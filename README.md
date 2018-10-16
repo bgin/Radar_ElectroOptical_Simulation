@@ -6,5 +6,6 @@ Main changes are related to drastically improved modeling of Radar interaction
 with targets and environment.
 T-Matrix models(by Mishchenko and by Xu) will be used to compute scattering coefficients returned by
 single particles and ensemble of particles.
-
+Large scatterers will be modelled as a OBJ or gmsh meshes.
+Radar scattering will be calculated by Method of Moments.
 
