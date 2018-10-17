@@ -8,4 +8,4 @@ T-Matrix models(by Mishchenko and by Xu) will be used to compute scattering coef
 single particles and ensemble of particles.
 Large scatterers will be modelled as a OBJ or gmsh meshes.
 Radar scattering will be calculated by Method of Moments.
-
+Atmospheric quantities and wind will be based on WRF modules and WRF output files.
