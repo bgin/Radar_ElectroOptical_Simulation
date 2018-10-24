@@ -9,3 +9,18 @@ single particles and ensemble of particles.
 Large scatterers will be modelled as a OBJ, gmsh meshes or converted nec files.
 Radar scattering will be calculated by Method of Moments with the help of modified NEC-2 program.
 Atmospheric quantities and wind will be based on WRF modules and WRF output files.
+
+
+List of references:
+
+1) Detection, Estimation, and Modulation Theory Part III: Radar-Sonar Signal Processing and Gaussian Signals in Noise
+   Harry L. van Trees
+   ISBN-10: 047110793X
+   ISBN-13: 978-0471107934
+   
+ 2) Detection Estimation and Modulation Theory, Part I: Detection, Estimation, and Filtering Theory 
+    Harry L. van Trees
+    ISBN-10: 9780470542965
+    ISBN-13: 978-0470542965
+    ASIN: 0470542969
+    
