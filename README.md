@@ -24,3 +24,6 @@ List of references:
     ISBN-13: 978-0470542965
     ASIN: 0470542969
     
+3) Automatic Control of Aircraft and Missiles 
+   John H. Blakelock
+   ASIN: B01FJ0JOU2
