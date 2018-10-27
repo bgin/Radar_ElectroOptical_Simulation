@@ -9,7 +9,7 @@ single particles and ensemble of particles.
 Large scatterers will be modelled as a OBJ, gmsh meshes and later converted to nec format files.
 Radar scattering will be calculated by Method of Moments with the help of modified NEC-2 program.
 Atmospheric quantities and wind will be based on WRF modules and WRF output files.
-
+Work in progress...
 
 List of references:
 
