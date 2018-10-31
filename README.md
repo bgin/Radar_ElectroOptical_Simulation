@@ -27,3 +27,8 @@ List of references:
 3) Automatic Control of Aircraft and Missiles 
    John H. Blakelock
    ASIN: B01FJ0JOU2
+   
+ 4) Generalized Moment Methods in Electromagnetics: Formulation and Computer Solution of Integral Equations
+    Johnson J. H. Wang
+    ISBN-10: 0471514438
+    ISBN-13: 978-0471514435
