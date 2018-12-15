@@ -1,5 +1,5 @@
 
-#include "Config.fpp"
+
 
 module mod_targetrp
 
@@ -79,8 +79,7 @@ module mod_targetrp
     
         type, public :: NECTargetRadPattern_t
             
-              sequence
-              public
+              
               ! Number of data columns (per angle)
               integer(kind=int4) :: m_ncols
 !DIR$   IF (GMS_TARGETRP_ADD_PADDING .EQ. 1 )
@@ -123,19 +122,20 @@ module mod_targetrp
         
     contains
     
-    subroutine initNECTargetRadPattern(rp,ncols,errstate,logging,verbose,append,fname)
+    subroutine initNECTargetRadPattern(rp,ncols,errstate,iounit,logging,verbose,append,fname)
           use mod_constants,    only : INITVAL
           use mod_print_error,  only : print_non_fatal_error,   &
                                        handle_fatal_memory_error
           type(NECTargetRadPattern_t),          intent(inout) :: rp
           integer(kind=int4),                   intent(in)    :: ncols
           logical(kind=int4),                   intent(inout) :: errstate
+          integer(kind=int4),                   intent(in)    :: iounit
           logical(kind=int4),                   intent(in)    :: logging,   &
                                                                  verbose,   &
                                                                  append
           character(len=*),                     intent(in)    :: fname
           ! Locals
-          integer(kind=int4) :: idx
+          integer(kind=int4) :: aerr
           character(len=256) :: emsg
           ! Exec code ....
           errstate = .false.
@@ -270,19 +270,20 @@ module mod_targetrp
           rp.m_Ephimag(:)   = INITVAL
           rp.m_Ephiphase(:) = INITVAL
           return
-9999      call  handle_fatal_memory_error( logging,verbose,append,fname,                                                    &
+9999      call  handle_fatal_memory_error(iounit, logging,verbose,append,fname,                                                    &
                              "logger: "// __FILE__ // "module: mod_targetrp, subroutine: initNECTargetRadPattern -- Memory Allocation Failure !!", &                                                        &
                               "module: mod_targetrp, subroutine: initNECTargetRadPattern -- Memory Allocation Failure !!", &
-                                                    emsg,__LINE__ ) 
-    end subroutine iniNECTargetRadPattern
+                                                    emsg,273 ) 
+    end subroutine initNECTargetRadPattern
     
-    subroutine readNECTargetRadPattern(rp,iounit,filename,errmsg,ioerr,logging,verbose,append,fname)
+    subroutine readNECTargetRadPattern(rp,iounit,filename,errmsg,ioerr,iounit2,logging,verbose,append,fname)
           use mod_print_error, only : handle_fatal_fileio_error
           type(NECTargetRadPattern_t),      intent(inout) :: rp
           integer(kind=int4),               intent(in)    :: iounit
           character(len=*),                 intent(in)    :: filename
           character(len=256),               intent(inout) :: errmsg
           integer(kind=int4),               intent(inout) :: ioerr
+          integer(kind=int4),               intent(in)    :: iounit2
           logical(kind=int4),               intent(in)    :: logging,  &
                                                              verbose,  &
                                                              append
@@ -293,19 +294,19 @@ module mod_targetrp
           ! Exec code ....
           inquire(FILE=trim(filename),EXIST=is_present)
           if(.not. is_present) then
-                call handle_fatal_fileio_error( logging,verbose,append,fname,     &
+                call handle_fatal_fileio_error( iounit2,logging,verbose,append,fname,     &
                      "logger: " //__FILE__//"module: mod_targetrp, subroutine: readNECTargetRadPattern: File"//filename//" Does Not Exist!!", &
                                             filename,                        &
                      "module: mod_targetrp, subroutine: readNECTargetRadPattern -- File Does Not Exist!! ",  &
-                                            errmsg,__LINE__)
+                                            errmsg,296)
           end if
-          open(UNIT=iounit,FILE=trim(filename),ACTION='READ',STATUS='OLD',IOMSG=errmsg,IOERR=ioerr)
+          open(UNIT=iounit,FILE=trim(filename),ACTION='READ',STATUS='OLD',IOMSG=errmsg,IOSTAT=ioerr)
           if(ioerr > 0) then
-                 call handle_fatal_fileio_error( logging,verbose,append,fname,     &
+                 call handle_fatal_fileio_error(iounit2, logging,verbose,append,fname,     &
                      "logger: " //__FILE__//"module: mod_targetrp, subroutine: readNECTargetRadPattern: File"//filename//" Open I/O Failure !! ", &
                                             filename,                        &
                      "module: mod_targetrp, subroutine: readNECTargetRadPattern -- File Open I/O Failure !! ",  &
-                                            errmsg,__LINE__)
+                                            errmsg,308)
           end if
           do idx = 1,  rp.m_ncols   
                 read(iounit, '(11F22.15)', IOMSG=errmsg,IOSTAT=ioerr)       &
@@ -325,11 +326,11 @@ module mod_targetrp
           close(UNIT=iounit,STATUS='KEEP')
           return
 9999      close(UNIT=iounit,STATUS='KEEP')
-          call   handle_fatal_fileio_error( logging,verbose,append,fname,  &
+          call   handle_fatal_fileio_error( iounit2, logging,verbose,append,fname,  &
                             "logger:"//__FILE__ //"module: mod_targetrp, subroutine: readNECTargetRadPattern, File"//filename//" READ I/O Failure!!",   &
                                           filename,                        &
                             "module: mod_targetrp, subroutine: readNECTargetRadPattern -- File READ I/O Failure !! ",  &
-                                           errmsg,__LINE__)
+                                           errmsg, 333)
     end subroutine readNECTargetRadPattern
     
     subroutine copyNECTargetRadPattern_ymm4r8(rp,      &
