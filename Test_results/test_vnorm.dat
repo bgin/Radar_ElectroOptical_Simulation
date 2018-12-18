@@ -1,0 +1,7 @@
+20181216:132436.374C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
+line:  625[TEST #11: test_vnorm -- START]
+ ========== TEST #11 -- PASSED!! ==========
+Quaternion1     0.845000000000000     0.932145800000000     0.045800000000000     0.652140000000000
+v-norm:     1.138542933778801
+20181216:132436.374C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
+ line:  647[TEST #11: test_vnorm -- END

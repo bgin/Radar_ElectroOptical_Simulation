@@ -1,0 +1,8 @@
+  20181209:121122.2C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90                                                                                                                                              315[TEST #4: test_array_init -- START]
+Quaternion1
+     0.000000000000000     1.000000000000000     2.000000000000000     3.000000000000000
+Quaternion2
+     0.100000000000000     0.200000000000000     0.300000000000000     0.400000000000000
+Quaternion3
+     1.100000000000000     2.100000000000000     3.100000000000000     4.100000000000000
+  20181209:121122.3C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90                                                                                                                                              315    [TEST #3: test_array_init -- END]
