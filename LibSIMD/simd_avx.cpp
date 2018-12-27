@@ -38,95 +38,179 @@
 
 
 v4f64 vec4f64_add_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_add_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_add_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_add_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_sub_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_sub_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_sub_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_sub_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_mul_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_mul_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_mul_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_mul_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_div_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_div_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_div_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_div_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_addsub_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_addsub_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_addsub_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_addsub_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_and_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_and_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_and_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_and_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_andnot_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_andnot_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_andnot_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_andnot_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
-v4f64 vec4f64_blend_vec4f64(v4f64 a, v4f64 b, const int imm) {
-	return (*(v4f64*)&(_mm256_blend_pd(*(__m256d*)&a,*(__m256d*)&b,imm)));
-}
+
+// Compile error:  -- //1>C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\LibSIMD\simd_avx.cpp(69, 2) : error : Intrinsic parameter must be an immediate value
+ v4f64 vec4f64_blend0_vec4f64(v4f64 a, v4f64 b) {
+	 __m256d ret = _mm256_blend_pd(*(__m256d*)&a, *(__m256d*)&b, 0);
+	 return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_blend_pd(*(__m256d*)&a,*(__m256d*)&b,0)));
+} 
+
+ v4f64 vec4f64_blend1_vec4f64(v4f64 a, v4f64 b) {
+	 __m256d ret = _mm256_blend_pd(*(__m256d*)&a, *(__m256d*)&b, 1);
+	 return (*(v4f64*)&ret);
+	 //return (*(v4f64*)&(_mm256_blend_pd(*(__m256d*)&a, *(__m256d*)&b,1)));
+ }
 
 v4f64 vec4f64_blendv_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_blendv_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_blendv_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_blendv_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_ceil_v4f64(v4f64 a) {
-	return (*(v4f64*)&(_mm256_ceil_pd(*(__m256d*)&a)));
+	__m256d ret = _mm256_ceil_pd(*(__m256d*)&a);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_ceil_pd(*(__m256d*)&a)));
 }
 
-v4f64 vec4f64_cmp_vec4f64(v4f64 a, v4f64 b, const int imm) {
-	return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a,*(__m256d*)&b,imm)));
+v4f64 vec4f64_cmp_eqoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b, 0);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a,*(__m256d*)&b,0)));
+}
+
+v4f64 vec4f64_cmp_ltoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b, 17);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,17)));
+}
+
+v4f64 vec4f64_cmp_leoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b, 18);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,18)));
+}
+
+v4f64 vec4f64_cmp_neqoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b, 12);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,12)));
+}
+
+v4f64 vec4f64_cmp_gtoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b, 29);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,29)));
+}
+
+v4f64 vec4f64_cmp_geoq_vec4f64(v4f64 a, v4f64 b) {
+	__m256d ret = _mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,30);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_cmp_pd(*(__m256d*)&a, *(__m256d*)&b,30)));
 }
 
 v4f64 vec4f64_floor_vec4f64(v4f64 a) {
-	return (*(v4f64*)&(_mm256_floor_pd(*(__m256d*)&a)));
+	__m256d ret = _mm256_floor_pd(*(__m256d*)&a);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_floor_pd(*(__m256d*)&a)));
 }
 
 v4f64 vec4f64_fmadd_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fmadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fmadd_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fmadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_fmaddsub_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fmaddsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fmaddsub_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fmaddsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_fmsub_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fmsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fmsub_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fmsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_fmsubadd_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fmsubadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fmsubadd_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fmsubadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_fnmadd_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fnmadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fnmadd_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fnmadd_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_fnmsub_vec4f64(v4f64 a, v4f64 b, v4f64 c) {
-	return (*(v4f64*)&(_mm256_fnmsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
+	__m256d ret = _mm256_fnmsub_pd(*(__m256d*)&a, *(__m256d*)&b, *(__m256d*)&c);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_fnmsub_pd(*(__m256d*)&a,*(__m256d*)&b,*(__m256d*)&c)));
 }
 
 v4f64 vec4f64_hadd_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_hadd_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_hadd_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_hadd_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_hsub_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_hsub_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_hsub_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_hsub_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_max_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_max_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_max_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_max_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_min_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_min_pd(*(__m256d*)&a,*(__m256d*)&b)));
+	__m256d ret = _mm256_min_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_min_pd(*(__m256d*)&a,*(__m256d*)&b)));
 }
 
 v4f64 vec4f64_movedup_vec4f64(v4f64 a) {
-	return (*(v4f64*)&(_mm256_movedup_pd(*(__m256d*)&a)));
+	__m256d ret = _mm256_movedup_pd(*(__m256d*)&a);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_movedup_pd(*(__m256d*)&a)));
 }
 
 int vec4f64_movemask_vec4f64(v4f64 a) {
@@ -134,12 +218,12 @@ int vec4f64_movemask_vec4f64(v4f64 a) {
 }
 
 v4f64 vec4f64_or_vec4f64(v4f64 a, v4f64 b) {
-	return (*(v4f64*)&(_mm256_or_pd(*(__m256d*)&a, *(__m256d*)&b)));
+	__m256d ret = _mm256_or_pd(*(__m256d*)&a, *(__m256d*)&b);
+	return (*(v4f64*)&ret);
+	//return (*(v4f64*)&(_mm256_or_pd(*(__m256d*)&a, *(__m256d*)&b)));
 }
 
-v4f64 vec4f64_permute2f128_vec4f64(v4f64 a, v4f64 b, const int imm) {
-	return (*(v4f64*)&(_mm256_permute2f128_pd(*(__m256d*)&a, *(__m256d*)&b, imm)));
-}
+
 
 
 //        void function -- implementations
@@ -158,59 +242,297 @@ v4f64 vec4f64_permute2f128_vec4f64(v4f64 a, v4f64 b, const int imm) {
 
 */
 
-void v4f64_add_pd(double * __restrict c, 
+void vec4f64_add_pd(double * __restrict c, 
 		          double * __restrict b, 
 				  double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_add_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void v4f64_sub_pd(double * __restrict c,
+void vec4f64_sub_pd(double * __restrict c,
 				  double * __restrict b,
 				  double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_sub_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void v4f64_mul_pd(double * __restrict c,
+void vec4f64_mul_pd(double * __restrict c,
 				  double * __restrict b,
 				  double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_mul_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void v4f64_div_pd(double * __restrict c,
+void vec4f64_div_pd(double * __restrict c,
 				  double * __restrict b,
 				  double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_div_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void v4f64_addsub_pd(double * __restrict c,
+void vec4f64_addsub_pd(double * __restrict c,
 				     double * __restrict b,
 					 double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_addsub_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void v4f64_and_pd(double * __restrict c,
+void vec4f64_and_pd(double * __restrict c,
 				  double * __restrict b,
 				  double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_and_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void v4f64_andnot_pd(double * __restrict c,
+void vec4f64_andnot_pd(double * __restrict c,
 				     double * __restrict b,
 					 double * __restrict a) {
 	_mm256_store_pd(&c[0], _mm256_andnot_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void v4f64_blend_pd(double * __restrict c,
-					double * __restrict b,
-				    double * __restrict a,
-					const int imm) {
-	_mm256_store_pd(&c[0], _mm256_blend_pd(*(__m256d*)&b[0],*(__m256d*)&a[0],imm));
-}
 
-void v4f64_blendv_pd(double * __restrict c,
+
+void vec4f64_blendv_pd(double * __restrict c,
 					 double * __restrict b,
 					 double * __restrict a,
 					 double * __restrict pred) {
 	_mm256_store_pd(&c[0], _mm256_blendv_pd(*(__m256d*)&b[0],*(__m256d*)&a[0],*(__m256d*)&pred[0]));
 }
+
+void vec4f64_ceil_pd(double * __restrict c,
+				   double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_ceil_pd(*(__m256d*)&a[0]));
+}
+
+void vec4f64_cmpeq_pd(double * __restrict c,
+				  double * __restrict b,
+				  double * __restrict a) {
+				 
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0],*(__m256d*)&a[0],0));
+}
+
+void vec4f64_cmpneq_pd(double * __restrict c,
+					   double * __restrict b,
+					   double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0],12));
+}
+
+void vec4f64_cmplt_pd(double * __restrict c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 17));
+}
+
+void vec4f64_cmple_pd(double * __restrict c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 18));
+}
+
+void vec4f64_cmpgt_pd(double * __restrict c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 29));
+}
+
+void vec4f64_cmpge_pd(double * __restrict c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 30));
+}
+
+void vec4f64_floor_pd(double * __restrict c,
+				    double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_floor_pd(*(__m256d*)&a[0]));
+}
+
+void vec4f64_fmadd_pd(double * __restrict d,
+				    double * __restrict c,
+					double * __restrict b,
+				    double * __restrict a) {
+	_mm256_store_pd(&d[0], _mm256_fmadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_fmaddsub_pd(double * __restrict d,
+					   double * __restrict c,
+					   double * __restrict b,
+					   double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_fmaddsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_fmsub_pd(double * __restrict d,
+					 double * __restrict c,
+					 double * __restrict b,
+					 double * __restrict a) {
+	_mm256_store_pd(&d[0], _mm256_fmsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_fmsubadd_pd(double * __restrict d,
+					   double * __restrict c,
+					   double * __restrict b,
+					   double * __restrict a) {
+	_mm256_store_pd(&d[0], _mm256_fmsubadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a));
+}
+
+void vec4f64_fnmadd_pd(double * __restrict d,
+					   double * __restrict c,
+					   double * __restrict b,
+				       double * __restrict a) {
+	_mm256_store_pd(&d[0], _mm256_fnmadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_fnmsub_pd(double * __restrict d,
+					   double * __restrict c,
+					   double * __restrict b,
+					   double * __restrict a) {
+	_mm256_store_pd(&d[0], _mm256_fnmsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_hadd_pd(double * __restrict c,
+					 double * __restrict b,
+				     double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_hadd_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+void vec4f64_hsub_pd(double * __restrict c,
+				     double * __restrict b,
+					 double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_hsub_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+void vec4f64_max_pd(double * __restrict c,
+				    double * __restrict b,
+					double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_max_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+void vec4f64_min_pd(double * __restrict c,
+					double * __restrict b,
+					double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_min_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+void vec4f64_movedup_pd(double * __restrict b,
+						double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_movedup_pd(*(__m256d*)&a[0]));
+}
+
+void vec4f64_movemask_pd(double * __restrict a,
+						 int * imm) {
+	*imm = _mm256_movemask_pd(*(__m256d*)&a[0]);
+}
+
+void vec4f64_or_pd(double * __restrict c,
+				   double * __restrict b,
+				   double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_or_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+
+
+void vec4f64_cvtpd_ps(float * __restrict b,
+					  double * __restrict a) {
+	_mm_store_ps(&b[0], _mm256_cvtpd_ps(*(__m256d*)&a[0]));
+}
+
+void vec4f64_cvtps_pd(double * __restrict b,
+					  float * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_cvtps_pd(*(__m128*)&a[0]));
+}
+
+void vec4f64_sqrt_pd(double * __restrict b,
+					 double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_sqrt_pd(*(__m256d*)&a[0]));
+}
+
+void vec4f64_undefined_pd(double * __restrict a) {
+	_mm256_store_pd(&a[0], _mm256_undefined_pd());
+}
+
+void vec_zeroall(void) {
+	_mm256_zeroall();
+}
+
+void vec_zeroupper(void) {
+	_mm256_zeroupper();
+}
+
+void vec4f64_broadcast_pd(double * __restrict b,
+					      double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_broadcast_pd((__m128d*)&a[0]));
+}
+
+void vec4f64_broadcast_sd(double * __restrict b,
+						  const double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_broadcast_sd(&a[0]));
+} 
+
+void vec4f64_testc_pd(int * c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	*c = _mm256_testc_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]);
+}
+
+void vec4f64_testnzc_pd(int * c,
+					    double * __restrict b,
+						double * __restrict a) {
+	*c = _mm256_testnzc_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]);
+}
+
+void vec4f64_testz_pd(int * c,
+					  double * __restrict b,
+					  double * __restrict a) {
+	*c = _mm256_testz_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]);
+}
+
+void vec4f64_round_nearest_pd(double * __restrict b,
+					  double * __restrict a){
+					 
+	_mm256_store_pd(&b[0], _mm256_round_pd(*(__m256d*)&a[0],_MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC));
+}
+
+void vec4f64_round_down_pd(double * __restrict b,
+						   double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_round_pd(*(__m256d*)&a[0], _MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC));
+}
+
+void vec4f64_round_up_pd(double * __restrict b,
+					     double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_round_pd(*(__m256d*)&a[0], _MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC));
+}
+
+void vec4f64_round_truncate_pd(double * __restrict b,
+							   double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_round_pd(*(__m256d*)&a[0], _MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC));
+}
+
+void vec4f64_stream_pd(double * __restrict b,
+					   double * __restrict a) {
+	_mm256_stream_pd(&b[0], *(__m256d*)&a[0]);
+}
+
+void vec4f64_unpacklo_pd(double * __restrict c,
+					     double * __restrict b,
+					     double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_unpacklo_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
+}
+
+void vec4f64_unpackhi_pd(double * __restrict c,
+						 double * __restrict b,
+						 double * __restrict a) {
+	_mm256_store_pd(&c[0], _mm256_unpackhi_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
+}
+
+
+void vec2f64_acos_pd(double * __restrict b,
+					 const double * __restrict a) {
+	_mm_store_pd(&b[0], _mm_acos_pd(*(__m128d*)&a[0]));
+}
+
+void vec4f64_acos_pd(double * __restrict b,
+					 const double * __restrict a) {
+	_mm256_store_pd(&b[0], _mm256_acos_pd(*(__m256d*)&a[0]));
+}
+
+void vec2f64_acosh_pd(double * __restrict b,
+					  const double * __restrict a) {
+	_mm_store_pd(&b[0], _mm_acosh_pd(*(__m128d*)&a[0]));
+}
+
+
+
 
