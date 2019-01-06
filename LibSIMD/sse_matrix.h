@@ -56,6 +56,11 @@ typedef struct __declspec(align(16))  V1x3f32 {
 
  // void functions callable from Fortran.
 
+void warmup_fp128unit(volatile float * __restrict ,
+					  const float * __restrict ,
+					  const float * __restrict ,
+					  const int n );
+
 void M4x4f32_setzero(struct M4x4f32 * __restrict);
 
 void M4x4f32_setzero_stream(struct M4x4f32 * __restrict);
@@ -174,6 +179,87 @@ void M4x4f32_maximum(float * , const struct M4x4f32 * __restrict);
 void M4x4f32_det(float * , const struct M4x4f32 * __restrict);
 
 void M4x4f32_inverse(float * , const struct M4x4f32 * __restrict);
+
+void V1x4f32_setzero(struct V1x4f32 * __restrict);
+
+void V1x4f32_setzero_stream(struct V1x4f32 * __restrict);
+
+void V1x4f32_set1(struct V1x4f32 * __restrict,
+				  const float);
+
+void V1x4f32_set1_stream(struct V1x4f32 * __restrict,
+					     const float);
+
+void V1x4f32_set_scalars(struct V1x4f32 * __restrict,
+					     const float, const float,
+						 const float, const float);
+
+void V1x4f32_set_scalars_stream(struct V1x4f32 * __restrict,
+							    const float, const float,
+								const float, const float);
+
+void V1x4f32_set_array(struct V1x4f32 * __restrict,
+					   const float * __restrict);
+
+void V1x4f32_set_array_stream(struct V1x4f32 * __restrict,
+							  const float * __restrict);
+
+void V1x4f32_set_V1x4f32(struct V1x4f32 * __restrict,
+					     const struct V1x4f32 * __restrict);
+
+void V1x4f32_set_V1x4f32_stream(struct V1x4f32 * __restrict,
+							    const struct V1x4f32 * __restrict);
+
+void V1x4f32_set_M4x4f32(struct V1x4f32 * __restrict,
+						 const struct M4x4f32 * __restrict,
+						 const int);
+
+void V1x4f32_set_M4x4f32_stream(struct V1x4f32 * __restrict,
+								const struct M4x4f32 * __restrict,
+								const int);
+
+void V1x4f32_mul_M4x4f32(struct V1x4f32 * __restrict,
+						 const struct V1x4f32 * __restrict ,
+						 const struct M4x4f32 * __restrict);
+
+void V1x4f32_mul_M4x4f32_inplace(struct V1x4f32 * __restrict,
+								 const struct M4x4f32 * __restrict);
+
+void V1x4f32_product(struct V1x4f32 * __restrict,
+					 const struct V1x4f32 * __restrict,
+					 const struct V1x4f32 * __restrict);
+
+void V1x4f32_product_inplace(struct V1x4f32 * __restrict,
+							 const struct V1x4f32 * __restrict);
+
+void V1x4f32_mul_scalar(struct V1x4f32 * __restrict ,
+					    const struct V1x4f32 * __restrict,
+						const float);
+
+void V1x4f32_add_V1x4f32(struct V1x4f32 * __restrict,
+						 const struct V1x4f32 * __restrict,
+						 const struct V1x4f32 * __restrict);
+
+void V1x4f32_add_V1x4f32_inplace(struct V1x4f32 * __restrict,
+								 const struct V1x4f32 * __restrict);
+
+void V1x4f32_sub_V1x4f32(struct V1x4f32 * __restrict,
+						 const struct V1x4f32 * __restrict,
+						 const struct V1x4f32 * __restrict);
+
+void V1x4f32_sub_V1x4f32_inplace(struct V1x4f32 * __restrict,
+							     const struct V1x4f32 * __restrict);
+
+void V1x4f32_dot(float * ,
+				 const struct V1x4f32 * __restrict,
+				 const struct V1x4f32 * __restrict);
+
+void V1x4f32_cross(struct V1x4f32 * __restrict,
+				   const struct V1x4f32 * __restrict,
+				   const struct V1x4f32 * __restrict);
+
+//void V1x4f32_normalize(struct V1x4f32 * __restrict);
+
 
 
 
