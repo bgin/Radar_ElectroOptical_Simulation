@@ -2801,6 +2801,818 @@ module mod_cublasapi_header
         end function cublasSgemm_v2
     end interface
     
+    interface
+        function cublasDgemm_v2(handle,transa,transb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDgemm_v2')
+                 import ::  CUBLAS_OP_N 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 import ::  cublasContext
+                 type(cublasContext),      value       :: handle
+                 integer(kind(CUBLAS_OP_N))            :: transa
+                 integer(kind(CUBLAS_OP_N))            :: transb
+                 integer(c_int),           value       :: m
+                 integer(c_int),           value       :: n
+                 integer(c_int),           value       :: k
+                 real(c_double)                         :: alpha
+                 real(c_double), dimension(*)           :: A
+                 integer(c_int),           value       :: lda
+                 real(c_double), dimension(*)           :: B
+                 integer(c_int),           value       :: ldb
+                 real(c_double), dimension(*)           :: C
+                 integer(c_int),           value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasDgemm_v2
+    end interface
     
+    interface
+        function cublasCgemm_v2(handle,transa,transb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCgemm_v2')
+                 import ::  CUBLAS_OP_N 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 import ::  cublasContext
+                 type(cublasContext),      value       :: handle
+                 integer(kind(CUBLAS_OP_N))            :: transa
+                 integer(kind(CUBLAS_OP_N))            :: transb
+                 integer(c_int),           value       :: m
+                 integer(c_int),           value       :: n
+                 integer(c_int),           value       :: k
+                 complex(c_float)                      :: alpha
+                 complex(c_float), dimension(*)        :: A
+                 integer(c_int),           value       :: lda
+                 complex(c_float), dimension(*)        :: B
+                 integer(c_int),           value       :: ldb
+                 complex(c_float), dimension(*)        :: C
+                 integer(c_int),           value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasCgemm_v2
+    end interface
+    
+    interface
+        function cublasZgemm_v2(handle,transa,transb,m,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZgemm_v2')
+                 import ::  CUBLAS_OP_N 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 import ::  cublasContext
+                 type(cublasContext),      value       :: handle
+                 integer(kind(CUBLAS_OP_N))            :: transa
+                 integer(kind(CUBLAS_OP_N))            :: transb
+                 integer(c_int),           value       :: m
+                 integer(c_int),           value       :: n
+                 integer(c_int),           value       :: k
+                 complex(c_double)                     :: alpha
+                 complex(c_double), dimension(*)       :: A
+                 integer(c_int),           value       :: lda
+                 complex(c_double), dimension(*)       :: B
+                 integer(c_int),           value       :: ldb
+                 complex(c_double), dimension(*)       :: C
+                 integer(c_int),           value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status  
+        end function cublasZgemm_v2
+    end interface
+    
+    interface
+        function cublasSsyrk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasSsyrk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_float)                         :: alpha
+                  real(c_float), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_float)                         :: beta
+                  real(c_float), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasSsyrk_v2
+    end interface
+    
+    interface
+        function cublasDsyrk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDsyrk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_double)                         :: alpha
+                  real(c_double), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_double)                         :: beta
+                  real(c_double), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasDsyrk_v2
+    end interface
+    
+    interface
+        function cublasCsyrk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCsyrk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_float)                      :: alpha
+                  complex(c_float), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_float)                      :: beta
+                  complex(c_float), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasCsyrk_v2
+    end interface
+    
+    interface
+        function cublasZsyrk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZsyrk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_double)                      :: alpha
+                  complex(c_double), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_double)                      :: beta
+                  complex(c_double), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasZsyrk_v2
+    end interface
+    
+    interface
+        function cublasCherk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCherk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_float)                         :: alpha
+                  complex(c_float), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  real(c_float)                         :: beta
+                  complex(c_float), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasCherk_v2
+    end interface
+    
+    interface
+        function cublasZherk_v2(handle,uplo,trans,n,k,alpha,A,lda,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZherk_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_double)                         :: alpha
+                  complex(c_double), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  real(c_double)                         :: beta
+                  complex(c_double), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasZherk_v2
+    end interface
+    
+    interface
+        function cublasSsyr2k_v2(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasSsyr2k_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_float)                         :: alpha
+                  real(c_float), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_float), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  real(c_float)                         :: beta
+                  real(c_float), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasSsyr2k_v2
+    end interface
+    
+    interface
+        function cublasDsyr2k_v2(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDsyr2k_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_double)                         :: alpha
+                  real(c_double), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_double), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  real(c_double)                         :: beta
+                  real(c_double), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status 
+        end function cublasDsyr2k_v2
+    end interface
+    
+    interface
+        function cublasCsyr2k_v2(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCsyr2k_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_float)                         :: alpha
+                  complex(c_float), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_float), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_float)                         :: beta
+                  complex(c_float), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status  
+        end function cublasCsyr2k_v2
+    end interface
+    
+    interface
+        function cublasZsyr2k_v2(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZsyr2k_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_double)                     :: alpha
+                  complex(c_double), dimension(*)       :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_double), dimension(*)       :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_double)                     :: beta
+                  complex(c_double), dimension(*)       :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasZsyr2k_v2
+    end interface
+    
+    interface
+        function cublasCher2k_v2(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCher2k_v2')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_float)                      :: alpha
+                  complex(c_float), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_float), dimension(*)        :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_float)                      :: beta
+                  complex(c_float), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasCher2k_v2
+    end interface
+    
+    interface
+        function cublasZher2k_v2(handle,uplo,trans,n,k,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZher2k_v2')
+                   import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_double)                      :: alpha
+                  complex(c_double), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_double), dimension(*)        :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_double)                      :: beta
+                  complex(c_double), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasZher2k_v2
+    end interface
+    
+    interface
+        function cublasSsyrkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasSsyrkx')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_float)                         :: alpha
+                  real(c_float), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_float), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  real(c_float)                         :: beta
+                  real(c_float), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasSsyrkx
+    end interface
+    
+    interface
+        function cublasDsyrkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDsyrkx')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  real(c_double)                         :: alpha
+                  real(c_double), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  real(c_double), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  real(c_double)                         :: beta
+                  real(c_double), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status    
+        end function cublasDsyrkx
+    end interface
+    
+    interface
+        function cublasCsyrkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCsyrkx')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_float)                         :: alpha
+                  complex(c_float), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_float), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_float)                         :: beta
+                  complex(c_float), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status    
+        end function cublasCsyrkx
+    end interface
+    
+    interface
+        function cublasZsyrkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZsyrkx')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_double)                         :: alpha
+                  complex(c_double), dimension(*)           :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_double), dimension(*)           :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_double)                         :: beta
+                  complex(c_double), dimension(*)           :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status   
+        end function cublasZsyrkx
+    end interface
+    
+    interface
+        function cublasCherkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCherkx')
+                  import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_float)                      :: alpha
+                  complex(c_float), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_float), dimension(*)        :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_float)                      :: beta
+                  complex(c_float), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status  
+        end function cublasCherkx
+    end interface
+    
+    interface
+        function cublasZherkx(handle,uplo,trans,n,k,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZherkx')
+                    import :: cublasContext
+                  import :: CUBLAS_OP_N
+                  import :: CUBLAS_FILL_MODE_LOWER 
+                  import :: CUBLAS_STATUS_SUCCESS 
+                  type(cublasContext),      value       :: handle
+                  integer(kind(CUBLAS_FILL_MODE_LOWER)) :: uplo
+                  integer(kind(CUBLAS_OP_N))            :: trans
+                  integer(c_int),           value       :: n
+                  integer(c_int),           value       :: k
+                  complex(c_double)                      :: alpha
+                  complex(c_double), dimension(*)        :: A
+                  integer(c_int),           value       :: lda
+                  complex(c_double), dimension(*)        :: B
+                  integer(c_int),           value       :: ldb
+                  complex(c_double)                      :: beta
+                  complex(c_double), dimension(*)        :: C
+                  integer(c_int),           value       :: ldc
+                  integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status
+        end function cublasZherkx
+    end interface
+    
+    interface
+        function cublasSsymm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasSsymm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_float)                          :: alpha
+                 real(c_float), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 real(c_float), dimension(*)            :: B
+                 integer(c_int),            value       :: ldb
+                 real(c_float)                          :: beta
+                 real(c_float), dimension(*)            :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))  :: cublas_status
+        end function cublasSsymm_v2
+    end interface
+    
+    interface
+        function cublasDsymm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDsymm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_double)                          :: alpha
+                 real(c_double), dimension(*)            :: A
+                 integer(c_int),            value        :: lda
+                 real(c_double), dimension(*)            :: B
+                 integer(c_int),            value        :: ldb
+                 real(c_double)                          :: beta
+                 real(c_double), dimension(*)            :: C
+                 integer(c_int),            value        :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))    :: cublas_status 
+        end function cublasDsymm_v2
+    end interface
+    
+    interface
+        function cublasCsymm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCsymm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_float)                       :: alpha
+                 complex(c_float), dimension(*)         :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_float), dimension(*)         :: B
+                 integer(c_int),            value       :: ldb
+                 complex(c_float)                       :: beta
+                 complex(c_float), dimension(*)         :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status  
+        end function cublasCsymm_v2
+    end interface
+    
+    interface
+        function cublasZsymm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZsymm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_double)                       :: alpha
+                 complex(c_double), dimension(*)         :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_double), dimension(*)         :: B
+                 integer(c_int),            value       :: ldb
+                 complex(c_double)                       :: beta
+                 complex(c_double), dimension(*)         :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status 
+        end function cublasZsymm_v2
+    end interface
+    
+    interface
+        function cublasChemm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasChemm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_float)                       :: alpha
+                 complex(c_float), dimension(*)         :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_float), dimension(*)         :: B
+                 integer(c_int),            value       :: ldb
+                 complex(c_float)                       :: beta
+                 complex(c_float), dimension(*)         :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status  
+        end function cublasChemm_v2
+    end interface
+    
+    interface
+        function cublasZhemm_v2(handle,side,uplo,m,n,alpha,A,lda,B,ldb,beta,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZhemm_v2')
+                  
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_double)                       :: alpha
+                 complex(c_double), dimension(*)         :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_double), dimension(*)         :: B
+                 integer(c_int),            value       :: ldb
+                 complex(c_double)                       :: beta
+                 complex(c_double), dimension(*)         :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status  
+        end function cublasZhemm_v2
+    end interface
+    
+    interface
+        function cublasSdgmm(handle,mode,m,n,A,lda,x,incx,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasSdgmm')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_float), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 real(c_float), dimension(*)            :: x
+                 integer(c_int),            value       :: incx
+                 real(c_float), dimension(*)            :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status  
+        end function cublasSdgmm
+    end interface
+    
+    interface
+        function cublasDdgmm(handle,mode,m,n,A,lda,x,incx,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasDdgmm')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_double), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 real(c_double), dimension(*)            :: x
+                 integer(c_int),            value       :: incx
+                 real(c_double), dimension(*)            :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status   
+        end function cublasDdgmm
+    end interface
+    
+    interface
+        function cublasCdgmm(handle,mode,m,n,A,lda,x,incx,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasCdgmm')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_float), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_float), dimension(*)            :: x
+                 integer(c_int),            value       :: incx
+                 complex(c_float), dimension(*)            :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status  
+        end function cublasCdgmm
+    end interface
+    
+    interface
+        function cublasZdgmm(handle,mode,m,n,A,lda,x,incx,C,ldc) result(cublas_status) &
+                    bind(c,name='cublasZdgmm')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_double), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_double), dimension(*)            :: x
+                 integer(c_int),            value       :: incx
+                 complex(c_double), dimension(*)            :: C
+                 integer(c_int),            value       :: ldc
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status   
+        end function cublasZdgmm
+    end interface
+    
+    interface
+        function cublasStrsm_v2(handle,side,uplo,trans,diag,m,n,alpha,A,lda,B,ldb) result(cublas_status) &
+                    bind(c,name='cublasStrsm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_OP_N
+                 import ::  CUBLAS_DIAG_NON_UNIT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(kind(CUBLAS_OP_N))             :: trans
+                 integer(kind(CUBLAS_DIAG_NON_UNIT))    :: diag
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_float)                          :: alpha
+                 real(c_float), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 real(c_float), dimension(*)            :: B
+                 integer(c_int),            value       :: ldb
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status   
+        end function cublasStrsm_v2
+    end interface
+    
+    interface
+        function cublasDtrsm_v2(handle,side,uplo,trans,diag,m,n,alpha,A,lda,B,ldb) result(cublas_status) &
+                    bind(c,name='cublasDtrsm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_OP_N
+                 import ::  CUBLAS_DIAG_NON_UNIT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(kind(CUBLAS_OP_N))             :: trans
+                 integer(kind(CUBLAS_DIAG_NON_UNIT))    :: diag
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 real(c_double)                          :: alpha
+                 real(c_double), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 real(c_double), dimension(*)            :: B
+                 integer(c_int),            value       :: ldb
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status   
+        end function cublasDtrsm_v2
+    end interface
+    
+    interface
+        function cublasCtrsm_v2(handle,side,uplo,trans,diag,m,n,alpha,A,lda,B,ldb) result(cublas_status) &
+                  bind(c,name='cublasCtrsm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_OP_N
+                 import ::  CUBLAS_DIAG_NON_UNIT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(kind(CUBLAS_OP_N))             :: trans
+                 integer(kind(CUBLAS_DIAG_NON_UNIT))    :: diag
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_float)                          :: alpha
+                 complex(c_float), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_float), dimension(*)            :: B
+                 integer(c_int),            value       :: ldb
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status    
+        end function cublasCtrsm_v2
+    end interface
+    
+    interface
+        function cublasZtrsm_v2(handle,side,uplo,trans,diag,m,n,alpha,A,lda,B,ldb) result(cublas_status) &
+                    bind(c,name='cublasZtrsm_v2')
+                 import ::  cublasContext
+                 import ::  CUBLAS_SIDE_LEFT
+                 import ::  CUBLAS_FILL_MODE_LOWER 
+                 import ::  CUBLAS_OP_N
+                 import ::  CUBLAS_DIAG_NON_UNIT
+                 import ::  CUBLAS_STATUS_SUCCESS
+                 type(cublasContext),       value       :: handle
+                 integer(kind(CUBLAS_SIDE_LEFT))        :: side
+                 integer(kind(CUBLAS_FILL_MODE_LOWER))  :: uplo
+                 integer(kind(CUBLAS_OP_N))             :: trans
+                 integer(kind(CUBLAS_DIAG_NON_UNIT))    :: diag
+                 integer(c_int),            value       :: m
+                 integer(c_int),            value       :: n
+                 complex(c_double)                          :: alpha
+                 complex(c_double), dimension(*)            :: A
+                 integer(c_int),            value       :: lda
+                 complex(c_double), dimension(*)            :: B
+                 integer(c_int),            value       :: ldb
+                 integer(kind(CUBLAS_STATUS_SUCCESS))   :: cublas_status    
+        end function cublasZtrsm_v2
+    end interface
 
 end module mod_cublasapi_header
