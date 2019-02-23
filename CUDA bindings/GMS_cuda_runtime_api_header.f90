@@ -812,7 +812,7 @@ module mod_cuda_runtime_api_header
                 use, intrinsic :: ISO_C_BINDING
                 import :: cudaLimitStackSize
                 import :: CUDA_SUCCESS
-                integer(kind(cudaLimitStackSize )) :: limit
+                integer(kind(cudaLimitStackSize )), value :: limit
                 integer(c_size_t),      value      :: val
                 integer(kind(CUDA_SUCCESS))        :: status
         end function cudaDeviceSetLimit
@@ -830,7 +830,7 @@ module mod_cuda_runtime_api_header
                  import :: cudaLimitStackSize
                  import :: CUDA_SUCCESS
                  integer(c_size_t)                 :: pValue
-                 integer(kind(cudaLimitStackSize)) :: limit
+                 integer(kind(cudaLimitStackSize)), value :: limit
                  integer(kind(CUDA_SUCCESS))       :: status
         end function cudaDeviceGetLimit
     end interface
@@ -884,7 +884,7 @@ module mod_cuda_runtime_api_header
                     bind(c,name='cudaDeviceSetCacheConfig')
                   import :: cudaFuncCachePreferNone 
                   import :: CUDA_SUCCESS
-                  integer(kind(cudaFuncCachePreferNone)) :: cacheConfig
+                  integer(kind(cudaFuncCachePreferNone)), value :: cacheConfig
                   integer(kind(CUDA_SUCCESS))            :: status
         end function cudaDeviceSetCacheConfig
     end interface
@@ -914,7 +914,7 @@ module mod_cuda_runtime_api_header
                     bind(c,name='cudDeviceSetSharedMemConfig')
                  import ::   cudaSharedMemBankSizeDefault 
                  import ::   CUDA_SUCCESS
-                 integer(kind(cudaSharedMemBankSizeDefault))  :: config
+                 integer(kind(cudaSharedMemBankSizeDefault)), value  :: config
                  integer(kind(CUDA_SUCCESS))                  :: status
         end function cudaDeviceSetSharedMemConfig
     end interface
@@ -1196,7 +1196,7 @@ module mod_cuda_runtime_api_header
                 import :: cudaDevAttrMaxThreadsPerBlock
                 import :: CUDA_SUCCESS
                 integer(c_int)                               :: val
-                integer(kind(cudaDevAttrMaxThreadsPerBlock)) :: attr
+                integer(kind(cudaDevAttrMaxThreadsPerBlock)), value :: attr
                 integer(c_int),     value                    :: device
                 integer(kind(CUDA_SUCCESS))                  :: status
         end function cudaDeviceGetAttribute
@@ -1209,7 +1209,7 @@ module mod_cuda_runtime_api_header
                  import :: cudaDevP2PAttrPerformanceRank   
                  import :: CUDA_SUCCESS
                  integer(c_int)                               :: val
-                 integer(kind(cudaDevP2PAttrPerformanceRank)) :: attr
+                 integer(kind(cudaDevP2PAttrPerformanceRank)), value :: attr
                  integer(c_int),        value                 :: srcDevice
                  integer(c_int),        value                 :: dstDevice
                  integer(kind(CUDA_SUCCESS))                  :: status
@@ -1963,7 +1963,7 @@ module mod_cuda_runtime_api_header
        ! * used to compute addresses within the 2D array. Given the row and column of
        ! * an array element of type \p T, the address is computed as:
        !! * \code
-         T* pElement = (T*)((char*)BaseAddress + Row * pitch) + Column;
+       !  T* pElement = (T*)((char*)BaseAddress + Row * pitch) + Column;
     ! \endcode
          
     interface
@@ -2267,6 +2267,523 @@ module mod_cuda_runtime_api_header
                 type(CUstream), value           :: stream
                 integer(kind(CUDA_SUCCESS))        :: status
         end function cudaMemcpy3DAsync
+    end interface
+    
+    !/**
+        !* \brief Copies data between host and device
+        !*
+        !* Copies \p count bytes from the memory area pointed to by \p src to the
+        !* CUDA array \p dst starting at the upper left corner
+        !* (\p wOffset, \p hOffset), where \p kind specifies the
+       ! * direction of the copy, and must be one of ::cudaMemcpyHostToHost,
+       ! * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+       ! * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+       ! * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+       ! * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+       ! * allowed on systems that support unified virtual addressing.
+      !  *
+    
+    interface
+        function cudaMemcpyToArrayAsync(dst,wOffset,hOffset,src,count,kin,stream) result(status) &
+                    bind(c,name='cudaMemcpyToArrayAsync')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUArray_st
+                import :: cudaMemcpyHostToHost 
+                import :: CUStream
+                import :: CUDA_SUCCESS
+                type(CUArray_st),  value    :: dst
+                integer(c_size_t), value    :: wOffset
+                integer(c_size_t), value    :: hOffset
+                type(c_ptr),       value    :: src
+                integer(c_size_t), value    :: count
+                integer(kind(cudaMemcpyHostToHost)), value :: kin
+                type(CUstream),    value    :: stream
+                integer(kind(CUDA_SUCCESS))  :: status
+        end function cudaMemcpyToArrayAsync
+    end interface
+    
+    !/**
+        !* \brief Copies data between host and device
+        !*
+        !* Copies \p count bytes from the CUDA array \p src starting at the upper
+        !* left corner (\p wOffset, hOffset) to the memory area pointed to by \p dst,
+        !* where \p kind specifies the direction of the copy, and must be one of
+        !* ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+        !* ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+        !* ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+        !* inferred from the pointer values. However, ::cudaMemcpyDefault is only
+        !* allowed on systems that support unified virtual addressing.
+    
+    interface
+        function cudaMemcpyFromArrayAsync(dst,src,wOffset,hOffset,count,kin,stream)  result(status)   &
+                     bind(c,name='cudaMemcpyFromArrayAsync')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUArray_st
+                import :: cudaMemcpyHostToHost 
+                import :: CUstream
+                import :: CUDA_SUCCESS
+                type(c_ptr),        value       :: dst
+                type(CUArray_st),   value       :: src
+                integer(c_size_t),  value       :: wOffset
+                integer(c_size_t),  value       :: hOffset
+                
+                integer(c_size_t),  value       :: count
+                integer(kind(cudaMemcpyHostToHost)), value :: kin
+                type(CUstream),     value       :: stream
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemcpyFromArrayAsync
+    end interface
+    
+    !/**
+        !* \brief Copies data between host and device
+        !*
+        !* Copies a matrix (\p height rows of \p width bytes each) from the memory
+        !* area pointed to by \p src to the memory area pointed to by \p dst, where
+       ! * \p kind specifies the direction of the copy, and must be one of
+       ! * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+       ! * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+    
+    interface
+        function cudaMemcpy2DAsync(dst,dpitch,src,spitch,width,height,kin,stream) result(status) &
+                      bind(c,name='cudaMemcpy2DAsync')
+                    use, intrinsic :: ISO_C_BINDING
+                    import :: cudaMemcpyHostToHost
+                    import :: CUstream
+                    import :: CUDA_SUCCESS
+                    type(c_ptr),        value       :: dst
+                    integer(c_size_t),  value       :: dpitch
+                    type(c_ptr),        value       :: src
+                    integer(c_size_t),  value       :: spitch
+                    integer(c_size_t),  value       :: width
+                    integer(c_size_t),  value       :: height
+                    integer(kind(cudaMemcpyHostToHost)), value  :: kin
+                    type(CUstream),     value       :: stream
+                    integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemcpy2DAsync
+    end interface
+    
+    !/**
+        !* \brief Copies data between host and device
+        !*
+        !* Copies a matrix (\p height rows of \p width bytes each) from the memory
+        !* area pointed to by \p src to the CUDA array \p dst starting at the
+        !* upper left corner (\p wOffset, \p hOffset) where \p kind specifies the
+        !* direction of the copy, and must be one of ::cudaMemcpyHostToHost,
+        !* ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+        !* ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+    
+    interface
+        function cudaMemcpy2DToArrayAsync(dst,wOffset,hOffset,src,spitch,width,height,kin,stream) result(status) &
+                    bind(c,name='cudaMemcpy2DToArrayAsync')
+                    use, intrinsic ::  ISO_C_BINDING
+                    import :: CUArray_st
+                    import :: cudaMemcpyHostToHost
+                    import :: CUstream
+                    import :: CUDA_SUCCESS
+                    type(CUArray_st),   value       :: dst
+                    integer(c_size_t),  value       :: wOffset
+                    integer(c_size_t),  value       :: hOffset
+                    type(c_ptr),        value       :: src
+                    integer(c_size_t),  value       :: spitch
+                    integer(c_size_t),  value       :: width
+                    integer(c_size_t),  value       :: height
+                    integer(kind(cudaMemcpyHostToHost)), value  :: kin
+                    type(CUstream),     value       :: stream
+                    integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemcpy2DToArrayAsync
+    end interface
+    
+    !/**
+        !* \brief Copies data between host and device
+        !*
+        !* Copies a matrix (\p height rows of \p width bytes each) from the CUDA
+        !* array \p srcArray starting at the upper left corner
+        !* (\p wOffset, \p hOffset) to the memory area pointed to by \p dst, where
+        !* \p kind specifies the direction of the copy, and must be one of
+        !* ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+        !* ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+    
+    interface
+        function   cudaMemcpy2DFromArrayAsync(dst,dpitch,src,wOffset,hOffset,width,height,kin,stream) result(status) &
+                        bind(c,name='cudaMemcpy2DFromArrayAsync')
+                     use, intrinsic :: ISO_C_BINDING
+                     import :: CUArray_st 
+                    import :: cudaMemcpyHostToHost
+                    import :: CUstream
+                    import :: CUDA_SUCCESS
+                    type(c_ptr),        value       :: dst
+                    integer(c_size_t),  value       :: dpitch
+                    type(CUArray_st),   value       :: src
+                    integer(c_size_t),  value       :: wOffset
+                    integer(c_size_t),  value       :: hOffset
+                    integer(c_size_t),  value       :: width
+                    integer(c_size_t),  value       :: height
+                    integer(kind(cudaMemcpyHostToHost)), value  :: kin
+                    type(CUstream),     value       :: stream
+                    integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemcpy2DFromArrayAsync
+    end interface
+    
+     !\brief Initializes or sets device memory to a value
+        !*
+        !* Fills the first \p count bytes of the memory area pointed to by \p devPtr
+        !* with the constant byte value \p value.
+        !*
+        !* Note that this function is asynchronous with respect to the host unless
+        !* \p devPtr refers to pinned host memory.
+        !*
+        !* \param devPtr - Pointer to device memory
+        !* \param value  - Value to set for each byte of specified memory
+        !* \param count  - Size in bytes to set
+        !*
+        !* \return
+        !* ::cudaSuccess,
+        !* ::cudaErrorInvalidValue,
+        !* ::cudaErrorInvalidDevicePointer
+        !* \notefnerr
+        !* \note_memset
+    
+    interface
+        function  cudaMemset(devPtr,val,count) result(status) &
+                    bind(c,name='cudaMemset')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUDA_SUCCESS
+                type(c_ptr),       value    :: devPtr
+                integer(c_int),    value    :: val
+                integer(c_size_t), value    :: count
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemset
+    end interface
+    
+     !*
+        !* \brief Initializes or sets device memory to a value
+        !*
+       ! *! Sets to the specified value \p value a matrix (\p height rows of \p width
+        !* bytes each) pointed to by \p dstPtr. \p pitch is the width in bytes of the
+        !* 2D array pointed to by \p dstPtr, including any padding added to the end
+        !* of each row. This function performs fastest when the pitch is one that has
+        !* been passed back by ::cudaMallocPitch().
+        !*
+        !* Note that this function is asynchronous with respect to the host unless
+        !* \p devPtr refers to pinned host memory.
+        !*
+        !* \param devPtr - Pointer to 2D device memory
+        !* \param pitch  - Pitch in bytes of 2D device memory
+        !* \param value  - Value to set for each byte of specified memory
+        !* \param width  - Width of matrix set (columns in bytes)
+        !* \param height - Height of matrix set (rows)
+    
+    interface
+        function cudaMemset2D(devPtr,pitch,val,width,height) result(status) &
+                    bind(c,name='cudaMemset2D')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: CUDA_SUCCESS
+                 type(c_ptr),       value   :: devPtr
+                 integer(c_size_t), value   :: pitch
+                 integer(c_int),    value   :: val
+                 integer(c_size_t), value   :: width
+                 integer(c_size_t), value   :: height
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemset2D
+    end interface
+    
+    !*
+        !* \brief Initializes or sets device memory to a value
+        ! *
+        ! * Initializes each element of a 3D array to the specified value \p value.
+        !* The object to initialize is defined by \p pitchedDevPtr. The \p pitch field
+        !* of \p pitchedDevPtr is the width in memory in bytes of the 3D array pointed
+        !* to by \p pitchedDevPtr, including any padding added to the end of each row.
+        !* The \p xsize field specifies the logical width of each row in bytes, while
+       ! * the \p ysize field specifies the height of each 2D slice in rows.
+    
+    interface
+        function cudaMemset3D(pitchedDevPtr,val,extent) result(status) &
+                    bind(c,name='cudaMemset3D')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: cudaPitchedPtr
+                 import :: cudaExtent
+                 import :: CUDA_SUCCESS
+                 type(cudaPitchedPtr),  value ::  pitchedDevPtr
+                 integer(c_int),        value ::  val
+                 type(cudaExtent),      value :: extent
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemset3D
+    end interface
+    
+    !*
+        !* \brief Initializes or sets device memory to a value
+        !*
+        !* Fills the first \p count bytes of the memory area pointed to by \p devPtr
+        !* with the constant byte value \p value.
+        !*
+        !* ::cudaMemsetAsync() is asynchronous with respect to the host, so
+        !* the call may return before the memset is complete. The operation can optionally
+        !* be associated to a stream by passing a non-zero \p stream argument.
+        !* If \p stream is non-zero, the operation may overlap with operations in other streams.
+        !*
+        !* The device version of this function only handles device to device copies and
+        !* cannot be given local or shared pointers.
+        !*
+        !* \param devPtr - Pointer to device memory
+        !* \param value  - Value to set for each byte of specified memory
+        !* \param count  - Size in bytes to set
+       ! * \param stream - Stream identifier
+    
+    interface
+        function cudaMemsetAsync(devPtr,val,count,stream) result(status) &
+                    bind(c,name='cudaMemsetAsync')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: CUstream
+                 import :: CUDA_SUCCESS
+                 type(c_ptr),       value   :: devPtr
+                 integer(c_int),    value   :: val
+                 integer(c_size_t), value   :: count
+                 type(CUstream),    value   :: stream
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemsetAsync
+    end interface
+    
+    !*
+        !* \brief Initializes or sets device memory to a value
+        !*
+        !*! Sets to the specified value \p value a matrix (\p height rows of \p width
+        !* bytes each) pointed to by \p dstPtr. \p pitch is the width in bytes of the
+        !* 2D array pointed to by \p dstPtr, including any padding added to the end
+        !* of each row. This function performs fastest when the pitch is one that has
+        !* been passed back by ::cudaMallocPitch().
+    
+    interface
+        function cudaMemset2DAsync(devPtr,pitch,val,width,height,stream) result(status) &
+                    bind(c,name='cudaMemset2DAsync')
+                  use, intrinsic :: ISO_C_BINDING
+                  import :: CUstream
+                  import :: CUDA_SUCCESS
+                  type(c_ptr),       value   :: devPtr
+                  integer(c_size_t), value  :: pitch
+                  integer(c_int),    value  :: val
+                  integer(c_size_t), value  :: width
+                  integer(c_size_t), value  :: height
+                  type(CUstream),    value  :: stream
+                  integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemset2DAsync
+    end interface
+    
+    !/**
+        !* \brief Initializes or sets device memory to a value
+        !*
+        !* Initializes each element of a 3D array to the specified value \p value.
+        !* The object to initialize is defined by \p pitchedDevPtr. The \p pitch field
+        !* of \p pitchedDevPtr is the width in memory in bytes of the 3D array pointed
+        !* to by \p pitchedDevPtr, including any padding added to the end of each row.
+        !* The \p xsize field specifies the logical width of each row in bytes, while
+       ! * the \p ysize field specifies the height of each 2D slice in rows.
+    
+    interface
+        function cudaMemset3DAsync(pitchedDevPtr,val,extent,stream) result(status) &
+                    bind(c,name='cudaMemset3DAsync')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: cudaPitchedPtr
+                 import :: cudaExtent
+                 import :: CUstream
+                 import :: CUDA_SUCCESS
+                 type(cudaPitchedPtr), value    :: pitchedDevPtr
+                 integer(c_int),       value    :: val
+                 type(cudaExtent),     value    :: extent
+                 type(CUstream),       value    :: stream
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemset3DAsync
+    end interface
+    
+    !/**
+        !* \brief Finds the address associated with a CUDA symbol
+        !*
+        !* Returns in \p *devPtr the address of symbol \p symbol on the device.
+        !* \p symbol is a variable that resides in global or constant memory space.
+       ! * If \p symbol cannot be found, or if \p symbol is not declared in the
+        !* global or constant memory space, \p *devPtr is unchanged and the error
+       ! * ::cudaErrorInvalidSymbol is returned.
+    
+    interface
+        function cudaGetSymbolAddress(devPtr,symbol) result(status) &
+                    bind(c,name='cudaGetSymbolAddress')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: CUDA_SUCCESS
+                 type(c_ptr)        :: devPtr
+                 type(c_ptr), value :: symbol
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaGetSymbolAddress
+    end interface
+    
+     !/**
+        !* \brief Finds the size of the object associated with a CUDA symbol
+        !*
+        !* Returns in \p *size the size of symbol \p symbol. \p symbol is a variable that
+        !* resides in global or constant memory space. If \p symbol cannot be found, or
+        !* if \p symbol is not declared in global or constant memory space, \p *size is
+        !* unchanged and the error ::cudaErrorInvalidSymbol is returned.
+       ! *
+       ! * \param size   - Size of object associated with symbol
+        !* \param symbol - Device symbol address
+    
+    interface
+        function cudaGetSymbolSize(size,symbol) result(status) &
+                    bind(c,name='cudaGetSymbolSize')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUDA_SUCCESS
+                integer(c_size_t)       :: size
+                type(c_ptr), value      :: symbol
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaGetSymbolSize
+    end interface
+    
+    !/**
+       ! * \brief Prefetches memory to the specified destination device
+        !*
+       ! * Prefetches memory to the specified destination device.  \p devPtr is the 
+       ! * base device pointer of the memory to be prefetched and \p dstDevice is the 
+       ! * destination device. \p count specifies the number of bytes to copy. \p stream
+       ! * is the stream in which the operation is enqueued. The memory range must refer
+       ! * to managed memory allocated via ::cudaMallocManaged or declared via __managed__ variables.
+    
+    interface
+        function cudaMemPrefetchAsync(devPtr,count,dstDevice,stream) result(status) &
+                    bind(c,name='cudaMemPrefetchAsync')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: CUstream
+                 import :: CUDA_SUCCESS
+                 type(c_ptr),       value   :: devPtr
+                 integer(c_size_t), value   :: count
+                 integer(c_int),    value   :: dstDevice
+                 type(CUstream),    value   :: stream
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemPrefetchAsync
+    end interface
+    
+    !/**
+        !* \brief Advise about the usage of a given memory range
+        !*
+        !!* Advise the Unified Memory subsystem about the usage pattern for the memory range
+        !* starting at \p devPtr with a size of \p count bytes. The start address and end address of the memory
+        !* range will be rounded down and rounded up respectively to be aligned to CPU page size before the
+        !* advice is applied. The memory range must refer to managed memory allocated via ::cudaMallocManaged
+        !* or declared via __managed__ variables.
+    
+    interface
+        function cudaMemAdvise(devPtr,count,advice,device) result(status) &
+                    bind(c,name='cudaMemAdvise')
+                use, intrinsic :: ISO_C_BINDING
+                import :: cudaMemAdviseSetReadMostly
+                import :: CUDA_SUCCESS
+                type(c_ptr),    value   :: devPtr
+                integer(c_size_t), value    :: count
+                integer(kind(cudaMemAdviseSetReadMostly)), value :: advice
+                integer(c_int), value   :: device
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemAdvise
+    end interface
+    
+    !/**
+        !* \brief Query an attribute of a given memory range
+        !*
+        !* Query an attribute about the memory range starting at \p devPtr with a size of \p count bytes. The
+        !* memory range must refer to managed memory allocated via ::cudaMallocManaged or declared via
+        !* __managed__ variables.
+    
+    interface
+        function cudaMemRangeGetAttribute(datum,dataSize,attribute,devPtr,count) result(status) &
+                    bind(c,name='cudaMemRangeGetAttribute')
+                use, intrinsic :: ISO_C_BINDING
+                import ::  cudaMemRangeAttributeReadMostly 
+                import :: CUDA_SUCCESS
+                type(c_ptr),    value   :: datum
+                integer(c_size_t),  value   :: dataSize
+                integer(kind(cudaMemRangeAttributeReadMostly)), value   :: attribute
+                type(c_ptr),   value    :: devPtr
+                integer(c_size_t), value    :: count
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemRangeGetAttribute
+    end interface
+    
+    !/**
+        !* \brief Query attributes of a given memory range.
+        !*
+        !* Query attributes of the memory range starting at \p devPtr with a size of \p count bytes. The
+       ! * memory range must refer to managed memory allocated via ::cudaMallocManaged or declared via
+       ! * __managed__ variables. The \p attributes array will be interpreted to have \p numAttributes
+       !! * entries. The \p dataSizes array will also be interpreted to have \p numAttributes entries.
+       ! * The results of the query will be stored in \p data.
+    
+    interface
+        function  cudaMemRangeGetAttributes(datum,dataSize,attributes,numAttributes,devPtr,count) result(status) &
+                    bind(c,name='cudaMemRangeGetAttributes')
+                 use, intrinsic :: ISO_C_BINDING
+                 import :: CUDA_SUCCESS
+                 type(c_ptr)        :: datum
+                 integer(c_size_t), value   :: dataSize
+                 integer(c_int), dimension(*) :: attributes
+                 integer(c_size_t), value     :: numAttributes
+                 type(c_ptr),       value     :: devPtr
+                 integer(c_size_t), value     :: count
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaMemRangeGetAttributes
+    end interface
+    
+   ! /**
+        !* \brief Queries if a device may directly access a peer device's memory.
+        !*
+        !* Returns in \p *canAccessPeer a value of 1 if device \p device is capable of
+        !* directly accessing memory from \p peerDevice and 0 otherwise.  If direct
+        !* access of \p peerDevice from \p device is possible, then access may be
+        !* enabled by calling ::cudaDeviceEnablePeerAccess().
+    
+    interface
+        function cudaDeviceCanAccessPeer(canAccessPeer,device,peerDevice) result(status) &
+                    bind(c,name='cudaDeviceCanAccessPeer')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUDA_SUCCESS
+                integer(c_int)          :: canAccessPeer
+                integer(c_int), value   :: device
+                integer(c_int), value   :: peerDevice
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaDeviceCanAccessPeer
+    end interface
+    
+   ! /**
+         !* \brief Enables direct access to memory allocations on a peer device.
+        !*
+        !* On success, all allocations from \p peerDevice will immediately be accessible by
+        !* the current device.  They will remain accessible until access is explicitly
+        !* disabled using ::cudaDeviceDisablePeerAccess() or either device is reset using
+        !* ::cudaDeviceReset().
+    
+    interface
+        function cudaDeviceEnablePeerAccess(peerDevice,flags) result(status) &
+                    bind(c,name='cudaDeviceEnablePeerAccess')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUDA_SUCCESS
+                integer(c_int), value   :: peerDevice
+                integer(c_int), value   :: flags
+                integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaDeviceEnablePeerAccess
+    end interface
+    
+    !/**
+       ! * \brief Disables direct access to memory allocations on a peer device.
+       ! *
+       ! * Returns ::cudaErrorPeerAccessNotEnabled if direct access to memory on
+       ! * \p peerDevice has not yet been enabled from the current device.
+       ! *
+       ! * \param peerDevice - Peer device to disable direct access to
+    
+    interface
+        function cudaDeviceDisablePeerAccess(peerDevice) result(status) &
+                    bind(c,name='cudaDeviceDisablePeerAccess')
+                use, intrinsic :: ISO_C_BINDING
+                import :: CUDA_SUCCESS
+                integer(c_int), value :: peerDevice
+                 integer(kind(CUDA_SUCCESS))     :: status
+        end function cudaDeviceDisablePeerAccess
     end interface
     
     
