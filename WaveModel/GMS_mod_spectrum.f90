@@ -1,4 +1,4 @@
-module mod_spectrum
+module GMS_mod_spectrum
 
     !
     ! wavy - A spectral ocean wave modeling and development framework
@@ -10,10 +10,10 @@ module mod_spectrum
     !
 
     use ,intrinsic :: ISO_C_BINDING, Only :  c_int, c_double
-    use mod_kinds,     only : int32_t, dp
-    use mod_utility,   only : diff, diff_periodic
-    use mod_datetime,  only : datetime
-    use mod_timedelta, only : timedelta
+    use GMS_mod_kinds,     only : int32_t, dp
+    use GMS_mod_utility,   only : diff, diff_periodic
+    use GMS_mod_datetime,  only : datetime
+    use GMS_mod_timedelta, only : timedelta
     implicit none
 
     private
@@ -64,7 +64,7 @@ module mod_spectrum
                  air_density,water_density,surface_tension,           &
                  errstate,iounit,logging,verbose,append,fname)
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: constructor
-          use mod_print_error,  only : handle_fatal_memory_error,  &
+          use GMS_mod_print_error,  only : handle_fatal_memory_error,  &
                                        print_non_fatal_error
           type(spectrum_type),      intent(inout) :: spectrum
           real(kind=dp),            intent(in)    :: fmin
@@ -661,7 +661,7 @@ module mod_spectrum
   !! simulation. *Report. Port and Harbour Research Institute*, Japan, **9**,
   !! 3-57.
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: peakedness
-          use mod_constants, only : eps
+          use GMS_mod_constants, only : eps
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED spec_in:64
           real(kind=dp), dimension(ndirs), intent(in) :: spec_in
@@ -680,7 +680,7 @@ module mod_spectrum
   !! Young, I, 1995. The determination of confidence limits associated with
   !! estimates of the spectral peak frequency. *Ocean Engng.*, **22**, 669-686.
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: peakFrequency
-          use mod_constants, only : eps
+          use GMS_mod_constants, only : eps
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED spec_in:64
           real(kind=dp),    dimension(ndirs), intent(in) :: spec_in
@@ -792,7 +792,7 @@ module mod_spectrum
             result(uorb)
  !! Returns the significant surface orbital velocity [m/s].
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: significantSurfaceOrbitalVelocity
-          use mod_constants, only : pi2_const
+          GMS_use mod_constants, only : pi2_const
           type(spectrum_type),      intent(in) :: spectrum
           ! Exec code
           uorb = 2*sqrt(sum((pi2_const*spectrum.f)**2*sum(spectrum.spec,dim=2)*spectrum.df))
@@ -814,7 +814,7 @@ module mod_spectrum
   !!
   !! Tm02 = \sqrt(m_0 / m_2)
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: meanPeriodZeroCrossing
-          use mod_constants, only : eps
+          use GMS_mod_constants, only : eps
           type(spectrum_type),  intent(in) :: spectrum
           ! Exec code ...
           meanPeriodZeroCrossing = sqrt(frequencyMoment(spectrum,0) &
@@ -823,7 +823,7 @@ module mod_spectrum
 
 
     subroutine wavenumberSpectrum(spectrum,spec_out,nfreqs,ndirs)
-          use mod_constants, only : v1_over_pi
+          use GMS_mod_constants, only : v1_over_pi
 !! Returns the wavenumber spectrum array of the spectrum instance.
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: wavenumberSpectrum
           type(spectrum_type),      intent(in) :: spectrum
@@ -859,4 +859,4 @@ module mod_spectrum
 
 
 
-end module mod_spectrum
+end module GMS_mod_spectrum
