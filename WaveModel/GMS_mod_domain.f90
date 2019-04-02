@@ -7,7 +7,7 @@ module GMS_mod_domain
 !
 ! Licensed under the BSD-3 clause license. See LICENSE for details.
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 21/03/2019
-! Removing most of the Object-Oriented crap
+! Removing most of the Object-Oriented overhead.
 !
     use GMS_mod_kinds,    only : int32_t, dp
     use GMS_mod_spectrum, only : spectrum_type
