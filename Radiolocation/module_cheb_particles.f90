@@ -218,7 +218,7 @@ module  mod_cheb_particles
      subroutine InitChebParticles(PartLTS,PartHTS,nxpts,nypts,nzpts,nt,nparticles, &
                                   nshpts,part_type,errstate,iounit, &
                                   verbose,logging, filename,append )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitChebParticlesSystem
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitChebParticles
            use mod_print_error, only : handle_fatal_memory_error
                                
            type(ChebParticlesLTS_t),    intent(inout) :: PartLTS
@@ -311,7 +311,7 @@ module  mod_cheb_particles
     !===================================================================
     
      subroutine ComputeShape_ymm8r4(PartLTS,np,acn,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape_ymm8r4
            use mod_vecconsts,     only : ymm8r4_one,ymm8r4_zero,ymm8r4_twopi
            type(ChebParticlesLTS_t),      intent(inout)  :: PartLTS
            integer(kind=int4),            intent(in)     :: np
