@@ -1018,801 +1018,175 @@ module mod_msr_architectural
         ! use. (RO)
      end type MSR_IA32_PERF_GLOBAL_INUSE
 
+     type, public :: MSR_IA32_PEBS_ENABLE
+        public
+        integer(kind=int4)   :: addr_dec = 1009
+        character(len=5)     :: addr_hex = "0x3F1"
+        integer(kind=int8b)  :: msr_read
+        integer(kind=int8b)  :: msr_write
+        character(len=16)    :: msrw_hex
+        character(len=16)    :: msr_name = "IA32_PEBS_ENABLE"
+     end type MSR_IA32_PEBS_ENABLE
+
+     type, public :: MSR_IA32_MCG_EXT_CTL
+        public
+        integer(kind=int4)   :: addr_dec = 1232
+        character(len=5)     :: addr_hex = "0x4D0"
+        integer(kind=int8b)  :: msr_read
+        integer(kind=int8b)  :: msr_write
+        character(len=16)    :: msrw_hex
+        character(len=16)    :: msr_name = "IA32_MCG_EXT_CTL"
+        ! Allows software to signal some MCEs to
+        ! only a single logical processor in the
+        ! system. (R/W)
+        ! 0 LMCE_EN
+        ! 63:1 Reserved
+     end type MSR_IA32_MCG_EXT_CTL
      
-     ! For calling msr-tools functions -- rdmsr and wrmsr
-     character(*), parameter, public :: rd_cmd = "rdmsr"
-     character(*), parameter, public :: wr_cmd = "wrmsr"
-     ! 
-     contains
+     type, public :: MSR_IA32_RTIT_OUTPUT_BASE
+        public
+        integer(kind=int4)    :: addr_dec = 1376
+        character(len=5)      :: addr_hex = "0x560"
+         integer(kind=int8b)  :: msr_read
+        integer(kind=int8b)   :: msr_write
+        character(len=16)     :: msrw_hex
+        character(len=21)     :: msr_name = "IA32_RTIT_OUTPUT_BASE"
+        ! Trace Output Base Register (R/W)
+        ! 
+     end type MSR_IA32_RTIT_OUTPUT_BASE
+    
+     type, public :: MSR_IA32_RTIT_OUTPUT_MASK_PTRS
+        public
+        integer(kind=int4)     :: addr_dec = 1377
+        character(len=5)       :: addr_hex = "0x561"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=21)      :: msr_name = "IA32_RTIT_OUTPUT_MASK_PTRS"
+        ! Trace Output Mask Pointers Register (R/W)
+     end type MSR_IA32_RTIT_OUTPUT_MASK_PTRS
+   
+     type, public :: MSR_IA32_RTIT_CTL
+        public
+        integer(kind=int4)     :: addr_dec = 1392
+        character(len=5)       :: addr_hex = "0x570"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=13)      :: msr_name = "IA32_RTIT_CTL"
+        ! Trace Control Register (R/W)
+     end type MSR_IA32_RTIT_CTL
 
-     subroutine AccessIA32_P5_MC_ADDR(reg,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_P5_MC_ADDR
-           type(MSR_IA32_P5_MC_ADDR),  intent(in)    :: reg
-           character(len=*),           intent(in)    :: command
-           character(len=*),           intent(in)    :: fname
-           integer(kind=int2),         intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-           string = command//reg.addr_hex//fname
-           stat = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_P5_MC_ADDR
+     type, public :: MSR_IA32_RTIT_STATUS
+        public
+        integer(kind=int4)     :: addr_dec = 1393
+        character(len=5)       :: addr_hex = "0x571"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=16)      :: msr_name = "IA32_RTIT_STATUS"
+        ! Tracing Status Register (R/W)
+     end type MSR_IA32_RTIT_STATUS
 
-     subroutine AccessIA32_P5_TYPE(reg,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_P5_TYPE
-           type(MSR_IA32_P5_TYPE),   intent(in)    :: reg
-           character(len=*),         intent(in)    :: command
-           character(len=*),         intent(in)    :: fname
-           integer(kind=int2),       intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-           string = command//reg.addr_hex//fname
-           stat = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_P5_TYPE
+     type, public :: MSR_IA32_RTIT_CR3_MATCH
+        public
+        integer(kind=int4)     :: addr_dec = 1394
+        character(len=5)       :: addr_hex = "0x572"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_CR3_MATCH"
+        ! Trace Filter CR3 Match Register (R/W)
+     end type MSR_IA32_RTIT_CR3_MATCH
 
-     subroutine AccessIA32_MONITOR_FILTER_SIZE(reg,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_MONITOR_FILTER_SIZE
-           type(MSR_IA32_MONITOR_FILTER_SIZE),   intent(in) :: reg
-           character(len=*),                     intent(in) :: command
-           character(len=*),                     intent(in) :: fname
-           integer(kind=int2),                   intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ...
-           string = command//reg.addr_hex//fname
-           stat = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_MONITOR_FILTER_SIZE
-       
-     subroutine AccessIA32_PLATFORM_ID(reg,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PLATFORM_ID
-           type(MSR_IA32_PLATFORM_ID),           intent(in) :: reg
-           character(len=*),                     intent(in) :: command
-           character(len=*),                     intent(in) :: fname
-           integer(kind=int2),                   intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-           string = command//reg.addr_hex//fname
-           stat = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_PLATFORM_ID
+     type, public :: MSR_IA32_RTIT_ADDR0_A
+        public
+        integer(kind=int4)     :: addr_dec = 1408
+        character(len=5)       :: addr_hex = "0x580"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR0_A"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR0_A
 
-     subroutine AccessIA32_APIC_BASE(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_APIC_BASE
-           type(MSR_IA32_APIC_BASE),     intent(in) :: reg
-           character(len=5),             intent(in) :: op
-           character(len=*),             intent(in) :: command
-           character(len=*),             intent(in) :: fname
-           integer(kind=int2),           intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-         
-AccessMSR:    select case(op)
-                  case("read")
-                     string = command//reg.addr_hex//fname
-                     stat = RUNQQ(rd_cmd,string)
-                     if(stat == -1) then
-                        ier = stat
-                     end if
-                  case("write")
-                     string = command//reg.addr_hex//reg.msrw_hex
-                     stat   = RUNQQ(wr_cmd,string)
-                     if(stat == -1) then
-                        ier = stat
-                     end if
-                  case default
-                     print*, "AccessIA32_APIC_BASE: -- Invalid switch argument!"
-                     return
-              end select AccessMSR
-     end subroutine AccessIA32_APIC_BASE
+     type, public :: MSR_IA32_RTIT_ADDR0_B
+        public
+        integer(kind=int4)     :: addr_dec = 1409
+        character(len=5)       :: addr_hex = "0x581"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR0_B"
+        ! Region 0 END Address (R/W)
+     end type MSR_IA32_RTIT_ADDR0_B
 
-     subroutine AccessIA32_FEATURE_CONTROL(reg,op,command,fname,ier)
-       !DIR$  ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_FEATURE_CONTROL
-           type(MSR_IA32_FEATURE_CONTROL),       intent(in) :: reg
-           character(len=5),                     intent(in) :: op
-           character(len=*),                     intent(in) :: command
-           character(len=*),                     intent(in) :: fname
-           integer(kind=int2),                   intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
-AccessMSR:   select case(op)
-                case("read")
-                   string = command//reg.addr_hex//fname
-                   stat = RUNQQ(rd_cmd,string)
-                   if(stat == -1) then
-                      ier = stat
-                   end if
-                case("write")
-                   string = command//reg.addr_hex//reg.msrw_hex
-                   stat = RUNQQ(wr_cmd,string)
-                   if(stat == -1) then
-                      ier = stat
-                   end if
-                case default
-                   print*, "AccessIA32_FEATURE_CONTROL: -- Invalid switch argument!!"
-                   return
-              end select AccessMSR
-     end subroutine AccessIA32_FEATURE_CONTROL
+     type, public :: MSR_IA32_RTIT_ADDR1_A
+        public
+        integer(kind=int4)     :: addr_dec = 14010
+        character(len=5)       :: addr_hex = "0x582"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR1_A"
+        ! Region 1 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR1_A
+     
+     type, public :: MSR_IA32_RTIT_ADDR1_B
+        public
+        integer(kind=int4)     :: addr_dec = 1411
+        character(len=5)       :: addr_hex = "0x583"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR1_B"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR1_B
 
-     subroutine AccessIA32_TSC_ADJUST(reg,op,command,fname,hwth,val,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_TSC_ADJUST
-           type(MSR_IA32_TSC_ADJUST),      intent(in) :: reg
-           character(len=5),               intent(in) :: op
-           character(len=*),               intent(in) :: command
-           character(len=*),               intent(in) :: fname
-           character(len=2),               intent(in) :: hwth
-           character(len=16),              intent(in) :: val
-           integer(kind=int2),             intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! EXec code
-          
-AccessMSR:     select case(op)
-                   case("read")
-                      string = command//reg.addr_hex//hwth//fname
-                      stat = RUNQQ(rd_cmd,string)
-                      if(stat == -1) then
-                         ier = stat
-                      end if
-                   case("write")
-                      string = command//hwth//reg.addr_hex//val
-                      stat = RUNQQ(wr_cmd,string)
-                      if(stat == -1) then
-                         ier = stat
-                      end if
-                   case default
-                      print*, "AccessIA32_TSC_ADJUST: -- Invalid switch argument!!"
-                      return
-                end select AccessMSR
-     end subroutine AccessIA32_TSC_ADJUST
+     type, public :: MSR_IA32_RTIT_ADDR2_A
+        public
+        integer(kind=int4)     :: addr_dec = 1412
+        character(len=5)       :: addr_hex = "0x584"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR2_A"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR2_A
 
-     subroutine AccessIA32_SPEC_CTRL(reg,op,command,fname,ier)
-       !DIR$  ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SPEC_CTRL
-           type(MSR_IA32_SPEC_CTRL),       intent(in) :: reg
-           character(len=5),               intent(in) :: op
-           character(len=*),               intent(in) :: command
-           character(len=*),               intent(in) :: fname
-           integer(kind=int2),             intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code .....
-        
-AccessMSR:    select case(op)
-                  case("read")
-                     string = command//reg.addr_hex//fname
-                     stat = RUNQQ(rd_cmd,string)
-                     if(stat == -1) then
-                        ier = stat
-                     end if
-                  case("write")
-                     string = command//reg.addr_hex/reg.msrw_hex
-                     stat   = RUNQQ(wr_cmd,string)
-                     if(stat == -1) then
-                        ier = stat
-                     end if
-                  case default
-                     print*, "AccessIA32_SPEC_CTRL: -- Invalid switch argument!!"
-                     return
-                  end select AccessMSR
-     end subroutine AccessIA32_SPEC_CTRL
+     type, public :: MSR_IA32_RTIT_ADDR2_B
+        public
+        integer(kind=int4)     :: addr_dec = 1413
+        character(len=5)       :: addr_hex = "0x585"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR2_B"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR2_B
 
-     subroutine AccessIA32_PRED_CMD(reg,op,command,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PRED_CMD
-           type(MSR_IA32_PRED_CMD),         intent(in) :: reg
-           character(len=5),                intent(in) :: op
-           character(len=*),                intent(in) :: command
-           character(len=*),                intent(in) :: fname
-           integer(kind=int2),              intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code .....
-         
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PRED_CMD: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR
-     end subroutine AccessIA32_PRED_CMD
+     type, public :: MSR_IA32_RTIT_ADDR3_A
+        public
+        integer(kind=int4)     :: addr_dec = 1414
+        character(len=5)       :: addr_hex = "0x586"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR3_A"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR3_A
 
-     subroutine AccessIA32_BIOS_UPDT_TRIG(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_BIOS_UPDT_TRIG
-           type(MSR_IA32_BIOS_UPDT_TRIG),          intent(in) :: reg
-           character(len=5),                       intent(in) :: op
-           character(len=*),                       intent(in) :: command
-           character(len=*),                       intent(in) :: fname
-           integer(kind=int2),                     intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code .....
-          
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_BIOS_UPDT_TRIG: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR           
-     end subroutine AccessIA32_BIOS_UPDT_TRIG
+     type, public :: MSR_IA32_RTIT_ADDR3_B
+        public
+        integer(kind=int4)     :: addr_dec = 1415
+        character(len=5)       :: addr_hex = "0x587"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_RTIT_ADDR3_B"
+        ! Region 0 Start Address (R/W)
+     end type MSR_IA32_RTIT_ADDR3_B
 
-     subroutine AccessIA32_BIOS_SIGN_ID(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_BIOS_SIGN_ID
-           type(MSR_IA32_BIOS_SIGN_ID),          intent(in) :: reg
-           character(len=5),                     intent(in) :: op
-           character(len=*),                     intent(in) :: command
-           character(len=*),                     intent(in) :: fname
-           integer(kind=int2),                   intent(inout) :: ier
-           ! Locls
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code .....
-      
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_BIOS_SIGN_ID: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR     
-     end subroutine AccessIA32_BIOS_SIGN_ID
-
-     subroutine AccessIA32_SGXLEPUBKEYHASH0(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SGXLEPUBKEYHASH0
-           type(MSR_IA32_SGXLEPUBKEYHASH0),      intent(in) :: reg
-           character(len=5),                     intent(in) :: op
-           character(len=*),                     intent(in) :: command
-           character(len=*),                     intent(in) :: fname
-           integer(kind=int2),                   intent(inout) :: ier
-           ! Local
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code .....
-         
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_SGXLEPUBKEYHASH0: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR     
-     end subroutine AccessIA32_SGXLEPUBKEYHASH0
-
-     subroutine AccessIA32_SGXLEPUBKEYHASH1(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SGXLEPUBKEYHASH1
-           type(MSR_IA32_SGXLEPUBKEYHASH1),         intent(in) :: reg
-           character(len=5),                        intent(in) :: op
-           character(len=*),                        intent(in) :: command
-           character(len=*),                        intent(in) :: fname
-           integer(kind=int2),                      intent(inout) :: ier
-           ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-       
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_SGXLEPUBKEYHASH1: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR               
-     end subroutine AccessIA32_SGXLEPUBKEYHASH1
-
-     subroutine AccessIA32_SGXLEPUBKEYHASH2(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SGXLEPUBKEYHASH2
-           type(MSR_IA32_SGXLEPUBKEYHASH2),       intent(in) :: reg
-           character(len=5),                      intent(in) :: op
-           character(len=*),                      intent(in) :: command
-           character(len=*),                      intent(in) :: fname
-           integer(kind=int2),                    intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_SGXLEPUBKEYHASH2: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR      
-     end subroutine AccessIA32_SGXLEPUBKEYHASH2
-
-     subroutine AccessIA32_SGXLEPUBKEYHASH3(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SGXLEPUBKEYHASH3
-           type(MSR_IA32_SGXLEPUBKEYHASH3),       intent(in) :: reg
-           character(len=5),                      intent(in) :: op
-           character(len=*),                      intent(in) :: command
-           character(len=*),                      intent(in) :: fname
-           integer(kind=int2),                    intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_SGXLEPUBKEYHASH3: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_SGXLEPUBKEYHASH3
-
-     subroutine  AccesIA32_SMM_MONITOR_CTL(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_SMM_MONITOR_CTL
-           type(MSR_IA32_SMM_MONITOR_CTL),         intent(in) :: reg
-           character(len=5),                       intent(in) :: op
-           character(len=*),                       intent(in) :: command
-           character(len=*),                       intent(in) :: fname
-           integer(kind=int2),                     intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_SMM_MONITOR_CTL: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccesIA32_SMM_MONITOR_CTL
-
-     subroutine AccessIA32_PMC0(reg,op,command,val,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC0
-           type(MSR_IA32_PMC0),            intent(in) :: reg
-           character(len=5),               intent(in) :: op
-           character(len=*),               intent(in) :: command
-           character(len=16),              intent(in) :: val
-           character(len=*),               intent(in) :: fname
-           integer(kind=int2),             intent(inout) :: ier
-           ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC0: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC0
-
-     subroutine AccessIA32_PMC1(reg,op,command,val,fname,ier)
-       !DIR$  ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC1
-           type(MSR_IA32_PMC1),            intent(in)  :: reg
-           character(len=5),               intent(in)  :: op
-           character(len=*),               intent(in)  :: command
-           character(len=16),              intent(in)  :: val
-           character(len=*),               intent(in)  :: fname
-           integer(kind=int2),             intent(inout) :: ier
-           ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC1: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC1
-
-     subroutine AccessIA32_PMC2(reg,op,command,val,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC2
-           type(MSR_IA32_PMC2),            intent(in) :: reg
-           character(len=5),               intent(in) :: op
-           character(len=*),               intent(in) :: command
-           character(len=16),              intent(in) :: val
-           character(len=*),               intent(in) :: fname
-           integer(kind=int2),             intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC2: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC2
-
-     subroutine AccessIA32_PMC3(reg,op,command,val,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC3
-           type(MSR_IA32_PMC3),         intent(in) :: reg
-           character(len=5),            intent(in) :: op
-           character(len=*),            intent(in) :: command
-           character(len=16),           intent(in) :: val
-           character(len=*),            intent(in) :: fname
-           integer(kind=int2),          intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-         
- AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC3: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC3
-
-     subroutine AccessIA32_PMC4(reg,op,command,val,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC4
-           type(MSR_IA32_PMC4),         intent(in) :: reg
-           character(len=5),            intent(in) :: op
-           character(len=*),            intent(in) :: command
-           character(len=16),           intent(in) :: val
-           character(len=*),            intent(in) :: fname
-           integer(kind=int2),          intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC4: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC4
-
-     subroutine AccessIA32_PMC5(reg,op,command,val,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC5
-           type(MSR_IA32_PMC5),           intent(in) :: reg
-           character(len=5),              intent(in) :: op
-           character(len=*),              intent(in) :: command
-           character(len=16),             intent(in) :: val
-           character(len=*),              intent(in) :: fname
-           integer(kind=int2),            intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC5: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-      end subroutine AccessIA32_PMC5
-
-      subroutine AccessIA32_PMC6(reg,op,command,val,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC6
-           type(MSR_IA32_PMC6),            intent(in) :: reg
-           character(len=5),               intent(in) :: op
-           character(len=*),               intent(in) :: command
-           character(len=16),              intent(in) :: val
-           character(len=*),               intent(in) :: fname
-           integer(kind=int2),             intent(in) :: ier
-           ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC6: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-      end subroutine AccessIA32_PMC6
-
-      subroutine AccessIA32_PMC7(reg,op,command,val,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_PMC7
-           type(MSR_IA32_PMC7),              intent(in) :: reg
-           character(len=5),                 intent(in) :: op
-           character(len=*),                 intent(in) :: command
-           character(len=16),                intent(in) :: val
-           character(len=*),                 intent(in) :: fname
-           integer(kind=int2),               intent(inout) :: ier
-           ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//val
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_PMC7: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_PMC7
-
-     subroutine AccessIA32_UMWAIT_CONTROL(reg,op,command,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_UMWAIT_CONTROL
-           type(MSR_IA32_UMWAIT_CONTROL),           intent(in) :: reg
-           character(len=5),                        intent(in) :: op
-           character(len=*),                        intent(in) :: command
-           character(len=*),                        intent(in) :: fname
-           integer(kind=int2),                      intent(inout) :: ier
-            ! LOcals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_UMWAIT_CONTROL: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR 
-     end subroutine AccessIA32_UMWAIT_CONTROL
-
-     subroutine AccessIA32_MTRRCAP(reg,command,fname,ier)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_MTRRCAP
-           type(MSR_IA32_MTRRCAP),          intent(in) :: reg
-           character(len=*),                intent(in) :: command
-           character(len=*),                intent(in) :: fname
-           integer(kind=int2),              intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-           string = command//reg.addr_hex//fname
-           stat   = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_MTRRCAP
-
-     subroutine AccessIA32_ARCH_CAPABILITIES(reg,command,fname,ier)
-       !DIR$  ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_ARCH_CAPABILITIES
-           type(MSR_IA32_ARCH_CAPABILITIES),          intent(in) :: reg
-           character(len=*),                          intent(in) :: command
-           character(len=*),                          intent(in) :: fname
-           integer(kind=int2),                        intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-           string = command//reg.addr_hex//fname
-           stat   = RUNQQ(rd_cmd,string)
-           if(stat == -1) then
-              ier = stat
-           end if
-     end subroutine AccessIA32_ARCH_CAPABILITIES
-
-     subroutine AccessIA32_FLUSH_CMD(reg,op,command,fname,ier)
-       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessIA32_FLUSH_CMD
-           type(MSR_IA32_FLUSH_CMD),           intent(in) :: reg
-           character(len=5),                   intent(in) :: op
-           character(len=*),                   intent(in) :: command
-           character(len=*),                   intent(in) :: fname
-           integer(kind=int2),                 intent(inout) :: ier
-           ! Locals
-           character(len=128), automatic :: string
-           integer(kind=int2), automatic :: stat
-           ! Exec code ....
-  ! Exec code ....
-AccessMSR:     select case(op)
-                    case("read")
-                       string = command//reg.addr_hex//fname
-                       stat   = RUNQQ(rd_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case("write")
-                       string = command//reg.addr_hex//reg.msrw_hex
-                       stat   = RUNQQ(wr_cmd,string)
-                       if(stat == -1) then
-                          ier = stat
-                       end if
-                    case default
-                       print*, "AccessIA32_FLUSH_CMD: -- Invalid switch argument!!"
-                       return
-               end select AccessMSR            
-     end subroutine AccessIA32_FLUSH_CMD
-
-             
+     
       
 end module mod_msr_architectural
