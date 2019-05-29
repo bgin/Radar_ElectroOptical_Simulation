@@ -42,8 +42,8 @@ module mod_msr_architectural
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int2,int4, int8b
-     use IFPORT
+     use mod_kinds, only : int4, int8b
+    
      implicit none
 
      type, public :: MSR_IA32_P5_MC_ADDR
@@ -1156,6 +1156,10 @@ module mod_msr_architectural
 
      type, public :: MSR_IA32_RTIT_ADDR2_B
         public
+
+
+
+
         integer(kind=int4)     :: addr_dec = 1413
         character(len=5)       :: addr_hex = "0x585"
         integer(kind=int8b)    :: msr_read
@@ -1187,6 +1191,204 @@ module mod_msr_architectural
         ! Region 0 Start Address (R/W)
      end type MSR_IA32_RTIT_ADDR3_B
 
-     
+     type, public :: MSR_IA32_DS_AREA
+        public
+        integer(kind=int4)     :: addr_dec = 1536
+        character(len=5)       :: addr_hex = "0x600"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=12)      :: msr_name = "IA32_DS_AREA"
+        ! DS Save Area (R/W)
+     end type MSR_IA32_DS_AREA
+
+     type, public :: MSR_IA32_TSC_DEADLINE
+        public
+        integer(kind=int4)     :: addr_dec = 1760
+        character(len=5)       :: addr_hex = "0x6E0"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=17)      :: msr_name = "IA32_TSC_DEADLINE"
+        ! TSC Target of Local APIC’s TSC Deadline
+        ! Mode (R/W)
+     end type MSR_IA32_TSC_DEADLINE
+
+     type, public :: MSR_IA32_PM_ENABLE
+        public
+        integer(kind=int4)     :: addr_dec = 1904
+        character(len=5)       :: addr_hex = "0x770"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=14)      :: msr_name = "IA32_PM_ENABLE"
+        ! Enable/disable HWP (R/W)
+     end type MSR_IA32_PM_ENABLE
+
+     type, public :: MSR_IA32_HWP_CAPABILITIES
+        public
+        integer(kind=int4)     :: addr_dec = 1905
+        character(len=5)       :: addr_hex = "0x771"
+        integer(kind=int8b)    :: msr_read
+        character(len=21)      :: "IA32_HWP_CAPABILITIES"
+        ! HWP Performance Range Enumeration (RO)
+     end type MSR_IA32_HWP_CAPABILITIES
+
+     type, public :: MSR_IA32_HWP_REQUEST_PKG
+        public
+        integer(kind=int4)     :: addr_dec = 1906
+        character(len=5)       :: addr_hex = "0x772"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=20)      :: msr_name = "IA32_HWP_REQUEST_PKG"
+        ! Power Management Control Hints for All
+        ! Logical Processors in a Package (R/W)
+     end type MSR_IA32_HWP_REQUEST_PKG
+
+     type, public :: MSR_IA32_HWP_INTERRUPT
+        public
+        integer(kind=int4)     :: addr_dec = 1908
+        character(len=5)       :: addr_hex = "0x774"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=18)      :: msr_name = "IA32_HWP_INTERRUPT"
+        ! Power Management Control Hints to a
+        ! Logical Processor (R/W)
+     end type MSR_IA32_HWP_INTERRUPT
+
+     type, public :: MSR_IA32_HWP_STATUS
+        public
+        integer(kind=int4)     :: addr_dec = 1911
+        character(len=5)       :: addr_hex = "0x777"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=15)      :: msr_name = "IA32_HWP_STATUS"
+        ! Log bits indicating changes to Guaranteed
+        ! & excursions to Minimum (R/W)
+     end type MSR_IA32_HWP_STATUS
+
+     type, public :: MSR_IA32_X2APIC_TPR
+        public
+        integer(kind=int4)     :: addr_dec = 2056
+        character(len=5)       :: addr_hex = "0x808"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=15)      :: msr_name = "IA32_X2APIC_TPR"
+        ! x2APIC Task Priority Register (R/W)
+     end type MSR_IA32_X2APIC_TPR
+
+     type, public :: MSR_IA32_X2APIC_PPR
+        public
+        integer(kind=int4)     :: addr_dec = 2058
+        character(len=5)       :: addr_hex = "0x80A"
+        integer(kind=int8b)    :: addr_read
+        character(len=15)      :: msr_name = "IA32_X2APIC_PPR"
+     end type MSR_IA32_X2APIC_PPR
+
+     type, public :: MSR_IA32_X2APIC_ICR
+        public
+        integer(kind=int4)     :: addr_dec = 2096
+        character(len=5)       :: addr_hex = "0x830"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=15)      :: msr_name = "IA32_X2APIC_ICR"
+        ! x2APIC Interrupt Command Register (R/W)
+     end type MSR_IA32_X2APIC_ICR
+
+     type, public :: MSR_IA32_X2APIC_LVT_TIMER
+        public
+        integer(kind=int4)     :: addr_dec = 2098
+        character(len=5)       :: addr_hex = "0x832"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=21)      :: msr_name = "IA32_X2APIC_LVT_TIMER"
+        ! x2APIC LVT Timer Interrupt Register (R/W)
+     end type MSR_IA32_X2APIC_LVT_TIMER
+
+     type, public :: MSR_IA32_X2APIC_LVT_THERMAL
+        public
+        integer(kind=int4)     :: addr_dec = 2099
+        character(len=5)       :: addr_hex = "0x833"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=22)      :: msr_name = "IA32_X2APIC_LVT_THERMAL"
+        ! x2APIC LVT Thermal Sensor Interrupt
+        ! Register (R/W)
+     end type MSR_IA32_X2APIC_LVT_THERMAL
+
+     type, public :: MSR_IA32_X2APIC_LVT_PMI
+        public
+        integer(kind=int4)     :: addr_dec = 2100
+        character(len=5)       :: addr_hex = "0x834"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=19)      :: msr_name = "IA32_X2APIC_LVT_PMI"
+        ! x2APIC LVT Performance Monitor Interrupt
+        ! Register (R/W)
+     end type MSR_IA32_X2APIC_LVT_PMI
+
+     type, public :: MSR_IA32_QM_CTR
+        public
+        integer(kind=int4)     :: addr_dec = 3214
+        character(len=5)       :: addr_hex = "0xC8E"
+        integer(kind=int8b)    :: msr_read
+       
+        character(len=10)      :: msr_name = "IA32_QM_CTR"
+        ! Monitoring Counter Register (R/O)
+     end type MSR_IA32_QM_CTR
+
+     type, public :: MSR_IA32_PQR_ASSOC
+        public
+        integer(kind=int4)     :: addr_dec = 3215
+        character(len=5)       :: addr_hex = "0xC8F"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=14)      :: msr_name = "IA32_PQR_ASSOC"
+        ! Resource Association Register (R/W)
+     end type MSR_IA32_PQR_ASSOC
+
+     type, public :: MSR_IA32_PKG_HDC_CTL
+        public
+        integer(kind=int4)     :: addr_dec = 3504
+        character(len=5)       :: addr_hex = "0xDB0"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=16)      :: msr_name = "IA32_PKG_HDC_CTL"
+        ! Package Level Enable/disable HDC (R/W)
+     end type MSR_IA32_PKG_HDC_CTL
+
+     type, public :: MSR_IA32_PM_CTL1
+        public
+        integer(kind=int4)     :: addr_dec = 3505
+        character(len=5)       :: addr_hex = "0xDB1"
+        integer(kind=int8b)    :: msr_read
+        integer(kind=int8b)    :: msr_write
+        character(len=16)      :: msrw_hex
+        character(len=12)      :: msr_name = "IA32_PM_CTL1"
+        ! Enable/disable HWP (R/W)
+     end type MSR_IA32_PM_CTL1
+
+     type, public :: MSR_IA32_THREAD_STALL
+        public
+        integer(kind=int4)     :: addr_dec = 3506
+        character(len=5)       :: addr_hex = "0xDB2"
+        character(len=17)      :: msr_name = "IA32_THREAD_STALL"
+        integer(kind=int8b), dimension(1000) :: msr_reads
+        ! Per-Logical_Processor HDC Idle Residency
+        ! (R/0)
+        ! 63:0 Stall_Cycle_Cnt (R/W) If CPUID.06H:EAX.[13] = 1
+        !      Stalled cycles due to HDC forced idle on this
+        !      logical processor.
+     end type MSR_IA32_THREAD_STALL
       
 end module mod_msr_architectural
