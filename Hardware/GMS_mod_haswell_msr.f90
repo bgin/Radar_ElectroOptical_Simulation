@@ -242,9 +242,9 @@ module mod_haswell_msr
         integer(kind=int4)   :: addr_dec = 226
         character(len=4)     :: addr_hex = "0xE2"
         character(len=24)    :: msr_name = "MSR_PKG_CST_CONFIG_CONTROL"
-        integer(kind=int8b), dimension(28) :: msr_read
-        integer(kind=int8b), dimension(28) :: msr_write
-        character(len=16),   dimension(28) :: msrw_hex
+        integer(kind=int8b), dimension(0:3) :: msr_read
+        integer(kind=int8b), dimension(0:3) :: msr_write
+        character(len=16),   dimension(0:3) :: msrw_hex
         ! C-State Configuration Control (R/W)
      end type MSR_PKG_CST_CONFIG_CONTROL_HASWELL
 
