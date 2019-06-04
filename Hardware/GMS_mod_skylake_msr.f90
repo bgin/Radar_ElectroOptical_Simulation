@@ -776,6 +776,451 @@ module mod_skylake_msr
         ! last branch record stack. This part of the stack contains
         ! pointers to the destination instruction
      end type MSR_LASTBRANCH_25_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_26_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1754
+        character(len=5)   :: addr_hex = "0x6DA"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_26_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 26 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_26_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_27_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1755
+        character(len=5)   :: addr_hex = "0x6DB"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_27_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 27 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_27_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_28_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1756
+        character(len=5)   :: addr_hex = "0x6DC"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_28_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 28 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_28_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_29_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1757
+        character(len=5)   :: addr_hex = "0x6DD"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_29_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 29 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_29_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_30_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1758
+        character(len=5)   :: addr_hex = "0x6DE"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_30_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 30 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_30_TO_IP_SKYLAKE
+
+     type, public :: MSR_LASTBRANCH_31_TO_IP_SKYLAKE
+        public
+        integer(kind=int4) :: addr_dec = 1759
+        character(len=5)   :: addr_hex = "0x6DF"
+        character(len=22)  :: msr_name = "MSR_LASTBRANCH_31_TO_IP"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 25 To IP (R/W)
+        ! One of 32 triplets of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! pointers to the destination instruction
+     end type MSR_LASTBRANCH_31_TO_IP_SKYLAKE
+
+     type, public :: MSR_IA32_PM_ENABLE_SKYLAKE
+        public
+        integer(kind=int4)  :: addr_dec = 1904
+        character(len=5)    :: addr_hex = "0x770"
+        character(len=14)   :: msr_name = "IA32_PM_ENABLE"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_write
+        character(len=16),   dimension(0:1) :: msrw_hex
+     end type MSR_IA32_PM_ENABLE_SKYLAKE
+
+     type, public :: MSR_IA32_HWP_CAPABILITIES_SKYLAKE
+        public
+        integer(kind=int4)  :: addr_dec = 1905
+        character(len=5)    :: addr_hex = "0x771"
+        character(len=20)   :: msr_name = "IA32_HWP_CAPABILITIES"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        !
+     end type MSR_IA32_HWP_CAPABILITIES_SKYLAKE
+
+     type, public :: MSR_IA32_HWP_REQUEST_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1908
+        character(len=5)     :: addr_hex = "0x774"
+        character(len=16)    :: msr_name = "IA32_HWP_REQUEST"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! 
+     end type MSR_IA32_HWP_REQUEST_SKYLAKE
+
+     type, public :: MSR_IA32_HWP_STATUS_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1911
+        character(len=5)     :: addr_hex = "0x777"
+        character(len=15)    :: msr_name = "IA32_HWP_STATUS"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+     end type MSR_IA32_HWP_STATUS_SKYLAKE
+
+     type, public :: MSR_IA32_PKG_HDC_CTL_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3504
+        character(len=5)     :: addr_hex = "0xDB0"
+        character(len=18)    :: msr_name = "IA32_PKG_HDC_CTL"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_write
+        character(len=16),   dimension(0:1) :: msrw_hex
+     end type MSR_IA32_PKG_HDC_CTL_SKYLAKE
+
+     type, public :: MSR_IA32_PM_CTL1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3505
+        character(len=5)     :: addr_hex = "0xDB1"
+        character(len=12)    :: msr_name = "IA32_PM_CTL1"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+     end type MSR_IA32_PM_CTL1_SKYLAKE
+
+     type, public :: MSR_IA32_THREAD_STALL_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3506
+        character(len=5)     :: addr_hex = "0xDB2"
+        character(len=17)    :: msr_name = "IA32_THREAD_STALL"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+     end type MSR_IA32_THREAD_STALL_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_0_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3520
+        character(len=5)     :: addr_hex = "0xDC0"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_0"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 0 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_0_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3521
+        character(len=5)     :: addr_hex = "0xDC1"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_1"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 1 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_1_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_2_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3522
+        character(len=5)     :: addr_hex = "0xDC2"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_2"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 2 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_2_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_3_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3523
+        character(len=5)     :: addr_hex = "0xDC3"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_3"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 3 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_3_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_4_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3524
+        character(len=5)     :: addr_hex = "0xDC4"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_4"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 4 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_4_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_5_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3525
+        character(len=5)     :: addr_hex = "0xDC4"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_5"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 5 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_5_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_6_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3526
+        character(len=5)     :: addr_hex = "0xDC6"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_6"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 6  Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_6_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_7_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3527
+        character(len=5)     :: addr_hex = "0xDC7"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_7"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 7 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_7_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_8_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3528
+        character(len=5)     :: addr_hex = "0xDC8"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_8"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 8 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_8_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_9_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3529
+        character(len=5)     :: addr_hex = "0xDC9"
+        character(len=13)    :: msr_name = "MSR_LBR_INFO_9"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 9 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_9_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_10_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3530
+        character(len=5)     :: addr_hex = "0xDCA"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_10"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 10 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_10_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_11_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3531
+        character(len=5)     :: addr_hex = "0xDCB"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_11"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 11 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_11_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_12_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3532
+        character(len=5)     :: addr_hex = "0xDCC"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_12"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 12 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_12_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_13_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3533
+        character(len=5)     :: addr_hex = "0xDCD"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_13"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 13 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_13_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_14_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3534
+        character(len=5)     :: addr_hex = "0xDCE"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_14"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 14 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_14_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_15_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3535
+        character(len=5)     :: addr_hex = "0xDCF"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_15"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 15 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_15_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_16_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3536
+        character(len=5)     :: addr_hex = "0xDD0"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_16"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 16 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_16_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_17_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3537
+        character(len=5)     :: addr_hex = "0xDD1"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_17"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 17 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_17_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_18_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3538
+        character(len=5)     :: addr_hex = "0xDD2"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_18"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 18 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_18_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_19_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3539
+        character(len=5)     :: addr_hex = "0xDD3"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_19"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 19 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_19_SKYLAKE
+
      
+
+
+
+
+
+
+
+
+
+
+     
+
 
 end module mod_skylake_msr
