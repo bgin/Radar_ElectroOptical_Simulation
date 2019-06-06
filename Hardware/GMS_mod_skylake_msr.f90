@@ -1209,18 +1209,342 @@ module mod_skylake_msr
         ! flag, TSX-related and elapsed cycle information
      end type MSR_LBR_INFO_19_SKYLAKE
 
+     type, public :: MSR_LBR_INFO_20_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3540
+        character(len=5)     :: addr_hex = "0xDD4"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_20"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 20 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_20_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_21_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3541
+        character(len=5)     :: addr_hex = "0xDD5"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_21"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 21 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_21_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_22_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3542
+        character(len=5)     :: addr_hex = "0xDD6"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_22"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 22 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_22_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_23_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3543
+        character(len=5)     :: addr_hex = "0xDD7"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_23"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 23 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_23_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_24_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3544
+        character(len=5)     :: addr_hex = "0xDD8"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_24"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 24 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_24_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_25_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3545
+        character(len=5)     :: addr_hex = "0xDD9"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_25"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 25 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_25_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_26_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3546
+        character(len=5)     :: addr_hex = "0xDDA"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_26"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 26 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_26_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_27_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3547
+        character(len=5)     :: addr_hex = "0xDDB"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_27"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 27 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_27_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_28_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3548
+        character(len=5)     :: addr_hex = "0xDDC"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_28"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 28 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_28_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_29_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3549
+        character(len=5)     :: addr_hex = "0xDDD"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_29"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 29 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_29_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_30_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3550
+        character(len=5)     :: addr_hex = "0xDDE"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_30"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 30 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_30_SKYLAKE
+
+     type, public :: MSR_LBR_INFO_31_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 3551
+        character(len=5)     :: addr_hex = "0xDDF"
+        character(len=14)    :: msr_name = "MSR_LBR_INFO_31"
+        integer(kind=int8b), dimension(0:55) :: msr_read
+        integer(kind=int8b), dimension(0:55) :: msr_write
+        character(len=16),   dimension(0:55) :: msrw_hex
+        ! Last Branch Record 31 Additional Information (R/W)
+        ! One of 32 triplet of last branch record registers on the
+        ! last branch record stack. This part of the stack contains
+        ! flag, TSX-related and elapsed cycle information
+     end type MSR_LBR_INFO_31_SKYLAKE
+
+     type, public :: MSR_UNC_PERF_FIXED_CTRL_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 916
+        character(len=5)     :: addr_hex = "0x394"
+        character(len=23)    :: msr_name = "MSR_UNC_PERF_FIXED_CTRL"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_write
+        character(len=16),   dimension(0:1) :: msrw_hex
+        ! Uncore Fixed Counter Control (R/W)
+     end type MSR_UNC_PERF_FIXED_CTRL_SKYLAKE
+
+     type, public :: MSR_UNC_PERF_FIXED_CTR_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 917
+        character(len=5)     :: addr_hex = "0x395"
+        character(len=22)    :: msr_name = "MSR_UNC_PERF_FIXED_CTR"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        ! Uncore Fixed Counter
+     end type MSR_UNC_PERF_FIXED_CTR_SKYLAKE
+
+     type, public :: MSR_UNC_CB0_CONFIG_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 918
+        character(len=5)     :: addr_hex = "0x396"
+        character(len=17)    :: msr_name = "MSR_UNC_CB0_CONFIG"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_write
+        character(len=16),   dimension(0:1) :: msrw_hex
+        ! Uncore C-Box Configuration Information (R/O)
+     end type MSR_UNC_CB0_CONFIG_SKYLAKE
      
+     type, public :: MSR_UNC_ARB_PERFCTR0_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 946
+        character(len=5)     :: addr_hex = "0x3B0"
+        character(len=20)    :: msr_name = "MSR_UNC_ARB_PERFCTR0"
+      
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore Arb Unit, Performance Counter 0
+     end type MSR_UNC_ARB_PERFCTR0_SKYLAKE
 
+     type, public :: MSR_UNC_ARB_PERFCTR1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 947
+        character(len=5)     :: addr_hex = "0x3B1"
+        character(len=20)    :: msr_name = "MSR_UNC_ARB_PERFCTR1"
+       
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore Arb Unit, Performance Counter 1
+     end type MSR_UNC_ARB_PERFCTR1_SKYLAKE
 
+     type, public :: MSR_UNC_ARB_PERFEVTSEL0_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 944
+        character(len=5)     :: addr_hex = "0x3B2"
+        character(len=21)    :: msr_name = "MSR_UNC_ARB_PERFEVTSEL0"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore Arb Unit, Counter 0 Event Select MSR
+     end type MSR_UNC_ARB_PERFEVTSEL0_SKYLAKE
 
+     type, public :: MSR_UNC_ARB_PERFEVTSEL1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 945
+        character(len=5)     :: addr_hex = "0x3B3"
+        character(len=21)    :: msr_name = "MSR_UNC_ARB_PERFEVTSEL1"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore Arb Unit, Counter 0 Event Select MSR
+     end type MSR_UNC_ARB_PERFEVTSEL1_SKYLAKE
 
-
-
-
-
-
-
+     type, public :: MSR_UNC_CBO_0_PERFEVTSEL0_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1792
+        character(len=5)     :: addr_hex = "0x700"
+        character(len=25)    :: msr_name = "MSR_UNC_CBO_0_PERFEVTSEL0"
      
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 0, Counter 0 Event Select MSR
+     end type MSR_UNC_CBO_0_PERFEVTSEL0_SKYLAKE
 
+     type, public :: MSR_UNC_CBO_0_PERFEVTSEL1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1793
+        character(len=5)     :: addr_hex = "0x701"
+        character(len=25)    :: msr_name = "MSR_UNC_CBO_0_PERFEVTSEL1"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 0, Counter 0 Event Select MSR
+     end type MSR_UNC_CBO_0_PERFEVTSEL1_SKYLAKE
+
+     type, public :: MSR_UNC_CBO_0_PERFCTR0_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1798
+        character(len=5)     :: addr_hex = "0x706"
+        character(len=21)    :: msr_name = "MSR_UNC_CB0_0_PERFCTR0"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 0, Performance Counter 0
+     end type MSR_UNC_CB0_0_PERFCTR0_SKYLAKE
+
+     type, public :: MSR_UNC_CBO_0_PERFCTR1_SKYLAKE
+        public
+        integer(kind=int4)   :: addr_dec = 1799
+        character(len=5)     :: addr_hex = "0x707"
+        character(len=21)    :: msr_name = "MSR_UNC_CBO_0_PERFCTR1"
+      
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 0, Performance Counter 1
+     end type MSR_UNC_CBO_0_PERFCTR1_SKYLAKE
+
+     type, public :: MSR_UNC_CBO_1_PERFEVTSEL0_SKYLAKE
+        public
+        integer(kind=int4)    :: addr_dec = 1808
+        character(len=5)      :: addr_hex = "0x710"
+        character(len=25)     :: msr_name = "MSR_UNC_CBO_1_PERFEVTSEL0"
+       
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 1, Counter 0 Event Select MSR
+     end type MSR_UNC_CBO_1_PERFEVTSEL0_SKYLAKE
+
+     type, public :: MSR_UNC_CBO_1_PERFEVTSEL1_SKYLAKE
+        public
+        integer(kind=int4)    :: addr_dec = 1809
+        character(len=5)      :: addr_hex = "0x711"
+        character(len=25)     :: msr_name = "MSR_UNC_CBO_1_PERFEVTSEL1"
+       
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore C-Box 1, Counter 0 Event Select MSR
+     end type MSR_UNC_CBO_1_PERFEVTSEL1_SKYLAKE
+     
+     type, public :: MSR_UNC_CBO_1_PERFCTR0_SKYLAKE
+        public
+        integer(kind=int4)    :: addr_dec = 1814
+        character(len=5)      :: addr_hex = "0x716"
+        character(len=21)     :: msr_name = "MSR_UNC_CBO_1_PERFCTR0"
+         
+        integer(kind=int8b), dimension(0:1) :: msr_read
+     end type MSR_UNC_CBO_1_PERFCTR0_SKYLAKE
+
+     type, public :: MSR_UNC_CBO_1_PERFCTR1_SKYLAKE
+        public
+        integer(kind=int4)    :: addr_dec = 1814
+        character(len=5)      :: addr_hex = "0x716"
+        character(len=21)     :: msr_name = "MSR_UNC_CBO_1_PERFCTR1"
+         
+        integer(kind=int8b), dimension(0:1) :: msr_read
+     end type MSR_UNC_CBO_1_PERFCTR1_SKYLAKE
+
+     type, public :: MSR_UNC_PERF_GLOBAL_CTRL_SKYLAKE
+        public
+        integer( kind=int4)   :: addr_dec = 3585
+        character(len=5)      :: addr_hex = "0xE01"
+        character(len=24)     :: msr_name = "MSR_UNC_PERF_GLOBAL_CTRL"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=int8b), dimension(0:1) :: msr_write
+        character(len=16),   dimension(0:1) :: msrw_hex
+        ! Uncore PMU Global Control
+     end type MSR_UNC_PERF_GLOBAL_CTRL_SKYLAKE
+
+     type, public :: MSR_UNC_PERF_GLOBAL_STATUS_SKYLAKE
+        public
+        integer(kind=int4)    :: addr_dec = 3586
+        character(len=5)      :: addr_hex = "0xE02"
+        character(len=26)     :: msr_name = "MSR_UNC_PERF_GLOBAL_STATUS"
+        integer(kind=int8b), dimension(0:1) :: msr_read
+        ! Uncore PMU Main Status
+     end type MSR_UNC_PERF_GLOBAL_STATUS_SKYLAKE
 
 end module mod_skylake_msr
