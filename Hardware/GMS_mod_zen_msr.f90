@@ -463,8 +463,204 @@ module  mod_zen_msr
         character(len=16),   dimension(0:31) :: msrw_hex
         ! MSRC001_001[7...9] [IO Range Mask] (Core::X86::Msr::IORR_MASK)
      end type MSR_IORR_MASK3_ZEN
-     
 
+     type, public :: MSR_PERF_LEGACY_CTL0_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010000"
+        character(len=14)     :: msr_name = "PERF_LEGACY_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_000[0...3] [Performance Event Select [3:0]] (Core::X86::Msr::PERF_LEGACY_CTL)
+     end type MSR_PERF_LEGACY_CTL0_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTL1_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010001"
+        character(len=14)     :: msr_name = "PERF_LEGACY_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_000[0...3] [Performance Event Select [3:0]] (Core::X86::Msr::PERF_LEGACY_CTL)
+     end type MSR_PERF_LEGACY_CTL1_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTL2_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010002"
+        character(len=14)     :: msr_name = "PERF_LEGACY_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_000[0...3] [Performance Event Select [3:0]] (Core::X86::Msr::PERF_LEGACY_CTL)
+     end type MSR_PERF_LEGACY_CTL2_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTL3_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010003"
+        character(len=14)     :: msr_name = "PERF_LEGACY_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_000[0...3] [Performance Event Select [3:0]] (Core::X86::Msr::PERF_LEGACY_CTL)
+     end type MSR_PERF_LEGACY_CTL3_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTR0_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010004"
+        character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(1000,0:63) :: msr_read
+        ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
+     end type MSR_PERF_LEGACY_CTR0_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTR1_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010005"
+        character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(1000,0:63) :: msr_read
+        ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
+     end type MSR_PERF_LEGACY_CTR1_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTR2_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010006"
+        character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(1000,0:63) :: msr_read
+        ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
+     end type MSR_PERF_LEGACY_CTR2_ZEN
+
+     type, public :: MSR_PERF_LEGACY_CTR3_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010007"
+        character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+        !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
+        integer(kind=int8b), dimension(1000,0:63) :: msr_read
+        ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
+     end type MSR_PERF_LEGACY_CTR3_ZEN
+
+     type, public :: MSR_MC_EXP_REDIR_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010022"
+        character(len=11)    :: msr_name = "MC_EXP_REDIR"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_0022 [Machine Check Exception Redirection] (Core::X86::Msr::McExcepRedir)
+     end type MSR_MC_EXP_REDIR_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING0_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010030"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING0_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING1_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010031"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING1_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING2_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010032"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING2_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING3_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010033"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING3_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING4_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010034"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING4_ZEN
+
+     type, public :: MSR_PROC_NAME_STRING5_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010035"
+        character(len=16)    :: msr_name = "PROC_NAME_STRING"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_003[0...5] [Processor Name String] (Core::X86::Msr::ProcNameString)
+     end type MSR_PROC_NAME_STRING5_ZEN
+
+     type, public :: MSR_MMIO_CFG_BASE_ADDR_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010058"
+        character(len=18)    :: msr_name = "MMIO_CFG_BASE_ADDR"
+        integer(kind=int8b), dimension(0:31) :: msr_read
+        integer(kind=int8b), dimension(0:31) :: msr_write
+        character(len=16),   dimension(0:31) :: msrw_hex
+        ! MSRC001_0058 [MMIO Configuration Base Address] (Core::X86::Msr::MmioCfgBaseAddr)
+     end type MSR_MMIO_CFG_BASE_ADDR_ZEN
+
+     type, public :: MSR_INT_PENDING_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010055"
+        character(len=10)    :: msr_name = "INT_PENDING"
+        integer(kind=int8b), dimension(0:31) :: msr_read
+        ! MSRC001_0055 [Reserved.] (Core::X86::Msr::IntPend)
+     end type MSR_INT_PENDING_ZEN
+
+     type, public :: MSR_TRIG_IO_CYCLE_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0010056"
+        character(len=13)     :: msr_name = "TRIG_IO_CYCLE"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_0056 [SMI Trigger IO Cycle] (Core::X86::Msr::SmiTrigIoCycle)
+     end type MSR_TRIG_IO_CYCLE_ZEN
+
+     type, public :: MSR_MMIO_CFG_BASE_ADDR_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010058"
+        character(len=18)    :: msr_name = "MMIO_CFG_BASE_ADDR"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_0058 [MMIO Configuration Base Address] (Core::X86::Msr::MmioCfgBaseAddr)
+     end type MSR_MMIO_CFG_BASE_ADDR_ZEN
+
+     type, public :: MSR_PSTATE_CUR_LIMIT_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010061"
+        character(len=15)    :: msr_name = "PSTATE_CUR_LIMIT"
+        integer(kind=int8b), dimension(0:31) :: msr_read
+        ! MSRC001_0061 [P-state Current Limit] (Core::X86::Msr::PStateCurLim)
+     end type MSR_PSTATE_CUR_LIMIT_ZEN
+
+     type, public :: MSR_PSTATE_CTL_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010062"
+        character(len=10)    :: msr_name = "PSTATE_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_0062 [P-state Control] (Core::X86::Msr::PStateCtl)
+     end type MSR_PSTATE_CTL_ZEN
+
+     type, public :: MSR_PSTATE_STAT_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0010063"
+        character(len=11)    :: msr_name = "PSTATE_STAT"
+        integer(kind=int8b), dimension(0:31) :: msr_read
+        ! MSRC001_0063 [P-state Status] (Core::X86::Msr::PStateStat)
+     end type MSR_PSTATE_STAT_ZEN
 
 
 end module mod_zen_msr
