@@ -43,7 +43,7 @@ module  mod_zen_msr
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     
-     use mod_kinds, only : int4, int8b  
+     use mod_kinds, only : int1, int4, int8b, dp  
      implicit none
 
 
@@ -51,9 +51,11 @@ module  mod_zen_msr
         public
         integer(kind=int4)    :: addr_dec = 10
         character(len=4)      :: addr_hex = "0x10"
+        !
         character(len=3)      :: msr_name = "TSC"
         integer(kind=int8b), dimension(0:63) :: msr_write
         character(len=16),   dimension(0:63) :: msrw_hex
+        real(kind=dp),       dimension(0:63) :: samp_delta ! time interval in micro-seconds
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! TSC: time stamp counter. Read-write,Volatile. Reset: 0000_0000_0000_0000h.
@@ -75,6 +77,7 @@ module  mod_zen_msr
         character(len=5)     :: msr_name = "MPERF"
         integer(kind=int8b), dimension(0:63) :: msr_write
         character(len=16),   dimension(0:63) :: msrw_hex
+        real(kind=dp),       dimension(0:63) :: samp_delta 
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MPERF: maximum core clocks counter. Read-write,Volatile. Reset: 0000_0000_0000_0000h
@@ -87,6 +90,7 @@ module  mod_zen_msr
         character(len=5)     :: msr_name = "APERF"
         integer(kind=int8b), dimension(0:63) :: msr_write
         character(len=16),   dimension(0:63) :: msrw_hex
+        real(kind=dp),       dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! APERF: actual core clocks counter. Read-write,Volatile. Reset: 0000_0000_0000_0000h
@@ -349,6 +353,7 @@ module  mod_zen_msr
         integer(kind=int4)    :: addr_dec = 260
         character(len=5)      :: addr_hex = "0x104"
         character(len=9)      :: msr_name = "TSC_RATIO"
+        real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC000_0104 [Time Stamp Counter Ratio] (Core::X86::Msr::TscRateMsr)
@@ -517,6 +522,7 @@ module  mod_zen_msr
         public
         character(len=10)     :: addr_hex = "0xC0010005"
         character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+        real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
@@ -526,6 +532,7 @@ module  mod_zen_msr
         public
         character(len=10)     :: addr_hex = "0xC0010006"
         character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
@@ -535,6 +542,7 @@ module  mod_zen_msr
         public
         character(len=10)     :: addr_hex = "0xC0010007"
         character(len=14)     :: msr_name = "PER_LEGACY_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_000[4...7] [Performance Event Counter [3:0]] (Core::X86::Msr::PERF_LEGACY_CTR)
@@ -866,6 +874,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010201"
         character(len=8)     :: msr_name = "PERF_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_020[1...B] [Performance Event Counter [5:0]] (Core::X86::Msr::PERF_CTR)
@@ -875,6 +884,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010203"
         character(len=8)     :: msr_name = "PERF_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_020[1...B] [Performance Event Counter [5:0]] (Core::X86::Msr::PERF_CTR)
@@ -884,6 +894,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010205"
         character(len=8)     :: msr_name = "PERF_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_020[1...B] [Performance Event Counter [5:0]] (Core::X86::Msr::PERF_CTR)
@@ -893,6 +904,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010207"
         character(len=8)     :: msr_name = "PERF_CTR"
+         real(kind=dp), dimension(0:63) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:63) :: msr_read
         ! MSRC001_020[1...B] [Performance Event Counter [5:0]] (Core::X86::Msr::PERF_CTR)
@@ -962,6 +974,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010231"
         character(len=6)     :: msr_name = "L3_PMC"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_023[1...B] [L3 Performance Event Counter [5:0]] (Core::X86::Msr::ChL3Pmc)
@@ -971,6 +984,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010233"
         character(len=6)     :: msr_name = "L3_PMC"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_023[1...B] [L3 Performance Event Counter [5:0]] (Core::X86::Msr::ChL3Pmc)
@@ -980,6 +994,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010235"
         character(len=6)     :: msr_name = "L3_PMC"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_023[1...B] [L3 Performance Event Counter [5:0]] (Core::X86::Msr::ChL3Pmc)
@@ -998,6 +1013,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC0010239"
         character(len=6)     :: msr_name = "L3_PMC"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_023[1...B] [L3 Performance Event Counter [5:0]] (Core::X86::Msr::ChL3Pmc)
@@ -1007,6 +1023,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC001023B"
         character(len=6)     :: msr_name = "L3_PMC"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_023[1...B] [L3 Performance Event Counter [5:0]] (Core::X86::Msr::ChL3Pmc)
@@ -1024,6 +1041,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC001029A"
         character(len=16)    :: msr_name = "CORE_ENERGY_STAT"
+         real(kind=dp), dimension(0:31) :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000,0:31) :: msr_read
         ! MSRC001_029A [Core Energy Status] (Core::X86::Msr::CORE_ENERGY_STAT)
@@ -1033,6 +1051,7 @@ module  mod_zen_msr
         public
         character(len=10)    :: addr_hex = "0xC001029B"
         character(len=15)    :: msr_name = "PKG_ENERGY_STAT"
+         real(kind=dp)       :: samp_delta
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
         integer(kind=int8b), dimension(1000) :: msr_read
         ! MSRC001_029B [Package Energy Status] (Core::X86::Msr::PKG_ENERGY_STAT)
@@ -1169,6 +1188,7 @@ module  mod_zen_msr
      end type MSR_IBS_OP_RIP_ZEN
 
      type, public :: MSR_IBS_OP_DATA_ZEN
+        public
         character(len=10)    :: addr_hex = "0xC0011035"
         character(len=11)    :: msr_name = "IBS_OP_DATA"
         integer(kind=int8b), dimension(0:63) :: msr_read
@@ -1178,6 +1198,7 @@ module  mod_zen_msr
      end type MSR_IBS_OP_DATA_ZEN
 
      type, public :: MSR_IBS_OP_DATA2_ZEN
+        public
         character(len=10)    :: addr_hex = "0xC0011036"
         character(len=12)    :: msr_name = "IBS_OP_DATA2"
         integer(kind=int8b), dimension(0:63) :: msr_read
@@ -1187,6 +1208,7 @@ module  mod_zen_msr
      end type MSR_IBS_OP_DATA2_ZEN
 
      type, public :: MSR_IBS_OP_DATA3_ZEN
+        public
         character(len=10)    :: addr_hex = "0xC0011037"
         character(len=11)    :: msr_name = "IBS_OP_DATA3"
         integer(kind=int8b), dimension(0:63) :: msr_read
@@ -1194,6 +1216,275 @@ module  mod_zen_msr
         character(len=16),   dimension(0:63) :: msrw_hex
         ! MSRC001_1035 [IBS Op Data] (Core::X86::Msr::IBS_OP_DATA)
      end type MSR_IBS_OP_DATA3_ZEN
+
+     type, public :: MSR_IBS_DC_LINADDR_ZEN
+        public
+        character(len=10)    :: addr_hex = "0xC0011038"
+        character(len=15)    :: msr_name = "IBS_DC_LINADDR"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_1038 [IBS DC Linear Address] (Core::X86::Msr::IBS_DC_LINADDR)
+     end type MSR_IBS_DC_LINADDR_ZEN
+
+     type, public :: MSR_IBS_DC_PHYSADDR_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC0011039"
+        character(len=15)     :: msr_name = "IBS_DC_PHYSADDR"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_1039 [IBS DC Physical Address] (Core::X86::Msr::IBS_DC_PHYSADDR)
+     end type MSR_IBS_DC_PHYSADDR_ZEN
+
+     type, public :: MSR_IBS_CTL_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC001103A"
+        character(len=7)      :: msr_name = "IBS_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_103A [IBS Control] (Core::X86::Msr::IBS_CTL)
+     end type MSR_IBS_CTL_ZEN
+
+     type, public :: MSR_BP_IBSTGT_RIP_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC001103B"
+        character(len=14)     :: msr_name = "BP_IBSTGT_RIP"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        integer(kind=int8b), dimension(0:63) :: msr_write
+        character(len=16),   dimension(0:63) :: msrw_hex
+        ! MSRC001_103B [IBS Branch Target Address] (Core::X86::Msr::BP_IBSTGT_RIP)
+     end type MSR_BP_IBSTGT_RIP_ZEN
+
+     type, public :: MSR_IC_IBS_EXTD_CTL_ZEN
+        public
+        character(len=10)     :: addr_hex = "0xC001103C"
+        character(len=15)     :: msr_name = "IC_IBS_EXTD_CTL"
+        integer(kind=int8b), dimension(0:63) :: msr_read
+        ! MSRC001_103C [IBS Fetch Control Extended] (Core::X86::Msr::IC_IBS_EXTD_CTL)
+     end type MSR_IC_IBS_EXTD_CTL_ZEN
+
+     type, public :: PMC_FPU_PIPE_ASSIGNMENT_ZEN
+        public
+        character(len=5)      :: event = "0x000"
+        character(len=20)     :: event_name = "FPU_PIPE_ASSIGNMENT"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx000 [FPU Pipe Assignment] (Core::X86::Pmc::Core::FpuPipeAssignment)
+     end type PMC_FPU_PIPE_ASSIGNMENT_ZEN
+
+     type, public :: PMC_FP_SCHED_EMPTY_ZEN
+        public
+        character(len=5)      :: event = "0x001"
+        character(len=14)     :: event_name = "FP_SCHED_EMPTY"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx001 [FP Scheduler Empty] (Core::X86::Pmc::Core::FpSchedEmpty)
+     end type PMC_FP_SCHED_EMPTY_ZEN
+
+     type, public :: PMC_FP_RET_X86_FPOPS_ZEN
+        public
+        character(len=5)      :: event = "0x002"
+        character(len=16)     :: event_name = "FP_RET_X86_FPOPS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx002 [Retired x87 Floating Point Operations] (Core::X86::Pmc::Core::FpRetx87FpOps)
+     end type PMC_FP_RET_X86_FPOPS_ZEN
+
+     type, public :: PMC_FP_RET_SSE_AVX_OPS_ZEN
+        public
+        character(len=5)      :: event = "0x003"
+        character(len=18)     :: event_name = "FP_RET_SSE_AVX_OPS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx003 [Retired SSE/AVX Operations] (Core::X86::Pmc::Core::FpRetSseAvxOps)
+     end type PMC_FP_RET_SSE_AVX_OPS_ZEN
+
+     type, public :: PMC_FP_NUM_MOV_ELIM_SCALOP_ZEN
+        public
+        character(len=5)       :: event = "0x004"
+        character(len=22)      :: event_name = "FP_NUM_MOV_ELIM_SCALOP"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx004 [Number of Move Elimination and Scalar Op Optimization]
+        !(Core::X86::Pmc::Core::FpNumMovElimScalOp)
+     end type PMC_FP_NUM_MOV_ELIM_SCALOP_ZEN
+
+     type, public :: PMC_FP_RETIRE_SEROPS_ZEN
+        public
+        character(len=5)       :: event = "0x005"
+        character(len=16)      :: event_name = "FP_RETIRE_SEROPS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx005 [Retired Serializing Ops] (Core::X86::Pmc::Core::FpRetiredSerOps)
+     end type PMC_FP_RETIRE_SEROPS_ZEN
+
+     type, public :: PMC_LS_BAD_STATUS2_ZEN
+        public
+        character(len=5)       :: event = "0x24"
+        character(len=14)      :: event_name = "LS_BAD_STATUS2"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx024 [Bad Status 2] (Core::X86::Pmc::Core::LsBadStatus2)
+     end type PMC_LS_BAD_STATUS2_ZEN
+
+     type, public :: PMC_LS_LOCKS_ZEN
+        public
+        character(len=5)       :: event = "0x25"
+        character(len=8)       :: event_name = "LS_LOCKS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx025 [Locks] (Core::X86::Pmc::Core::LsLocks)
+     end type PMC_LS_LOCKS_ZEN
+
+     type, public :: PMC_LS_RET_CLFLUSH_ZEN
+        public
+        character(len=5)       :: event = "0x26"
+        character(len=14)      :: event_name = "LS_RET_CLFLUSH"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx026 [Retired CLFLUSH Instructions] (Core::X86::Pmc::Core::LsRetClClush)
+     end type PMC_LS_RET_CLFLUSH_ZEN
+
+     type, public :: PMC_LS_RET_CPUID_ZEN
+        public
+        character(len=5)       :: event = "0x27"
+        character(len=12)      :: event_name = "LS_RET_CPUID"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! MCx027 [Retired CPUID Instructions] (Core::X86::Pmc::Core::LsRetCpuid)
+     end type PMC_LS_RET_CPUID_ZEN
+
+     type, public :: PMC_LS_DISPATCH_ZEN
+        public
+        character(len=5)       :: event = "0x29"
+        character(len=11)      :: event_name = "LS_DISPATCH"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx029 [LS Dispatch] (Core::X86::Pmc::Core::LsDispatch)
+     end type PMC_LS_DISPATCH_ZEN
+
+     type, public :: PMC_LS_SMI_RX_ZEN
+        public
+        character(len=5)       :: event = "0x2B"
+        character(len=9)       :: event_name = "LS_SMI_RX"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx02B [SMIs Received] (Core::X86::Pmc::Core::LsSmiRx)
+     end type PMC_LS_SMI_RX_ZEN
+
+     type, public :: PMC_LS_STLF_ZEN
+        public
+        character(len=5)       :: event = "0x35"
+        character(len=7)       :: event_name = "LS_STLF"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx035 [Store to Load Forward] (Core::X86::Pmc::Core::LsSTLF)
+     end type PMC_LS_STLF_ZEN
+
+     type, public :: PMC_LS_ST_COMMIT_CANCELS2_ZEN
+        public
+        character(len=5)       :: event = "0x37"
+        character(len=21)      :: event_name = "LS_ST_COMMIT_CANCLES2"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx037 [Store Commit Cancels 2] (Core::X86::Pmc::Core::LsStCommitCancel2)
+     end type PMC_LS_ST_COMMIT_CANCELS2_ZEN
+
+     type, public :: PMC_LS_DC_ACCESSES_ZEN
+        public
+        character(len=5)       :: event = "0x40"
+        character(len=14)      :: event_name = "LS_DC_ACCESSES"
+         real(kind=dp), dimension(0:31) :: samp_delta
+          !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx040 [Data Cache Accesses] (Core::X86::Pmc::Core::LsDcAccesses)
+     end type PMC_LS_DC_ACCESSES_ZEN
+
+     type, public :: PMC_LS_REFILLS_FROM_SYS_ZEN
+        public
+        character(len=5)       :: event = "0x43"
+        character(len=18)      :: event_name = "LS_REFILLS_FROM_SYS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx043 [Data Cache Refills from System] (Core::X86::Pmc::Core::LsRefillsFromSys)
+     end  type  PMC_LS_REFILLS_FROM_SYS_ZEN
+
+     type, public :: PMC_LS_L1_DTLB_MISS_ZEN
+        public
+        character(len=5)      :: event = "0x45"
+        character(len=14)     :: event_name = "LS_L1_DTLB_MISS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx045 [L1 DTLB Miss] (Core::X86::Pmc::Core::LsL1DTlbMiss)
+     end type PMC_LS_L1_DTLB_MISS_ZEN
+
+     type, public :: PMC_LS_TABLE_WALKER_ZEN
+        public
+        character(len=5)      :: event = "0x46"
+        character(len=15)     :: event_name = "LS_TABLE_WALKER"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        !PMCx046 [Tablewalker allocation] (Core::X86::Pmc::Core::LsTablewalker)
+     end type PMC_LS_TABLE_WALKER_ZEN
+
+     type, public :: PMC_LS_MISALIGN_ACCESS_ZEN
+        public
+        character(len=5)      :: event = "0x47"
+        character(len=16)     :: event_name = "LS_MISALIGN_ACCESS"
+         real(kind=dp), dimension(0:31) :: samp_delta
+         !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx047 [Misaligned loads] (Core::X86::Pmc::Core::LsMisalAccesses)
+     end type PMC_LS_MISALIGN_ACCESS_ZEN
+
+     type, public :: PMC_LS_PREF_INSTR_DISPATCH_ZEN
+        public
+        character(len=5)      :: event = "0x4B"
+        character(len=21)     :: event_name = "LS_PERF_INSTR_DISPATCH"
+         real(kind=dp), dimension(0:31) :: samp_delta
+          !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx04B [Prefetch Instructions Dispatched] (Core::X86::Pmc::Core::LsPrefInstrDisp)
+     end type PMC_LS_PREF_INSTR_DISPATCH_ZEN
+
+     type, public :: PMC_LS_INEF_SW_PREF_ZEN
+        public
+        character(len=5)       :: event = "0x52"
+        character(len=15)      :: event_name = "LS_INEF_SW_PREF"
+         real(kind=dp), dimension(0:31) :: samp_delta
+          !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx052 [Ineffective Software Prefetchs] (Core::X86::Pmc::Core::LsInefSwPref)
+     end type PMC_LS_INEF_SW_PREF_ZEN
+
+     type, public :: PMC_LS_SW_PREF_DC_FILLS_ZEN
+        public
+        character(len=5)       :: event = "0x59"
+        character(len=19)      :: event_name = "LS_SW_PREF_DC_FILLS"
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(1000,0:31) :: pmc_read
+        ! PMCx059 [Software Prefetch Data Cache Fills] (Core::X86::Pmc::Core::LsSwPfDcFills)
+     end type PMC_LS_SW_PREF_DC_FILLS_ZEN
+
+     
 
 
 end module mod_zen_msr
