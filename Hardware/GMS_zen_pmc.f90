@@ -1257,13 +1257,405 @@
        
      end type PMC_RETIRED_NEAR_RET_ZEN
 
+     type, public :: PMC_RETIRED_NEAR_RET_MISPRED_ZEN
+        public
+        character(len=4)        :: event = "0xC9"
+        character(len=23)       :: even t_name = "RETIRED_NEAR_RET_MISPRED"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx0C9 [Retired Near Returns Mispredicted] (Core::X86::Pmc::Core::ExRetNearRetMispred)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0C9 [Retired Near Returns Mispredicted] (Core::X86::Pmc::Core::ExRetNearRetMispred)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0C9 [Retired Near Returns Mispredicted] (Core::X86::Pmc::Core::ExRetNearRetMispred)
+#endif          
+     end type PMC_RETIRED_NEAR_RET_MISPRED_ZEN
 
+     type, public :: PMC_RETIRED_INDIRECT_BR_INSTR_MISPRED_ZEN
+        public
+        character(len=4)          :: event = "0xCA"
+        character(len=31)         :: event_name = "RETIRED_INDIRECT_BR_INSTR_MISPRED"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx0CA [Retired Indirect Branch Instructions Mispredicted] (Core::X86::Pmc::Core::ExRetBrnIndMisp)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0CA [Retired Indirect Branch Instructions Mispredicted] (Core::X86::Pmc::Core::ExRetBrnIndMisp)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0CA [Retired Indirect Branch Instructions Mispredicted] (Core::X86::Pmc::Core::ExRetBrnIndMisp)
+#endif         
+     end type PMC_RETIRED_INDIRECT_BR_INSTR_MISPRED_ZEN
 
+     type, public :: PMC_RETIRED_MMX_FP_INSTR_ZEN
+        public
+        character(len=4)           :: event = "0xCB"
+        character(len=20)          :: event_name = "RETIRED_MMX_FP_INSTR"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        !PMCx0CB [Retired MMXTM/FP Instructions] (Core::X86::Pmc::Core::ExRetMmxFpInstr)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0CB [Retired MMXTM/FP Instructions] (Core::X86::Pmc::Core::ExRetMmxFpInstr)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0CB [Retired MMXTM/FP Instructions] (Core::X86::Pmc::Core::ExRetMmxFpInstr)
+#endif         
+     end type PMC_RETIRED_MMX_FP_INSTR_ZEN
 
+     type, public :: PMC_RETIRED_COND_BR_INSTR_ZEN
+        public
+        character(len=4)          :: event = "0xD1"
+        character(len=21)         :: event_name = "RETIRED_COND_BR_INSTR"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx0D1 [Retired Conditional Branch Instructions] (Core::X86::Pmc::Core::ExRetCond)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0D1 [Retired Conditional Branch Instructions] (Core::X86::Pmc::Core::ExRetCond)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0D1 [Retired Conditional Branch Instructions] (Core::X86::Pmc::Core::ExRetCond)
+#endif        
+     end type PMC_RETIRED_COND_BR_INSTR_ZEN
 
+     type, public :: PMC_DIV_CYCLES_BUSY_ZEN
+        public
+        character(len=4)           :: event = "0xD3"
+        character(len=15)          :: event_name = "DIV_CYCLES_BUSY"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx0D3 [Div Cycles Busy count] (Core::X86::Pmc::Core::ExDivBusy)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0D3 [Div Cycles Busy count] (Core::X86::Pmc::Core::ExDivBusy)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0D3 [Div Cycles Busy count] (Core::X86::Pmc::Core::ExDivBusy)
+#endif             
+     end type PMC_DIV_CYCLES_BUSY_ZEN
 
+     type, public :: PMC_DIV_OP_COUNT_ZEN
+        public
+        character(len=4)         :: event = "0xD4"
+        character(len=11)        :: event_name = "DIV_OP_COUNT"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx0D4 [Div Op Count] (Core::X86::Pmc::Core::ExDivCount)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx0D4 [Div Op Count] (Core::X86::Pmc::Core::ExDivCount)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx0D4 [Div Op Count] (Core::X86::Pmc::Core::ExDivCount)
+#endif        
+     end type PMC_DIV_OP_COUNT_ZEN
 
+     type, public :: PMC_TAGGED_IBS_OPS_ZEN
+        public
+        character(len=5)         :: event = "0x1CF"
+        character(len=15)        :: event_name = "TAGGED_IBS_OPS"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx1CF [Tagged IBS Ops] (Core::X86::Pmc::Core::ExTaggedIbsOps)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx1CF [Tagged IBS Ops] (Core::X86::Pmc::Core::ExTaggedIbsOps)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx1CF [Tagged IBS Ops] (Core::X86::Pmc::Core::ExTaggedIbsOps)
+#endif           
+     end type PMC_TAGGED_IBS_OPS_ZEN
 
+     type, public :: PMC_RETIRED_FUSED_BR_INSTR_ZEN
+        public
+        character(len=5)          :: event = "0x1D0"
+        character(len=23)         :: event_name = "RETIRED_FUSED_BR_INSTR"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx1D0 [Retired Fused Branch Instructions] (Core::X86::Pmc::Core::ExRetFusBrnchInst)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx1D0 [Retired Fused Branch Instructions] (Core::X86::Pmc::Core::ExRetFusBrnchInst)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx1D0 [Retired Fused Branch Instructions] (Core::X86::Pmc::Core::ExRetFusBrnchInst)
+#endif        
+     end type PMC_RETIRED_FUSED_BR_INSTR_ZEN
+
+     type, public :: PMC_L2_REQUEST_G1_ZEN
+        public
+        character(len=4)          :: event = "0x60"
+        character(len=13)         :: event_name = "L2_REQUESTS_G1"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx060 [Requests to L2 Group1] (Core::X86::Pmc::Core::L2RequestG1)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx060 [Requests to L2 Group1] (Core::X86::Pmc::Core::L2RequestG1)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx060 [Requests to L2 Group1] (Core::X86::Pmc::Core::L2RequestG1)
+#endif        
+     end type PMC_L2_REQUEST_G1_ZEN
+
+     type, public :: PMC_L2_REQUESTS_G2_ZEN
+        public
+        character(len=4)           :: event = "0x61"
+        character(len=13)          :: event_name = "L2_REQUESTS_G2"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx060 [Requests to L2 Group2] (Core::X86::Pmc::Core::L2RequestG1)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx060 [Requests to L2 Group2] (Core::X86::Pmc::Core::L2RequestG1)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx060 [Requests to L2 Group2] (Core::X86::Pmc::Core::L2RequestG1)
+#endif         
+     end type PMC_L2_REQUESTS_G2_ZEN
+
+     type, public :: PMC_L2_LATENCY_ZEN
+        public
+        character(len=4)          :: event = "0x62"
+        character(len=9)          :: event_name = "L2_LATENCY"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        !PMCx062 [L2 Latency] (Core::X86::Pmc::Core::L2Latancy)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx062 [L2 Latency] (Core::X86::Pmc::Core::L2Latancy)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        !PMCx062 [L2 Latency] (Core::X86::Pmc::Core::L2Latancy)
+#endif           
+     end type  PMC_L2_LATENCY_ZEN
+
+     type, public :: PMC_LS_L2_WBC_REQUESTS_ZEN
+        public
+        character(len=4)           :: event = "0x63"
+        character(len=18)          :: event_name = "LS_L2_WBC_REQUESTS"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! PMCx063 [LS to L2 WBC requests] (Core::X86::Pmc::Core::L2WbcReq)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx063 [LS to L2 WBC requests] (Core::X86::Pmc::Core::L2WbcReq)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx063 [LS to L2 WBC requests] (Core::X86::Pmc::Core::L2WbcReq)
+#endif         
+     end type PMC_LS_L2_WBC_REQUESTS_ZEN
+
+     type, public :: PMC_CORE_L2_CACHEABLE_REQ_STATUS_ZEN
+        public
+        character(len=4)           :: event = "0x64"
+        character(len=29)          :: event_name = "CORE_L2_CACHEABLE_REQ_STATUS"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        !PMCx064 [Core to L2 Cacheable Request Access Status] (Core::X86::Pmc::Core::L2CacheReqStat)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        !PMCx064 [Core to L2 Cacheable Request Access Status] (Core::X86::Pmc::Core::L2CacheReqStat)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx064 [Core to L2 Cacheable Request Access Status] (Core::X86::Pmc::Core::L2CacheReqStat)
+#endif          
+     end type PMC_CORE_L2_CACHEABLE_REQ_STATUS_ZEN
+
+     type, public :: PMC_L2_FILL_PENDING_ZEN
+        public
+        character(len=4)           :: event = "0x6D"
+        character(len=15)          :: event_name = "L2_FILL_PENDING"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        !PMCx06D [Cycles with fill pending from L2] (Core::X86::Pmc::Core::L2FillPending)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! PMCx06D [Cycles with fill pending from L2] (Core::X86::Pmc::Core::L2FillPending)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! PMCx06D [Cycles with fill pending from L2] (Core::X86::Pmc::Core::L2FillPending)
+#endif        
+     end type PMC_L2_FILL_PENDING_ZEN
+
+     type, public :: PMC_L3_CACHE_ACCESSES_ZEN
+        public
+        character(len=3)               :: event = "0x1"
+        character(len=18)              :: event_name = "L3_CACHE_ACCESSES"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! L3PMCx01 [L3 Cache Accesses] (Core::X86::Pmc::L3::L3RequestG1)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! L3PMCx01 [L3 Cache Accesses] (Core::X86::Pmc::L3::L3RequestG1)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! L3PMCx01 [L3 Cache Accesses] (Core::X86::Pmc::L3::L3RequestG1)
+#endif         
+     end type PMC_L3_CACHE_ACCESSES_ZEN
+
+     type, public :: PMC_L3_MISS_ZEN
+        public
+        character(len=3)                 :: event = "0x6"
+        character(len=7)                 :: event_name = "L3_MISS"
+#if (ZEN_16_CORE) == 1
+        integer(kind=int4), dimension(0:15) :: samp_num
+        real(kind=dp), dimension(0:15) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:15) :: pmc_read
+        ! L3PMCx06 [L3 Miss] (Core::X86::Pmc::L3::L3CombClstrState)
+#elif (ZEN_24_CORE) == 1
+        integer(kind=int4), dimension(0:23) :: samp_num
+        real(kind=dp), dimension(0:23) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:23) :: pmc_read
+        ! L3PMCx06 [L3 Miss] (Core::X86::Pmc::L3::L3CombClstrState)
+#elif (ZEN_32_CORE) == 1
+        integer(kind=int4), dimension(0:31) :: samp_num
+        real(kind=dp), dimension(0:31) :: samp_delta
+        !DIR$ ATTRIBUTES ALIGN : 64 :: pmc_read
+        integer(kind=int1), dimension(MAX_SAMP,0:31) :: pmc_read
+        ! L3PMCx06 [L3 Miss] (Core::X86::Pmc::L3::L3CombClstrState)
+#endif        
+     end type PMC_L3_MISS_ZEN
 
 
   end module mod_zen_pmc
