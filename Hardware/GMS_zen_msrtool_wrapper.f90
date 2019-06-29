@@ -1,4 +1,6 @@
 
+ 
+  
 module mod_zen_msrtools_wrapper
 
 
@@ -49,9 +51,10 @@ module mod_zen_msrtools_wrapper
      character(*), parameter, private :: wmsr = "wrmsr"
      character(*), parameter, public  :: reset_val = "0x000000000000000"
      integer(kind=int8b), parameter, public :: init_val = Z"FFFFFFFFFFFFFFF"
+     integer(kind=int8b), parameter, public :: zero_val = Z"000000000000000"
      character(*), parameter, public  :: init_valh      = "0xFFFFFFFFFFFFFFFF"
      contains
-
+!DIR$ ATTRIBUTES INLINE :: initMSR_TSC_ZEN
      subroutine initMSR_TSC_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_TSC_ZEN
            type(MSR_TSC_ZEN),      intent(inout) :: reg
@@ -60,20 +63,25 @@ module mod_zen_msrtools_wrapper
            reg.samp_delta = 0.0_dp
            reg.msr_write  = init_val
            reg.msrw_hex   = init_valh
-           reg.msr_read   = init_val
+           reg.msr_read   = init_val ! Inlining up to call to intel_malloc
+           
      end subroutine initMSR_TSC_ZEN
 
      subroutine AccessMSR_TSC_ZEN(reg,command,reset,fname,hwth,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TSC_ZEN
-       type(MSR_TSC_ZEN),    intent(in) :: reg
+     
+       type(MSR_TSC_ZEN),    intent(in)    :: reg
        character(len=*),     intent(in)    :: command
        logical(kind=int1),   intent(in)    :: reset
        character(len=*),     intent(in)    :: fname
        character(len=2),     intent(in)    :: hwth ! HW thread number
+       !
        integer(kind=int2),   intent(inout) :: ier
+      
        ! Locals
        character(len=128), automatic :: string
        integer(kind=int2), automatic :: stat
+       
        ! Exec code ....
        if(.not. reset) then
           string = command//hwth//reg.addr_hex//fname
@@ -81,6 +89,7 @@ module mod_zen_msrtools_wrapper
           if(stat == -1) then
              ier = stat
           end if
+        
        else
           string = command//hwth//reg.addr_hex//reset_val
           stat = RUNQQ(wmsr,string)
@@ -90,6 +99,48 @@ module mod_zen_msrtools_wrapper
        end if
      end subroutine AccessMSR_TSC_ZEN
 
+     subroutine ReadMSR_TSC_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_TSC_ZEN
+          
+           type(MSR_TSC_ZEN),          intent(inout) :: reg
+           integer(kind=int4),         intent(in)    :: iounit
+           integer(kind=int4),         intent(in)    :: nth
+           character(len=*),           intent(in)    :: fname
+           integer(kind=int2),         intent(in)    :: status
+           integer(kind=int4),         intent(inout) :: err
+           character(len=256),         intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           is_present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, nth
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+     end subroutine ReadMSR_TSC_ZEN         
+    
+     
+!DIR$ ATTRIBUTES INLINE :: initMSR_APIC_BAR_ZEN
      subroutine initMSR_APIC_BAR_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_APIC_BAR_ZEN
            type(MSR_APIC_BAR_ZEN),        intent(inout) :: reg
@@ -113,8 +164,41 @@ module mod_zen_msrtools_wrapper
            if(stat == -1) then
                 ier = stat
            end if
-     end subroutine AccessMSR_APIC_BAR_ZEN
+      end subroutine AccessMSR_APIC_BAR_ZEN
 
+      subroutine ReadMSR_APIC_BAR_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_APIC_BAR_ZEN
+           type(MSR_APIC_BAR_ZEN),      intent(inout) :: reg
+           integer(kind=int4),          intent(in)    :: iounit
+           character(len=*),            intent(in)    :: fname
+           integer(kind=int2),          intent(in)    :: status
+           integer(kind=int4),          intent(inout) :: err
+           character(len=256),          intent(inout) :: ermsg
+           ! LOcals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code ....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'Z16.16',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+           return              
+      end subroutine ReadMSR_APIC_BAR_ZEN
+         
+!DIR$ ATTRIBUTES INLINE :: initMSR_MPERF_ZEN
      subroutine initMSR_MPERF_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MPERF_ZEN
            type(MSR_MPERF_ZEN),        intent(inout) :: reg
@@ -151,7 +235,7 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_MPERF_ZEN
-
+!DIR$ ATTRIBUTES INLINE :: initMSR_APERF_ZEN
      subroutine initMSR_APERF_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_APERF_ZEN
            type(MSR_APERF_ZEN),      intent(inout) :: reg
@@ -188,7 +272,7 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_APERF_ZEN
-
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_ZEN
      subroutine initMSR_MTRR_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_ZEN
            type(MSR_MTRR_ZEN),   intent(inout) :: reg
@@ -213,7 +297,7 @@ module mod_zen_msrtools_wrapper
               ier = stat
            end if
      end subroutine AccessMSR_MTRR_ZEN
-
+!DIR$ ATTRIBUTES INLINE :: initMSR_MCG_CAP_ZEN
      subroutine initMSR_MCG_CAP_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MCG_CAP_ZEN
            type(MSR_MCG_CAP_ZEN),   intent(inout) :: reg
@@ -238,7 +322,7 @@ module mod_zen_msrtools_wrapper
               ier = stat
            end if
      end subroutine AccessMSR_MCG_CAP_ZEN
-
+!DIR$ ATTRIBUTES INLINE :: initMSR_MCG_STAT_ZEN
      subroutine initMSR_MCG_STAT_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MCG_STAT_ZEN
            type(MSR_MCG_STAT_ZEN),       intent(inout) :: reg
@@ -266,7 +350,7 @@ module mod_zen_msrtools_wrapper
            end if
        
      end subroutine AccessMSR_MCG_STAT_ZEN
-
+!DIR$ ATTRIBUTES INLINE initMSR_MCG_CTL_ZEN
      subroutine initMSR_MCG_CTL_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MCG_CTL_ZEN
            type(MSR_MCG_CTL_ZEN),      intent(inout) :: reg
@@ -292,7 +376,15 @@ module mod_zen_msrtools_wrapper
            if(stat == -1) then
               ier = stat
            end if
-     end subroutine AccessMSR_MCG_CTL_ZEN   
+     end subroutine AccessMSR_MCG_CTL_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_DBG_CTL_ZEN
+     subroutine initMSR_DBG_CTL_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_DBG_CTL_ZEN
+           type(MSR_DBG_CTL_ZEN),      intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+           
+     end subroutine initMSR_DBG_CTL_ZEN
 
      subroutine AccessMSR_DBG_CTL_ZEN(reg,command,hwth,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_DBG_CTL_ZEN
@@ -320,6 +412,13 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_DBG_CTL_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_BR_FROM_IP_ZEN
+     subroutine initMSR_BR_FROM_IP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BR_FROM_IP_ZEN
+           type(MSR_BR_FROM_IP_ZEN),     intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_BR_FROM_IP_ZEN
 
      subroutine AccessMSR_BR_FROM_IP_ZEN(reg,command,hwth,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BR_FROM_IP_ZEN
@@ -347,6 +446,13 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_BR_FROM_IP_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_BR_TO_IP_ZEN
+     subroutine initMSR_BR_TO_IP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_BR_TO_IP_ZEN
+           type(MSR_BR_TO_IP_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_BR_TO_IP_ZEN
 
      subroutine AccessMSR_BR_TO_IP_ZEN(reg,command,hwth,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BR_TO_IP_ZEN
@@ -374,6 +480,13 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_BR_TO_IP_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_LAST_EXP_FROM_IP_ZEN
+     subroutine initMSR_LAST_EXP_FROM_IP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_LAST_EXP_FROM_IP_ZEN
+           type(MSR_LAST_EXP_FROM_IP_ZEN),   intent(inout) :: reg
+           ! Exec code .....
+           reg.msr_read = init_val
+     end subroutine initMSR_LAST_EXP_FROM_IP_ZEN
 
      subroutine AccessMSR_LAST_EXP_FROM_IP_ZEN(reg,command,hwth,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_LAST_EXP_FROM_IP_ZEN
@@ -401,6 +514,13 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_LAST_EXP_FROM_IP_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_LAST_EXP_TO_IP_ZEN
+     subroutine initMSR_LAST_EXP_TO_IP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_LAST_EXP_TO_IP_ZEN
+           type(MSR_LAST_EXP_TO_IP_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_LAST_EXP_TO_IP_ZEN
 
      subroutine AccessMSR_LAST_EXP_TO_IP_ZEN(reg,command,hwth,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_LAST_EXP_TO_IP_ZEN
@@ -428,6 +548,13 @@ module mod_zen_msrtools_wrapper
               end if
            end if
      end subroutine AccessMSR_LAST_EXP_TO_IP_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED_ZEN
+     subroutine initMSR_MTRR_FIXED_ZEN(reg)
+!DIR$  ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED_ZEN
+           type(MSR_MTRR_FIXED_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED_ZEN
 
      subroutine AccessMSR_MTRR_FIXED_ZEN(reg,command,core,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED_ZEN
@@ -446,9 +573,175 @@ module mod_zen_msrtools_wrapper
               ier = stat
            end if
      end subroutine AccessMSR_MTRR_FIXED_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED16K_ZEN
+     subroutine initMSR_MTRR_FIXED16K_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED16K_ZEN
+           type(MSR_MTRR_FIXED16K_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED16K_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED16K1_ZEN
+     subroutine initMSR_MTRR_FIXED16K1_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED16K1_ZEN
+           type(MSR_MTRR_FIXED16K1_ZEN),  intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED16K1_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K_ZEN     
+     subroutine initMSR_MTRR_FIXED4K_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K_ZEN
+           type(MSR_MTRR_FIXED4K_ZEN),   intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K1_ZEN
+     subroutine initMSR_MTRR_FIXED4K1_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K1_ZEN
+           type(MSR_MTRR_FIXED4K1_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K1_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K2_ZEN
+     subroutine initMSR_MTRR_FIXED4K2_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K2_ZEN
+           type(MSR_MTRR_FIXED4K2_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K2_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K3_ZEN
+     subroutine initMSR_MTRR_FIXED4K3_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K3
+           type(MSR_MTRR_FIXED4K3_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K3_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K4_ZEN
+     subroutine initMSR_MTRR_FIXED4K4_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K4_ZEN
+           type(MSR_MTRR_FIXED4K4_ZEN),   intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K4_ZEN   
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K5_ZEN     
+     subroutine initMSR_MTRR_FIXED4K5_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K5_ZEN
+           type(MSR_MTRR_FIXED4K5_ZEN),   intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K5_ZEN
 
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K6_ZEN
+     subroutine initMSR_MTRR_FIXED4K6_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K6_ZEN
+           type(MSR_MTRR_FIXED4K6_MSR),   intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K6_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K7_ZEN
+     subroutine initMSR_MTRR_FIXED4K7_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K7_ZEN
+           type(MSR_MTRR_FIXED4K7_ZEN),   intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_FIXED4K7_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_PAT_ZEN
+     subroutine initMSR_PAT_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PAT_ZEN
+           type(MSR_PAT_ZEN),              intent(inout) :: reg
+           ! Code exec .....
+           reg.msr_read = init_val
+     end subroutine initMSR_PAT_ZEN
+!DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_DEFTYPE_ZEN
+     subroutine initMSR_MTRR_DEFTYPE_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_DEFTYPE_ZEN
+           type(MSR_MTRR_DEFTYPE_ZEN),     intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_MTRR_DEFTYPE_ZEN
+!DIR$  ATTRIBUTES INLINE :: initMSR_EFER_ZEN
+     subroutine initMSR_EFER_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_EFER_ZEN
+           type(MSR_EFER_ZEN),             intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = init_val
+     end subroutine initMSR_EFER_ZEN
+
+     subroutine initMSR_MPERF_READONLY_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MPERF_READONLY_ZEN
+           type(MSR_MPERF_READONLY_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+     end subroutine initMSR_MPERF_READONLY_ZEN
+
+     subroutine initMSR_APERF_READONLY_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_APERF_READONLY_ZEN
+           type(MSR_APERF_READONLY_ZEN),   intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+     end subroutine initMSR_APERF_READONLY_ZEN
+
+     subroutine initMSR_IRPERF_COUNT_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IRPERF_COUNT_ZEN
+           type(MSR_IRPERF_COUNT_ZEN),     intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = zero_val
+     end subroutine initMSR_IRPERF_COUNT_ZEN
+
+     subroutine initMSR_TSC_AUX_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_TSC_AUX_ZEN
+           type(MSR_TSC_AUX_ZEN),          intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+     end subroutine initMSR_TSC_AUX_ZEN
+
+     subroutine initMSR_TSC_RATIO_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_TSC_RATIO_ZEN
+           type(MSR_TSC_RATIO_ZEN),        intent(inout) :: reg
+           ! Exec cdoe ...
+           reg.samp_delta = 0.0_dp
+           reg.msr_read   = zero_val
+     end subroutine initMSR_TSC_RATIO_ZEN
+
+!DIR$ ATTRIBUTES INLINE :: initMSR_MCA_INTR_CFG_ZEN
+     subroutine initMSR_MCA_INTR_CFG_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MCA_INTR_CFG_ZEN
+           type(MSR_MCA_INTR_CFG_ZEN),    intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_MCA_INTR_CFG_ZEN
+
+!DIR$ ATTRIBUTES INLINE :: initMSR_SYS_CFG_ZEN
+     subroutine initMSR_SYS_CFG_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_SYS_CFG_ZEN
+           type(MSR_SYS_CFG_ZEN),         intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_SYS_CFG_ZEN
      
+!DIR$ ATTRIBUTES INLINE :: initMSR_HW_CFG_ZEN
+     subroutine initMSR_HW_CFG_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_HW_CFG_ZEN
+           type(MSR_HW_CFG_ZEN),         intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_HW_CFG_ZEN
+
+!DIR$ ATTRIBUTES INLINE :: initMSR_TOP_MEM_ZEN
+      subroutine initMSR_TOP_MEM_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_TOP_MEM_ZEN
+           type(MSR_TOP_MEM_ZEN),        intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_TOP_MEM_ZEN
+
+         
      
-
-
 end module mod_zen_msrtools_wrapper
