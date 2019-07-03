@@ -136,7 +136,7 @@ module mod_zen_msrtools_wrapper
            return
 9999       err = ioerr          
            close(UNIT=iounit,STATUS='KEEP')
-           return
+           
      end subroutine ReadMSR_TSC_ZEN         
     
      
@@ -1112,6 +1112,40 @@ module mod_zen_msrtools_wrapper
            ! Exec code ....
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K1_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K1_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K1_ZEN
+           type(MSR_MTRR_FIXED4K1_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K1_ZEN  
+
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K2_ZEN
      subroutine initMSR_MTRR_FIXED4K2_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K2_ZEN
@@ -1119,6 +1153,40 @@ module mod_zen_msrtools_wrapper
            ! Exec code ....
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K2_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K2_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K2_ZEN
+           type(MSR_MTRR_FIXED4K2_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K2_ZEN
+
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K3_ZEN
      subroutine initMSR_MTRR_FIXED4K3_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K3
@@ -1126,20 +1194,120 @@ module mod_zen_msrtools_wrapper
            ! Exec code ....
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K3_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K3_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K3_ZEN
+           type(MSR_MTRR_FIXED4K3_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K3_ZEN
+
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K4_ZEN
      subroutine initMSR_MTRR_FIXED4K4_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K4_ZEN
            type(MSR_MTRR_FIXED4K4_ZEN),   intent(inout) :: reg
            ! Exec code ...
            reg.msr_read = init_val
-     end subroutine initMSR_MTRR_FIXED4K4_ZEN   
+     end subroutine initMSR_MTRR_FIXED4K4_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K4_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K4_ZEN
+           type(MSR_MTRR_FIXED4K4_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K4_ZEN
+
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K5_ZEN     
      subroutine initMSR_MTRR_FIXED4K5_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K5_ZEN
            type(MSR_MTRR_FIXED4K5_ZEN),   intent(inout) :: reg
            ! Exec code ...
            reg.msr_read = init_val
-     end subroutine initMSR_MTRR_FIXED4K5_ZEN
+      end subroutine initMSR_MTRR_FIXED4K5_ZEN
+
+      subroutine ReadMSR_MTRR_FIXED4K5_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K5_ZEN
+           type(MSR_MTRR_FIXED4K5_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+      end subroutine ReadMSR_MTRR_FIXED4K5_ZEN
 
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K6_ZEN
      subroutine initMSR_MTRR_FIXED4K6_ZEN(reg)
@@ -1148,6 +1316,39 @@ module mod_zen_msrtools_wrapper
            ! Exec code ...
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K6_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K6_ZEN(reg,iounit,fname,status,err,ermsg)
+ !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K6_ZEN
+           type(MSR_MTRR_FIXED4K6_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K6_ZEN
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_FIXED4K7_ZEN
      subroutine initMSR_MTRR_FIXED4K7_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_FIXED4K7_ZEN
@@ -1155,6 +1356,39 @@ module mod_zen_msrtools_wrapper
            ! Exec code ...
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K7_ZEN
+
+     subroutine ReadMSR_MTRR_FIXED4K7_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_FIXED4K7_ZEN
+           type(MSR_MTRR_FIXED4K7_ZEN),   intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MTRR_FIXED4K7_ZEN
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_PAT_ZEN
      subroutine initMSR_PAT_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PAT_ZEN
@@ -1162,6 +1396,40 @@ module mod_zen_msrtools_wrapper
            ! Code exec .....
            reg.msr_read = init_val
      end subroutine initMSR_PAT_ZEN
+
+     subroutine ReadMSR_PAT_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_PAT_ZEN
+           type(MSR_PAT_ZEN),                  0intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_PAT_ZEN
+
+         
 !DIR$ ATTRIBUTES INLINE :: initMSR_MTRR_DEFTYPE_ZEN
      subroutine initMSR_MTRR_DEFTYPE_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MTRR_DEFTYPE_ZEN
@@ -1169,6 +1437,40 @@ module mod_zen_msrtools_wrapper
            ! Exec code ...
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_DEFTYPE_ZEN
+
+     subroutine ReadMSR_MTRR_DEFTYPE_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MTRR_DEFTYPE_ZEN
+           type(MSR_MTRR_DEFTYPE_ZEN),     intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')  
+     end subroutine ReadMSR_MTRR_DEFTYPE_ZEN
+     
+         
 !DIR$  ATTRIBUTES INLINE :: initMSR_EFER_ZEN
      subroutine initMSR_EFER_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_EFER_ZEN
@@ -1177,12 +1479,82 @@ module mod_zen_msrtools_wrapper
            reg.msr_read = init_val
      end subroutine initMSR_EFER_ZEN
 
+     subroutine ReadMSR_EFER_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATRIBUTES CODE_ALIGN:32 :: ReadMSR_EFER_ZEN
+           type(MSR_EFER_ZEN),                 intent(inout) :: reg
+           integer(kind=int4),                 intent(in)    :: iounit
+           character(len=*),                   intent(in)    :: fname
+           integer(kind=int2),                 intent(in)    :: status
+           integer(kind=int4),                 intent(inout) :: err
+           character(len=256),                 intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read
+           if(ioerr > 0 .or. ioerr < 0) goto 9999
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')  
+     end subroutine ReadMSR_EFER_ZEN
+
      subroutine initMSR_MPERF_READONLY_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_MPERF_READONLY_ZEN
            type(MSR_MPERF_READONLY_ZEN),   intent(inout) :: reg
            ! Exec code ....
            reg.msr_read = zero_val
      end subroutine initMSR_MPERF_READONLY_ZEN
+
+     subroutine ReadMSR_MPERF_READONLY_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_MPERF_READONLY_ZEN
+           type(MSR_MPERF_READONLY_ZEN),   intent(inout) :: reg
+           integer(kind=int4),             intent(in)    :: iounit
+           integer(kind=int4),             intent(in)    :: nth
+           character(len=*),               intent(in)    :: fname
+           integer(kind=int2),             intent(in)    :: status
+           integer(kind=int4),             intent(inout) :: err
+           character(len=256),             intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, nth
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_MPERF_READONLY_ZEN
 
      subroutine initMSR_APERF_READONLY_ZEN(reg)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_APERF_READONLY_ZEN
