@@ -3244,6 +3244,249 @@ module mod_zen_msrtools_wrapper
 9999       err = ioerr          
            close(UNIT=iounit,STATUS='KEEP')
      end subroutine ReadMSR_PERF_LEGACY_CTR0_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_PERF_LEGACY_CTR1_ZEN
+     subroutine initMSR_PERF_LEGACY_CTR1_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PERF_LEGACY_CTR1_ZEN
+           type(MSR_PERF_LEGACY_CTR1_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.samp_delta = 0.0_dp
+           reg.msr_read   = zero_val
+     end subroutine initMSR_PERF_LEGACY_CTR1_ZEN
+    
+     subroutine AccessMSR_PERF_LEGACY_CTR1_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR1_ZEN
+           type(MSR_PERF_LEGACY_CTR1_ZEN),    intent(in)    :: reg
+           character(len=*),                  intent(in)    :: command
+           logical(kind=int1),                intent(in)    :: reset
+           character(len=*),                  intent(in)    :: fname
+           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           integer(kind=int2),                intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_PERF_LEGACY_CTR1_ZEN
+    
+     subroutine ReadMSR_PERF_LEGACY_CTR1_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_PERF_LEGACY_CTR1_ZEN
+           type(MSR_PERF_LEGACY_CTR1_ZEN),      intent(inout) :: reg
+           integer(kind=int4),                  intent(in)    :: iounit
+           integer(kind=int4),                  intent(in)    :: nth
+           character(len=*),                    intent(in)    :: fname
+           integer(kind=int2),                  intent(in)    :: status
+           integer(kind=int4),                  intent(inout) :: err
+           character(len=256),                  intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, nth
+              read(iounit,'(F22.15)',IOMSG=ermsg,IOSTAT=ioerr) reg.samp_delta(j)
+              if(ioerr >0.or.ioerr < 0) goto 9999
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_PERF_LEGACY_CTR1_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_PERF_LEGACY_CTR2_ZEN
+     subroutine initMSR_PERF_LEGACY_CTR2_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PERF_LEGACY_CTR2_ZEN
+           type(MSR_PERF_LEGACY_CTR2_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.samp_delta = 0.0_dp
+           reg.msr_read   = zero_val
+     end subroutine initMSR_PERF_LEGACY_CTR2_ZEN
+    
+     subroutine AccessMSR_PERF_LEGACY_CTR2_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR2_ZEN
+           type(MSR_PERF_LEGACY_CTR2_ZEN),    intent(in)    :: reg
+           character(len=*),                  intent(in)    :: command
+           logical(kind=int1),                intent(in)    :: reset
+           character(len=*),                  intent(in)    :: fname
+           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           integer(kind=int2),                intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_PERF_LEGACY_CTR2_ZEN
+    
+     subroutine ReadMSR_PERF_LEGACY_CTR2_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_PERF_LEGACY_CTR2_ZEN
+           type(MSR_PERF_LEGACY_CTR2_ZEN),      intent(inout) :: reg
+           integer(kind=int4),                  intent(in)    :: iounit
+           integer(kind=int4),                  intent(in)    :: nth
+           character(len=*),                    intent(in)    :: fname
+           integer(kind=int2),                  intent(in)    :: status
+           integer(kind=int4),                  intent(inout) :: err
+           character(len=256),                  intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, nth
+              read(iounit,'(F22.15)',IOMSG=ermsg,IOSTAT=ioerr) reg.samp_delta(j)
+              if(ioerr >0.or.ioerr < 0) goto 9999
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_PERF_LEGACY_CTR2_ZEN
+
+         
+       !DIR$ ATTRIBUTES INLINE :: initMSR_PERF_LEGACY_CTR3_ZEN
+     subroutine initMSR_PERF_LEGACY_CTR3_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PERF_LEGACY_CTR3_ZEN
+           type(MSR_PERF_LEGACY_CTR3_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.samp_delta = 0.0_dp
+           reg.msr_read   = zero_val
+     end subroutine initMSR_PERF_LEGACY_CTR3_ZEN
+    
+     subroutine AccessMSR_PERF_LEGACY_CTR3_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR3_ZEN
+           type(MSR_PERF_LEGACY_CTR3_ZEN),    intent(in)    :: reg
+           character(len=*),                  intent(in)    :: command
+           logical(kind=int1),                intent(in)    :: reset
+           character(len=*),                  intent(in)    :: fname
+           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           integer(kind=int2),                intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_PERF_LEGACY_CTR3_ZEN
+    
+     subroutine ReadMSR_PERF_LEGACY_CTR3_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_PERF_LEGACY_CTR3_ZEN
+           type(MSR_PERF_LEGACY_CTR3_ZEN),      intent(inout) :: reg
+           integer(kind=int4),                  intent(in)    :: iounit
+           integer(kind=int4),                  intent(in)    :: nth
+           character(len=*),                    intent(in)    :: fname
+           integer(kind=int2),                  intent(in)    :: status
+           integer(kind=int4),                  intent(inout) :: err
+           character(len=256),                  intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, nth
+              read(iounit,'(F22.15)',IOMSG=ermsg,IOSTAT=ioerr) reg.samp_delta(j)
+              if(ioerr >0.or.ioerr < 0) goto 9999
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_PERF_LEGACY_CTR3_ZEN
+
+    
     
          
      
