@@ -1,6 +1,5 @@
 
-include 'GMS_config.fpp'
-  
+
 module mod_zen_msrtools_wrappers
 
 
@@ -55,10 +54,7 @@ module mod_zen_msrtools_wrappers
      character(*), parameter, public  :: init_valh      = "0xFFFFFFFFFFFFFFFF"
      contains
 
-! Short version of msr-tools wrappers
-#if (MSR_TOOLS_WRAPPERS_SHORT_VERSION) == 1
 
-#else
      
 !DIR$ ATTRIBUTES INLINE :: initMSR_TSC_ZEN
      subroutine initMSR_TSC_ZEN(reg)
@@ -4908,10 +4904,1383 @@ module mod_zen_msrtools_wrappers
      end subroutine ReadMSR_L3_PMCX_ZEN
 
      subroutine initMSR_CORE_ENERGY_STAT_ZEN(reg)
-!DIR$ 
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CORE_ENERGY_ZEN
+           type(MSR_CORE_ENERGY_STAT_ZEN),     intent(inout) :: reg
+           ! Exec code ....
+           reg.samp_delta = 0.0_dp
+           reg.msr_read   = zero_val
      end subroutine initMSR_CORE_ENERGY_STAT_ZEN
+
+     subroutine AccessMSR_CORE_ENERGY_STAT_ZEN(reg,command,reset,fname,core,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CORE_ENERGY_STAT_ZEN
+           type(MSR_CORE_ENERGY_STAT_ZEN),     intent(in)    :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: core ! core number
+           integer(kind=int2),                 intent(inout) :: ier
+          
       
-#endif
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//core//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//core//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_CORE_ENERGY_STAT_ZEN
+
+     subroutine ReadMSR_CORE_ENERGY_STAT_ZEN(reg,iounit,ncores,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_CORE_ENERGY_STAT_ZEN
+           type(MSR_CORE_ENERGY_STAT_ZEN),       intent(inout) :: reg
+           integer(kind=int4),                   intent(in)    :: iounit
+           integer(kind=int4),                   intent(in)    :: ncores
+           character(len=*),                     intent(in)    :: fname
+           integer(kind=int2),                   intent(in)    :: status
+           integer(kind=int4),                   intent(inout) :: err
+           character(len=256),                   intent(inout) :: ermsg
+         
+           ! Locals
+           integer(kind=int4), automatic :: j,i,ioerr
+           logical(kind=int4), automatic :: present
+           ! Exec code ...
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status == -1) then
+              err = -9999
+              return
+           end if
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr > 0) then
+              err = ioerr
+              return
+           end if
+!....
+           do j=0, ncores
+              read(iounit,'(F22.15)',IOMSG=ermsg,IOSTAT=ioerr) reg.samp_delta(j)
+              if(ioerr >0.or.ioerr < 0) goto 9999
+              do i=1, NSAMP
+                 read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i,j)
+                 if(ioerr > 0.or.ioerr < 0) goto 9999
+              end do
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_CORE_ENERGY_STAT_ZEN
+
+     subroutine initMSR_PKG_ENERGY_STAT_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_PKG_ENERGY_STAT_ZEN
+           type(MSR_PKG_ENERGY_STAT_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read = zero_val
+     end subroutine initMSR_PKG_ENERGY_STAT_ZEN
+
+     subroutine AccessMSR_PKG_ENERGY_STAT_ZEN(reg,iounit,fname,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PKG_ENERGY_STAT_ZEN
+           type(MSR_PKG_ENERGY_STAT_ZEN),        intent(in) :: reg
+           character(len=*),                     intent(in) :: command
+           character(len=*),                     intent(in) :: fname
+           !
+           integer(kind=int2),                   intent(inout) :: ier
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+           ! Exec code .....
+           string = command//reg.addr_hex//fname
+           stat   = RUNQQ(rmsr,string)
+           if(stat == -1) then
+              ier = stat
+           end if 
+     end subroutine AccessMSR_PKG_ENERGY_STAT_ZEN
+
+     subroutine ReadMSR_PKG_ENERGY_STAT_ZEN(reg,iounit,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_PKG_ENERGY_STAT_ZEN
+           type(MSR_PKG_ENERGY_STAT_ZEN),             intent(inout) :: reg
+           integer(kind=int4),                        intent(in)    :: iounit
+           character(len=*),                          intent(in)    :: fname
+           integer(kind=int2),                        intent(in)    :: status
+           integer(kind=int4),                        intent(inout) :: err
+           character(len=256),                        intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, NSAMP
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP') 
+     end subroutine ReadMSR_PKG_ENERGY_STAT_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_CPUID_7_FEATURES_ZEN
+     subroutine initMSR_CPUID_7_FEATURES_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CPUID_7_FEATURES_ZEN
+           type(MSR_CPUID_7_FEATURES_ZEN),      intent(inout) :: reg
+           ! EXec code .....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_CPUID_7_FEATURES_ZEN
+
+     subroutine AccessMSR_CPUID_7_FEATURES_ZEN(reg,command,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CPUID_7_FEATURES_ZEN
+           type(MSR_CPUID_7_FEATURES_ZEN),       intent(in) :: reg
+           character(len=*),                     intent(in) :: command
+           character(len=*),                     intent(in) :: fname
+           character(len=2),                     intent(in) :: hwth
+           integer(kind=int2),                   intent(inout) :: ier
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+           ! Exec code .....
+           string = command//hwth//reg.addr_hex//fname
+           stat   = RUNQQ(rmsr,string)
+           if(stat == -1) then
+              ier = stat
+           end if 
+      end subroutine AccessMSR_CPUID_7_FEATURES_ZEN
+
+      subroutine ReadMSR_CPUID_7_FEATURES_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_CPUID_7_FEATURES_ZEN
+           type(MSR_CPUID_7_FEATURES_ZEN),       intent(inout) :: reg
+           integer(kind=int4),                   intent(in)    :: iounit
+           integer(kind=int4),                   intent(in)    :: nth
+           character(len=*),                     intent(in)    :: fname
+           integer(kind=int2),                   intent(in)    :: status
+           integer(kind=int4),                   intent(inout) :: err
+           character(len=256),                   intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_CPUID_7_FEATURES_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_CPUID_PWR_THERM_ZEN
+     subroutine initMSR_CPUID_PWR_THERM_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CPUID_PWR_THERM_ZEN
+           type(MSR_CPUID_PWR_THERM_ZEN),     intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_CPUID_PWR_THERM_ZEN
+
+     subroutine AccessMSR_CPUID_PWR_THERM_ZEN(reg,command,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_PWR_THERM_ZEN
+           type(MSR_CPUID_PWR_THERM_ZEN),        intent(in) :: reg
+           character(len=*),                     intent(in) :: command
+           character(len=*),                     intent(in) :: fname
+           character(len=2),                     intent(in) :: hwth
+           integer(kind=int2),                   intent(inout) :: ier
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+           ! Exec code .....
+           string = command//hwth//reg.addr_hex//fname
+           stat   = RUNQQ(rmsr,string)
+           if(stat == -1) then
+              ier = stat
+           end if 
+      end subroutine AccessMSR_CPUID_PWR_THERM_ZEN
+
+      subroutine ReadMSR_CPUID_PWR_THERM_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_CPUID_PWR_THERM_ZEN
+           type(MSR_CPUID_PWR_THERM_ZEN),        intent(inout) :: reg
+           integer(kind=int4),                   intent(in)    :: iounit
+           integer(kind=int4),                   intent(in)    :: nth
+           character(len=*),                     intent(in)    :: fname
+           integer(kind=int2),                   intent(in)    :: status
+           integer(kind=int4),                   intent(inout) :: err
+           character(len=256),                   intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_CPUID_PWR_THERM_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_CPUID_FEATURES_ZEN
+     subroutine initMSR_CPUID_FEATURES_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CPUID_FEATURES_ZEN
+           type(MSR_CPUID_FEATURES_ZEN),     intent(inout) :: reg
+           ! EXec code .....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_CPUID_FEATURES_ZEN
+
+     subroutine AccessMSR_CPUID_FEATURES_ZEN(reg,command,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_FEATURES_ZEN
+           type(MSR_CPUID_FEATURES_ZEN),         intent(in) :: reg
+           character(len=*),                     intent(in) :: command
+           character(len=*),                     intent(in) :: fname
+           character(len=2),                     intent(in) :: hwth
+           integer(kind=int2),                   intent(inout) :: ier
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+           ! Exec code .....
+           string = command//hwth//reg.addr_hex//fname
+           stat   = RUNQQ(rmsr,string)
+           if(stat == -1) then
+              ier = stat
+           end if 
+     end subroutine AccessMSR_CPUID_FEATURES_ZEN
+
+     subroutine ReadMSR_CPUID_FEATURES_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_CPUID_FEATURES_ZEN
+           type(MSR_CPUID_FEATURES_ZEN),         intent(inout) :: reg
+           integer(kind=int4),                   intent(in)    :: iounit
+           integer(kind=int4),                   intent(in)    :: nth
+           character(len=*),                     intent(in)    :: fname
+           integer(kind=int2),                   intent(in)    :: status
+           integer(kind=int4),                   intent(inout) :: err
+           character(len=256),                   intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_CPUID_FEATURES_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_CPUID_EXT_FEATURES_ZEN
+     subroutine initMSR_CPUID_EXT_FEATURES_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: MSR_CPUID_EXT_FEATURES_ZEN
+           type(MSR_CPUID_EXT_FEATURES_ZEN),     intent(inout) :: reg
+           ! Exec code ...
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_CPUID_EXT_FEATURES_ZEN
+
+     subroutine AccessMSR_CPUID_EXT_FEATURES_ZEN(reg,command,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_EXT_FEATURES_ZEN
+           type(MSR_CPUID_EXT_FEATURES_ZEN),     intent(in) :: reg
+           character(len=*),                     intent(in) :: command
+           character(len=*),                     intent(in) :: fname
+           character(len=2),                     intent(in) :: hwth
+           integer(kind=int2),                   intent(inout) :: ier
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+           ! Exec code .....
+           string = command//hwth//reg.addr_hex//fname
+           stat   = RUNQQ(rmsr,string)
+           if(stat == -1) then
+              ier = stat
+           end if 
+      end subroutine AccessMSR_CPUID_EXT_FEATURES_ZEN
+
+      subroutine ReadMSR_CPUID_EXT_FEATURES_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_CPUID_EXT_FEATURES_ZEN
+           type(MSR_CPUID_EXT_FEATURES_ZEN),      intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_CPUID_EXT_FEATURES_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_FETCH_CTL_ZEN
+     subroutine initMSR_IBS_FETCH_CTL_ZEN(reg)
+!DIR$  ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_FETCH_CTL_ZEN
+           type(MSR_IBS_FETCH_CTL_ZEN),    intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_IBS_FETCH_CTL_ZEN
+
+     subroutine AccessMSR_IBS_FETCH_CTL_ZEN(reg,command,reset,fname,core,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_CTL_ZEN
+           type(MSR_IBS_FETCH_CTL_ZEN),        intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: core ! core number
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//core//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//core//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_FETCH_CTL_ZEN
+
+     subroutine ReadMSR_IBS_FETCH_CTL_ZEN(reg,iounit,ncores,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_FETCH_CTL_ZEN
+           type(MSR_IBS_FETCH_CTL_ZEN),           intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: ncores
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, ncores
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_FETCH_CTL_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_FETCH_LINADDR_ZEN
+     subroutine initMSR_IBS_FETCH_LINADDR_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_FETCH_LINADDR_ZEN
+           type(MSR_IBS_FETCH_LINADDR_ZEN),    intent(inout) :: reg
+           ! Exec code .....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_IBS_FETCH_LINADDR_ZEN
+
+     subroutine AccessMSR_IBS_FETCH_LINADDR_ZEN(reg,command,reset,fname,core,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_LINADDR_ZEN
+           type(MSR_IBS_FETCH_LINADDR_ZEN),    intent(in)    :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: core ! core number
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//core//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//core//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_FETCH_LINADDR_ZEN
+
+     subroutine ReadMSR_IBS_FETCH_LINADDR_ZEN(reg,iounit,ncores,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_FETCH_LINADDR_ZEN
+           type(MSR_IBS_FETCH_LINADDR_ZEN),       intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: ncores
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, ncores
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_FETCH_LINADDR_ZEN
+
+      !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_FETCH_PHYSADDR_ZEN
+     subroutine initMSR_IBS_FETCH_PHYSADDR_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_FETCH_PHYSADDR_ZEN
+           type(MSR_IBS_FETCH_PHYSADDR_ZEN),    intent(inout) :: reg
+           ! Exec code .....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+     end subroutine initMSR_IBS_FETCH_PHYSADDR_ZEN
+
+     subroutine AccessMSR_IBS_FETCH_PHYSADDR_ZEN(reg,command,reset,fname,core,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_PHYSADDR_ZEN
+           type(MSR_IBS_FETCH_PHYSADDR_ZEN),   intent(in)    :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: core ! core number
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//core//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//core//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_FETCH_PHYSADDR_ZEN
+
+     subroutine ReadMSR_IBS_FETCH_PHYSADDR_ZEN(reg,iounit,ncores,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_FETCH_PHYSADDR_ZEN
+           type(MSR_IBS_FETCH_PHYSADDR_ZEN),      intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: ncores
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, ncores
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_FETCH_PHYSADDR_ZEN
+
+     !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_OP_CTL_ZEN    
+     subroutine initMSR_IBS_OP_CTL_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_CTL_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_OP_CTL_ZEN
+
+      subroutine AccessMSR_IBS_OP_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_CTL_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),           intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_OP_CTL_ZEN
+
+     subroutine ReadMSR_IBS_OP_CTL_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_OP_CTL_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_OP_CTL_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_OP_RIP_ZEN    
+     subroutine initMSR_IBS_OP_RIP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_RIP_ZEN
+           type(MSR_IBS_OP_RIP_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_OP_RIP_ZEN
+
+      subroutine AccessMSR_IBS_OP_RIP_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_RIP_ZEN
+           type(MSR_IBS_OP_RIP_ZEN),           intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_OP_RIP_ZEN
+
+     subroutine ReadMSR_IBS_OP_RIP_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_OP_RIP_ZEN
+           type(MSR_IBS_OP_RIP_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_OP_RIP_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_OP_DATA_ZEN    
+     subroutine initMSR_IBS_OP_DATA_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_DATA_ZEN
+           type(MSR_IBS_OP_DATA_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_OP_DATA_ZEN
+
+      subroutine AccessMSR_IBS_OP_DATA_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA_ZEN
+           type(MSR_IBS_OP_DATA_ZEN),          intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_OP_DATA_ZEN
+
+     subroutine ReadMSR_IBS_OP_DATA_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_OP_DATA_ZEN
+           type(MSR_IBS_OP_DATA_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_OP_DATA_ZEN
+    
+!DIR$ ATTRIBUTES INLINE :: initMSR_IBS_OP_DATA2_ZEN    
+     subroutine initMSR_IBS_OP_DATA2_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_DATA2_ZEN
+           type(MSR_IBS_OP_DATA2_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_OP_DATA2_ZEN
+
+      subroutine AccessMSR_IBS_OP_DATA2_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA2_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),           intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_OP_DATA2_ZEN
+
+     subroutine ReadMSR_IBS_OP_DATA2_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_OP_DATA2_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_OP_DATA2_ZEN
+
+!DIR$ ATTRIBUTES INLINE :: initMSR_IBS_OP_DATA3_ZEN    
+     subroutine initMSR_IBS_OP_DATA3_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_DATA3_ZEN
+           type(MSR_IBS_OP_DATA3_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_OP_DATA3_ZEN
+
+      subroutine AccessMSR_IBS_OP_DATA3_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA3_ZEN
+           type(MSR_IBS_OP_DATA3_ZEN),           intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_OP_DATA3_ZEN
+
+     subroutine ReadMSR_IBS_OP_DATA3_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_OP_DATA3_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_OP_DATA3_ZEN
+    
+     !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_DC_LINADDR_ZEN    
+     subroutine initMSR_IBS_DC_LINADDR_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_DC_LINADDR_ZEN
+           type(MSR_IBS_DC_LINADDR_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_DC_LINADDR_ZEN
+
+      subroutine AccessMSR_IBS_DC_LINADDR_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_DC_LINADDR_ZEN
+           type(MSR_IBS_DC_LINADDR_ZEN),       intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_DC_LINADDR_ZEN
+
+     subroutine ReadMSR_IBS_DC_LINADDR_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_DC_LINADDR_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),              intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_DC_LINADDR_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_DC_PHYSADDR_ZEN    
+     subroutine initMSR_IBS_DC_PHYSADDR_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_OP_CTL_ZEN
+           type(MSR_IBS_DC_PHYSADR_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_IBS_DC_PHYSADDR_ZEN
+
+      subroutine AccessMSR_IBS_DC_PHYSADDR_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_DC_PHYSADDR_ZEN
+           type(MSR_IBS_DC_PHYSADDR_ZEN),      intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_DC_PHYSADDR_ZEN
+
+     subroutine ReadMSR_IBS_DC_PHYSADDR_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_DC_PHYSADDR_ZEN
+           type(MSR_IBS_DC_PHYSADDR_ZEN),         intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_DC_PHYSADDR_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_IBS_CTL_ZEN    
+     subroutine initMSR_IBS_CTL_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IBS_CTL_ZEN
+           type(MSR_IBS_CTL_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           
+      end subroutine initMSR_IBS_CTL_ZEN
+
+      subroutine AccessMSR_IBS_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_CTL_ZEN
+           type(MSR_IBS_CTL_ZEN),           intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IBS_CTL_ZEN
+
+     subroutine ReadMSR_IBS_CTL_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IBS_CTL_ZEN
+           type(MSR_IBS_CTL_ZEN),                 intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IBS_CTL_ZEN
+
+       !DIR$ ATTRIBUTES INLINE :: initMSR_BP_IBSTGT_RIP_ZEN    
+     subroutine initMSR_BP_IBSTGT_RIP_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_BP_IBSTGT_RIP_ZEN
+           type(MSR_BP_IBSTGT_RIP_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           reg.msr_write = zero_val
+           reg.msrw_hex  = init_valh
+      end subroutine initMSR_BP_IBSTGT_RIP_ZEN
+
+      subroutine AccessMSR_BP_IBSTGT_RIP_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BP_IBSTGT_RIP_ZEN
+           type(MSR_BP_IBSTGT_RIP_ZEN),        intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_BP_IBSTGT_RIP_ZEN
+
+     subroutine ReadMSR_BP_IBSTGT_RIP_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_BP_IBSTGT_RIP_ZEN
+           type(MSR_BP_IBSTGT_RIP_ZEN),           intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_BP_IBSTGT_RIP_ZEN
+    
+       !DIR$ ATTRIBUTES INLINE :: initMSR_IC_IBS_EXTD_CTL_ZEN    
+     subroutine initMSR_IC_IBS_EXTD_CTL_ZEN(reg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_IC_IBS_EXTD_CTL_ZEN
+           type(MSR_IBS_OP_CTL_ZEN),      intent(inout) :: reg
+           ! Exec code ....
+           reg.msr_read  = zero_val
+           
+      end subroutine initMSR_IC_IBS_EXTD_CTL_ZEN
+
+      subroutine AccessMSR_IC_IBS_EXTD_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IC_IBS_EXTD_CTL_ZEN
+           type(MSR_IC_IBS_EXTD_CTL_ZEN),      intent(inout) :: reg
+           character(len=*),                   intent(in)    :: command
+           logical(kind=int1),                 intent(in)    :: reset
+           character(len=*),                   intent(in)    :: fname
+           character(len=2),                   intent(in)    :: hwth
+           integer(kind=int2),                 intent(inout) :: ier
+          
+      
+           ! Locals
+           character(len=128), automatic :: string
+           integer(kind=int2), automatic :: stat
+       
+           ! Exec code ....
+           if(.not. reset) then
+               string = command//hwth//reg.addr_hex//fname
+               stat = RUNQQ(rmsr,string)
+               if(stat == -1) then
+                  ier = stat
+               end if
+        
+           else
+               string = command//hwth//reg.addr_hex//reset_val
+               stat = RUNQQ(wmsr,string)
+               if(stat == -1) then
+                   ier = stat
+               end if
+           end if 
+     end subroutine AccessMSR_IC_IBS_EXTD_CTL_ZEN
+
+     subroutine ReadMSR_IC_IBS_EXTD_CTL_ZEN(reg,iounit,nth,fname,status,err,ermsg)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ReadMSR_IC_IBS_EXTD_CTL_ZEN
+           type(MSR_IC_IBS_EXTD_CTL_ZEN),         intent(inout) :: reg
+           integer(kind=int4),                    intent(in)    :: iounit
+           integer(kind=int4),                    intent(in)    :: nth
+           character(len=*),                      intent(in)    :: fname
+           integer(kind=int2),                    intent(in)    :: status
+           integer(kind=int4),                    intent(inout) :: err
+           character(len=256),                    intent(inout) :: ermsg
+           ! Locals
+           logical(kind=int4), automatic :: present
+           integer(kind=int4), automatic :: i,ioerr
+           ! Exec code .....
+           present = .false.
+           inquire(FILE=trim(fname),EXIST=present)
+           if(.not.present .or. status ==-1) then
+              err = -9999
+              return
+           end if
+           ioerr = 0
+           open(UNIT=iounit,FILE=trim(fname),ACTION='READ',STATUS='OLD',IOMSG=ermsg,IOSTAT=ioerr)
+           if(ioerr >  0) then
+              err = ioerr
+              return
+           end if
+           do i=0, nth
+                read(iounit,'(Z16.16)',IOMSG=ermsg,IOSTAT=ioerr) reg.msr_read(i)
+                if(ioerr > 0 .or. ioerr < 0) goto 9999
+           end do
+           close(UNIT=iounit,STATUS='KEEP')
+           return
+9999       err = ioerr          
+           close(UNIT=iounit,STATUS='KEEP')
+     end subroutine ReadMSR_IC_IBS_EXTD_CTL_ZEN
+
+     
+
 
      
 end module mod_zen_msrtools_wrappers
