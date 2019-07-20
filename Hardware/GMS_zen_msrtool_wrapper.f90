@@ -9,7 +9,7 @@ module mod_zen_msrtools_wrappers
  !
  !
  !          Module  name:
- !                         mod_zen_msrtools_wrapper
+ !                         mod_zen_msrtools_wrappers
  !          
  !          Purpose:
  !                    This module contains a wrapper subroutines
@@ -45,6 +45,18 @@ module mod_zen_msrtools_wrappers
      use mod_kinds, only : int1,int2, int4, int8b, dp
      use mod_zen_msr
      implicit none
+     public
+     ! File and module data
+     integer(kind=int4),  parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_MAJOR = 1
+     integer(kind=int4),  parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_MINOR = 0
+     integer(kind=int4),  parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_MICRO = 0
+     integer(kind=int4),  parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_FULLVER = 1000*MOD_ZEN_MSRTOOL_WRAPPER_MAJOR + &
+                                                                                 100*MOD_ZEN_MSRTOOL_WRAPPER_MINOR  + &
+                                                                                 10*MOD_ZEN_MSRTOOL_WRAPPER_MICRO
+     character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_CREATION_DATE = "20-07-2019 10:51 +00200 (SAT 20 JUL 2019 GMT+2)"
+     character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_BUILD_DATE    = "00-00-0000 00:00"
+     character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_SYNOPSIS      = "Fortran wrappers around msr-tools program."
 
      character(*), parameter, private :: rmsr = "rdmsr"
      character(*), parameter, private :: wmsr = "wrmsr"
