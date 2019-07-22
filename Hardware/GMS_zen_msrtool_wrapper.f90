@@ -58,6 +58,22 @@ module mod_zen_msrtools_wrappers
      character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      character(*),        parameter, public :: MOD_ZEN_MSRTOOL_WRAPPER_SYNOPSIS      = "Fortran wrappers around msr-tools program."
 
+    ! Usage: rdmsr [options] regno
+    !--help         -h  Print this help
+    !--version      -V  Print current version
+    ! --hexadecimal  -x  Hexadecimal output (lower case)
+    ! --capital-hex  -X  Hexadecimal output (upper case)
+    !--decimal      -d  Signed decimal output
+    !--unsigned     -u  Unsigned decimal output
+    !--octal        -o  Octal output
+    !--c-language   -c  Format output as a C language constant
+    !--zero-pad     -0  Output leading zeroes
+    !--raw          -r  Raw binary output
+    !--all          -a  all processors  <------- USE ALWAYS THIS OPTION
+    !--processor #  -p  Select processor number (default 0)
+    !--bitfield h:l -f  Output bits [h:l] only
+
+
      character(*), parameter, private :: rmsr = "rdmsr"
      character(*), parameter, private :: wmsr = "wrmsr"
      character(*), parameter, public  :: reset_val = "0x000000000000000"
@@ -65,7 +81,7 @@ module mod_zen_msrtools_wrappers
      integer(kind=int8b), parameter, public :: zero_val = Z"000000000000000"
      character(*), parameter, public  :: init_valh      = "0xFFFFFFFFFFFFFFFF"
      contains
-
+     
 
      
 !DIR$ ATTRIBUTES INLINE :: initMSR_TSC_ZEN
@@ -80,32 +96,33 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = init_val ! Inlining up to call to intel_malloc
            
      end subroutine initMSR_TSC_ZEN
-
-     subroutine AccessMSR_TSC_ZEN(reg,command,reset,fname,hwth,ier)
+     
+     subroutine AccessMSR_TSC_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TSC_ZEN
      
        type(MSR_TSC_ZEN),    intent(in)    :: reg
        character(len=*),     intent(in)    :: command
        logical(kind=int1),   intent(in)    :: reset
        character(len=*),     intent(in)    :: fname
-       character(len=2),     intent(in)    :: hwth ! HW thread number
-       !
        integer(kind=int2),   intent(inout) :: ier
+       
+      
       
        ! Locals
        character(len=128), automatic :: string
        integer(kind=int2), automatic :: stat
        
        ! Exec code ....
+       ! Always dump all cores
        if(.not. reset) then
-          string = command//hwth//reg.addr_hex//fname
+          string = command//reg.addr_hex//fname
           stat = RUNQQ(rmsr,string)
           if(stat == -1) then
              ier = stat
           end if
         
        else
-          string = command//hwth//reg.addr_hex//reset_val
+          string = command//reg.addr_hex//reset_val
           stat = RUNQQ(wmsr,string)
           if(stat == -1) then
              ier = stat
@@ -164,18 +181,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_APIC_BAR_zen
 
-     subroutine AccessMSR_APIC_BAR_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_APIC_BAR_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_APIC_BAR_ZEN
            type(MSR_APIC_BAR_ZEN),       intent(in) :: reg
            character(len=*),             intent(in) :: command
            character(len=*),             intent(in) :: fname
-           character(len=2),             intent(in) :: core
+          
            integer(kind=int2),           intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
                 ier = stat
@@ -228,12 +245,12 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = init_val
      end subroutine initMSR_MPERF_ZEN
 
-     subroutine AccessMSR_MPERF_ZEN(reg,command,reset,hwth,fname,ier)
+     subroutine AccessMSR_MPERF_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MPERF_ZEN
            type(MSR_MPERF_ZEN),      intent(in) :: reg
            character(len=*),         intent(in) :: command
            logical(kind=int1),       intent(in) :: reset
-           character(len=2),         intent(in) :: hwth
+           !
            character(len=*),         intent(in) :: fname
            integer(kind=int2),       intent(inout) :: ier
            ! Locals
@@ -241,13 +258,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -304,12 +321,12 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = init_val
      end subroutine initMSR_APERF_ZEN
      
-     subroutine AccessMSR_APERF_ZEN(reg,command,reset,hwth,fname,ier)
+     subroutine AccessMSR_APERF_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_APERF_ZEN
            type(MSR_APERF_ZEN),      intent(in) :: reg
            character(len=*),         intent(in) :: command
            logical(kind=int1),       intent(in) :: reset
-           character(len=2),         intent(in) :: hwth
+           !
            character(len=*),         intent(in) :: fname
            integer(kind=int2),       intent(inout) :: ier
            ! Locals
@@ -317,13 +334,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -379,18 +396,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_ZEN
 
-     subroutine AccessMSR_MTRR_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_ZEN
            type(MSR_MTRR_ZEN),      intent(in) :: reg
            character(len=*),        intent(in) :: command
-           character(len=2),        intent(in) :: core
+           !
            character(len=*),        intent(in) :: fname
            integer(kind=int2),      intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -440,18 +457,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MCG_CAP_ZEN
 
-     subroutine AccessMSR_MCG_CAP_ZEN(reg,command,hwth,fname,ier)
+     subroutine AccessMSR_MCG_CAP_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MCG_CAP_ZEN
            type(MSR_MCG_CAP_ZEN),     intent(in) :: reg
            character(len=*),          intent(in) :: command
-           character(len=2),          intent(in) :: hwth
+           !
            character(len=*),          intent(in) :: fname
            integer(kind=int2),        intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -503,18 +520,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh 
      end subroutine initMSR_MCG_STAT_ZEN
        
-     subroutine AccessMSR_MCG_STAT_ZEN(reg,command,hwth,fname,ier)
+     subroutine AccessMSR_MCG_STAT_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MCG_STAT_ZEN
            type(MSR_MCG_STAT_ZEN),    intent(in) :: reg
            character(len=*),          intent(in) :: command
-           character(len=2),          intent(in) :: hwth
+           !
            character(len=*),          intent(in) :: fname
            integer(kind=int2),        intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -567,18 +584,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_MCG_CTL_ZEN
 
-     subroutine AccessMSR_MCG_CTL_ZEN(reg,command,hwth,fname,ier)
+     subroutine AccessMSR_MCG_CTL_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MCG_CTL_ZEN
            type(MSR_MCG_CTL_ZEN),     intent(in) :: reg
            character(len=*),          intent(in) :: command
-           character(len=2),          intent(in) :: hwth
+           !
            character(len=*),          intent(in) :: fname
            integer(kind=int2),        intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -630,11 +647,11 @@ module mod_zen_msrtools_wrappers
            
      end subroutine initMSR_DBG_CTL_ZEN
 
-     subroutine AccessMSR_DBG_CTL_ZEN(reg,command,hwth,reset,fname,ier)
+     subroutine AccessMSR_DBG_CTL_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_DBG_CTL_ZEN
            type(MSR_DBG_CTL_ZEN),       intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: hwth
+           !
            logical(kind=int1),          intent(in) :: reset
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
@@ -643,13 +660,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -700,11 +717,11 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_BR_FROM_IP_ZEN
 
-     subroutine AccessMSR_BR_FROM_IP_ZEN(reg,command,hwth,reset,fname,ier)
+     subroutine AccessMSR_BR_FROM_IP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BR_FROM_IP_ZEN
            type(MSR_BR_FROM_IP_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: hwth
+           !
            logical(kind=int1),          intent(in) :: reset
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
@@ -713,13 +730,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -770,11 +787,11 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_BR_TO_IP_ZEN
 
-     subroutine AccessMSR_BR_TO_IP_ZEN(reg,command,hwth,reset,fname,ier)
+     subroutine AccessMSR_BR_TO_IP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BR_TO_IP_ZEN
            type(MSR_BR_TO_IP_ZEN),      intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: hwth
+           !
            logical(kind=int1),          intent(in) :: reset
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
@@ -783,13 +800,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -841,11 +858,11 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_LAST_EXP_FROM_IP_ZEN
 
-     subroutine AccessMSR_LAST_EXP_FROM_IP_ZEN(reg,command,hwth,reset,fname,ier)
+     subroutine AccessMSR_LAST_EXP_FROM_IP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_LAST_EXP_FROM_IP_ZEN
            type(MSR_LAST_EXP_FROM_IP_ZEN),    intent(in) :: reg
            character(len=*),                  intent(in) :: command
-           character(len=2),                  intent(in) :: hwth
+           
            logical(kind=int1),                intent(in) :: reset
            character(len=*),                  intent(in) :: fname
            integer(kind=int2),                intent(inout) :: ier
@@ -854,13 +871,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -911,11 +928,11 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_LAST_EXP_TO_IP_ZEN
 
-     subroutine AccessMSR_LAST_EXP_TO_IP_ZEN(reg,command,hwth,reset,fname,ier)
+     subroutine AccessMSR_LAST_EXP_TO_IP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_LAST_EXP_TO_IP_ZEN
            type(MSR_LAST_EXP_TO_IP_ZEN),       intent(in) :: REG
            character(len=*),                   intent(in) :: command
-           character(len=2),                   intent(in) :: hwth
+           !
            logical(kind=int1),                 intent(in) :: reset
            character(len=*),                   intent(in) :: fname
            integer(kind=int2),                 intent(inout) :: ier
@@ -924,13 +941,13 @@ module mod_zen_msrtools_wrappers
            integer(kind=int2), automatic :: stat
            ! Exec code .....
            if(.not. reset) then
-              string = command//hwth//reg.addr_hex//fname
+              string = command//reg.addr_hex//fname
               stat   = RUNQQ(rmsr,string)
               if(stat == -1) then
                  ier = stat
               end if
            else
-              string = command//hwth//reg.addr_hex//reset_val
+              string = command//reg.addr_hex//reset_val
               stat   = RUNQQ(wrmsr,string)
               if(stat == -1) then
                  ier = stat
@@ -981,18 +998,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED_ZEN
            type(MSR_MTRR_FIXED_ZEN),   intent(in) :: reg
            character(len=*),           intent(in) :: command
-           character(len=2),           intent(in) :: core
+           !
            character(len=*),           intent(in) :: fname
            integer(kind=int2),         intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1043,18 +1060,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED16K_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED16K_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED16K_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED16K_ZEN
            type(MSR_MTRR_FIXED16K_ZEN),    intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1106,18 +1123,18 @@ module mod_zen_msrtools_wrappers
      end subroutine initMSR_MTRR_FIXED16K1_ZEN
 
          
-     subroutine AccessMSR_MTRR_FIXED16K1_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED16K1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED16K1_ZEN
            type(MSR_MTRR_FIXED16K1_ZEN),   intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1170,18 +1187,18 @@ module mod_zen_msrtools_wrappers
      end subroutine initMSR_MTRR_FIXED4K_ZEN
 
          
-     subroutine AccessMSR_MTRR_FIXED4K_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K_ZEN
            type(MSR_MTRR_FIXED4K_ZEN),   intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1233,18 +1250,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K1_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K1_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K1_ZEN
            type(MSR_MTRR_FIXED4K1_ZEN),   intent(in) :: reg
            character(len=*),              intent(in) :: command
-           character(len=2),              intent(in) :: core
+           !
            character(len=*),              intent(in) :: fname
            integer(kind=int2),            intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1295,18 +1312,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K2_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K2_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K2_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K2_ZEN
            type(MSR_MTRR_FIXED4K2_ZEN),   intent(in) :: reg
            character(len=*),              intent(in) :: command
-           character(len=2),              intent(in) :: core
+           !
            character(len=*),              intent(in) :: fname
            integer(kind=int2),            intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1357,18 +1374,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
       end subroutine initMSR_MTRR_FIXED4K3_ZEN
 
-      subroutine AccessMSR_MTRR_FIXED4K3_ZEN(reg,command,core,fname,ier)
+      subroutine AccessMSR_MTRR_FIXED4K3_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K3_ZEN
            type(MSR_MTRR_FIXED4K3_ZEN),   intent(in) :: reg
            character(len=*),              intent(in) :: command
-           character(len=2),              intent(in) :: core
+           !
            character(len=*),              intent(in) :: fname
            integer(kind=int2),            intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1419,18 +1436,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K4_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K4_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K4_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K4_ZEN
            type(MSR_MTRR_FIXED4K4_ZEN),   intent(in) :: reg
            character(len=*),              intent(in) :: command
-           character(len=2),              intent(in) :: core
+           !
            character(len=*),              intent(in) :: fname
            integer(kind=int2),            intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1481,18 +1498,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K5_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K5_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K5_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K5_ZEN
            type(MSR_MTRR_FIXED4K5_ZEN),   intent(in) :: reg
            character(len=*),              intent(in) :: command
-           character(len=2),              intent(in) :: core
+           !
            character(len=*),              intent(in) :: fname
            integer(kind=int2),            intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1542,18 +1559,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K6_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K6_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K6_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K6_ZEN
            type(MSR_MTRR_FIXED4K6_ZEN),    intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1603,18 +1620,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_FIXED4K7_ZEN
 
-     subroutine AccessMSR_MTRR_FIXED4K7_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_FIXED4K7_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_FIXED4K7_ZEN
            type(MSR_MTRR_FIXED4K7_ZEN),    intent(in)  :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1664,18 +1681,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PAT_ZEN
 
-     subroutine AccessMSR_PAT_ZEN(reg,command,hwth,fname,ier)
+     subroutine AccessMSR_PAT_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PAT_ZEN
            type(MSR_PAT_ZEN),              intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: hwth
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1726,18 +1743,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_MTRR_DEFTYPE_ZEN
 
-     subroutine AccessMSR_MTRR_DEFTYPE_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_MTRR_DEFTYPE_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MTRR_DEFTYPE_ZEN
            type(MSR_MTRR_DEFTYPE_ZEN),     intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1788,18 +1805,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_EFER_ZEN
 
-     subroutine AccessMSR_EFER_ZEN(reg,command,hwth,fname,ier)
+     subroutine AccessMSR_EFER_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_EFER_ZEN
            type(MSR_EFER_ZEN),             intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: hwth
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -1849,13 +1866,13 @@ module mod_zen_msrtools_wrappers
      end subroutine initMSR_MPERF_READONLY_ZEN
 
          
-     subroutine AccessMSR_MPERF_READONLY_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_MPERF_READONLY_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MPERF_READONLY_ZEN
            type(MSR_MPERF_READONLY_ZEN),    intent(in) :: reg
            character(len=*),     intent(in)    :: command
            logical(kind=int1),   intent(in)    :: reset
            character(len=*),     intent(in)    :: fname
-           character(len=2),     intent(in)    :: hwth ! HW thread number
+           !
            !
            integer(kind=int2),   intent(inout) :: ier
       
@@ -1865,14 +1882,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -1928,13 +1945,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = zero_val
      end subroutine initMSR_APERF_READONLY_ZEN
 
-     subroutine AccessMSR_APERF_READONLY_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_APERF_READONLY_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_APERF_READONLY_ZEN
-           type(MSR_APERF_READONLY_ZEN),      intent(in) :: reg
+           type(MSR_APERF_READONLY_ZEN),      intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
            !
            integer(kind=int2),   intent(inout) :: ier
       
@@ -1944,14 +1961,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -2006,13 +2023,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = zero_val
      end subroutine initMSR_IRPERF_COUNT_ZEN
 
-     subroutine AccessMSR_IPERF_COUNT_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_IPERF_COUNT_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IPERF_COUNT_ZEN
            type(MSR_IPERF_COUNT_ZEN),         intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
           
            integer(kind=int2),   intent(inout) :: ier
       
@@ -2022,14 +2039,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -2084,13 +2101,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = zero_val
      end subroutine initMSR_TSC_AUX_ZEN
 
-     subroutine AccessMSR_TSC_AUX_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_TSC_AUX_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TSC_AUX_ZEN
            type(MSR_TSC_AUX_ZEN),             intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
           
            integer(kind=int2),   intent(inout) :: ier
       
@@ -2100,14 +2117,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -2163,13 +2180,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
       end subroutine initMSR_TSC_RATIO_ZEN
 
-      subroutine AccessMSR_TSC_RATIO_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_TSC_RATIO_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TSC_RATIO_ZEN
            type(MSR_TSC_RATIO_ZEN),           intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -2179,14 +2196,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -2255,18 +2272,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_SYS_CFG_ZEN
 
-     subroutine AccessMSR_SYS_CFG_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_SYS_CFG_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_SYS_CFG_ZEN
            type(MSR_SYS_CFG_ZEN),          intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+         
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2318,18 +2335,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_HW_CFG_ZEN
 
-     subroutine AccessMSR_HW_CFG_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_HW_CFG_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_HW_CFG_ZEN
            type(MSR_HW_CFG_ZEN),           intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+         
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2381,18 +2398,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_TOP_MEM_ZEN
 
-     subroutine AccessMSR_TOP_MEM_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_TOP_MEM_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TOP_MEM_ZEN
            type(MSR_TOP_MEM_ZEN),          intent(in) :: reg
            character(len=*),               intent(in) :: command
-           character(len=2),               intent(in) :: core
+           !
            character(len=*),               intent(in) :: fname
            integer(kind=int2),             intent(inout) :: ier
              ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code ...
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2444,18 +2461,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_TOP_MEM2_ZEN
 
-     subroutine AccessMSR_TOP_MEM2_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_TOP_MEM2_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TOP_MEM2_ZEN
            type(MSR_TOP_MEM2_ZEN),    intent(inout) :: reg
            character(len=*),          intent(in) :: command
-           character(len=2),          intent(in) :: core
+          
            character(len=*),          intent(in) :: fname
            integer(kind=int2),        intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2507,18 +2524,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_BASE1_ZEN
 
-     subroutine AccessMSR_IORR_BASE1_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_BASE1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_BASE1_ZEN
            type(MSR_IORR_BASE1_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+          
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2570,18 +2587,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_BASE2_ZEN
 
-     subroutine AccessMSR_IORR_BASE2_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_BASE2_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_BASE2_ZEN
            type(MSR_IORR_BASE2_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+        
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2633,18 +2650,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_BASE3_ZEN
 
-     subroutine AccessMSR_IORR_BASE1_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_BASE1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_BASE3_ZEN
            type(MSR_IORR_BASE3_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+         
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2696,18 +2713,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_MASK1_ZEN
 
-     subroutine AccessMSR_IORR_MASK1_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_MASK1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_MASK1_ZEN
            type(MSR_IORR_MASK1_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+         
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2759,18 +2776,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_MASK2_ZEN
 
-     subroutine AccessMSR_IORR_MASK2_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_MASK2_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_MASK2_ZEN
            type(MSR_IORR_MASK2_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+     
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2822,18 +2839,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IORR_MASK3_ZEN
 
-     subroutine AccessMSR_IORR_MASK3_ZEN(reg,command,core,fname,ier)
+     subroutine AccessMSR_IORR_MASK3_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IORR_MASK3_ZEN
            type(MSR_IORR_MASK3_ZEN),    intent(in) :: reg
            character(len=*),            intent(in) :: command
-           character(len=2),            intent(in) :: core
+          
            character(len=*),            intent(in) :: fname
            integer(kind=int2),          intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -2885,13 +2902,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_PERF_LEGACY_CTL0_ZEN
       
-     subroutine AccessMSR_PERF_LEGACY_CTL0_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTL0_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTL0_ZEN
            type(MSR_PERF_LEGACY_CTL0_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+         
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -2901,14 +2918,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -2961,13 +2978,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_PERF_LEGACY_CTL1_ZEN
       
-     subroutine AccessMSR_PERF_LEGACY_CTL1_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTL1_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTL1_ZEN
            type(MSR_PERF_LEGACY_CTL1_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+         
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -2977,7 +2994,7 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
@@ -3037,13 +3054,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_PERF_LEGACY_CTL2_ZEN
       
-     subroutine AccessMSR_PERF_LEGACY_CTL2_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTL2_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTL2_ZEN
            type(MSR_PERF_LEGACY_CTL2_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+         
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3053,14 +3070,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3113,13 +3130,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_PERF_LEGACY_CTL3_ZEN
       
-     subroutine AccessMSR_PERF_LEGACY_CTL3_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTL3_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTL3_ZEN
            type(MSR_PERF_LEGACY_CTL3_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+          
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3129,14 +3146,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3188,13 +3205,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
      end subroutine initMSR_PERF_LEGACY_CTR0_ZEN
     
-     subroutine AccessMSR_PERF_LEGACY_CTR0_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTR0_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR0_ZEN
            type(MSR_PERF_LEGACY_CTR0_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3204,14 +3221,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3268,13 +3285,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
      end subroutine initMSR_PERF_LEGACY_CTR1_ZEN
     
-     subroutine AccessMSR_PERF_LEGACY_CTR1_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTR1_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR1_ZEN
            type(MSR_PERF_LEGACY_CTR1_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+            !
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3284,14 +3301,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3348,13 +3365,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
      end subroutine initMSR_PERF_LEGACY_CTR2_ZEN
     
-     subroutine AccessMSR_PERF_LEGACY_CTR2_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTR2_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR2_ZEN
            type(MSR_PERF_LEGACY_CTR2_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3364,14 +3381,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3429,13 +3446,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
      end subroutine initMSR_PERF_LEGACY_CTR3_ZEN
     
-     subroutine AccessMSR_PERF_LEGACY_CTR3_ZEN(reg,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_LEGACY_CTR3_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_LEGACY_CTR3_ZEN
            type(MSR_PERF_LEGACY_CTR3_ZEN),    intent(in)    :: reg
            character(len=*),                  intent(in)    :: command
            logical(kind=int1),                intent(in)    :: reset
            character(len=*),                  intent(in)    :: fname
-           character(len=2),                  intent(in)    :: hwth ! HW thread number
+           !
            integer(kind=int2),                intent(inout) :: ier
           
       
@@ -3445,14 +3462,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -3510,18 +3527,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_MC_EXP_REDIR_ZEN
 
-     subroutine AccessMSR_MC_EXP_REDIR_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_MC_EXP_REDIR_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MC_EXP_REDIR_ZEN
            type(MSR_MC_EXP_REDIR_ZEN),      intent(in) :: reg
            character(len=*),                intent(in) :: command
            character(len=*),                intent(in) :: fname
-           character(len=2),                intent(in) :: hwth
+        
            integer(kind=int2),              intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3571,18 +3588,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING0_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING0_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING0_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING0_ZEN
            type(MSR_PROC_NAME_STRING0_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+          
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3632,18 +3649,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING1_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING1_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING1_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING1_ZEN
            type(MSR_PROC_NAME_STRING1_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+         
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3693,18 +3710,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING2_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING2_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING2_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING2_ZEN
            type(MSR_PROC_NAME_STRING2_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+          
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3755,18 +3772,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING3_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING3_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING3_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING3_ZEN
            type(MSR_PROC_NAME_STRING3_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+          
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3816,18 +3833,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING4_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING4_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING4_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING4_ZEN
            type(MSR_PROC_NAME_STRING4_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+          
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3877,18 +3894,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PROC_NAME_STRING5_ZEN
     
-     subroutine AccessMSR_PROC_NAME_STRING5_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PROC_NAME_STRING5_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PROC_NAME_STRING5_ZEN
            type(MSR_PROC_NAME_STRING5_ZEN),     intent(in) :: reg
            character(len=*),                    intent(in) :: command
            character(len=*),                    intent(in) :: fname
-           character(len=2),                    intent(in) :: core
+          
            integer(kind=int2),                  intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -3940,18 +3957,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_MMIO_CFG_BASE_ADDR_ZEN
              
-     subroutine AccessMSR_MMIO_CFG_BASE_ADDR_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_MMIO_CFG_BASE_ADDR_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_MMIO_CFG_BASE_ADDR_ZEN
            type(MSR_MMIO_CFG_BASE_ADDR_ZEN),     intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4001,18 +4018,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_INT_PENDING_ZEN
 
-     subroutine AccessMSR_INT_PENDING_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_INT_PENDING_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_INT_PENDING_ZEN
            type(MSR_INT_PENDING_ZEN),            intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+          
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4064,18 +4081,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_TRIG_IO_CYCLE_ZEN
 
-     subroutine AccessMSR_TRIG_IO_CYCLE_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_TRIG_IO_CYCLE_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_TRIG_IO_CYCLE_ZEN
            type(MSR_TRIG_IO_CYCLE_ZEN),          intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+          
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4125,18 +4142,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PSTATE_CUR_LIMIT_ZEN
 
-     subroutine AccessMSR_PSTATE_CUR_LIMIT_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PSTATE_CUR_LIMIT_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PSTATE_CUR_LIMIT_ZEN
            type(MSR_PSTATE_CUR_LIMIT_ZEN),       intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4188,18 +4205,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_PSTATE_CTL_ZEN
 
-     subroutine AccessMSR_PSTATE_CTL_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_PSTATE_CTL_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PSTATE_CTL_ZEN
            type(MSR_PSTATE_CTL_ZEN),       intent(in) :: reg
            character(len=*),               intent(in) :: command
            character(len=*),               intent(in) :: fname
-           character(len=2),               intent(in) :: hwth
+         
            integer(kind=int2),             intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4249,18 +4266,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_PSTATE_STAT_ZEN
 
-     subroutine AccessMSR_PSTATE_STAT_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_PSTATE_STAT_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PSTATE_STAT_ZEN
            type(MSR_PSTATE_STAT_ZEN),      intent(in) :: reg
            character(len=*),               intent(in) :: command
            character(len=*),               intent(in) :: fname
-           character(len=2),               intent(in) :: core
+         
            integer(kind=int2),             intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4315,18 +4332,18 @@ module mod_zen_msrtools_wrappers
            msrwh = init_valh
       end subroutine initMSR_PSTATE_DEFX_ZEN
 
-      subroutine AccessMSR_PSTATE_DEFX_ZEN(haddr,command,fname,hwth,ier)
+      subroutine AccessMSR_PSTATE_DEFX_ZEN(haddr,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PSTATE_DEFX_ZEN
            character(len=10),              intent(in) :: haddr
            character(len=*),               intent(in) :: command
            character(len=*),               intent(in) :: core
-           character(len=2),               intent(in) :: hwth
+         
            integer(kind=int2),             intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//haddr//fname
+           string = command//haddr//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4378,18 +4395,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CSTATE_BASE_ADDRESS_ZEN
 
-     subroutine AccessMSR_CSTATE_BASE_ADDRESS_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_CSTATE_BASE_ADDRESS_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CSTATE_BASE_ADDRESS_ZEN
            type(MSR_CSTATE_BASE_ADDRESS_ZEN),    intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+          
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4442,18 +4459,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CPU_WDT_CFG_ZEN
 
-     subroutine AccessMSR_CPU_WDT_CFG_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_CPU_WDT_CFG_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPU_WDT_CFG_ZEN
            type(MSR_CPU_WDT_CFG_ZEN),            intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4503,18 +4520,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_SMM_BASE_ZEN
 
-     subroutine AccessMSR_SMM_BASE_ZEN(reg,command,fname,core,ier)
+     subroutine AccessMSR_SMM_BASE_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_SMM_BASE_ZEN
            type(MSR_SMM_BASE_ZEN),               intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: core
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//core//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4564,18 +4581,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_SMM_CTL_ZEN
 
-     subroutine AccessMSR_SMM_CTL_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_SMM_CTL_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_SMM_CTL_ZEN
            type(MSR_SMM_CTL_ZEN),                intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4625,18 +4642,18 @@ module mod_zen_msrtools_wrappers
            reg.msr_read = init_val
      end subroutine initMSR_LOCAL_SMI_STAT_ZEN
 
-     subroutine AccessMSR_LOCAL_SMI_STAT_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_LOCAL_SMI_STAT_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_LOCAL_SMI_STAT_ZEN
            type(MSR_LOCAL_SMI_STAT_ZEN),         intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -4691,13 +4708,13 @@ module mod_zen_msrtools_wrappers
            msrwh = init_valh
      end subroutine initMSR_PERF_CTLX_ZEN
 
-     subroutine AccessMSR_PERF_CTLX_ZEN(haddr,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_CTLX_ZEN(haddr,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_CTLX_ZEN
            character(len=10),              intent(in) :: haddr
            character(len=*),               intent(in) :: command
            logical(kind=int1),             intent(in) :: reset
            character(len=*),               intent(in) :: fname
-           character(len=2),               intent(in) :: hwth
+        
            integer(kind=int2),             intent(inout) :: ier
            
            ! Locals
@@ -4706,14 +4723,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//haddr//fname
+               string = command//haddr//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//haddr//reset_val
+               string = command//haddr//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -4766,13 +4783,13 @@ module mod_zen_msrtools_wrappers
            msrr  = zero_val
      end subroutine initMSR_PERF_CTRX_ZEN
 
-     subroutine AccessMSR_PERF_CTRX_ZEN(hadrr,command,reset,fname,hwth,ier)
+     subroutine AccessMSR_PERF_CTRX_ZEN(hadrr,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_PERF_CTRX_ZEN
            character(len=10),              intent(in) :: haddr
            character(len=*),               intent(in) :: command
            logical(kind=int1),             intent(in) :: reset
            character(len=*),               intent(in) :: fname
-           character(len=2),               intent(in) :: hwth
+        
            integer(kind=int2),             intent(inout) :: ier
            
            ! Locals
@@ -4781,14 +4798,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//haddr//fname
+               string = command//haddr//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//haddr//reset_val
+               string = command//haddr//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -4923,13 +4940,13 @@ module mod_zen_msrtools_wrappers
            reg.msr_read   = zero_val
      end subroutine initMSR_CORE_ENERGY_STAT_ZEN
 
-     subroutine AccessMSR_CORE_ENERGY_STAT_ZEN(reg,command,reset,fname,core,ier)
+     subroutine AccessMSR_CORE_ENERGY_STAT_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CORE_ENERGY_STAT_ZEN
            type(MSR_CORE_ENERGY_STAT_ZEN),     intent(in)    :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: core ! core number
+          
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -4939,14 +4956,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//core//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//core//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5063,18 +5080,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CPUID_7_FEATURES_ZEN
 
-     subroutine AccessMSR_CPUID_7_FEATURES_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_CPUID_7_FEATURES_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: initMSR_CPUID_7_FEATURES_ZEN
            type(MSR_CPUID_7_FEATURES_ZEN),       intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -5126,18 +5143,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CPUID_PWR_THERM_ZEN
 
-     subroutine AccessMSR_CPUID_PWR_THERM_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_CPUID_PWR_THERM_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_PWR_THERM_ZEN
            type(MSR_CPUID_PWR_THERM_ZEN),        intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+       
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -5189,18 +5206,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CPUID_FEATURES_ZEN
 
-     subroutine AccessMSR_CPUID_FEATURES_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_CPUID_FEATURES_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_FEATURES_ZEN
            type(MSR_CPUID_FEATURES_ZEN),         intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+      
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -5252,18 +5269,18 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_CPUID_EXT_FEATURES_ZEN
 
-     subroutine AccessMSR_CPUID_EXT_FEATURES_ZEN(reg,command,fname,hwth,ier)
+     subroutine AccessMSR_CPUID_EXT_FEATURES_ZEN(reg,command,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_CPUID_EXT_FEATURES_ZEN
            type(MSR_CPUID_EXT_FEATURES_ZEN),     intent(in) :: reg
            character(len=*),                     intent(in) :: command
            character(len=*),                     intent(in) :: fname
-           character(len=2),                     intent(in) :: hwth
+         
            integer(kind=int2),                   intent(inout) :: ier
            ! Locals
            character(len=128), automatic :: string
            integer(kind=int2), automatic :: stat
            ! Exec code .....
-           string = command//hwth//reg.addr_hex//fname
+           string = command//reg.addr_hex//fname
            stat   = RUNQQ(rmsr,string)
            if(stat == -1) then
               ier = stat
@@ -5315,13 +5332,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IBS_FETCH_CTL_ZEN
 
-     subroutine AccessMSR_IBS_FETCH_CTL_ZEN(reg,command,reset,fname,core,ier)
+     subroutine AccessMSR_IBS_FETCH_CTL_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_CTL_ZEN
            type(MSR_IBS_FETCH_CTL_ZEN),        intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: core ! core number
+      
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5331,14 +5348,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//core//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//core//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5391,13 +5408,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IBS_FETCH_LINADDR_ZEN
 
-     subroutine AccessMSR_IBS_FETCH_LINADDR_ZEN(reg,command,reset,fname,core,ier)
+     subroutine AccessMSR_IBS_FETCH_LINADDR_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_LINADDR_ZEN
            type(MSR_IBS_FETCH_LINADDR_ZEN),    intent(in)    :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: core ! core number
+      
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5407,14 +5424,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//core//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//core//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5467,13 +5484,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
      end subroutine initMSR_IBS_FETCH_PHYSADDR_ZEN
 
-     subroutine AccessMSR_IBS_FETCH_PHYSADDR_ZEN(reg,command,reset,fname,core,ier)
+     subroutine AccessMSR_IBS_FETCH_PHYSADDR_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_FETCH_PHYSADDR_ZEN
            type(MSR_IBS_FETCH_PHYSADDR_ZEN),   intent(in)    :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: core ! core number
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5483,14 +5500,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//core//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//core//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5543,13 +5560,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_OP_CTL_ZEN
 
-      subroutine AccessMSR_IBS_OP_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_OP_CTL_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_CTL_ZEN
            type(MSR_IBS_OP_CTL_ZEN),           intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5559,14 +5576,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5619,13 +5636,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_OP_RIP_ZEN
 
-      subroutine AccessMSR_IBS_OP_RIP_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_OP_RIP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_RIP_ZEN
            type(MSR_IBS_OP_RIP_ZEN),           intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+      
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5635,14 +5652,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5695,13 +5712,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_OP_DATA_ZEN
 
-      subroutine AccessMSR_IBS_OP_DATA_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_OP_DATA_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA_ZEN
            type(MSR_IBS_OP_DATA_ZEN),          intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5711,14 +5728,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5771,13 +5788,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_OP_DATA2_ZEN
 
-      subroutine AccessMSR_IBS_OP_DATA2_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_OP_DATA2_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA2_ZEN
            type(MSR_IBS_OP_CTL_ZEN),           intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+        
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5787,14 +5804,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5847,13 +5864,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_OP_DATA3_ZEN
 
-      subroutine AccessMSR_IBS_OP_DATA3_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_OP_DATA3_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_OP_DATA3_ZEN
            type(MSR_IBS_OP_DATA3_ZEN),           intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5863,14 +5880,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5923,13 +5940,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_DC_LINADDR_ZEN
 
-      subroutine AccessMSR_IBS_DC_LINADDR_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_DC_LINADDR_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_DC_LINADDR_ZEN
            type(MSR_IBS_DC_LINADDR_ZEN),       intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+        
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -5939,14 +5956,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -5999,13 +6016,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_IBS_DC_PHYSADDR_ZEN
 
-      subroutine AccessMSR_IBS_DC_PHYSADDR_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_DC_PHYSADDR_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_DC_PHYSADDR_ZEN
            type(MSR_IBS_DC_PHYSADDR_ZEN),      intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+        
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -6015,14 +6032,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -6074,13 +6091,13 @@ module mod_zen_msrtools_wrappers
            
       end subroutine initMSR_IBS_CTL_ZEN
 
-      subroutine AccessMSR_IBS_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IBS_CTL_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IBS_CTL_ZEN
            type(MSR_IBS_CTL_ZEN),           intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -6090,14 +6107,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -6150,13 +6167,13 @@ module mod_zen_msrtools_wrappers
            reg.msrw_hex  = init_valh
       end subroutine initMSR_BP_IBSTGT_RIP_ZEN
 
-      subroutine AccessMSR_BP_IBSTGT_RIP_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_BP_IBSTGT_RIP_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_BP_IBSTGT_RIP_ZEN
            type(MSR_BP_IBSTGT_RIP_ZEN),        intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+         
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -6166,14 +6183,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
@@ -6225,13 +6242,13 @@ module mod_zen_msrtools_wrappers
            
       end subroutine initMSR_IC_IBS_EXTD_CTL_ZEN
 
-      subroutine AccessMSR_IC_IBS_EXTD_CTL_ZEN(reg,command,reset,fname,hwth,ier)
+      subroutine AccessMSR_IC_IBS_EXTD_CTL_ZEN(reg,command,reset,fname,ier)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: AccessMSR_IC_IBS_EXTD_CTL_ZEN
            type(MSR_IC_IBS_EXTD_CTL_ZEN),      intent(inout) :: reg
            character(len=*),                   intent(in)    :: command
            logical(kind=int1),                 intent(in)    :: reset
            character(len=*),                   intent(in)    :: fname
-           character(len=2),                   intent(in)    :: hwth
+          
            integer(kind=int2),                 intent(inout) :: ier
           
       
@@ -6241,14 +6258,14 @@ module mod_zen_msrtools_wrappers
        
            ! Exec code ....
            if(.not. reset) then
-               string = command//hwth//reg.addr_hex//fname
+               string = command//reg.addr_hex//fname
                stat = RUNQQ(rmsr,string)
                if(stat == -1) then
                   ier = stat
                end if
         
            else
-               string = command//hwth//reg.addr_hex//reset_val
+               string = command//reg.addr_hex//reset_val
                stat = RUNQQ(wmsr,string)
                if(stat == -1) then
                    ier = stat
