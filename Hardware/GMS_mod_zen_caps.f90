@@ -60,90 +60,8 @@ module mod_zen_caps
 
      !=======================================================================================================================================!
 
-     !=======================================================================================================================================!
-     character(*),        parameter,  private :: DESC_APIC_BAR         =  "MSR0000_001B [APIC Base Address]"
-     character(*),        parameter,  private :: DESC_MTRR             =  "MSR0000_00FE [MTRR Capabilities]"
-     character(*),        parameter,  private :: DESC_MCG_CAP          =  "MSR0000_0179 [Global Machine Check Capabilities]"
-     character(*),        parameter,  private :: DESC_MCG_STAT         =  "MSR0000_017A [Global Machine Check Status]"
-     character(*),        parameter,  private :: DESC_MCG_CTL          =  "MSR0000_017B [Global Machine Check Exception Reporting Control]"
-     character(*),        parameter,  private :: DESC_DBG_CTL          =  "MSR0000_01D9 [Debug Control]"
-     character(*),        parameter,  private :: DESC_BR_FROM_IP       =  "MSR0000_01DB [Last Branch From IP]"
-     character(*),        parameter,  private :: DESC_BR_TO_IP         =  "MSR0000_01DC [Last Branch To IP]"
-     character(*),        parameter,  private :: DESC_LAST_EXP_FROM_IP =  "MSR0000_01DD [Last Exception From IP]"
-     character(*),        parameter,  private :: DESC_LAST_EXP_TO_IP   =  "MSR0000_01DE [Last Exception To IP]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED       =  "MSR0000_0250 [Fixed-Size MTRR]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED16K    =  "MSR0000_0250 [Fixed-Size MTRR_16K]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED16K1   =  "MSR0000_0259 [Fixed-Size MTRR_16K1]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K     =  "MSR0000_0268 [Fixed-Size MTRR_4K]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K1    =  "MSR0000_0269 [Fixed-Size MTRR_4K1]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K2    =  "MSR0000_026A [Fixed-Size MTRR_4K2]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K3    =  "MSR0000_026B [Fixed-Size MTRR_4K3]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K4    =  "MSR0000_026C [Fixed-Size MTRR_4K4]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K5    =  "MSR0000_026D [Fixed-Size MTRR_4K5]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K6    =  "MSR0000_026E [Fixed-Size MTRR_4K6]"
-     character(*),        parameter,  private :: DESC_MTRR_FIXED4K7    =  "MSR0000_026F [Fixed-Size MTRR_4k7]"
-     character(*),        parameter,  private :: DESC_PAT              =  "MSR0000_0277 [Page Attribute Table]"
-     character(*),        parameter,  private :: DESC_MTRR_DEFTYPE     =  "MSR0000_02FF [MTRR Default Memory Type]"
-     character(*),        parameter,  private :: DESC_EFER             =  "MSRC000_0080 [Extended Feature Enable]"
-     character(*),        parameter,  private :: DESC_SYS_CFG          =  "MSRC001_0010 [System Configuration]"
-     character(*),        parameter,  private :: DESC_HW_CFG           =  "MSRC001_0015 [Hardware Configuration]"
-     character(*),        parameter,  private :: DESC_TOP_MEM          =  "MSRC001_001A [Top Of Memory]"
-     character(*),        parameter,  private :: DESC_TOP_MEM2         =  "MSRC001_001D [Top Of Memory 2]"
-     character(*),        parameter,  private :: DESC_IORR_BASE1       =  "MSRC001_001[6] [IO Range Base]"
-     character(*),        parameter,  private :: DESC_IORR_BASE2       =  "MSRC001_001[7] [IO Range Base]"
-     character(*),        parameter,  private :: DESC_IORR_BASE3       =  "MSRC001_001[8] [IO Range Base]"
-     character(*),        parameter,  private :: DESC_IORR_MASK1       =  "MSRC001_001[7] [IO Range Mask]"
-     character(*),        parameter,  private :: DESC_IORR_MASK2       =  "MSRC001_001[8] [IO Range Mask]"
-     character(*),        parameter,  private :: DESC_IORR_MASK3       =  "MSRC001_001[9] [IO Range Mask]"
-     character(*),        parameter,  private :: DESC_PERF_LEGACY_CTL0 =  "MSRC001_000[0...3] [Performance Event Select [0]]"
-     character(*),        parameter,  private :: DESC_PERF_LEGACY_CTL1 =  "MSRC001_000[0...3] [Performance Event Select [1]]"
-     character(*),        parameter,  private :: DESC_PERF_LEGACY_CTL2 =  "MSRC001_000[0...3] [Performance Event Select [2]]"
-     character(*),        parameter,  private :: DESC_PERF_LEGACY_CTL3  =  "MSRC001_000[0...3] [Performance Event Select [3]]"
-     character(*),        parameter,  private :: DESC_MX_EXP_REDIR      =  "MSRC001_0022 [Machine Check Exception Redirection]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING0 = "MSRC001_003[0] [Processor Name String0]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING1 = "MSRC001_003[1] [Processor Name String1]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING2 = "MSRC001_003[2] [Processor Name String2]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING3 = "MSRC001_003[3] [Processor Name String3]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING4 = "MSRC001_003[4] [Processor Name String4]"
-     character(*),        parameter,  private :: DESC_PROC_NAME_STRING5 = "MSRC001_003[5] [Processor Name String5]"
-     character(*),        parameter,  private :: DESC_MMIO_CFG_BADDR    = "MSRC001_0058 [MMIO Configuration Base Address]"
-     character(*),        parameter,  private :: DESC_INT_PENDING       = "MSRC001_0055 [Reserved.]"
-     character(*),        parameter,  private :: DESC_TRIG_IO_CYCLE     = "MSRC001_0056 [SMI Trigger IO Cycle]"
-     character(*),        parameter,  private :: DESC_PSTATE_CUR_LIMIT  = "MSRC001_0061 [P-state Current Limit]"
-     character(*),        parameter,  private :: DESC_PSTATE_CTL        = "MSRC001_0062 [P-state Control]"
-     character(*),        parameter,  private :: DESC_PSTATE_STAT       = "MSRC001_0063 [P-state Status]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF0       = "MSRC001_006[4] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF1       = "MSRC001_006[5] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF2       = "MSRC001_006[6] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF3       = "MSRC001_006[7] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF4       = "MSRC001_006[8] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF5       = "MSRC001_006[9] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF6       = "MSRC001_006[A] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_PSTATE_DEF7       = "MSRC001_006[B] [P-state [7:0]]"
-     character(*),        parameter,  private :: DESC_CSTATE_BADDR      = "MSRC001_0073 [C-state Base Address]"
-     character(*),        parameter,  private :: DESC_CPU_WDT_CFG       = "MSRC001_0074 [CPU Watchdog Timer]"
-     character(*),        parameter,  private :: DESC_SMM_BASE          = "MSRC001_0111 [SMM Base Address]"
-     character(*),        parameter,  private :: DESC_SMM_ADDR          = "MSRC001_0112 [SMM TSeg Base Address]"
-     character(*),        parameter,  private :: DESC_SMM_MASK          = "MSRC001_0113 [SMM TSeg Mask]"
-     character(*),        parameter,  private :: DESC_SMM_CTL           = "MSRC001_0116 [SMM Control]"
-     character(*),        parameter,  private :: DESC_LOCAL_SMI_STAT    = "MSRC001_011A [Local SMI Status]"
-     character(*),        parameter,  private :: DESC_PERF_CTL0         = "MSRC001_020[0] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_PERF_CTL2         = "MSRC001_020[2] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_PERF_CTL4         = "MSRC001_020[4] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_PERF_CTL6         = "MSRC001_020[6] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_PERF_CTL8         = "MSRC001_020[8] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_PERF_CTL10        = "MSRC001_020[A] [Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG0       = "MSRC001_023[0] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG2       = "MSRC001_023[2] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG4       = "MSRC001_023[4] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG6       = "MSRC001_023[6] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG8       = "MSRC001_023[8] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_L3_PMC_CFG10      = "MSRC001_023[A] [L3 Performance Event Select [5:0]]"
-     character(*),        parameter,  private :: DESC_RAPL_UNIT         = "MSRC001_0299 [RAPL Power Unit]"
-     character(*),        parameter,  private :: DESC_CPUID_FEAT7       = "MSRC001_1002 [CPUID Features for CPUID Fn00000007_E[A,B]X]"
-     character(*),        parameter,  private :: DESC_CPUID_PWR_THERM   = "MSRC001_1003 [Thermal and Power Management CPUID Features]"
-     
-     !=======================================================================================================================================!
+    
+   
      
      type, public :: ZenCPU_t
         public
@@ -195,13 +113,49 @@ module mod_zen_caps
         type(MSR_PROC_NAME_STRING0_ZEN) :: proc_name0
         type(MSR_PROC_NAME_STRING1_ZEN) :: proc_name1
         type(MSR_PROC_NAME_STRING2_ZEN) :: proc_name2
-        type(MSR_PROC_NAME_STRING3_ZEN) :: proc_name3
-        type(MSR_PROC_NAME_STRING4_ZEN) :: proc_name4
-        type(MSR_PROC_NAME_STRING5_ZEN) :: proc_name5
-        type(MSR_MMIO_CFG_BASE_ADDR_ZEN) :: mmio_cfgbase
-        type(MSR_INT_PENDING_ZEN)        :: int_pending
-        type(MSR_TRIG_IO_CYCLE_ZEN)      :: trig_iocycle
-        
+        type(MSR_PROC_NAME_STRING3_ZEN)      :: proc_name3
+        type(MSR_PROC_NAME_STRING4_ZEN)      :: proc_name4
+        type(MSR_PROC_NAME_STRING5_ZEN)      :: proc_name5
+        type(MSR_MMIO_CFG_BASE_ADDR_ZEN)     :: mmio_cfgbase
+        type(MSR_INT_PENDING_ZEN)            :: int_pending
+        type(MSR_TRIG_IO_CYCLE_ZEN)          :: trig_iocycle
+        type(MSR_PSTATE_CUR_LIMIT_ZEN)       :: pstate_curlimit
+        type(MSR_PSTATE_CTL_ZEN)             :: pstate_ctl
+        type(MSR_PSTATE_STAT_ZEN)            :: pstate_stat
+        type(MSR_PSTATE_DEF0_ZEN)            :: pstate_def0
+        type(MSR_PSTATE_DEF1_ZEN)            :: pstate_def1
+        type(MSR_PSTATE_DEF2_ZEN)            :: pstate_def2
+        type(MSR_PSTATE_DEF3_ZEN)            :: pstate_def3
+        type(MSR_PSTATE_DEF4_ZEN)            :: pstate_def4
+        type(MSR_PSTATE_DEF5_ZEN)            :: pstate_def5
+        type(MSR_PSTATE_DEF6_ZEN)            :: pstate_def6
+        type(MSR_PSTATE_DEF7_ZEN)            :: pstate_def7
+        type(MSR_CSTATE_BASE_ADDR_ZEN)       :: pstate_cstate_baseaddr
+        type(MSR_CPU_WDT_CFG_ZEN)            :: cpu_wdt_cfg
+        type(MSR_SMM_BASE_ZEN)               :: smm_base
+        type(MSR_SMM_ADDR_ZEN)               :: smm_addr
+        type(MSR_SMM_CTL_ZEN)                :: smm_ctl
+        type(MSR_LOCAL_SMI_STAT_ZEN)         :: local_smi_stat
+        type(MSR_PERF_CTL0_ZEN)              :: perf_ctl0
+        type(MSR_PERF_CTL2_ZEN)              :: perf_ctl2
+        type(MSR_PERF_CTL4_ZEN)              :: perf_ctl4
+        type(MSR_PERF_CTL6_ZEN)              :: perf_ctl6
+        type(MSR_PERF_CTL8_ZEN)              :: perf_ctl8
+        type(MSR_PERF_CTL10_ZEN)             :: perf_ctl10
+        type(MSR_CPUID_7_FEATURES_ZEN)       :: cpuid7_features
+        type(MSR_CPUID_PWR_THERM_ZEN)        :: cpuid_pwrtherm
+        type(MSR_CPUID_FEATURES_ZEN)         :: cpuid_features
+        type(MSR_CPUID_EXT_FEATURES_ZEN)     :: cpuid_extfeat
+        type(MSR_DR1_ADDR_MASK_ZEN)          :: dr1_addrmask
+        type(MSR_DR2_ADDR_MASK_ZEN)          :: dr2_addrmask
+        type(MSR_DR3_ADDR_MASK_ZEN)          :: dr3_addrmask
+        type(MSR_TW_CFG_ZEN)                 :: tw_cfg
+        type(MSR_IBS_FETCH_CTL_ZEN)          :: ibs_fetchctl
+        type(MSR_IBS_FETCH_LINADDR_ZEN)      :: ibs_fetch_laddr
+        type(MSR_IBS_FETCH_PHYSADDR_ZEN)     :: ibs_fetch_phyaddr
+        type(MSR_IBS_CTL_ZEN)                :: ibs_ctl
+        type(MSR_BP_IBSTGT_RIP_ZEN)          :: bp_ibstgt_rip
+        type(MSR_IC_IBS_EXTD_CTL_ZEN)        :: ic_ibs_extdctl
      end type ZenCPU_t
 
      
