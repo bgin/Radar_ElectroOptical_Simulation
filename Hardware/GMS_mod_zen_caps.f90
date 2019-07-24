@@ -65,13 +65,14 @@ module mod_zen_caps
      
      type, public :: ZenCPU_t
         public
-        character(len=128)             :: filename
-        character(len=32)              :: fname ! friendly name
-        character(len=32)              :: cname ! hex coded name
+        !
+        character(len=32)              :: cpu_fname ! friendly name
+        character(len=32)              :: cpu_cname ! hex coded name
         integer(kind=int4)             :: ncores
         integer(kind=int4)             :: nthreads
         integer(kind=int4)             :: ordinal ! n-th state sample (1...nth)
         logical(kind=int4)             :: to_screen ! output to screen, beside to file output
+        !
         type(MSR_APIC_BAR_ZEN)         :: apic_bar
         type(MSR_MTRR_ZEN)             :: mtrr
         type(MSR_MCG_CAP_ZEN)          :: mcg_cap
@@ -158,6 +159,37 @@ module mod_zen_caps
         type(MSR_IC_IBS_EXTD_CTL_ZEN)        :: ic_ibs_extdctl
      end type ZenCPU_t
 
-     
+     contains
+
+     subroutine initZenCPU(zcpu,fname,cname,ncores,nthreads,   &
+                           ordinal,to_screen)
+!DIR$  ATTRIBUTES CODE_ALIGN:32 :: initZenCPU
+           type(ZenCPU_t),             intent(inout) :: zcpu
+           character(len=*),           intent(in)    :: fname
+           character(len=*),           intent(in)    :: cname
+           integer(kind=int4),         intent(in)    :: ncores
+           integer(kind=int4),         intent(in)    :: nthreads
+           integer(kind=int4),         intent(in)    :: ordinal
+           logical(kind=int4),         intent(in)    :: to_screen
+           ! Exec code .....
+           call initMSR_APIC_BAR_ZEN(zcpu.apic_bar)
+           call initMSR_MTRR_ZEN(zcpu.mtrr)
+           call initMSR_MCG_CAP_ZEN(zcpu.mcg_cap)
+           call initMSR_MCG_STAT_ZEN(zcpu.mcg_stat)
+           call initMSR_MCG_CTL_ZEN(zcpu.mcg_ctl)
+           call initMSR_DBG_CTL_ZEN(zcpu.dbg_ctl)
+           call initMSR_BR_FROM_IP_ZEN(zcpu.br_fromip)
+           call initMSR_BR_TO_IP_ZEN(zcpu.br_toip)
+           call initMSR_LAST_EXP_FROM_IP_ZEN(zcpu.lexp_fromip)
+           call initMSR_LAST_EXP_TO_IP_ZEN(zcpu.lexp_toip)
+           call initMSR_MTRR_FIXED_ZEN(zcpu.mtrr_fixed)
+           call initMSR_MTRR_FIXED16K_ZEN(zcpu.mtrr_fixed16k)
+           call initMSR_MTRR_FIXED16K1_ZEN(zcpu.mtrr_fixed16k1)
+           call initMSR_MTRR_FIXED4K_ZEN(zcpu.mtrr_fixed4k)
+           call initMSR_MTRR_FIXED4K1_ZEN(zcpu.mtrr_fixed4k1)
+           call initMSR_MTRR_FIXED4K2_ZEN(zcpu.mtrr_fixed4k2)
+           call initMSR_MTRR_FIXED4K3_ZEN(zcpu.mtrr_fixed4k3)
+           call initMSR_MTRR_FIXED4K4_ZEN(zcpu.mtrr_fixed4k4)
+     end subroutine initZenCPU
 
 end module mod_zen_caps
