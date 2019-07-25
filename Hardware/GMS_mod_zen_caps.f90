@@ -161,16 +161,21 @@ module mod_zen_caps
 
      contains
 
-     subroutine initZenCPU(zcpu,fname,cname,ncores,nthreads,   &
-                           ordinal,to_screen)
+       subroutine initZenCPU(zcpu,msrrd,msrwr,msrwh,length, &
+                            fname,cname,ncores,nthreads,    &
+                            ordinal,to_screen)
 !DIR$  ATTRIBUTES CODE_ALIGN:32 :: initZenCPU
-           type(ZenCPU_t),             intent(inout) :: zcpu
-           character(len=*),           intent(in)    :: fname
-           character(len=*),           intent(in)    :: cname
-           integer(kind=int4),         intent(in)    :: ncores
-           integer(kind=int4),         intent(in)    :: nthreads
-           integer(kind=int4),         intent(in)    :: ordinal
-           logical(kind=int4),         intent(in)    :: to_screen
+           type(ZenCPU_t),                            intent(inout) :: zcpu
+           integer(kind=int8b), dimension(0:length),  intent(inout) :: msrrd
+           integer(kind=int8b), dimension(0:length),  intent(inout) :: msrwr
+           character(len=16),   dimension(0:length),  intent(inout) :: msrwh
+           integer(kind=int4),                        intent(in)    :: length
+           character(len=*),                          intent(in)    :: fname
+           character(len=*),                          intent(in)    :: cname
+           integer(kind=int4),                        intent(in)    :: ncores
+           integer(kind=int4),                        intent(in)    :: nthreads
+           integer(kind=int4),                        intent(in)    :: ordinal
+           logical(kind=int4),                        intent(in)    :: to_screen
            ! Exec code .....
            call initMSR_APIC_BAR_ZEN(zcpu.apic_bar)
            call initMSR_MTRR_ZEN(zcpu.mtrr)
@@ -190,6 +195,40 @@ module mod_zen_caps
            call initMSR_MTRR_FIXED4K2_ZEN(zcpu.mtrr_fixed4k2)
            call initMSR_MTRR_FIXED4K3_ZEN(zcpu.mtrr_fixed4k3)
            call initMSR_MTRR_FIXED4K4_ZEN(zcpu.mtrr_fixed4k4)
+           call initMSR_MTRR_FIXED4K5_ZEN(zcpu.mtrr_fixed4k5)
+           call initMSR_MTRR_FIXED4K6_ZEN(zcpu.mtrr_fixed4k6)
+           call initMSR_MTRR_FIXED4K7_ZEN(zcpu.mtrr_fixed4k7)
+           call initMSR_PAT_ZEN(zcpu.pat)
+           call initMSR_MTRR_DEFTYPE_ZEN(zcpu.mtrr_deftype)
+           call initMSR_EFER_ZEN(zcpu.efer)
+           call initMSR_SYS_CFG_ZEN(zcpu.sys_cfg)
+           call initMSR_HW_CFG_ZEN(zcpu.hw_cfg)
+           call initMSR_TOP_MEM_ZEN(zcpu.top_mem)
+           call initMSR_TOP_MEM2_ZEN(zcpu.top_mem2)
+           call initMSR_IORR_BASE1_ZEN(zcpu.iorr_base1)
+           call initMSR_IORR_BASE2_ZEN(zcpu.iorr_base2)
+           call initMSR_IORR_BASE3_ZEN(zcpu.iorr_base3)
+           call initMSR_IORR_MASK1_ZEN(zcpu.iorr_mask1)
+           call initMSR_IORR_MASK2_ZEN(zcpu.iorr_mask2)
+           call initMSR_IORR_MASK3_ZEN(zcpu.iorr_mask3)
+           call initMSR_PERF_LEGACY_CTL0_ZEN(zcpu.perf_legctl0)
+           call initMSR_PERF_LEGACY_CTL1_ZEN(zcpu.perf_legctl1)
+           call initMSR_PERF_LEGACY_CTL2_ZEN(zcpu.perf_legctl2)
+           call initMSR_PERF_LEGACY_CTL3_ZEN(zcpu.perf_legctl3)
+           call initMSR_MC_EXP_REDIR_ZEN(zcpu.mc_expredir)
+           call initMSR_PROC_NAME_STRING0_ZEN(zcpu.proc_name0)
+           call initMSR_PROC_NAME_STRING1_ZEN(zcpu.proc_name1)
+           call initMSR_PROC_NAME_STRING2_ZEN(zcpu.proc_name2)
+           call initMSR_PROC_NAME_STRING3_ZEN(zcpu.proc_name3)
+           call initMSR_PROC_NAME_STRING4_ZEN(zcpu.proc_name4)
+           call initMSR_PROC_NAME_STRING5_ZEN(zcpu.proc_name5)
+           call initMSR_MMIO_CFG_BASE_ADDR_ZEN(zcpu.mmio_cfgbase)
+           call initMSR_INT_PENDING_ZEN(zcpu.int_pending)
+           call initMSR_TRIG_IO_CYCLE_ZEN(zcpu.trig_iocycle)
+           call initMSR_PSTATE_CUR_LIMIT_ZEN(zcpu.pstate_curlimit)
+           call initMSR_PSTATE_CTL_ZEN(zcpu.pstate_ctl)
+           call initMSR_PSTATE_STAT_ZEN(zcpu.pstate_stat)
+           call initMSR_PSTATE_DEFX_ZEN(msrrd,msrwr,msrwh,length)
      end subroutine initZenCPU
 
 end module mod_zen_caps
