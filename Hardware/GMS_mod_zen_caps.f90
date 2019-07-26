@@ -131,7 +131,7 @@ module mod_zen_caps
         type(MSR_PSTATE_DEF5_ZEN)            :: pstate_def5
         type(MSR_PSTATE_DEF6_ZEN)            :: pstate_def6
         type(MSR_PSTATE_DEF7_ZEN)            :: pstate_def7
-        type(MSR_CSTATE_BASE_ADDR_ZEN)       :: pstate_cstate_baseaddr
+        type(MSR_CSTATE_BASE_ADDR_ZEN)       :: cstate_baseaddr
         type(MSR_CPU_WDT_CFG_ZEN)            :: cpu_wdt_cfg
         type(MSR_SMM_BASE_ZEN)               :: smm_base
         type(MSR_SMM_ADDR_ZEN)               :: smm_addr
@@ -143,14 +143,15 @@ module mod_zen_caps
         type(MSR_PERF_CTL6_ZEN)              :: perf_ctl6
         type(MSR_PERF_CTL8_ZEN)              :: perf_ctl8
         type(MSR_PERF_CTL10_ZEN)             :: perf_ctl10
+        type(MSR_CORE_ENERGY_STAT_ZEN)       :: core_enerstat
+        type(MSR_PKG_ENERGY_STAT_ZEN)        :: pkg_enerstat
         type(MSR_CPUID_7_FEATURES_ZEN)       :: cpuid7_features
         type(MSR_CPUID_PWR_THERM_ZEN)        :: cpuid_pwrtherm
         type(MSR_CPUID_FEATURES_ZEN)         :: cpuid_features
         type(MSR_CPUID_EXT_FEATURES_ZEN)     :: cpuid_extfeat
-        type(MSR_DR1_ADDR_MASK_ZEN)          :: dr1_addrmask
-        type(MSR_DR2_ADDR_MASK_ZEN)          :: dr2_addrmask
-        type(MSR_DR3_ADDR_MASK_ZEN)          :: dr3_addrmask
-        type(MSR_TW_CFG_ZEN)                 :: tw_cfg
+        type(MSR_IBS_OP_DATA_ZEN)            :: ibs_opdata
+        type(MSR_IBS_OP_DATA2_ZEN)           :: ibs_opdata2
+        type(MSR_IBS_OP_DATA3_ZEN)           :: ibs_opdata3
         type(MSR_IBS_FETCH_CTL_ZEN)          :: ibs_fetchctl
         type(MSR_IBS_FETCH_LINADDR_ZEN)      :: ibs_fetch_laddr
         type(MSR_IBS_FETCH_PHYSADDR_ZEN)     :: ibs_fetch_phyaddr
@@ -161,21 +162,18 @@ module mod_zen_caps
 
      contains
 
-       subroutine initZenCPU(zcpu,msrrd,msrwr,msrwh,length, &
-                            fname,cname,ncores,nthreads,    &
-                            ordinal,to_screen)
+       subroutine initZenCPU(zcpu,fname,cname,ncores,nthreads,    &
+                             ordinal,to_screen)
+                           
 !DIR$  ATTRIBUTES CODE_ALIGN:32 :: initZenCPU
-           type(ZenCPU_t),                            intent(inout) :: zcpu
-           integer(kind=int8b), dimension(0:length),  intent(inout) :: msrrd
-           integer(kind=int8b), dimension(0:length),  intent(inout) :: msrwr
-           character(len=16),   dimension(0:length),  intent(inout) :: msrwh
-           integer(kind=int4),                        intent(in)    :: length
-           character(len=*),                          intent(in)    :: fname
-           character(len=*),                          intent(in)    :: cname
-           integer(kind=int4),                        intent(in)    :: ncores
-           integer(kind=int4),                        intent(in)    :: nthreads
-           integer(kind=int4),                        intent(in)    :: ordinal
-           logical(kind=int4),                        intent(in)    :: to_screen
+           type(ZenCPU_t),                                intent(inout) :: zcpu
+           !
+           character(len=*),                              intent(in)    :: fname
+           character(len=*),                              intent(in)    :: cname
+           integer(kind=int4),                            intent(in)    :: ncores
+           integer(kind=int4),                            intent(in)    :: nthreads
+           integer(kind=int4),                            intent(in)    :: ordinal
+           logical(kind=int4),                            intent(in)    :: to_screen
            ! Exec code .....
            call initMSR_APIC_BAR_ZEN(zcpu.apic_bar)
            call initMSR_MTRR_ZEN(zcpu.mtrr)
@@ -228,7 +226,68 @@ module mod_zen_caps
            call initMSR_PSTATE_CUR_LIMIT_ZEN(zcpu.pstate_curlimit)
            call initMSR_PSTATE_CTL_ZEN(zcpu.pstate_ctl)
            call initMSR_PSTATE_STAT_ZEN(zcpu.pstate_stat)
-           call initMSR_PSTATE_DEFX_ZEN(msrrd,msrwr,msrwh,length)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read, &
+                                        zcpu.pstate_def0.msr_write,&
+                                        zcpu.pstate_def0.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def1.msr_read, &
+                                        zcpu.pstate_def1.msr_write,&
+                                        zcpu.pstate_def1.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def2.msr_read, &
+                                        zcpu.pstate_def2.msr_write,&
+                                        zcpu.pstate_def2.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def3.msr_read, &
+                                        zcpu.pstate_def3.msr_write,&
+                                        zcpu.pstate_def3.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def4.msr_read, &
+                                        zcpu.pstate_def4.msr_write,&
+                                        zcpu.pstate_def4.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def5.msr_read, &
+                                        zcpu.pstate_def5.msr_write,&
+                                        zcpu.pstate_def5.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def6.msr_read, &
+                                        zcpu.pstate_def6.msr_write,&
+                                        zcpu.pstate_def6.msrw_hex)
+           call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def7.msr_read, &
+                                        zcpu.pstate_def7.msr_write,&
+                                        zcpu.pstate_def7.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl0.msr_read,     &
+                                      zcpu.perf_ctl0.msr_write,    &
+                                      zcpu.perf_ctl0.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl2.msr_read,     &
+                                      zcpu.perf_ctl2.msr_write,    &
+                                      zcpu.perf_ctl2.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl4.msr_read,     &
+                                      zcpu.perf_ctl4.msr_write,    &
+                                      zcpu.perf_ctl4.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl6.msr_read,     &
+                                      zcpu.perf_ctl6.msr_write,    &
+                                      zcpu.perf_ctl6.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl8.msr_read,     &
+                                      zcpu.perf_ctl8.msr_write,    &
+                                      zcpu.perf_ctl8.msrw_hex)
+           call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl10.msr_read,     &
+                                      zcpu.perf_ctl10.msr_write,    &
+                                      zcpu.perf_ctl10.msrw_hex)
+           call initMSR_CSTATE_BASE_ADDRESS_ZEN(zcpu.cstate_baseaddr)
+           call initMSR_CPU_WDT_CFG_ZEN(zcpu.cpu_wdt_cfg)
+           call initMSR_SMM_BASE_ZEN(zcpu.smm_base)
+           call initMSR_SMM_CTL_ZEN(zcpu.smm_ctl)
+           call initMSR_LOCAL_SMI_STAT_ZEN(zcpu.local_smi_stat)
+           call initMSR_CORE_ENERGY_STAT_ZEN(zcpu.core_enerstat)
+           call initMSR_PKG_ENERGY_STAT_ZEN(zcpu.pkg_enerstat)
+           call initMSR_CPUID_7_FEATURES_ZEN(zcpu.cpuid7_features)
+           call initMSR_CPUID_PWR_THERM_ZEN(zcpu.pwrtherm)
+           call initMSR_CPUID_FEATURES_ZEN(zcpu.cpuid_features)
+           call initMSR_CPUID_EXT_FEATURES_ZEN(zcpu.cpuid_extfeat)
+           call initMSR_IBS_OP_DATA_ZEN(zcpu.ibs_opdata)
+           call initMSR_IBS_OP_DATA2_ZEN(zcpu.ibs_opdata2)
+           call initMSR_IBS_OP_DATA3_ZEN(zcpu.ibs_opdata3)
+           call initMSR_IBS_FETCH_CTL_ZEN(zcpu.ibs_fetchctl)
+           call initMSR_IBS_FETCH_LINADDR_ZEN(zcpu.fetch_laddr)
+           call initMSR_IBS_FETCH_PHYSADDR_ZEN(zcpu.fetch_phyaddr)
+           call initMSR_IBS_CTL_ZEN(zcpu.ibs_ctl)
+           call initMSR_BP_IBSTGT_RIP_ZEN(zcpu.bp_ibstgt_rip)
+           call initMSR_IC_IBS_EXTD_CTL_ZEN(zcpu.ic_ibs_extdctl)
      end subroutine initZenCPU
 
 end module mod_zen_caps
