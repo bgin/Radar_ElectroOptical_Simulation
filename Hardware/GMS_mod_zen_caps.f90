@@ -157,7 +157,7 @@ module mod_zen_caps
         type(MSR_IBS_FETCH_PHYSADDR_ZEN)     :: ibs_fetch_phyaddr
         type(MSR_IBS_CTL_ZEN)                :: ibs_ctl
         type(MSR_BP_IBSTGT_RIP_ZEN)          :: bp_ibstgt_rip
-        type(MSR_IC_IBS_EXTD_CTL_ZEN)        :: ic_ibs_extdctl
+        type(MSR_IC_IBS_EXTD_CTL_ZEN)        :: ic_ibs_extdctl ! 85 type members
      end type ZenCPU_t
 
      contains
@@ -175,6 +175,12 @@ module mod_zen_caps
            integer(kind=int4),                            intent(in)    :: ordinal
            logical(kind=int4),                            intent(in)    :: to_screen
            ! Exec code .....
+           zcpu.fname     = fname
+           zcpu.cname     = cname
+           zcpu.ncores    = ncores
+           zcpu.nthreads  = nthreads
+           zcpu.ordinal   = ordinal
+           zcpu.to_screen = to_screen
            call initMSR_APIC_BAR_ZEN(zcpu.apic_bar)
            call initMSR_MTRR_ZEN(zcpu.mtrr)
            call initMSR_MCG_CAP_ZEN(zcpu.mcg_cap)
@@ -228,46 +234,46 @@ module mod_zen_caps
            call initMSR_PSTATE_STAT_ZEN(zcpu.pstate_stat)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read, &
                                         zcpu.pstate_def0.msr_write,&
-                                        zcpu.pstate_def0.msrw_hex)
+                                        zcpu.pstate_def0.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def1.msr_read, &
                                         zcpu.pstate_def1.msr_write,&
-                                        zcpu.pstate_def1.msrw_hex)
+                                        zcpu.pstate_def1.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def2.msr_read, &
                                         zcpu.pstate_def2.msr_write,&
-                                        zcpu.pstate_def2.msrw_hex)
+                                        zcpu.pstate_def2.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def3.msr_read, &
                                         zcpu.pstate_def3.msr_write,&
-                                        zcpu.pstate_def3.msrw_hex)
+                                        zcpu.pstate_def3.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def4.msr_read, &
                                         zcpu.pstate_def4.msr_write,&
-                                        zcpu.pstate_def4.msrw_hex)
+                                        zcpu.pstate_def4.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def5.msr_read, &
                                         zcpu.pstate_def5.msr_write,&
-                                        zcpu.pstate_def5.msrw_hex)
+                                        zcpu.pstate_def5.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def6.msr_read, &
                                         zcpu.pstate_def6.msr_write,&
-                                        zcpu.pstate_def6.msrw_hex)
+                                        zcpu.pstate_def6.msrw_hex,zcpu.nthreads)
            call initMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def7.msr_read, &
                                         zcpu.pstate_def7.msr_write,&
-                                        zcpu.pstate_def7.msrw_hex)
+                                        zcpu.pstate_def7.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl0.msr_read,     &
                                       zcpu.perf_ctl0.msr_write,    &
-                                      zcpu.perf_ctl0.msrw_hex)
+                                      zcpu.perf_ctl0.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl2.msr_read,     &
                                       zcpu.perf_ctl2.msr_write,    &
-                                      zcpu.perf_ctl2.msrw_hex)
+                                      zcpu.perf_ctl2.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl4.msr_read,     &
                                       zcpu.perf_ctl4.msr_write,    &
-                                      zcpu.perf_ctl4.msrw_hex)
+                                      zcpu.perf_ctl4.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl6.msr_read,     &
                                       zcpu.perf_ctl6.msr_write,    &
-                                      zcpu.perf_ctl6.msrw_hex)
+                                      zcpu.perf_ctl6.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl8.msr_read,     &
                                       zcpu.perf_ctl8.msr_write,    &
-                                      zcpu.perf_ctl8.msrw_hex)
+                                      zcpu.perf_ctl8.msrw_hex,zcpu.nthreads)
            call initMSR_PERF_CTLX_ZEN(zcpu.perf_ctl10.msr_read,     &
                                       zcpu.perf_ctl10.msr_write,    &
-                                      zcpu.perf_ctl10.msrw_hex)
+                                      zcpu.perf_ctl10.msrw_hex,zcpu.nthreads)
            call initMSR_CSTATE_BASE_ADDRESS_ZEN(zcpu.cstate_baseaddr)
            call initMSR_CPU_WDT_CFG_ZEN(zcpu.cpu_wdt_cfg)
            call initMSR_SMM_BASE_ZEN(zcpu.smm_base)
@@ -289,5 +295,123 @@ module mod_zen_caps
            call initMSR_BP_IBSTGT_RIP_ZEN(zcpu.bp_ibstgt_rip)
            call initMSR_IC_IBS_EXTD_CTL_ZEN(zcpu.ic_ibs_extdctl)
      end subroutine initZenCPU
+
+     subroutine collectZenCaps(zcpu,commands,filenames,reset)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: collectZenCaps
+           type(ZenCPU_t),                       intent(inout) :: zcpu
+           character(len=62),    dimension(85),  intent(in)    :: commands
+           character(len=48),    dimension(85),  intent(in)    :: filenames
+           logical(kind=int1),   dimension(22),  intent(in)    :: reset
+           ! Locals
+           character(len=256), automatic :: ermsg
+           integer(kind=int4), automatic :: err
+           integer(kind=int4), automatic :: iounit
+           integer(kind=int2), automatic :: ier
+           ! Exec code .....
+           ermsg  = " "
+           err    = 0
+           iounit = 100
+           ier    = -2
+           call AccessMSR_APIC_BAR_ZEN(zcpu.apic_bar,commands(1),filenames(1),ier)
+           call ReadMSR_APIC_BAR_ZEN(zcpu.apic_bar,iounit,zcpu.nthreads,filenames(1),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_APIC_BAR_ZEN --  failed with an error:", ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 101
+           ier    = -2
+           call AccessMSR_MTRR_ZEN(zcpu.mtrr,commands(2),filenames(2),ier)
+           call ReadMSR_MTRR_ZEN(zcpu.mtrr,iounit,zcpu.ncores,filenames(2),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_ZEN -- failed with an error:", ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 102
+           ier    = -2
+           call AccessMSR_MCG_CAP_ZEN(zcpu.mcg_cap,commands(3),filenames(3),ier)
+           call ReadMSR_MCG_CAP_ZEN(zcpu.mcg_cap,iounit,zcpu.nthreads,filenames(3),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MCG_CAP_ZEN -- failed with an error:",ermsg)
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 103
+           ier    = -2
+           call AccessMSR_MCG_STAT_ZEN(zcpu.mcg_stat,commands(4),filenames(4),ier)
+           call ReadMSR_MCG_STAT_ZEN(zcpu.mcg_stat,iounit,zcpu.nthreads,filenames(4),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MCG_STAT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 104
+           ier    = -2
+           call AccessMSR_MCG_CTL_ZEN(zcpu.mcg_ctl,commands(5),filenames(5),ier)
+           call ReadMSR_MCG_CTL_ZEN(zcpu.mcg_ctl,iounit,zcpu.nthreads,filenames(5),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MCG_CTL_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 105
+           ier    = -2
+           call AccessMSR_DBG_CTL_ZEN(zcpu.dbg_ctl,commands(6),filenames(6),ier)
+           call ReadMSR_DBG_CTL_ZEN(zcpu.dbg_ctl,iounit,zcpu.nthreads,filenames(6),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_DBG_CTL_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 106
+           ier    = -2
+           call AccessMSR_BR_FROM_IP_ZEN(zcpu.br_fromip,commands(7),reset(1),filenames(7),ier)
+           call ReadMSR_BR_FROM_IP_ZEN(zcpu.br_fromip,iounit,zcpu.nthreads,filenames(7),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_BR_FROM_IP_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 107
+           ier    = -2
+           call AccessMSR_BR_TO_IP_ZEN(zcpu.br_toip,commands(8),reset(2),filenames(8),ier)
+           call ReadMSR_BR_TO_IP_ZEN(zcpu.br_toip,iounit,zcpu.nthreads,filenames(8),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_BR_TO_IP_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 108
+           ier    = -2
+           call AccessMSR_LAST_EXP_FROM_IP_ZEN(zcpu.lexp_fromip,commands(9),reset(3),filenames(9),ier)
+           call ReadMSR_LAST_EXP_FROM_IP_ZEN(zcpu.lexp_fromip,iounit,zcpu.nthreads,filenames(9),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_LAST_EXP_FROM_IP_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 109
+           ier    = -2
+           call AccessMSR_LAST_EXP_TO_IP_ZEN(zcpu.lexp_toip,commands(10),reset(4),filenames(10),ier)
+           call ReadMSR_LAST_EXP_TO_IP_ZEN(zcpu.lexp_toip,iounit,zcpu.nthreads,filenames(10),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_LAST_EXP_TO_IP_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 110
+           ier    = -2
+           call AccessMSR_MTRR_FIXED_ZEN(zcpu.mtrr_fixed,commands(11),filenames(11),ier)
+           call ReadMSR_MTRR_FIXED_ZEN(zcpu.mtrr_fixed,iounit,zcpu.nthreads,filenames(11),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 111
+           ier    = -2
+           
+     end subroutine collectZenCaps
 
 end module mod_zen_caps
