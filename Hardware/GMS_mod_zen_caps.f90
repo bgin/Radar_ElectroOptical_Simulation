@@ -411,6 +411,312 @@ module mod_zen_caps
            err    = 0
            iounit = 111
            ier    = -2
+           call AccessMSR_MTRR_FIXED16K_ZEN(zcpu.mtrr_fixed16k,commands(12),filenames(12),ier)
+           call ReadMSR_MTRR_FIXED16K_ZEN(zcpu.mtrr_fixed16k,iounit,zcpu.ncores,filenames(11),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED16K_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 112
+           ier    = -2
+           call AccessMSR_MTRR_FIXED16K1_ZEN(zcpu.mtrr_fixed16k1,commands(13),filenames(13),ier)
+           call ReadMSR_MTRR_FIXED16K1_ZEN(zcpu.mtrr_fixed16k1,iounit,zcpu.ncores,filenames(13),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED16K1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 113
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K_ZEN(zcpu.mtrr_fixed4k,commands(14),filenames(14),ier)
+           call ReadMSR_MTRR_FIXED4K_ZEN(zcpu.mtrr_fixed4k,iounit,zcpu.ncores,filenames(14),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 114
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K1_ZEN(zcpu.mtrr_fixed4k1,commands(15),filenames(15),ier)
+           call ReadMSR_MTRR_FIXED4K1_ZEN(zcpu.mtrr_fixed4k1,iounit,zcpu.ncores,filenames(15),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 115
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K2_ZEN(zcpu.mtrr_fixed4k2,commands(16),filenames(16),ier)
+           call ReadMSR_MTRR_FIXED4K2_ZEN(zcpu.mtrr_fixed4k2,iounit,zcpu.ncores,filenames(16),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 116
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K3_ZEN(zcpu.mtrr_fixed4k3,commands(17),filenames(17),ier)
+           call ReadMSR_MTRR_FIXED4K3_ZEN(zcpu.mtrr_fixed4k3,iounit,zcpu.ncores,filenames(17),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 117
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K4_ZEN(zcpu.mtrr_fixed4k4,commands(18),filenames(18),ier)
+           call ReadMSR_MTRR_FIXED4K4_ZEN(zcpu.mtrr_fixed4k4,iounit,zcpu.ncores,filenames(18),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K4_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 118
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K5_ZEN(zcpu.mtrr_fixed4k5,commands(19),filenames(19),ier)
+           call ReadMSR_MTRR_FIXED4K5_ZEN(zcpu.mtrr_fixed4k5,iounit,zcpu.ncores,filenames(19),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K5_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 119
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K6_ZEN(zcpu.mtrr_fixed4k6,commands(20),filenames(20),ier)
+           call ReadMSR_MTRR_FIXED4K6_ZEN(zcpu.mtrr_fixed4k6,iounit,zcpu.ncores,filenames(20),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K6_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 120
+           ier    = -2
+           call AccessMSR_MTRR_FIXED4K7_ZEN(zcpu.mtrr_fixed4k7,commands(21),filenames(21),ier)
+           call ReadMSR_MTRR_FIXED4K7_ZEN(zcpu.mtrr_fixed4k7,iounit,zcpu.ncores,filenames(21),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_FIXED4K7_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 121
+           ier    = -2
+           call AccessMSR_PAT_ZEN(zcpu.pat,commands(22),filenames(22),ier)
+           call ReadMSR_PAT_ZEN(zcpu.pat,iounit,zcpu.nthreads,filenames(22),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PAT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 122
+           ier    = -2
+           call AccessMSR_MTRR_DEFTYPE_ZEN(zcpu.mtrr_deftype,commands(23),filenames(23),ier)
+           call ReadMSR_MTRR_DEFTYPE(zcpu.mtrr_deftype,iounit,zcpu.ncores,filenames(23),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MTRR_DEFTYPE_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 123
+           ier    = -2
+           call AccessMSR_EFER_ZEN(zcpu.efer,commands(24),filenames(24),ier)
+           call ReadMSR_EFER_ZEN(zcpu.efer,iounit,zcpu.nthreads,filenames(24),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_EFER_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 124
+           ier    = -2
+           call AccessMSR_SYS_CFG_ZEN(zcpu.sys_cfg,commands(25),filenames(25),ier)
+           call ReadMSR_SYS_CFG_ZEN(zcpu.sys_cfg,iounit,zcpu.ncores,filenames(25),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_SYS_CFG_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 125
+           ier    = -2
+           call AccessMSR_HW_CFG_ZEN(zcpu.hw_cfg,commands(26),filenames(26),ier)
+           call ReadMSR_HW_CFG_ZEN(zcpu.hw_cfg,iounit,zcpu.ncores,filenames(26),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_HW_CFG_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 126
+           ier    = -2
+           call AccessMSR_TOP_MEM_ZEN(zcpu.top_mem,commands(27),filenames(27),ier)
+           call ReadMSR_TOP_MEM_ZEN(zcpu.top_mem,iounit,zcpu.ncores,filenames(27),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_TOP_MEM_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 127
+           ier    = -2
+           call AccessMSR_TOP_MEM2_ZEN(zcpu.top_mem2,commands(28),filenames(28),ier)
+           call ReadMSR_TOP_MEM2_ZEN(zcpu.top_mem2,iounit,zcpu.ncores,filenames(28),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_TOP_MEM2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 128
+           ier    = -2
+           call AccessMSR_IORR_BASE1_ZEN(zcpu.iorr_base1,commands(29),filenames(29),ier)
+           call ReadMSR_IORR_BASE1_ZEN(zcpu.iorr_base1,iounit,zcpu.ncores,filenames(29),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_BASE1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 129
+           ier    = -2
+           call AccessMSR_IORR_BASE2_ZEN(zcpu.iorr_base2,commands(30),filenames(30),ier)
+           call ReadMSR_IORR_BASE2_ZEN(zcpu.iorr_base2,iounit,zcpu.ncores,filenames(30),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_BASE2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 130
+           ier    = -2
+           call AccessMSR_IORR_BASE3_ZEN(zcpu.iorr_base3,commands(31),filenames(31),ier)
+           call ReadMSR_IORR_BASE3_ZEN(zcpu.iorr_base3,iounit,zcpu.ncores,filenames(31),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_BASE3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 131
+           ier    = -2
+           call AccessMSR_IORR_MASK1_ZEN(zcpu.iorr_mask1,commands(32),filenames(32),ier)
+           call ReadMSR_IORR_MASK1_ZEN(zcpu.iorr_mask1,iounit,zcpu.ncores,filenames(32),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_MASK1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 132
+           ier    = -2
+           call AccessMSR_IORR_MASK2_ZEN(zcpu.iorr_mask2,commands(33),filenames(33),ier)
+           call ReadMSR_IORR_MASK2_ZEN(zcpu.iorr_mask2,iounit,zcpu.ncores,filenames(33),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_MASK2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 133
+           ier    = -2
+           call AccessMSR_IORR_MASK3_ZEN(zcpu.iorr_mask3,commands(34),filenames(34),ier)
+           call ReadMSR_IORR_MASK3_ZEN(zcpu.iorr_mask3,iounit,zcpu.ncores,filenames(33),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IORR_MASK3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 133
+           ier    = -2
+           call AccessMSR_PERF_LEGACY_CTL0_ZEN(zcpu.perf_legctl0,commands(35),filenames(35),ier)
+           call ReadMSR_PERF_LEGACY_CTL0_ZEN(zcpu.perf_legctl0,iounit,zcpu.nthreads,filenames(35),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PERF_LEGACY_CTL0_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 134
+           ier    = -2
+           call AccessMSR_PERF_LEGACY_CTL1_ZEN(zcpu.perf_legctl1,commands(36),filenames(36),ier)
+           call ReadMSR_PERF_LEGACY_CTL1_ZEN(zcpu.perf_legctl1,iounit,zcpu.nthreads,filenames(36),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PERF_LEGACY_CTL1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 135
+           ier    = -2
+           call AccessMSR_PERF_LEGACY_CTL2_ZEN(zcpu.perf_legctl2,commands(37),filenames(37),ier)
+           call ReadMSR_PERF_LEGACY_CTL2_ZEN(zcpu.perf_legctl2,iounit,zcpu.nthreads,filenames(37),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PERF_LEGACY_CTL2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 136
+           ier    = -2
+           call AccessMSR_PERF_LEGACY_CTL3_ZEN(zcpu.perf_legctl3,commands(38),filenames(38),ier)
+           call ReadMSR_PERF_LEGACY_CTL3_ZEN(zcpu.perf_legctl3,iounit,zcpu.nthreads,filenames(38),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PERF_LEGACY_CTL3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 137
+           ier    = -2
+           call AccessMSR_MC_EXP_REDIR_ZEN(zcpu.mc_expredir,commands(39),filenames(39),ier)
+           call ReadMSR_MC_EXP_REDIR_ZEN(zcpu.mc_expredir,iounit,zcpu.nthreads,filenames(39),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MC_EXP_REDIR_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 138
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING0_ZEN(zcpu.proc_name0,commands(40),filenames(40),ier)
+           call ReadMSR_PROC_NAME_STRING0(zcpu.proc_name0,iounit,zcpu.ncores,filenames(40),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING0_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 139
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING1_ZEN(zcpu.proc_name1,commands(41),filenames(41),ier)
+           call ReadMSR_PROC_NAME_STRING1(zcpu.proc_name1,iounit,zcpu.ncores,filenames(41),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 140
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING2_ZEN(zcpu.proc_name2,commands(42),filenames(42),ier)
+           call ReadMSR_PROC_NAME_STRING2(zcpu.proc_name2,iounit,zcpu.ncores,filenames(42),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 141
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING3_ZEN(zcpu.proc_name3,commands(43),filenames(43),ier)
+           call ReadMSR_PROC_NAME_STRING3(zcpu.proc_name3,iounit,zcpu.ncores,filenames(43),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 142
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING4_ZEN(zcpu.proc_name4,commands(44),filenames(44),ier)
+           call ReadMSR_PROC_NAME_STRING4(zcpu.proc_name4,iounit,zcpu.ncores,filenames(44),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING4_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 143
+           ier    = -2
+           call AccessMSR_PROC_NAME_STRING5_ZEN(zcpu.proc_name5,commands(45),filenames(45),ier)
+           call ReadMSR_PROC_NAME_STRING5(zcpu.proc_name5,iounit,zcpu.ncores,filenames(45),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PROC_NAME_STRING5_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 144
+           ier    = -2
            
      end subroutine collectZenCaps
 
