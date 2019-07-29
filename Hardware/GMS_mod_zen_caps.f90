@@ -296,12 +296,14 @@ module mod_zen_caps
            call initMSR_IC_IBS_EXTD_CTL_ZEN(zcpu.ic_ibs_extdctl)
      end subroutine initZenCPU
 
-     subroutine collectZenCaps(zcpu,commands,filenames,reset)
+     subroutine collectZenCaps(zcpu,commands,filenames,addrs,msrrx,nth,reset)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: collectZenCaps
-           type(ZenCPU_t),                       intent(inout) :: zcpu
-           character(len=62),    dimension(85),  intent(in)    :: commands
-           character(len=48),    dimension(85),  intent(in)    :: filenames
-           logical(kind=int1),   dimension(22),  intent(in)    :: reset
+           type(ZenCPU_t),                           intent(inout) :: zcpu
+           character(len=62),    dimension(85),      intent(in)    :: commands
+           character(len=48),    dimension(85),      intent(in)    :: filenames
+           character(len=10),    dimension(8),       intent(in)    :: addrs
+           logical(kind=int8b),  dimension(8,0:nth), intent(inout) :: msrrx
+           logical(kind=int1),   dimension(22),      intent(in)    :: reset
            ! Locals
            character(len=256), automatic :: ermsg
            integer(kind=int4), automatic :: err
@@ -717,7 +719,140 @@ module mod_zen_caps
            err    = 0
            iounit = 144
            ier    = -2
-           
+           call AccessMSR_MMIO_CFG_BASE_ADDR_ZEN(zcpu.mmio_cfgbase,commands(46),filenames(46),ier)
+           call ReadMSR_MMIO_CFG_BASE_ADDR_ZEN(zcpu.mmio_cfgbase,iounit,zcpu.ncores,filenames(46),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_MMIO_CFG_BASE_ADDR_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 145
+           ier    = -2
+           call AccessMSR_INT_PENDING_ZEN(zcpu.int_pending,commands(47),filenames(47),ier)
+           call ReadMSR_INT_PENDING_ZEN(zcpu.int_pending,iounit,zcpu.ncores,filenames(47),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_INT_PENDING_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 146
+           ier    = -2
+           call AccessMSR_TRIG_IO_CYCLE_ZEN(zcpu.trig_iocycle,commands(48),filenames(48),ier)
+           call ReadMSR_TRIG_IO_CYCLE_ZEN(zcpu.trig_iocycle,iounit,zcpu.nthreads,filenames(48),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_TRIG_IO_CYCLE_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 147
+           ier    = -2
+           call AccessMSR_PSTATE_CUR_LIMIT_ZEN(zcpu.pstate_curlimit,commands(49),filenames(49),ier)
+           call ReadMSR_PSTATE_CUR_LIMIT_ZEN(zcpu.pstate_curlimit,iounit,zcpu.ncores,filenames(49),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_CUR_LIMIT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 148
+           ier    = -2
+           call AccessMSR_PSTATE_CTL_ZEN(zcpu.pstate_ctl,commands(50),filenames(50),ier)
+           call ReadMSR_PSTATE_CTL_ZEN(zcpu.pstate_ctl,iounit,zcpu.nthreads,filenames(50),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_CTL_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 149
+           ier    = -2
+           call AccessMSR_PSTATE_STAT_ZEN(zcpu.pstate_stat,commands(51),filenames(51),ier)
+           call ReadMSR_PSTATE_STAT_ZEN(zcpu.pstate_stat,iounit,zcpu.ncores,commands(51),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_STAT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 150
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(1),commands(52),filenames(52),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(1,:),zcpu.nthreads,iounit,filenames(52), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF0_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 151
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(2),commands(53),filenames(53),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(2,:),zcpu.nthreads,iounit,filenames(53), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF1_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 152
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(3),commands(54),filenames(54),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(3,:),zcpu.nthreads,iounit,filenames(54), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 153
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(4),commands(55),filenames(55),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(4,:),zcpu.nthreads,iounit,filenames(55), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 154
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(5),commands(56),filenames(56),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(5,:),zcpu.nthreads,iounit,filenames(56), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF4_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 155
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(6),commands(57),filenames(57),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(6,:),zcpu.nthreads,iounit,filenames(57), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF5_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 156
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(7),commands(58),filenames(58),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(7,:),zcpu.nthreads,iounit,filenames(58), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF6_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 157
+           ier    = -2
+           call AccessMSR_PSTATE_DEFX_ZEN(addrs(8),commands(59),filenames(59),ier)
+           call ReadMSR_PSTATE_DEFX_ZEN(zcpu.pstate_def0.msr_read(8,:),zcpu.nthreads,iounit,filenames(59), &
+                ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PSTATE_DEF7_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 158
+           ier    = -2
      end subroutine collectZenCaps
 
 end module mod_zen_caps
