@@ -955,6 +955,61 @@ module mod_zen_caps
            err    = 0
            iounit = 169
            ier    = -2
+           call AccessMSR_CORE_ENERGY_STAT_ZEN(zcpu.core_enerstat,commands(71),reset(18),filenames(71),ier)
+           call ReadMSR_CORE_ENERGY_STAT_ZEN(zcpu.core_enerstat,iounit,zcpu.ncores,filenames(71),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_CORE_ENERGY_STAT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 170
+           ier    = -2
+           call AccessMSR_PKG_ENERGY_STAT_ZEN(zcpu.pkg_enerstat,commands(72),filenames(72),ier)
+           call ReadMSR_PKG_ENERGY_STAT_ZEN(zcpu.pkg_enerstat,iounit,filenames(73),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_PKG_ENERGY_STAT_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 171
+           ier    = -2
+           call AccessMSR_CPUID_7_FEATURES_ZEN(zcpu.cpuid7_features,commands(73),filenames(73),ier)
+           call ReadMSR_CPUID_7_FEATURES_ZEN(zcpu.cpuid7_features,iounit,zcpu.nthreads,filenames(74),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_CPUID_7_FEATURES_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 172
+           ier    = -2
+           call AccessMSR_CPUID_PWR_THERM_ZEN(zcpu.cpuid_pwrtherm,commands(74),filenames(74),ier)
+           call ReadMSR_CPUID_PWR_THERM_ZEN(zcpu.cpuid_pwrtherm,iounit,zcpu.nthreads,filenames(74),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_CPUID_PWR_THERM_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 173
+           ier    = -2
+           call AccessMSR_CPUID_FEATURES_ZEN(zcpu.cpuid_features,commands(75),filenames(75),ier)
+           call ReadMSR_CPUID_FEATURES_ZEN(zcpu.cpuid_features,iounit,zcpu.nthreads,filenames(75),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_CPUID_FEATURES_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 174
+           ier    = -2
+           call AccessMSR_CPUID_EXT_FEATURES_ZEN(zcpu.cpuid_extfeat,commands(76),filenames(76),ier)
+           call ReadMSR_CPUID_EXT_FEATURES_ZEN(zcpu.cpuid_extfeat,iounit,zcpu.nthreads,filenames(76),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_CPUID_EXT_FEATURES_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 175
+           ier    = -2
+           
      end subroutine collectZenCaps
 
 end module mod_zen_caps
