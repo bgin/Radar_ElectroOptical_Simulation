@@ -156,8 +156,8 @@ module mod_zen_caps
         type(MSR_IBS_FETCH_LINADDR_ZEN)      :: ibs_fetch_laddr
         type(MSR_IBS_FETCH_PHYSADDR_ZEN)     :: ibs_fetch_phyaddr
         type(MSR_IBS_CTL_ZEN)                :: ibs_ctl
-        type(MSR_BP_IBSTGT_RIP_ZEN)          :: bp_ibstgt_rip
-        type(MSR_IC_IBS_EXTD_CTL_ZEN)        :: ic_ibs_extdctl ! 85 type members
+       ! type(MSR_BP_IBSTGT_RIP_ZEN)         :: bp_ibstgt_rip
+       !  type(MSR_IC_IBS_EXTD_CTL_ZEN)      :: ic_ibs_extdctl ! 83 type members
      end type ZenCPU_t
 
      contains
@@ -292,21 +292,21 @@ module mod_zen_caps
            call initMSR_IBS_FETCH_LINADDR_ZEN(zcpu.fetch_laddr)
            call initMSR_IBS_FETCH_PHYSADDR_ZEN(zcpu.fetch_phyaddr)
            call initMSR_IBS_CTL_ZEN(zcpu.ibs_ctl)
-           call initMSR_BP_IBSTGT_RIP_ZEN(zcpu.bp_ibstgt_rip)
-           call initMSR_IC_IBS_EXTD_CTL_ZEN(zcpu.ic_ibs_extdctl)
+          ! call initMSR_BP_IBSTGT_RIP_ZEN(zcpu.bp_ibstgt_rip)
+          ! call initMSR_IC_IBS_EXTD_CTL_ZEN(zcpu.ic_ibs_extdctl)
      end subroutine initZenCPU
 
      subroutine collectZenCaps(zcpu,commands,filenames,addrs,addrs2,msrrx,msrrx2,nth,reset)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: collectZenCaps
            type(ZenCPU_t),                           intent(inout) :: zcpu
-           character(len=62),    dimension(85),      intent(in)    :: commands
-           character(len=48),    dimension(85),      intent(in)    :: filenames
+           character(len=62),    dimension(83),      intent(in)    :: commands
+           character(len=48),    dimension(83),      intent(in)    :: filenames
            character(len=10),    dimension(8),       intent(in)    :: addrs
            character(len=10),    dimension(6),       intent(in)    :: addrs2
            logical(kind=int8b),  dimension(8,0:nth), intent(inout) :: msrrx
            logical(kind=int8b),  dimension(6,0:nth), intent(inout) :: msrrx2
            integer(kind=int4),                       intent(in)    :: nth
-           logical(kind=int1),   dimension(22),      intent(in)    :: reset
+           logical(kind=int1),   dimension(24),      intent(in)    :: reset
            ! Locals
            character(len=256), automatic :: ermsg
            integer(kind=int4), automatic :: err
@@ -1009,7 +1009,69 @@ module mod_zen_caps
            err    = 0
            iounit = 175
            ier    = -2
-           
+           call AccessMSR_IBS_OP_DATA_ZEN(zcpu.ibs_opdata,commands(77),reset(19),filenames(77),ier)
+           call ReadMSR_IBS_OP_DATA_ZEN(zcpu.ibs_opdata,iounit,zcpu.nthreads,filenames(77),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_OP_DATA_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 176
+           ier    = -2
+           call AccessMSR_IBS_OP_DATA2_ZEN(zcpu.ibs_opdata2,commands(78),reset(20),filenames(78),ier)
+           call ReadMSR_IBS_OP_DATA2_ZEN(zcpu.ibs_opdata2,iounit,zcpu.nthreads,filenames(78),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_OP_DATA2_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 177
+           ier    = -2
+           call AccessMSR_IBS_OP_DATA3_ZEN(zcpu.ibs_opdata3,commands(79),reset(20),filenames(79),ier)
+           call ReadMSR_IBS_OP_DATA3_ZEN(zcpu.ibs_opdata3,iounit,zcpu.nthreads,filenames(79),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_OP_DATA3_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 178
+           ier    = -2
+           call AccessMSR_IBS_FETCH_CTL_ZEN(zcpu.ibs_fetchctl,commands(80),reset(21),filenames(80),ier)
+           call ReadMSR_IBS_FETCH_CTL_ZEN(zcpu.ibs_fetchctl,iounit,zcpu.ncores,filenames(80),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_FETCH_CTL_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 179
+           ier    = -2
+           call AccessMSR_IBS_FETCH_LINADDR_ZEN(zcpu.ibs_fetch_laddr,commands(81),reset(22),filenames(81),ier)
+           call ReadMSR_IBS_FETCH_LINADDR_ZEN(zcpu.ibs_fetch_laddr,iounit,zcpu.ncores,filenames(81),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_FETCH_LINADDR_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 180
+           ier    = -2
+           call AccessMSR_IBS_FETCH_PHYADDR_ZEN(zcpu.ibs_fetch_phyaddr,commands(82),reset(23),filenames(82),ier)
+           call ReadMSR_IBS_FETCH_PHYADDR_ZEN(zcpu.ibs_fetch_phyadr,iounit,zcpu.ncores,filenames(82),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_FETCH_PHYADDR_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 181
+           ier    = -2
+           call AccessMSR_IBS_CTL_ZEN(zcpu.ibs_ctl,commands(83),reset(24),filenames(83),ier)
+           call ReadMSR_IBS_CTL_ZEN(zcpu.ibs_ctl,iounit,zcpu.nthreads,filenames(83),ier,err,ermsg)
+           if(err == -1 .or. err > 0) then
+              print*, "ReadMSR_IBS_CTL_ZEN -- failed with an error:",ermsg
+           end if
+           ermsg  = " "
+           err    = 0
+           iounit = 182
+           ier    = -2
      end subroutine collectZenCaps
 
 end module mod_zen_caps
