@@ -302,8 +302,240 @@ module mod_core_events
   !   "EventName": "TX_EXEC.MISC5",
   !   "BriefDescription": "Counts the number of times an HLE XACQUIRE instruction was executed inside an RTM transactional region.
   character(*),     parameter, public :: TX_EXEC_MISC5                             = "r105D"
+  !    "EventName": "RS_EVENTS.EMPTY_CYCLES",
+  !  "BriefDescription": "Cycles when Reservation Station (RS) is empty for the thread",
+  !  "PublicDescription": "This event counts cycles when the Reservation Station ( RS ) is empty for the thread. The RS is a structure that buffers allocated micro-ops from the Front-end.
+  !  If there are many cycles when the RS is empty, it may represent an underflow of instructions delivered from the Front-end.
+  character(*),     parameter, public :: RS_EVENTS_EMPTY_CYCLES                    = "r015E"
+  !  "EventName": "RS_EVENTS.EMPTY_END",
+  !   "BriefDescription": "Counts end of periods where the Reservation Station (RS) was empty. Could be useful to precisely locate Frontend Latency Bound issues.
+  character(*),     parameter, public :: RS_EVENTS_EMPTY_END                       = "r015E"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_DATA_RD",
+  !  "BriefDescription": "Offcore outstanding Demand Data Read transactions in uncore queue.",
+  !  "PublicDescription": "Offcore outstanding demand data read transactions in SQ to uncore. Set Cmask=1 to count cycles.
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_DATA_RD = "r0160"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DEMAND_DATA_RD",
+  !  "BriefDescription": "Cycles when offcore outstanding Demand Data Read transactions are present in SuperQueue (SQ), queue to uncore."
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DEMAND_DATA_RD = "r0160"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_DATA_RD_GE_6",
+  !   "BriefDescription": "Cycles with at least 6 offcore outstanding Demand Data Read transactions in uncore queue.
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_DATA_RD_GE_6        = "r0160"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_CODE_RD",
+  !  "BriefDescription": "Offcore outstanding code reads transactions in SuperQueue (SQ), queue to uncore, every cycle",
+  !  "PublicDescription": "Offcore outstanding Demand code Read transactions in SQ to uncore. Set Cmask=1 to count cycles.
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_CODE_R              = "r0260"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_RFO",
+  !  "BriefDescription": "Offcore outstanding RFO store transactions in SuperQueue (SQ), queue to uncore",
+  !  "PublicDescription": "Offcore outstanding RFO store transactions in SQ to uncore. Set Cmask=1 to count cycles."
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_RFO                = "r0460"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD",
+  !  "BriefDescription": "Offcore outstanding cacheable Core Data Read transactions in SuperQueue (SQ), queue to uncore",
+  !  "PublicDescription": "Offcore outstanding cacheable data read transactions in SQ to uncore. Set Cmask=1 to count cycles."
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD               = "r0860"
+  !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD",
+  !  "BriefDescription": "Cycles when offcore outstanding cacheable Core Data Read transactions are present in SuperQueue (SQ), queue to uncore."
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD       = "r0860"
+  !   "EventName": "LOCK_CYCLES.SPLIT_LOCK_UC_LOCK_DURATION",
+  !  "BriefDescription": "Cycles when L1 and L2 are locked due to UC or split lock",
+  !  "PublicDescription": "Cycles in which the L1D and L2 are locked, due to a UC lock or split lock.
+  character(*),     parameter, public :: LOCK_CYCLES-SPLIT_LOCK_UC_LOCK_DURATION                = "r0163"
+  !   "EventName": "LOCK_CYCLES.CACHE_LOCK_DURATION",
+  !  "BriefDescription": "Cycles when L1D is locked",
+  !  "PublicDescription": "Cycles in which the L1D is locked.
+  character(*),     parameter, public :: LOCK_CYCLES_CACHE_LOCK_DURATION                        = "r0263"
+  !   "EventName": "IDQ.EMPTY",
+  !   "BriefDescription": "Instruction Decode Queue (IDQ) empty cycles"
+  character(*),     parameter, public :: IDQ_EMPTY                                              = "r0279"
+  !    "EventName": "IDQ.MITE_UOPS",
+  !  "BriefDescription": "Uops delivered to Instruction Decode Queue (IDQ) from MITE path",
+  !  "PublicDescription": "Increment each cycle # of uops delivered to IDQ from MITE path. Set Cmask = 1 to count cycles.
+  character(*),     parameter, public :: IDQ_MITE_UOPS                                          = "r0479"
+  !   "EventName": "IDQ.MITE_CYCLES",
+  !  "BriefDescription": "Cycles when uops are being delivered to Instruction Decode Queue (IDQ) from MITE path.
+  character(*),     parameter, public :: IDQ_MITE_CYCLES                                        = "r0479"
+  !   "EventName": "IDQ.DSB_UOPS",
+  !  "BriefDescription": "Uops delivered to Instruction Decode Queue (IDQ) from the Decode Stream Buffer (DSB) path",
+  !  "PublicDescription": "Increment each cycle. # of uops delivered to IDQ from DSB path. Set Cmask = 1 to count cycles.
+  character(*),     parameter, public :: IDQ_DSB_UOPS                                           = "r0879"
+  !   "EventName": "IDQ.MS_DSB_UOPS",
+  !  "BriefDescription": "Uops initiated by Decode Stream Buffer (DSB) that are being delivered to Instruction Decode Queue (IDQ) while Microcode Sequenser (MS) is busy",
+  !  "PublicDescription": "Increment each cycle # of uops delivered to IDQ when MS_busy by DSB. Set Cmask = 1 to count cycles. Add Edge=1 to count # of delivery
+  character(*),     parameter, public :: IDQ_MS_DSB_UOPS                                        = "r1079"
+  !   "EventName": "IDQ.MS_DSB_CYCLES",
+  !  "BriefDescription": "Cycles when uops initiated by Decode Stream Buffer (DSB) are being delivered to Instruction Decode Queue (IDQ) while Microcode Sequenser (MS) is busy
+  character(*),     parameter, public :: IDQ_MS_DSB_CYCLES                                      = "r1079"
+  !    "EventName": "IDQ.MS_DSB_OCCUR",
+  !   "BriefDescription": "Deliveries to Instruction Decode Queue (IDQ) initiated by Decode Stream Buffer (DSB) while Microcode Sequenser (MS) is busy
+  character(*),     parameter, public :: IDQ_MS_DBS_OCCUR                                       = "r1079"
+  !    "EventName": "IDQ.ALL_DSB_CYCLES_4_UOPS",
+  !  "BriefDescription": "Cycles Decode Stream Buffer (DSB) is delivering 4 Uops",
+  !  "PublicDescription": "Counts cycles DSB is delivered four uops. Set Cmask = 4.
+  character(*),     parameter, public :: IDQ_ALL_DBS_CYCLES_4_UOPS                              = "r1879"
+  !   "EventName": "IDQ.ALL_DSB_CYCLES_ANY_UOPS",
+  !  "BriefDescription": "Cycles Decode Stream Buffer (DSB) is delivering any Uop",
+  !  "PublicDescription": "Counts cycles DSB is delivered at least one uops. Set Cmask = 1.",
+  character(*),     parameter, public :: IDQ_ALL_DBS_CYCLES_ANY_UOPS                            = "r1879"
+  !   "EventName": "IDQ.MS_MITE_UOPS",
+  !  "BriefDescription": "Uops initiated by MITE and delivered to Instruction Decode Queue (IDQ) while Microcode Sequenser (MS) is busy",
+  !  "PublicDescription": "Increment each cycle # of uops delivered to IDQ when MS_busy by MITE. Set Cmask = 1 to count cycles."
+  character(*),     parameter, public :: IDQ_MS_MITE_UOPS                                       = "r2079"
+  !    "EventName": "IDQ.ALL_MITE_CYCLES_4_UOPS",
+  !  "BriefDescription": "Cycles MITE is delivering 4 Uops",
+  !  "PublicDescription": "Counts cycles MITE is delivered four uops. Set Cmask = 4.
+  character(*),     parameter, public :: IDQ_ALL_MITE_CYCLES_4_UOPS                             = "r2479"
+  !   "EventName": "IDQ.ALL_MITE_CYCLES_ANY_UOPS",
+  !  "BriefDescription": "Cycles MITE is delivering any Uop",
+  !  "PublicDescription": "Counts cycles MITE is delivered at least one uop. Set Cmask = 1
+  character(*),     parameter, public :: IDQ_ALL_MITE_CYCLES_ANY_UOPS                           = "r2479"
+  !  "EventName": "IDQ.MS_UOPS",
+  !  "BriefDescription": "Uops delivered to Instruction Decode Queue (IDQ) while Microcode Sequenser (MS) is busy",
+  !   "PublicDescription": "This event counts uops delivered by the Front-end with the assistance of the microcode sequencer.
+  !  Microcode assists are used for complex instructions or scenarios that can't    be handled by the standard decoder.  Using other instructions, if possible, will usually improve performance."
+  character(*),     parameter, public :: IDQ_MS_UOPS                                            = "r3079"
+  !  "EventName": "IDQ.MS_CYCLES",
+  !  "BriefDescription": "Cycles when uops are being delivered to Instruction Decode Queue (IDQ) while Microcode Sequenser (MS) is busy",
+  !  "PublicDescription": "This event counts cycles during which the microcode sequencer assisted the Front-end in delivering uops.
+  !  Microcode assists are used for complex instructions or scenarios that !  can't be handled by the standard decoder.  Using other instructions, if possible, will usually improve performance.",
+  !   "Counter": "0,1,2,3",
+  character(*),     parameter, public :: IDQ_MS_CYCLES                                          = "r3079"
+  !  "EventName": "IDQ.MS_SWITCHES",
+  !  "BriefDescription": "Number of switches from DSB (Decode Stream Buffer) or MITE (legacy decode pipeline) to the Microcode Sequencer.",
+  !  "PublicDescription": "Number of switches from DSB (Decode Stream Buffer) or MITE (legacy decode pipeline) to the Microcode Sequencer."
+  character(*),     parameter, public :: IDQ_MS_SWITCHES                                        = "r3079"
+  !  "EventName": "IDQ.MITE_ALL_UOPS",
+  !   "BriefDescription": "Uops delivered to Instruction Decode Queue (IDQ) from MITE path",
+  !  "PublicDescription": "Number of uops delivered to IDQ from any path.",
+  character(*),     parameter, public :: IDQ_MITE_ALL_UOPS                                      = "r3c79"
+  !  "EventName": "ICACHE.HIT",
+  !  "BriefDescription": "Number of Instruction Cache, Streaming Buffer and Victim Cache Reads. both cacheable and noncacheable, including UC fetches.
+  character(*),     parameter, public :: ICACHE_HIT                                             = "r0180"
+  !   "EventName": "ICACHE.MISSES",
+  !  "BriefDescription": "Number of Instruction Cache, Streaming Buffer and Victim Cache Misses. Includes Uncacheable accesses.",
+  !  "PublicDescription": "This event counts Instruction Cache (ICACHE) misses.
+  character(*),     parameter, public :: ICACHE_MISSES                                          = "r0280"
+  !  "EventName": "ICACHE.IFETCH_STALL",
+  !   "BriefDescription": "Cycles where a code fetch is stalled due to L1 instruction-cache miss.",
+  !   "PublicDescription": "Cycles where a code fetch is stalled due to L1 instruction-cache miss."
+  character(*),     parameter, public :: ICACHE_IFETCH_STALL                                    = "r0480"
+  !   "EventName": "ICACHE.IFDATA_STALL",
+  !  "BriefDescription": "Cycles where a code fetch is stalled due to L1 instruction-cache miss.
+  character(*),     parameter, public :: ICACHE_IFDATA_STALL                                    = "r0480"
+  !  "EventName": "ITLB_MISSES.MISS_CAUSES_A_WALK",
+  !  "BriefDescription": "Misses at all ITLB levels that cause page walks",
+  !  "PublicDescription": "Misses in ITLB that causes a page walk of any page size.
+  character(*),     parameter, public :: ITLB_MISSES_MISS_CAUSES_A_WALK                         = "r0185"
+  !   "EventName": "ITLB_MISSES.WALK_COMPLETED_4K",
+  !  "BriefDescription": "Code miss in all TLB levels causes a page walk that completes. (4K)"
+  character(*),     parameter, public :: ITLB_MISSES_WALK_COMPLETED_4K                          = "r0285"
+  !   "EventName": "ITLB_MISSES.WALK_COMPLETED_2M_4M",
+  !   "BriefDescription": "Code miss in all TLB levels causes a page walk that completes. (2M/4M)",
+  character(*),     parameter, public :: ITLB_MISSES_WALK_COMPLETED_2M_4M                       = "r0485"
+  !   "EventName": "ITLB_MISSES.WALK_COMPLETED_1G",
+  !   "BriefDescription": "Store miss in all TLB levels causes a page walk that completes. (1G)
+  character(*),     parameter, public :: ITLB_MISSES_WALK_COMPLETED_1G                          = "r0885"
+  !   "EventName": "ITLB_MISSES.WALK_COMPLETED",
+  !   "BriefDescription": "Misses in all ITLB levels that cause completed page walks
+  character(*),     parameter, public :: ITLB_MISSES_WALK_COMPLETED                             = "r0e85"
+  !    "EventName": "ITLB_MISSES.WALK_DURATION",
+  !   "BriefDescription": "Cycles when PMH is busy with page walks
+  character(*),     parameter, public :: ITLB_MISSES_WALK_DURATION                              = "r1085"
+  !    "EventName": "ITLB_MISSES.STLB_HIT_4K",
+  !    "BriefDescription": "Core misses that miss the  DTLB and hit the STLB (4K)"
+  character(*),     parameter, public :: ITLB_MISSES_STLB_HIT_4K                                = "r2085"
+  !     "EventName": "ITLB_MISSES.STLB_HIT_2M",
+  !   "BriefDescription": "Code misses that miss the  DTLB and hit the STLB (2M)"
+  character(*),     parameter, public :: ITLB_MISSES_STLB_HIT_2M                                = "r4085"
+  !   "EventName": "ITLB_MISSES.STLB_HIT",
+  !  "BriefDescription": "Operations that miss the first ITLB level but hit the second and do not cause any page walks"
+  character(*),     parameter, public :: ITLB_MISSES_STLB_HIT                                   = "r6085"
+  !   "EventName": "ILD_STALL.LCP",
+  !  "BriefDescription": "Stalls caused by changing prefix length of the instruction.",
+  !  "PublicDescription": "This event counts cycles where the decoder is stalled on an instruction with a length changing prefix (LCP).
+  character(*),     parameter, public :: ILD_STALL_LCP                                          = "r0187"
+  !   "EventName": "ILD_STALL.IQ_FULL",
+  !  "BriefDescription": "Stall cycles because IQ is full",
+  character(*),     parameter, public :: ILD_STALL_IQ_FULL                                      = "r0487"
+  ! "EventName": "BR_INST_EXEC.NONTAKEN_CONDITIONAL",
+  !  "BriefDescription": "Not taken macro-conditional branches."
+  character(*),     parameter, public :: BR_INST_EXEC.NONTAKEN_CONDITIONAL                      = "r4188"
+  !   "EventName": "BR_INST_EXEC.TAKEN_CONDITIONAL",
+  !   "BriefDescription": "Taken speculative and retired macro-conditional branches.
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_CONDITIONAL                         = "r8188"
+  !  "EventName": "BR_INST_EXEC.TAKEN_DIRECT_JUMP",
+  !  "BriefDescription": "Taken speculative and retired macro-conditional branch instructions excluding calls and indirects.
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_DIRECT_JUMP                         = "r8288"
+  !   "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET",
+  !  "BriefDescription": "Taken speculative and retired indirect branches excluding calls and returns."
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8488"
+  ! "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_NEAR_RETURN",
+  !  "BriefDescription": "Taken speculative and retired indirect branches with return mnemonic."
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_NEAR_RETURN                = "r8888"
+  !  "EventName": "BR_INST_EXEC.TAKEN_DIRECT_NEAR_CALL",
+  !  "BriefDescription": "Taken speculative and retired direct near calls."
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_DIRECT_NEAR_CALL                    = "r9088"
+  !  "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_NEAR_CALL",
+  !   "BriefDescription": "Taken speculative and retired indirect calls.
+  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_NEAR_CALL                  = "rA088"
+  !  "EventName": "BR_INST_EXEC.ALL_CONDITIONAL",
+  !  "BriefDescription": "Speculative and retired macro-conditional branches.",
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_CONDITIONAL                           = "rC188"
+  !   "EventName": "BR_INST_EXEC.ALL_DIRECT_JMP",
+  !  "BriefDescription": "Speculative and retired macro-unconditional branches excluding calls and indirects."
+  character(*),     parameter, public :: BR_INST_EXEC.ALL_DIRECT_JMP                            = "rC288"
+  !  "EventName": "BR_INST_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET",
+  !  "BriefDescription": "Speculative and retired indirect branches excluding calls and returns.
+  character(*),     parameter, public :: BR_INST_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC488"
+  !    "EventName": "BR_INST_EXEC.ALL_INDIRECT_NEAR_RETURN",
+  !  "BriefDescription": "Speculative and retired indirect return branches."
+  character(*),     parameter, public :: BR_INST_EXEC.ALL_INDIRECT_NEAR_RETURN                  = "rC888"
+  !  "EventName": "BR_INST_EXEC.ALL_DIRECT_NEAR_CALL",
+  !  "BriefDescription": "Speculative and retired direct near calls."
+  character(*),     parameter, public :: BR_INST_EXEC.ALL_DIRECT_NEAR_CALL                      = "rD088"
+  !  "EventName": "BR_INST_EXEC.ALL_BRANCHES",
+  !   "BriefDescription": "Speculative and retired  branches",
+  character(*),     parameter, public :: BR_INST_EXEC.ALL_BRANCHES                              = "rFF88"
+  !  "EventName": "BR_MISP_EXEC.NONTAKEN_CONDITIONAL",
+  !  "BriefDescription": "Not taken speculative and retired mispredicted macro conditional branches.
+  character(*),     parameter, public :: BR_MISP_EXEC.NONTAKEN_CONDITIONAL                      = "r4189"
+  !   "EventName": "BR_MISP_EXEC.TAKEN_CONDITIONAL",
+  !   "BriefDescription": "Taken speculative and retired mispredicted macro conditional branches."
+  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_CONDITIONAL                         = "r4189"
+  !    "EventName": "BR_MISP_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET",
+  !   "BriefDescription": "Taken speculative and retired mispredicted indirect branches excluding calls and returns.
+  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8489"
+  !   "EventName": "BR_MISP_EXEC.TAKEN_RETURN_NEAR",
+  !   "BriefDescription": "Taken speculative and retired mispredicted indirect branches with return mnemonic.
+  character(*),     parameter, public :: BR_MISP_EXEC_TAKEN_RETURN_NEAR                         = "r8889"
+  ! "EventName": "BR_MISP_EXEC.TAKEN_INDIRECT_NEAR_CALL",
+  !  "BriefDescription": "Taken speculative and retired mispredicted indirect calls.
+  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_INDIRECT_NEAR_CALL                  = "rA089"
+  !  "EventName": "BR_MISP_EXEC.ALL_CONDITIONAL",
+  !  "BriefDescription": "Speculative and retired mispredicted macro conditional branches.
+  character(*),     parameter, public :: BR_MISP_EXEC_ALL_CONDITIONAL                           = "rC189"
+  !  "EventName": "BR_MISP_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET",
+  !  "BriefDescription": "Mispredicted indirect branches excluding calls and returns.
+  character(*),     parameter, public :: BR_MISP_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC489"
+  !   "EventName": "BR_MISP_EXEC.ALL_BRANCHES",
+  !   "BriefDescription": "Speculative and retired mispredicted macro conditional branches"
+  character(*),     parameter, public :: BR_MISP_EXEC_ALL_BRANCHES                              = "rFF89"
+  !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CORE",
+  !  "BriefDescription": "Uops not delivered to Resource Allocation Table (RAT) per thread when backend of the machine is not stalled",
+  !  "PublicDescription": "This event count the number of undelivered (unallocated) uops from the Front-end to the Resource Allocation Table (RAT) while the Back-end of the processor is not stalled.
+  !  The  !Front-end can allocate up to 4 uops per cycle so this event can increment 0-4 times per cycle depending on the number of unallocated uops. This event is counted on a per-core basis."
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CORE                            = "r019C"
+  !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE",
+  !  "BriefDescription": "Cycles per thread when 4 or more uops are not delivered to Resource Allocation Table (RAT) when backend of the machine is not stalled",
+  !  "PublicDescription": "This event counts the number cycles during which the Front-end allocated exactly zero uops
+  !  to the Resource Allocation Table (RAT) while the Back-end of the processor is not stalled.  This event is counted on a per-core basis.",
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CYCLES_0_UOPS_DELIV_CORE        = "r019C"
+  !     "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_1_UOP_DELIV.CORE",
+  !     "BriefDescription": "Cycles per thread when 3 or more uops are not delivered to
+  !     Resource Allocation Table (RAT) when backend of the machine is not stalled.
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_1_UOP_DELIV.CORE      = "r019C"
   
 end module mod_core_events
+
+
 
 
 
