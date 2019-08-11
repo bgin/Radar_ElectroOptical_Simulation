@@ -532,7 +532,214 @@ module mod_core_events
   !     "BriefDescription": "Cycles per thread when 3 or more uops are not delivered to
   !     Resource Allocation Table (RAT) when backend of the machine is not stalled.
   character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_1_UOP_DELIV.CORE      = "r019C"
-  
+  !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_2_UOP_DELIV.CORE",
+  !  "BriefDescription": "Cycles with less than 2 uops delivered by the front end."
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_2_UOP_DELIV.CORE      = "r019C"
+  !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_3_UOP_DELIV.CORE",
+  !   "BriefDescription": "Cycles with less than 3 uops delivered by the front end.
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_3_UOP_DELIV.CORE      = "r019C"
+  !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK",
+  !   "BriefDescription": "Counts cycles FE delivered 4 uops or Resource Allocation Table (RAT) was stalling FE.
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK                = "r019C"
+  !    "EventName": "UOPS_EXECUTED_PORT.PORT_0",
+  !    "BriefDescription": "Cycles per thread when uops are executed in port 0
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_0                              = "r01A1"
+  !    "EventName": "UOPS_EXECUTED_PORT.PORT_0_CORE",
+  !    "BriefDescription": "Cycles per core when uops are executed in port 0.
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_0_CORE                         = "r01A1"
+  !     "EventName": "UOPS_DISPATCHED_PORT.PORT_0",
+  !     "BriefDescription": "Cycles per thread when uops are executed in port 0.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_0                            = "r01A1"
+  !      "EventName": "UOPS_EXECUTED_PORT.PORT_1",
+  !     "BriefDescription": "Cycles per thread when uops are executed in port 1"
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_1                              = "r02A1"
+  !     "EventName": "UOPS_EXECUTED_PORT.PORT_1_CORE",
+  !     "BriefDescription": "Cycles per core when uops are executed in port 1
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_1_CORE                         = "r02A1"
+  !      "EventName": "UOPS_DISPATCHED_PORT.PORT_1",
+  !      "BriefDescription": "Cycles per thread when uops are executed in port 1
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_1                            = "r02A1"
+  !      "EventName": "UOPS_EXECUTED_PORT.PORT_2",
+  !      "BriefDescription": "Cycles per thread when uops are executed in port 2
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_2                              = "r04A1"
+  !       "EventName": "UOPS_EXECUTED_PORT.PORT_2_CORE",
+  !       "BriefDescription": "Cycles per core when uops are dispatched to port 2.
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_2_CORE                         = "r04A1"
+  !        "EventName": "UOPS_DISPATCHED_PORT.PORT_2",
+  !        "BriefDescription": "Cycles per thread when uops are executed in port 2
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_2                            = "r04A1"
+  !      "EventName": "UOPS_EXECUTED_PORT.PORT_3",
+  !      "BriefDescription": "Cycles per thread when uops are executed in port 3"
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_3                              = "r08A1"
+  !       "EventName": "UOPS_EXECUTED_PORT.PORT_3_CORE",
+  !       "BriefDescription": "Cycles per core when uops are dispatched to port 3
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_3_CORE                         = "r08A1"
+  !      "EventName": "UOPS_DISPATCHED_PORT.PORT_3",
+  !      "BriefDescription": "Cycles per thread when uops are executed in port 3.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_3                            = "r08A1"
+  !       "EventName": "UOPS_EXECUTED_PORT.PORT_4",
+  !       "BriefDescription": "Cycles per thread when uops are executed in port 4"
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_4                              = "r10A1"
+  !        "EventName": "UOPS_EXECUTED_PORT.PORT_4_CORE",
+  !         "BriefDescription": "Cycles per core when uops are executed in port 4.
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_4_CORE                         = "r10A1"
+  !         "EventName": "UOPS_DISPATCHED_PORT.PORT_4",
+  !   "BriefDescription": "Cycles per thread when uops are executed in port 4.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_4                            = "r10A1"
+  !    "EventName": "UOPS_EXECUTED_PORT.PORT_5",
+  !    "BriefDescription": "Cycles per thread when uops are executed in port 5"
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_5                              = "r20A1"
+  !      "EventName": "UOPS_EXECUTED_PORT.PORT_5_CORE",
+  !      "BriefDescription": "Cycles per core when uops are executed in port 5."
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_5_CORE                         = "r20A1"
+  !       "EventName": "UOPS_DISPATCHED_PORT.PORT_5",
+  !       "BriefDescription": "Cycles per thread when uops are executed in port 5.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_5                            = "r20A1"
+  !       "EventName": "UOPS_EXECUTED_PORT.PORT_6",
+  !       "BriefDescription": "Cycles per thread when uops are executed in port 6
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_6                              = "r40A1"
+  !    "EventName": "UOPS_EXECUTED_PORT.PORT_6_CORE",
+  !    "BriefDescription": "Cycles per core when uops are executed in port 6.
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_6_CORE                         = "r40A1"
+  !   "EventName": "UOPS_DISPATCHED_PORT.PORT_6",
+  !    "BriefDescription": "Cycles per thread when uops are executed in port 6.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_6                            = "r40A1"
+  !     "EventName": "UOPS_EXECUTED_PORT.PORT_7",
+  !  "BriefDescription": "Cycles per thread when uops are executed in port 7"
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_7                              = "r80A1"
+  !    "EventName": "UOPS_EXECUTED_PORT.PORT_7_CORE",
+  !    "BriefDescription": "Cycles per core when uops are dispatched to port 7."
+  character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_7_CORE                         = "r80A1"
+  !     "EventName": "UOPS_DISPATCHED_PORT.PORT_7",
+  !    "BriefDescription": "Cycles per thread when uops are executed in port 7.
+  character(*),     parameter, public :: UOPS_DISPATCHED_PORT_PORT_7                            = "r80A1"
+  !   "EventName": "RESOURCE_STALLS.ANY",
+  !   "BriefDescription": "Resource-related stall cycles"
+  character(*),     parameter, public :: RESOURCES_STALLS_ANY                                   = "r01A2"
+  !     "EventName": "RESOURCE_STALLS.RS",
+  !  "BriefDescription": "Cycles stalled due to no eligible RS entry available."
+  character(*),     parameter, public :: RESOURCE_STALLS_RS                                     = "r04A2"
+  !   "EventName": "RESOURCE_STALLS.SB",
+  !   "BriefDescription": "Cycles stalled due to no store buffers available. (not including draining form sync).",
+  !   "PublicDescription": "This event counts cycles during which no instructions were allocated because no Store Buffers (SB) were available.
+  character(*),     parameter, public :: RESOURCE_STALLS_SB                                     = "r08A2"
+  !    "EventName": "RESOURCE_STALLS.ROB",
+  !  "BriefDescription": "Cycles stalled due to re-order buffer full.",
+  character(*),     parameter, public :: RESOURCE_STALLS_ROB                                    = "r10A2"
+  !    "EventName": "CYCLE_ACTIVITY.CYCLES_L2_PENDING",
+  !  "BriefDescription": "Cycles with pending L2 cache miss loads.",
+  !  "PublicDescription": "Cycles with pending L2 miss loads. Set Cmask=2 to count cycle."
+  character(*),     parameter, public :: CYCLE_ACTIVITIES_CYCLES_L2_PENDING                     = "r01A3"
+  !   "EventName": "CYCLE_ACTIVITY.CYCLES_LDM_PENDING",
+  !  "BriefDescription": "Cycles with pending memory loads.",
+  !  "PublicDescription": "Cycles with pending memory loads. Set Cmask=2 to count cycle.
+  character(*),     parameter, public :: CYCLES_ACTIVITIES_CYCLES_LDM_PENDING                   = "r02A3"
+  !    "EventName": "CYCLE_ACTIVITY.CYCLES_NO_EXECUTE",
+  !  "BriefDescription": "This event increments by 1 for every cycle where there was no execute for this thread.",
+  !   "PublicDescription": "This event counts cycles during which no instructions were executed in the execution stage of the pipeline.
+  character(*),     parameter, public :: CYCLE_ACTIVITY_CYCLES_NO_EXECUTE                       = "r04A3"
+  !    "EventName": "CYCLE_ACTIVITY.STALLS_L2_PENDING",
+  !    "BriefDescription": "Execution stalls due to L2 cache misses."
+  character(*),     parameter, public :: CYCLE_ACTIVITY_STALLS_L2_PENDING                       = "r05A3"
+  !     "EventName": "CYCLE_ACTIVITY.STALLS_LDM_PENDING",
+  !  "BriefDescription": "Execution stalls due to memory subsystem.",
+  !  "PublicDescription": "This event counts cycles during which no instructions were executed in the execution stage of
+  !   the pipeline and there were memory instructions pending (waiting for data).
+  character(*),     parameter, public :: CYCLE_ACTIVITY_STALLS_LDM_PENDING                      = "r06A3"
+  !    "EventName": "CYCLE_ACTIVITY.CYCLES_L1D_PENDING",
+  !   "BriefDescription": "Cycles with pending L1 cache miss loads.",
+  !  "PublicDescription": "Cycles with pending L1 data cache miss loads. Set Cmask=8 to count cycle."
+  character(*),     parameter, public :: CYCLE_ACTIVITY_CYCLES_L1D_PENDING                      = "r08A3"
+  !    "EventName": "CYCLE_ACTIVITY.STALLS_L1D_PENDING",
+  !  "BriefDescription": "Execution stalls due to L1 data cache misses",
+  !  "PublicDescription": "Execution stalls due to L1 data cache miss loads. Set Cmask=0CH.
+  character(*),     parameter, public :: CYCLE_ACTIVITY_STALLS_L1D_PENDING                      = "r0CA3"
+  !    "EventName": "LSD.UOPS",
+  !   "BriefDescription": "Number of Uops delivered by the LSD.",
+  character(*),     parameter, public :: LSD_UOPS                                               = "r01A8"
+  !     "EventName": "LSD.CYCLES_ACTIVE",
+  !   "BriefDescription": "Cycles Uops delivered by the LSD, but didn't come from the decoder.",
+  character(*),     parameter, public :: LSD_CYCLES_ACTIVE                                      = "r01A8"
+  !    "EventName": "LSD.CYCLES_4_UOPS",
+  !   "BriefDescription": "Cycles 4 Uops delivered by the LSD, but didn't come from the decoder.
+  character(*),     parameter, public :: LSD_CYCLES_4_UOPS                                      = "r01A8"
+  !    "EventName": "DSB2MITE_SWITCHES.PENALTY_CYCLES",
+  !    "BriefDescription": "Decode Stream Buffer (DSB)-to-MITE switch true penalty cycles."
+  character(*),     parameter, public :: DSB2MITE_SWITCHES.PENALTY_CYCLES                       = "r02AB"
+  !     "EventName": "ITLB.ITLB_FLUSH",
+  !     "BriefDescription": "Flushing of the Instruction TLB (ITLB) pages, includes 4k/2M/4M pages.
+  character(*),     parameter, public :: ITLB_ITLB_FLUSH                                        = "r01AE"
+  !      "EventName": "OFFCORE_REQUESTS.DEMAND_DATA_RD",
+  !      "BriefDescription": "Demand Data Read requests sent to uncore",
+  character(*),     parameter, public :: OFFCORE_REQUESTS_DEMAND_DATA_RD                        = "r01B0"
+  !       "EventName": "OFFCORE_REQUESTS.DEMAND_CODE_RD",
+  !       "BriefDescription": "Cacheable and noncachaeble code read requests",
+  character(*),     parameter, public :: OFFCORE_REQUESTS_DEMAND_CODE_RD                        = "r02B0"
+  !        "EventName": "OFFCORE_REQUESTS.DEMAND_RFO",
+  !  "BriefDescription": "Demand RFO requests including regular RFOs, locks, ItoM",
+  !  "PublicDescription": "Demand RFO read requests sent to uncore, including regular RFOs, locks, ItoM.",
+  character(*),     parameter, public :: OFFCORE_REQUESTS_DEMAND_RFO                            = "r04B0"
+  !    "EventName": "OFFCORE_REQUESTS.ALL_DATA_RD",
+  !  "BriefDescription": "Demand and prefetch data reads",
+  !  "PublicDescription": "Data read requests sent to uncore (demand and prefetch).
+  character(*),     parameter, public :: OFFCORE_REQUESTS_ALL_DATA_RD                           = "r08B0"
+  !   "EventName": "UOPS_EXECUTED.STALL_CYCLES",
+  !  "BriefDescription": "Counts number of cycles no uops were dispatched to be executed on this thread."
+  character(*),     parameter, public :: UOPS_EXECUTED_STALL_CYCLES                             = "r01B1"
+  !   "EventName": "UOPS_EXECUTED.CYCLES_GE_1_UOP_EXEC",
+  !  "BriefDescription": "Cycles where at least 1 uop was executed per-thread",
+  !  "PublicDescription": "This events counts the cycles where at least one uop was executed. It is counted per thread.",
+  character(*),     parameter, public :: UOPS_EXECUTED_CYCLES_GE_1_UOP_EXEC                     = "r01B1"
+  !  "EventName": "UOPS_EXECUTED.CYCLES_GE_2_UOPS_EXEC",
+  !  "BriefDescription": "Cycles where at least 2 uops were executed per-thread",
+  !  "PublicDescription": "This events counts the cycles where at least two uop were executed. It is counted per thread.",
+  character(*),     parameter, public :: UOPS_EXECUTED_CYCLES_GE_2_UOP_EXEC                     = "r01B1"
+  !   "EventName": "UOPS_EXECUTED.CYCLES_GE_3_UOPS_EXEC",
+  !  "BriefDescription": "Cycles where at least 3 uops were executed per-thread",
+  !  "PublicDescription": "This events counts the cycles where at least three uop were executed. It is counted per thread.",
+  character(*),    parameter, public :: UOPS_EXECUTED.CYCLES_GE_3_UOPS_EXEC                     = "r01B1"
+  !   "EventName": "UOPS_EXECUTED.CYCLES_GE_4_UOPS_EXEC",
+  !  "BriefDescription": "Cycles where at least 4 uops were executed per-thread.",
+  !  "PublicDescription": "Cycles where at least 4 uops were executed per-thread.",
+  character(*),    parameter, public :: UOPS_EXECUTED.CYCLES_GE_4_UOPS_EXEC                     = "r01B1"
+  !   "EventName": "UOPS_EXECUTED.CORE",
+  !  "BriefDescription": "Number of uops executed on the core.",
+  !  "PublicDescription": "Counts total number of uops to be executed per-core each cycle.",
+  character(*),    parameter, public :: UOPS_EXECUTED_CORE                                      = "r02B1"
+  !   "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_1",
+  !   "BriefDescription": "Cycles at least 1 micro-op is executed from any thread on physical core.",
+  character(*),    parameter, public :: UOPS_EXECUTED_CORE_CYCLES_GE_1                          = "r02B1"
+  !    "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_2",
+  !    "BriefDescription": "Cycles at least 2 micro-op is executed from any thread on physical core.",
+  character(*),    parameter, public :: UOPS_EXECUTED_CORE_CYCLES_GE_2                          = "r02B1"
+  !     "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_3",
+  !   "BriefDescription": "Cycles at least 3 micro-op is executed from any thread on physical core.",
+  character(*),    parameter, public ::  UOPS_EXECUTED_CORE_CYCLES_GE_3                         = "r02B1"
+  !    "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_4",
+  !   "BriefDescription": "Cycles at least 4 micro-op is executed from any thread on physical core.",
+  character(*),    parameter, public ::  UOPS_EXECUTED_CORE_CYCLES_GE_4                        = "r02B1"
+  !    "EventName": "UOPS_EXECUTED.CORE_CYCLES_NONE",
+  !    "BriefDescription": "Cycles with no micro-ops executed from any thread on physical core.",
+  character(*),    parameter, public :: UOPS_EXECUTED_CORE_CYCLES_NONE                         = "r02B1"
+  !    "EventName": "OFFCORE_REQUESTS_BUFFER.SQ_FULL",
+  !   "BriefDescription": "Offcore requests buffer cannot take more entries for this thread core.",
+  character(*),    parameter, public :: OFFCORE_REQUESTS_BUFFER_SQ_FULL                        = "r01b2"
+  !   "EventName": "OFFCORE_RESPONSE",
+  !   "BriefDescription": "Offcore response can be programmed only with a specific pair of event select and counter MSR, 
+  !and with specific event codes and predefine mask bit value in a dedicated MSR to specify attributes of the offcore transaction.",
+  character(*),    parameter, public :: OFFCORE_RESPONSE                                       = "r0B7"
+  !  "EventName": "PAGE_WALKER_LOADS.DTLB_L1",
+  ! "BriefDescription": "Number of DTLB page walker hits in the L1+FB"
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_DTLB_L1                              = "r11BC"
+  !   "EventName": "PAGE_WALKER_LOADS.DTLB_L2",
+  ! "BriefDescription": "Number of DTLB page walker hits in the L2",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_DTLB_L2                              = "r12BC"
+  !    "EventName": "PAGE_WALKER_LOADS.DTLB_L3",
+  !  BriefDescription": "Number of DTLB page walker hits in the L3 + XSNP",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_DTLB_L3                              = "r14BC"
+  !   "EventName": "PAGE_WALKER_LOADS.DTLB_MEMORY",
+  ! "BriefDescription": "Number of DTLB page walker hits in Memory",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_DTLB_MEMORY                          = "r18BC"
 end module mod_core_events
 
 
