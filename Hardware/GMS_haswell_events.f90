@@ -740,6 +740,221 @@ module mod_core_events
   !   "EventName": "PAGE_WALKER_LOADS.DTLB_MEMORY",
   ! "BriefDescription": "Number of DTLB page walker hits in Memory",
   character(*),    parameter, public :: PAGE_WALKER_LOADS_DTLB_MEMORY                          = "r18BC"
+  !  "EventName": "PAGE_WALKER_LOADS.ITLB_L1",
+  !  "BriefDescription": "Number of ITLB page walker hits in the L1+FB",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_ITLB_L1                              = "r21BC"
+  !    "EventName": "PAGE_WALKER_LOADS.ITLB_L2",
+  !  "BriefDescription": "Number of ITLB page walker hits in the L2",
+  character(*),    parameter, public ::  PAGE_WALKER_LOADS_ITLB_L2                             = "r22BC"
+  !    "EventName": "PAGE_WALKER_LOADS.ITLB_L3",
+  !  "BriefDescription": "Number of ITLB page walker hits in the L3 + XSNP"
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_ITLB_L3                              = "r24BC"
+  !  "EventName": "PAGE_WALKER_LOADS.ITLB_MEMORY",
+  !  "BriefDescription": "Number of ITLB page walker hits in Memory",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_ITLB_MEMORY                          = "r28BC"
+  !  "EventName": "PAGE_WALKER_LOADS.EPT_DTLB_L1",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks from
+  !  the DTLB that hit in the L1 and FB."
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_DTLB_L1                          = "r41BC"
+  !   "EventName": "PAGE_WALKER_LOADS.EPT_DTLB_L2",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks
+  !  from the DTLB that hit in the L2.
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_DTLB_L2                          = "r42BC"
+  !   "EventName": "PAGE_WALKER_LOADS.EPT_DTLB_L3",
+  !   "BriefDescription": "Counts the number of Extended Page Table walks
+  !   from the DTLB that hit in the L3.",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_DTLB_L3                          = "r44BC"
+  !   "EventName": "PAGE_WALKER_LOADS.EPT_DTLB_MEMORY",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks
+  !   from the DTLB that hit in memory.
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_DTLB_MEMORY                      = "r48BC"
+  !    "EventName": "PAGE_WALKER_LOADS.EPT_ITLB_L1",
+  !  BriefDescription": "Counts the number of Extended Page Table
+  !waks from the ITLB that hit in the L1 and FB."
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_ITLB_L1                          = "r81BC"
+  ! "EventName": "PAGE_WALKER_LOADS.EPT_ITLB_L2",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks
+  !  from the ITLB that hit in the L2."
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_ITLB_L2                          = "r82BC"
+  !  "EventName": "PAGE_WALKER_LOADS.EPT_ITLB_L3",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks
+  !  from the ITLB that hit in the L2.",
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_ITLB_L3                          = "r84BC"
+  !   "EventName": "PAGE_WALKER_LOADS.EPT_ITLB_MEMORY",
+  !  "BriefDescription": "Counts the number of Extended Page Table walks
+  !   from the ITLB that hit in memory."
+  character(*),    parameter, public :: PAGE_WALKER_LOADS_EPT_ITLB_MEMORY                      = "r88BC"
+  !   "EventName": "TLB_FLUSH.DTLB_THREAD",
+  !  "BriefDescription": "DTLB flush attempts of the thread-specific entries",
+  character(*),    parameter, public :: TLB_FLUSH_DTLB_THREAD                                  = "r01BD"
+  !     "EventName": "TLB_FLUSH.STLB_ANY",
+  !  "BriefDescription": "STLB flush attempts",
+  character(*),    parameter, public :: TLB_FLUSH_STLB_ANY                                     = "r20BD"
+  !  "EventName": "INST_RETIRED.ANY_P",
+  !  "BriefDescription": "Number of instructions retired.
+  ! General Counter   - architectural event",
+  character(*),    parameter, public :: INST_RETIRED_ANY_P                                    = "r00C0"
+  !   "EventName": "INST_RETIRED.PREC_DIST",
+  !  "BriefDescription": "Precise instruction retired event with HW
+  !  to reduce effect of PEBS shadow in IP distribution",
+  character(*),    parameter, public :: INT_RETIRED_PREC_DIST                                 = "r01C0"
+  !   "EventName": "INST_RETIRED.X87",
+  !  "BriefDescription": "FP operations retired. X87 FP operations that have no exceptions: Counts also flows that have several X87 or flows that use X87 uops in the exception handling.",
+  !  "PublicDescription": "This is a precise version (that is, uses PEBS) of the event that counts FP operations retired.
+  !  For X87 FP operations that have no exceptions counting also includes flows that have several X87, or flows that use X87 uops in the exception handling.",
+  character(*),    parameter, public :: INST_RETIRED_X87                                      = "r02C0"
+  !   "EventName": "OTHER_ASSISTS.AVX_TO_SSE",
+  !   "BriefDescription": "Number of transitions from AVX-256 to legacy SSE when penalty applicable"
+  character(*),    parameter, public :: OTHER_ASSISTS_AVX_TO_SSE                              = "r08C1"
+  !    "EventName": "OTHER_ASSISTS.SSE_TO_AVX",
+  !  "BriefDescription": "Number of transitions from legacy SSE to AVX-256 when penalty applicable ",
+  character(*),    parameter, public :: OTHER_ASSISTS_SSE_TO_AVX                              = "r10C1"
+  !    "EventName": "OTHER_ASSISTS.ANY_WB_ASSIST"
+  character(*),    parameter, public :: OTHER_ASSISTS_ANY_WB_ASSIST                           = "r40C1"
+  !   "EventName": "UOPS_RETIRED.ALL",
+  !  "BriefDescription": "Actually retired uops.
+  character(*),    parameter, public :: UOPS_RETIRED_ALL                                      = "r01C2"
+  !  "EventName": "UOPS_RETIRED.STALL_CYCLES",
+  !   "BriefDescription": "Cycles no executable uops retired",
+  character(*),    parameter, public :: UOPS_RETIRED_STALL_CYCLES                             = "r01C2"
+  !    "EventName": "UOPS_RETIRED.TOTAL_CYCLES",
+  !  "BriefDescription": "Number of cycles using always true condition applied to  PEBS uops retired event."
+  character(*),    parameter, public :: UOPS_RETIRED_TOTAL_CYCLES                             = "r01C2"
+  !   "EventName": "UOPS_RETIRED.CORE_STALL_CYCLES",
+  !  "BriefDescription": "Cycles no executable uops retired on core",
+  character(*),    parameter, public :: UOPS_RETIRED_CORE_STALL_CYLES                         = "r01C2"
+  !   "EventName": "UOPS_RETIRED.RETIRE_SLOTS",
+  !  "BriefDescription": "Retirement slots used.
+  character(*),    parameter, public :: UOPS_RETIRED_RETIRE_SLOTS                             = "r02C2"
+  !   "EventName": "MACHINE_CLEARS.CYCLES",
+  !  "BriefDescription": "Cycles there was a Nuke. Account for both thread-specific and All Thread Nukes."
+  character(*),    parameter, public :: MACHINE_CLEARS_CYCLES                                 = "r01C3"
+  !   "EventName": "MACHINE_CLEARS.COUNT",
+  !   "BriefDescription": "Number of machine clears (nukes) of any type."
+  character(*),    parameter, public :: MACHINE_CLEARS_COUNT                                  = "r01C3"
+  !    "EventName": "MACHINE_CLEARS.MEMORY_ORDERING",
+  !  "BriefDescription": "Counts the number of machine clears due to memory order conflicts.",
+  !  "PublicDescription": "This event counts the number of memory ordering machine clears detected.
+  !  Memory ordering machine clears can result from memory address aliasing or snoops from another hardware thread or core to data inflight in the pipeline.
+  !  Machine clears can have a significant performance impact if they are happening frequently.",
+  character(*),    parameter, public :: MACHINE_CLEARS_MEMORY_ORDERING                        = "r02C3"
+  !   "EventName": "MACHINE_CLEARS.SMC",
+  !   "BriefDescription": "Self-modifying code (SMC) detected.
+  character(*),    parameter, public :: MACHINE_CLEARS_SMC                                    = "r04C3"
+  !    "EventName": "MACHINE_CLEARS.MASKMOV",
+  !  "BriefDescription": "This event counts the number of executed Intel AVX masked load operations that refer to an
+  !   illegal address range with the mask bits set to 0.
+  character(*),    parameter, public :: MACHINE_CLEARS_MASKMOV                                = "r20C3"
+  !    "EventName": "BR_INST_RETIRED.ALL_BRANCHES",
+  !   "BriefDescription": "All (macro) branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_ALL_BRANCHES                          = "r00C4"
+  !    "EventName": "BR_INST_RETIRED.CONDITIONAL",
+  !   "BriefDescription": "Conditional branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_CONDITIONAL                           = "r01C4"
+  !    "EventName": "BR_INST_RETIRED.NEAR_CALL",
+  !   "BriefDescription": "Direct and indirect near call instructions retired.
+  character(*),    parameter, public :: BR_INST_RETIRED_NEAR_CALL                             = "r02C4"
+  !   "EventName": "BR_INST_RETIRED.NEAR_CALL_R3",
+  !  "BriefDescription": "Direct and indirect macro near call instructions retired (captured in ring 3)
+  character(*),    parameter, public :: BR_INST_RETIRED_NEAR_CALL_R3                          = "r02C4"
+  !  "EventName": "BR_INST_RETIRED.ALL_BRANCHES_PEBS",
+  !   "BriefDescription": "All (macro) branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_ALL_BRANCHES_PEBS                     = "r04C4"
+  !   "EventName": "BR_INST_RETIRED.NEAR_RETURN",
+  !  "BriefDescription": "Return instructions retired.
+  character(*),    parameter, public :: BR_INST_RETIRED_NEAR_RETURN                           = "r08C4"
+  !    "EventName": "BR_INST_RETIRED.NOT_TAKEN",
+  !    "BriefDescription": "Counts all not taken macro branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_NOT_TAKEN                             = "r10C4"
+  !     "EventName": "BR_INST_RETIRED.NEAR_TAKEN",
+  !    "BriefDescription": "Taken branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_NEAR_TAKEN                            = "r20C4"
+  !   "EventName": "BR_INST_RETIRED.FAR_BRANCH",
+  !  "BriefDescription": "Counts the number of far branch instructions retired.",
+  character(*),    parameter, public :: BR_INST_RETIRED_FAR_BRANCH                            = "r40C4"
+  !   "EventName": "BR_MISP_RETIRED.ALL_BRANCHES",
+  !  "BriefDescription": "All mispredicted macro branch instructions retired.
+  character(*),    parameter, public :: BR_MISP_RETIRED_ALL_BRANCHES                          = "r00C5"
+  !     "EventName": "BR_MISP_RETIRED.CONDITIONAL",
+  !  "BriefDescription": "Mispredicted conditional branch instructions retired.
+  character(*),    parameter, public :: BR_MISP_RETIRED_CONDITIONAL                           = "r01C5"
+  !    "EventName": "BR_MISP_RETIRED.ALL_BRANCHES_PEBS",
+  !  "BriefDescription": "Mispredicted macro branch instructions retired. ",
+  character(*),    parameter, public :: BR_MISP_RETIRED_ALL_BRANCHES_PEBS                     = "r04C5"
+  !   "EventName": "BR_MISP_RETIRED.NEAR_TAKEN",
+  !  "BriefDescription": "number of near branch instructions retired that were mispredicted and taken.",
+  character(*),    parameter, public :: BR_MISP_RETIRED_NEAR_TAKEN                            = "r20C5"
+  !   "EventName": "AVX_INSTS.ALL",
+  !  "BriefDescription": "Approximate counts of AVX & AVX2 256-bit instructions, including non-arithmetic instructions, loads, and stores.  
+  ! May count non-AVX instructions that employ 256-bit operations, including (but not necessarily limited to) rep string instructions that use 256-bit loads and stores for optimized performance,
+  ! XSAVE* and XRSTOR*, and operations that transition the x87 FPU data registers between x87 and MMX.",
+  character(*),    parameter, public :: AVX_INSTS_ALL                                         = "r07C6"
+  !     "EventName": "HLE_RETIRED.START",
+  !  "BriefDescription": "Number of times an HLE execution started.",
+  character(*),    parameter, public :: HLE_RETIRED_START                                     = "r01C8"
+  !   "EventName": "HLE_RETIRED.COMMIT",
+  !  "BriefDescription": "Number of times an HLE execution successfully committed.",
+  character(*),    parameter, public :: HLE_RETIRED_COMMIT                                    = "r02C8"
+  !  "EventName": "HLE_RETIRED.ABORTED",
+  !  "BriefDescription": "Number of times an HLE execution aborted due to any reasons (multiple categories may count as one)."
+  character(*),    parameter, public :: HLE_RETIRED_ABORTED                                   = "r04C8"
+  !   "EventName": "HLE_RETIRED.ABORTED_MISC1",
+  !  "BriefDescription": "Number of times an HLE execution aborted due to various memory events (e.g., read/write capacity and conflicts)
+  character(*),    parameter, public :: HLE_RETIRED_ABORTED_MISC1                             = "r08C8"
+  !  "EventName": "HLE_RETIRED.ABORTED_MISC2",
+  !  "BriefDescription": "Number of times an HLE execution aborted due to uncommon conditions."
+  character(*),    parameter, public :: HLE_RETIRED_ABORTED_MISC2                             = "r10C8"
+  !   "EventName": "HLE_RETIRED.ABORTED_MISC3",
+  !  "BriefDescription": "Number of times an HLE execution aborted due to HLE-unfriendly instructions.",
+  character(*),    parameter, public :: HLE_RETIRED_ABORTED_MISC3                             = "r20C8"
+  !    "EventName": "HLE_RETIRED.ABORTED_MISC4",
+  !  "BriefDescription": "Number of times an HLE execution aborted due to incompatible memory type
+  character(*),    parameter, public :: HLE_RETIRED_ABORTED_MISC4                             = "r40C8"
+  !  "EventName": "FP_ASSIST.X87_OUTPUT",
+  !  "BriefDescription": "output - Numeric Overflow, Numeric Underflow, Inexact Result ",
+  character(*),    parameter, public :: FP_ASSIST_X87_OUTPUT                                  = "r02CA"
+  !   "EventName": "FP_ASSIST.X87_INPUT",
+  !  "BriefDescription": "input - Invalid Operation, Denormal Operand, SNaN Operand ",
+  character(*),    parameter, public :: FP_ASSIST_X87_INPUT                                   = "r04CA"
+  !    "EventName": "FP_ASSIST.SIMD_OUTPUT",
+  !  "BriefDescription": "SSE* FP micro-code assist when output value is invalid.
+  character(*),    parameter, public :: FP_ASSIST_SIMD_OUTPUT                                 = "r08CA"
+  !    "EventName": "FP_ASSIST.SIMD_OUTPUT",
+  !  "BriefDescription": "SSE* FP micro-code assist when output value is invalid. ",
+  character(*),    parameter, public :: FP_ASSIST_SIMD_OUTPUT                                 = "r08CA"
+  !    "EventName": "FP_ASSIST.SIMD_INPUT",
+  !   "BriefDescription": "Any input SSE* FP Assist ",
+  character(*),    parameter, public :: FP_ASSIST_SIMD_INPUT                                  = "r10CA"
+  !    "EventName": "FP_ASSIST.ANY",
+  !  "BriefDescription": "Counts any FP_ASSIST umask was incrementing ",
+  character(*),    parameter, public :: FP_ASSIST_ANY                                         = "r1ECA"
+  !     "EventName": "ROB_MISC_EVENTS.LBR_INSERTS",
+  !   "BriefDescription": "Count cases of saving new LBR",
+  character(*),    parameter, public :: ROB_MISC_EVENTS_LBR_INSERTS                           = "r20CC"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_4",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 4
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_4                   = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_8",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 8
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_8                   = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_16",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 16
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_16                   = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_32",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 32
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_32                   = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_64",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 64
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_64                  = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_128",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 128
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_128                  = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_256",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 256
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_256                  = "r01CD"
+  !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512",
+  !  "BriefDescription": "Randomly selected loads with latency value being above 512
+  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512                   = "r01CD"
 end module mod_core_events
 
 
