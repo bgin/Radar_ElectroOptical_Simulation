@@ -955,6 +955,135 @@ module mod_core_events
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512",
   !  "BriefDescription": "Randomly selected loads with latency value being above 512
   character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512                   = "r01CD"
+  !   "EventName": "MEM_UOPS_RETIRED.STLB_MISS_LOADS",
+  !  "BriefDescription": "Retired load uops that miss the STLB. (precise Event)"
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_STLB_MISS_LOADS                        = "r11D0"
+  !   "EventName": "MEM_UOPS_RETIRED.STLB_MISS_STORES",
+  !  "BriefDescription": "Retired store uops that miss the STLB. (precise Event)",
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_STLB_MISS_STORES                       = "r12D0"
+  !   "EventName": "MEM_UOPS_RETIRED.LOCK_LOADS",
+  !  "BriefDescription": "Retired load uops with locked access. (precise Event)",
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_LOCK_LOADS                             = "r21D0"
+  !   "EventName": "MEM_UOPS_RETIRED.SPLIT_LOADS",
+  !  "BriefDescription": "Retired load uops that split across a cacheline boundary. (precise Event)",
+  !  "PublicDescription": "This event counts load uops retired which had memory addresses spilt across 2 cache lines. 
+  !  A line split is across 64B cache-lines which may include a page split (4K). This is a precise event."
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_SPLIT_LOADS                            = "r41D0"
+  !   "EventName": "MEM_UOPS_RETIRED.SPLIT_STORES",
+  !  "BriefDescription": "Retired store uops that split across a cacheline boundary. (precise Event)",
+  !  "PublicDescription": "This event counts store uops retired which had memory addresses spilt across 2 cache lines.
+  !  A line split is across 64B cache-lines which may include a page split (4K). This is a precise event."
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_SPLIT_STORES                           = "r42D0"
+  ! "EventName": "MEM_UOPS_RETIRED.ALL_LOADS",
+  !  "BriefDescription": "All retired load uops. (precise Event)",
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_ALL_LOADS                              = "r81D0"
+  !   "EventName": "MEM_UOPS_RETIRED.ALL_STORES",
+  !  "BriefDescription": "All retired store uops. (precise Event)",
+  !  "PublicDescription": "This event counts all store uops retired. This is a precise event."
+  character(*),    parameter, public :: MEM_UOPS_RETIRED_ALL_STORES                             = "r82D0"
+  !  "EventName": "MEM_LOAD_UOPS_RETIRED.L1_HIT",
+  !  "BriefDescription": "Retired load uops with L1 cache hits as data sources.",
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L1_HIT                            = "r01D1"
+  !   "EventName": "MEM_LOAD_UOPS_RETIRED.L2_HIT",
+  !   "BriefDescription": "Retired load uops with L2 cache hits as data sources.",
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L2_HIT                            = "r02D1"
+  !  "EventName": "MEM_LOAD_UOPS_RETIRED.L3_HIT",
+  !  "BriefDescription": "Miss in last-level (L3) cache. Excludes Unknown data-source.",
+  !  "PublicDescription": "This event counts retired load uops in which data sources were data hits in the L3 cache without snoops required.
+  !  This does not include hardware prefetches. This is a precise event
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L3_HIT                            = "r04D1"
+  !   "EventName": "MEM_LOAD_UOPS_RETIRED.L1_MISS",
+  !   "BriefDescription": "Retired load uops misses in L1 cache as data sources.",
+  !  "PublicDescription": "This event counts retired load uops in which data sources missed in the L1 cache.
+  !  This does not include hardware prefetches. This is a precise event.",
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L1_MISS                           = "r08D1"
+  !   "EventName": "MEM_LOAD_UOPS_RETIRED.L2_MISS",
+  !  "BriefDescription": "Retired load uops with L2 cache misses as data sources."
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L2_MISS                           = "r10D1"
+  ! "EventName": "MEM_LOAD_UOPS_RETIRED.L3_MISS",
+  !  "BriefDescription": "Miss in last-level (L3) cache. Excludes Unknown data-source.",
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_L3_MISS                           = "r20D1"
+  !   "EventName": "MEM_LOAD_UOPS_RETIRED.HIT_LFB",
+  !  "BriefDescription": "Retired load uops which data sources were load uops missed L1
+  !  but hit FB due to preceding miss to the same cache line with data not ready.
+  character(*),    parameter, public :: MEM_LOAD_UOPS_RETIRED_HIT_LFB                           = "r40D1"
+  !  "EventName": "MEM_LOAD_UOPS_L3_HIT_RETIRED.XSNP_MISS",
+  !  "BriefDescription": "Retired load uops which data sources were L3 hit and cross-core snoop missed in on-pkg core cache.
+  character(*),    parameter, public :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_MISS                  = "r01D2"
+  !   "EventName": "MEM_LOAD_UOPS_L3_HIT_RETIRED.XSNP_HIT",
+  !  "BriefDescription": "Retired load uops which data sources were L3 and cross-core snoop hits in on-pkg core cache. ",
+  !  "PublicDescription": "This event counts retired load uops that hit in the L3 cache, but required a cross-core snoop which resulted in a HIT in an on-pkg core cache.
+  !  This does not include hardware prefetches. This is a precise event.
+  character(*),    parameter, public :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_MISS                  = "r02D2"
+  !   "EventName": "MEM_LOAD_UOPS_L3_HIT_RETIRED.XSNP_HITM",
+  !  "BriefDescription": "Retired load uops which data sources were HitM responses from shared L3. ",
+  !  "PublicDescription": "This event counts retired load uops that hit in the L3 cache, but required a cross-core snoop which resulted in a
+  !  HITM (hit modified) in an on-pkg core cache. This does not include hardware prefetches. This is a precise event
+  character(*),    parameter, public :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_HITM                  = "r04D2"
+  !  "EventName": "MEM_LOAD_UOPS_L3_HIT_RETIRED.XSNP_NONE",
+  !  "BriefDescription": "Retired load uops which data sources were hits in L3 without snoops required.",
+  character(*),    parameter, public :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_NONE                  = "r08D2"
+  !  "EventName": "MEM_LOAD_UOPS_L3_MISS_RETIRED.LOCAL_DRAM",
+  !  "BriefDescription": "tbd",
+  !  "PublicDescription": "This event counts retired load uops where the data came from local DRAM.
+  !  This does not include hardware prefetches. This is a precise event."
+  character(*),    parameter, public :: MEM_LOAD_UOPS_L3_MISS_RETIRED_LOCAL_DRAM                = "r01D3"
+  !   "EventName": "BACLEARS.ANY",
+  !  "BriefDescription": "Counts the total number when the front end is resteered, mainly when the BPU cannot provide a correct prediction and this is corrected by other
+  ! branch handling mechanisms at the front end.",
+  !  "PublicDescription": "Number of front end re-steers due to BPU misprediction.
+  character(*),    parameter, public :: BACLEARS_ANY                                            = "r1FE6"
+  !   "EventName": "L2_TRANS.DEMAND_DATA_RD",
+  !   "BriefDescription": "Demand Data Read requests that access L2 cache",
+  character(*),    parameter, public :: L2_TRANS_DEMAND_DATA_RD                                 = "r01F0"
+  !   "EventName": "L2_TRANS.RFO",
+  !   "BriefDescription": "RFO requests that access L2 cache",
+  character(*),    parameter, public :: L2_TRANS_RFO                                            = "r02F0"
+  !   "EventName": "L2_TRANS.CODE_RD",
+  !   "BriefDescription": "L2 cache accesses when fetching instructions",
+  character(*),    parameter, public :: L2_TRANS_CODE_RD                                        = "r04F0"
+  !   "EventName": "L2_TRANS.ALL_PF",
+  !  "BriefDescription": "L2 or L3 HW prefetches that access L2 cache",
+  !  "PublicDescription": "Any MLC or L3 HW prefetch accessing L2, including rejects.
+  character(*),    parameter, public :: L2_TRANS_ALL_PF                                         = "r08F0"
+  !   "EventName": "L2_TRANS.L1D_WB",
+  !  "BriefDescription": "L1D writebacks that access L2 cache",
+  character(*),    parameter, public :: L2_TRANS_L1D_WB                                         = "r10F0"
+  !   "EventName": "L2_TRANS.L2_FILL",
+  !   "BriefDescription": "L2 fill requests that access L2 cache"
+  character(*),    parameter, public :: L2_TRANS_L2_FILL                                        = "r20F0"
+  !    "EventName": "L2_TRANS.L2_WB",
+  !   "BriefDescription": "L2 writebacks that access L2 cache",
+  character(*),    parameter, public :: L2_TRANS_L2_WB                                          = "r40F0"
+  !    "EventName": "L2_TRANS.ALL_REQUESTS",
+  !   "BriefDescription": "Transactions accessing L2 pipe"
+  character(*),    parameter, public :: L2_TRANS_ALL_REQUESTS                                   = "r80F0"
+  !    "EventName": "L2_LINES_IN.I",
+  !    "BriefDescription": "L2 cache lines in I state filling L2"
+  character(*),    parameter, public :: L2_LINES_IN_I                                           = "r01F1"
+  !      "EventName": "L2_LINES_IN.S",
+  !   "BriefDescription": "L2 cache lines in S state filling L2",
+  character(*),    parameter, public :: L2_LINES_IN_S                                           = "r02F1"
+  !   "EventName": "L2_LINES_IN.E",
+  !  "BriefDescription": "L2 cache lines in E state filling L2",
+  character(*),    parameter, public :: L2_LINES_IN_E                                           = "r04F1"
+  !  "EventName": "L2_LINES_IN.ALL",
+  !  "BriefDescription": "L2 cache lines filling L2",
+  !  "PublicDescription": "This event counts the number of L2 cache lines brought into the L2 cache.
+  !  Lines are filled into the L2 cache when there was an L2 miss."
+  character(*),    parameter, public :: L2_LINES_IN_ALL                                         = "r07F1"
+  !  "EventName": "L2_LINES_OUT.DEMAND_CLEAN",
+  !  "BriefDescription": "Clean L2 cache lines evicted by demand",
+  character(*),    parameter, public :: L2_LINES_OUT_DEMAND_CLEAN                               = "r05F2"
+  !    "EventName": "L2_LINES_OUT.DEMAND_DIRTY",
+  !  "BriefDescription": "Dirty L2 cache lines evicted by demand",
+  character(*),    parameter, public :: L2_LINES_OUT_DEMAND_DIRTY                               = "r06F2"
+  !    "EventName": "SQ_MISC.SPLIT_LOCK",
+  !  "BriefDescription": "Split locks in SQ",
+  character(*),    parameter, public :: SQ_MISC_SPLIT_LOCK                                      = "r10F4"
+  !    "EventName": "OFFCORE_RESPONSE.ALL_REQUESTS.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all requests miss in the L3 ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_REQUESTS_L3_MISS_ANY_RESPONSE      = "r01B7"
 end module mod_core_events
 
 
