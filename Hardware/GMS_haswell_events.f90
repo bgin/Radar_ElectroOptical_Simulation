@@ -1084,6 +1084,76 @@ module mod_core_events
   !    "EventName": "OFFCORE_RESPONSE.ALL_REQUESTS.L3_MISS.ANY_RESPONSE",
   !  "BriefDescription": "Counts all requests miss in the L3 ",
   character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_REQUESTS_L3_MISS_ANY_RESPONSE      = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_REQUESTS.L3_HIT.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all requests hit in the L3 "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_REQUESTS_L3_HIT_ANY_RESPONSE       = "r01B7"
+  !    "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.LOCAL_DRAM",
+  !  "BriefDescription": "miss the L3 and the data is returned from local dram
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_READS_L3_MISS_LOCAL_DRAM           = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_MISS.ANY_RESPONSE",
+  !   "BriefDescription": "miss in the L3
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_READS_L3_MISS_ANY_RESPONSE         = "r01B7"
+  !    "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.HITM_OTHER_CORE",
+  !  "BriefDescription": "hit in the L3 and the snoop to one of the sibling cores
+  !  hits the line in M state and the line is forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_READS_L3_HIT_HITM_OTHER_CORE       = "r01B7"
+  !  "EventName": "OFFCORE_RESPONSE.ALL_READS.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+  !  "BriefDescription": "hit in the L3 and the snoops to sibling cores hit in either E/S state and the line is not forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_READS_L3_HIT_HIT_OTHER_CORE_NO_FWD = "r01B7"
+  !    "EventName": "OFFCORE_RESPONSE.ALL_CODE_RD.L3_MISS.LOCAL_DRAM",
+  !  "BriefDescription": "Counts all demand & prefetch code reads miss the L3 and the data is returned from local dram "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_CODE_RD_L3_MISS_LOCAL_DRAM         = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_CODE_RD.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all demand & prefetch code reads miss in the L3 "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_CODE_RD_L3_MISS_ANY_RESPONSE       = "r01B7"
+  ! "EventName": "OFFCORE_RESPONSE.ALL_CODE_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+  !  "BriefDescription": "Counts all demand & prefetch code reads hit in the L3 and the snoops to
+  !  sibling cores hit in either E/S state and the line is not forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_CODE_RD_L3_HIT_HIT_OTHER_CORE_NO_FWD = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.LOCAL_DRAM",
+  !  "BriefDescription": "Counts all demand & prefetch RFOs miss the L3 and the data is returned from local dram ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_RFO_L3_MISS_LOCAL_DRAM               = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all demand & prefetch RFOs miss in the L3 "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_RFO_L3_MISS_ANY_RESPONSE             = "r01B7"
+  !    "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.HITM_OTHER_CORE",
+  !  "BriefDescription": "Counts all demand & prefetch RFOs hit in the L3 and the
+  !  snoop to one of the sibling cores hits the line in M state and the line is forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_RFO_L3_HIT_HITM_OTHER_CORE           = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_RFO.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+  !  "BriefDescription": "Counts all demand & prefetch RFOs hit in the L3 and the
+  !  snoops to sibling cores hit in either E/S state and the line is not forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_RFO_L3_HIT_HIT_OTHER_CORE_NO_FWD     = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.LOCAL_DRAM",
+  !  "BriefDescription": "Counts all demand & prefetch data reads miss the L3 and the data is returned from local dram "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_DATA_RD_L3_MISS_LOCAL_DRAM           = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all demand & prefetch data reads miss in the L3 ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_DATA_RD_L3_MISS_ANY_RESPONSE         = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.HITM_OTHER_CORE",
+  !  "BriefDescription": "Counts all demand & prefetch data reads hit in the L3 and the
+  !  snoop to one of the sibling cores hits the line in M state and the line is forwarded
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_DATA_RD_L3_HIT_HITM_OTHER_CORE      = "r01B7"
+  ! "EventName": "OFFCORE_RESPONSE.ALL_DATA_RD.L3_HIT.HIT_OTHER_CORE_NO_FWD",
+  !  "BriefDescription": "Counts all demand & prefetch data reads hit in the L3 and the
+  !  snoops to sibling cores hit in either E/S state and the line is not forwarded "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_ALL_DATA_RD_L3_HIT_HIT_OTHER_CORE_NO_FWD = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.PF_L3_CODE_RD.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts prefetch (that bring data to LLC only) code reads miss in the L3 "
+  character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L3_CODE_RD_L3_MISS_ANY_RESPONSE       = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.PF_L3_CODE_RD.L3_HIT.ANY_RESPONSE",
+  !  "BriefDescription": "Counts prefetch (that bring data to LLC only) code reads hit in the L3 ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L3_CODE_RD_L3_HIT_ANY_RESPONSE        = "r01B7"
+  !    "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all prefetch (that bring data to LLC only) RFOs miss in the L3 ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L3_RFO_L3_MISS_ANY_RESPONSE           = "r01B7"
+  !   "EventName": "OFFCORE_RESPONSE.PF_L3_RFO.L3_HIT.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all prefetch (that bring data to LLC only) RFOs hit in the L3
+  character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L3_RFO_L3_HIT_ANY_RESPONSE            = "r01B7"
+  !  "EventName": "OFFCORE_RESPONSE.PF_L2_CODE_RD.L3_MISS.ANY_RESPONSE",
+  !  "BriefDescription": "Counts all prefetch (that bring data to LLC only) code reads miss in the L3 ",
+  character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L2_CODE_RD_L3_MISS_ANY_RESPONSE       = "r01B7"
+  ! 
 end module mod_core_events
 
 
@@ -1094,6 +1164,107 @@ end module mod_core_events
 
 module mod_uncore_events
 
-
-
+  !  "EventName": "UNC_CBO_XSNP_RESPONSE.MISS_EXTERNAL",
+  !  "BriefDescription": "An external snoop misses in some processor core."
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_MISS_EXTERNAL   = "r2122"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.MISS_XCORE",
+  !  "BriefDescription": "A cross-core snoop initiated by this Cbox due to processor core memory request which misses in some processor core."
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_MISS_XCORE      = "r4122"
+  !    "EventName": "UNC_CBO_XSNP_RESPONSE.MISS_EVICTION",
+  !  "BriefDescription": "A cross-core snoop resulted from L3 Eviction which misses in some processor core.",
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_MISS_EVICTION   = "r8122"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.HIT_EXTERNAL",
+  !  "BriefDescription": "An external snoop hits a non-modified line in some processor core."
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HIT_EXTERNAL    =  "r2422"
+  !     "EventName": "UNC_CBO_XSNP_RESPONSE.HIT_XCORE",
+  !  "BriefDescription": "A cross-core snoop initiated by this Cbox due to processor
+  !  core memory request which hits a non-modified line in some processor core."
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HIT_XCORE       = "r4422"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.HIT_EVICTION",
+  !  "BriefDescription": "A cross-core snoop resulted from L3 Eviction which hits a non-modified line in some processor core.",
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HIT_EVICTION    = "r8422"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.HITM_EXTERNAL",
+  !  "BriefDescription": "An external snoop hits a modified line in some processor core.
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HITM_EXTERNAL   = "r2822"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.HITM_XCORE",
+  !  "BriefDescription": "A cross-core snoop initiated by this Cbox due to
+  !   processor core memory request which hits a modified line in some processor core
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HITM_XCORE      = "r4822"
+  !   "EventName": "UNC_CBO_XSNP_RESPONSE.HITM_EVICTION",
+  !  "BriefDescription": "A cross-core snoop resulted from L3 Eviction which hits a modified line in some processor core.
+  character(*),     parameter, public :: UNC_CBO_XSNP_RESPONSE_HITM_EVICTION   = "r8822"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.READ_M",
+  !  "BriefDescription": "L3 Lookup read request that access cache and found line in M-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_READ_M           = "r1134"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.WRITE_M",
+  !  "BriefDescription": "L3 Lookup write request that access cache and found line in M-state.",
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_WRITE_M          = "r2134"
+  !     "EventName": "UNC_CBO_CACHE_LOOKUP.EXTSNP_M",
+  !  "BriefDescription": "L3 Lookup external snoop request that access cache and found line in M-state.",
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_EXTSNP_M         = "r4134"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.ANY_M",
+  !  "BriefDescription": "L3 Lookup any request that access cache and found line in M-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_ANY_M            = "r8134"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.READ_I",
+  !  "BriefDescription": "L3 Lookup read request that access cache and found line in I-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_READ_I           = "r1834"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.WRITE_I",
+  !  "BriefDescription": "L3 Lookup write request that access cache and found line in I-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_WRITE_I          = "r2834"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.EXTSNP_I",
+  !  "BriefDescription": "L3 Lookup external snoop request that access cache and found line in I-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_EXTSNP_I         = "r4834"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.ANY_I",
+  !  "BriefDescription": "L3 Lookup any request that access cache and found line in I-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_ANY_I            = "r8834"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.READ_MESI",
+  !  "BriefDescription": "L3 Lookup read request that access cache and found line in any MESI-state.",
+  character(*),     parameter, public :: UNC-CBO_CACHE_LOOKUP_READ_MESI        = "r1F34"
+  !     "EventName": "UNC_CBO_CACHE_LOOKUP.WRITE_MESI",
+  !  "BriefDescription": "L3 Lookup write request that access cache and found line in MESI-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_WRITE_MESI       = "r2F34"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.EXTSNP_MESI",
+  !  "BriefDescription": "L3 Lookup external snoop request that access cache and found line in MESI-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_EXTSNP_MESI      = "r4F34"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.ANY_MESI",
+  !  "BriefDescription": "L3 Lookup any request that access cache and found line in MESI-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_ANY_MESI         = "r8F34"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.ANY_ES",
+  !  "BriefDescription": "L3 Lookup any request that access cache and found line in E or S-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_ANY_ES           = "r8634"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.EXTSNP_ES",
+  !  "BriefDescription": "L3 Lookup external snoop request that access cache and found line in E or S-state.
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_EXTSNP_ES        = "r4634"
+  !    "EventName": "UNC_CBO_CACHE_LOOKUP.READ_ES",
+  !  "BriefDescription": "L3 Lookup read request that access cache and found line in E or S-state.",
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_READ_ES          = "r1634"
+  !   "EventName": "UNC_CBO_CACHE_LOOKUP.WRITE_ES",
+  !  "BriefDescription": "L3 Lookup write request that access cache and found line in E or S-state."
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_WRITE_ES         = "r2634"
+  !   "EventName": "UNC_CLOCK.SOCKET",
+  !   "BriefDescription": "This 48-bit fixed counter counts the UCLK cycles."
+  character(*),     parameter, public :: UNC_CLOCK_SOCKET                      = "r0100"
+  !    "EventName": "UNC_ARB_TRK_OCCUPANCY.ALL",
+  !  "BriefDescription": "Each cycle count number of all Core outgoing valid entries. 
+  !Such entry is defined as valid from it's allocation till first of IDI0 or DRS0 messages is sent out. Accounts for Coherent and non-coherent traffic."
+  character(*),     parameter, public :: UNC_ARB_TRK_OCCUPANCY_ALL             = "r0180"
+  !   "EventName": "UNC_ARB_TRK_REQUESTS.ALL",
+  !  "BriefDescription": "Total number of Core outgoing entries allocated. Accounts for Coherent and non-coherent traffic.",
+  character(*),     parameter, public :: UNC_ARB_TRK_REQUESTS_ALL              = "r0181"
+  !   "EventName": "UNC_ARB_TRK_REQUESTS.WRITES",
+  !  "BriefDescription": "Number of Writes allocated - any write transactions: full/partials writes and evictions."
+  character(*),     parameter, public :: UNC_ARB_TRK_REQUESTS_WRITES           = "r2081"
+  !   "EventName": "UNC_ARB_COH_TRK_OCCUPANCY.All",
+  !  "BriefDescription": "Each cycle count number of valid entries in Coherency Tracker queue from allocation till deallocation.
+  !  Aperture requests (snoops) appear as NC decoded internally and become coherent (snoop L3, access memory)"
+  character(*),     parameter, public :: UNC_ARB_COH_TRK_OCCUPANCY_ALL         = "r0183"
+  !  "EventName": "UNC_ARB_COH_TRK_REQUESTS.ALL",
+  !  "BriefDescription": "Number of entries allocated. Account for Any type: e.g. Snoop, Core aperture, etc.
+  character(*),     parameter, public :: UNC_ARB_COH_TRK_REQUESTS_ALL          = "r0184"
+  !  "EventName": "UNC_ARB_TRK_OCCUPANCY.CYCLES_WITH_ANY_REQUEST",
+  !  "BriefDescription": "Cycles with at least one request outstanding is waiting for data return from memory controller.
+  !  Account for coherent and non-coherent requests initiated by IA Cores, Processor Graphics Unit, or LLC.
+  character(*),     parameter, public :: UNC_ARB_TRK_OCCUPANCY_CYCLES_WITH_ANY_REQUEST = "r0180"
 end module mod_uncore_events
+
+
