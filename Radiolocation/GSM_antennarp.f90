@@ -37,7 +37,7 @@ module mod_antennarp
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds,  only : int1, int4, dp
+     use mod_kinds,  only : int1, int4, sp
      implicit none
      
      public :: initNECRadPattern,   &
@@ -87,37 +87,37 @@ module mod_antennarp
 !DIR$ ENDIF
           ! Angle theta (deg)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_angth
-          real(kind=dp), allocatable, dimension(:) :: m_angth
+          real(kind=sp), allocatable, dimension(:) :: m_angth
           ! Angle phi (deg)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_angphi
-          real(kind=dp), allocatable, dimension(:) :: m_angphi
+          real(kind=sp), allocatable, dimension(:) :: m_angphi
           ! Cross Section vertical (db)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_csvert
-          real(kind=dp), allocatable, dimension(:) :: m_csvert
+          real(kind=sp), allocatable, dimension(:) :: m_csvert
           ! Cross Section horizontal (db)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_cshor
-          real(kind=dp), allocatable, dimension(:) :: m_cshor
+          real(kind=sp), allocatable, dimension(:) :: m_cshor
           ! Cross Section total (db)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_cstot
-          real(kind=dp), allocatable, dimension(:) :: m_cstot
+          real(kind=sp), allocatable, dimension(:) :: m_cstot
           ! Polarization axial ratio
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_polax
-          real(kind=dp), allocatable, dimension(:) :: m_polax
+          real(kind=sp), allocatable, dimension(:) :: m_polax
           ! Polarization tilt (deg)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_poltilt
-          real(kind=dp), allocatable, dimension(:) :: m_poltilt
+          real(kind=sp), allocatable, dimension(:) :: m_poltilt
           ! E-theta magnitude (volts)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_Ethmag
-          real(kind=dp), allocatable, dimension(:) :: m_Ethmag
+          real(kind=sp), allocatable, dimension(:) :: m_Ethmag
           ! E-theta phase (deg)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_Ethphi
-          real(kind=dp), allocatable, dimension(:) :: m_Ethphi
+          real(kind=sp), allocatable, dimension(:) :: m_Ethphi
           ! E-phi magnitude (volts)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_Ephimag
-          real(kind=dp), allocatable, dimension(:) :: m_Ephimag
+          real(kind=sp), allocatable, dimension(:) :: m_Ephimag
           ! E-phi phase (deg)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_Ephphase
-          real(kind=dp), allocatable, dimension(:) :: m_Ephphase
+          real(kind=sp), allocatable, dimension(:) :: m_Ephphase
     end type NECRadPattern_t
     
     contains
@@ -334,51 +334,51 @@ module mod_antennarp
                                            errmsg, 334)
     end subroutine readNECRadPattern
     
-    subroutine copyNECRadPattern_ymm4r8(rp,               &
-                                        ymm4r8_angth,     &
-                                        ymm4r8_angphi,    &
-                                        ymm4r8_csvert,    &
-                                        ymm4r8_cshor,     &
-                                        ymm4r8_cstot,     &
-                                        ymm4r8_polax,     &
-                                        ymm4r8_poltilt,   &
-                                        ymm4r8_Ethmag,    &
-                                        ymm4r8_Ethphi,    &
-                                        ymm4r8_Ephimag,   &
-                                        ymm4r8_Ephphase , &
+    subroutine copyNECRadPattern_ymm8r4(rp,               &
+                                        ymm8r4_angth,     &
+                                        ymm8r4_angphi,    &
+                                        ymm8r4_csvert,    &
+                                        ymm8r4_cshor,     &
+                                        ymm8r4_cstot,     &
+                                        ymm8r4_polax,     &
+                                        ymm8r4_poltilt,   &
+                                        ymm8r4_Ethmag,    &
+                                        ymm8r4_Ethphi,    &
+                                        ymm8r4_Ephimag,   &
+                                        ymm8r4_Ephphase , &
                                         errstate            )
                                        
           use mod_print_error, only : print_non_fatal_error
-          use mod_vectypes,    only : YMM4r8_t
-          use mod_copypaos,    only : copy_r8_ymm4r8
+          use mod_vectypes,    only : YMM8r4_t
+          use mod_copypaos,    only : copy_r4_ymm8r4
           type(NECRadPattern_t),                     intent(in) :: rp
-          type(YMM4r8_t), contiguous,  dimension(:), intent(inout) ::  ymm4r8_angth,     &
-                                                                       ymm4r8_angphi,    &
-                                                                       ymm4r8_csvert,    &
-                                                                       ymm4r8_cshor,     &
-                                                                       ymm4r8_cstot,     &
-                                                                       ymm4r8_polax,     &
-                                                                       ymm4r8_poltilt,   &
-                                                                       ymm4r8_Ethmag,    &
-                                                                       ymm4r8_Ethphi,    &
-                                                                       ymm4r8_Ephimag,   &
-                                                                       ymm4r8_Ephphase
+          type(YMM8r4_t), contiguous,  dimension(:), intent(inout) ::  ymm8r4_angth,     &
+                                                                       ymm8r4_angphi,    &
+                                                                       ymm8r4_csvert,    &
+                                                                       ymm8r4_cshor,     &
+                                                                       ymm8r4_cstot,     &
+                                                                       ymm8r4_polax,     &
+                                                                       ymm8r4_poltilt,   &
+                                                                       ymm8r4_Ethmag,    &
+                                                                       ymm8r4_Ethphi,    &
+                                                                       ymm8r4_Ephimag,   &
+                                                                       ymm8r4_Ephphase
           logical(kind=int4),                        intent(inout) :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code
           errstate = .false.
-          is_conforming  = (4*size(rp.m_angth)    == size(ymm4r8_angth))   .and.  &
-                           (4*size(rp.m_angphi)   == size(ymm4r8_angphi))  .and.  & 
-                           (4*size(rp.m_csvert)   == size(ymm4r8_csvert))  .and.  &
-                           (4*size(rp.m_cshor)    == size(ymm4r8_cshor))   .and.  &
-                           (4*size(rp.m_cstot)    == size(ymm4r8_cstot))   .and.  &
-                           (4*size(rp.m_polax)    == size(ymm4r8_polax))   .and.  &
-                           (4*size(rp.m_poltilt)  == size(ymm4r8_poltilt)) .and.  &
-                           (4*size(rp.m_Ethmag)   == size(ymm4r8_Ethmag))  .and.  &
-                           (4*size(rp.m_Ethphi)   == size(ymm4r8_Ethphi))  .and.  &
-                           (4*size(rp.m_Ephimag)  == size(ymm4r8_Ephimag)) .and.  &
-                           (4*size(rp.m_Ephphase) == size(ymm4r8_Ephphase))
+          is_conforming  = (8*size(rp.m_angth)    == size(ymm8r4_angth))   .and.  &
+                           (8*size(rp.m_angphi)   == size(ymm8r4_angphi))  .and.  & 
+                           (8*size(rp.m_csvert)   == size(ymm8r4_csvert))  .and.  &
+                           (8*size(rp.m_cshor)    == size(ymm8r4_cshor))   .and.  &
+                           (8*size(rp.m_cstot)    == size(ymm8r4_cstot))   .and.  &
+                           (8*size(rp.m_polax)    == size(ymm8r4_polax))   .and.  &
+                           (8*size(rp.m_poltilt)  == size(ymm8r4_poltilt)) .and.  &
+                           (8*size(rp.m_Ethmag)   == size(ymm8r4_Ethmag))  .and.  &
+                           (8*size(rp.m_Ethphi)   == size(ymm8r4_Ethphi))  .and.  &
+                           (8*size(rp.m_Ephimag)  == size(ymm8r4_Ephimag)) .and.  &
+                           (8*size(rp.m_Ephphase) == size(ymm8r4_Ephphase))
           if(.not. is_conforming) then
               call  print_non_fatal_error(" ================= Non-Fatal ================== " , &
                                           " Module: mod_antennarp, subroutine: copyNECRadPattern_ymm4r8: Nonconforming array(s) detected!! ",  &
@@ -386,19 +386,19 @@ module mod_antennarp
                errstate = .true.
                return
           end if
-          call copy_r8_ymm4r8(ymm4r8_angth,   rp.m_angth)
-          call copy_r8_ymm4r8(ymm4r8_angphi,  rp.m_angphi)
-          call copy_r8_ymm4r8(ymm4r8_csvert,  rp.m_csvert)
-          call copy_r8_ymm4r8(ymm4r8_cshor,   rp.m_cshor)
-          call copy_r8_ymm4r8(ymm4r8_cstot,   rp.m_cstot)
-          call copy_r8_ymm4r8(ymm4r8_polax,   rp.m_polax)
-          call copy_r8_ymm4r8(ymm4r8_poltilt, rp.m_poltilt)
-          call copy_r8_ymm4r8(ymm4r8_Ethmag,  rp.m_Ethmag)
-          call copy_r8_ymm4r8(ymm4r8_Ethphi,  rp.m_Ethphi)
-          call copy_r8_ymm4r8(ymm4r8_Ephimag, rp.m_Ephimag)
-          call copy_r8_ymm4r8(ymm4r8_Ephphase,rp.m_Ephphase)
+          call copy_r4_ymm8r4(ymm8r4_angth,   rp.m_angth)
+          call copy_r4_ymm8r4(ymm8r4_angphi,  rp.m_angphi)
+          call copy_r4_ymm8r4(ymm8r4_csvert,  rp.m_csvert)
+          call copy_r4_ymm8r4(ymm8r4_cshor,   rp.m_cshor)
+          call copy_r4_ymm8r4(ymm8r4_cstot,   rp.m_cstot)
+          call copy_r4_ymm8r4(ymm8r4_polax,   rp.m_polax)
+          call copy_r4_ymm8r4(ymm8r4_poltilt, rp.m_poltilt)
+          call copy_r4_ymm8r4(ymm8r4_Ethmag,  rp.m_Ethmag)
+          call copy_r4_ymm8r4(ymm8r4_Ethphi,  rp.m_Ethphi)
+          call copy_r4_ymm8r4(ymm8r4_Ephimag, rp.m_Ephimag)
+          call copy_r4_ymm8r4(ymm8r4_Ephphase,rp.m_Ephphase)
           
-    end subroutine copyNECRadPattern_ymm4r8
+    end subroutine copyNECRadPattern_ymm8r4
                                         
                                         
                                         
