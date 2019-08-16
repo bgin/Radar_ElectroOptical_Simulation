@@ -37,7 +37,7 @@ module mod_targetrp
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-    use mod_kinds, only : int1, int4, dp
+    use mod_kinds, only : int1, int4, sp
     implicit none
     
     public
@@ -87,37 +87,37 @@ module mod_targetrp
 !DIR$   ENDIF
               ! Angle theta
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_angth
-              real(kind=dp),    allocatable, dimension(:) :: m_angth
+              real(kind=sp),    allocatable, dimension(:) :: m_angth
               ! Angle phi
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_angphi
-              real(kind=dp),    allocatable, dimension(:) :: m_angphi
+              real(kind=sp),    allocatable, dimension(:) :: m_angphi
               ! Cross section: vertical (db)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_csvert
-              real(kind=dp),    allocatable, dimension(:) :: m_csvert
+              real(kind=sp),    allocatable, dimension(:) :: m_csvert
               ! Cross section: horizontal  (db)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_cshor
-              real(kind=dp),    allocatable, dimension(:) :: m_cshor
+              real(kind=sp),    allocatable, dimension(:) :: m_cshor
               ! Cross section total    (db)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_cstot
-              real(kind=dp),    allocatable, dimension(:) :: m_cstot
+              real(kind=sp),    allocatable, dimension(:) :: m_cstot
               ! Polarization: axial ratio unitless
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_axratio
-              real(kind=dp),    allocatable, dimension(:) :: m_axratio
+              real(kind=sp),    allocatable, dimension(:) :: m_axratio
               ! Polarization: tilt (deg)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_tilt
-              real(kind=dp),    allocatable, dimension(:) :: m_tilt
+              real(kind=sp),    allocatable, dimension(:) :: m_tilt
               ! E-field theta magnitude (volts)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethmag
-              real(kind=dp),    allocatable, dimension(:) :: m_Ethmag
+              real(kind=sp),    allocatable, dimension(:) :: m_Ethmag
               ! E-field theta phase (deg)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethphase
-              real(kind=dp),    allocatable, dimension(:) :: m_Ethphase
+              real(kind=sp),    allocatable, dimension(:) :: m_Ethphase
               ! E-field phi magnitude (volts)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephimag
-              real(kind=dp),    allocatable, dimension(:) :: m_Ephimag
+              real(kind=sp),    allocatable, dimension(:) :: m_Ephimag
               ! E-field phi phase (deg)
 !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephiphase
-              real(kind=dp),    allocatable, dimension(:) :: m_Ephiphase
+              real(kind=sp),    allocatable, dimension(:) :: m_Ephiphase
         end type NECTargetRadPattern_t
         
     contains
@@ -333,50 +333,50 @@ module mod_targetrp
                                            errmsg, 333)
     end subroutine readNECTargetRadPattern
     
-    subroutine copyNECTargetRadPattern_ymm4r8(rp,      &
-                                       ymm4r8_angth,    &
-                                       ymm4r8_angphi,   &
-                                       ymm4r8_csvert,   &
-                                       ymm4r8_cshor,    &
-                                       ymm4r8_cstot,    &
-                                       ymm4r8_axratio,  &
-                                       ymm4r8_tilt,     &
-                                       ymm4r8_Ethmag,   &
-                                       ymm4r8_Ethphase, &
-                                       ymm4r8_Ephimag,  &
-                                       ymm4r8_Ephiphase,    &
+    subroutine copyNECTargetRadPattern_ymm8r4(rp,      &
+                                       ymm8r4_angth,    &
+                                       ymm8r4_angphi,   &
+                                       ymm8r4_csvert,   &
+                                       ymm8r4_cshor,    &
+                                       ymm8r4_cstot,    &
+                                       ymm8r4_axratio,  &
+                                       ymm8r4_tilt,     &
+                                       ymm8r4_Ethmag,   &
+                                       ymm8r4_Ethphase, &
+                                       ymm8r4_Ephimag,  &
+                                       ymm8r4_Ephiphase,    &
                                        errstate  )
           use mod_print_error, only : print_non_fatal_error
-          use mod_vectypes,    only :  YMM4r8_t
-          use mod_copypaos,    only : copy_r8_ymm4r8
+          use mod_vectypes,    only :  YMM8r4_t
+          use mod_copypaos,    only : copy_r4_ymm8r4
           type(NECTargetRadPattern_t),              intent(in)    :: rp
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_angth,    &
-                                                                     ymm4r8_angphi,   &
-                                                                     ymm4r8_csvert,   &
-                                                                     ymm4r8_cshor,    &
-                                                                     ymm4r8_cstot,    &
-                                                                     ymm4r8_axratio,  &
-                                                                     ymm4r8_tilt,     &
-                                                                     ymm4r8_Ethmag,   &
-                                                                     ymm4r8_Ethphase, &
-                                                                     ymm4r8_Ephimag,  &
-                                                                     ymm4r8_Ephiphase
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_angth,    &
+                                                                     ymm8r4_angphi,   &
+                                                                     ymm8r4_csvert,   &
+                                                                     ymm8r4_cshor,    &
+                                                                     ymm8r4_cstot,    &
+                                                                     ymm8r4_axratio,  &
+                                                                     ymm8r4_tilt,     &
+                                                                     ymm8r4_Ethmag,   &
+                                                                     ymm8r4_Ethphase, &
+                                                                     ymm8r4_Ephimag,  &
+                                                                     ymm8r4_Ephiphase
           logical(kind=int4),                       intent(inout) :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code ....
           errstate = .false.
-          is_conforming = (4*size(rp.m_angth)     == size(ymm4r8_angth))    .and.  &
-                          (4*size(rp.m_angphi)    == size(ymm4r8_angphi))   .and.  &
-                          (4*size(rp.m_csvert)    == size(ymm4r8_csvert))   .and.  &
-                          (4*size(rp.m_cshor)     == size(ymm4r8_cshor))    .and.  &
-                          (4*size(rp.m_cstot)     == size(ymm4r8_cstot))    .and.  &
-                          (4*size(rp.m_axratio)   == size(ymm4r8_axratio))  .and.  &
-                          (4*size(rp.m_tilt)      == size(ymm4r8_tilt))     .and.  &
-                          (4*size(rp.m_Ethmag)    == size(ymm4r8_Ethmag))   .and.  &
-                          (4*size(rp.m_Ethphase)  == size(ymm4r8_Ethphase)) .and.  &
-                          (4*size(rp.m_Ephimag)   == size(ymm4r8_Ephimag))  .and.  &
-                          (4*size(rp.m_Ephiphase) == size(ymm4r8_Ephiphase))
+          is_conforming = (8*size(rp.m_angth)     == size(ymm8r4_angth))    .and.  &
+                          (8*size(rp.m_angphi)    == size(ymm8r4_angphi))   .and.  &
+                          (8*size(rp.m_csvert)    == size(ymm8r4_csvert))   .and.  &
+                          (8*size(rp.m_cshor)     == size(ymm8r4_cshor))    .and.  &
+                          (8*size(rp.m_cstot)     == size(ymm8r4_cstot))    .and.  &
+                          (8*size(rp.m_axratio)   == size(ymm8r4_axratio))  .and.  &
+                          (8*size(rp.m_tilt)      == size(ymm8r4_tilt))     .and.  &
+                          (8*size(rp.m_Ethmag)    == size(ymm8r4_Ethmag))   .and.  &
+                          (8*size(rp.m_Ethphase)  == size(ymm8r4_Ethphase)) .and.  &
+                          (8*size(rp.m_Ephimag)   == size(ymm8r4_Ephimag))  .and.  &
+                          (8*size(rp.m_Ephiphase) == size(ymm8r4_Ephiphase))
           if(.not. is_conforming) then 
                  call  print_non_fatal_error(" ================= Non-Fatal ================== " , &
                                           " Module: mod_targetrp, subroutine: copyNECTargetRadPattern_ymm4r8: Nonconforming array(s) detected!! ",  &
@@ -384,18 +384,18 @@ module mod_targetrp
                  errstate = .true.
                  return
           end if
-          call copy_r8_ymm4r8(ymm4r8_angth,    rp.m_angth)
-          call copy_r8_ymm4r8(ymm4r8_angphi,   rp.m_angphi)
-          call copy_r8_ymm4r8(ymm4r8_csvert,   rp.m_csvert)
-          call copy_r8_ymm4r8(ymm4r8_cshor,    rp.m_cshor)
-          call copy_r8_ymm4r8(ymm4r8_cstot,    rp.m_cstot)
-          call copy_r8_ymm4r8(ymm4r8_axratio,  rp.m_axratio)
-          call copy_r8_ymm4r8(ymm4r8_tilt,     rp.m_tilt)
-          call copy_r8_ymm4r8(ymm4r8_Ethmag,   rp.m_Ethmag)
-          call copy_r8_ymm4r8(ymm4r8_Ethphase, rp.m_Ethphase)
-          call copy_r8_ymm4r8(ymm4r8_Ephimag,  rp.m_Ephimag)
-          call copy_r8_ymm4r8(ymm4r8_Ephiphase,rp.m_Ephiphase)
+          call copy_r4_ymm4r8(ymm8r4_angth,    rp.m_angth)
+          call copy_r4_ymm4r8(ymm8r4_angphi,   rp.m_angphi)
+          call copy_r4_ymm4r8(ymm8r4_csvert,   rp.m_csvert)
+          call copy_r4_ymm4r8(ymm8r4_cshor,    rp.m_cshor)
+          call copy_r4_ymm4r8(ymm8r4_cstot,    rp.m_cstot)
+          call copy_r4_ymm4r8(ymm8r4_axratio,  rp.m_axratio)
+          call copy_r4_ymm4r8(ymm8r4_tilt,     rp.m_tilt)
+          call copy_r4_ymm4r8(ymm8r4_Ethmag,   rp.m_Ethmag)
+          call copy_r4_ymm4r8(ymm8r4_Ethphase, rp.m_Ethphase)
+          call copy_r4_ymm4r8(ymm8r4_Ephimag,  rp.m_Ephimag)
+          call copy_r4_ymm4r8(ymm8r4_Ephiphase,rp.m_Ephiphase)
           
-    end subroutine copyNECTargetRadPattern_ymm4r8
+    end subroutine copyNECTargetRadPattern_ymm8r4
 
 end module mod_targetrp
