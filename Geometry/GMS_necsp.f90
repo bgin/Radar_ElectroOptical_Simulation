@@ -38,7 +38,7 @@ module mod_necsp
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-    use mod_kinds, ONLY :  int1, int4, dp
+    use mod_kinds, ONLY :  int1, int4, sp
     implicit none
     
     public ::  initNECParamPatches,   &
@@ -99,22 +99,22 @@ module mod_necsp
           integer(kind=int4), allocatable, dimension(:), public :: m_sptype
           ! x coordinate of the patch center
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcoord
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcoord
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcoord
           ! y coordinate of the patch center
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycoord
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycoord
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycoord
           ! z coordinate of the patch center
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcoord
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcoord
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcoord
           ! elevation angle of the outward normal vector above the x-y plane (degrees).
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_elevang
-          real(kind=dp),      allocatable, dimension(:), public :: m_elevang
+          real(kind=sp),      allocatable, dimension(:), public :: m_elevang
           ! azimuth angle of the outward normal vector from the x axis (degrees). 
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_azimang
-          real(kind=dp),      allocatable, dimension(:), public :: m_azimang
+          real(kind=sp),      allocatable, dimension(:), public :: m_azimang
           !patch area (square of units used)
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_parea
-          real(kind=dp),      allocatable, dimension(:), public :: m_parea
+          real(kind=sp),      allocatable, dimension(:), public :: m_parea
     end type NECParamPatches_t
     
     type, public :: NECRectangPatches_t
@@ -130,31 +130,31 @@ module mod_necsp
           integer(kind=int4), allocatable, dimension(:), public :: m_rptype
           !   x coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner1
           !   y coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner1
           !  z coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner1
           !  x coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner2
           !  y coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner2
           ! z  coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner2
           !  x coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner3
           !  y coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner3
           !  z coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner3
     end type NECRectangPatches_t
     
     type, public :: NECTriangPatches_t
@@ -170,31 +170,31 @@ module mod_necsp
           integer(kind=int4), allocatable, dimension(:), public :: m_tptype
           !   x coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner1
           !   y coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner1
           !  z coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner1
           !  x coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner2
           !  y coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner2
           ! z  coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner2
           !  x coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner3
           !  y coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner3
           !  z coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner3         
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner3         
     end type  NECTriangPatches_t
     
     type, public :: NECQuadPatches_t 
@@ -209,40 +209,40 @@ module mod_necsp
           integer(kind=int4), allocatable, dimension(:), public :: m_qptype
             !   x coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner1
           !   y coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner1
           !  z coordinate of corner 1
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner1
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner1
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner1
           !  x coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner2
           !  y coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner2
           ! z  coordinate of corner 2
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner2
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner2
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner2
           !  x coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner3
           !  y coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner3
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner3
           !  z coordinate of corner 3
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner3
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner3  
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner3  
           ! x coordinate of corner 4
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcorner4
-          real(kind=dp),      allocatable, dimension(:), public :: m_xcorner4
+          real(kind=sp),      allocatable, dimension(:), public :: m_xcorner4
           ! y coordinate of corner 4
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycorner4
-          real(kind=dp),      allocatable, dimension(:), public :: m_ycorner4
+          real(kind=sp),      allocatable, dimension(:), public :: m_ycorner4
           ! z coordinate of corner 4
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcorner4
-          real(kind=dp),      allocatable, dimension(:), public :: m_zcorner4
+          real(kind=sp),      allocatable, dimension(:), public :: m_zcorner4
     end type NECQuadPatches_t
     
     contains
@@ -343,12 +343,12 @@ module mod_necsp
           end if
           ! Memory first touch
           pp.m_sptype(:)  =  -1
-          pp.m_xcoord(:)  =  0.0_dp
-          pp.m_ycoord(:)  =  0.0_dp
-          pp.m_zcoord(:)  =  0.0_dp
-          pp.m_elevang(:) =  0.0_dp
-          pp.m_azimang(:) =  0.0_dp
-          pp.m_parea(:)   =  0.0_dp
+          pp.m_xcoord(:)  =  0.0_sp
+          pp.m_ycoord(:)  =  0.0_sp
+          pp.m_zcoord(:)  =  0.0_sp
+          pp.m_elevang(:) =  0.0_sp
+          pp.m_azimang(:) =  0.0_sp
+          pp.m_parea(:)   =  0.0_sp
           errstate = .false.
           return
 9999      call handle_fatal_memory_error( iounit, logging,verbose,append,fname, &
@@ -409,55 +409,55 @@ module mod_necsp
                                            errmsg, 409)
     end subroutine readNECParamPatches
     
-    subroutine copyNECParamPatches_ymm8i4_ymm4r8(pp,             &
+    subroutine copyNECParamPatches_ymm8i4_ymm8r4(pp,             &
                                                  ymm8i4_sptype,  &
-                                                 ymm4r8_xcoord,  &
-                                                 ymm4r8_ycoord,  &
-                                                 ymm4r8_zcoord,  &
-                                                 ymm4r8_elevang, &
-                                                 ymm4r8_azimang, &
-                                                 ymm4r8_parea,   &
+                                                 ymm8r4_xcoord,  &
+                                                 ymm8r4_ycoord,  &
+                                                 ymm8r4_zcoord,  &
+                                                 ymm8r4_elevang, &
+                                                 ymm8r4_azimang, &
+                                                 ymm8r4_parea,   &
                                                  errstate    )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r4_ymm8r4
           type(NECParamPatches_t),                  intent(in) :: pp
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_sptype
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_xcoord,   &
-                                                                     ymm4r8_ycoord,   &
-                                                                     ymm4r8_zcoord,   &
-                                                                     ymm4r8_elevang,  &
-                                                                     ymm4r8_azimang,  &
-                                                                     ymm4r8_parea
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_xcoord,   &
+                                                                     ymm8r4_ycoord,   &
+                                                                     ymm8r4_zcoord,   &
+                                                                     ymm8r4_elevang,  &
+                                                                     ymm8r4_azimang,  &
+                                                                     ymm8r4_parea
           logical(kind=int4),                       intent(inout)    :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code .....
           errstate = .false.
           is_conforming = (8*size(pp.m_sptype)  == size(ymm8i4_sptype))  .and.  &
-                          (4*size(pp.m_xcoord)  == size(ymm4r8_xcoord))  .and.  &
-                          (4*size(pp.m_ycoord)  == size(ymm4r8_ycoord))  .and.  &
-                          (4*size(pp.m_zcoord)  == size(ymm4r8_zcoord))  .and.  &
-                          (4*size(pp.m_elevang) == size(ymm4r8_elevang)) .and.  &
-                          (4*size(pp.m_azimang) == size(ymm4r8_azimang)) .and.  &
-                          (4*size(pp.m_parea)   == size(ymm4r8_parea))   
+                          (8*size(pp.m_xcoord)  == size(ymm8r4_xcoord))  .and.  &
+                          (8*size(pp.m_ycoord)  == size(ymm8r4_ycoord))  .and.  &
+                          (8*size(pp.m_zcoord)  == size(ymm8r4_zcoord))  .and.  &
+                          (8*size(pp.m_elevang) == size(ymm8r4_elevang)) .and.  &
+                          (8*size(pp.m_azimang) == size(ymm8r4_azimang)) .and.  &
+                          (8*size(pp.m_parea)   == size(ymm8r4_parea))   
           if(.not. is_conforming) then
                  call print_non_fatal_error( "================ Non-Fatal ===================", &
-                                          "Module: mod_necsp, subroutine: copyNECParamPatches_ymm8i4_ymm4r8: -- Nonconforming arrays !!", &
+                                          "Module: mod_necsp, subroutine: copyNECParamPatches_ymm8i4_ymm8r4: -- Nonconforming arrays !!", &
                                           __LINE__,__FILE__)
                  errstate = .true.
                  return
           end if
           call copy_i4_ymm8i4(ymm8i4_sptype,  pp.m_sptype)
-          call copy_r8_ymm4r8(ymm4r8_xcoord,  pp.m_xcoord)
-          call copy_r8_ymm4r8(ymm4r8_ycoord,  pp.m_ycoord)
-          call copy_r8_ymm4r8(ymm4r8_zcoord,  pp.m_zcoord)
-          call copy_r8_ymm4r8(ymm4r8_elevang, pp.m_elevang)
-          call copy_r8_ymm4r8(ymm4r8_azimang, pp.m_azimang)
-          call copy_r8_ymm4r8(ymm4r8_parea,   pp.m_parea)
+          call copy_r4_ymm8r4(ymm4r8_xcoord,  pp.m_xcoord)
+          call copy_r4_ymm8r4(ymm4r8_ycoord,  pp.m_ycoord)
+          call copy_r4_ymm8r4(ymm4r8_zcoord,  pp.m_zcoord)
+          call copy_r4_ymm8r4(ymm4r8_elevang, pp.m_elevang)
+          call copy_r4_ymm8r4(ymm4r8_azimang, pp.m_azimang)
+          call copy_r4_ymm8r4(ymm4r8_parea,   pp.m_parea)
           
-    end subroutine copyNECParamPatches_ymm8i4_ymm4r8
+    end subroutine copyNECParamPatches_ymm8i4_ymm8r4
     
     subroutine initNECRectangPatches(rp,nrp,errstate,iounit,logging,verbose,append,fname)
           use mod_constants, only : INITVAL
@@ -654,48 +654,48 @@ module mod_necsp
                                            errmsg, 654) 
     end subroutine readNECRectangPatches
     
-    subroutine copyNECRectangPatches_ymm8i4_ymm4r8(rp,       &
+    subroutine copyNECRectangPatches_ymm8i4_ymm8r4(rp,       &
                                                    ymm8i4_rptype,    &
-                                                   ymm4r8_xcorner1,  &
-                                                   ymm4r8_ycorner1,  &
-                                                   ymm4r8_zcorner1,  &
-                                                   ymm4r8_xcorner2,  &
-                                                   ymm4r8_ycorner2,  &
-                                                   ymm4r8_zcorner2,  &
-                                                   ymm4r8_xcorner3,  &
-                                                   ymm4r8_ycorner3,  &
-                                                   ymm4r8_zcorner3,  &
+                                                   ymm8r4_xcorner1,  &
+                                                   ymm8r4_ycorner1,  &
+                                                   ymm8r4_zcorner1,  &
+                                                   ymm8r4_xcorner2,  &
+                                                   ymm8r4_ycorner2,  &
+                                                   ymm8r4_zcorner2,  &
+                                                   ymm8r4_xcorner3,  &
+                                                   ymm8r4_ycorner3,  &
+                                                   ymm8r4_zcorner3,  &
                                                    errstate         )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r4_ymm8r4
           type(NECRectangPatches_t),       intent(in) :: rp
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_rptype
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_xcorner1,  &
-                                                                     ymm4r8_ycorner1,  &
-                                                                     ymm4r8_zcorner1,  &
-                                                                     ymm4r8_xcorner2,  &
-                                                                     ymm4r8_ycorner2,  &
-                                                                     ymm4r8_zcorner2,  &
-                                                                     ymm4r8_xcorner3,  &
-                                                                     ymm4r8_ycorner3,  &
-                                                                     ymm4r8_zcorner3
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_xcorner1,  &
+                                                                     ymm8r4_ycorner1,  &
+                                                                     ymm8r4_zcorner1,  &
+                                                                     ymm8r4_xcorner2,  &
+                                                                     ymm8r4_ycorner2,  &
+                                                                     ymm8r4_zcorner2,  &
+                                                                     ymm8r4_xcorner3,  &
+                                                                     ymm8r4_ycorner3,  &
+                                                                     ymm8r4_zcorner3
           logical(kind=int4),                       intent(inout) :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code ....
           errstate = .false.
           is_conforming = (8*size(rp.m_rptype)   == size(ymm8i4_rptype))    .and.  &
-                          (4*size(rp.m_xcorner1) == size(ymm4r8_xcorner1))  .and.  &
-                          (4*size(rp.m_ycorner1) == size(ymm4r8_ycorner1))  .and.  &
-                          (4*size(rp.m_zcorner1) == size(ymm4r8_zcorner1))  .and.  &
-                          (4*size(rp.m_xcorner2) == size(ymm4r8_xcorner2))  .and.  &
-                          (4*size(rp.m_ycorner2) == size(ymm4r8_ycorner2))  .and.  &
-                          (4*size(rp.m_zcorner2) == size(ymm4r8_zcorner2))  .and.  &
-                          (4*size(rp.m_xcorner3) == size(ymm4r8_xcorner3))  .and.  &
-                          (4*size(rp.m_ycorner3) == size(ymm4r8_ycorner3))  .and.  &
-                          (4*size(rp.m_zcorner3) == size(ymm4r8_zcorner3))
+                          (8*size(rp.m_xcorner1) == size(ymm8r4_xcorner1))  .and.  &
+                          (8*size(rp.m_ycorner1) == size(ymm8r4_ycorner1))  .and.  &
+                          (8*size(rp.m_zcorner1) == size(ymm8r4_zcorner1))  .and.  &
+                          (8*size(rp.m_xcorner2) == size(ymm8r4_xcorner2))  .and.  &
+                          (8*size(rp.m_ycorner2) == size(ymm8r4_ycorner2))  .and.  &
+                          (8*size(rp.m_zcorner2) == size(ymm8r4_zcorner2))  .and.  &
+                          (8*size(rp.m_xcorner3) == size(ymm8r4_xcorner3))  .and.  &
+                          (8*size(rp.m_ycorner3) == size(ymm8r4_ycorner3))  .and.  &
+                          (8*size(rp.m_zcorner3) == size(ymm8r4_zcorner3))
           if(.not. is_conforming) then
                  call print_non_fatal_error(  "================ Non-Fatal ===================", &
                                           "Module: mod_necsp, subroutine: copyNECRectangPatches_ymm8i4_ymm4r8: -- Nonconforming arrays !!", &
@@ -704,15 +704,15 @@ module mod_necsp
                  return 
           end if
           call copy_i4_ymm8i4(ymm8i4_rptype,   rp.m_rptype)
-          call copy_r8_ymm4r8(ymm4r8_xcorner1, rp.m_xcorner1)
-          call copy_r8_ymm4r8(ymm4r8_ycorner1, rp.m_ycorner1)
-          call copy_r8_ymm4r8(ymm4r8_zcorner1, rp.m_zcorner1)
-          call copy_r8_ymm4r8(ymm4r8_xcorner2, rp.m_xcorner2)
-          call copy_r8_ymm4r8(ymm4r8_ycorner2, rp.m_ycorner2)
-          call copy_r8_ymm4r8(ymm4r8_zcorner2, rp.m_zcorner2)
-          call copy_r8_ymm4r8(ymm4r8_xcorner3, rp.m_xcorner3)
-          call copy_r8_ymm4r8(ymm4r8_ycorner3, rp.m_ycorner3)
-          call copy_r8_ymm4r8(ymm4r8_zcorner3, rp.m_zcorner3)
+          call copy_r4_ymm8r4(ymm8r4_xcorner1, rp.m_xcorner1)
+          call copy_r4_ymm8r4(ymm8r4_ycorner1, rp.m_ycorner1)
+          call copy_r4_ymm8r4(ymm8r4_zcorner1, rp.m_zcorner1)
+          call copy_r4_ymm8r4(ymm8r4_xcorner2, rp.m_xcorner2)
+          call copy_r4_ymm8r4(ymm8r4_ycorner2, rp.m_ycorner2)
+          call copy_r4_ymm8r4(ymm8r4_zcorner2, rp.m_zcorner2)
+          call copy_r4_ymm8r4(ymm8r4_xcorner3, rp.m_xcorner3)
+          call copy_r4_ymm8r4(ymm8r4_ycorner3, rp.m_ycorner3)
+          call copy_r4_ymm8r4(ymm8r4_zcorner3, rp.m_zcorner3)
           
     end subroutine copyNECRectangPatches_ymm8i4_ymm4r8
     
@@ -911,48 +911,48 @@ module mod_necsp
                                            errmsg, 911) 
     end subroutine readNECTriangPatches
     
-    subroutine copyNECTriangPatches_ymm8i4_ymm4r8(tp,                 &
+    subroutine copyNECTriangPatches_ymm8i4_ymm8r4(tp,                 &
                                                      ymm8i4_tptype,   &
-                                                     ymm4r8_xcorner1, &
-                                                     ymm4r8_ycorner1, &
-                                                     ymm4r8_zcorner1, &
-                                                     ymm4r8_xcorner2, &
-                                                     ymm4r8_ycorner2, &
-                                                     ymm4r8_zcorner2, &
-                                                     ymm4r8_xcorner3, &
-                                                     ymm4r8_ycorner3, &
-                                                     ymm4r8_zcorner3, &
+                                                     ymm8r4_xcorner1, &
+                                                     ymm8r4_ycorner1, &
+                                                     ymm8r4_zcorner1, &
+                                                     ymm8r4_xcorner2, &
+                                                     ymm8r4_ycorner2, &
+                                                     ymm8r4_zcorner2, &
+                                                     ymm8r4_xcorner3, &
+                                                     ymm8r4_ycorner3, &
+                                                     ymm8r4_zcorner3, &
                                                      errstate       )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r4_ymm8r4
           type(NECTriangPatches_t),                 intent(in)    :: tp
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_tptype
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_xcorner1,   &
-                                                                     ymm4r8_ycorner1,   &
-                                                                     ymm4r8_zcorner1,   &
-                                                                     ymm4r8_xcorner2,   &
-                                                                     ymm4r8_ycorner2,   &
-                                                                     ymm4r8_zcorner2,   &
-                                                                     ymm4r8_xcorner3,   &
-                                                                     ymm4r8_ycorner3,   &
-                                                                     ymm4r8_zcorner3
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_xcorner1,   &
+                                                                     ymm8r4_ycorner1,   &
+                                                                     ymm8r4_zcorner1,   &
+                                                                     ymm8r4_xcorner2,   &
+                                                                     ymm8r4_ycorner2,   &
+                                                                     ymm8r4_zcorner2,   &
+                                                                     ymm8r4_xcorner3,   &
+                                                                     ymm8r4_ycorner3,   &
+                                                                     ymm8r4_zcorner3
            logical(kind=int4),                      intent(inout) :: errstate
            ! Locals
            logical(kind=int4) :: is_conforming = .false.
            ! Exec code ....
            errstate = .false.
            is_conforming = (8*size(tp.m_tptype)   == size(ymm8i4_tptype))    .and.  &
-                           (4*size(tp.m_xcorner1) == size(ymm4r8_xcorner1))  .and.  &
-                           (4*size(tp.m_ycorner1) == size(ymm4r8_ycorner1))  .and.  &
-                           (4*size(tp.m_zcorner1) == size(ymm4r8_zcorner1))  .and.  &
-                           (4*size(tp.m_xcorner2) == size(ymm4r8_xcorner2))  .and.  &
-                           (4*size(tp.m_ycorner2) == size(ymm4r8_ycorner2))  .and.  &
-                           (4*size(tp.m_zcorner2) == size(ymm4r8_zcorner2))  .and.  &
-                           (4*size(tp.m_xcorner3) == size(ymm4r8_xcorner3))  .and.  &
-                           (4*size(tp.m_ycorner3) == size(ymm4r8_ycorner3))  .and.  &
-                           (4*size(tp.m_zcorner3) == size(ymm4r8_zcorner3))
+                           (8*size(tp.m_xcorner1) == size(ymm8r4_xcorner1))  .and.  &
+                           (8*size(tp.m_ycorner1) == size(ymm8r4_ycorner1))  .and.  &
+                           (8*size(tp.m_zcorner1) == size(ymm8r4_zcorner1))  .and.  &
+                           (8*size(tp.m_xcorner2) == size(ymm8r4_xcorner2))  .and.  &
+                           (8*size(tp.m_ycorner2) == size(ymm8r4_ycorner2))  .and.  &
+                           (8*size(tp.m_zcorner2) == size(ymm8r4_zcorner2))  .and.  &
+                           (8*size(tp.m_xcorner3) == size(ymm8r4_xcorner3))  .and.  &
+                           (8*size(tp.m_ycorner3) == size(ymm8r4_ycorner3))  .and.  &
+                           (8*size(tp.m_zcorner3) == size(ymm8r4_zcorner3))
           if(.not. is_conforming) then
                  call print_non_fatal_error(  "================ Non-Fatal ===================", &
                                           "Module: mod_necsp, subroutine: copyNECTriangPatches_ymm8i4_ymm4r8: -- Nonconforming arrays !!", &
@@ -961,17 +961,17 @@ module mod_necsp
                  return 
           end if
           call copy_i4_ymm8i4(ymm8i4_tptype,   tp.m_tptype)
-          call copy_r8_ymm4r8(ymm4r8_xcorner1, tp.m_xcorner1)
-          call copy_r8_ymm4r8(ymm4r8_ycorner1, tp.m_ycorner1)
-          call copy_r8_ymm4r8(ymm4r8_zcorner1, tp.m_zcorner1)
-          call copy_r8_ymm4r8(ymm4r8_xcorner2, tp.m_xcorner2)
-          call copy_r8_ymm4r8(ymm4r8_ycorner2, tp.m_ycorner2)
-          call copy_r8_ymm4r8(ymm4r8_zcorner2, tp.m_zcorner2)
-          call copy_r8_ymm4r8(ymm4r8_xcorner3, tp.m_xcorner3)
-          call copy_r8_ymm4r8(ymm4r8_ycorner3, tp.m_ycorner3)
-          call copy_r8_ymm4r8(ymm4r8_zcorner3, tp.m_zcorner3)
+          call copy_r4_ymm8r4(ymm8r4_xcorner1, tp.m_xcorner1)
+          call copy_r4_ymm8r4(ymm8r4_ycorner1, tp.m_ycorner1)
+          call copy_r4_ymm8r4(ymm8r4_zcorner1, tp.m_zcorner1)
+          call copy_r4_ymm8r4(ymm8r4_xcorner2, tp.m_xcorner2)
+          call copy_r4_ymm8r4(ymm8r4_ycorner2, tp.m_ycorner2)
+          call copy_r4_ymm8r4(ymm8r4_zcorner2, tp.m_zcorner2)
+          call copy_r4_ymm8r4(ymm8r4_xcorner3, tp.m_xcorner3)
+          call copy_r4_ymm8r4(ymm8r4_ycorner3, tp.m_ycorner3)
+          call copy_r4_ymm8r4(ymm8r4_zcorner3, tp.m_zcorner3)
           
-    end subroutine copyNECTriangPatches_ymm8i4_ymm4r8
+    end subroutine copyNECTriangPatches_ymm8i4_ymm8r4
                                                      
                                                      
     subroutine initNECQuadPatches(qp,nqp,errstate,iounit,logging,verbose,append,fname)
@@ -1204,57 +1204,57 @@ module mod_necsp
                                            errmsg, 1204) 
     end subroutine readNECQuadPatches
     
-    subroutine copyNECQuadPatches_ymm8i4_ymm4r8(qp,     &
+    subroutine copyNECQuadPatches_ymm8i4_ymm8r4(qp,     &
                                                 ymm8i4_qptype,   &
-                                                ymm4r8_xcorner1, &
-                                                ymm4r8_ycorner1, &
-                                                ymm4r8_zcorner1, &
-                                                ymm4r8_xcorner2, &
-                                                ymm4r8_ycorner2, &
-                                                ymm4r8_zcorner2, &
-                                                ymm4r8_xcorner3, &
-                                                ymm4r8_ycorner3, &
-                                                ymm4r8_zcorner3, &
-                                                ymm4r8_xcorner4, &
-                                                ymm4r8_ycorner4, &
-                                                ymm4r8_zcorner4, &
+                                                ymm8r4_xcorner1, &
+                                                ymm8r4_ycorner1, &
+                                                ymm8r4_zcorner1, &
+                                                ymm8r4_xcorner2, &
+                                                ymm8r4_ycorner2, &
+                                                ymm8r4_zcorner2, &
+                                                ymm8r4_xcorner3, &
+                                                ymm8r4_ycorner3, &
+                                                ymm8r4_zcorner3, &
+                                                ymm8r4_xcorner4, &
+                                                ymm8r4_ycorner4, &
+                                                ymm8r4_zcorner4, &
                                                 errstate   )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r4_ymm8r4
           type(NECQuadPatches_t),                   intent(in)    :: qp
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) ::  ymm8i4_qptype
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) ::  ymm4r8_xcorner1,   &
-                                                                      ymm4r8_ycorner1, &
-                                                                      ymm4r8_zcorner1, &
-                                                                      ymm4r8_xcorner2, &
-                                                                      ymm4r8_ycorner2, &
-                                                                      ymm4r8_zcorner2, &
-                                                                      ymm4r8_xcorner3, &
-                                                                      ymm4r8_ycorner3, &
-                                                                      ymm4r8_zcorner3, &
-                                                                      ymm4r8_xcorner4, &
-                                                                      ymm4r8_ycorner4, &
-                                                                      ymm4r8_zcorner4
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) ::  ymm8r4_xcorner1,   &
+                                                                      ymm8r4_ycorner1, &
+                                                                      ymm8r4_zcorner1, &
+                                                                      ymm8r4_xcorner2, &
+                                                                      ymm8r4_ycorner2, &
+                                                                      ymm8r4_zcorner2, &
+                                                                      ymm8r4_xcorner3, &
+                                                                      ymm8r4_ycorner3, &
+                                                                      ymm8r4_zcorner3, &
+                                                                      ymm8r4_xcorner4, &
+                                                                      ymm8r4_ycorner4, &
+                                                                      ymm8r4_zcorner4
           logical(kind=int4),                       intent(inout) :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code ....
           errstate = .false.
           is_conforming =  (8*size(qp.m_qptype)   == size(ymm8i4_qptype))    .and.  &
-                           (4*size(qp.m_xcorner1) == size(ymm4r8_xcorner1))  .and.  &
-                           (4*size(qp.m_ycorner1) == size(ymm4r8_ycorner1))  .and.  &
-                           (4*size(qp.m_zcorner1) == size(ymm4r8_zcorner1))  .and.  &
-                           (4*size(qp.m_xcorner2) == size(ymm4r8_xcorner2))  .and.  &
-                           (4*size(qp.m_ycorner2) == size(ymm4r8_ycorner2))  .and.  &
-                           (4*size(qp.m_zcorner2) == size(ymm4r8_zcorner2))  .and.  &
-                           (4*size(qp.m_xcorner3) == size(ymm4r8_xcorner3))  .and.  &
-                           (4*size(qp.m_ycorner3) == size(ymm4r8_ycorner3))  .and.  &
-                           (4*size(qp.m_zcorner3) == size(ymm4r8_zcorner3))  .and.  &
-                           (4*size(qp.m_xcorner4) == size(ymm4r8_xcorner4))  .and.  &
-                           (4*size(qp.m_ycorner4) == size(ymm4r8_ycorner4))  .and.  &
-                           (4*size(qp.m_zcorner4) == size(ymm4r8_zcorner4))
+                           (8*size(qp.m_xcorner1) == size(ymm8r4_xcorner1))  .and.  &
+                           (8*size(qp.m_ycorner1) == size(ymm8r4_ycorner1))  .and.  &
+                           (8*size(qp.m_zcorner1) == size(ymm8r4_zcorner1))  .and.  &
+                           (8*size(qp.m_xcorner2) == size(ymm8r4_xcorner2))  .and.  &
+                           (8*size(qp.m_ycorner2) == size(ymm8r4_ycorner2))  .and.  &
+                           (8*size(qp.m_zcorner2) == size(ymm8r4_zcorner2))  .and.  &
+                           (8*size(qp.m_xcorner3) == size(ymm8r4_xcorner3))  .and.  &
+                           (8*size(qp.m_ycorner3) == size(ymm8r4_ycorner3))  .and.  &
+                           (8*size(qp.m_zcorner3) == size(ymm8r4_zcorner3))  .and.  &
+                           (8*size(qp.m_xcorner4) == size(ymm8r4_xcorner4))  .and.  &
+                           (8*size(qp.m_ycorner4) == size(ymm8r4_ycorner4))  .and.  &
+                           (8*size(qp.m_zcorner4) == size(ymm8r4_zcorner4))
           if(.not. is_conforming) then
                    call print_non_fatal_error(  "================ Non-Fatal ===================", &
                                           "Module: mod_necsp, subroutine: copyNECQuadPatches_ymm8i4_ymm4r8: -- Nonconforming arrays !!", &
@@ -1263,20 +1263,20 @@ module mod_necsp
                    return 
           end if
           call copy_i4_ymm8i4(ymm8i4_qptype,   qp.m_qptype)
-          call copy_r8_ymm4r8(ymm4r8_xcorner1, qp.m_xcorner1)
-          call copy_r8_ymm4r8(ymm4r8_ycorner1, qp.m_ycorner1)
-          call copy_r8_ymm4r8(ymm4r8_zcorner1, qp.m_zcorner1)
-          call copy_r8_ymm4r8(ymm4r8_xcorner2, qp.m_xcorner2)
-          call copy_r8_ymm4r8(ymm4r8_ycorner2, qp.m_ycorner2)
-          call copy_r8_ymm4r8(ymm4r8_zcorner2, qp.m_zcorner2)
-          call copy_r8_ymm4r8(ymm4r8_xcorner3, qp.m_xcorner3)
-          call copy_r8_ymm4r8(ymm4r8_ycorner3, qp.m_ycorner3)
-          call copy_r8_ymm4r8(ymm4r8_zcorner3, qp.m_zcorner3)
-          call copy_r8_ymm4r8(ymm4r8_xcorner4, qp.m_xcorner4)
-          call copy_r8_ymm4r8(ymm4r8_ycorner4, qp.m_ycorner4)
-          call copy_r8_ymm4r8(ymm4r8_zcorner4, qp.m_zcorner4)
+          call copy_r4_ymm8r4(ymm8r4_xcorner1, qp.m_xcorner1)
+          call copy_r4_ymm8r4(ymm8r4_ycorner1, qp.m_ycorner1)
+          call copy_r4_ymm8r4(ymm8r4_zcorner1, qp.m_zcorner1)
+          call copy_r4_ymm8r4(ymm8r4_xcorner2, qp.m_xcorner2)
+          call copy_r4_ymm8r4(ymm8r4_ycorner2, qp.m_ycorner2)
+          call copy_r4_ymm8r4(ymm8r4_zcorner2, qp.m_zcorner2)
+          call copy_r4_ymm8r4(ymm8r4_xcorner3, qp.m_xcorner3)
+          call copy_r4_ymm8r4(ymm8r4_ycorner3, qp.m_ycorner3)
+          call copy_r4_ymm8r4(ymm8r4_zcorner3, qp.m_zcorner3)
+          call copy_r4_ymm8r4(ymm8r4_xcorner4, qp.m_xcorner4)
+          call copy_r4_ymm8r4(ymm8r4_ycorner4, qp.m_ycorner4)
+          call copy_r4_ymm8r4(ymm8r4_zcorner4, qp.m_zcorner4)
           
-    end subroutine copyNECQuadPatches_ymm8i4_ymm4r8
+    end subroutine copyNECQuadPatches_ymm8i4_ymm8r4
                                                 
                                                 
 end module mod_necsp
