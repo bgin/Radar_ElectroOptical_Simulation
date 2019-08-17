@@ -38,7 +38,7 @@ module mod_segdataout
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-    use mod_kinds, only : int1, int4, dp
+    use mod_kinds, only : int1, int4, sp
     
     implicit none
     
@@ -94,25 +94,25 @@ module mod_segdataout
           integer(kind=int4), allocatable, dimension(:) :: m_wirenum
           ! X1 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_x1
-          real(kind=dp),      allocatable, dimension(:) :: m_x1
+          real(kind=sp),      allocatable, dimension(:) :: m_x1
           ! Y1 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_y1
-          real(kind=dp),      allocatable, dimension(:) :: m_y1
+          real(kind=sp),      allocatable, dimension(:) :: m_y1
           ! Z1 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_z1
-          real(kind=dp),      allocatable, dimension(:) :: m_z1
+          real(kind=sp),      allocatable, dimension(:) :: m_z1
           ! X2 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_x2
-          real(kind=dp),      allocatable, dimension(:) :: m_x2
+          real(kind=sp),      allocatable, dimension(:) :: m_x2
           ! Y2 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_y2
-          real(kind=dp),      allocatable, dimension(:) :: m_y2
+          real(kind=sp),      allocatable, dimension(:) :: m_y2
           ! Z2 coordinate
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_z2
-          real(kind=dp),      allocatable, dimension(:) :: m_z2
+          real(kind=sp),      allocatable, dimension(:) :: m_z2
           ! Radius
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_radius
-          real(kind=dp),      allocatable, dimension(:) :: m_radius
+          real(kind=sp),      allocatable, dimension(:) :: m_radius
           ! Number of segments per single wire
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_nsegs
           integer(kind=int4), allocatable, dimension(:) :: m_nsegs
@@ -141,25 +141,25 @@ module mod_segdataout
           integer(kind=int4),   allocatable, dimension(:) :: m_segnum
           !  X -- COORDINATE OF SEG. CENTER
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcoord
-          real(kind=dp),        allocatable, dimension(:) :: m_xcoord
+          real(kind=sp),        allocatable, dimension(:) :: m_xcoord
           !  Y -- COORDINATE OF SEG. CENTER
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycoord
-          real(kind=dp),        allocatable, dimension(:) :: m_ycoord
+          real(kind=sp),        allocatable, dimension(:) :: m_ycoord
           !  Z -- COORDINATE OF SEG. CENTER
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcoord
-          real(kind=dp),        allocatable, dimension(:) :: m_zcoord
+          real(kind=sp),        allocatable, dimension(:) :: m_zcoord
           ! Segment length
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_seglen
-          real(kind=dp),        allocatable, dimension(:) :: m_seglen
+          real(kind=sp),        allocatable, dimension(:) :: m_seglen
           ! ORIENTATION ANGLES: alpha 
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_alpha
-          real(kind=dp),        allocatable, dimension(:) :: m_alpha
+          real(kind=sp),        allocatable, dimension(:) :: m_alpha
           ! ORIENTATION ANGLES: beta
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_beta
-          real(kind=dp),        allocatable, dimension(:) :: m_beta
+          real(kind=sp),        allocatable, dimension(:) :: m_beta
           ! Wire radius
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_wradius
-          real(kind=dp),        allocatable, dimension(:) :: m_wradius
+          real(kind=sp),        allocatable, dimension(:) :: m_wradius
           ! I-   -- CONNECTION DATA 
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_Iminus
           integer(kind=int4),   allocatable, dimension(:) :: m_Iminus
@@ -394,33 +394,33 @@ module mod_segdataout
                                            errmsg,394)
     end subroutine readNECWireDataOut
     
-    subroutine copyNECWireDataOut_ymm4r8_ymm8i4(wo,               &
+    subroutine copyNECWireDataOut_ymm8r4_ymm8i4(wo,               &
                                                 ymm8i4_wirenum,   &
-                                                ymm4r8_x1,        &
-                                                ymm4r8_y1,        &
-                                                ymm4r8_z1,        &
-                                                ymm4r8_x2,        &
-                                                ymm4r8_y2,        &
-                                                ymm4r8_z2,        &
-                                                ymm4r8_radius,    &
+                                                ymm8r4_x1,        &
+                                                ymm8r4_y1,        &
+                                                ymm8r4_z1,        &
+                                                ymm8r4_x2,        &
+                                                ymm8r4_y2,        &
+                                                ymm8r4_z2,        &
+                                                ymm8r4_radius,    &
                                                 ymm8i4_nsegs,     &
                                                 ymm8i4_firstseg,  &
                                                 ymm8i4_lastseg,   &
                                                 ymm8i4_tagnum,    &
                                                 errstate            )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r4_ymm8r4
           type(NECWireDataOut_t),                   intent(in)    :: wo
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_wirenum
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_x1,       &
-                                                                     ymm4r8_y1,       &
-                                                                     ymm4r8_z1,       &
-                                                                     ymm4r8_x2,       &
-                                                                     ymm4r8_y2,       &
-                                                                     ymm4r8_z2,       &
-                                                                     ymm4r8_radius    
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_x1,       &
+                                                                     ymm8r4_y1,       &
+                                                                     ymm8r4_z1,       &
+                                                                     ymm8r4_x2,       &
+                                                                     ymm8r4_y2,       &
+                                                                     ymm8r4_z2,       &
+                                                                     ymm8r4_radius    
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_nsegs,    &
                                                                      ymm8i4_firstseg, &
                                                                      ymm8i4_lastseg,  &
@@ -431,13 +431,13 @@ module mod_segdataout
           ! Exec code ....
           errstate = .false.
           is_conforming = (8*size(wo.m_wirenum)   == size(ymm8i4_wirenum))  .and.  &
-                          (4*size(wo.m_x1)        == size(ymm4r8_x1))       .and.  &
-                          (4*size(wo.m_y1)        == size(ymm4r8_y1))       .and.  &
-                          (4*size(wo.m_z1)        == size(ymm4r8_z1))       .and.  &
-                          (4*size(wo.m_x2)        == size(ymm4r8_x2))       .and.  &
-                          (4*size(wo.m_y2)        == size(ymm4r8_y2))       .and.  &
-                          (4*size(wo.m_z2)        == size(ymm4r8_z2))       .and.  &
-                          (4*size(wo.m_radius)    == size(ymm4r8_radius))   .and.  &
+                          (8*size(wo.m_x1)        == size(ymm8r4_x1))       .and.  &
+                          (8*size(wo.m_y1)        == size(ymm8r4_y1))       .and.  &
+                          (8*size(wo.m_z1)        == size(ymm8r4_z1))       .and.  &
+                          (8*size(wo.m_x2)        == size(ymm8r4_x2))       .and.  &
+                          (8*size(wo.m_y2)        == size(ymm8r4_y2))       .and.  &
+                          (8*size(wo.m_z2)        == size(ymm8r4_z2))       .and.  &
+                          (8*size(wo.m_radius)    == size(ymm8r4_radius))   .and.  &
                           (8*size(wo.m_nsegs)     == size(ymm8i4_nsegs))    .and.  &
                           (8*size(wo.m_firstseg)  == size(ymm8i4_firstseg)) .and.  &
                           (8*size(wo.m_lastseg)   == size(ymm8i4_lastseg))  .and.  &
@@ -451,19 +451,19 @@ module mod_segdataout
               end if
               
          call copy_i4_ymm8i4(ymm8i4_wirenum , wo.m_wirenum)
-         call copy_r8_ymm4r8(ymm4r8_x1,     wo.m_x1)
-         call copy_r8_ymm4r8(ymm4r8_y1,     wo.m_y1)
-         call copy_r8_ymm4r8(ymm4r8_z1,     wo.m_z1)
-         call copy_r8_ymm4r8(ymm4r8_x2,     wo.m_x2)
-         call copy_r8_ymm4r8(ymm4r8_y2,     wo.m_y2)
-         call copy_r8_ymm4r8(ymm4r8_z2,     wo.m_z2)
-         call copy_r8_ymm4r8(ymm4r8_radius, wo.m_radius)
+         call copy_r4_ymm8r4(ymm8r4_x1,     wo.m_x1)
+         call copy_r4_ymm8r4(ymm8r4_y1,     wo.m_y1)
+         call copy_r4_ymm8r4(ymm8r4_z1,     wo.m_z1)
+         call copy_r4_ymm8r4(ymm8r4_x2,     wo.m_x2)
+         call copy_r4_ymm8r4(ymm8r4_y2,     wo.m_y2)
+         call copy_r4_ymm8r4(ymm8r4_z2,     wo.m_z2)
+         call copy_r4_ymm8r4(ymm8r4_radius, wo.m_radius)
          call copy_i4_ymm8i4(ymm8i4_nsegs,  wo.m_nsegs)
          call copy_i4_ymm8i4(ymm8i4_firstseg, wo.m_firstseg)
          call copy_i4_ymm8i4(ymm8i4_lastseg,  wo.m_lastseg)
          call copy_i4_ymm8i4(ymm8i4_tagnum,   wo.m_tagnum)
           
-    end subroutine copyNECWireDataOut_ymm4r8_ymm8i4
+    end subroutine copyNECWireDataOut_ymm8r4_ymm8i4
     
     subroutine initNECSegmentDataOut(so,ncols,errstate,iounit,logging,verbose,append,fname)
           use mod_constants,    only : INITVAL
@@ -683,33 +683,33 @@ module mod_segdataout
                                         errmsg, 682         )
     end subroutine readNECSegmentDataOut
     
-    subroutine copyNECSegmentDataOut_ymm8i4_ymm4r8(so,     &
+    subroutine copyNECSegmentDataOut_ymm8i4_ymm8r4(so,     &
                                                     ymm8i4_segnum,   &
-                                                    ymm4r8_xcoord,   &
-                                                    ymm4r8_ycoord,   &
-                                                    ymm4r8_zcoord,   &
-                                                    ymm4r8_seglen,   &
-                                                    ymm4r8_alpha,    &
-                                                    ymm4r8_beta,     &
-                                                    ymm4r8_wradius,  &
+                                                    ymm8r4_xcoord,   &
+                                                    ymm8r4_ycoord,   &
+                                                    ymm8r4_zcoord,   &
+                                                    ymm8r4_seglen,   &
+                                                    ymm8r4_alpha,    &
+                                                    ymm8r4_beta,     &
+                                                    ymm8r4_wradius,  &
                                                     ymm8i4_Iminus,   &
                                                     ymm8i4_I,        &
                                                     ymm8i4_Iplus,    &
                                                     ymm8i4_tagnum,   &
                                                     errstate     )
           use mod_print_error,      only : print_non_fatal_error
-          use mod_vectypes,         only : YMM8i4_t, YMM4r8_t
+          use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
-                                           copy_r8_ymm4r8
+                                           copy_r8_ymm8r4
           type(NECSegmentDataOut_t),                intent(in) :: so
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_segnum
-          type(YMM4r8_t), contiguous, dimension(:), intent(inout) :: ymm4r8_xcoord,  &
-                                                                     ymm4r8_ycoord,  &
-                                                                     ymm4r8_zcoord,  &
-                                                                     ymm4r8_seglen,  &
-                                                                     ymm4r8_alpha,   &
-                                                                     ymm4r8_beta,    &
-                                                                     ymm4r8_wradius
+          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_xcoord,  &
+                                                                     ymm8r4_ycoord,  &
+                                                                     ymm8r4_zcoord,  &
+                                                                     ymm8r4_seglen,  &
+                                                                     ymm8r4_alpha,   &
+                                                                     ymm8r4_beta,    &
+                                                                     ymm8r4_wradius
           type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_Iminus,  &
                                                                      ymm8i4_I,       &
                                                                      ymm8i4_Iplus,   &
@@ -720,13 +720,13 @@ module mod_segdataout
           ! Exec code....
           errstate = .false.
           is_conforming = (8*size(so.m_segnum,dim=1)  == size(ymm8i4_segnum,dim=1))  .and. &
-                          (4*size(so.m_xcoord,dim=1)  == size(ymm4r8_xcoord,dim=1))  .and. &
-                          (4*size(so.m_ycoord,dim=1)  == size(ymm4r8_ycoord,dim=1))  .and. &
-                          (4*size(so.m_zcoord,dim=1)  == size(ymm4r8_zcoord,dim=1))  .and. &
-                          (4*size(so.m_seglen,dim=1)  == size(ymm4r8_seglen,dim=1))  .and. &
-                          (4*size(so.m_alpha,dim=1)   == size(ymm4r8_alpha, dim=1))  .and. &
-                          (4*size(so.m_beta,dim=1)    == size(ymm4r8_beta,  dim=1))  .and. &
-                          (4*size(so.m_wradius,dim=1) == size(ymm4r8_wradius,dim=1)) .and. &
+                          (8*size(so.m_xcoord,dim=1)  == size(ymm8r4_xcoord,dim=1))  .and. &
+                          (8*size(so.m_ycoord,dim=1)  == size(ymm8r4_ycoord,dim=1))  .and. &
+                          (8*size(so.m_zcoord,dim=1)  == size(ymm8r4_zcoord,dim=1))  .and. &
+                          (8*size(so.m_seglen,dim=1)  == size(ymm8r4_seglen,dim=1))  .and. &
+                          (8*size(so.m_alpha,dim=1)   == size(ymm8r4_alpha, dim=1))  .and. &
+                          (8*size(so.m_beta,dim=1)    == size(ymm8r4_beta,  dim=1))  .and. &
+                          (8*size(so.m_wradius,dim=1) == size(ymm8r4_wradius,dim=1)) .and. &
                           (8*size(so.m_Iminus,dim=1)  == size(ymm8i4_Iminus,dim=1))  .and. &
                           (8*size(so.m_I,  dim=1)     == size(ymm8i4_I,  dim=1))     .and. &
                           (8*size(so.m_Iplus,dim=1)   == size(ymm8i4_Iplus,dim=1))   .and. &
@@ -739,18 +739,18 @@ module mod_segdataout
                 return
           end if
           call copy_i4_ymm8i4( ymm8i4_segnum,  so.m_segnum)
-          call copy_r8_ymm4r8( ymm4r8_xcoord,  so.m_xcoord)
-          call copy_r8_ymm4r8( ymm4r8_ycoord,  so.m_ycoord)
-          call copy_r8_ymm4r8( ymm4r8_zcoord,  so.m_zcoord)
-          call copy_r8_ymm4r8( ymm4r8_seglen,  so.m_seglen)
-          call copy_r8_ymm4r8( ymm4r8_alpha,   so.m_alpha)
-          call copy_r8_ymm4r8( ymm4r8_beta,    so.m_beta)
-          call copy_r8_ymm4r8( ymm4r8_wradius, so.m_wradius)
+          call copy_r4_ymm8r4( ymm8r4_xcoord,  so.m_xcoord)
+          call copy_r4_ymm8r4( ymm8r4_ycoord,  so.m_ycoord)
+          call copy_r4_ymm8r4( ymm8r4_zcoord,  so.m_zcoord)
+          call copy_r4_ymm8r4( ymm8r4_seglen,  so.m_seglen)
+          call copy_r4_ymm8r4( ymm8r4_alpha,   so.m_alpha)
+          call copy_r4_ymm8r4( ymm8r4_beta,    so.m_beta)
+          call copy_r4_ymm8r4( ymm8r4_wradius, so.m_wradius)
           call copy_i4_ymm8i4( ymm8i4_Iminus,  so.m_Iminus)
           call copy_i4_ymm8i4( ymm8i4_I,       so.m_I)
           call copy_i4_ymm8i4( ymm8i4_Iplus,   so.m_Iplus)
           call copy_i4_ymm8i4( ymm8i4_tagnum,  so.m_tagnum)
           
-   end subroutine copyNECSegmentDataOut_ymm8i4_ymm4r8
+   end subroutine copyNECSegmentDataOut_ymm8i4_ymm8r4
                                                     
 end module mod_segdataout
