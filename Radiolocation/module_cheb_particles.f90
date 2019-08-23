@@ -12,8 +12,7 @@ module  mod_cheb_particles
  !                         'mod_cheb_particles'
  !          
  !          Purpose:
- !                      This module models 'Chebyshev Particles' aggregated concentration per number of bins
- !                      of size distribution.
+ !                      This module models 'Chebyshev Particles' aggregated concentration 
  !                       
  !          History:
  !                        Date: 24-07-2018
@@ -51,7 +50,7 @@ module  mod_cheb_particles
     !=====================================================59
 
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_CHEB_PARTICLES_MAJOR = 1
+    integer(kind=int4), parameter, public :: MOD_CHEB_PARTICLES_MAJOR = 2
     
     ! Minor version
     integer(kind=int4), parameter, public :: MOD_CHEB_PARTICLES_MINOR = 0
@@ -109,60 +108,60 @@ module  mod_cheb_particles
           integer(kind=int4)              :: np
           ! Time evolution steps
           integer(kind=int4)              :: nt
-          
-          !
           ! Particles types  (dust-like,grail,snow,hail)
           character(len=32)                :: particles_type
-          !
-          
-         
-
-       
-      
-         
           ! Chebyshev particles shapes  i.e. (r = r0[1+eTn(cos(theta))]
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_shape          
           type(YMM8r4_t), allocatable, dimension(:,:)  :: particles_shape
-
-          
           ! Chebyshev particles radii  
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_radii          
           real(kind=sp), allocatable, dimension(:)      :: particles_radii
+          ! Chebyshev particles  surface (units of mm^2), (total)
+!DIR$     ATTRIBUTES ALIGN : 64 :: particles_surface          
+          real(kind=sp), allocatable, dimension(:)          :: particles_surf
+           ! Chebyshev particles  parametric equation in x - dimension (non-dimensional)
+!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_x          
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramx
+          ! Chebyshev particles   parametric equation in y  - dimension (non-dimensional)
+!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_y          
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramy
+          ! Chebyshev particles  parametric equation in z - dimension (non-dimensional)
+!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_z          
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramz
+           ! Particles per bin mass (kg) (time-invariant)
+!DIR$     ATTRIBUTES ALIGN : 64 :: particles_mass          
+          type(YMM8r4_t), allocatable, dimension(:)       :: particles_mass
+           ! Particles (coupled)  temperature (units of Celsius)
+!DIR$     ATTRIBUTES ALIGN : 64 :: paricles_temp          
+          type(YMM8r4_t), allocatable, dimension(:)       :: particles_temp
+      
+         
+     end type ChebParticlesLTS_t      
 
-          ! 
+          
+         
+
+           
           
        
 
          
           
-          ! Chebyshev particles  surface (units of mm^2), (total)
-!DIR$     ATTRIBUTES ALIGN : 64 :: particles_surface          
-          real(kind=sp), allocatable, dimension(:)          :: particles_surf
+         
 
           
-          ! Chebyshev particles  parametric equation in x - dimension (non-dimensional)
-!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_x          
-          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramx
+         
 
           
-          ! Chebyshev particles   parametric equation in y  - dimension (non-dimensional)
-!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_y          
-          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramy
-
+         
           
-          ! Chebyshev particles  parametric equation in z - dimension (non-dimensional)
-!DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_z          
-          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramz
+         
 
-          ! Particles per bin mass (kg) (time-invariant)
-!DIR$     ATTRIBUTES ALIGN : 64 :: particles_mass          
-          type(YMM8r4_t), allocatable, dimension(:)       :: particles_mass
+         
 
-          ! Particles (coupled)  temperature (units of Celsius)
-!DIR$     ATTRIBUTES ALIGN : 64 :: paricles_temp          
-          type(YMM8r4_t), allocatable, dimension(:)       :: particles_temp
+         
       
-      end type ChebParticlesLTS_t      
+          
       
 
           
@@ -218,7 +217,7 @@ module  mod_cheb_particles
      subroutine InitChebParticles(PartLTS,PartHTS,nxpts,nypts,nzpts,nt,nparticles, &
                                   nshpts,part_type,errstate,iounit, &
                                   verbose,logging, filename,append )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitChebParticles
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitChebParticlesSystem
            use mod_print_error, only : handle_fatal_memory_error
                                
            type(ChebParticlesLTS_t),    intent(inout) :: PartLTS
@@ -303,589 +302,105 @@ module  mod_cheb_particles
           
      end subroutine InitChebParticles
 
- !===================================================================
+    !===================================================================
     !                   Computational procedures 
     !  These procedures are not type bound in order to facilitate potential
     !  OpenMP parallelization (to be done later).
     !  Only Chebyshev Particles of type T2 and T4 should be used.
     !===================================================================
     
-     subroutine ComputeShape_ymm8r4(PartLTS,np,acn,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape_ymm8r4
-           use mod_vecconsts,     only : ymm8r4_one,ymm8r4_zero,ymm8r4_twopi
+     subroutine ComputeShape(PartLTS,np,cn,cdef)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+           use mod_cheb_particles_common, only : ComputeShape_YMM8r4
            type(ChebParticlesLTS_t),      intent(inout)  :: PartLTS
            integer(kind=int4),            intent(in)     :: np
-           real(kind=sp), dimension(np),  intent(inout)  :: acn
-           real(kind=sp), dimension(np),  intent(inout)  :: acdef
+           real(kind=sp), dimension(np),  intent(inout)  :: cn
+           real(kind=sp), dimension(np),  intent(inout)  :: cdef
+           ! EXec code ...
+           call ComputeShape_YMM8r4(PartLTS.particles_shape,    &
+                                    PartLTS.particles_radii,    &
+                                    cn,                         &
+                                    cdef,                       &
+                                    PartLTS.nshpts,             &
+                                    np)
           
-           ! Locals
-           ! Error checking moved to the outside world
-           type :: Vtheta2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vtheta0
-              type(YMM8r4_t) :: vtheta1
-              type(YMM8r4_t) :: vtheta2
-              type(YMM8r4_t) :: vtheta3
-           end type Vtheta2CacheLines_t
-           type :: Vthinc2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vthinc0
-              type(YMM8r4_t) :: vthinc1
-              type(YMM8r4_t) :: vthinc2
-              type(YMM8r4_t) :: vthinc3
-           end type Vthinc2CacheLines_t
-           type :: Termx2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: term0
-              type(YMM8r4_t) :: term1
-              type(YMM8r4_t) :: term2
-              type(YMM8r4_t) :: term3
-           end type Termx2CacheLines_t
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vtheta2CL
-           type(Vtheta2CacheLines_t) :: Vtheta2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vthinc2CL
-           type(Vthinc2CacheLines_t) :: Vthinc2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Term2CL
-           type(Termx2CacheLines_t) :: Term2CL
-           !DIR$ ATTRIBUTES ALIGN : 32 :: cn_rand
-           type(YMM8r4_t), automatic :: cn_rand
-           ! DIR$ ATTRIBUTES ALIGN : 32 :: sphr_rand
-           type(YMM8r4_t), automatic :: sphr_rand
-           !DIR$ ATTRIBUTES ALIGN : 32  :: cdef_rand
-           type(YMM8r4_t), automatic :: cdef_rand
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vNPTS
-           type(YMM8r4_t), automatic :: vNPTS
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vC
-           type(YMM8r4_t), automatic :: vC
-           !DIR$ ATTRIBUTES ALIGN : 32 tmp
-           type(YMM8r4_t), automatic :: tmp
-           real(kind=sp),  automatic :: cn
-           real(kind=sp),  automatic :: sphr
-           real(kind=sp),  automatic :: cdef
-           integer(kind=int4), automatic :: j,i
+     end subroutine ComputeShape    
+         
+          
            
-          
-          
-           ! Exec code ....
-           cn_rand             = ymm8r4_zero
-           sphr_rand           = ymm8r4_zero
-           cdef_rand           = ymm8r4_zero
-           Vtheta2CL.vtheta0   = ymm8r4_zero
-           Vtheta2CL.vtheta1   = ymm8r4_zero
-           Vtheta2CL.vtheta2   = ymm8r4_zero
-           Vtheta2CL.vtheta3   = ymm8r4_zero
-           Vthinc2CL.vthinc0   = ymm8r4_zero
-           Vthinc2CL.vthinc1   = ymm8r4_zero
-           Vthinc2CL.vthinc2   = ymm8r4_zero
-           Vthinc2CL.vthinc3   = ymm8r4_zero
-           vNPTS               = ymm8r4_zero
-           tmp                 = ymm8r4_zero
-           vC                  = ymm8r4_zero
-           Term2CL.term0       = ymm8r4_zero
-           Term2CL.term1       = ymm8r4_zero
-           Term2CL.term2       = ymm8r4_zero
-           Term2CL.term3       = ymm8r4_zero
-           cn        = 0.0_sp
-           sphr      = 0.0_sp
-           cdef      = 0.0_sp
-           vNPTS.v   = real(PartLTS.nshpts,kind=sp)
-           ! First touch
-           PartLTS.particles_shape = ymm8r4_zero
-           PartLTS.particles_radii = 0.0_sp
-           do j=1, PartLTS.np
-              call RANDOM_SEED()
-              call RANDOM_NUMBER(cn)
-              if(0.0_sp == cn) cn = 0.1_sp
-              cn = cn*10.0_sp
-              acn(j) = cn ! caching values for the different proprties computations
-              cn_rand.v = cn
-              call RANDOM_NUMBER(sphr)
-              sphr = sphr*3.0_sp
-             ! asphr(j) = sphr
-              sphr_rand.v = sphr
-              PartLTS.particles_radii(j) = sphr ! caching not used here directly.
-              call RANDOM_NUMBER(cdef)
-              cdef_rand.v = cdef
-              acdef(j) = cdef
-              vC.v = ymm8r4_twopi.v*sphr_rand.v
-              tmp.v = vC.v/vNPTS.v
-              Vthinc2CL.vthinc0.v = tmp.v
-              Vthinc2CL.vthinc0.v = Vthinc2CL.vthinc0.v*VINC.v
-              Vthinc2CL.vthinc1.v = tmp.v
-              Vthinc2CL.vthinc1.v = Vthinc2CL.vthinc1.v*VINC2.v
-              Vthinc2CL.vthinc2.v = tmp.v
-              Vthinc2CL.vthinc2.v = Vthinc2CL.vthinc2.v*VINC3.v
-              Vthinc2CL.vthinc3.v = tmp.v
-              Vthinc2CL.vthinc3.v = Vthinc2CL.vthinc3.v*VINC4.v
-              Vtheta2CL.vtheta0   = ymm8r4_zero
-              Term2CL.term0       = ymm8r4_zero
-              Vtheta2CL.vtheta1   = ymm8r4_zero
-              Term2CL.term1       = ymm8r4_zero
-              Vtheta2CL.vtheta2   = ymm8r4_zero
-              Term2CL.term2       = ymm8r4_zero
-              Vtheta2CL.vtheta3   = ymm8r4_zero
-              Term2CL.term3       = ymm8r4_zero
-              !DIR$ VECTOR ALWAYS
-              do i=1, PartLTS.nshpts-3, 4
-                 Vtheta2CL.vtheta0.v   = Vtheta2CL.vtheta0.v+Vthinc2CL.vthinc0.v
-                 Term2CL.term0.v       = ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v+Vtheta2CL.vtheta0.v)
-                 PartLTS.particles_shape(i+0,j).v = sphr_rand.v*Term2CL.term0.v
-                 Vtheta2CL.vtheta1.v   = Vtheta2CL.vtheta1.v+Vthinc2CL.vthinc1.v
-                 Term2CL.term1.v       = ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v+Vtheta2CL.vtheta1.v)
-                 PartLTS.particles_shape(i+1,j).v = sphr_rand.v*Term2CL.term1.v
-                 Vtheta2CL.vtheta2.v   = Vtheta2CL.vtheta2.v+Vthinc2CL.vthinc2.v
-                 Term2CL.term2.v       = ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v+Vtheta2CL.vtheta2.v)
-                 PartLTS.particles_shape(i+2,j).v = sphr_rand.v*Term2CL.term2.v
-                 Vtheta2CL.vtheta3.v   = Vtheta2CL.vtheta3.v+Vthinc2CL.vthinc3.v
-                 Term2CL.term3.v       = ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v+Vtheta2CL.vtheta3.v)
-                 PartLTS.particles_shape(i+3,j).v = sphr_rand.v*Term2CL.term3.v
-              end do
-           end do
-     end subroutine ComputeShape_ymm8r4
+    
 
 
-     subroutine ComputeXparam_ymm8r4(PartLTS,np,acn,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeXparam_ymm8r4
-           use mod_vecconsts, only : ymm8r4_twopi,ymm8r4_one,ymm8r4_zero
+     subroutine ComputeXparam(PartLTS,np,cn,cdef)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeXparam
+           use mod_cheb_particles_common, only : ComputeXparam_YMM8r4
            type(ChebParticlesLST_t),     intent(inout) :: PartLST
            integer(kind=int4),           intent(in)    :: np
-           real(kind=sp), dimension(np), intent(in)    :: acn
-           real(kind=sp), dimension(np), intent(in)    :: acdef
+           real(kind=sp), dimension(np), intent(in)    :: cn
+           real(kind=sp), dimension(np), intent(in)    :: cdef
+           ! EXec code ....
+           call ComputeXparam_YMM8r4(PartLTS.particles_paramx,   &
+                                     PartLTS.particles_radii,    &
+                                     cn,                         &
+                                     cdef,                       &
+                                     PartLTS.nxpts,              &
+                                     np)
+           
+     end subroutine ComputeXparam   
           
-           ! Locals
-           ! Error checking moved to the outside world
-           type :: Vtheta2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vtheta0
-              type(YMM8r4_t) :: vtheta1
-              type(YMM8r4_t) :: vtheta2
-              type(YMM8r4_t) :: vtheta3
-           end type Vtheta2CacheLines_t
-           type :: Vphi2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vphi0
-              type(YMM8r4_t) :: vphi1
-              type(YMM8r4_t) :: vphi2
-              type(YMM8r4_t) :: vphi3
-           end type Vphi2CacheLines_t
-           type :: Vthinc2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vthinc0
-              type(YMM8r4_t) :: vthinc1
-              type(YMM8r4_t) :: vthinc2
-              type(YMM8r4_t) :: vthinc3
-           end type Vthinc2CacheLines_t
-           type :: Vphinc2CacheLines
-              sequence
-              type(YMM8r4_t) :: vphinc0
-              type(YMM8r4_t) :: vphinc1
-              type(YMM8r4_t) :: vphinc2
-              type(YMM8r4_t) :: vphinc3
-           end type Vphinc2CacheLines_t
-           type :: Termx2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: term0
-              type(YMM8r4_t) :: term1
-              type(YMM8r4_t) :: term2
-              type(YMM8r4_t) :: term3
-           end type Termx2CacheLines_t
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vtheta2CL
-           type(Vtheta2CacheLines_t) :: Vtheta2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vphi2CL
-           type(Vphi2CacheLines_t)  :: Vphi2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vthinc2CL
-           type(Vthinc2CacheLines_t) :: Vthinc2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vphinc2CL
-           type(Vphinc2CacheLines_t) :: Vphinc2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Term2CL
-           type(Termx2CacheLines_t) :: Term2CL
-           !DIR$ ATTRIBUTES ALIGN : 32 :: cn_rand
-           type(YMM8r4_t), automatic :: cn_rand
-           ! DIR$ ATTRIBUTES ALIGN : 32 :: sphr_rand
-           type(YMM8r4_t), automatic :: sphr_rand
-           !DIR$ ATTRIBUTES ALIGN : 32  :: cdef_rand
-           type(YMM8r4_t), automatic :: cdef_rand
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vNPTS
-           type(YMM8r4_t), automatic :: vNPTS
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vC
-           type(YMM8r4_t), automatic :: vC
-           !DIR$ ATTRIBUTES ALIGN : 32 tmp1,tmp2
-           type(YMM8r4_t), automatic :: tmp1,tmp2
-           integer(kind=int4), automatic :: j,i
+         
           
         
-           ! Exec code .....
-           cn_rand             = ymm8r4_zero
-           sphr_rand           = ymm8r4_zero
-           cdef_rand           = ymm8r4_zero
-           Vtheta2CL.vtheta0   = ymm8r4_zero
-           Vtheta2CL.vtheta1   = ymm8r4_zero
-           Vtheta2CL.vtheta2   = ymm8r4_zero
-           Vtheta2CL.vtheta3   = ymm8r4_zero
-           Vphi2CL.vphi0       = ymm8r4_zero
-           Vphi2CL.vphi1       = ymm8r4_zero
-           Vphi2CL.vphi2       = ymm8r4_zero
-           Vphi2CL.vphi3       = ymm8r4_zero
-           Vthinc2CL.vthinc0   = ymm8r4_zero
-           Vthinc2CL.vthinc1   = ymm8r4_zero
-           Vthinc2CL.vthinc2   = ymm8r4_zero
-           Vthinc2CL.vthinc3   = ymm8r4_zero
-           Vphinc2CL.vphinc0   = ymm8r4_zero
-           Vphinc2CL.vphinc1   = ymm8r4_zero
-           Vphinc2CL.vphinc2   = ymm8r4_zero
-           Vphinc2CL.vphinc3   = ymm8r4_zero
-           vNPTS               = ymm8r4_zero
-           tmp1                = ymm8r4_zero
-           tmp2                = ymm8r4_zero
-           vC                  = ymm8r4_zero
-           Term2CL.term0       = ymm8r4_zero
-           Term2CL.term1       = ymm8r4_zero
-           Term2CL.term2       = ymm8r4_zero
-           Term2CL.term3       = ymm8r4_zero
-           vNPTS.v   = real(PartLTS.nxpts,kind=sp)
-           ! First touch
-           PartLTS.particles_paramx = ymm8r4_zero
-           do j=1, PartLTS.np
-              cn_rand.v   = acn(j)
-              sphr_rand.v = PartLTS.particles_radii(j)
-              cdef_rand.v = acdef(j)
-              vC.v        = ymm8r4_twopi.v*sphr_rand.v
-              tmp1.v      = vC.v/vNPTS.v
-              tmp2.v      = tmp1.v
-              Vthinc2CL.vthinc0.v   = tmp1.v
-              Vthinc2CL.vthinc0.v   = Vthinc2CL.vthinc0.v*VINC.v
-              Vphinc2CL.vphinc0.v   = tmp2.v
-              Vphinc2CL.vphinc0.v   = Vphinc2CL.vphinc0.v*VINC.v
-              Vthinc2CL.vthinc1.v   = tmp1.v
-              Vthinc2CL.vthinc1.v   = Vthinc2CL.vthinc1.v*VINC2.v
-              Vphinc2CL.vphinc1.v   = tmp2.v
-              Vphinc2CL.vphinc1.v   = Vphinc2CL.vphinc1.v*VINC2.v
-              Vthinc2CL.vthinc2.v   = tmp1.v
-              Vthinc2CL.vthinc2.v   = Vthinc2CL.vthinc2.v*VINC3.v
-              Vphinc2CL.vphinc2.v   = tmp2.v
-              Vphinc2CL.vphinc2.v   = Vphinc2CL.vphinc2.v*VINC3.v
-              Vthinc2CL.vthinc3.v   = tmp1.v
-              Vthinc2CL.vthinc3.v   = Vthinc2CL.vthinc3.v*VINC4.v
-              Vphinc2CL.vphinc3.v   = tmp2.v
-              Vphinc2CL.vphinc3.v   = Vphinc2CL.vphinc3.v*VINC4.v
-              Vtheta2CL.vtheta0     = ymm8r4_zero
-              Vphi2CL.vphi0         = ymm8r4_zero
-              Term2CL.term0         = ymm8r4_zero
-              Vtheta2CL.vtheta1     = ymm8r4_zero
-              Vphi2CL.vphi1         = ymm8r4_zero
-              Term2CL.term1         = ymm8r4_zero
-              Vtheta2CL.vtheta2     = ymm8r4_zero
-              Vphi2CL.vphi2         = ymm8r4_zero
-              Term2CL.term2         = ymm8r4_zero
-              Vtheta2CL.vtheta3     = ymm8r4_zero
-              Vphi2CL.vphi3         = ymm8r4_zero
-              Term2CL.term3         = ymm8r4_zero
-              !DIR$ VECTOR ALWAYS
-              do i=1, PartLTS.nxpts-3, 4
-                 Vtheta2CL.vtheta0.v = Vtheta2CL.vtheta0.v+Vthinc2CL.vthinc0.v
-                 Vphi2CL.vphi0.v   = Vphi2CL.vphi0.v+Vphinc2CL.vphinc0.v
-                 Term2CL.term0.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta0.v))
-                 Term2CL.term0.v   = Term2CL.term0.v*sin(Vtheta2CL.vtheta0.v)*cos(Vphi2CL.vphi0.v)
-                 PartLTS.particles_paramx(i+0,j).v = Term2CL.term0.v
-                 Vtheta2CL.vtheta1.v = Vtheta2CL.vtheta1.v+Vthinc2CL.vthinc1.v
-                 Vphi2CL.vphi1.v   = Vphi2CL.vphi1.v+Vphinc2CL.vphinc1.v
-                 Term2CL.term1.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta1.v))
-                 Term2CL.term1.v   = Term2CL.term1.v*sin(Vtheta2CL.vtheta1.v)*cos(Vphi2CL.vphi1.v)
-                 PartLTS.particles_paramx(i+1,j).v = Term2CL.term1.v
-                 Vtheta2CL.vtheta2.v = Vtheta2CL.vtheta2.v+Vthinc2CL.vthinc2.v
-                 Vphi2CL.vphi2.v   = Vphi2CL.vphi2.v+Vphinc2CL.vphinc2.v
-                 Term2CL.term2.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta2.v))
-                 Term2CL.term2.v   = Term2CL.term2.v*sin(Vtheta2CL.vtheta2.v)*cos(Vphi2CL.vphi2.v)
-                 PartLTS.particles_paramx(i+2,j).v = Term2CL.term2.v
-                 Vtheta2CL.vtheta3.v = Vtheta2CL.vtheta3.v+Vthinc2CL.vthinc3.v
-                 Vphi2CL.vphi3.v   = Vphi2CL.vphi3.v+Vphinc2CL.vphinc3.v
-                 Term2CL.term3.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta3.v))
-                 Term2CL.term3.v   = Term2CL.term3.v*sin(Vtheta2CL.vtheta3.v)*cos(Vphi2CL.vphi3.v)
-                 PartLTS.particles_paramx(i+3,j).v = Term2CL.term3.v
-              end do
-           end do
-     end subroutine ComputeXparam_ymm8r4
+         
+        
+           
+               
+    
        
-     subroutine ComputeYparam_ymm8r4(PartLTS,np,acn,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeYparam_ymm8r4
-           use mod_vecconsts, only : ymm8r4_twopi,ymm8r4_one,ymm8r4_zero
+     subroutine ComputeYparam(PartLTS,np,cn,cdef)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeYparam
+           use mod_cheb_particles_common, only : ComputeYparam_YMM8r4
            type(ChebParticlesLST_t),     intent(inout) :: PartLST
            integer(kind=int4),           intent(in)    :: np
-           real(kind=sp), dimension(np), intent(in)    :: acn
-           real(kind=sp), dimension(np), intent(in)    :: acdef
-          
-           ! Locals
-           ! Error checking moved to the outside world
-           type :: Vtheta2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vtheta0
-              type(YMM8r4_t) :: vtheta1
-              type(YMM8r4_t) :: vtheta2
-              type(YMM8r4_t) :: vtheta3
-           end type Vtheta2CacheLines_t
-           type :: Vphi2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vphi0
-              type(YMM8r4_t) :: vphi1
-              type(YMM8r4_t) :: vphi2
-              type(YMM8r4_t) :: vphi3
-           end type Vphi2CacheLines_t
-           type :: Vthinc2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vthinc0
-              type(YMM8r4_t) :: vthinc1
-              type(YMM8r4_t) :: vthinc2
-              type(YMM8r4_t) :: vthinc3
-           end type Vthinc2CacheLines_t
-           type :: Vphinc2CacheLines
-              sequence
-              type(YMM8r4_t) :: vphinc0
-              type(YMM8r4_t) :: vphinc1
-              type(YMM8r4_t) :: vphinc2
-              type(YMM8r4_t) :: vphinc3
-           end type Vphinc2CacheLines_t
-           type :: Termx2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: term0
-              type(YMM8r4_t) :: term1
-              type(YMM8r4_t) :: term2
-              type(YMM8r4_t) :: term3
-           end type Termx2CacheLines_t
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vtheta2CL
-           type(Vtheta2CacheLines_t) :: Vtheta2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vphi2CL
-           type(Vphi2CacheLines_t)  :: Vphi2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vthinc2CL
-           type(Vthinc2CacheLines_t) :: Vthinc2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Vphinc2CL
-           type(Vphinc2CacheLines_t) :: Vphinc2CL
-           !DIR$ ATTRIBUTES ALIGN : 64 :: Term2CL
-           type(Termx2CacheLines_t) :: Term2CL
-           !DIR$ ATTRIBUTES ALIGN : 32 :: cn_rand
-           type(YMM8r4_t), automatic :: cn_rand
-           ! DIR$ ATTRIBUTES ALIGN : 32 :: sphr_rand
-           type(YMM8r4_t), automatic :: sphr_rand
-           !DIR$ ATTRIBUTES ALIGN : 32  :: cdef_rand
-           type(YMM8r4_t), automatic :: cdef_rand
-           !
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vNPTS
-           type(YMM8r4_t), automatic :: vNPTS
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vC
-           type(YMM8r4_t), automatic :: vC
-           !
-           !DIR$ ATTRIBUTES ALIGN : 32 tmp1,tmp2
-           type(YMM8r4_t), automatic :: tmp1,tmp2
-           integer(kind=int4), automatic :: j,i
+           real(kind=sp), dimension(np), intent(in)    :: cn
+           real(kind=sp), dimension(np), intent(in)    :: cdef
            ! Exec code .....
-           cn_rand             = ymm8r4_zero
-           sphr_rand           = ymm8r4_zero
-           cdef_rand           = ymm8r4_zero
-           Vtheta2CL.vtheta0   = ymm8r4_zero
-           Vtheta2CL.vtheta1   = ymm8r4_zero
-           Vtheta2CL.vtheta2   = ymm8r4_zero
-           Vtheta2CL.vtheta3   = ymm8r4_zero
-           Vphi2CL.vphi0       = ymm8r4_zero
-           Vphi2CL.vphi1       = ymm8r4_zero
-           Vphi2CL.vphi2       = ymm8r4_zero
-           Vphi2CL.vphi3       = ymm8r4_zero
-           Vthinc2CL.vthinc0   = ymm8r4_zero
-           Vthinc2CL.vthinc1   = ymm8r4_zero
-           Vthinc2CL.vthinc2   = ymm8r4_zero
-           Vthinc2CL.vthinc3   = ymm8r4_zero
-           Vphinc2CL.vphinc0   = ymm8r4_zero
-           Vphinc2CL.vphinc1   = ymm8r4_zero
-           Vphinc2CL.vphinc2   = ymm8r4_zero
-           Vphinc2CL.vphinc3   = ymm8r4_zero
-           vNPTS               = ymm8r4_zero
-           tmp1                = ymm8r4_zero
-           tmp2                = ymm8r4_zero
-           vC                  = ymm8r4_zero
-           Term2CL.term0       = ymm8r4_zero
-           Term2CL.term1       = ymm8r4_zero
-           Term2CL.term2       = ymm8r4_zero
-           Term2CL.term3       = ymm8r4_zero
-           vNPTS.v   = real(PartLTS.nypts,kind=sp)
-           ! First touch
-           PartLTS.particles_paramy = ymm8r4_zero
-             do j=1, PartLTS.np
-                cn_rand.v   = acn(j)
-                sphr_rand.v = PartLTS.particles_radii(j)
-                cdef_rand.v = acdef(j)
-                vC.v        = ymm8r4_twopi.v*sphr_rand.v
-                tmp1.v      = vC.v/vNPTS.v
-                tmp2.v      = tmp1.v
-                Vthinc2CL.vthinc0.v   = tmp1.v
-                Vthinc2CL.vthinc0.v   = Vthinc2CL.vthinc0.v*VINC.v
-                Vphinc2CL.vphinc0.v   = tmp2.v
-                Vphinc2CL.vphinc0.v   = Vphinc2CL.vphinc0.v*VINC.v
-                Vthinc2CL.vthinc1.v   = tmp1.v
-                Vthinc2CL.vthinc1.v   = Vthinc2CL.vthinc1.v*VINC2.v
-                Vphinc2CL.vphinc1.v   = tmp2.v
-                Vphinc2CL.vphinc1.v   = Vphinc2CL.vphinc1.v*VINC2.v
-                Vthinc2CL.vthinc2.v   = tmp1.v
-                Vthinc2CL.vthinc2.v   = Vthinc2CL.vthinc2.v*VINC3.v
-                Vphinc2CL.vphinc2.v   = tmp2.v
-                Vphinc2CL.vphinc2.v   = Vphinc2CL.vphinc2.v*VINC3.v
-                Vthinc2CL.vthinc3.v   = tmp1.v
-                Vthinc2CL.vthinc3.v   = Vthinc2CL.vthinc3.v*VINC4.v
-                Vphinc2CL.vphinc3.v   = tmp2.v
-                Vphinc2CL.vphinc3.v   = Vphinc2CL.vphinc3.v*VINC4.v
-                Vtheta2CL.vtheta0     = ymm8r4_zero
-                Vphi2CL.vphi0         = ymm8r4_zero
-                Term2CL.term0         = ymm8r4_zero
-                Vtheta2CL.vtheta1     = ymm8r4_zero
-                Vphi2CL.vphi1         = ymm8r4_zero
-                Term2CL.term1         = ymm8r4_zero
-                Vtheta2CL.vtheta2     = ymm8r4_zero
-                Vphi2CL.vphi2         = ymm8r4_zero
-                Term2CL.term2         = ymm8r4_zero
-                Vtheta2CL.vtheta3     = ymm8r4_zero
-                Vphi2CL.vphi3         = ymm8r4_zero
-                Term2CL.term3         = ymm8r4_zero
-                !DIR$ VECTOR ALWAYS
-                do i=1, PartLTS.nypts-3, 4
-                     Vtheta2CL.vtheta0.v = Vtheta2CL.vtheta0.v+Vthic2CL.vthinc0.v
-                     Vphi2CL.vphi0.v   = Vphi2CL.vphi0.v+Vphinc2CL.vphinc0.v
-                     Term2CL.term0.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta0.v))
-                     Term2CL.term0.v   = Term2CL.term0.v*sin(Vtheta2CL.vtheta0.v)*sin(Vphi2CL.vphi0.v)
-                     PartLTS.particles_paramy(i+0,j).v = Term2CL.term0.v
-                     Vtheta2CL.vtheta1.v = Vtheta2CL.vtheta1.v+Vthinc2CL.vthinc1.v
-                     Vphi2CL.vphi1.v   = Vphi2CL.vphi1.v+Vphinc2CL.vphinc1.v
-                     Term2CL.term1.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta1.v))
-                     Term2CL.term1.v   = Term2CL.term1.v*sin(Vtheta2CL.vtheta1.v)*sin(Vphi2CL.vphi1.v)
-                     PartLTS.particles_paramy(i+1,j).v = Term2CL.term1.v
-                     Vtheta2CL.vtheta2.v = Vtheta2CL.vtheta2.v+Vthinc2CL.vthinc2.v
-                     Vphi2CL.vphi2.v   = Vphi2CL.vphi2.v+Vphi2CL.vphinc2.v
-                     Term2CL.term2.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta2.v))
-                     Term2CL.term2.v   = Term2CL.term2.v*sin(Vtheta2CL.vtheta2.v)*sin(Vphi2CL.vphi2.v)
-                     PartLTS.particles_paramy(i+2,j).v = Term2CL.term2.v
-                     Vtheta2CL.vtheta3.v = Vtheta2CL.vtheta3.v+Vtheta2CL.vthinc3.v
-                     Vphi2CL.vphi3.v   = Vphi2CL.vphi3.v+Vphinc2CL.vphinc3.v
-                     Term2CL.term3.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta3.v))
-                     Term2CL.term3.v   = Term2CL.term3.v*sin(Vtheta2CL.vtheta3.v)*sin(Vtheta2CL.vphi3.v)
-                     PartLTS.particles_paramy(i+3,j).v = Term2CL.term3.v
-                  end do
-               end do
-     end subroutine ComputeYparam_ymm8r4
+           call ComputeYparam_YMM8r4(PartLTS.particles_paramy,   &
+                                     PartLTS.particles_radii,    &
+                                     cn,                         &
+                                     cdef,                       &
+                                     PartLTS.nypts,              &
+                                     np)
+        
+     end subroutine ComputeYparam    
+           
+          
+         
+         
+            
+   
 
-     subroutine ComputeZparam_ymm8r4(PartLTS,np,acn,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeZparam_ymm8r4
-            use mod_vecconsts, only : ymm8r4_twopi,ymm8r4_one,ymm8r4_zero
+     subroutine ComputeZparam(PartLTS,np,cn,cdef)
+!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeZparam
+            use mod_cheb_particles_common
             type(ChebParticlesLST_t),     intent(inout) :: PartLST
             integer(kind=int4),           intent(in)    :: np
-            real(kind=sp), dimension(np), intent(in)    :: acn
-            real(kind=sp), dimension(np), intent(in)    :: acdef
-          
-            ! Locals
-            ! Error checking moved to the outside world
-             type :: Vtheta2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vtheta0
-              type(YMM8r4_t) :: vtheta1
-              type(YMM8r4_t) :: vtheta2
-              type(YMM8r4_t) :: vtheta3
-            end type Vtheta2CacheLines_t
-            type :: Vthinc2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: vthinc0
-              type(YMM8r4_t) :: vthinc1
-              type(YMM8r4_t) :: vthinc2
-              type(YMM8r4_t) :: vthinc3
-            end type Vthinc2CacheLines_t
-            type :: Termx2CacheLines_t
-              sequence
-              type(YMM8r4_t) :: term0
-              type(YMM8r4_t) :: term1
-              type(YMM8r4_t) :: term2
-              type(YMM8r4_t) :: term3
-            end type Termx2CacheLines_t
-             !DIR$ ATTRIBUTES ALIGN : 64 :: Vtheta2CL
-            type(Vtheta2CacheLines_t) :: Vtheta2CL
-             !DIR$ ATTRIBUTES ALIGN : 64 :: Vthinc2CL
-            type(Vthinc2CacheLines_t) :: Vthinc2CL
-             !DIR$ ATTRIBUTES ALIGN : 64 :: Term2CL
-            type(Termx2CacheLines_t) :: Term2CL
-            !DIR$ ATTRIBUTES ALIGN : 32 :: cn_rand
-            type(YMM8r4_t), automatic :: cn_rand
-            ! DIR$ ATTRIBUTES ALIGN : 32 :: sphr_rand
-            type(YMM8r4_t), automatic :: sphr_rand
-            !DIR$ ATTRIBUTES ALIGN : 32  :: cdef_rand
-            type(YMM8r4_t), automatic :: cdef_rand
+            real(kind=sp), dimension(np), intent(in)    :: cn
+            real(kind=sp), dimension(np), intent(in)    :: cdef
+            ! EXec code .....
+            call ComputeZparam_YMM8r4(PartLTS.particles_paramz,    &
+                                      PartLTS.particles_radii,     &
+                                      cn,                          &
+                                      cdef,                        &
+                                      PartLTS.nzpts,               &
+                                      np)
+     end subroutine ComputeZparam   
             
-            !DIR$ ATTRIBUTES ALIGN : 32 :: vNPTS
-            type(YMM8r4_t), automatic :: vNPTS
-            !DIR$ ATTRIBUTES ALIGN : 32 :: vC
-            type(YMM8r4_t), automatic :: vC
-            !
-            !DIR$ ATTRIBUTES ALIGN : 32 tmp1
-            type(YMM8r4_t), automatic :: tmp1
-            integer(kind=int4), automatic :: j,i
-            ! Exec code .....
-            cn_rand             = ymm8r4_zero
-            sphr_rand           = ymm8r4_zero
-            cdef_rand           = ymm8r4_zero
-            Vtheta2CL.vtheta0   = ymm8r4_zero
-            Vtheta2CL.vtheta1   = ymm8r4_zero
-            Vtheta2CL.vtheta2   = ymm8r4_zero
-            Vtheta2CL.vtheta3   = ymm8r4_zero
-            Vthinc2CL.vthinc0   = ymm8r4_zero
-            Vthinc2CL.vthinc1   = ymm8r4_zero
-            Vthinc2CL.vthinc2   = ymm8r4_zero
-            Vthinc2CL.vthinc3   = ymm8r4_zero
-            vNPTS               = ymm8r4_zero
-            tmp1                = ymm8r4_zero
-            !
-            vC                  = ymm8r4_zero
-            Term2CL.term0       = ymm8r4_zero
-            Term2CL.term1       = ymm8r4_zero
-            Term2CL.term2       = ymm8r4_zero
-            Term2CL.term3       = ymm8r4_zero
-            vNPTS.v   = real(PartLTS.nzpts,kind=sp)
-             ! First touch
-            PartLTS.particles_paramz = ymm8r4_zero
-            do j=1, PartLTS.np
-                cn_rand.v   = acn(j)
-                sphr_rand.v = PartLTS.particles_radii(j)
-                cdef_rand.v = acdef(j)
-                vC.v        = ymm8r4_twopi.v*sphr_rand.v
-                tmp1.v      = vC.v/vNPTS.v
-                Vthinc2CL.vthinc0.v   = tmp1.v
-                Vthinc2CL.vthinc0.v   = Vthinc2CL.vthinc0.v*VINC.v
-                Vthinc2CL.vthinc1.v   = tmp1.v
-                Vthinc2CL.vthinc1.v   = Vthinc2CL.vthinc1.v*VINC2.v
-                Vthinc2CL.vthinc2.v   = tmp1.v
-                Vthinc2CL.vthinc2.v   = Vthinc2CL.vthinc2.v*VINC3.v
-                Vthinc2CL.vthinc3.v   = tmp1.v
-                Vthinc2CL.vthinc3.v   = Vthinc2CL.vthinc3.v*VINC4.v
-                Vtheta2CL.vtheta0     = ymm8r4_zero
-                Term2CL.term0         = ymm8r4_zero
-                Vtheta2CL.vtheta1     = ymm8r4_zero
-                Term2CL.term1         = ymm8r4_zero
-                Vtheta2CL.vtheta2     = ymm8r4_zero
-                Term2CL.term2         = ymm8r4_zero
-                Vtheta2CL.vtheta3     = ymm8r4_zero
-                Term2CL.term3         = ymm8r4_zero
-                !DIR$ VECTOR ALWAYS
-                do i=1, PartLTS.nzpts-3, 4
-                     Vtheta2CL.vtheta0.v = Vtheta2CL.vtheta0.v+Vthinc2CL.vthinc0.v
-                     Term2CL.term0.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta0.v))
-                     Term2CL.term0.v   = term0.v*cos(Vtheta2CL.vtheta0.v)
-                     PartLTS.particles_paramz(i+0,j).v = Term2CL.term0.v
-                     Vtheta2CL.vtheta1.v = Vtheta2CL.vtheta1.v+Vthinc2CL.vthinc1.v
-                     Term2CL.term1.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta1.v))
-                     Term2CL.term1.v   = term1.v*cos(Vtheta2CL.vtheta1.v)
-                     PartLTS.particles_paramz(i+1,j).v = Term2CL.term1.v
-                     Vtheta2CL.vtheta2.v = Vtheta2CL.vtheta2.v+Vthinc2CL.vthinc2.v
-                     Term2CL.term2.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta2.v))
-                     Term2CL.term2.v   = term2.v*cos(Vtheta2CL.vtheta2.v)
-                     PartLTS.particles_paramz(i+2,j).v = Term2CL.term2.v
-                     Vtheta2CL.vtheta3.v = Vtheta2CL.vtheta3.v+Vthinc2CL.vthinc3.v
-                     Term2CL.term3.v   = sphr_rand.v*(ymm8r4_one.v+cdef_rand.v*cos(cn_rand.v*Vtheta2CL.vtheta3.v))
-                     Term2CL.term3.v   = term3.v*cos(Vtheta2CL.vtheta3.v)
-                     PartLTS.particles_paramz(i+3,j).v = Term2CL.term3.v
-                 end do
-              end do 
-     end subroutine ComputeZparam_ymm8r4              
+           
+          
+               
+                   
+                
                     
      !==========================================================================80
      !            Computes Chebyshev particles surface area
