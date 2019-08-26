@@ -992,43 +992,43 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     
     subroutine TMATR0 (NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,DDR,    &
                        DRR,DRI,NMAX,NCHECK)
-        
-          integer(I32P) :: NGAUSS
-          real(R64P), dimension(NPNG2) :: X,W,AN,S,SS
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TMATR0       
+          integer(kind=int4) :: NGAUSS
+          real(kind=dp), dimension(NPNG2) :: X,W,AN,S,SS
 !DIR$     ASSUME_ALIGNED X:64,W:64,AN:64,S:64,SS:64
-          real(R64P), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
 !DIR$     ASSUME_ALIGNED ANN:64
-          real(R64P) :: PPI,PIR,PII
-          real(R64P), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
+          real(kind=dp) :: PPI,PIR,PII
+          real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
 !DIR$     ASSUME_ALIGNED R:64,DR:64,DDR:64,DRR:64,DRI:64
-          integer(I32P) :: NMAX,NCHECK
+          integer(kind=int4) :: NMAX,NCHECK
           ! Locals
-          real(R64P), dimension(NPNG2) :: SIG 
+          real(kind=dp), dimension(NPNG2) :: SIG 
 !DIR$     ATTRIBUTES ALIGN : 64 :: SIG
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
                                                DJI,D1,D2
 !DIR$     ATTRIBUTES ALIGN : 64 :: D1
 !DIR$     ATTRIBUTES ALIGN : 64 :: D2
-          real(R64P), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
+          real(kind=dp), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
 !DIR$     ATTRIBUTES ALIGN : 64 :: DS
 !DIR$     ATTRIBUTES ALIGN : 64 :: DSS
 !DIR$     ATTRIBUTES ALIGN : 64 :: RR
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV1
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV2          
-          real(R64P), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
+          real(kind=dp), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
                                               I21,I22,RG11,RG12,RG21,  &
                                               RG22,IG11,IG12,IG21,IG22
-          real(R64P), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
+          real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
                                               TRGQR,TRGQI,TR1,TI1
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQR          
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQI
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQR
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQI
-          real(R32P), dimension(NPN6*NPN4*NPN4*8) :: PLUS
+          real(kind=dp), dimension(NPN6*NPN4*NPN4*8) :: PLUS
 !DIR$     ATTRIBUTES ALIGN : 64 :: PLUS
-          integer(I32P) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
+          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
                            N1,N2,K1,KK1,K2,KK2,NM
-          real(R64P)    :: FACTOR,SI,DD1,DD2,AN1,AN2,     &
+          real(kind=dp)    :: FACTOR,SI,DD1,DD2,AN1,AN2,     &
                            AR12,AR21,AI12,AI21,GR12,      &
                            GR21,GI12,GI21,D1N1,D2N1,      &
                            A12,A21,A22,AA1,QJ1,QY1,       &
@@ -1056,10 +1056,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
       NNMAX=NMAX+NMAX
       NG=2*NGAUSS
       NGSS=NG
-      FACTOR=1D0
+      FACTOR=1._dp
       IF (NCHECK.EQ.1) THEN
             NGSS=NGAUSS
-            FACTOR=2D0
+            FACTOR=2.0_dp
          ELSE
             CONTINUE
       ENDIF
@@ -1093,15 +1093,15 @@ c              PRINT 7337, NGGG,DSCA,DEXT
            AN1=AN(N1)
            DO 300 N2=MM1,NMAX
                 AN2=AN(N2)
-                AR12=0._R64P
-                AR21=0._R64P
-                AI12=0._R64P
-                AI21=0._R64P
-                GR12=0._R64P
-                GR21=0._R64P
-                GI12=0._R64P
-                GI21=0._R64P
-                IF (NCHECK.EQ.1.AND.SIG(N1+N2).LT.0._R64P) GO TO 205
+                AR12=0._dp
+                AR21=0._dp
+                AI12=0._dp
+                AI21=0._dp
+                GR12=0._dp
+                GR21=0._dp
+                GI12=0._dp
+                GI21=0._dp
+                IF (NCHECK.EQ.1.AND.SIG(N1+N2).LT.0._dp) GO TO 205
 !DIR$   FMA
                 DO 200 I=1,NGSS
                     D1N1=D1(I,N1)
@@ -1206,15 +1206,15 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                 TRGQR(K1,K2)=TPIR*TGR21-TPII*TGI21+TPPI*TGR12
                 TRGQI(K1,K2)=TPIR*TGI21+TPII*TGR21+TPPI*TGI12
  
-                TQR(K1,KK2)=0._R64P
-                TQI(K1,KK2)=0._R64P
-                TRGQR(K1,KK2)=0._R64P
-                TRGQI(K1,KK2)=0._R64P
+                TQR(K1,KK2)=0._dp
+                TQI(K1,KK2)=0._dp
+                TRGQR(K1,KK2)=0._dp
+                TRGQI(K1,KK2)=0._dp
  
-                TQR(KK1,K2)=0._R64P
-                TQI(KK1,K2)=0._R64P
-                TRGQR(KK1,K2)=0._R64P
-                TRGQI(KK1,K2)=0._R64P
+                TQR(KK1,K2)=0._dp
+                TQI(KK1,K2)=0._dp
+                TRGQR(KK1,K2)=0._dp
+                TRGQI(KK1,K2)=0._dp
  
                 TQR(KK1,KK2)=TPIR*TAR12-TPII*TAI12+TPPI*TAR21
                 TQI(KK1,KK2)=TPIR*TAI12+TPII*TAR12+TPPI*TAI21
@@ -1237,43 +1237,43 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     
     subroutine TMATR (M,NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,DDR,    &
                        DRR,DRI,NMAX,NCHECK)
-          implicit none
-          integer(I32P) :: M,NGAUSS
-          real(R64P), dimension(NPNG2) :: X,W,AN,S,SS
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TMATR
+          integer(kind=int4) :: M,NGAUSS
+          real(kind=dp), dimension(NPNG2) :: X,W,AN,S,SS
 !DIR$     ASSUME_ALIGNED X:64,W:64,AN:64,S:64,SS:64
-          real(R64P), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
 !DIR$     ASSUME_ALIGNED ANN:64
-          real(R64P) :: PPI,PIR,PII
-          real(R64P), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
+          real(kind=dp) :: PPI,PIR,PII
+          real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
 !DIR$     ASSUME_ALIGNED R:64,DR:64,DDR:64,DRR:64,DRI:64
-          integer(I32P) :: NMAX,NCHECK
+          integer(kind=int4) :: NMAX,NCHECK
           ! Locals
-          real(R64P), dimension(NPNG2) :: SIG 
+          real(kind=dp), dimension(NPNG2) :: SIG 
 !DIR$     ATTRIBUTES ALIGN : 64 :: SIG
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
                                                DJI,D1,D2
 !DIR$     ATTRIBUTES ALIGN : 64 :: D1
 !DIR$     ATTRIBUTES ALIGN : 64 :: D2
-          real(R64P), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
+          real(kind=dp), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
 !DIR$     ATTRIBUTES ALIGN : 64 :: DS
 !DIR$     ATTRIBUTES ALIGN : 64 :: DSS
 !DIR$     ATTRIBUTES ALIGN : 64 :: RR
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV1
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV2          
-          real(R64P), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
+          real(kind=dp), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
                                               I21,I22,RG11,RG12,RG21,  &
                                               RG22,IG11,IG12,IG21,IG22
-          real(R64P), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
+          real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
                                               TRGQR,TRGQI,TR1,TI1
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQR          
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQI
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQR
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQI
-          real(R32P), dimension(NPN6*NPN4*NPN4*8) :: PLUS
+          real(kind=sp), dimension(NPN6*NPN4*NPN4*8) :: PLUS
 !DIR$     ATTRIBUTES ALIGN : 64 :: PLUS
-          integer(I32P) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
+          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
                            N1,N2,K1,KK1,K2,KK2,NM
-          real(R64P)    :: FACTOR,QM,QMM,WR,SI,DD1,DD2,AN1,AN2,     &
+          real(kind=dp)    :: FACTOR,QM,QMM,WR,SI,DD1,DD2,AN1,AN2,     &
                            AR11,AR12,AR21,AR22,AI11,A11,AA2,        &
                            AI12,AI21,AI22,GR11,GR12,GR22,           &
                            GR21,GI11,GI12,GI21,GI22,D1N1,D2N1,      &
@@ -1307,14 +1307,14 @@ c              PRINT 7337, NGGG,DSCA,DEXT
       QMM=QM*QM
       NG=2*NGAUSS
       NGSS=NG
-      FACTOR=1._R64P
+      FACTOR=1._dp
        IF (NCHECK.EQ.1) THEN
             NGSS=NGAUSS
-            FACTOR=2D0
+            FACTOR=2.0_dp
          ELSE
             CONTINUE
       ENDIF
-      SI=1._R64P
+      SI=1._dp
       NM=NMAX+NMAX
       DO 5 N=1,NM
            SI=-SI
@@ -1346,22 +1346,22 @@ c              PRINT 7337, NGGG,DSCA,DEXT
            AN1=AN(N1)
            DO 300 N2=MM1,NMAX
                 AN2=AN(N2)
-                AR11=0._R64P
-                AR12=0._R64P
-                AR21=0._R64P
-                AR22=0._R64P
-                AI11=0._R64P
-                AI12=0._R64P
-                AI21=0._R64P
-                AI22=0._R64P
-                GR11=0._R64P
-                GR12=0._R64P
-                GR21=0._R64P
-                GR22=0._R64P
-                GI11=0._R64P
-                GI12=0._R64P
-                GI21=0._R64P
-                GI22=0._R64P
+                AR11=0._dp
+                AR12=0._dp
+                AR21=0._dp
+                AR22=0._dp
+                AI11=0._dp
+                AI12=0._dp
+                AI21=0._dp
+                AI22=0._dp
+                GR11=0._dp
+                GR12=0._dp
+                GR21=0._dp
+                GR22=0._dp
+                GI11=0._dp
+                GI12=0._dp
+                GI21=0._dp
+                GI22=0._dp
                 SI=SIG(N1+N2)
 !DIR$   FMA 
                 DO 200 I=1,NGSS
@@ -1432,7 +1432,7 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                     DSSI=DSS(I)
                     RRI=RR(I)
  
-                    IF (NCHECK.EQ.1.AND.SI.GT.0._R64P) GO TO 150
+                    IF (NCHECK.EQ.1.AND.SI.GT.0._dp) GO TO 150
  
                     E1=DSI*AA1
                     AR11=AR11+E1*B1R
@@ -1550,27 +1550,27 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     end subroutine
     
     subroutine VIG (X, NMAX, M, DV1, DV2)
-      implicit none
-      real(R64P) :: X
-      integer(I32P) :: NMAX,M
-      real(R64P), dimension(NPN1) :: DV1,DV2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VIG
+      real(kind=dp) :: X
+      integer(kind=int4) :: NMAX,M
+      real(kind=dp), dimension(NPN1) :: DV1,DV2
 !DIR$ ASSUME_ALIGNED VD1:64, DV2:64 
       ! Locals
-      real(R64P) :: A,QS,QS1,D1,D2,QN,QN1,QN2,D3,DER,  &
+      real(kind=dp) :: A,QS,QS1,D1,D2,QN,QN1,QN2,D3,DER,  &
                     QMM,QNM,QNM1
-      integer(I32P) :: I,N,I2
+      integer(kind=int4) :: I,N,I2
       ! Exec code ...
-      A=1._R64P
-      QS=DSQRT(1._R64P-X*X)
-      QS1=1._R64P/QS
+      A=1._dp
+      QS=DSQRT(1._dp-X*X)
+      QS1=1._dp/QS
 !DIR$ VECTOR ALIGNED
 !DIR$ SIMD VECTORLENGTHFOR(REAL(KIND=8))
       DO N=1,NMAX
-         DV1(N)=0._R64P
-         DV2(N)=0._R64P
+         DV1(N)=0._dp
+         DV2(N)=0._dp
       ENDDO   
       IF (M.NE.0) GO TO 20
-      D1=1._R64P
+      D1=1._dp
       D2=X  
       DO N=1,NMAX  
          QN=DFLOAT(N)
@@ -1617,9 +1617,9 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C**********************************************************************
  
       subroutine TT(NMAX,NCHECK)
-      implicit none
-      integer(I32P) :: NMAX,NCHECK
-      real(R64P), dimension(NPN2,NPN2) :: F,B,QR,QI,RGQR,RGQI,  &
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TT
+      integer(kind=int4) :: NMAX,NCHECK
+      real(kind=dp), dimension(NPN2,NPN2) :: F,B,QR,QI,RGQR,RGQI,  &
                                           A,C,D,E
 !DIR$ ATTRIBUTES ALIGN : 64 :: F
 !DIR$ ATTRIBUTES ALIGN : 64 :: B
@@ -1627,13 +1627,13 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !DIR$ ATTRIBUTES ALIGN : 64 :: C
 !DIR$ ATTRIBUTES ALIGN : 64 :: D
 !DIR$ ATTRIBUTES ALIGN : 64 :: E  
-      real(R64P), dimension(NPN2) :: WORK
+      real(kind=dp), dimension(NPN2) :: WORK
 !DIR$ ATTRIBUTES ALIGN : 64 :: WORK
-      real(R64P), dimension(NPN2,NPN2) :: TR1,TI1
+      real(kind=dp), dimension(NPN2,NPN2) :: TR1,TI1
       COMPLEX*16 ZQ(NPN2,NPN2),ZW(NPN2)
-      integer(I32P), dimension(NPN2) :: IPIV,IPVT
-      integer(I32P) :: NDIM,NNMAX,I,J,INFO,K
-      real(R64P)    :: TR,TI,ARR,ARI,AR,AI,TR,TI
+      integer(kind=int4), dimension(NPN2) :: IPIV,IPVT
+      integer(kind=int4) :: NDIM,NNMAX,I,J,INFO,K
+      real(kind=dp)    :: TR,TI,ARR,ARI,AR,AI,TR,TI
       COMMON /CT/ TR1,TI1
       COMMON /CTT/ QR,QI,RGQR,RGQI
 !DIR$ ATTRIBUTES ALIGN : 64 :: /CT/
@@ -1658,8 +1658,8 @@ c              PRINT 7337, NGGG,DSCA,DEXT
  1100 FORMAT ('WARNING:  info=', i2)
       DO I=1,NNMAX
          DO J=1,NNMAX
-            TR=0._R64P
-            TI=0._R64P
+            TR=0._dp
+            TI=0._dp
 !DIR$   FMA
 	    DO K=1,NNMAX
                  ARR=RGQR(I,K)
@@ -1697,51 +1697,51 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C********************************************************************
  
     subroutine GSP(NMAX,CSCA,LAM,ALF1,ALF2,ALF3,ALF4,BET1,BET2,LMAX)
-          implicit none
-          integer(I32P) :: NMAX
-          real(R64P)    :: CSCA,LAM
-          real(R64P), dimension(NPL) :: ALF1,ALF2,ALF3,ALF4,BET1,BET2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: GSP
+          integer(kind=int4) :: NMAX
+          real(kind=dp)    :: CSCA,LAM
+          real(kind=dp), dimension(NPL) :: ALF1,ALF2,ALF3,ALF4,BET1,BET2
 !DIR$     ASSUME_ALIGNED ALF1:64,ALF2:64,ALF3:64,ALF4:64,BET1:64,BET2:64
-          integer(I32P) :: LMAX
+          integer(kind=int4) :: LMAX
           ! Locals
-          real(R64P), dimension(900) :: SSIGN
-          real(R64P), dimension(NPL) :: SSI
+          real(kind=dp), dimension(900) :: SSIGN
+          real(kind=dp), dimension(NPL) :: SSI
 !DIR$     ATTRIBUTES ALIGN : 64 :: SSI
-          real(R64P), dimension(NPN1) :: SSJ
+          real(kind=dp), dimension(NPN1) :: SSJ
 !DIR$     ATTRIBUTES ALIGN : 64 :: SSJ
-          real(R64P), dimension(NPL1,NPN4) :: TR1,TR2,TI1,TI2
-          real(R64P), dimension(NPL1,NPN6) :: G1,G2
-          real(R64P), dimension(NPN4) :: AR1,AR2,AI1,AI2
+          real(kind=dp), dimension(NPL1,NPN4) :: TR1,TR2,TI1,TI2
+          real(kind=dp), dimension(NPL1,NPN6) :: G1,G2
+          real(kind=dp), dimension(NPN4) :: AR1,AR2,AI1,AI2
 !DIR$     ATTRIBUTES ALIGN : 64 :: AR1     
 !DIR$     ATTRIBUTES ALIGN : 64 :: AR2
 !DIR$     ATTRIBUTES ALIGN : 64 :: AI1
 !DIR$     ATTRIBUTES ALIGN : 64 :: AI2          
-          real(R64P), dimension(NPN4,NPN4) :: FR,FI,FF
+          real(kind=dp), dimension(NPN4,NPN4) :: FR,FI,FF
 !DIR$     ATTRIBUTES ALIGN : 64 :: FR
 !DIR$     ATTRIBUTES ALIGN : 64 :: FI
 !DIR$     ATTRIBUTES ALIGN : 64 :: FF
-          real(R32P), dimension(NPL1,NPL1,NPN4) :: B1R,B1I,B2R,B2I
-          real(R32P), dimension(NPL1,NPN4,NPN4) :: D1,D2,D3,D4,D5R,D5I
+          real(kind=sp), dimension(NPL1,NPL1,NPN4) :: B1R,B1I,B2R,B2I
+          real(kind=sp), dimension(NPL1,NPN4,NPN4) :: D1,D2,D3,D4,D5R,D5I
 !DIR$     ATTRIBUTES ALIGN : 64 :: D1
 !DIR$     ATTRIBUTES ALIGN : 64 :: D2
 !DIR$     ATTRIBUTES ALIGN : 64 :: D2
 !DIR$     ATTRIBUTES ALIGN : 64 :: D4
 !DIR$     ATTRIBUTES ALIGN : 64 :: D5R
 !DIR$     ATTRIBUTES ALIGN : 64 :: D5I
-          real(R32P), dimension(NPN6*NPN4*NPN4*8) :: PLUS1
+          real(kind=sp), dimension(NPN6*NPN4*NPN4*8) :: PLUS1
   !DIR$     ATTRIBUTES ALIGN : 64 :: PLUS
-          real(R32P), dimension(NPN6,NPN4,NPN4) :: TR11,TR12,TR21,TR22,  
+          real(kind=sp), dimension(NPN6,NPN4,NPN4) :: TR11,TR12,TR21,TR22,  
                                                    TI11,TI12,TI21,TI22
           complex(16), dimension(NPN1) :: CIM
           complex(16) :: CI,CCI,CCJ
          
-          integer(I32P) :: L1MAX,I,I1,J,NMAX1,         &
+          integer(kind=int4) :: L1MAX,I,I1,J,NMAX1,         &
                            K1,K2,K3,K4,K5,K6,NN,       &
                            M1,M,M1MAX,L1,NN1,NN1MAX,   &
                            N1,NNMAX,NNMIN,KN,N,NNN,M2, &
                            M1MIN,NN1MIN,MMAX,MMIN,L1,  &
                            NL,L
-          real(R64P) :: SI,SJ,TT1,TT2,TT3,TT4,TT5,TT6,     &
+          real(kind=dp) :: SI,SJ,TT1,TT2,TT3,TT4,TT5,TT6,     &
                         TT7,TT8,T1,T2,T3,T4,SIG,AAR1,AAR2, &
                         AAI1,AAI2,SSS,RR1,RI1,RR2,RI2,     &
                         XR,XI,BBR1,BBR2,BBI1,BBI2,XX,X1,   &
@@ -1764,12 +1764,12 @@ c              PRINT 7337, NGGG,DSCA,DEXT
       CALL SIGNUM
       LMAX=2*NMAX
       L1MAX=LMAX+1
-      CI=(0D0,1D0)
+      CI=(0.0_dp,1.0_dp)
       CIM(1)=CI
       DO 2 I=2,NMAX
          CIM(I)=CIM(I-1)*CI
     2 CONTINUE
-      SSI(1)=1._R64P
+      SSI(1)=1._dp
       DO 3 I=1,LMAX
          I1=I+1
          SI=DFLOAT(2*I+1)
@@ -1856,10 +1856,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                NNN=NN+1
                SIG=SSIGN(KN+NN)
                M1MAX=MIN0(N,NN)+NPN6
-               AAR1=0._R64P
-               AAR2=0._R64P
-               AAI1=0._R64P
-               AAI2=0._R64P
+               AAR1=0._dp
+               AAR2=0._dp
+               AAI1=0._dp
+               AAI2=0._dp
 !DIR$     FMA
                DO 13 M1=NPN6,M1MAX
                   M=M1-NPN6
@@ -1895,10 +1895,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
             M1MAX=M2+NPN6
             M1MIN=M1+NPN6
             DO 30 M1=M1MIN,M1MAX
-               BBR1=0._R64P
-               BBI1=0._R64P
-               BBR2=0._R64P
-               BBI2=0._R64P
+               BBR1=0._dp
+               BBI1=0._dp
+               BBR2=0._dp
+               BBI2=0._dp
 !DIR$     FMA
                DO 25 NN=NNMIN,NNMAX
                   NNN=NN+1
@@ -1931,8 +1931,8 @@ c              PRINT 7337, NGGG,DSCA,DEXT
             DO 180 M1=M1MIN,M1MAX
                M=M1-NPN6
                NN1MIN=IABS(M-1)+1
-               DD1=0._R64P
-               DD2=0._R64P
+               DD1=0._dp
+               DD2=0._dp
 !DIR$   FMA
                DO 150 NN1=NN1MIN,NN1MAX
                   XX=SSI(NN1)
@@ -1957,10 +1957,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
             DO 186 M1=M1MIN,M1MAX
                M=M1-NPN6
                NN1MIN=IABS(M-1)+1
-               DD3=0._R64P
-               DD4=0._R64P
-               DD5R=0._R64P
-               DD5I=0._R64P
+               DD3=0._dp
+               DD4=0._dp
+               DD5R=0._dp
+               DD5I=0._dp
                M2=-M+2+NPN6
                DO 183 NN1=NN1MIN,NN1MAX
                   XX=SSI(NN1)
@@ -1992,14 +1992,14 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C     PRINT 3303
  3303 FORMAT (' G1, G2, ...')
  
-      DK=LAM*LAM/(4._R64P*CSCA*DACOS(-1._R64P))
+      DK=LAM*LAM/(4._dp*CSCA*DACOS(-1._dp))
       DO 300 L1=1,L1MAX
-         G1L=0._R64P
-         G2L=0._R64P
-         G3L=0._R64P
-         G4L=0._R64P
-         G5LR=0._R64P
-         G5LI=0._R64P
+         G1L=0._dp
+         G2L=0._dp
+         G3L=0._dp
+         G4L=0._dp
+         G5LR=0._dp
+         G5LI=0._dp
          L=L1-1
          SL=SSI(L1)*DK
          DO 290 N=1,NMAX
@@ -2015,8 +2015,8 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                M1MIN=NPN6-MMAX
                M1MAX=NPN6+MMAX
                SI=SSIGN(NL+NNN)
-               DM1=0._R64P
-               DM2=0._R64P
+               DM1=0._dp
+               DM2=0._dp
 !DIR$   FMA
                DO 270 M1=M1MIN,M1MAX
                   M=M1-NPN6
@@ -2030,10 +2030,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                G1L=G1L+SSS*DM1
                G2L=G2L+SSS*DM2*SI
                IF(L.LT.2) GO TO 280
-               DM3=0._R64P
-               DM4=0._R64P
-               DM5R=0._R64P
-               DM5I=0._R64P
+               DM3=0._dp
+               DM4=0._dp
+               DM5R=0._dp
+               DM5I=0._dp
                MMAX=MIN0(N,NN+2)
                MMIN=MAX0(-N,-NN+2)
                M1MAX=NPN6+MMAX
@@ -2064,10 +2064,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
          ALF2(L1)=G3L+G4L
          ALF3(L1)=G3L-G4L
          ALF4(L1)=G1L-G2L
-         BET1(L1)=G5LR*2._R64P
-         BET2(L1)=G5LI*2._R64P
+         BET1(L1)=G5LR*2._dp
+         BET2(L1)=G5LI*2._dp
          LMAX=L
-         IF(DABS(G1L).LT.1.0E-6_R64P) GO TO 500
+         IF(DABS(G1L).LT.1.0E-6_dp) GO TO 500
   300 CONTINUE
   500 CONTINUE
      
@@ -2077,18 +2077,18 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C   0.LE.N.LE.899
  
       subroutine FACT
-          implicit none
-          real(R64P), dimension(900) :: F
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: FACT
+          real(kind=dp), dimension(900) :: F
           ! Locals
-          integer(I32P) :: I,I1
+          integer(kind=int4) :: I,I1
           COMMON /FAC/ F
 !DIR$     ATTRIBUTES ALIGN : 64 :: /FAC/
           ! Exec code ... 
-          F(1)=0._R64P
-          F(2)=0._R64P
+          F(1)=0._dp
+          F(2)=0._dp
           DO 2 I=3,900
                I1=I-1
-               F(I)=F(I1)+0.5_R64P*DLOG(DFLOAT(I1))
+               F(I)=F(I1)+0.5_dp*DLOG(DFLOAT(I1))
      2 CONTINUE
      
     end subroutine
@@ -2097,14 +2097,14 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C   0.LE.N.LE.899
  
       subroutine SIGNUM
-          implicit none
-          real(R64P), dimension(900) :: SSIGN
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SIGNUM
+          real(kind=dp), dimension(900) :: SSIGN
           ! Locals
-          integer(I32P) :: N
+          integer(kind=int4) :: N
           COMMON /SS/ SSIGN
 !DIR$     ATTRIBUTES ALIGN : 64 :: /SS/
           ! Exec code ...
-          SSIGN(1)=1._R64P
+          SSIGN(1)=1._dp
           DO 2 N=2,899 
                SSIGN(N)=-SSIGN(N-1)
        2 CONTINUE
@@ -2133,17 +2133,17 @@ c              PRINT 7337, NGGG,DSCA,DEXT
  
  
     subroutine CCG(N,N1,NMAX,K1,K2,GG)
-          implicit none
-          integer(I32P) :: N,N1,NMAX,K1,K2
-          real(R64P), dimension(NPL1,NPN6) :: GG
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CCG
+          integer(kind=int4) :: N,N1,NMAX,K1,K2
+          real(kind=dp), dimension(NPL1,NPN6) :: GG
 !DIR$     ASSUME_ALIGNED GG:64
           ! Locals
-          real(R64P), dimension(0:NPN5) :: CD,CU
+          real(kind=dp), dimension(0:NPN5) :: CD,CU
 !DIR$     ATTRIBUTES ALIGN : 64 :: CD
 !DIR$     ATTRIBUTES ALIGN : 64 :: CU
-          integer(I32P) :: NNF,MIN,MF,MIND,MM,M1,NNL,  &
+          integer(kind=int4) :: NNF,MIN,MF,MIND,MM,M1,NNL,  &
                            NNU,NNM,NN,M
-          real(R64P)    :: C,C2,C1,A,B,D
+          real(kind=dp)    :: C,C2,C1,A,B,D
           ! Exec code ... 
           IF(NMAX.LE.NPN4.AND.0.LE.N1.AND.  &
               N1.LE.NMAX+N.AND.             &
@@ -2165,12 +2165,12 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                  NNL=MAX0(IABS(MM),IABS(N-N1))
                  IF(NNL.GT.NNF) GO TO 90
                     NNU=N+N1
-                    NNM=(NNU+NNL)*0.5_R64P
+                    NNM=(NNU+NNL)*0.5_dp
                     IF (NNU.EQ.NNL) NNM=NNL
                     CALL CCGIN(N,N1,M,MM,C)
                     CU(NNL)=C  
                     IF (NNL.EQ.NNF) GO TO 50
-                    C2=0D0
+                    C2=0.0_dp
                     C1=C
            DO 7 NN=NNL+1,MIN0(NNM,NNF)
                 A=DFLOAT((NN+MM)*(NN-MM)*(N1-N+NN))
@@ -2178,8 +2178,8 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                 A=DFLOAT(4*NN*NN)/A
                 A=A*DFLOAT((2*NN+1)*(2*NN-1))
                 A=DSQRT(A)
-                B=0.5_R64P*DFLOAT(M-M1)
-                D=0._R64P
+                B=0.5_dp*DFLOAT(M-M1)
+                D=0._dp
                 IF(NN.EQ.1) GO TO 5
                 B=DFLOAT(2*NN*(NN-1))
                 B=DFLOAT((2*M-MM)*NN*(NN-1)-MM*N*(N+1)+    &
@@ -2198,7 +2198,7 @@ c              PRINT 7337, NGGG,DSCA,DEXT
          CALL DIRECT(N,M,N1,M1,NNU,MM,C)
          CD(NNU)=C
          IF (NNU.EQ.NNM+1) GO TO 50
-         C2=0._R64P
+         C2=0._dp
          C1=C
          DO 12 NN=NNU-1,NNM+1,-1
             A=DFLOAT((NN-MM+1)*(NN+MM+1)*(N1-N+NN+1))
@@ -2230,10 +2230,10 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     end subroutine
     
     subroutine DIRECT (N,M,N1,M1,NN,MM,C)
-          implicit none
-          integer(I32P) :: N,M,N1,M1,NN,MM
-          real(R64P), dimension(900) ::  F
-          real(R64P) :: C
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DIRECT
+          integer(kind=int4) :: N,M,N1,M1,NN,MM
+          real(kind=dp), dimension(900) ::  F
+          real(kind=dp) :: C
           COMMON /FAC/ F
 !DIR$     ATTRIBUTES ALIGN : 64 :: /FAC/
           ! Exec code ...
@@ -2253,13 +2253,13 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C                               /MM/.LE.N+N1
  
     subroutine CCGIN(N,N1,M,MM,G)
-          implicit none
-          integer(I32P) :: N,N1,M,MM
-          real(R64P) :: G
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CCGIN      
+          integer(kind=int4) :: N,N1,M,MM
+          real(kind=dp) :: G
            ! Locals
-          real(R64P), dimension(900) :: F,SSIGN
-          integer(I32P) :: L1,L2,L3,K,M1,N2,M2,N12,M12
-          real(R64P)    :: A
+          real(kind=dp), dimension(900) :: F,SSIGN
+          integer(kind=int4) :: L1,L2,L3,K,M1,N2,M2,N12,M12
+          real(kind=dp)    :: A
           COMMON /SS/ SSIGN
           COMMON /FAC/ F
 !DIR$     ATTRIBUTES ALIGN : 64 :: /SS/
@@ -2292,7 +2292,7 @@ c              PRINT 7337, NGGG,DSCA,DEXT
               N1=L2
               M=L3
               RETURN
-  100         A=1._R64P
+  100         A=1._dp
               L1=M
               L2=MM
               IF(MM.GE.0) GO TO 150
@@ -2310,37 +2310,37 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     end subroutine
     
     subroutine SAREA (D,RAT)
-          implicit none
-          real(R64P) :: D,RAT
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SAREA
+          real(kind=dp) :: D,RAT
           ! Locals
-          real(R64P) :: E,R
-          IF (D.GE.1._R64P) GO TO 10
-          E=DSQRT(1D0-D*D)
-          R=0.5_R64P*(D**(2._R64P/3._R64P) + D**(-1._R64P/3._R64P)*DASIN(E)/E)
+          real(kind=dp) :: E,R
+          IF (D.GE.1._dp) GO TO 10
+          E=DSQRT(1.0_dp-D*D)
+          R=0.5_dp*(D**(2._dp/3._dp) + D**(-1._dp/3._dp)*DASIN(E)/E)
           R=DSQRT(R)
-          RAT=1._R64P/R
+          RAT=1._dp/R
           RETURN
-   10     E=DSQRT(1._R64P-1._R64P/(D*D))
-          R=0.25D0*(2D0*D**(2D0/3D0) + D**(-4D0/3D0)*DLOG((1D0+E)/(1D0-E)) /E)
+   10     E=DSQRT(1._dp-1._dp/(D*D))
+          R=0.25_dp*(2.0_dp*D**(2.0_dp/3.0_dp) + D**(-4.0_dp/3.0_dp)*DLOG((1D0+E)/(1D0-E)) /E)
           R=DSQRT(R)
-          RAT=1._R64P/R
+          RAT=1._dp/R
     end subroutine  
      
     subroutine SURFCH (N,E,RAT)
-          implicit none
-          integer(I32P) :: N
-          real(R64P)    :: E,RAT
-          real(R64P), dimension(60) :: X,W
-          real(R64P) :: DN,E2,EN,S,V,XI,DX,DXN,DS,DSN,DCN,  &
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SURFCH
+          integer(kind=int4) :: N
+          real(kind=dp)    :: E,RAT
+          real(kind=dp), dimension(60) :: X,W
+          real(kind=dp) :: DN,E2,EN,S,V,XI,DX,DXN,DS,DSN,DCN,  &
                         A,A2,ENS,RS,RV,RS
-          integer(I32P) :: NG
+          integer(kind=int4) :: NG
           DN=DFLOAT(N)
           E2=E*E
           EN=E*DN
           NG=60
           CALL GAUSS (NG,0,0,X,W)
-          S=0._R64P
-          V=0._R64P
+          S=0._dp
+          V=0._dp
           DO 10 I=1,NG
              XI=X(I)
              DX=DACOS(XI)
@@ -2354,17 +2354,17 @@ c              PRINT 7337, NGGG,DSCA,DEXT
              S=S+W(I)*A*DSQRT(A2+ENS*ENS)
              V=V+W(I)*(DS*A+XI*ENS)*DS*A2
    10 CONTINUE
-        RS=DSQRT(S*0.5_R64P)
-        RV=(V*3._R64P/4._R64P)**(1._R64P/3._R64P)
+        RS=DSQRT(S*0.5_dp)
+        RV=(V*3._dp/4._dp)**(0.333333333333333333333333_dp)
         RAT=RV/RS
      
     end subroutine
     
     subroutine SAREAC (EPS,RAT)
-          implicit none
-          real(R64P) :: EPS,RAT
-          RAT=(1.5_R64P/EPS)**(0.333333333333333333333333333_R64P)
-          RAT=RAT/DSQRT( (EPS+2._R64P)/(2._R64P*EPS) )
+!DIR$ ATTIRBUTES CODE_ALIGN : 32 :: SAREAC
+          real(kind=dp) :: EPS,RAT
+          RAT=(1.5_dp/EPS)**(0.333333333333333333333333333_R64P)
+          RAT=RAT/DSQRT( (EPS+2._dp)/(2._dp*EPS) )
      
     end subroutine
     
@@ -2372,38 +2372,38 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C  EFFECTIVE RADIUS A AND EFFECTIVE VARIANCE B
  
     subroutine POWER (A,B,R1,R2)
-          implicit none
+!DIR$ ATTRIBUTES COEE_ALIGN : 32 :: POWER
           real(R64P) :: A,B,R1,R2
           interface 
-              real(R64P) function F(R1)
-                 real(R64P), intent(in) :: R1
+              real(kind=dp) function F(R1)
+                 real(kind=dp), intent(in) :: R1
               end function F
           end interface
-          real(R64P) :: AX,BX
+          real(kind=dp) :: AX,BX
           COMMON AA,BB
           AA=A
           BB=B
-          AX=1.0E-5_R64P
-          BX=A-1.0E-5_R64P
-          R1=ZEROIN (AX,BX,F,0D0)
-          R2=(1._R64P+B)*2._R64P*A-R1
+          AX=1.0E-5_dp
+          BX=A-1.0E-5_dp
+          R1=ZEROIN (AX,BX,F,0.0_dp)
+          R2=(1._dp+B)*2._dp*A-R1
      
     end subroutine
     
-    real(R64P) function ZEROIN (AX,BX,F,TOL)
-          implicit none
-          real(R64P) :: AX,BX,TOL
+    real(kind=dp) function ZEROIN (AX,BX,F,TOL)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZEROIN
+          real(kind=dp) :: AX,BX,TOL
           interface 
-              real(R64P) function F(x)
-                 real(R64P), intent(in) :: x
+              real(kind=dp) function F(x)
+                 real(kind=dp), intent(in) :: x
               end function F
           end interface
-          real(R64P) :: TOL1,A,B,FA,FB,C,FC,D,E,XM,  &
+          real(kind=dp) :: TOL1,A,B,FA,FB,C,FC,D,E,XM,  &
                         S,P,Q,R
-          EPS=1D0
-       10 EPS=0.5_R64P*EPS
-          TOL1=1._R64P+EPS
-          IF (TOL1.GT.1D0) GO TO 10
+          EPS=1.0_dp
+       10 EPS=0.5_dp*EPS
+          TOL1=1._dp+EPS
+          IF (TOL1.GT.1.0_dp) GO TO 10
        15 A=AX
           B=BX
           FA=F(A)
@@ -2419,26 +2419,26 @@ c              PRINT 7337, NGGG,DSCA,DEXT
           FA=FB
           FB=FC
           FC=FA
-       40 TOL1=2.0_R64P*EPS*DABS(B)+0.5_R64P*TOL
-          XM=0.5_R64P*(C-B)
+       40 TOL1=2.0_dp*EPS*DABS(B)+0.5_dp*TOL
+          XM=0.5_dp*(C-B)
           IF (DABS(XM).LE.TOL1) GO TO 90
        44 IF (FB.EQ.0._R64P) GO TO 90
        45 IF (DABS(E).LT.TOL1) GO TO 70
        46 IF (DABS(FA).LE.DABS(FB)) GO TO 70
        47 IF (A.NE.C) GO TO 50
        48 S=FB/FA
-          P=2._R64P*XM*S
-          Q=1._R64P-S
+          P=2._dp*XM*S
+          Q=1._dp-S
           GO TO 60
        50 Q=FA/FC
           R=FB/FC
           S=FB/FA
-          P=S*(2.0_R64P*XM*Q*(Q-R)-(B-A)*(R-1.0_R64P))
-          Q=(Q-1.0_R64P)*(R-1.0_R64P)*(S-1.0_R64P)
-       60 IF (P.GT.0.0_R64P) Q=-Q
+          P=S*(2.0_dp*XM*Q*(Q-R)-(B-A)*(R-1.0_dp))
+          Q=(Q-1.0_dp)*(R-1.0_dp)*(S-1.0_dp)
+       60 IF (P.GT.0.0_dp) Q=-Q
           P=DABS(P)
-          IF ((2.0_R64P*P).GE.(3.0_R64P*XM*Q-DABS(TOL1*Q))) GO TO 70
-       64 IF (P.GE.DABS(0.5_R64P*E*Q)) GO TO 70
+          IF ((2.0_dp*P).GE.(3.0_dp*XM*Q-DABS(TOL1*Q))) GO TO 70
+       64 IF (P.GE.DABS(0.5_dp*E*Q)) GO TO 70
        65 E=D
           D=P/Q
           GO TO 80
@@ -2455,12 +2455,12 @@ c              PRINT 7337, NGGG,DSCA,DEXT
        
     end function
     
-    real(R64P) function F(R1)
+    real(kind=dp) function F(R1)
           implicit none
-          real(R64P) :: R1
-          real(R64P) :: R2
+          real(kind=dp) :: R1
+          real(kind=dp) :: R2
           COMMON A,B
-          R2=(1.0_R64P+B)*2.0_R64P*A-R1
+          R2=(1.0_dp+B)*2.0_dp*A-R1
           F=(R2-R1)/DLOG(R2/R1)-A
       
     end function
@@ -2475,32 +2475,32 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C**********************************************************************
  
     subroutine  GAUSS ( N,IND1,IND2,Z,W )
-          implicit none
-          integer(I32P) :: N,IND1,IND2
-          real(R64P), dimension(N) :: Z,W
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: GAUSS        
+          integer(kind=int4) :: N,IND1,IND2
+          real(kind=dp), dimension(N) :: Z,W
 !DIR$     ASSUME_ALIGNED Z:64,W:64
-          integer(I32P) :: IND,K,M,I,NITER,J
-          real(R64P)    :: A,B,C,F,X,PB,CHECK,PC,DJ,  &
+          integer(kind=int4) :: IND,K,M,I,NITER,J
+          real(kind=dp)    :: A,B,C,F,X,PB,CHECK,PC,DJ,  &
                            PA,ZZ
-          A=1._R64P
-          B=2._R64P
-          C=3._R64P
+          A=1._dp
+          B=2._dp
+          C=3._dp
           IND=MOD(N,2)
           K=N/2+IND
           F=DFLOAT(N)
           DO 100 I=1,K
                  M=N+1-I
                  IF(I.EQ.1) X=A-B/((F+A)*F)
-                 IF(I.EQ.2) X=(Z(N)-A)*4.0_R64P+Z(N)
-                 IF(I.EQ.3) X=(Z(N-1)-Z(N))*1.6_R64P+Z(N-1)
+                 IF(I.EQ.2) X=(Z(N)-A)*4.0_dp+Z(N)
+                 IF(I.EQ.3) X=(Z(N-1)-Z(N))*1.6_dp+Z(N-1)
                  IF(I.GT.3) X=(Z(M+1)-Z(M+2))*C+Z(M+3)
-                 IF(I.EQ.K.AND.IND.EQ.1) X=0._R64P
+                 IF(I.EQ.K.AND.IND.EQ.1) X=0._dp
                  NITER=0
-                 CHECK=1D-16
-   10            PB=1._R64P
+                 CHECK=1.0E-16_dp
+   10            PB=1._dp
                  NITER=NITER+1
                  IF (NITER.LE.100) GO TO 15
-                 CHECK=CHECK*10D0
+                 CHECK=CHECK*10.0_dp
    15            PC=X
                  DJ=A
           DO 20 J=2,N
@@ -2541,14 +2541,14 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     
     subroutine DISTRB (NNK,YY,WY,NDISTR,AA,BB,GAM,R1,R2,REFF,    &             
                         VEFF,P1)                                               
-          implicit none
-          integer(I32P) :: NNK,NDISTR
-          real(R64P), dimension(NNK) ::YY,WY
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DISTRB      
+          integer(kind=dint4) :: NNK,NDISTR
+          real(kind=dp), dimension(NNK) ::YY,WY
 !DIR$     ASSUME_ALIGNED YY:64,WW:64
-          real(R64P) :: AA,BB,GAM,R1,R2,REFF,VEFF,P1
+          real(kind=dp) :: AA,BB,GAM,R1,R2,REFF,VEFF,P1
           ! Locals
-          integer(I32P) :: I
-          real(R64P)    :: A2,B2,DB,X,Y,DA,DAB,SUM,G,XI
+          integer(kind=int4) :: I
+          real(kind=dp)    :: A2,B2,DB,X,Y,DA,DAB,SUM,G,XI
           IF (NDISTR.EQ.2) GO TO 100                                                
           IF (NDISTR.EQ.3) GO TO 200                                                
           IF (NDISTR.EQ.4) GO TO 300                                                
@@ -2569,11 +2569,11 @@ c              PRINT 7337, NGGG,DSCA,DEXT
   100 PRINT 1002,AA,BB                                                          
  1002 FORMAT('LOG-NORMAL DISTRIBUTION, r_g=',F8.4,'  [ln(sigma_g)]**2=', F6.4)                   
             
-      DA=1.0_R64P/AA                                                                 
+      DA=1.0_dp/AA                                                                 
       DO 150 I=1,NNK                                                            
              X=YY(I)                                                                
              Y=DLOG(X*DA)                                                          
-             Y=DEXP(-Y*Y*0.5_R64P/BB)/X                                             
+             Y=DEXP(-Y*Y*0.5_dp/BB)/X                                             
              WY(I)=WY(I)*Y                                                          
   150 CONTINUE                                                                  
       GO TO 400                                                                 
@@ -2586,8 +2586,8 @@ c              PRINT 7337, NGGG,DSCA,DEXT
       GO TO 400                                                                 
   300 PRINT 1004,AA,BB                                                          
  1004 FORMAT ('GAMMA DISTRIBUTION,  a=',F6.3,'  b=',F6.4)
-      B2=(1.0_R64P-3.0_R64P*BB)/BB                                                        
-      DAB=1.0_R64P/(AA*BB)                                                          
+      B2=(1.0_dp-3.0_dp*BB)/BB                                                        
+      DAB=1.0_dp/(AA*BB)                                                          
       DO 350 I=1,NNK                                                            
              X=YY(I)                                                                
              X=(X**B2)*DEXP(-X*DAB)                                                 
@@ -2602,29 +2602,29 @@ c              PRINT 7337, NGGG,DSCA,DEXT
              IF (X.GT.R1) WY(I)=WY(I)*(X/R1)**BB
   370 CONTINUE
   400 CONTINUE                                                                  
-      SUM=0._R64P
+      SUM=0._dp
 !DIR$ SIMD REDUCTION(+,SUM)
       DO 450 I=1,NNK
              SUM=SUM+WY(I)
   450 CONTINUE
-      SUM=1.0_R64P/SUM
+      SUM=1.0_dp/SUM
 !DIR$ VECTOR ALIGNED
 !DIR$ SIMD VECTORLENGTHFOR(REAL(KIND=8))
       DO 500 I=1,NNK
              WY(I)=WY(I)*SUM
   500 CONTINUE
-      G=0._R64P
+      G=0._dp
       DO 550 I=1,NNK
               X=YY(I)
               G=G+X*X*WY(I)
   550 CONTINUE
-      REFF=0.0_R64P
+      REFF=0.0_dp
       DO 600 I=1,NNK
          X=YY(I)
          REFF=REFF+X*X*X*WY(I)
   600 CONTINUE
       REFF=REFF/G
-      VEFF=0._R64P
+      VEFF=0._dp
       DO 650 I=1,NNK
          X=YY(I)
          XI=X-REFF
@@ -2635,18 +2635,18 @@ c              PRINT 7337, NGGG,DSCA,DEXT
     end subroutine
     
     subroutine HOVENR(L1,A1,A2,A3,A4,B1,B2)
-          implicit none
-          integer(I32P) :: L1
-          real(R64P), dimension(L1) :: A1,A2,A3,A4,B1,B2
+!DIR$    ATTRIBUTES CODE_ALIGN : 32 :: HOVENR        
+          integer(kind=int4) :: L1
+          real(kind=dp), dimension(L1) :: A1,A2,A3,A4,B1,B2
 !DIR$     ASSUME_ALIGNED A1:64,A2:64,A3:64,A4:64,B1:64,B2:64
-          integer(I32P) :: L,KONTR,LL
-          real(R64P)    :: DL,DDL,AA1,AA2,AA3,AA4,BB1,BB2,C,  &
+          integer(kind=int4) :: L,KONTR,LL
+          real(kind=dp)    :: DL,DDL,AA1,AA2,AA3,AA4,BB1,BB2,C,  &
                            CC,C1C2,C3
           DO 100 L=1,L1
                  KONTR=1
                  LL=L-1
-                 DL=DFLOAT(LL)*2.0_R64P+1.0_R64P
-                 DDL=DL*0.48_R64P
+                 DL=DFLOAT(LL)*2.0_dp+1.0_dp
+                 DDL=DL*0.48_dp
                  AA1=A1(L)
                  AA2=A2(L)
                  AA3=A3(L)
@@ -2662,7 +2662,7 @@ c              PRINT 7337, NGGG,DSCA,DEXT
                  IF(KONTR.EQ.2) PRINT 3000,LL
                  C=-0.1_R64P
                  DO 50 I=1,11
-                       C=C+0.1D0
+                       C=C+0.1_dp
                        CC=C*C
                        C1=CC*BB2*BB2
                        C2=C*AA4
@@ -2692,21 +2692,21 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !C        180*(I-1)/(N-1) (DEGREES), WHERE I NUMBERS THE ANGLES
  
     SUBROUTINE MATR(A1,A2,A3,A4,B1,B2,scatmat,LMAX,NPNA)
-          implicit none
-          real(R64P), dimension(NPL) :: A1,A2,A3,A4,B1,B2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MATR
+          real(kind=dp), dimension(NPL) :: A1,A2,A3,A4,B1,B2
 !DIR$     ASSUME_ALIGNED A1:64,A2:64,A3:64,A4:64,B1:64,B2:64
-          real(R64P), dimension(6,NPNA) :: scatmat
-          integer(I32P) :: LMAX,NPNA
+          real(kind=dp), dimension(6,NPNA) :: scatmat
+          integer(kind=int4) :: LMAX,NPNA
           ! Locals
-          integer(I32P) :: N,L1MAX,I1,L1,L
-          real(R64P)    :: DN,DA,DB,TB,TAA,U,F11,F12,F33,F34,F22,F44, &
+          integer(kind=int4) :: N,L1MAX,I1,L1,L
+          real(kind=dp)    :: DN,DA,DB,TB,TAA,U,F11,F12,F33,F34,F22,F44, &
                            P1,P2,P3,P4,PP1,PP2,PP3,PP4,D6,U,DL,DL1,PL1, &
                            P,F2,F3,PL2,PL3,PL4
           ! Exec code ...                 
           N=NPNA
-          DN=1.0_R64P/DFLOAT(N-1)
+          DN=1.0_dp/DFLOAT(N-1)
           DA=PI*DN
-          DB=180.0_R64P*DN
+          DB=180.0_dp*DN
           L1MAX=LMAX+1
 !      PRINT 1000
 ! 1000 FORMAT(' ')
@@ -2724,22 +2724,22 @@ c              PRINT 7337, NGGG,DSCA,DEXT
 !      PRINT 1003
 ! 1003 FORMAT(' ',5X,'<',8X,'F11',8X,'F22',8X,'F33',
 !     & 8X,'F44',8X,'F12',8X,'F34')
-          D6=DSQRT(6.0_R64P)*0.25_R64P
+          D6=DSQRT(6.0_dp)*0.25_dp
       DO 500 I1=1,N
              TAA=TAA+DA
              TB=TB+DB
              U=DCOS(TAA)
-             F11=0._R64P
-             F2=0._R64P
-             F3=0._R64P
-             F44=0._R64P
-             F12=0._R64P
-             F34=0._R64P
-             P1=0._R64P
-             P2=0._R64P
-             P3=0._R64P
-             P4=0._R64P
-             PP1=1._R64P
+             F11=0._dp
+             F2=0._dp
+             F3=0._dp
+             F44=0._dp
+             F12=0._dp
+             F34=0._dp
+             P1=0._dp
+             P2=0._dp
+             P3=0._dp
+             P4=0._dp
+             PP1=1._dp
              PP2=0.25_R64P*(1.0_R64P+U)*(1.0_R64P+U)
              PP3=0.25_R64P*(1.0_R64P-U)*(1.0_R64P-U)
              PP4=D6*(U*U-1.0_R64P)
