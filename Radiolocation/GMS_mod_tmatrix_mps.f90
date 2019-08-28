@@ -487,13 +487,13 @@ module  mod_tmatrix_mps
            pih   = dacos(0.0_dp)
            twopi  = 4.0_dp*pih
            pione  = 2.0_dp*pih
-           ci=dcmplx(0._R64P,1._R64P)
-           cin=dcmplx(0._R64P,-1._R64P)
-           ci0=dcmplx(0._R64P,0._R64P)
-           gcs=0._R64P
-           gcv=0._R64P
-           eps=1.0E-20_R64P
-           fint=0._R64P
+           ci=dcmplx(0._dp,1._dp)
+           cin=dcmplx(0._dp,-1._dp)
+           ci0=dcmplx(0._dp,0._dp)
+           gcs=0._dp
+           gcv=0._dp
+           eps=1.0E-20_dp
+           fint=0._dp
 
      ! OPEN(UNIT=1,FILE='gmm03Tr.in',STATUS='OLD')
      ! READ(1,'(a20)') FLNAME
@@ -583,8 +583,8 @@ module  mod_tmatrix_mps
 !C  example: when sang=1, the results in output will be written for every 
 !C  degree of scattering angle from 0 to 180 
 !C-----------------------------------------------------------------------  
-      if(sang.lt.0.001_R64P) sang=90._R64P
-         nang=90._R64P/sang+1._R64P
+      if(sang.lt.0.001_dp) sang=90._dp
+         nang=90._dp/sang+1._dp
          nang2=2*ti4%nang-1
       if(nang2.gt.nangmax) then
          write(6,*) '  sang too small'
@@ -641,15 +641,15 @@ module  mod_tmatrix_mps
     ! +                             (r0(j,i),j=1,9)
            if(idshp(i).eq.0) then
               do j=1,3
-                  shp(j,i)=0._R64P
+                  shp(j,i)=0._dp
               enddo
          endif
-         temp=dabs(shp(1,i)-1._R64P)
-         temp0=0.0000001_R64P
+         temp=dabs(shp(1,i)-1._dp)
+         temp0=0.0000001_dp
          if(idshp(i).eq.-1.and.tr8%temp.lt.temp0) then
             idshp(i)=0
             do j=1,3
-               shp(j,i)=0._R64P
+               shp(j,i)=0._dp
             enddo
          endif
          x0=r0(1,i)
@@ -667,7 +667,7 @@ module  mod_tmatrix_mps
 1        continue
          !close(2)
          gcsr=dsqrt(gcs)
-         gcvr=gcv**0.333333333333333333333333333333_R64P
+         gcvr=gcv**0.333333333333333333333333333333_dp
          goto 11
  !10   write(6,*) 'fatal error in the input file'
  !     stop
@@ -690,9 +690,9 @@ module  mod_tmatrix_mps
       endif
       do i=1,nL
          x(i)=k*r0(4,i)
-         if(r0(7,i).lt.0.000000000001_R64P) then
-            xc(i)=0._R64P
-            refc(i)=dcmplx(0._R64P,0._R64P)
+         if(r0(7,i).lt.0.000000000001_dp) then
+            xc(i)=0._dp
+            refc(i)=dcmplx(0._dp,0._dp)
          else
             xc(i)=k*r0(7,i)
          endif
@@ -724,10 +724,10 @@ module  mod_tmatrix_mps
          do j1=1,nmp
 !DIR$       UNROLL (2)
             do 2=1,nmp
-               tbar(i,1,1,j1,j2)=0._R64P
-               tbar(i,1,2,j1,j2)=0._R64P
-               tbar(i,2,1,j1,j2)=0._R64P
-               tbar(i,2,2,j1,j2)=0._R64P
+               tbar(i,1,1,j1,j2)=0._dp
+               tbar(i,1,2,j1,j2)=0._dp
+               tbar(i,2,1,j1,j2)=0._dp
+               tbar(i,2,2,j1,j2)=0._dp
             enddo
          enddo
          if(i.eq.1) goto  12
@@ -740,9 +740,9 @@ module  mod_tmatrix_mps
                      uvmax(i)=uvmax(j)
                      do n=1,nmax(j)
                         do v=1,nmax(j)
-			              in0=n*(n+1)
-			               iv0=v*(v+1)
-			               tbar(i,1,1,in0,iv0)=tbar(j,1,1,in0,iv0)
+			   in0=n*(n+1)
+			   iv0=v*(v+1)
+			   tbar(i,1,1,in0,iv0)=tbar(j,1,1,in0,iv0)
                            tbar(i,1,2,in0,iv0)=tbar(j,1,2,in0,iv0)
                            tbar(i,2,1,in0,iv0)=tbar(j,2,1,in0,iv0)
                            tbar(i,2,2,in0,iv0)=tbar(j,2,2,in0,iv0)
@@ -757,11 +757,11 @@ module  mod_tmatrix_mps
 			                    tbar(i,2,1,imn,iuv)=A
 			                    A=tbar(j,2,2,imn,iuv)
 			                    tbar(i,2,2,imn,iuv)=A
-                                imn=-m+in0
+                                            imn=-m+in0
 			                    iuv=-m+iv0
 			                    A=tbar(j,1,1,imn,iuv)
 			                    tbar(i,1,1,imn,iuv)=A
-                                A=tbar(j,1,2,imn,iuv)
+                                            A=tbar(j,1,2,imn,iuv)
 			                    tbar(i,1,2,imn,iuv)=A
 			                    A=tbar(j,2,1,imn,iuv)
 			                    tbar(i,2,1,imn,iuv)=A
@@ -779,12 +779,12 @@ module  mod_tmatrix_mps
  121     continue
  12      if(idshp(i).eq.0) then
            ratio=xc(i)/x(i)
-            if(ratio.gt.1._R64P) then
+            if(ratio.gt.1._dp) then
                write(6,*) 'size of core >mantle for particle ',i
                call TRACEBACKQQ(STRING="size of core > mantle for particle", USER_EXIT_CODE= -1)
 	          stop
             endif
-            if(ratio.lt.0.00000000000001_R64P) ratio=0._R64P	   
+            if(ratio.lt.0.00000000000001_dp) ratio=0._dp	   
             call scoatabd(x(i),ratio,r0(8,i),-r0(9,i),r0(5,i),     &
                          -r0(6,i),np,an,bn,NADD,nmax(i))
             if(nmax(i).gt.np) then
@@ -809,7 +809,7 @@ module  mod_tmatrix_mps
 	        goto 15
         endif
          RAT=irat
-         DDELT=0.001_R64P
+         DDELT=0.001_dp
          NDGS=2
 !DIR$   LOOP COUNT ( 101)
 	 do m=1,NPN6
@@ -818,14 +818,14 @@ module  mod_tmatrix_mps
 !DIR$ IVDEP:LOOP
 !DIR$ UNROLL (2)
 	       do v=1,NPN4
-	          RT11(m,n,v)=0._R64P
-		      RT12(m,n,v)=0._R64P
-		      RT21(m,n,v)=0._R64P
-		      RT22(m,n,v)=0._R64P
-		      IT11(m,n,v)=0._R64P
-		      IT12(m,n,v)=0._R64P
-		      IT21(m,n,v)=0._R64P
-		      IT22(m,n,v)=0._R64P
+	              RT11(m,n,v)=0._dp
+		      RT12(m,n,v)=0._dp
+		      RT21(m,n,v)=0._dp
+		      RT22(m,n,v)=0._dp
+		      IT11(m,n,v)=0._dp
+		      IT12(m,n,v)=0._dp
+		      IT21(m,n,v)=0._dp
+		      IT22(m,n,v)=0._dp
 	       enddo
 	    enddo
 	 enddo
@@ -856,19 +856,19 @@ module  mod_tmatrix_mps
             do v=1,nmax(i)
                iv0=v*(v+1)
                nsmall=min(n,v)
-	           A=-ci**(v-n)
-	           imn=in0
+	       A=-ci**(v-n)
+	       imn=in0
                iuv=iv0
-                B=dcmplx(RT11(1,n,v),IT11(1,n,v))
+               B=dcmplx(RT11(1,n,v),IT11(1,n,v))
                tbar(ti,1,1,imn,iuv)=A*B
-                B=dcmplx(RT12(1,n,v),IT12(1,n,v))
+               B=dcmplx(RT12(1,n,v),IT12(1,n,v))
                tbar(i,1,2,imn,iuv)=A*B
                B=dcmplx(RT21(1,n,v),IT21(1,n,v))
                tbar(i,2,1,imn,iuv)=A*B
                B=dcmplx(RT22(1,n,v),IT22(1,n,v))
                tbar(i,2,2,imn,iuv)=A*B
                do m=1,nsmall
-                   imn=m+in0
+                  imn=m+in0
                   iuv=m+iv0
                   imn1=-m+in0
                   iuv1=-m+iv0
@@ -890,7 +890,7 @@ module  mod_tmatrix_mps
 15       if(nmax(i).gt.nmax0) then
             nmax0=nmax(i)
 	        imax=i
-	     endif
+	 endif
       enddo 
       write(6,*) 'maximum scattering order: ',imax,'   ',nmax0
       write(6,'(/)')
@@ -903,11 +903,11 @@ module  mod_tmatrix_mps
 !C  calculating constants and Gaunt coefficients
 !C-----------------------------------------------------------------------
       n0=nmax0+2
-      fnr(0)=0._R64P
+      fnr(0)=0._dp
       do n=1,4*(nmax0+1)
          fnr(n)=dsqrt(dble(n))
       enddo
-      bcof(0)=1._R64P
+      bcof(0)=1._dp
       do n=0,n0-1
          bcof(n+1)=fnr(n+n+2)*fnr(n+n+1)*bcof(n)/fnr(n+1)/fnr(n+1)
       enddo
@@ -918,15 +918,15 @@ module  mod_tmatrix_mps
 !DIR$   LOOP COUNT (10,100,300)
         do 17 i=1,nL
              if(idshp(i).eq.0) goto 17
-                alph=shp(2,i)*pih*0.01111111111111111111111111111111_R64P
-                beta=shp(3,i)*pih*0.01111111111111111111111111111111_R64P
+                alph=shp(2,i)*pih*0.01111111111111111111111111111111_dp
+                beta=shp(3,i)*pih*0.01111111111111111111111111111111_dp
                 s=dabs(alph)
                 t=dabs(beta)
-                if(s.lt.0.0000000001_R64P.and.t.lt.0.00000000001_R64P) goto 17
+                if(s.lt.0.0000000001_dp.and.t.lt.0.00000000001_dp) goto 17
                 if(i.eq.1) goto  172
           do 171 j=i-1,1,-1
-            ii=idshp(i)
-            ij=idshp(j)
+                ii=idshp(i)
+                ij=idshp(j)
 	        ca=shp(2,j)
 	        s=shp(1,i)
 	        t=shp(1,j)
@@ -939,7 +939,7 @@ module  mod_tmatrix_mps
                   if(sa.eq.ca.and.sb.eq.cb) then
                      do inn=1,uvmax(j)
                         do iv=1,uvmax(j)
-			               tbar(i,1,1,inn,iv)=tbar(j,1,1,inn,iv)
+			   tbar(i,1,1,inn,iv)=tbar(j,1,1,inn,iv)
                            tbar(i,1,2,inn,iv)=tbar(j,1,2,inn,iv)
                            tbar(i,2,1,inn,iv)=tbar(j,2,1,inn,iv)
                            tbar(i,2,2,inn,iv)=tbar(j,2,2,inn,iv)
@@ -963,10 +963,10 @@ module  mod_tmatrix_mps
          cb=dcos(beta)
          A=dcmplx(ca,sa)
          n1=nmax(i)
-	    ekt(0)=1._R64P
+	 ekt(0)=1._dp
          do m=1,2*n1
             ekt(m)=A**m
-	        ekt(-m)=dconjg(ekt(m))
+	    ekt(-m)=dconjg(ekt(m))
          enddo
          call rotcoef(cb,n1)
          do m=-n1,n1
@@ -974,8 +974,8 @@ module  mod_tmatrix_mps
                A=ekt(u-m)
                do 173 n=1,n1
                   if(iabs(m).gt.n) go to 173
-                  in0=n*(n+1)
-	              imn=in0+m
+                    in0=n*(n+1)
+	            imn=in0+m
                   do 174 v=1,n1
                      if(iabs(u).gt.v) go to 173
                      iv0=v*(v+1)
@@ -983,7 +983,7 @@ module  mod_tmatrix_mps
                      nsmall=min(n,v)
                      do ip=1,2
                         do iq=1,2
-                           bar(ip,iq)=0._R64P
+                           bar(ip,iq)=0._dp
                         enddo
                      enddo
                      do is=-nsmall,nsmall
@@ -1087,10 +1087,10 @@ module  mod_tmatrix_mps
             do iuv=1,uvmax(j)
                do i=1,nL
                   do imn=1,uvmax(i)
-                     pct(j,i,1,1,imn,iuv)=0.d0
-                     pct(j,i,1,2,imn,iuv)=0.d0
-                     pct(j,i,2,1,imn,iuv)=0.d0
-                     pct(j,i,2,2,imn,iuv)=0.d0
+                     pct(j,i,1,1,imn,iuv)=0.0_dp
+                     pct(j,i,1,2,imn,iuv)=0.0_dp
+                     pct(j,i,2,1,imn,iuv)=0.0_dp
+                     pct(j,i,2,2,imn,iuv)=0.0_dp
                      if(j.eq.i) then
                         pct(j,i,1,1,imn,iuv)=tbar(i,1,1,imn,iuv)
                         pct(j,i,1,2,imn,iuv)=tbar(i,1,2,imn,iuv)
@@ -1180,13 +1180,13 @@ module  mod_tmatrix_mps
             do j=1,nL
                if(iuv.le.uvmax(j)) then
 	             do imn=iuvc,uvmax(j)
-                     asr(j,j,imn)=tbar(j,1,iq,imn,iuv)
-		             bsr(j,j,imn)=tbar(j,2,iq,imn,iuv)
-		         enddo
+                        asr(j,j,imn)=tbar(j,1,iq,imn,iuv)
+		        bsr(j,j,imn)=tbar(j,2,iq,imn,iuv)
+		     enddo
                endif
             enddo
             do j=1,nL
-               temp=0._R64P
+               temp=0._dp
                do imn=iuvc,uvmax(j)
                   A=asr(j,j,imn)
                   temp0=A*dconjg(A)
@@ -1219,21 +1219,21 @@ module  mod_tmatrix_mps
                enddo
             enddo
             do 611 i=1,nL
-	           c1i(i)=0._R64P
+	           c1i(i)=0._dp
 	        if(iuv.gt.uvmax(i)) goto 611
                do 6111 imn=iuvc,uvmax(i)
                   n=dsqrt(dble(imn))
                   do 6112 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6112
-                     as1(j,i,imn)=0._R64P
-                     bs1(j,i,imn)=0._R64P
+                     as1(j,i,imn)=0._dp
+                     bs1(j,i,imn)=0._dp
                      ijmax=max(i,j)
                      ijmin=min(i,j)
                      if(ijmax.eq.ijmin) then
-                        cz=1._R64P
+                        cz=1._dp
                      else
                         ij=(ijmax-1)*(ijmax-2)/2
-			            ij=ij+ijmax-ijmin
+			ij=ij+ijmax-ijmin
                         cz=bes0(ij)
                      endif
                      A=tbar(i,1,iq,imn,iuv)
@@ -1245,16 +1245,16 @@ module  mod_tmatrix_mps
                         ijmax=max(jj,j)
                         ijmin=min(jj,j)
                         if(ijmax.eq.ijmin) then
-                           cz=1._R64P
+                           cz=1._dp
                         else
                            ij=(ijmax-1)*(ijmax-2)/2
-			               ij=ij+ijmax-ijmin
+			   ij=ij+ijmax-ijmin
                            cz=bes0(ij)
                         endif
                         A0=asr(jj,i,imn)
                         B0=bsr(jj,i,imn)
-			            do iuvp=iuvc,uvmax(i)
-			               A=tbar(i,1,1,imn,iuvp)
+			do iuvp=iuvc,uvmax(i)
+			   A=tbar(i,1,1,imn,iuvp)
                            A0=A0+A*tta(jj,i,iuvp)
                            B=tbar(i,1,2,imn,iuvp)
                            A0=A0+B*ttb(jj,i,iuvp)
@@ -1273,8 +1273,8 @@ module  mod_tmatrix_mps
  6112	          continue
  6111 	       continue
  611        continue
-            temp=0._R64P
-            B0=0._R64P
+            temp=0._dp
+            B0=0._dp
             do 612 i=1,nL
                cext0=c1i(i)/c0i(i)
                if(cext0.lt.small) ind(i)=1
@@ -1339,8 +1339,8 @@ module  mod_tmatrix_mps
                   n=dsqrt(dble(imn))
                   do 6142 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6142
-                     ast(j,i,imn)=0._R64P
-                     bst(j,i,imn)=0._R64P
+                     ast(j,i,imn)=0._dp
+                     bst(j,i,imn)=0._dp
                      do 6143 jj=1,nL
 		            if(iuv.gt.uvmax(jj)) goto 6143
                         ijmax=max(jj,j)
