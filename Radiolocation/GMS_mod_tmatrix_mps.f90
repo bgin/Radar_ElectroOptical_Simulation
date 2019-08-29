@@ -1388,8 +1388,8 @@ module  mod_tmatrix_mps
                do imn=iuvc,uvmax(i)
                   do 6211 j=1,nL
                      if(iuv.gt.uvmax(j)) then
-                        asv(j,i,imn)=0._R64P
-                        bsv(j,i,imn)=0._R64P
+                        asv(j,i,imn)=0._dp
+                        bsv(j,i,imn)=0._dp
                         go to 6211
                      endif
                      asv(j,i,imn)=asp(j,i,imn)-Aj*ast(j,i,imn)
@@ -1417,30 +1417,30 @@ module  mod_tmatrix_mps
                   enddo
                enddo
             enddo
-            A2=0.d0
-            B2=0.d0
+            A2=0.0_dp
+            B2=0.0_dp
             do 622 i=1,nL
                if(ind(i).gt.0) goto 622
                do 6221 imn=iuvc,uvmax(i)
                   n=dsqrt(dble(imn))
                   do 6222 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6222
-                         asc(j,i,imn)=0._R64P
-                         bsc(j,i,imn)=0._R64P
+                         asc(j,i,imn)=0.0_dp
+                         bsc(j,i,imn)=0.0_dp
                         do 6223 jj=1,nL
-		                   if(iuv.gt.uvmax(jj)) goto 6223
+		             if(iuv.gt.uvmax(jj)) goto 6223
                               ijmax=max(jj,j)
                               ijmin=min(jj,j)
                              if(ijmax.eq.ijmin) then
-                               cz=1._R64P
+                               cz=1.0_dp
                              else
                                ij=(ijmax-1)*(ijmax-2)/2+ijmax-ijmin
                                cz=bes0(ij)
                              endif
                         Aj2=asv(jj,i,imn)
                         Bj2=bsv(jj,i,imn)
-		       	        do iuvp=iuvc,uvmax(i)
-			               A=tbar(i,1,1,imn,iuvp)
+		       	do iuvp=iuvc,uvmax(i)
+			   A=tbar(i,1,1,imn,iuvp)
                            Aj2=Aj2+A*tta(jj,i,iuvp)
                            B=tbar(i,1,2,imn,iuvp)
                            Aj2=Aj2+B*ttb(jj,i,iuvp)
@@ -1459,7 +1459,7 @@ module  mod_tmatrix_mps
  6222             continue
  6221          continue
  622        continue
-            if(cdabs(B2).lt.1.d-200) then
+            if(cdabs(B2).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1486,7 +1486,7 @@ module  mod_tmatrix_mps
                enddo
  623        continue
             do 624 i=1,nL
-               c1i(i)=0._R64P
+               c1i(i)=0.0_dp
                if(ind(i).gt.0) goto 624
                do 6241 imn=iuvc,uvmax(i)
                   do 6242 j=1,nL
@@ -1500,8 +1500,8 @@ module  mod_tmatrix_mps
  6242             continue
  6241          continue
  624        continue
-            cext0=0._R64P
-            cext1=0._R64P
+            cext0=0.0_dp
+            cext1=0.0_dp
             do 625 i=1,nL
                if(ind(i).gt.0) goto 625
                cext0=cext0+c0i(i)
@@ -1538,7 +1538,7 @@ module  mod_tmatrix_mps
             B2=0.d0
             do 626 i=1,nL 	   
                if(ind(i).gt.0) goto 626
-               B2i(i)=0.d0
+               B2i(i)=0.0_dp
                do imn=iuvc,uvmax(i)
                   do 6261 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6261
@@ -1551,7 +1551,7 @@ module  mod_tmatrix_mps
  	       B2=B2+B2i(i)
  626        continue	
             A0=B0*Bj
-            if(cdabs(A0).lt.1.d-200) then
+            if(cdabs(A0).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1596,21 +1596,21 @@ module  mod_tmatrix_mps
                   enddo
                enddo
             enddo
-            A0=0.d0
+            A0=0.0_dp
             do 629 i=1,nL
                if(ind(i).gt.0) goto 629
                do 6291 imn=iuvc,uvmax(i)
                   n=dsqrt(dble(imn))
                   do 6292 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6292
-                     ast(j,i,imn)=0._R64P
-                     bst(j,i,imn)=0._R64P
+                     ast(j,i,imn)=0._dp
+                     bst(j,i,imn)=0._dp
                      do 6293 jj=1,nL
                         if(iuv.gt.uvmax(jj)) goto 6293
-		   	               ijmax=max(jj,j)
+		   	   ijmax=max(jj,j)
                            ijmin=min(jj,j)
                         if(ijmax.eq.ijmin) then
-                           cz=1._R64P
+                           cz=1._dp
                         else
                            ij=(ijmax-1)*(ijmax-2)/2+ijmax-ijmin
                            cz=bes0(ij)
@@ -1618,7 +1618,7 @@ module  mod_tmatrix_mps
                         Aj2=as1(jj,i,imn)
                         Bj2=bs1(jj,i,imn)
                         do iuvp=iuvc,uvmax(i)
-			               A=tbar(i,1,1,imn,iuvp)
+			   A=tbar(i,1,1,imn,iuvp)
                            Aj2=Aj2+A*tta(jj,i,iuvp)
                            B=tbar(i,1,2,imn,iuvp)
                            Aj2=Aj2+B*ttb(jj,i,iuvp)
@@ -1635,7 +1635,7 @@ module  mod_tmatrix_mps
  6292             continue
  6291          continue
  629        continue
-            if(cdabs(A0).lt.1.d-200) then
+            if(cdabs(A0).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1731,7 +1731,7 @@ module  mod_tmatrix_mps
                guv4=u*(u+1)+((v-u-2)*(v+u+1)+(v+u)*(v-u+1))/2
                ntemp=v-u-1
                if(ntemp.lt.0) then
-                  temp=0._R64P
+                  temp=0._dp
                else
                   temp=fnr(ntemp)
                endif
@@ -1739,7 +1739,7 @@ module  mod_tmatrix_mps
                guv6=u*(u-1)+((v-u)*(v+u+1)+(v+u-2)*(v-u+1))/2
                ntemp=v+u-1
                if(ntemp.lt.0) then
-                  temp=0._R64P
+                  temp=0._dp
                else
                   temp=fnr(ntemp)
                endif
@@ -1754,7 +1754,7 @@ module  mod_tmatrix_mps
                   sb=cb*sb
                   n1=n+1
                   n2=2*n
-                  rn=1._R64P/dble(n*n1)
+                  rn=1._dp/dble(n*n1)
                   p=fnr(n)*fnr(n+2)/fnr(n2+1)
                   p=p/fnr(n2+3)/dble(n1)
                   t=fnr(n-1)*fnr(n+1)/fnr(n2-1)
@@ -1785,7 +1785,7 @@ module  mod_tmatrix_mps
                      gmn4=m*(m+1)+((n-m-2)*(n+m+1)+(n+m)*(n-m+1))/2
                      ntemp=n-m-1
                      if(ntemp.lt.0) then
-                        temp=0.d0
+                        temp=0.0_dp
                      else
                         temp=fnr(ntemp)
                      endif
@@ -1793,7 +1793,7 @@ module  mod_tmatrix_mps
                      gmn6=m*(m-1)+((n-m)*(n+m+1)+(n+m-2)*(n-m+1))/2
                      ntemp=n+m-1
                      if(ntemp.lt.0) then
-                        temp=0.d0
+                        temp=0.0_dp
                      else
                         temp=fnr(ntemp)
                      endif
@@ -1838,7 +1838,7 @@ module  mod_tmatrix_mps
                         if(iabs(u-1).gt.v-1) goto 1966
                         B=B+guv6*pct(i,j,iq,ip,juv6,imn1)
  1966                   cz=dconjg(B)*A
-                        temp=0.5d0*sb*cz
+                        temp=0.5_dp*sb*cz
                         cpr=cpr+temp
                         cpri(j)=cpri(j)+temp
                         A=ci0
@@ -1858,7 +1858,7 @@ module  mod_tmatrix_mps
                         if(iabs(u+1).gt.v-1) goto 1976
                         B=B+guv4*pct(i,j,iq,ip,juv4,imn1)
  1976                   cz=dconjg(B)*A
-                        temp=0.5d0*sb*cz
+                        temp=0.5_dp*sb*cz
                         cpr=cpr+temp
                         cpri(j)=cpri(j)+temp
                      enddo
@@ -1916,7 +1916,7 @@ module  mod_tmatrix_mps
          do n=1,nmax0          
             do 19001 v=1,nmax0
                if(iabs(ids).gt.n+v) goto 19001
-               fv0=0.5_R64P*fnr(2*v+1)
+               fv0=0.5_dp*fnr(2*v+1)
                do 19002 ms=-n,n
                   mw=ms+ids
                   if(iabs(mw).gt.v) goto 19002
@@ -1952,7 +1952,7 @@ module  mod_tmatrix_mps
                do 19003 n=1,nmax0
                   if(n.gt.nmax(i)) goto 19003
                   in0=n*(n+1)
-                  cv=1._R64P
+                  cv=1._dp
                   do 19004 v=1,nmax0
                      if(v.gt.nmax(j)) goto 19004
                      if(iabs(ids).gt.n+v) goto 19004
@@ -1996,12 +1996,12 @@ module  mod_tmatrix_mps
                      do it=itmin,n+v
                         do m=0,n
                            if(iabs(m-1).gt.it) then
-                              cwmf1=0._R64P
+                              cwmf1=0._dp
                            else
                               cwmf1=wmf1(n,v,m,it)
                            endif
                            if(m+1.gt.it) then
-                              cwm1=0._R64P
+                              cwm1=0._dp
                            else
                               cwm1=wm1(n,v,m,it)
                            endif
@@ -2012,9 +2012,9 @@ module  mod_tmatrix_mps
                                  A=dconjg(A)
                                  B=cv*A
                                  fhmf1(it,n,m,ip)= &
-                                   fhmf1(it,n,m,ip)+A
+                                 fhmf1(it,n,m,ip)+A
                                  fhmf1vq(it,n,m,ip)= &
-                                   fhmf1vq(it,n,m,ip)+cq*B
+                                 fhmf1vq(it,n,m,ip)+cq*B
                                  A=cwm1*fhas(it,ip,iq)
                                  A=dconjg(A)
                                  B=cv*A
@@ -2060,7 +2060,7 @@ module  mod_tmatrix_mps
                                  B=fm1q(it,jn,m,jp)
                                  A=gt*(A0+A*B)
                                  A1m(m,n,jn,ip,jp)=     &
-                                    A1m(m,n,jn,ip,jp)+A
+                                 A1m(m,n,jn,ip,jp)+A
                                  fn=(-1)**(ip+jp+n+jn)
                                  A=fhmf1vq(it,n,m,ip)
                                  B=fmf1vq(it,jn,m,jp)
@@ -2069,48 +2069,48 @@ module  mod_tmatrix_mps
                                  B=fm1v(it,jn,m,jp)
                                  A=fn*gt*(A0+A*B)
                                  A2m(m,n,jn,ip,jp)=     &
-                                  A2m(m,n,jn,ip,jp)+A
+                                 A2m(m,n,jn,ip,jp)+A
                                  if(m.gt.0) goto 19061
                                  temp=((-1)**ip)*gt
                                  A=fhm1q(it,n,0,ip)
                                  B=fmf1(it,jn,2,jp)
                                  A=temp*A*B
                                  B11n(n,jn,ip,jp)=    &
-                                  B11n(n,jn,ip,jp)+A
+                                 B11n(n,jn,ip,jp)+A
                                  nj=ip+n+it
                                  temp=((-1)**nj)*gt
                                  A=fhmf1vq(it,n,1,ip)
                                  B=fmf1(it,jn,1,jp)
                                  A=temp*A*B
                                  B12n(n,jn,ip,jp)=    &
-                                  B12n(n,jn,ip,jp)+A
+                                 B12n(n,jn,ip,jp)+A
                                  nj=ip+n+jn
                                  temp=((-1)**nj)*gt
                                  A=fhmf1vq(it,n,2,ip)
                                  B=fm1v(it,jn,0,jp)
                                  A=temp*A*B
                                  B13n(n,jn,ip,jp)=    &
-                                  B13n(n,jn,ip,jp)+A
+                                 B13n(n,jn,ip,jp)+A
                                  nj=jp+n+jn
                                  temp=((-1)**nj)*gt
                                  A=fhm1v(it,n,0,ip)
                                  B=fmf1vq(it,jn,2,jp)
                                  A=temp*A*B
                                  B21n(n,jn,ip,jp)=   &
-                                  B21n(n,jn,ip,jp)+A
+                                 B21n(n,jn,ip,jp)+A
                                  nj=jp+jn+it
                                  temp=((-1)**nj)*gt
                                  A=fhmf1(it,n,1,ip)
                                  B=fmf1vq(it,jn,1,jp)
                                  A=temp*A*B
                                  B22n(n,jn,ip,jp)=   &
-                                   B22n(n,jn,ip,jp)+A
+                                 B22n(n,jn,ip,jp)+A
                                  temp=((-1)**jp)*gt
                                  A=fhmf1(it,n,2,ip)
                                  B=fm1q(it,jn,0,jp)
                                  A=temp*A*B
                                  B23n(n,jn,ip,jp)=   &
-                                   B23n(n,jn,ip,jp)+A
+                                 B23n(n,jn,ip,jp)+A
 19061                            continue
                               enddo
                            enddo
@@ -2124,14 +2124,14 @@ module  mod_tmatrix_mps
       do 1910 ia=1,nang
          iang=2*nang-ia
          dang(ia)=sang*dble(ia-1)
-         dang(iang)=180.0_R64P-dang(ia)                  
-         theta=dang(ia)*pione/180.0_R64P
+         dang(iang)=180.0_dp-dang(ia)                  
+         theta=dang(ia)*pione/180.0_dp
          xt=dcos(theta)
          call tipitaud(nmax0,xt)
          do i=1,4
             do j=1,4
-               mue(i,j,ia)=0.d0
-               mue(i,j,iang)=0.d0
+               mue(i,j,ia)=0.0_dp
+               mue(i,j,iang)=0.0_dp
             enddo
          enddo
          do i=1,2
@@ -2153,10 +2153,10 @@ module  mod_tmatrix_mps
          do n=1,nmax0
             gn=(-1)**n
             itau0=(n-1)*(n+2)/2+1
-            tau0p(1)=0.5_R64P*tau(itau0)
-            tau0p(2)=0._R64P
+            tau0p(1)=0.5_dp*tau(itau0)
+            tau0p(2)=0._dp
             tau0pg(1)=-gn*tau0p(1)
-            tau0pg(2)=0._R64P
+            tau0pg(2)=0._dp
             itau=itau0+1
             gn=-gn
             tau1p(1)=tau(itau)
@@ -2172,10 +2172,10 @@ module  mod_tmatrix_mps
             do jn=1,nmax0
                jtau0=(jn-1)*(jn+2)/2+1
                gn=(-1)**jn
-               tau0pj(1)=0.5_R64P*tau(jtau0)
-               tau0pj(2)=0._R64P
+               tau0pj(1)=0.5_dp*tau(jtau0)
+               tau0pj(2)=0._dp
                tau0pjg(1)=-gn*tau0pj(1)
-               tau0pjg(2)=0._R64P
+               tau0pjg(2)=0._dp
                jtau=jtau0+1
                gn=-gn
                tau1pj(1)=tau(jtau)
@@ -2242,8 +2242,8 @@ module  mod_tmatrix_mps
                   taup(1)=tau(itau)
                   taup(2)=pi(itau)
                   if(m.eq.0) then
-                     taup(1)=0.5_R64P*taup(1)
-                     taup(2)=0._R64P
+                     taup(1)=0.5_dp*taup(1)
+                     taup(2)=0._dp
                   endif
                   taupg(1)=-gmn*taup(1)
                   taupg(2)=gmn*taup(2)
@@ -2252,8 +2252,8 @@ module  mod_tmatrix_mps
                   taupj(1)=tau(jtau)
                   taupj(2)=pi(jtau)
                   if(m.eq.0) then
-                     taupj(1)=0.5_R64P*taupj(1)
-                     taupj(2)=0._R64P
+                     taupj(1)=0.5_dp*taupj(1)
+                     taupj(2)=0._dp
                   endif
                   taupjg(1)=-gmnj*taupj(1)
                   taupjg(2)=gmnj*taupj(2)
@@ -2275,15 +2275,15 @@ module  mod_tmatrix_mps
                               B0=A*taum(ik,jk)
                               B1=Aj*taum(ik,jk)
                               A0p(ip,jp,ik,jk)=   &
-                                A0p(ip,jp,ik,jk)+B0
+                              A0p(ip,jp,ik,jk)+B0
                               A1p(ip,jp,ik,jk)=    &
-                                A1p(ip,jp,ik,jk)+B1
+                              A1p(ip,jp,ik,jk)+B1
                               B0=A*taumg(ik,jk)
                               B1=Aj*taumg(ik,jk)
                               A0pg(ip,jp,ik,jk)=   &
-                                A0pg(ip,jp,ik,jk)+B0
+                              A0pg(ip,jp,ik,jk)+B0
                               A1pg(ip,jp,ik,jk)=   &
-                               A1pg(ip,jp,ik,jk)+B1
+                              A1pg(ip,jp,ik,jk)+B1
                            enddo
                         enddo
                      enddo
@@ -2313,9 +2313,9 @@ module  mod_tmatrix_mps
                mue(2,3,ia)=mue(2,3,ia)+temp
                temp=-A0
                mue(2,4,ia)=mue(2,4,ia)+temp
-               temp=0.5d0*dimag(A1p(ip,jp,ip,3-jp))
+               temp=0.5_dp*dimag(A1p(ip,jp,ip,3-jp))
                mue(3,1,ia)=mue(3,1,ia)+temp
-               temp=-0.5d0*dimag(B1p(ip,jp,ip,3-jp))
+               temp=-0.5_dp*dimag(B1p(ip,jp,ip,3-jp))
                mue(3,2,ia)=mue(3,2,ia)+temp
                A0=A0p(ip,jp,ip,3-jp)-A0p(ip,jp,3-ip,jp)
                A0=A0-B0p(ip,jp,ip,3-jp)-B0p(ip,jp,3-ip,jp)
@@ -2323,9 +2323,9 @@ module  mod_tmatrix_mps
                mue(3,3,ia)=mue(3,3,ia)+temp
                temp=-dimag(A0)
                mue(3,4,ia)=mue(3,4,ia)+temp
-               temp=-0.5d0*A1p(ip,jp,ip,3-jp)
+               temp=-0.5_dp*A1p(ip,jp,ip,3-jp)
                mue(4,1,ia)=mue(4,1,ia)+temp
-               temp=0.5d0*B1p(ip,jp,ip,3-jp)
+               temp=0.5_dp*B1p(ip,jp,ip,3-jp)
                mue(4,2,ia)=mue(4,2,ia)+temp
                A0=A0p(ip,jp,ip,3-jp)+A0p(ip,jp,3-ip,jp)
                A0=A0-B0p(ip,jp,ip,3-jp)+B0p(ip,jp,3-ip,jp)
@@ -2364,9 +2364,9 @@ module  mod_tmatrix_mps
                mue(3,3,iang)=mue(3,3,iang)+temp
                temp=-dimag(A0)
                mue(3,4,iang)=mue(3,4,iang)+temp
-               temp=-0.5d0*A1pg(ip,jp,ip,3-jp)
+               temp=-0.5_dp*A1pg(ip,jp,ip,3-jp)
                mue(4,1,iang)=mue(4,1,iang)+temp
-               temp=0.5d0*B1pg(ip,jp,ip,3-jp)
+               temp=0.5_dp*B1pg(ip,jp,ip,3-jp)
                mue(4,2,iang)=mue(4,2,iang)+temp
                A0=A0pg(ip,jp,ip,3-jp)+A0pg(ip,jp,3-ip,jp)
                A0=A0-B0pg(ip,jp,ip,3-jp)+B0pg(ip,jp,3-ip,jp)
@@ -2378,22 +2378,22 @@ module  mod_tmatrix_mps
             enddo
          enddo
          temp=mue(1,1,ia)+mue(1,2,ia)+mue(2,1,ia)+mue(2,2,ia)
-         i22(ia)=0.5d0*temp
+         i22(ia)=0.5_dp*temp
          temp=mue(1,1,ia)-mue(1,2,ia)-mue(2,1,ia)+mue(2,2,ia)
-         i11(ia)=0.5d0*temp
+         i11(ia)=0.5_dp*temp
          temp=mue(1,1,ia)+mue(1,2,ia)-mue(2,1,ia)-mue(2,2,ia)
-         i21(ia)=0.5d0*temp
+         i21(ia)=0.5_dp*temp
          temp=mue(1,1,ia)-mue(1,2,ia)+mue(2,1,ia)-mue(2,2,ia)
-         i12(ia)=0.5d0*temp
+         i12(ia)=0.5_dp*temp
          if(ia.eq.iang) goto 1910
          temp=mue(1,1,iang)+mue(1,2,iang)+mue(2,1,iang)+mue(2,2,iang)
-         i22(iang)=0.5d0*temp
+         i22(iang)=0.5_dp*temp
          temp=mue(1,1,iang)-mue(1,2,iang)-mue(2,1,iang)+mue(2,2,iang)
-         i11(iang)=0.5d0*temp
+         i11(iang)=0.5_dp*temp
          temp=mue(1,1,iang)+mue(1,2,iang)-mue(2,1,iang)-mue(2,2,iang)
-         i21(iang)=0.5d0*temp
+         i21(iang)=0.5_dp*temp
          temp=mue(1,1,iang)-mue(1,2,iang)+mue(2,1,iang)-mue(2,2,iang)
-         i12(iang)=0.5d0*temp
+         i12(iang)=0.5_dp*temp
 1910  continue
       cbak=i11(2*nang-1)
       do i=1,nang2
@@ -2410,9 +2410,9 @@ module  mod_tmatrix_mps
       write(6,'(5x,a6,7x,a6,7x,a6,7x,a6,7x,a5,6x,a12)')    &
       '<Cext>','<Cabs>','<Csca>','<Cbak>','<Cpr>','<cos(theta)>'
       write(6,'(2x,6e13.5)') cext,cabs,csca,cbak,cext-cpr,assym
-      cscax=0.d0
-      cextx=0.d0
-      cprx=0.d0
+      cscax=0.0_dp
+      cextx=0.0_dp
+      cprx=0.0_dp
       do i=1,nL
          cscax=cscax+cscai(i)
          cextx=cextx+cexti(i)
@@ -2543,17 +2543,17 @@ module  mod_tmatrix_mps
 !C  COMPLEX REFRACTIVE INDEX OF MANTLE = (XM2,YM2)
 !C
     subroutine scoatabd(XB,Q,XM1,YM1,XM2,YM2,np,an,bn,NADD,NSTOP)
-          implicit none
-          real(R64P) :: XB,Q,XM1,YM1,XM2,YM2
-          integer(I32P) :: np
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: scoatabd
+          real(kind=dp) :: XB,Q,XM1,YM1,XM2,YM2
+          integer(kind=int4) :: np
           complex(16), dimension(np) :: an,bn
-          integer(I32P) :: NADD,NSTOP
+          integer(kind=int4) :: NADD,NSTOP
           ! Locals
-          integer(I32P), parameter :: nab = 500_I32P
-          integer(I32P), parameter :: ndx = 5000_I32P
-          real(R64P), dimension(nab) :: AR,AI,BR,BI
+          integer(kind=int4),parameter :: nab = 500
+          integer(kind=int4), parameter :: ndx = 5000
+          real(kind=dp), dimension(nab) :: AR,AI,BR,BI
 !DIR$     ATTRIBUTES ALIGN : 64 :: AR,AI,BR,BI
-          real(R64P), dimension(ndx) ::  AM1AR,AM1AI,AM2AR,AM2AI,   &
+          real(kind=dp), dimension(ndx) ::  AM1AR,AM1AI,AM2AR,AM2AI,   &
                                          AM2BR,AM2BI,AB,SM2AR,      &
                                          SM2AI,SM2BR,SM2BI,SB,      &
                                          BM2AR,BM2AI,BM2BR,BM2BI,   &
@@ -2563,9 +2563,9 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: SM2BR,SM2BI,SB,BM2AR,BM2AI
 !DIR$     ATTRIBUTES ALIGN : 64 :: BM2BR,BM2BI,BDBR,BDBI,BB
 !DIR$     ATTRIBUTES ALIGN : 64 :: CM2AR,CM2AI,CM2BR,CM2BI,CB
-          real(R64P), dimension(4) ::     U,V,D1,EV,SHV,CHV,SU,     &
+          real(kind=dp), dimension(4) ::     U,V,D1,EV,SHV,CHV,SU,     &
                                           CU,SN1R,SN1I,CN1R,CN1I
-          real(R64P) :: YM1P,YM2P,oneth,CTST,CNX,FCT0,SM1A0R,SM1A0I,     &
+          real(kind=dp) :: YM1P,YM2P,oneth,CTST,CNX,FCT0,SM1A0R,SM1A0I,     &
                         SM2A0R,SM2A0I,SM2B0R,SM2B0I,SB0,CNN,FCT, SM1A1R, &
                         SM1A1I,SM2A1R,SM2A1I,QSM1A,QSM2A,QSM2B,BM2A0R,   &
                         BM2A0I, QSM2B0, BM2B0R,BM2B0I,BB0,BDB0R, BDB0I,  &
@@ -2581,7 +2581,7 @@ module  mod_tmatrix_mps
                         CZB2I,SCZ2R,SCZ2I,UVZ2R,UVZ2I,CSZ2R,CSZ2I,AND,   &
                         ABANDR,ABANDI,ABANNR,ABANNI,AAAA,ABBNDR, ABBNDI, &
                         ABBNNR,ABBNNI,BBBB,TI,YM,XM,XN
-          integer(I32P) :: K,NX,I,J,N,ii
+          integer(kind=int4) :: K,NX,I,J,N,ii
           ! Exec code....
 !DIR$     VECTOR ALIGNED
 !DIR$     SIMD VECTORLENGTHFOR(REAL(KIND=8))
@@ -2620,15 +2620,15 @@ module  mod_tmatrix_mps
              CB(ii)    = ZERO
           end do
            do i=1,np
-              an(i)=0.d0
-              bn(i)=0.d0
+              an(i)=0.0_dp
+              bn(i)=0.0_dp
           enddo
           XM=DMAX1(XM1,XM2)
           YM1P=DABS(YM1)
           YM2P=DABS(YM2)
           YM=DMAX1(YM1P,YM2P)
           XN=XB*DSQRT(XM**2+YM**2)
-          NX=1.1_R64P*XN+10._R64P
+          NX=1.1_R64P*XN+10._dp
       if(NX.gt.ndx) then
          write(6,*) 'parameter (ndx) in sub. scoatabd too small'
          write(6,*) 'please change ndx to ',NX
@@ -2636,7 +2636,7 @@ module  mod_tmatrix_mps
          call TRACEBACKQQ(STRING="parameter (ndx) in sub. scoatabd too small",USER_EXIT_CODE = -1)
          stop
       endif
-      oneth=0.3333333333333333333333333333_R64P 
+      oneth=0.3333333333333333333333333333_dp
       NSTOP=XB+4._R64P*XB**oneth
       NSTOP=NSTOP+2+NADD   
       if(NSTOP.gt.ndx) then 
@@ -2645,7 +2645,7 @@ module  mod_tmatrix_mps
          stop   
       endif   	       
       XA=XB*Q
-      CTST=0.00000000000001_R64P            
+      CTST=0.00000000000001_dp           
       U(1)=XM1*XA
       V(1)=YM1*XA
       U(2)=XM2*XA
@@ -2653,14 +2653,14 @@ module  mod_tmatrix_mps
       U(3)=XM2*XB
       V(3)=YM2*XB
       U(4)=XB
-      V(4)=0.0_R64P
+      V(4)=0.0_dp
       K=1
-      IF(Q.EQ.0.0_R64P) K=3
+      IF(Q.EQ.0.0_dp) K=3
       DO 10 J=K,4
          D1(J)=U(J)*U(J)+V(J)*V(J)
          EV(J)=DEXP(V(J))
-         SHV(J)=0.5_R64P*(EV(J)*EV(J)-1.0_R64P)
-         CHV(J)=0.5_R64P*(EV(J)*EV(J)+1.0_R64P)
+         SHV(J)=0.5_dp*(EV(J)*EV(J)-1.0_dp)
+         CHV(J)=0.5_dp*(EV(J)*EV(J)+1.0_dp)
          SU(J)=DSIN(U(J))
          CU(J)=DCOS(U(J))
          SN1R(J)=SU(J)*CHV(J)
@@ -2668,8 +2668,8 @@ module  mod_tmatrix_mps
          CN1R(J)=CU(J)*CHV(J)
 10    CN1I(J)=-SU(J)*SHV(J)
       CNX=NX
-      FCT0=2.0_R64P*CNX+3.0_R64P
-      IF(Q.EQ.0.0_R64P) GO TO 12
+      FCT0=2.0_dp*CNX+3.0_dp
+      IF(Q.EQ.0.0_dp) GO TO 12
       SM1A0R=U(1)/FCT0
       SM1A0I=V(1)/FCT0
       SM2A0R=U(2)/FCT0
@@ -2680,7 +2680,7 @@ module  mod_tmatrix_mps
       DO 15 I=1,NX
          N=NX-I+1
          CNN=N
-         FCT=2.0_R64P*CNN+1.0_R64P
+         FCT=2.0_dp*CNN+1.0_dp
          IF(Q.EQ.0.0D0) GO TO 18
          SM1A1R=+U(1)*FCT/D1(1)-SM1A0R
          SM1A1I=-V(1)*FCT/D1(1)-SM1A0I
@@ -2705,10 +2705,10 @@ module  mod_tmatrix_mps
          QSM2B=SM2BR(N)**2+SM2BI(N)**2
          SM2B0R=+SM2BR(N)/QSM2B
          SM2B0I=-SM2BI(N)/QSM2B
-         AB(N)=(CNN+1.0D0)/U(4)-SB0
+         AB(N)=(CNN+1.0_dp)/U(4)-SB0
          SB0=U(4)/(FCT-SB0*U(4))
 15    SB(N)=SB0
-      IF(Q.EQ.0.0_R64P) GO TO 20
+      IF(Q.EQ.0.0_dp) GO TO 20
       QCM2A0=CN1R(2)**2+CN1I(2)**2
       BM2A0R=-SN1R(2)*CN1R(2)-SN1I(2)*CN1I(2)
       BM2A0R=BM2A0R/QCM2A0
@@ -2721,8 +2721,8 @@ module  mod_tmatrix_mps
       BM2B0I=+SN1R(3)*CN1I(3)-SN1I(3)*CN1R(3)
       BM2B0I=BM2B0I/QCM2B0
       BB0=-SN1R(4)/CN1R(4)
-      BDB0R=0.0_R64P
-      BDB0I=-1.0_R64P
+      BDB0R=0.0_dp
+      BDB0I=-1.0_dp
       IF(Q.EQ.0.0_R64P) GO TO 22
       UM2R0=+SN1R(2)*SN1R(3)+SN1I(2)*SN1I(3)
       UM2R0=UM2R0/QSM2B0
