@@ -1353,8 +1353,8 @@ module  mod_tmatrix_mps
                         endif
                         Aj2=asp(jj,i,imn)
                         Bj2=bsp(jj,i,imn)
-			            do iuvp=iuvc,uvmax(i)
-			               A=tbar(i,1,1,imn,iuvp)
+			do iuvp=iuvc,uvmax(i)
+			   A=tbar(i,1,1,imn,iuvp)
                            Aj2=Aj2+A*tta(jj,i,iuvp)
                            B=tbar(i,1,2,imn,iuvp)
                            Aj2=Aj2+B*ttb(jj,i,iuvp)
@@ -2354,9 +2354,9 @@ module  mod_tmatrix_mps
                mue(2,3,iang)=mue(2,3,iang)+temp
                temp=-A0
                mue(2,4,iang)=mue(2,4,iang)+temp
-               temp=0.5d0*dimag(A1pg(ip,jp,ip,3-jp))
+               temp=0.5_dp*dimag(A1pg(ip,jp,ip,3-jp))
                mue(3,1,iang)=mue(3,1,iang)+temp
-               temp=-0.5d0*dimag(B1pg(ip,jp,ip,3-jp))
+               temp=-0.5_dp*dimag(B1pg(ip,jp,ip,3-jp))
                mue(3,2,iang)=mue(3,2,iang)+temp
                A0=A0pg(ip,jp,ip,3-jp)-A0pg(ip,jp,3-ip,jp)
                A0=A0-B0pg(ip,jp,ip,3-jp)-B0pg(ip,jp,3-ip,jp)
@@ -2884,9 +2884,9 @@ module  mod_tmatrix_mps
          BR(N)=(BNNR*BNDR+BNNI*BNDI)/BND
          BI(N)=(BNNI*BNDR-BNNR*BNDI)/BND
          TI=AR(N)*AR(N)+AI(N)*AI(N)+BR(N)*BR(N)+ &
-     	    BI(N)*BI(N)
+     	 BI(N)*BI(N)
          TI=TI/(AR(1)*AR(1)+AI(1)*AI(1)+BR(1)*BR(1)+ &
-        BI(1)*BI(1))
+         BI(1)*BI(1))
          SN1R(4)=SNB
          CN1R(4)=CNB
          UM2R0=UM2R
@@ -2906,13 +2906,13 @@ module  mod_tmatrix_mps
     end subroutine
     
     subroutine cofsrd(nmax,np)
-          implicit none
-          integer(I32P) :: nmax,np
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofsrd
+          integer(kind=int4) :: nmax,np
           ! Locals
-          integer(I32P), parameter :: nmp = np*(np+2)
-          real(R64P), dimension(nmp) :: cofsr
-          real(R64P) :: lnfacd,c
-          integer(I32P) :: i,n,m
+          integer(kind=int4), parameter :: nmp = np*(np+2)
+          real(kind=dp), dimension(nmp) :: cofsr
+          real(kind=dp) :: lnfacd,c
+          integer(kind=int4) :: i,n,m
           common/crot/cofsr
           ! Exec code .... 
           i=0
@@ -2920,7 +2920,7 @@ module  mod_tmatrix_mps
              do m=-n,n
                 i=i+1       
                 c=lnfacd(dble(n-m))-lnfacd(dble(n+m))
-                cofsr(i)=0.5d0*c
+                cofsr(i)=0.5_dp*c
 !c               c=0.5d0*c
 !c            cofsr(i)=dexp(c)
          enddo
@@ -2928,22 +2928,22 @@ module  mod_tmatrix_mps
     end subroutine
     
     subroutine cofd0(nmax,np)
-          implicit none
-          integer(I32P) :: nmax,np
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofd0
+          integer(kind=int4) :: nmax,np
           ! Locals
-          integer(I32P), parameter :: nmp = np*(np+2)
-          integer(I32P), parameter :: ni0 = np*(np+1)*(2*np+1)/3+np*np
-          integer(I32P) :: v,i,m,ns,inm,ivm	
-          real(R64P) :: lnfacd,sm,c,c0,c1
-          real(R64P), dimension(ni0)        :: cof0
-          real(R64P), dimension(nmp)        :: cofsr
-          real(R64P), dimension(0:4*(np+1)) :: fnr
+          integer(kind=int4), parameter :: nmp = np*(np+2)
+          integer(kind=int4), parameter :: ni0 = np*(np+1)*(2*np+1)/3+np*np
+          integer(kind=int4) :: v,i,m,ns,inm,ivm	
+          real(kind=dp) :: lnfacd,sm,c,c0,c1
+          real(kind=dp), dimension(ni0)        :: cof0
+          real(kind=dp), dimension(nmp)        :: cofsr
+          real(kind=dp), dimension(0:4*(np+1)) :: fnr
           common/cofmnv0/cof0(ni0)
           common/crot/cofsr(nmp)	
           common/fnr/fnr(0:4*(np+1))
           ! Exec code ...
           i=0
-          sm=-0.5_R64P*dble((-1)**nmax)
+          sm=-0.5_dp*dble((-1)**nmax)
           do m=-nmax,nmax
              ns=max(1,iabs(m))
              sm=-sm
@@ -2964,19 +2964,19 @@ module  mod_tmatrix_mps
     end subroutine
     
     subroutine cofnv0(nmax,np)
-          implicit none
-          integer(I32P) :: nmax,np
+!DIR$ ATTRTIBUTES CODE_ALIGN : 32 :: cofnv0
+          integer(kind=int4) :: nmax,np
           ! Locals
-          integer(I32P) :: n,v
-          real(R64P) :: c1,lnfacd,cnv(np,np)
-          real(R64P), dimension(np,np) :: cnv
+          integer(kind=int4) :: n,v
+          real(kind=dp) :: c1,lnfacd,cnv(np,np)
+          real(kind=dp), dimension(np,np) :: cnv
           common/cfnv/cnv
           ! Exec code ...
           do n=1,nmax
              do v=n,nmax
                 c1=lnfacd(dble(2*n))+lnfacd(dble(2*v))
                 c1=c1-lnfacd(dble(2*n+2*v))
-                c1=c1+2.d0*lnfacd(dble(n+v))
+                c1=c1+2.0_dp*lnfacd(dble(n+v))
                 c1=c1-lnfacd(dble(n))-lnfacd(dble(v))
                 cnv(n,v)=c1
             enddo
@@ -2986,13 +2986,13 @@ module  mod_tmatrix_mps
 !    C  subroutine gau0.f generates tabulated values for  
 !C  Gaunt coefficients up to n=v=n_max
       subroutine gau0(nmax,np)
-          implicit none
-          integer(I32P) :: nmax,np
-          integer(I32P), parameter :: ni0 =  np*(np+1)*(2*np+1)/3+np*np
-          integer(I32P), parameter :: ng0 =  np*(2*np**3+10*np**2+19*np+5)/6
-          integer(I32P) :: v,qmax,uvmax,i,na,m,ns,n
-          integer(I32P), dimension(ni0) :: iga0
-          real(R64P), dimension(ng0) :: ga0
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gau0
+          integer(kind=int4) :: nmax,np
+          integer(kind=int4), parameter :: ni0 =  np*(np+1)*(2*np+1)/3+np*np
+          integer(kind=int4), parameter :: ng0 =  np*(2*np**3+10*np**2+19*np+5)/6
+          integer(kind=int4) :: v,qmax,uvmax,i,na,m,ns,n
+          integer(kind=int4), dimension(ni0) :: iga0
+          real(kind=dp), dimension(ng0) :: ga0
           common/g0/ga0
           common/ig0/iga0
           ! Exec code ....
@@ -3015,19 +3015,19 @@ module  mod_tmatrix_mps
 !      c  transforms the rectangular coordinates (x,y,z)
 !c  to spherical coordinates (r,theta,phi)
       subroutine carsphd(x,y,z,r,xt,sphi,cphi)
-          implicit none
-          real(R64P) :: x,y,z,r,xt,sphi,cphi
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carsphd
+          real(kind=dp) :: x,y,z,r,xt,sphi,cphi
           r=dsqrt(x*x+y*y+z*z)
-          if(r.eq.0._R64P) then
-             xt=1._R64P
-             sphi=0._R64P
-             cphi=1._R64P
+          if(r.eq.0._dp) then
+             xt=1._dp
+             sphi=0._dp
+             cphi=1._dp
              return
           endif
           xt=z/r
-          if(y.eq.0._R64P.and.x.eq.0._R64P) then
-             sphi=0._R64P
-             cphi=1._R64P
+          if(y.eq.0._dp.and.x.eq.0._dp) then
+             sphi=0._dp
+             cphi=1._dp
              return
           endif
       sphi=dsqrt(x*x+y*y)
@@ -3043,23 +3043,23 @@ module  mod_tmatrix_mps
 !c  calculation of the Riccati-Bessel function Psi_n(z)=z j_n(z) 
 !c  [see Xu et al., Physical Review E, v.60, 2347-2365 (1999)]
     SUBROUTINE besseljd(NC,X,BESJ)
-          implicit none
-          INTEGER NC,NX,K,N
-          real(R64P) :: X,PN,CN,X2
-          real(R64P), dimension(0:NC) ::  BESJ
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: besseljd
+          INTEGER(kind=int4) ::  NC,NX,K,N
+          real(KIND=DP) :: X,PN,CN,X2
+          real(KIND=DP), dimension(0:NC) ::  BESJ
           DO K=1,NC
-             BESJ(K)=0._R64P
+             BESJ(K)=0._dp
           ENDDO
-          IF(DABS(X).LT.1.D-12) THEN
-             BESJ(0)=1.D0
-             BESJ(1)=0.3333333333333333333_R64P*X
+          IF(DABS(X).LT.1.0E-12_dp) THEN
+             BESJ(0)=1.0_dp
+             BESJ(1)=0.3333333333333333333_dp*X
              RETURN
           ENDIF
 !c  down-recursively calculating an array of the ratio functions  
 !c  P_{NC},P_{NC-1},...,P(2) stored in the same array for j_n, 
 !c  starting with an asymptotic value P_{NX+1}=X/(2 NX+3) at the 
 !c  highest order NX+1, where NX=NC+1.1X+10 
-          NX=1.1_R64P*X+10._R64P
+          NX=1.1_dp*X+10._dp
           NX=NC+NX   
           PN=X/DBLE(2*NX+3)
           DO 5 K=1,NX-1
@@ -3070,16 +3070,16 @@ module  mod_tmatrix_mps
                   BESJ(N)=PN
        5 CONTINUE
 !C  calculating j_0(x) and j_1(x)
-         IF(DABS(X)-0.1D0) 10,11,11
+         IF(DABS(X)-0.1_dp) 10,11,11
     10   X2=X*X
-         BESJ(0)=1._R64P-X2/72._R64P
-         BESJ(0)=1._R64P-X2/42._R6RP*BESJ(0)
-         BESJ(0)=1._R64P-X2/20._R64P*BESJ(0)
-         BESJ(0)=1._R64P-X2/6._R64P*BESJ(0)
-         BESJ(1)=1._R64P/45360._R64P-X2/3991680._R64P
-         BESJ(1)=1._R64P/840._R64P-X2*BESJ(1)
-         BESJ(1)=1._R64P/30._R64P-X2*BESJ(1)
-         BESJ(1)=X*(0.3333333333333333_R64P-X2*BESJ(1))
+         BESJ(0)=1._dp-X2/72._dp
+         BESJ(0)=1._dp-X2/42._dp*BESJ(0)
+         BESJ(0)=1._dp-X2/20._dp*BESJ(0)
+         BESJ(0)=1._dp-X2/6._dp*BESJ(0)
+         BESJ(1)=1._dp/45360._dp-X2/3991680._dp
+         BESJ(1)=1._dp/840._dp-X2*BESJ(1)
+         BESJ(1)=1._dp/30._dp-X2*BESJ(1)
+         BESJ(1)=X*(0.3333333333333333_dp-X2*BESJ(1))
       GOTO 12
    11    BESJ(0)=DSIN(X)/X
          BESJ(1)=(DSIN(X)/X-DCOS(X))/X      
@@ -3094,26 +3094,26 @@ module  mod_tmatrix_mps
 !c  the second kind with a real argument: y_0,y_1,...,y_n
 
     subroutine besselyd(n,x,besy)
-          implicit none
-          integer(I32P) ::  i,n
-          real(R64P) :: x,besyn,x2
-          real(R64P), dimension(0:n) :: besy
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: besselyd
+          integer(kind=int4) ::  i,n
+          real(kind=dp) :: x,besyn,x2
+          real(kind=dp), dimension(0:n) :: besy
           ! Exec code ...
-          if(x.eq.0.d0) then
+          if(x.eq.0.0_dp) then
              write(6,*) 'bad argument in sub. besselyd'
              call TRACEBACKQQ(STRING="bad argument in sub. besselyd",USER_EXIT_CODE = -1)
              stop
           endif
-         if(dabs(x)-0.1_R64P)10,11,11
+         if(dabs(x)-0.1_dp)10,11,11
   10        x2=x*x
-            besyn=1._R64P-x2/72._R64P
-            besyn=1._R64P-x2/42._R64P*besyn
-            besyn=1._R64P-x2/20._R64P*besyn
-            besyn=1._R64P-x2/6._R64P*besyn
-            besy(0)=1._R64P-x2/56._R64P
-            besy(0)=1._R64P-x2/30._R64P*besy(0)
-            besy(0)=1._R64P-x2/12._R64P*besy(0)
-            besy(0)=1._R64P-0.5_R64P*x2*besy(0)
+            besyn=1._dp-x2/72._dp
+            besyn=1._dp-x2/42._dp*besyn
+            besyn=1._dp-x2/20._dp*besyn
+            besyn=1._dp-x2/6._dp*besyn
+            besy(0)=1._dp-x2/56._dp
+            besy(0)=1._dp-x2/30._dp*besy(0)
+            besy(0)=1._dp-x2/12._dp*besy(0)
+            besy(0)=1._dp-0.5_dp*x2*besy(0)
             besy(0)=-besy(0)/x
             goto 12
   11        besyn=dsin(x)/x
@@ -3135,40 +3135,40 @@ module  mod_tmatrix_mps
 !c  (1991)]
 !c  Yu-lin Xu   12/2000   
     subroutine rotcoef(cbe,nmax,np)
-          implicit none
-          real(R64P) :: cbe
-          integer(I32P) :: nmax,np
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rotcoef         
+          real(kind=dp) :: cbe
+          integer(kind=int4) :: nmax,np
           ! Locals
-          integer(I32P), parameter :: nmp = np*(np+2)
-          real(R64P) :: sbe,cbe2,sben,dkt,fmn,dkm0,dkm1, &
+          integer(kind=int4), parameter :: nmp = np*(np+2)
+          real(kind=dp) :: sbe,cbe2,sben,dkt,fmn,dkm0,dkm1, &
                         dkn1,sbe2
-          integer(I32P) :: inn,n,nn1,k,im1,m,m1,kn,IM
-          real(R64P), dimension(-2*np:2*np) :: dk0,dk01
+          integer(kind=int4) :: inn,n,nn1,k,im1,m,m1,kn,IM
+          real(kind=dp, dimension(-2*np:2*np) :: dk0,dk01
 !DIR$     ATTRIBUTES ALIGN : 64 :: dk0,dk01    
-          real(R64P), dimension(0:np+2) :: bcof
-          real(R64P), dimension(-np:np,0:nmp) :: dc
-          real(R64P), dimension(0:4*(np+1)) :: fnr
+          real(kind=dp), dimension(0:np+2) :: bcof
+          real(kind=dp), dimension(-np:np,0:nmp) :: dc
+          real(kind=dp), dimension(0:4*(np+1)) :: fnr
           common/rot/bcof(0:np+2),dc(-np:np,0:nmp)
           common/fnr/fnr(0:4*(np+1))
           ! Exec code ....
          ! dk0  = 0._R64P
          ! dk01 = 0._R64P
-          sbe=dsqrt((1._R64P+cbe)*(1._R64P-cbe))
-          cbe2=.5_R64P*(1._R64P+cbe)
-          sbe2=.5_R64P*(1._R64P-cbe)
+          sbe=dsqrt((1._dp+cbe)*(1._dp-cbe))
+          cbe2=.5_dp*(1._dp+cbe)
+          sbe2=.5_dp*(1._dp-cbe)
           inn=1           ! was 'in'
-          dk0(0)=1._R64P
-          sben=1._R64P
-          dc(0,0)=1._R64P
-          dk01(0)=0._R64P
+          dk0(0)=1._dp
+          sben=1._dp
+          dc(0,0)=1._dp
+          dk01(0)=0._dp
           do n=1,nmax
              nn1=n*(n+1)
              inn=-inn
-             sben=sben*sbe/2._R64P
+             sben=sben*sbe/2._dp
              dk0(n)=dble(inn)*sben*bcof(n)
              dk0(-n)=dble(inn)*dk0(n)
-             dk01(n)=0._R64P
-             dk01(-n)=0._R64P
+             dk01(n)=0._dp
+             dk01(-n)=0._dp
              dc(0,nn1+n)=dk0(n)
              dc(0,nn1-n)=dk0(-n)
              do k=-n+1,n-1
@@ -3182,15 +3182,15 @@ module  mod_tmatrix_mps
             im=1
             do m=1,n
                im=-im
-               fmn=1._R64P/fnr(n-m+1)/fnr(n+m)
+               fmn=1._dp/fnr(n-m+1)/fnr(n+m)
                m1=m-1
-               dkm0=0._R64P
+               dkm0=0._dp
                do k=-n,n
                   kn=nn1+k
                   dkm1=dkm0
                   dkm0=dc(m1,kn)
                   if(k.eq.n) then
-                     dkn1=0._R64P
+                     dkn1=0._dp
                   else
                      dkn1=dc(m1,kn+1)
                   endif
@@ -3208,6 +3208,7 @@ module  mod_tmatrix_mps
 !c  (m,n,m,v) and a given dimensionless translation distance kd 
 !cu uses subroutine gid0.f 
     subroutine cofxuds0(nmax,np,m,n,v,sja,sya,A,B,Aj,Bj)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofxuds0
       implicit double precision (a-h,o-z)
       !include 'gmm01f.par'
       parameter (ni0=np*(np+1)*(2*np+1)/3+np*np)
@@ -3225,15 +3226,15 @@ module  mod_tmatrix_mps
          write(6,*) '|m|>n or v in subroutine cofxuds0.f'
          stop
       endif
-      A=0.d0
-      B=0.d0
-      Aj=0.d0
-      Bj=0.d0
+      A=0.0_dp
+      B=0.0_dp
+      Aj=0.0_dp
+      Bj=0.0_dp
       call gid0(nmax,m,n,v,id)
       c=cof0(id)
       ig=iga0(id)
       nv2=v*(v+1)+n*(n+1)
-      signz=dcmplx(0.d0,1.d0)**(n+v)
+      signz=dcmplx(0.0_dp,1.0_dp)**(n+v)
       p=n+v+2
       qmax=min(n,v)
       do i=1,qmax+1
@@ -3248,7 +3249,7 @@ module  mod_tmatrix_mps
       A=A*c
       Aj=Aj*c
       if(m.eq.0) return
-      signz=dcmplx(0.d0,1.d0)**(n+v+1)
+      signz=dcmplx(0.0_dp,1.0_dp)**(n+v+1)
       p=n+v
       do 20 i=1,qmax
          p=p-2
@@ -3287,7 +3288,8 @@ module  mod_tmatrix_mps
 !c  Yu-lin Xu    12/2000
 
     subroutine tipitaud(nmax,np,x)
-     ! include 'gmm01f.par'
+      ! include 'gmm01f.par'
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: tipitaud
       parameter (nmp0=(np+1)*(np+4)/2)
       implicit double precision (a-h,o-z)
       common/fnr/fnr(0:4*(np+1))
@@ -3393,6 +3395,7 @@ module  mod_tmatrix_mps
 !      c  gxurcd0.f to compute Gaunt coefficients a(-m,n,m,v,p)
 !cu uses lnfacd.f to compute ln(z!)
       subroutine gxurcd0(m,np,n,v,qmax,na)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gxurcd0
         implicit double precision (a-h,o-z)
  !     include 'gmm01f.par'
         parameter (ng0=np*(2*np**3+10*np**2+19*np+5)/6)
@@ -3439,10 +3442,10 @@ module  mod_tmatrix_mps
       end subroutine
       
      subroutine gid0(nmax,m,n,iv,id)
-           implicit none
-           integer(I32P) :: nmax,m,n,iv,id
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gid0
+           integer(kind=int4) :: nmax,m,n,iv,id
            ! Locals
-           integer(I32P) :: nt,ns,nc0
+           integer(kind=int4) :: nt,ns,nc0
            nt=nmax*(nmax+1)*(2*nmax+1)/3+nmax*nmax
            ns=max(1,iabs(m))
            nc0=nmax-iabs(m)
@@ -3458,10 +3461,11 @@ module  mod_tmatrix_mps
      end  subroutine
      
      function plgndrd(l,mr,x)   result(val)
-      integer(I32P) ::  l,mr,m,index,i,ll
-      real(R64P) :: x
-      real(R64P) :: val
-      real(R64P) :: fact,pll,pmm,pmmp1,somx2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: plgndrd
+      integer(kind=int4) ::  l,mr,m,index,i,ll
+      real(kind=dp) :: x
+      real(kind=dp) :: val
+      real(kind=dp) :: fact,pll,pmm,pmmp1,somx2
      ! double precision plgndrd,lnfacd
       m=mr
       index=0
@@ -3469,21 +3473,21 @@ module  mod_tmatrix_mps
          index=1
          m=-m
       endif
-      if(dabs(x).gt.1.d0) then
+      if(dabs(x).gt.1.0_dp) then
 	     write(6,*) 'n,m,x: ', l,(-2*index+1)*m,x
          stop 'bad arguments in plgndrd'
       end if
       if(m.gt.l) then
-	     val=0._R64P
+	     val=0._dp
          return
       end if
-      pmm=1.d0
+      pmm=1.0_dp
       if(m.gt.0) then
-        somx2=dsqrt((1._R64P-x)*(1._R64P+x))
-        fact=1._R64P
+        somx2=dsqrt((1._dp-x)*(1._dp+x))
+        fact=1._dp
         do 11 i=1,m
           pmm=-pmm*fact*somx2
-          fact=fact+2._R64P
+          fact=fact+2._dp
 11      continue
       endif
       if(l.eq.m) then
@@ -3513,15 +3517,15 @@ module  mod_tmatrix_mps
      end  function
      
     subroutine rtrT(anpt,np,nLp,nodrj,nodri,ekt,drot,ij1,ij2,ii1,ii2)      
-          implicit none
-          integer(I32P) :: np,nLp,nodrj,nodri
-          integer(I32P), parameter :: nmp = np*(np+2)
-          integer(I32P), parameter :: nrc = 4*np*(np+1)*(np+2)/3+np,    &
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rtrT
+          integer(kind=int4) :: np,nLp,nodrj,nodri
+          integer(kind=int4), parameter :: nmp = np*(np+2)
+          integer(kind=int4), parameter :: nrc = 4*np*(np+1)*(np+2)/3+np,    &
                                       nij = nLp*(nLp-1)/2
           complex(16), dimension(2,nmp) :: anpt
           complex(16), dimension(np)    :: ekt
-          real(R64P),  dimension(nrc)   :: drot
-          integer(I32P) :: ij1,ij2,ii1,ii2
+          real(kind=dp),  dimension(nrc)   :: drot
+          integer(kind=int4) :: ij1,ij2,ii1,ii2
           ! Locals
           complex(16), dimension(2,2*np) :: ant
 !DIR$     ATTRIBUTES ALIGN : 64 :: ant
@@ -3531,16 +3535,16 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: ek
           complex(16), dimension(2,np,nmp) :: atr
           complex(16) :: a,b
-          integer(I32P) :: nj1,nj2,ni1,ni2,nmax,irc,n,k,kn,mmax, &
+          integer(kind=int4) :: nj1,nj2,ni1,ni2,nmax,irc,n,k,kn,mmax, &
                            l,ml,inn,imn,m
-          real(R64P) :: sik
+          real(kind=dp) :: sik
           common/tran/atr
            ! Exec code ...
           nj1=dsqrt(dble(ij1))
           nj2=dsqrt(dble(ij2))
           ni1=dsqrt(dble(ii1))
           ni2=dsqrt(dble(ii2))
-          ek(0)=1._R64P
+          ek(0)=1._dp
           nmax=max(nj2,ni2)
          do m=1,nmax
             ek(m)=ekt(m)
@@ -3557,8 +3561,8 @@ module  mod_tmatrix_mps
        do n=nj1,nj2
            n1=n*(n+1)
             do m=-n,n
-               amt(1,m)=0._R64P
-               amt(2,m)=0._R64P
+               amt(1,m)=0._dp
+               amt(2,m)=0._dp
            enddo
            do 10 k=-n,n
                kn=n1+k
@@ -3594,8 +3598,8 @@ module  mod_tmatrix_mps
          n1i=max(n1,ni1)
          do n=n1i,ni2
             imn=n*(n+1)+m
-            a=0.d0
-            b=0.d0
+            a=0.0_dp
+            b=0.0-dp
             do 20 l=n1j,nj2
                ml=l*(l+1)+m
                a=a+atr(1,n,ml)*ant(1,l)+ &
@@ -3620,8 +3624,8 @@ module  mod_tmatrix_mps
          inn=-inn
          n1=n*(n+1)
          do m=-n,n
-            amt(1,m)=0.d0
-            amt(2,m)=0.d0
+            amt(1,m)=0.0_dp
+            amt(2,m)=0.0_dp
          enddo
          sik=-inn
          do 30 k=-n,n
@@ -3648,12 +3652,13 @@ module  mod_tmatrix_mps
     end subroutine
     
     subroutine transT(nL,np,nLp,r0,nmax,uvmax,fint,atr0,btr0,ek,      &
-                     drot,as,bs,as1,bs1,ind,confg,iuvc,isw)
-          integer(I32P) :: nL,np,nLp
-          real(R64P), dimension(6,nLp) :: r0
-          integer(I32P), dimension(nLp) :: nmax,uvmax,ind 
-          real(R64P) :: fint
-          integer(I32P), parameter :: nmp = np*(np+2),  &
+                      drot,as,bs,as1,bs1,ind,confg,iuvc,isw)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: transT
+          integer(kind=int4) :: nL,np,nLp
+          real(kind=dp), dimension(6,nLp) :: r0
+          integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind 
+          real(kind=dp) :: fint
+          integer(kind=int4), parameter :: nmp = np*(np+2),  &
                                       ni0 = np*(np+1)*(2*np+1)/3+np*np, &
                                       nrc = 4*np*(np+1)*(np+2)/3+np,    &
                                       nij = nLp*(nLp-1)/2
@@ -3662,20 +3667,20 @@ module  mod_tmatrix_mps
           complex(16), dimension(np,nij)   :: ek
           complex(16), dimension(nLp,nmp)  :: as,bs,as1,bs1
           
-          real(R64P),  dimension(nrc,nij)  :: drot
-          real(R64P),  dimension(5,nij)    :: confg
-          integer(I32P) :: iuvc,isw
+          real(kind=dp),  dimension(nrc,nij)  :: drot
+          real(kind=dp),  dimension(5,nij)    :: confg
+          integer(kind=int4) :: iuvc,isw
           ! Locals
           complex(16), dimension(2,nmp) :: at1
-          integer(I32P) :: i,imn,j,ij,nlarge,itrc,nsmall,m,n1,n, &
+          integer(kind=int4) :: i,imn,j,ij,nlarge,itrc,nsmall,m,n1,n, &
                            v,ij1,ij2,ii1,ii2,iuv
-          real(R64P) :: x0,y0,z0,temp,sic,
+          real(kind=dp) :: x0,y0,z0,temp,sic,
           common/tran/atr
           ! Exec code ....
           do i=1,nL
              do imn=1,uvmax(i)
-                 as1(i,imn)=dcmplx(0._R64P,0._R64P)
-                 bs1(i,imn)=dcmplx(0._R64P,0._R64P)
+                 as1(i,imn)=dcmplx(0._dp,0._dp)
+                 bs1(i,imn)=dcmplx(0._dp,0._dp)
              enddo
           enddo
           do 11 i=1,nL-1
@@ -3699,7 +3704,7 @@ module  mod_tmatrix_mps
                      iuv=v*(v+1)+m
                      atr(1,n,iuv)=atr0(itrc,ij)
                      atr(2,n,iuv)=btr0(itrc,ij)
-                     if(x0.eq.0._R64P.and.y0.eq.0._R64P) then
+                     if(x0.eq.0._dp.and.y0.eq.0._dp) then
                         if(z0.lt.0._R64P) goto 20
                      endif
                      goto 21
