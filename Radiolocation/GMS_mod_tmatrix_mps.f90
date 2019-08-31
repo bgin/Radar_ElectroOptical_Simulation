@@ -3705,7 +3705,7 @@ module  mod_tmatrix_mps
                      atr(1,n,iuv)=atr0(itrc,ij)
                      atr(2,n,iuv)=btr0(itrc,ij)
                      if(x0.eq.0._dp.and.y0.eq.0._dp) then
-                        if(z0.lt.0._R64P) goto 20
+                        if(z0.lt.0._dp) goto 20
                      endif
                      goto 21
  20                  sic=dble((-1)**(n+v))
@@ -3723,8 +3723,8 @@ module  mod_tmatrix_mps
                do n=nmax(j)+1,nlarge
                   do m=-n,n
                      iuv=n*(n+1)+m
-                     at1(1,iuv)=dcmplx(0._R64P,0._R64P)
-                     at1(2,iuv)=dcmplx(0._R64P,0._R64P)
+                     at1(1,iuv)=dcmplx(0._dp,0._dp)
+                     at1(2,iuv)=dcmplx(0._dp,0._dp)
                   enddo
                enddo
             endif
@@ -3738,7 +3738,7 @@ module  mod_tmatrix_mps
             ij2=iuvc-1
             ii1=iuvc
             ii2=uvmax(i)
- 24         if(x0.eq.0._R64P.and.y0.eq.0._R64P) then
+ 24         if(x0.eq.0._dp.and.y0.eq.0._dp) then
                call trvT(at1,np,nmax(j),nmax(i),ij1,ij2,ii1,ii2)
             else
                call rtrT(at1,np,nLp,nmax(j),nmax(i),ek(1,ij),  &
@@ -3767,8 +3767,8 @@ module  mod_tmatrix_mps
                do n=nmax(i)+1,nlarge
                   do m=-n,n
                      iuv=n*(n+1)+m
-                     at1(1,iuv)=dcmplx(0._R64P,0._R64P)
-                     at1(2,iuv)=dcmplx(0._R64P,0._R64P)
+                     at1(1,iuv)=dcmplx(0._dp,0._dp)
+                     at1(2,iuv)=dcmplx(0._dp,0._dp)
                   enddo
                enddo
             endif
@@ -3782,7 +3782,7 @@ module  mod_tmatrix_mps
             ii2=iuvc-1
             ij1=iuvc
             ij2=uvmax(j)
- 27         if(x0.eq.0._R64P.and.y0.eq.0._R64P) then
+ 27         if(x0.eq.0._dp.and.y0.eq.0._dp) then
                call trvT(at1,np,nmax(i),nmax(j),ii1,ii2,ij1,ij2)
             else 
                call rtrT(at1,np,nLp,nmax(i),nmax(j),ek(1,ij),   &
@@ -3798,15 +3798,15 @@ module  mod_tmatrix_mps
     end  subroutine
                      
     subroutine trvT(anpt,np,nodrj,nodri,ij1,ij2,ii1,ii2)
-          implicit none
-          integer(I32P), parameter :: nmp = np*(np+2)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: trvT
+          integer(kind=int4), parameter :: nmp = np*(np+2)
           complex(16), dimension(2,nmp) :: anpt
-          integer(I32P) :: np,nodrj,nodri,ij1,ij2,ii1,ii2
+          integer(kind=int4) :: np,nodrj,nodri,ij1,ij2,ii1,ii2
           ! Locals
           complex(16), dimension(2,2*np) :: ant
           complex(16) :: a,b
           complex(16), dimension(2,np,nmp) :: atr
-          integer(I32P) :: nji,nj2,ni1,ni2,mmax,m,n1,nj1,imn,  &
+          integer(kind=int4) :: nji,nj2,ni1,ni2,mmax,m,n1,nj1,imn,  &
                            ip,n1i,l,ml,n
           common/tran/atr
           ! Exec code ...
@@ -3829,8 +3829,8 @@ module  mod_tmatrix_mps
          do 20 n=n1i,ni2
             imn=n*(n+1)+m
             if(imn.lt.ii1.or.imn.gt.ii2) goto 20
-            a=0._R64P
-            b=0._R64P
+            a=0._dp
+            b=0._dp
             do 21 l=n1j,nodrj
                ml=l*(l+1)+m
                if(ml.lt.ij1.or.ml.gt.ij2) goto 21               
@@ -3855,15 +3855,15 @@ module  mod_tmatrix_mps
 !c  Physics 139, 137-165 (1998)]
 !c 
       subroutine xuwigd(j1,j2,np,m1,m2,c,cf,n,kmax)
-          implicit none
-          integer(I32P) :: j1,j2,np,m1,m2,n,kmax
-          real(R64P), dimension(n) :: c,cf
-          real(R64P), dimension(0:4*(np+1)) :: fnr
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xuwigd
+          integer(kind=int4) :: j1,j2,np,m1,m2,n,kmax
+          real(kind=dp), dimension(n) :: c,cf
+          real(kind=dp), dimension(0:4*(np+1)) :: fnr
           ! Locals
-          integer(I32P) :: i,m3,j,j3f,j3,k
-          real(R64P) :: s,t,cr
+          integer(kind=int4) :: i,m3,j,j3f,j3,k
+          real(kind=dp) :: s,t,cr
           common/fnr/fnr(0:4*(np+1))
-          data small/1.d-12/
+          data small/1.0E-12_dp/
          ! code ....
          a(j1,j2,j3,m1,m2)=fnr(j3+j1-j2)*fnr(j1+j2+1+j3)* &
                            fnr(j3+m1+m2)*fnr(j3-j1+j2)*   &
@@ -3872,7 +3872,7 @@ module  mod_tmatrix_mps
                            (j1*j1+j1-j2*j2-j2))-        &
                            dble((m1-m2)*(j3*j3+j3)))
         do i=1,n
-           c(i)=0.d0
+           c(i)=0.0_dp
         enddo
         if(iabs(m1).gt.j1.or.iabs(m2).gt.j2) return
         kmax=j1+j2-max(iabs(j1-j2),iabs(m1+m2))+1
@@ -3885,7 +3885,7 @@ module  mod_tmatrix_mps
         s=s+lnfacd(dble(j1+j2+m1+m2))-lnfacd(dble(j2-m2))
         s=s-lnfacd(dble(j2+m2))
         j=j1-j2+m1+m2
-        c(1)=((-1)**j)*dexp(.5d0*s)
+        c(1)=((-1)**j)*dexp(0.5_dp*s)
         if(kmax.eq.1) return
         c(2)=-b(j1,j2,j3,m1,m2)*c(1)/   &
               (dble(j3+1)*a(j1,j2,j3,m1,m2))
@@ -3900,7 +3900,7 @@ module  mod_tmatrix_mps
 	        s=s+lnfacd(dble(j1+m1))+lnfacd(dble(j2-m2))
 	        s=s+lnfacd(dble(j2+m2))-lnfacd(dble(j1+j2+j3+1))
 	        s=s+lnfacd(dble(j3-m3))+lnfacd(dble(j3+m3))
-	        t=0.5_R64P*s
+	        t=0.5_dp*s
 	        if(j3.eq.j1-j2.or.j3.eq.m3) k=j2+m2
 	        if(j3.eq.j2-j1.or.j3.eq.-m3) k=j1-m1
 	        s=lnfacd(dble(j1+j2-j3-k))+lnfacd(dble(j1-m1-k))
@@ -3933,7 +3933,7 @@ module  mod_tmatrix_mps
               b(j1,j2,j3,m1,m2)*c(i-1)
          c(i)=-c(i)/(dble(j3+1)*a(j1,j2,j3,m1,m2))
          cr=dabs(c(i)-cf(i))
-         if(dabs(c(i)).gt.1.d0) cr=cr/dabs(c(i))
+         if(dabs(c(i)).gt.1.0_dp) cr=cr/dabs(c(i))
          if(cr.lt.small) then
             do j=i,kmax-2
                c(j)=cf(j)
@@ -3952,24 +3952,24 @@ module  mod_tmatrix_mps
 !C  please see the original code by Mishchenko.
 
     subroutine tm0d(LAM,NP,EPS,AXI,RAT,MRR,MRI,DDELT,NDGS,NMAX)
-          implicit none
-          real(R64P) :: LAM
-          integer(I32P) :: NP
-          real(R64P)    :: EPS,AXI,RAT,MRR,MRI,DDELT
-          integer(I32P) :: NDGS,NMAX
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: tm0d
+          real(kind=dp) :: LAM
+          integer(kind=int4) :: NP
+          real(kind=dp)    :: EPS,AXI,RAT,MRR,MRI,DDELT
+          integer(kind=int4) :: NDGS,NMAX
           ! Locals
-          real(R64P), dimension(NPNG2) :: X,W,S,SS,R,DR,DDR,DRR,DRI
-          real(R64P), dimension(NPN1)  :: AN
-          real(R64P), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPNG2) :: X,W,S,SS,R,DR,DDR,DRR,DRI
+          real(kind=dp), dimension(NPN1)  :: AN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
 !DIR$     ATTRIBUTES ALIGN : 64 :: X,W,S,SS,R,DR,DDR,DRR,DRI
 !DIR$     ATTRIBUTES ALIGN : 64 :: AN,ANN
-          real(R64P), dimension(NPN2,NPN2) :: TR1,TI1
-          real(R64P), dimension(NPN6,NPN4,NPN4) :: RT11,RT12,RT21,RT22, &
+          real(kind=dp), dimension(NPN2,NPN2) :: TR1,TI1
+          real(kind=dp), dimension(NPN6,NPN4,NPN4) :: RT11,RT12,RT21,RT22, &
                                                    IT11,IT12,IT21,IT22
-          integer(I32P) :: ICHOICE,NCHECK, IXXX,INM1,NMA,MMAX,NGAUSS,  &
+          integer(kind=int4) :: ICHOICE,NCHECK, IXXX,INM1,NMA,MMAX,NGAUSS,  &
                            N,N1,NNNGGG,NGGG,NGAUS,NNM,N2,NN2,NN1,M,NM, &
                            N11,N22
-          real(R64P) :: P,A,XEV,QEXT1,QSCA1,QEXT,QSCA,TR1NN,TI1NN, TR1NN1, &
+          real(kind=dp) :: P,A,XEV,QEXT1,QSCA1,QEXT,QSCA,TR1NN,TI1NN, TR1NN1, &
                         TI1NN1,DN1,DSCA,DEXT,PPI,PIR,PII,ZZ1,ZZ2,ZZ3,ZZ4,ZZ5, &
                         ZZ6,ZZ7,ZZ8,QSC,QXT,WALB
  
@@ -3979,24 +3979,24 @@ module  mod_tmatrix_mps
  
 !C  OPEN FILES *******************************************************
  
-      P=DACOS(-1._R64P)
+      P=DACOS(-1._dp)
       ICHOICE=2
       NCHECK=0
       IF (NP.EQ.-1.OR.NP.EQ.-2) NCHECK=1
       IF (NP.GT.0.AND.(-1)**NP.EQ.1) NCHECK=1
       WRITE (6,5454) ICHOICE,NCHECK
  5454 FORMAT ('ICHOICE=',I1,'  NCHECK=',I1)
-      IF (DABS(RAT-1D0).GT.1D-8.AND.NP.EQ.-1) CALL SAREA (EPS,RAT)
-      IF (DABS(RAT-1D0).GT.1D-8.AND.NP.GE.0) CALL SURFCH(NP,EPS,RAT)
-      IF (DABS(RAT-1D0).GT.1D-8.AND.NP.EQ.-2) CALL SAREAC (EPS,RAT)
+      IF (DABS(RAT-1.0_dp).GT.1.0E-8_dp.AND.NP.EQ.-1) CALL SAREA (EPS,RAT)
+      IF (DABS(RAT-1.0_dp).GT.1.0E-8_dp.AND.NP.GE.0) CALL SURFCH(NP,EPS,RAT)
+      IF (DABS(RAT-1.0_dp).GT.1.0E-8_dp.AND.NP.EQ.-2) CALL SAREAC (EPS,RAT)
       IF (NP.EQ.-3) CALL DROP (RAT)
 !C     PRINT 8000, RAT
  8000 FORMAT ('RAT=',F8.6)
-      IF(NP.EQ.-1.AND.EPS.GE.1._R64P) PRINT 7000,EPS
-      IF(NP.EQ.-1.AND.EPS.LT.1._R64P) PRINT 7001,EPS
+      IF(NP.EQ.-1.AND.EPS.GE.1._dp) PRINT 7000,EPS
+      IF(NP.EQ.-1.AND.EPS.LT.1._dp) PRINT 7001,EPS
       IF(NP.GE.0) PRINT 7100,NP,EPS
-      IF(NP.EQ.-2.AND.EPS.GE.1._R64P) PRINT 7150,EPS
-      IF(NP.EQ.-2.AND.EPS.LT.1._R64P) PRINT 7151,EPS
+      IF(NP.EQ.-2.AND.EPS.GE.1._dp) PRINT 7150,EPS
+      IF(NP.EQ.-2.AND.EPS.LT.1._dp) PRINT 7151,EPS
       IF(NP.EQ.-3) PRINT 7160
       PRINT 7400, LAM,MRR,MRI
       PRINT 7200,DDELT
@@ -4009,21 +4009,21 @@ module  mod_tmatrix_mps
  7160 FORMAT('GENERALIZED CHEBYSHEV PARTICLES')
  7200 FORMAT ('ACCURACY OF COMPUTATIONS DDELT = ',D8.2)
  7400 FORMAT('LAM=',F10.6,3X,'MRR=',D10.4,3X,'MRI=',D10.4)
-      DDELT=0.1_R64P*DDELT
-      IF (DABS(RAT-1._R64P).LE.0.000001_R64P) PRINT 8003, AXI
-      IF (DABS(RAT-1._R64P).GT.0.000001_R64P) PRINT 8004, AXI
+      DDELT=0.1_dp*DDELT
+      IF (DABS(RAT-1._dp).LE.0.000001_dp) PRINT 8003, AXI
+      IF (DABS(RAT-1._dp).GT.0.000001_dp) PRINT 8004, AXI
  8003 FORMAT('EQUAL-VOLUME-SPHERE RADIUS=',F8.4)
  8004 FORMAT('EQUAL-SURFACE-AREA-SPHERE RADIUS=',F8.4)
       A=RAT*AXI
-      XEV=2D0*P*A/LAM
-      IXXX=XEV+4.05_R64P*XEV**0.33333333333333333_R64P
+      XEV=2.0_dp*P*A/LAM
+      IXXX=XEV+4.05_dp*XEV**0.33333333333333333_dp
       INM1=MAX0(4,IXXX)
       IF (INM1.GE.NPN1) PRINT 7333, NPN1
       IF (INM1.GE.NPN1) STOP
  7333 FORMAT('CONVERGENCE IS NOT OBTAINED FOR NPN1=',I3,      &
            '.  EXECUTION TERMINATED')
-      QEXT1=0D0
-      QSCA1=0D0
+      QEXT1=0.0_dp
+      QSCA1=0.0_dp
       DO 50 NMA=INM1,NPN1
          NMAX=NMA
          MMAX=1
@@ -4038,8 +4038,8 @@ module  mod_tmatrix_mps
                DR,DDR,DRR,DRI,NMAX)
          CALL TMATR0 (NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,      &
                   DDR,DRR,DRI,NMAX,NCHECK)
-         QEXT=0._R64P
-         QSCA=0._R64P
+         QEXT=0._dp
+         QSCA=0._dp
          DO 4 N=1,NMAX
             N1=N+NMAX
             TR1NN=TR1(N,N)
@@ -4074,8 +4074,8 @@ module  mod_tmatrix_mps
                  DR,DDR,DRR,DRI,NMAX)
          CALL TMATR0 (NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,      &
                     DDR,DRR,DRI,NMAX,NCHECK)
-         QEXT=0D0
-         QSCA=0D0
+         QEXT=0.0_dp
+         QSCA=0.0_dp
          DO 104 N=1,NMAX
             N1=N+NMAX
             TR1NN=TR1(N,N)
@@ -4096,8 +4096,8 @@ module  mod_tmatrix_mps
          IF (NGAUS.EQ.NPNG1) PRINT 7336
   150 CONTINUE
   155 CONTINUE
-      QSCA=0._R64P
-      QEXT=0._R64P
+      QSCA=0._dp
+      QEXT=0._dp
       NNM=NMAX*2
       DO 204 N=1,NNM
          QEXT=QEXT+TR1(N,N)
@@ -4131,7 +4131,7 @@ module  mod_tmatrix_mps
                     DDR,DRR,DRI,NMAX,NCHECK)
          NM=NMAX-M+1
          M1=M+1
-         QSC=0._R64P
+         QSC=0._dp
          DO 214 N2=1,NM
             NN2=N2+M-1
             N22=N2+NM
@@ -4155,12 +4155,12 @@ module  mod_tmatrix_mps
                ZZ8=TI1(N11,N22)
                IT22(M1,NN1,NN2)=ZZ8
                QSC=QSC+(ZZ1*ZZ1+ZZ2*ZZ2+ZZ3*ZZ3+ZZ4*ZZ4+   &
-                      ZZ5*ZZ5+ZZ6*ZZ6+ZZ7*ZZ7+ZZ8*ZZ8)*2._R64P
+                      ZZ5*ZZ5+ZZ6*ZZ6+ZZ7*ZZ7+ZZ8*ZZ8)*2._dp
   214    CONTINUE
          NNM=2*NM
-         QXT=0._R64P
+         QXT=0._dp
          DO 215 N=1,NNM
-            QXT=QXT+TR1(N,N)*2._R64P
+            QXT=QXT+TR1(N,N)*2._dp
   215    CONTINUE
          QSCA=QSCA+QSC
          QEXT=QEXT+QXT
@@ -4189,26 +4189,26 @@ module  mod_tmatrix_mps
 !C     0.LE.X.LE.1
 
     SUBROUTINE VIGAMPL (X, NMAX, M, DV1, DV2)
-          implicit none
-          real(R64P) :: X
-          integer(I32P) :: NMAX,M
-          real(R64P), dimension(NPN6) ::  DV1, DV2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VIGAMPL
+          real(kind=dp) :: X
+          integer(kind=int4) :: NMAX,M
+          real(kind=dp), dimension(NPN6) ::  DV1, DV2
           ! Locals
-          integer(I32P) :: N,I,I2
-          real(R64P)    :: DX,A,QS,QS1,DSI,D1,D2,QN,QN1,QN2,  &
+          integer(kind=int4) :: N,I,I2
+          real(kind=dp)    :: DX,A,QS,QS1,DSI,D1,D2,QN,QN1,QN2,  &
                            D3,DER,D3,QNM,QNM1,QMM,DN
          DO 1 N=1,NMAX
-             DV1(N)=0._R64P
-             DV2(N)=0._R64P
+             DV1(N)=0._dp
+             DV2(N)=0._dp
        1 CONTINUE
          DX=DABS(X)
-         IF (DABS(1._R64P-DX).LE.0.0000000001_R64P) GO TO 100
-         A=1._R64P
-         QS=DSQRT(1._R64P-X*X)
-         QS1=1._R64P/QS
+         IF (DABS(1._dp-DX).LE.0.0000000001_dp) GO TO 100
+         A=1._dp
+         QS=DSQRT(1._dp-X*X)
+         QS1=1._dp/QS
          DSI=QS1
          IF (M.NE.0) GO TO 20
-         D1=1D0
+         D1=1.0-dp
          D2=X  
          DO 5 N=1,NMAX  
              QN=DFLOAT(N)
@@ -4227,7 +4227,7 @@ module  mod_tmatrix_mps
          I2=I*2
          A=A*DSQRT(DFLOAT(I2-1)/DFLOAT(I2))*QS
    25 CONTINUE
-      D1=0._R64P
+      D1=0._dp
       D2=A 
       DO 30 N=M,NMAX
          QN=DFLOAT(N)
@@ -4246,28 +4246,28 @@ module  mod_tmatrix_mps
   100 IF (M.NE.1) RETURN
       DO 110 N=1,NMAX
          DN=DFLOAT(N*(N+1))
-         DN=0.5_R64P*DSQRT(DN)
-         IF (X.LT.0._R64P) DN=DN*(-1)**(N+1)
+         DN=0.5_dp*DSQRT(DN)
+         IF (X.LT.0._dp) DN=DN*(-1)**(N+1)
          DV1(N)=DN
-         IF (X.LT.0._R64P) DN=-DN
+         IF (X.LT.0._dp) DN=-DN
          DV2(N)=DN
   110 CONTINUE
     
     end subroutine
     
     SUBROUTINE CONST (NGAUSS,NMAX,MMAX,P,X,W,AN,ANN,S,SS,NP,EPS)
-          implicit none
-          integer(I32P) :: NGAUSS,NMAX,MMAX,NP
-          real(R64P) :: P,EPS
-          real(R64P), dimension(NPNG2) ::  X,W,S,SS
-          real(R64P), dimension(NPNG1) ::  X1,W1,X2,W2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CONST
+          integer(kind=int4) :: NGAUSS,NMAX,MMAX,NP
+          real(kind=dp) :: P,EPS
+          real(kind=dp), dimension(NPNG2) ::  X,W,S,SS
+          real(kind=dp), dimension(NPNG1) ::  X1,W1,X2,W2
 !DIR$     ATTRIBUTES ALIGN : 64 :: X1,W1,X2,W2
-          real(R64P), dimension(NPN1) :: AN
-          real(R64P), dimension(NPN1,NPN1) :: ANN
-          real(R64P), dimension(NPN1) :: DD
+          real(kind=dp), dimension(NPN1) :: AN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPN1) :: DD
 !DIR$     ATTRIBUTES ALIGN : 64 :: DD          
-          integer(I32P) :: N,NN,N1,NG,NG1,NG2,I
-          real(R64P)    :: D,DDD,DD,XX,Y
+          integer(kind=int4) :: N,NN,N1,NG,NG1,NG2,I
+          real(kind=dp)    :: D,DDD,DD,XX,Y
           ! Exec code ...
           DO 10 N=1,NMAX
                 NN=N*(N+1)
@@ -4275,7 +4275,7 @@ module  mod_tmatrix_mps
                 D=DSQRT(DFLOAT(2*N+1)/DFLOAT(NN))
                 DD(N)=D
                 DO 10 N1=1,N
-                     DDD=D*DD(N1)*0.5_R64P
+                     DDD=D*DD(N1)*0.5_dp
                      ANN(N,N1)=DDD
                      ANN(N1,N)=DDD
         10 CONTINUE
@@ -4283,18 +4283,19 @@ module  mod_tmatrix_mps
            IF (NP.EQ.-2) GO  TO 11
            CALL GAUSS(NG,0,0,X,W)
            GO TO 19
-        11 NG1=DFLOAT(NGAUSS)/2._R64P
+        11 NG1=DFLOAT(NGAUSS)/2._dp
            NG2=NGAUSS-NG1
            XX=-DCOS(DATAN(EPS))
            CALL GAUSS(NG1,0,0,X1,W1)
            CALL GAUSS(NG2,0,0,X2,W2)
+!DIR$      SIMD
            DO 12 I=1,NG1
-                 W(I)=0.5_R64P*(XX+1D0)*W1(I)
-                 X(I)=0.5_R64P*(XX+1D0)*X1(I)+0.5_R64P*(XX-1._R64P)
+                 W(I)=0.5_dp*(XX+1.0_dp)*W1(I)
+                 X(I)=0.5_dp*(XX+1.0_dp)*X1(I)+0.5_dp*(XX-1._dp)
         12 CONTINUE
          DO 14 I=1,NG2
-              W(I+NG1)=-0.5_R64P*XX*W2(I)
-              X(I+NG1)=-0.5_R64P*XX*X2(I)+0.5_R64P*XX
+              W(I+NG1)=-0.5_dp*XX*W2(I)
+              X(I+NG1)=-0.5_dp*XX*X2(I)+0.5_dp*XX
        14 CONTINUE
        DO 16 I=1,NGAUSS
              W(NG-I+1)=W(I)
@@ -4302,7 +4303,7 @@ module  mod_tmatrix_mps
       16 CONTINUE
       19 DO 20 I=1,NGAUSS
                Y=X(I)
-               Y=1D0/(1D0-Y*Y)
+               Y=1D0/(1.0_dp-Y*Y)
                SS(I)=Y
                SS(NG-I+1)=Y
                Y=DSQRT(Y)
@@ -4314,39 +4315,39 @@ module  mod_tmatrix_mps
     
     SUBROUTINE VARY (LAM,MRR,MRI,A,EPS,NP,NGAUSS,X,P,PPI,PIR,PII,    &
                       R,DR,DDR,DRR,DRI,NMAX)
-          implicit none
-          real(R64P) :: LAM,MRR,MRI,A,EPS
-          integer(I32P) :: NP,NGAUSS
-          real(R64P), dimension(NPNG2) :: X
-          real(R64P) :: P,PPI,PIR,PII
-          real(R64P), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
-          integer(I32P) :: NMAX
+!DIR$ ATTRIBUTES CODE-ALIGN : 32 :: VARY
+          real(kind=dp) :: LAM,MRR,MRI,A,EPS
+          integer(kind=int4) :: NP,NGAUSS
+          real(kind=dp), dimension(NPNG2) :: X
+          real(kind=dp) :: P,PPI,PIR,PII
+          real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
+          integer(kind=int4) :: NMAX
           ! Locals
-          real(R64P), dimension(NPNG2) :: Z,ZR,ZI
+          real(kind=dp), dimension(NPNG2) :: Z,ZR,ZI
 !DIR$     ATTRIBUTES ALIGN : 64 :: Z,ZR,ZI
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DJR,DJI,DY
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DJR,DJI,DY
 !!DIR$     ATTRIBUTES ALIGN : 64 :: J,Y,JR,JI,DJ,DJR,DJI,DY      
-          integer(I32P) :: NG,I,NNMAX1, NNMAX2
-          real(R64P) :: PI,V,PRR,PRI,TA,VV,V,V1,V2,TB,TA
+          integer(kind=int4) :: NG,I,NNMAX1, NNMAX2
+          real(kind=dp) :: PI,V,PRR,PRI,TA,VV,V,V1,V2,TB,TA
           COMMON /CBESS/ J,Y,JR,JI,DJ,DY,DJR,DJI
           NG=NGAUSS*2
           IF (NP.GT.0) CALL RSP2(X,NG,A,EPS,NP,R,DR)
           IF (NP.EQ.-1) CALL RSP1(X,NG,NGAUSS,A,EPS,NP,R,DR)
           IF (NP.EQ.-2) CALL RSP3(X,NG,NGAUSS,A,EPS,R,DR)
           IF (NP.EQ.-3) CALL RSP4(X,NG,A,R,DR)
-          PI=P*2._R64P/LAM
+          PI=P*2._dp/LAM
           PPI=PI*PI
           PIR=PPI*MRR
           PII=PPI*MRI
-          V=1._R64P/(MRR*MRR+MRI*MRI)
+          V=1._dp/(MRR*MRR+MRI*MRI)
           PRR=MRR*V
           PRI=-MRI*V
-          TA=0._R64P
+          TA=0._dp
           DO 10 I=1,NG
                 VV=DSQRT(R(I))
                 V=VV*PI
                 TA=MAX(TA,V)
-                VV=1._R64P/V
+                VV=1._dp/V
                 DDR(I)=VV
                 DRR(I)=PRR*VV
                 DRI(I)=PRI*VV
@@ -4361,34 +4362,34 @@ module  mod_tmatrix_mps
    9000 FORMAT(' NMAX = ',I2,', i.e., greater than ',I3)
       TB=TA*DSQRT(MRR*MRR+MRI*MRI)
       TB=DMAX1(TB,DFLOAT(NMAX))
-      NNMAX1=1.2_R64P*DSQRT(DMAX1(TA,DFLOAT(NMAX)))+3._R64P
-      NNMAX2=(TB+4._R64P*(TB**0.33333_R64P)+1.2_R64P*DSQRT(TB))
+      NNMAX1=1.2_dp*DSQRT(DMAX1(TA,DFLOAT(NMAX)))+3._dp
+      NNMAX2=(TB+4._dp*(TB**0.33333_dp)+1.2_dp*DSQRT(TB))
       NNMAX2=NNMAX2-NMAX+5
       CALL BESS(Z,ZR,ZI,NG,NMAX,NNMAX1,NNMAX2)
     
     end subroutine
                       
     SUBROUTINE RSP1 (X,NG,NGAUSS,REV,EPS,NP,R,DR)
-          implicit none
-          real(R64P), dimension(NG)  :: X
-          integer(I32P) :: NG,NGAUSS
-          real(R64P) :: REV,EPS
-          integer(I32P) :: NP
-          real(R64P), dimension(NG) :: R,DR
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RSP1
+          real(kind=dp), dimension(NG)  :: X
+          integer(kind=int4) :: NG,NGAUSS
+          real(kind=dp) :: REV,EPS
+          integer(kind=int4) :: NP
+          real(kind=dp), dimension(NG) :: R,DR
           ! Locals
-          real(R64P) :: A,AA,EE,EE1,C,CC,SS,S,RR
-          integer(I32P) :: I
+          real(kind=dp) :: A,AA,EE,EE1,C,CC,SS,S,RR
+          integer(kind=int4) :: I
           ! Exec code ...
-          A=REV*EPS**(0.3333333333333333333333_R64P)
+          A=REV*EPS**(0.3333333333333333333333_dp)
           AA=A*A
           EE=EPS*EPS
-          EE1=EE-1._R64P
+          EE1=EE-1._dp
           DO 50 I=1,NGAUSS
                 C=X(I)
                 CC=C*C
-                SS=1D0-CC
+                SS=1.0_dp-CC
                 S=DSQRT(SS)
-                RR=1D0/(SS+EE*CC)
+                RR=1.0_dp/(SS+EE*CC)
                 R(I)=AA*RR
                 R(NG-I+1)=R(I)
                 DR(I)=RR*C*S*EE1
@@ -4398,29 +4399,29 @@ module  mod_tmatrix_mps
     end subroutine
     
     SUBROUTINE RSP2 (X,NG,REV,EPS,N,R,DR)
-          implicit none
-          real(R64P), dimension(NG) :: X
-          integer(I32P) :: NG
-          real(R64P) :: REV,EPS
-          integer(I32P) :: N
-          real(R64P), dimension(NG) :: R,DR
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RSP2
+          real(kind=dp), dimension(NG) :: X
+          integer(kind=int4) :: NG
+          real(kind=dp) :: REV,EPS
+          integer(kind=int4) :: N
+          real(kind=dp), dimension(NG) :: R,DR
           ! Locals
-          real(R64P) :: DNP,DN,DN4,EP,A,R0,XI,RI
-          integer(I32P) :: I
+          real(kind=dp) :: DNP,DN,DN4,EP,A,R0,XI,RI
+          integer(kind=int4) :: I
           ! Exec code ....          
           DNP=DFLOAT(N)
           DN=DNP*DNP
-          DN4=DN*4._R64P
+          DN4=DN*4._dp
           EP=EPS*EPS
-          A=1._R64P+1.5_R64P*EP*(DN4-2._R64P)/(DN4-1._R64P)
-          I=(DNP+0.1_R64P)*0.5_R64P
+          A=1._dp+1.5_dp*EP*(DN4-2._dp)/(DN4-1._dp)
+          I=(DNP+0.1_dp)*0.5_dp
           I=2*I
-          IF (I.EQ.N) A=A-3._R64P*EPS*(1._R64P+0.25_R64P*EP)/     &
-                  (DN-1._R64P)-0.25_R64P*EP*EPS/(9._R64P*DN-1._R64P)
-          R0=REV*A**(-0.3333333333333333333333_R64P)
+          IF (I.EQ.N) A=A-3._dp*EPS*(1._dp+0.25_dp*EP)/     &
+                  (DN-1._dp)-0.25_dp*EP*EPS/(9._dp*DN-1._dp)
+          R0=REV*A**(-0.3333333333333333333333_dp)
           DO 50 I=1,NG
                 XI=DACOS(X(I))*DNP
-                RI=R0*(1._R64P+EPS*DCOS(XI))
+                RI=R0*(1._dp+EPS*DCOS(XI))
                 R(I)=RI*RI
                 DR(I)=-R0*EPS*DNP*DSIN(XI)/RI
 !c        WRITE (6,*) I,R(I),DR(I)
@@ -4429,20 +4430,20 @@ module  mod_tmatrix_mps
     end subroutine
     
       SUBROUTINE RSP3 (X,NG,NGAUSS,REV,EPS,R,DR)
-          implicit none
-          real(R64P), dimension(NG) :: X
-          integer(I32P) :: NG,NGAUSS
-          real(R64P) :: REV,EPS
-          real(R64P), dimension(NG) :: R,DR
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RSP3
+          real(kind=dp), dimension(NG) :: X
+          integer(kind=int4) :: NG,NGAUSS
+          real(kind=dp) :: REV,EPS
+          real(kind=dp), dimension(NG) :: R,DR
           ! Locals
-          real(R64P) :: H,A,CO,SI,RAD,RTHET
-          integer(I32P) :: I
+          real(kind=dp) :: H,A,CO,SI,RAD,RTHET
+          integer(kind=int4) :: I
           ! Exec code ....
-          H=REV*( (2._R64P/(3._R64P*EPS*EPS))**(0.3333333333333333333333_R64P) )
+          H=REV*( (2._dp/(3._dp*EPS*EPS))**(0.3333333333333333333333_dp) )
           A=H*EPS
           DO 50 I=1,NGAUSS
                 CO=-X(I)
-                SI=DSQRT(1D0-CO*CO)
+                SI=DSQRT(1.0_dp-CO*CO)
                 IF (SI/CO.GT.A/H) GO TO 20
                 RAD=H/CO
                 RTHET=H*SI/(CO*CO)
@@ -4470,23 +4471,23 @@ module  mod_tmatrix_mps
 !C**********************************************************************
 
     SUBROUTINE RSP4 (X,NG,REV,R,DR)
-          implicit none
-          real(R64P), dimension(NG) :: X
-          integer(I32P) :: NG
-          real(R64P) :: REV
-          real(R64P), dimension(NG) :: DR
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RSP4
+          real(kind=dp), dimension(NG) :: X
+          integer(kind=int4) :: NG
+          real(kind=dp) :: REV
+          real(kind=dp), dimension(NG) :: DR
           ! Locals
-          integer(I32P), parameter :: NC = 10
-          real(R64P), dimension(0:NC) :: C
-          real(R64P) :: R0,R0V,XI,RI,DRI,XIN
-          integer(I32P) :: I,N
+          integer(kind=int4), parameter :: NC = 10
+          real(kind=dp), dimension(0:NC) :: C
+          real(kind=dp) :: R0,R0V,XI,RI,DRI,XIN
+          integer(kind=int4) :: I,N
       
           COMMON /CDROP/ C,R0V
           R0=REV*R0V
           DO I=1,NG
              XI=DACOS(X(I))
-             RI=1D0+C(0)
-             DRI=0._R64P
+             RI=1.0_dp+C(0)
+             DRI=0._dp
              DO N=1,NC
                 XIN=XI*N
                 RI=RI+C(N)*DCOS(XIN)
@@ -4502,15 +4503,15 @@ module  mod_tmatrix_mps
     end subroutine
     
     SUBROUTINE BESS (X,XR,XI,NG,NMAX,NNMAX1,NNMAX2)
-          implicit none
-          real(R64P), dimension(NG) :: X,XR,XI
-          integer(I32P) :: NG,NMAX,NNMAX1,NNMAX2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BESS
+          real(kind=dp), dimension(NG) :: X,XR,XI
+          integer(kind=int4) :: NG,NMAX,NNMAX1,NNMAX2
           ! lOCALS
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,DJI
-          real(R64P), dimension(NPN1) :: AJ,AY,AJR,AJI,ADJ,ADY,ADJR,ADJI
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,DJI
+          real(kind=dp), dimension(NPN1) :: AJ,AY,AJR,AJI,ADJ,ADY,ADJR,ADJI
 !DIR$     ATTRIBUTES ALIGN : 64 ::  AJ,AY,AJR,AJI,ADJ,ADY,ADJR,ADJI  
-          integer(I32P) :: I,N
-          real(R64P) :: XX,YR,YI
+          integer(kind=int4) :: I,N
+          real(kind=dp) :: XX,YR,YI
           COMMON /CBESS/ J,Y,JR,JI,DJ,DY,DJR,DJI
  
           DO 10 I=1,NG
@@ -4534,25 +4535,25 @@ module  mod_tmatrix_mps
     end subroutine
     
     SUBROUTINE RJB(X,Y,U,NMAX,NNMAX)
-          implicit none
-          real(R64P)  ::  X
-          real(R64P), dimension(NMAX) :: Y,U
-          integer(I32P) :: NMAX,NNMAX
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RJB
+          real(kind=dp)  ::  X
+          real(kind=dp), dimension(NMAX) :: Y,U
+          integer(kind=int4) :: NMAX,NNMAX
           ! Locals
-          real(R64P), dimension(800) :: Z
+          real(kind=dp), dimension(800) :: Z
 !DIR$     ATTRIBUTES ALIGN : 64 :: Z          
-          integer(I32P) :: L,LI,L1,I1
-          real(R64P) :: XX,Z0,Y0,Y1,YI1
+          integer(kind=int4) :: L,LI,L1,I1
+          real(kind=dp) :: XX,Z0,Y0,Y1,YI1
           ! Exec code ....
           L=NMAX+NNMAX
-          XX=1._R64P/X
-          Z(L)=1._R64P/(DFLOAT(2*L+1)*XX)
+          XX=1._dp/X
+          Z(L)=1._dp/(DFLOAT(2*L+1)*XX)
           L1=L-1
           DO 5 I=1,L1
                I1=L-I
-               Z(I1)=1._R64P/(DFLOAT(2*I1+1)*XX-Z(I1+1))
+               Z(I1)=1._dp/(DFLOAT(2*I1+1)*XX-Z(I1+1))
         5 CONTINUE
-        Z0=1._R64P/(XX-Z(1))
+        Z0=1._dp/(XX-Z(1))
         Y0=Z0*DCOS(X)*XX
         Y1=Y0*Z(1)
         U(1)=Y0-Y1*XX
@@ -4567,21 +4568,21 @@ module  mod_tmatrix_mps
     end subroutine
     
     SUBROUTINE RYB(X,Y,V,NMAX)
-          implicit none
-          real(R64P) :: X
-          real(R64P), dimension(NMAX) :: Y,V
-          integer(I32P) :: NMAX
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RYB
+          real(kind=dp) :: X
+          real(kind=dp), dimension(NMAX) :: Y,V
+          integer(kind=int4) :: NMAX
           ! Locals
-          integer(I32P) :: I,NMAX1
-          real(R64P) :: C,S,X1,X2,X3,Y1
+          integer(kind=int4) :: I,NMAX1
+          real(kind=dp) :: C,S,X1,X2,X3,Y1
           C=DCOS(X)
           S=DSIN(X)
-          X1=1._R64P/X
+          X1=1._dp/X
           X2=X1*X1
           X3=X2*X1
           Y1=-C*X2-S*X1
           Y(1)=Y1
-          Y(2)=(-3._R64P*X3+X1)*C-3._R64P*X2*S
+          Y(2)=(-3._dp*X3+X1)*C-3._dp*X2*S
           NMAX1=NMAX-1
           DO 5 I=2,NMAX1
         5      Y(I+1)=DFLOAT(2*I+1)*X1*Y(I)-Y(I-1)
@@ -4601,23 +4602,23 @@ module  mod_tmatrix_mps
 !C**********************************************************************
  
     SUBROUTINE CJB (XR,XI,YR,YI,UR,UI,NMAX,NNMAX)
-          implicit none
-          real(R64P) :: XR,XI
-          real(R64P), dimension(NMAX) :: YR,YI,UR,UI
-          integer(I32P) :: NMAX,NNMAX
-          real(R64P), dimension(NPN1) :: CYR,CYI,CUR,CUI
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CJB
+          real(kind=dp) :: XR,XI
+          real(kind=dp), dimension(NMAX) :: YR,YI,UR,UI
+          integer(kind=int4) :: NMAX,NNMAX
+          real(kind=dp), dimension(NPN1) :: CYR,CYI,CUR,CUI
 !DIR$     ATTRIBUTES ALIGN : 64 :: CYR,CYI,CUR,CUI
-          real(R64P), dimension(1200) :: CZR,CZI
+          real(kind=dp), dimension(1200) :: CZR,CZI
 !DIR$     ATTRIBUTES ALIGN : 64 :: CZR,CZI
-          integer(I32P) :: L,L1,I,I1
-          real(R64P) :: XRXI,CXXR,CXXI,QF,AR,AI,ARI,CZ0R,CZ0I, &
+          integer(kind=int4) :: L,L1,I,I1
+          real(kind=dp) :: XRXI,CXXR,CXXI,QF,AR,AI,ARI,CZ0R,CZ0I, &
                         CR,CI,CY0R,CY0I,CY1R,CY1I,CU1R,CU1I,   &
                         QI,CYI1R, CYI1I,CUII,CYIR,CUIR,CYII
           L=NMAX+NNMAX
-          XRXI=1._R64P/(XR*XR+XI*XI)
+          XRXI=1._dp/(XR*XR+XI*XI)
           CXXR=XR*XRXI
           CXXI=-XI*XRXI 
-          QF=1._R64P/DFLOAT(2*L+1)
+          QF=1._dp/DFLOAT(2*L+1)
           CZR(L)=XR*QF
           CZI(L)=XI*QF
           L1=L-1
@@ -4626,13 +4627,13 @@ module  mod_tmatrix_mps
              QF=DFLOAT(2*I1+1)
              AR=QF*CXXR-CZR(I1+1)
              AI=QF*CXXI-CZI(I1+1)
-             ARI=1._R64P/(AR*AR+AI*AI)
+             ARI=1._dp/(AR*AR+AI*AI)
              CZR(I1)=AR*ARI
              CZI(I1)=-AI*ARI
          ENDDO   
          AR=CXXR-CZR(1)
          AI=CXXI-CZI(1)
-         ARI=1._R64P/(AR*AR+AI*AI)
+         ARI=1._dp/(AR*AR+AI*AI)
          CZ0R=AR*ARI
          CZ0I=-AI*ARI
          CR=DCOS(XR)*DCOSH(XI)
@@ -4679,29 +4680,29 @@ module  mod_tmatrix_mps
     
     SUBROUTINE TMATR0 (NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,DDR,   &
                        DRR,DRI,NMAX,NCHECK)
-          implicit none
-          integer(I32P) :: NGAUSS
-          real(R64P), dimension(NPNG2) :: X,W
-          real(R64P), dimension(NPN1)  :: AN
-          real(R64P), dimension(NPN1,NPN1) :: ANN
-          real(R64P), dimension(NPNG2) :: S,SS
-          real(R64P) :: PPI,PIR,PII
-          real(R64P), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
-          integer(I32P) :: NMAX,NCHECK
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TMATR0        
+          integer(kind=int4) :: NGAUSS
+          real(kind=dp), dimension(NPNG2) :: X,W
+          real(kind=dp), dimension(NPN1)  :: AN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPNG2) :: S,SS
+          real(kind=dp) :: PPI,PIR,PII
+          real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
+          integer(kind=int4) :: NMAX,NCHECK
           ! Locals
-          real(R64P), dimension(NPN2) :: SIG
+          real(kind=dp), dimension(NPN2) :: SIG
 !DIR$     ATTRIBUTES ALIGN : 64 :: SIG
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,DJI,D1,D2
-          real(R64P), dimension(NPNG2) :: DS,DSS,RR
-          real(R64P), dimension(NPN1) :: DV1,DV2
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,DJI,D1,D2
+          real(kind=dp), dimension(NPNG2) :: DS,DSS,RR
+          real(kind=dp), dimension(NPN1) :: DV1,DV2
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV1,DV2   
-          real(R64P), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,I21,I22, &
+          real(kind=dp), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,I21,I22, &
                                               RG11,RG12,RG21,RG22,IG11,IG12,   &
                                               IG21,IG22
-          real(R64P), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI,TRGQR,TRGQI
-          real(R64P), dimension(NPN2,NPN2) :: TR1,TI1
-          integer(I32P) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,N1,NM,K1,KK1,N2,K2,KK2
-          real(R64P) :: FACTOR,SI,DD1,DD2,AN2,AR12,AR21,AI12,AI21,GR12,GR21, &
+          real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI,TRGQR,TRGQI
+          real(kind=dp), dimension(NPN2,NPN2) :: TR1,TI1
+          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,N1,NM,K1,KK1,N2,K2,KK2
+          real(kind=dp) :: FACTOR,SI,DD1,DD2,AN2,AR12,AR21,AI12,AI21,GR12,GR21, &
                         GI12,GI21,D1N1,D2N1,D1N2,D2N2,AA1,QJ1,QY1,QJR2,QJI2,QDJR2, &
                         QDJI2,QDJ1,QDY1,C1R,C1I,B1R,B1I,C2R,C2I,B2R,B2I,C3R,C3I,   &
                         B3R,B3I,C4R,C4I,B4R,B4I,DRRI,DRII,C5R,C5I,B5R,B5I,URI,RRI, &
@@ -4717,14 +4718,14 @@ module  mod_tmatrix_mps
           NNMAX=NMAX+NMAX
           NG=2*NGAUSS
           NGSS=NG
-          FACTOR=1._R64P
+          FACTOR=1._dp
           IF (NCHECK.EQ.1) THEN
             NGSS=NGAUSS
-            FACTOR=2._R64P
+            FACTOR=2._dp
           ELSE
             CONTINUE
          ENDIF
-         SI=1._R64P
+         SI=1._dp
          DO 5 N=1,NNMAX
            SI=-SI
            SIG(N)=SI
@@ -4750,15 +4751,15 @@ module  mod_tmatrix_mps
            AN1=AN(N1)
            DO 300 N2=MM1,NMAX
                 AN2=AN(N2)
-                AR12=0._R64P
-                AR21=0._R64P
-                AI12=0._R64P
-                AI21=0._R64P
-                GR12=0._R64P
-                GR21=0._R64P
-                GI12=0._R64P
-                GI21=0._R64P
-                IF (NCHECK.EQ.1.AND.SIG(N1+N2).LT.0._R64P) GO TO 205
+                AR12=0._dp
+                AR21=0._dp
+                AI12=0._dp
+                AI21=0._dp
+                GR12=0._dp
+                GR21=0._dp
+                GI12=0._dp
+                GI21=0._dp
+                IF (NCHECK.EQ.1.AND.SIG(N1+N2).LT.0._dp) GO TO 205
 
                 DO 200 I=1,NGSS
                     D1N1=D1(I,N1)
@@ -4862,15 +4863,15 @@ module  mod_tmatrix_mps
                 TRGQR(K1,K2)=TPIR*TGR21-TPII*TGI21+TPPI*TGR12
                 TRGQI(K1,K2)=TPIR*TGI21+TPII*TGR21+TPPI*TGI12
  
-                TQR(K1,KK2)=0._R64P
-                TQI(K1,KK2)=0._R64P
-                TRGQR(K1,KK2)=0._R64P
-                TRGQI(K1,KK2)=0._R64P
+                TQR(K1,KK2)=0._dp
+                TQI(K1,KK2)=0._dp
+                TRGQR(K1,KK2)=0._dp
+                TRGQI(K1,KK2)=0._dp
  
-                TQR(KK1,K2)=0._R64P
-                TQI(KK1,K2)=0._R64P
-                TRGQR(KK1,K2)=0._R64P
-                TRGQI(KK1,K2)=0._R64P
+                TQR(KK1,K2)=0._dp
+                TQI(KK1,K2)=0._dp
+                TRGQR(KK1,K2)=0._dp
+                TRGQI(KK1,K2)=0._dp
  
                 TQR(KK1,KK2)=TPIR*TAR12-TPII*TAI12+TPPI*TAR21
                 TQI(KK1,KK2)=TPIR*TAI12+TPII*TAR12+TPPI*TAI21
@@ -4892,43 +4893,43 @@ module  mod_tmatrix_mps
                        
       subroutine TMATR (M,NGAUSS,X,W,AN,ANN,S,SS,PPI,PIR,PII,R,DR,DDR,    &
                        DRR,DRI,NMAX,NCHECK)
-          implicit none
-          integer(I32P) :: M,NGAUSS
-          real(R64P), dimension(NPNG2) :: X,W,AN,S,SS
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TMATR
+          integer(kind=int4) :: M,NGAUSS
+          real(kind=dp), dimension(NPNG2) :: X,W,AN,S,SS
 !DIR$     ASSUME_ALIGNED X:64,W:64,AN:64,S:64,SS:64
-          real(R64P), dimension(NPN1,NPN1) :: ANN
+          real(kind=dp), dimension(NPN1,NPN1) :: ANN
 !DIR$     ASSUME_ALIGNED ANN:64
-          real(R64P) :: PPI,PIR,PII
-          real(R64P), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
+          real(kind=dp) :: PPI,PIR,PII
+          real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
 !DIR$     ASSUME_ALIGNED R:64,DR:64,DDR:64,DRR:64,DRI:64
-          integer(I32P) :: NMAX,NCHECK
+          integer(kind=int4) :: NMAX,NCHECK
           ! Locals
-          real(R64P), dimension(NPNG2) :: SIG 
+          real(kind=dp), dimension(NPNG2) :: SIG 
 !DIR$     ATTRIBUTES ALIGN : 64 :: SIG
-          real(R64P), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
+          real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DY,DJR,  &
                                                DJI,D1,D2
 !DIR$     ATTRIBUTES ALIGN : 64 :: D1
 !DIR$     ATTRIBUTES ALIGN : 64 :: D2
-          real(R64P), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
+          real(kind=dp), dimension(NPNG2) :: DS,DSS,RR,DV1,DV2
 !DIR$     ATTRIBUTES ALIGN : 64 :: DS
 !DIR$     ATTRIBUTES ALIGN : 64 :: DSS
 !DIR$     ATTRIBUTES ALIGN : 64 :: RR
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV1
 !DIR$     ATTRIBUTES ALIGN : 64 :: DV2          
-          real(R64P), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
+          real(kind=dp), dimension(NPN1,NPN1) :: R11,R12,R21,R22,I11,I12,  &
                                               I21,I22,RG11,RG12,RG21,  &
                                               RG22,IG11,IG12,IG21,IG22
-          real(R64P), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
+          real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI, &
                                               TRGQR,TRGQI,TR1,TI1
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQR          
 !DIR$     ATTRIBUTES ALIGN : 64 :: TQI
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQR
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQI
-          real(R32P), dimension(NPN6*NPN4*NPN4*8) :: PLUS
+          real(kind=sp), dimension(NPN6*NPN4*NPN4*8) :: PLUS
 !DIR$     ATTRIBUTES ALIGN : 64 :: PLUS
-          integer(I32P) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
+          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
                            N1,N2,K1,KK1,K2,KK2,NM
-          real(R64P)    :: FACTOR,QM,QMM,WR,SI,DD1,DD2,AN1,AN2,     &
+          real(kind=dp)    :: FACTOR,QM,QMM,WR,SI,DD1,DD2,AN1,AN2,     &
                            AR11,AR12,AR21,AR22,AI11,A11,AA2,        &
                            AI12,AI21,AI22,GR11,GR12,GR22,           &
                            GR21,GI11,GI12,GI21,GI22,D1N1,D2N1,      &
@@ -4962,14 +4963,14 @@ module  mod_tmatrix_mps
       QMM=QM*QM
       NG=2*NGAUSS
       NGSS=NG
-      FACTOR=1._R64P
+      FACTOR=1._dp
        IF (NCHECK.EQ.1) THEN
             NGSS=NGAUSS
-            FACTOR=2D0
+            FACTOR=2.0_dp
          ELSE
             CONTINUE
       ENDIF
-      SI=1._R64P
+      SI=1._dp
       NM=NMAX+NMAX
       DO 5 N=1,NM
            SI=-SI
@@ -5001,22 +5002,22 @@ module  mod_tmatrix_mps
            AN1=AN(N1)
            DO 300 N2=MM1,NMAX
                 AN2=AN(N2)
-                AR11=0._R64P
-                AR12=0._R64P
-                AR21=0._R64P
-                AR22=0._R64P
-                AI11=0._R64P
-                AI12=0._R64P
-                AI21=0._R64P
-                AI22=0._R64P
-                GR11=0._R64P
-                GR12=0._R64P
-                GR21=0._R64P
-                GR22=0._R64P
-                GI11=0._R64P
-                GI12=0._R64P
-                GI21=0._R64P
-                GI22=0._R64P
+                AR11=0._dp
+                AR12=0._dp
+                AR21=0._dp
+                AR22=0._dp
+                AI11=0._dp
+                AI12=0._dp
+                AI21=0._dp
+                AI22=0._dp
+                GR11=0._dp
+                GR12=0._dp
+                GR21=0._dp
+                GR22=0._dp
+                GI11=0._dp
+                GI12=0._dp
+                GI21=0._dp
+                GI22=0._dp
                 SI=SIG(N1+N2)
 !DIR$   FMA 
                 DO 200 I=1,NGSS
@@ -5087,7 +5088,7 @@ module  mod_tmatrix_mps
                     DSSI=DSS(I)
                     RRI=RR(I)
  
-                    IF (NCHECK.EQ.1.AND.SI.GT.0._R64P) GO TO 150
+                    IF (NCHECK.EQ.1.AND.SI.GT.0._dp) GO TO 150
  
                     E1=DSI*AA1
                     AR11=AR11+E1*B1R
@@ -5205,24 +5206,24 @@ module  mod_tmatrix_mps
     end subroutine 
                        
     SUBROUTINE VIG (X, NMAX, M, DV1, DV2)
-          implicit none
-          real(R64P) :: X
-          integer(I32P) :: NMAX,M
-          real(R64P), dimension(NPN1) :: DV1,DV2
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VIG
+          real(kind=dp) :: X
+          integer(kind=int4) :: NMAX,M
+          real(kind=dp), dimension(NPN1) :: DV1,DV2
           ! Locals
-          real(R64P) :: A,QS,QS1,D1,D2,QN,QN1,QN2,D3,DER,  &
+          real(kind=dp) :: A,QS,QS1,D1,D2,QN,QN1,QN2,D3,DER,  &
                         QMM,QNM,QNM1
-          integer(I32P) :: N,I,I2
+          integer(kind=int4) :: N,I,I2
            ! Exec code ....
-          A=1._R64P
-          QS=DSQRT(1._R64P-X*X)
-          QS1=1._R64P/QS
+          A=1._dp
+          QS=DSQRT(1._dp-X*X)
+          QS1=1._dp/QS
           DO N=1,NMAX
-                DV1(N)=0._R64P
-                DV2(N)=0._R64P
+                DV1(N)=0._dp
+                DV2(N)=0._dp
          ENDDO   
       IF (M.NE.0) GO TO 20
-      D1=1._R64P
+      D1=1._dp
       D2=X  
       DO N=1,NMAX  
          QN=DFLOAT(N)
@@ -5241,7 +5242,7 @@ module  mod_tmatrix_mps
          I2=I*2
          A=A*DSQRT(DFLOAT(I2-1)/DFLOAT(I2))*QS
       ENDDO   
-      D1=0._R64P
+      D1=0._dp
       D2=A 
       DO N=M,NMAX
          QN=DFLOAT(N)
@@ -5269,16 +5270,16 @@ module  mod_tmatrix_mps
 !C**********************************************************************
  
     SUBROUTINE TT(NMAX,NCHECK)
-          implicit none
-          integer(I32P) :: NMAX,NCHECK
-          real(R64P), dimension(NPN2,NPN2) :: F
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TT
+          integer(kind=int4) :: NMAX,NCHECK
+          real(kind=dp), dimension(NPN2,NPN2) :: F
 !DIR$     ATTRIBUTES ALIGN : 64 :: F
-          real(R64P), dimension(NPN2) :: B,WORK
+          real(kind=dp), dimension(NPN2) :: B,WORK
 !DIR$     ATTRIBUTES ALIGN : 64 :: B,WORK
-          real(R64P), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,  &
+          real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,  &
                                               A,C,D,E
 !DIR$     ATTRIBUTES ALIGN : 64 ::  A,C,D,E
-          real(R64P), dimension(NPN2,NPN2) :: TR1,TI1
+          real(kind=dp), dimension(NPN2,NPN2) :: TR1,TI1
           COMPLEX(16), dimension(NPN2,NPN2) ::  ZQ
           COMPLEX(16), dimension(NPN2) :: ZW
 !DIR$     ATTRIBUTES ALIGN : 64 :: ZQ,ZW
@@ -5286,9 +5287,9 @@ module  mod_tmatrix_mps
                                                ZTHETA
 !DIR$     ATTRIBUTES ALIGN : 64 :: ZQR,ZAFAC,ZT,ZTHETA     
      
-         INTEGER(I32P), dimension(NPN2) ::  IPIV,IPVT
-         integer(I32P) :: I,NDIM,NNMAX,J,ICHOICE,INFO,K,IFAIL,N1,N2
-         real(R64P) :: TR,TI,ARR,ARI,AR,AI,TR
+         INTEGER(kind=int4), dimension(NPN2) ::  IPIV,IPVT
+         integer(kind=int4) :: I,NDIM,NNMAX,J,ICHOICE,INFO,K,IFAIL,N1,N2
+         real(kind=dp) :: TR,TI,ARR,ARI,AR,AI,TR
          COMMON /CHOICE/ ICHOICE
          COMMON /CT/ TR1,TI1
          COMMON /CTT/ QR,QI,RGQR,RGQI
@@ -5298,7 +5299,8 @@ module  mod_tmatrix_mps
  
 !C	Inversion from NAG-LIB or Waterman's method
  
-	DO I=1,NNMAX
+         DO I=1,NNMAX
+!DIR$ SIMD
 	   DO J=1,NNMAX
 	      ZQ(I,J)=DCMPLX(QR(I,J),QI(I,J))
 	      ZAFAC(I,J)=ZQ(I,J)
@@ -5313,8 +5315,8 @@ module  mod_tmatrix_mps
  1100      FORMAT ('WARNING:  info=', i2)
 	   DO I=1,NNMAX
 	      DO J=1,NNMAX
-	         TR=0._R64P
-	         TI=0._R64P
+	         TR=0._dp
+	         TI=0._dp
 	         DO K=1,NNMAX
                     ARR=RGQR(I,K)
                     ARI=RGQI(I,K)
@@ -5333,7 +5335,8 @@ module  mod_tmatrix_mps
 !C          CALL F01RCF(NNMAX,NNMAX,ZAFAC,NPN2,ZTHETA,IFAIL)
 !C          CALL F01REF('S',NNMAX,NNMAX,NNMAX,ZAFAC,
 !C    &                 NPN2,ZTHETA,ZW,IFAIL)
-	   DO I=1,NNMAX
+    DO I=1,NNMAX
+!DIR$ SIMD
 	      DO J=1,NNMAX
 	         ZQ(I,J)=DCMPLX(DREAL(ZAFAC(I,J)),-    &
                       DIMAG(ZAFAC(I,J)))
@@ -5342,22 +5345,22 @@ module  mod_tmatrix_mps
 	   DO I=1,NNMAX
 	      DO J=1,NNMAX
                  IF (I.LE.NNMAX/2.AND.I.EQ.J) THEN
-	            D(I,J)=-1D0
+	            D(I,J)=-1.0_dp
                     ELSE IF (I.GT.NNMAX/2.AND.I.EQ.J) THEN
-	               D(I,J)=1._R64P
+	               D(I,J)=1._dp
 	               ELSE
-	               D(I,J)=0._R64P
+	               D(I,J)=0._dp
 	         ENDIF
               ENDDO
            ENDDO
 	   DO I=1,NNMAX
 	      DO J=1,NNMAX
-	         ZT(I,J)=DCMPLX(0D0,0D0)
+	         ZT(I,J)=DCMPLX(0.0_dp,0.0_dp)
 	         DO K=1,NNMAX
 	            ZT(I,J)=ZT(I,J)+D(I,I)* &
                        ZQ(I,K)*D(K,K)*ZQ(J,K)
 	         ENDDO
-	         ZT(I,J)=0.5_R64P*(ZT(I,J)-D(I,J)**2)
+	         ZT(I,J)=0.5_dp*(ZT(I,J)-D(I,J)**2)
 	         TR1(I,J)=DREAL(ZT(I,j))
 	         TI1(I,J)=DIMAG(ZT(i,j))
               ENDDO
@@ -5379,7 +5382,8 @@ module  mod_tmatrix_mps
       ENDIF
       CALL PROD(QR,A,C,NDIM,NNMAX)
       CALL PROD(C,QR,D,NDIM,NNMAX)
-      DO 20 N1=1,NNMAX
+      DO 20 N1=1,NNMAX#
+!DIR$ SIMD
            DO 20 N2=1,NNMAX
                 C(N1,N2)=D(N1,N2)+QI(N1,N2)
    20 CONTINUE
@@ -5404,15 +5408,15 @@ module  mod_tmatrix_mps
     END SUBROUTINE
     
     SUBROUTINE PROD(A,B,C,NDIM,N)
-          implicit none
-          real(R64P), dimension(NDIM,N) :: A,B,C
-          integer(I32P) :: NDIM,N
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: PROD
+          real(kind=dp), dimension(NDIM,N) :: A,B,C
+          integer(kind=int4) :: NDIM,N
           ! Locals
-          real(R64P) :: CIJ
-          integer(I32P) :: I,J,K
+          real(kind=dp) :: CIJ
+          integer(kind=int4) :: I,J,K
       DO 10 I=1,N
            DO 10 J=1,N
-                CIJ=0._R64P
+                CIJ=0._dp
                 DO 5 K=1,N
                      CIJ=CIJ+A(I,K)*B(K,J)
     5           CONTINUE
@@ -5422,19 +5426,19 @@ module  mod_tmatrix_mps
     END   SUBROUTINE
     
     SUBROUTINE INV1 (NMAX,F,A)
-          implicit none
-          integer(I32P) :: NMAX
-          real(R64P), dimension(NPN2,NPN2) :: F,A
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: INV1
+          integer(kind=int4) :: NMAX
+          real(kind=dp), dimension(NPN2,NPN2) :: F,A
           ! Locals
-          real(R64P), dimension(NPN1) :: WORK
+          real(kind=dp), dimension(NPN1) :: WORK
 !DIR$     ATTRIBUTES ALIGN : 64 :: WORK
-          real(R64P), dimension(NPN1,NPN1) :: Q1,Q2,P1,P2
+          real(kind=dp), dimension(NPN1,NPN1) :: Q1,Q2,P1,P2
 !DIR$     ATTRIBUTES ALIGN : 64 :: Q1,Q2,P1,P2
-          integer(I32P), dimension(NPN1) ::  IPVT,IND1,IND2
-          integer(I32P) :: NDIM,NN1,NN2,I,NNMAX,J,I1,I2,J1,J2
+          integer(kind=int4), dimension(NPN1) ::  IPVT,IND1,IND2
+          integer(kind=int4) :: NDIM,NN1,NN2,I,NNMAX,J,I1,I2,J1,J2
           ! Exec code ....
           NDIM=NPN1
-          NN1=(DFLOAT(NMAX)-0.1_R64P)*0.5_R64P+1._R64P 
+          NN1=(DFLOAT(NMAX)-0.1_dp)*0.5_dp+1._dp 
           NN2=NMAX-NN1
           DO 5 I=1,NMAX
                 IND1(I)=2*I-1
@@ -5456,7 +5460,7 @@ module  mod_tmatrix_mps
             CALL INVERT(NDIM,NMAX,Q2,P2,COND,IPVT,WORK,B)
          DO 30 I=1,NNMAX
              DO 30 J=1,NNMAX
-                A(J,I)=0._R64P
+                A(J,I)=0._dp
        30 CONTINUE
         DO 40 I=1,NMAX
               I1=IND1(I)
@@ -5471,24 +5475,24 @@ module  mod_tmatrix_mps
     END  SUBROUTINE
     
     SUBROUTINE INVERT (NDIM,N,A,X,COND,IPVT,WORK,B)
-          implicit none
-          integer(I32P) :: NDIM,N
-          real(R64P), dimension(NDIM,N) :: A,X
-          real(R64P) :: COND
-          integer(I32P), dimension(N) ::  IPVT
-          real(R64P), dimension(N) :: WORK,B
+!DIR4 ATTRIBUTES CODE_ALIGN : 32 :: INVERT
+          integer(kind=int4) :: NDIM,N
+          real(kind=dp), dimension(NDIM,N) :: A,X
+          real(kind=dp) :: COND
+          integer(kind=int4), dimension(N) ::  IPVT
+          real(kind=dp), dimension(N) :: WORK,B
           ! Locals
-          integer(I32P) :: I,J
+          integer(kind=int4) :: I,J
           ! Exec code ...
           CALL DECOMP (NDIM,N,A,COND,IPVT,WORK)
-          IF (COND+1D0.EQ.COND) PRINT 5,COND
+          IF (COND+1.0_dp.EQ.COND) PRINT 5,COND
 !C     IF (COND+1D0.EQ.COND) STOP
     5 FORMAT(' THE MATRIX IS SINGULAR FOR THE GIVEN NUMERICAL ACCURACY '  , &
                 'COND = ',D12.6)
       DO 30 I=1,N
            DO 10 J=1,N
-                B(J)=0._R64P
-                IF (J.EQ.I) B(J)=1._R64P
+                B(J)=0._dp
+                IF (J.EQ.I) B(J)=1._dp
   10       CONTINUE
            CALL SOLVE (NDIM,N,A,B,IPVT)
            DO 30 J=1,N
@@ -5498,22 +5502,23 @@ module  mod_tmatrix_mps
     END SUBROUTINE
     
     SUBROUTINE DECOMP (NDIM,N,A,COND,IPVT,WORK)
-          implicit none
-          integer(I32P) :: NDIM,N
-          real(R64P), dimension(NDIM,N) :: A
-          real(R64P) :: COND
-          integer(I32P), dimension(N) ::  IPVT
-          real(R64P), dimension(N) :: WORK
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DECOMP
+          integer(kind=int4) :: NDIM,N
+          real(kind=dp), dimension(NDIM,N) :: A
+          real(kind=dp) :: COND
+          integer(kind=int4), dimension(N) ::  IPVT
+          real(kind=dp), dimension(N) :: WORK
           ! Locals
-          integer(I32P) :: NM1,J,I,K,KP1,M,KB
-          real(R64P) :: ANORM,T,EK,YNORM,ZNORM
+          integer(kind=int4) :: NM1,J,I,K,KP1,M,KB
+          real(kind=dp) :: ANORM,T,EK,YNORM,ZNORM
           ! Exec code ...
           IPVT(N)=1
           IF(N.EQ.1) GO TO 80
           NM1=N-1
-          ANORM=0._R64P
+          ANORM=0._dp
           DO 10 J=1,N
-              T=0._R64P
+             T=0._dp
+!DIR$ SIMD
               DO 5 I=1,N
                  T=T+DABS(A(I,J))
     5     CONTINUE
@@ -5530,7 +5535,7 @@ module  mod_tmatrix_mps
           T=A(M,K)
           A(M,K)=A(K,K)
           A(K,K)=T
-          IF (T.EQ.0._R64P) GO TO 35
+          IF (T.EQ.0._dp) GO TO 35
           DO 20 I=KP1,N
               A(I,K)=-A(I,K)/T
    20     CONTINUE
@@ -5538,27 +5543,27 @@ module  mod_tmatrix_mps
               T=A(M,J)
               A(M,J)=A(K,J)
               A(K,J)=T
-              IF (T.EQ.0._R64P) GO TO 30
+              IF (T.EQ.0._dp) GO TO 30
               DO 25 I=KP1,N
                   A(I,J)=A(I,J)+A(I,K)*T
    25         CONTINUE
    30     CONTINUE
    35 CONTINUE
       DO 50 K=1,N
-          T=0._R64P
+          T=0._dp
           IF (K.EQ.1) GO TO 45
           KM1=K-1
           DO 40 I=1,KM1
               T=T+A(I,K)*WORK(I)
    40     CONTINUE
-   45     EK=1._R64P
-          IF (T.LT.0D0) EK=-1._R64P
-          IF (A(K,K).EQ.0._R64P) GO TO 90
+   45     EK=1._dp
+          IF (T.LT.0.0_dp) EK=-1._dp
+          IF (A(K,K).EQ.0._dp) GO TO 90
           WORK(K)=-(EK+T)/A(K,K)
    50 CONTINUE
       DO 60 KB=1,NM1
           K=N-KB
-          T=0._R64P
+          T=0._dp
           KP1=K+1
           DO 55 I=KP1,N
               T=T+A(I,K)*WORK(K)
@@ -5570,33 +5575,33 @@ module  mod_tmatrix_mps
           WORK(M)=WORK(K)
           WORK(K)=T
    60 CONTINUE
-      YNORM=0._R64P
+      YNORM=0._dp
       DO 65 I=1,N
           YNORM=YNORM+DABS(WORK(I))
    65 CONTINUE
       CALL SOLVE (NDIM,N,A,WORK,IPVT)
-      ZNORM=0._R64P
+      ZNORM=0._dp
       DO 70 I=1,N
           ZNORM=ZNORM+DABS(WORK(I))
    70 CONTINUE
       COND=ANORM*ZNORM/YNORM
-      IF (COND.LT.1d0) COND=1._R64P
+      IF (COND.LT.1.0_dp) COND=1._dp
       RETURN
-   80 COND=1._R64P
-      IF (A(1,1).NE.0._R64P) RETURN
-   90 COND=HUGE(1._R64P)
+   80 COND=1._dp
+      IF (A(1,1).NE.0._dp) RETURN
+   90 COND=HUGE(1._dp)
     
     END  SUBROUTINE
     
     SUBROUTINE SOLVE (NDIM,N,A,B,IPVT)
-          implicit none
-          integer(I32P) :: NDIM,N
-          real(R64P), dimension(NDIM,N) :: A
-          real(R64P), dimension(N)      :: B
-          integer(I32P), dimension(N) :: IPVT
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SOLVE
+          integer(kind=int4) :: NDIM,N
+          real(kind=dp), dimension(NDIM,N) :: A
+          real(kind=dp), dimension(N)      :: B
+          integer(kind=int4), dimension(N) :: IPVT
           ! Locals
-          integer(I32P) :: NM1,K,KP1,K,I,KB,KM1,M
-          real(R64P) :: T
+          integer(kind=int4) :: NM1,K,KP1,K,I,KB,KM1,M
+          real(kind=dp) :: T
           IF (N.EQ.1) GO TO 50
              NM1=N-1
           DO 20 K=1,NM1
@@ -5605,6 +5610,7 @@ module  mod_tmatrix_mps
                 T=B(M)
                 B(M)=B(K)
                 B(K)=T
+            !DIR4 SIMD
             DO 10 I=KP1,N
               B(I)=B(I)+A(I,K)*T
    10     CONTINUE
@@ -5614,6 +5620,7 @@ module  mod_tmatrix_mps
           K=KM1+1
           B(K)=B(K)/A(K,K)
           T=-B(K)
+          !DIR$ SIMD
           DO 30 I=1,KM1
               B(I)=B(I)+A(I,K)*T
    30     CONTINUE
@@ -5621,20 +5628,20 @@ module  mod_tmatrix_mps
    50 B(1)=B(1)/A(1,1)
      
     END  SUBROUTINE
-    
+!DIR$ ATTRIBUTES INLINE :: SAREA    
     SUBROUTINE SAREA (D,RAT)
-          implicit none
-          real(R64P) :: D,RAT
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SAREA
+          real(kindd=dp) :: D,RAT
           ! Locals
-          real(R64P) :: E,R
+          real(kind=dp) :: E,R
           IF (D.GE.1) GO TO 10
-          E=DSQRT(1._R64P-D*D)
-          R=0.5_R64P*(D**(2._R64P/3._R64P) + D**(-0.33333333333333333_R64P)*DASIN(E)/E)
+          E=DSQRT(1._dp-D*D)
+          R=0.5_dp*(D**(2._dp/3._dp) + D**(-0.33333333333333333_dp)*DASIN(E)/E)
           R=DSQRT(R)
-          RAT=1._R64P/R
+          RAT=1._dp/R
           RETURN
-       10 E=DSQRT(1._R64P-1._R64P/(D*D))
-          R=0.25_R64P*(2._R64P*D**(2._R64P/3._R64P) + D**(-4._R64P/3._R64P)*DLOG((1._R64P)/(0.1_R64P))/E)
+       10 E=DSQRT(1._dp-1._dp/(D*D))
+          R=0.25_dp*(2._dp*D**(2._dp/3._dp) + D**(-4._dp/3._dp)*DLOG((1._dp)/(0.1_dp))/E)
     
           R=DSQRT(R)
           RAT=1._R64P/R
@@ -5642,21 +5649,21 @@ module  mod_tmatrix_mps
     END  SUBROUTINE
     
     SUBROUTINE SURFCH (N,E,RAT)
-          implicit none
-          integer(I32P) :: N
-          real(R64P) :: E,RAT
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SURFCH
+          integer(kind=int4) :: N
+          real(kind=dp) :: E,RAT
           ! Locals
-          real(R64P), dimension(60) :: X,W
-          integer(I32P) :: I,NG
-          real(R64P) :: DN,E2,EN,S,V,XI,DX,DXI,DS,DSN,DCN,A2, &
+          real(kind=dp), dimension(60) :: X,W
+          integer(kind=dint4) :: I,NG
+          real(kind=dp) :: DN,E2,EN,S,V,XI,DX,DXI,DS,DSN,DCN,A2, &
                         A,ENS,RS,RV
           DN=DFLOAT(N)
           E2=E*E
           EN=E*DN
           NG=60
           CALL GAUSS (NG,0,0,X,W)
-          S=0._R64P
-          V=0._R64P
+          S=0._dp
+          V=0._dp
           DO 10 I=1,NG
                 XI=X(I)
                 DX=DACOS(XI)
@@ -5664,55 +5671,55 @@ module  mod_tmatrix_mps
                 DS=DSIN(DX)
                 DSN=DSIN(DXN)
                 DCN=DCOS(DXN)
-                A=1._R64P+E*DCN
+                A=1._dp+E*DCN
                 A2=A*A
                 ENS=EN*DSN
                 S=S+W(I)*A*DSQRT(A2+ENS*ENS)
                 V=V+W(I)*(DS*A+XI*ENS)*DS*A2
       10 CONTINUE
-        RS=DSQRT(S*0.5_R64P)
-        RV=(V*3._R64P/4._R64P)**(0.3333333333333333333333_R64P)
+        RS=DSQRT(S*0.5_dp)
+        RV=(V*3._dp/4._dp)**(0.3333333333333333333333_dp)
         RAT=RV/RS
     
     END  SUBROUTINE
-    
+!DIR$ ATTRIBUTES INLINE :: SAREAC    
     SUBROUTINE SAREAC (EPS,RAT)
-        implicit none
-        real(R64P) :: EPS,RAT
-        RAT=(1.5_R64P/EPS)**(0.33333333333333333333333_R64P)
-        RAT=RAT/DSQRT( (EPS+2._R64P)/(2._R64P*EPS) )
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SAREAC
+        real(kind=dp) :: EPS,RAT
+        RAT=(1.5_dp/EPS)**(0.33333333333333333333333_dp)
+        RAT=RAT/DSQRT( (EPS+2._dp)/(2._dp*EPS) )
       
     END SUBROUTINE
     
     SUBROUTINE DROP (RAT)
-          implicit none
-          real(R64P) :: RAT
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DROP
+          real(kind=dp) :: RAT
           ! Locls
-          integer(I32P), parameter :: NC = 10, NG = 60
-          real(R64P), dimension(NG) :: X,W
-          real(R64P), dimension(0:NC) :: C
-          real(R64P) :: V,S,XI,WI,RI,DRI,XIN,CI,RISI,RS,RV,R0V
-          integer(I32P) :: I,N,
+          integer(kind=int4), parameter :: NC = 10, NG = 60
+          real(kind=dp), dimension(NG) :: X,W
+          real(kind=dp), dimension(0:NC) :: C
+          real(kind=dp) :: V,S,XI,WI,RI,DRI,XIN,CI,RISI,RS,RV,R0V
+          integer(kind=int4) :: I,N,
           COMMON /CDROP/ C,R0V
-          C(0)=-0.0481_R64P
-          C(1)= 0.0359_R64P
-          C(2)=-0.1263_R64P
-          C(3)= 0.0244_R64P
-          C(4)= 0.0091_R64P
-          C(5)=-0.0099_R64P
-          C(6)= 0.0015_R64P
-          C(7)= 0.0025_R64P
-          C(8)=-0.0016_R64P
-          C(9)=-0.0002_R64P
-          C(10)= 0.0010_R64P
+          C(0)=-0.0481_dp
+          C(1)= 0.0359_dp
+          C(2)=-0.1263_dp
+          C(3)= 0.0244_dp
+          C(4)= 0.0091_dp
+          C(5)=-0.0099_dp
+          C(6)= 0.0015_dp
+          C(7)= 0.0025_dp
+          C(8)=-0.0016_dp
+          C(9)=-0.0002_dp
+          C(10)= 0.0010_dp
           CALL GAUSS (NG,0,0,X,W)
-          S=0._R64P
-          V=0._R64P
+          S=0._dp
+          V=0._dp
           DO I=1,NG
                XI=DACOS(X(I))
                WI=W(I)
-               RI=1._R64P+C(0)
-               DRI=0._R64P
+               RI=1._dp+C(0)
+               DRI=0._dp
                DO N=1,NC
                     XIN=XI*N
                     RI=RI+C(N)*DCOS(XIN)
@@ -5724,10 +5731,10 @@ module  mod_tmatrix_mps
                S=S+WI*RI*DSQRT(RI*RI+DRI*DRI)
                V=V+WI*RI*RISI*(RISI-DRI*CI)
          ENDDO
-         RS=DSQRT(S*0.5_R64P)
-         RV=(V*3._R64P*0.25_R64P)**(0.33333333333333333333_R64P)
-         IF (DABS(RAT-1._R64P).GT.0.00000001_R64P) RAT=RV/RS
-         R0V=1._R64P/RV
+         RS=DSQRT(S*0.5_dp)
+         RV=(V*3._dp*0.25_dp)**(0.33333333333333333333_dp)
+         IF (DABS(RAT-1._dp).GT.0.00000001_dp) RAT=RV/RS
+         R0V=1._dp/RV
          WRITE (6,1000) R0V
          DO N=0,NC
              WRITE (6,1001) N,C(N)
@@ -5748,29 +5755,29 @@ module  mod_tmatrix_mps
 !C**********************************************************************
  
     SUBROUTINE GAUSS (N,IND1,IND2,Z,W)
-          implicit none
-          integer(I32P) :: N,IND1,IND2
-          real(R64P), dimension(N) :: Z,W
-          real(R64P), parameter :: A = 1._R64P, B = 2._R64P, C = 3._R64P
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: GAUSS
+          integer(kind=int4) :: N,IND1,IND2
+          real(kind=dp), dimension(N) :: Z,W
+          real(kind=dp), parameter :: A = 1._dp, B = 2._dp, C = 3._dp
         !  DATA A,B,C /1._R64P,2D0,3D0/
-          integer(I32P) :: IND,K,I,M,NITER,J
-          real(R64P) :: F,CHECK,PB,PC,X,DJ,PA
+          integer(kind=int4) :: IND,K,I,M,NITER,J
+          real(kind=dp) :: F,CHECK,PB,PC,X,DJ,PA
           IND=MOD(N,2)
           K=N/2+IND
           F=DFLOAT(N)
           DO 100 I=1,K
                  M=N+1-I
           IF(I.EQ.1) X=A-B/((F+A)*F)
-          IF(I.EQ.2) X=(Z(N)-A)*4D0+Z(N)
-          IF(I.EQ.3) X=(Z(N-1)-Z(N))*1.6D0+Z(N-1)
+          IF(I.EQ.2) X=(Z(N)-A)*4.0_dp+Z(N)
+          IF(I.EQ.3) X=(Z(N-1)-Z(N))*1.6_dp+Z(N-1)
           IF(I.GT.3) X=(Z(M+1)-Z(M+2))*C+Z(M+3)
-          IF(I.EQ.K.AND.IND.EQ.1) X=0D0
+          IF(I.EQ.K.AND.IND.EQ.1) X=0.0_dp
           NITER=0
-          CHECK=0.0000000000000001_R64P
-   10     PB=1._R64P
+          CHECK=0.0000000000000001_dp
+   10     PB=1._dp
           NITER=NITER+1
           IF (NITER.LE.100) GO TO 15
-          CHECK=CHECK*10._R64P
+          CHECK=CHECK*10._dp
    15     PC=X
           DJ=A
           DO 20 J=2,N
