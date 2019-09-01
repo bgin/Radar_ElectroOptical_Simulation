@@ -1,4 +1,6 @@
 
+include 'GMS_config.fpp'
+
 module  mod_tmatrix_mps
 
  !===================================================================================85
@@ -86,7 +88,7 @@ module  mod_tmatrix_mps
         
    
     use mod_kinds,    only : int4, sp, dp
-    use IFPORT,       only : TRACEBACKQQ
+    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ
     implicit none
     !=====================================================59
     !  File and module information:
@@ -138,7 +140,7 @@ module  mod_tmatrix_mps
     
     integer(kind=int4), parameter, private :: NPN6  = NPN4+1
     
-    integer(kind=int4), parameter, private :: NANGMAX = 1801
+    integer(kind=int4), parameter, private :: NANGMAX = 1808
     
     complex(16),   parameter, private :: CZERO = DCMPLX(0._dp,0._dp)
     
@@ -177,6 +179,8 @@ module  mod_tmatrix_mps
           integer(kind=int4), parameter :: nrc  = 4*np*(np+1)*(np+2)/3+np
           integer(kind=int4), parameter :: nij  = nLp*(nLp-1)/2
           integer(kind=int4) :: u,v,u0
+          logical(kind=int4), automatic :: result
+          integer(kind=int4), automatic :: ret
           integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind
           real(kind=dp), dimension(nLp) :: x,xc
 !DIR$     ATTRIBUTES ALIGN : 64 :: x,xc
@@ -494,7 +498,8 @@ module  mod_tmatrix_mps
            gcv=0._dp
            eps=1.0E-20_dp
            fint=0._dp
-
+           result = .false.
+           ret    = -1
      ! OPEN(UNIT=1,FILE='gmm03Tr.in',STATUS='OLD')
      ! READ(1,'(a20)') FLNAME
 !C-----------------------------------------------------------------------
@@ -585,7 +590,7 @@ module  mod_tmatrix_mps
 !C-----------------------------------------------------------------------  
       if(sang.lt.0.001_dp) sang=90._dp
          nang=90._dp/sang+1._dp
-         nang2=2*ti4%nang-1
+         nang2=2*nang-1
       if(nang2.gt.nangmax) then
          write(6,*) '  sang too small'
          write(6,*) '  please increase sang in tmatrix_mps_driver'
@@ -646,7 +651,7 @@ module  mod_tmatrix_mps
          endif
          temp=dabs(shp(1,i)-1._dp)
          temp0=0.0000001_dp
-         if(idshp(i).eq.-1.and.tr8%temp.lt.temp0) then
+         if(idshp(i).eq.-1.and.temp.lt.temp0) then
             idshp(i)=0
             do j=1,3
                shp(j,i)=0._dp
@@ -672,7 +677,7 @@ module  mod_tmatrix_mps
  !10   write(6,*) 'fatal error in the input file'
  !     stop
  11      k=twopi/w
-        xv=k*tr8%gcvr
+        xv=k*gcvr
          xs=k*gcsr
          if(irat.eq.1) then 
              write(6,'(a,f7.3)') ' volume-equiv. xv:  ', xv
@@ -731,6 +736,17 @@ module  mod_tmatrix_mps
             enddo
          enddo
          if(i.eq.1) goto  12
+!DIR$ IF (USE_PERF_PROFILER .EQ. 1)
+         !DIR$ IF (CPU_HASWELL .EQ. 1)
+            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop_741.txt -er100 -er200 -er203 &
+                               -er105 -er205 -er108 -er100e -er3f24 -er0148 -er2048 -er0149 &
+                               -er0185 -r01a2 -a sleep 0.000001")
+            if(result == .false.) then
+               ret = GETLASTERRORQQ()
+               print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+            end if
+          !DIR$ ENDIF
+!DIR$ ENDIF
 !DIR$    DISTRIBUTE POINT
          do 121 j=i-1,1,-1
             if(idshp(i).eq.idshp(j).and.shp(1,i).eq.shp(1,j)) then
