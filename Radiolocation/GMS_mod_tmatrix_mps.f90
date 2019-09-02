@@ -88,7 +88,7 @@ module  mod_tmatrix_mps
         
    
     use mod_kinds,    only : int4, sp, dp
-    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ
+    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ,GETLASTERRORQQ
     implicit none
     !=====================================================59
     !  File and module information:
@@ -867,6 +867,17 @@ module  mod_tmatrix_mps
             stop
          endif
          uvmax(i)=nmax(i)*(nmax(i)+2)
+!DIR$ IF (USE_PERF_PROFILER .EQ. 1)
+         !DIR$ IF (CPU_HASWELL .EQ. 1)
+             result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop873.txt -er20F0 -er1FE6 -er20D1 &
+                               -er10D1 -er08D1 -er01D1 -er02D1 -er07C6 -er20C5 -er10C4 -er01C2       &
+                               -er10C1 -er08C1 -er02B1 -er01B1 -er01A2 -er0279 -er0248 -a sleep 0.0001")
+             if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+             end if
+          !DIR$ ENDIF
+!DIR$ ENDIF
          do n=1,nmax(i)
             in0=n*(n+1)
             do v=1,nmax(i)
@@ -931,6 +942,20 @@ module  mod_tmatrix_mps
 !C  calculating T-matrices of individual particles in their respective
 !C  specified orientations
 !C-----------------------------------------------------------------------
+
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+      !DIR$ IF (CPU_HASWELL .EQ. 1)
+          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop951.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
+                            -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
+                            -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
+                            -er11BC -er01C2 -a sleep 0.001")
+            if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+             end if
+       !DIR$ ENDIF
+!DIR$ ENDIF
+      
 !DIR$   LOOP COUNT (10,100,300)
         do 17 i=1,nL
              if(idshp(i).eq.0) goto 17
@@ -1038,6 +1063,20 @@ module  mod_tmatrix_mps
 !      C-----------------------------------------------------------------------
 !C  calculating rotational and translation coefficients
 !C-----------------------------------------------------------------------
+
+!DIR$   IF (USE_PERF_PROFILER .EQ. 1)
+       !DIR$ IF (CPU_HASWELL .EQ. 1)
+           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1072.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
+                            -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
+                            -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
+                            -er11BC -er01C2 -a sleep 0.1")
+           if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+             end if
+       !DIR$ ENDIF
+!DIR$ ENDIF
+      
 !DIR$ LOOP COUNT (9,99,299)
       do i=1,nL-1
 !DIR$ LOOP COUNT (10,100,300)
