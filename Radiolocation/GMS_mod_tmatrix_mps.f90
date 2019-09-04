@@ -743,7 +743,7 @@ module  mod_tmatrix_mps
                                -er0185 -r01a2 -a sleep 0.000001")
             if(result == .false.) then
                ret = GETLASTERRORQQ()
-               print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+               print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ",__LINE__
             end if
           !DIR$ ENDIF
 !DIR$ ENDIF
@@ -874,7 +874,7 @@ module  mod_tmatrix_mps
                                -er10C1 -er08C1 -er02B1 -er01B1 -er01A2 -er0279 -er0248 -a sleep 0.0001")
              if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret,"loop at: ", __LINE__
              end if
           !DIR$ ENDIF
 !DIR$ ENDIF
@@ -916,7 +916,7 @@ module  mod_tmatrix_mps
          enddo  
 15       if(nmax(i).gt.nmax0) then
             nmax0=nmax(i)
-	        imax=i
+	    imax=i
 	 endif
       enddo 
       write(6,*) 'maximum scattering order: ',imax,'   ',nmax0
@@ -951,7 +951,7 @@ module  mod_tmatrix_mps
                             -er11BC -er01C2 -a sleep 0.001")
             if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
        !DIR$ ENDIF
 !DIR$ ENDIF
@@ -1072,7 +1072,7 @@ module  mod_tmatrix_mps
                             -er11BC -er01C2 -a sleep 0.1")
            if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
        !DIR$ ENDIF
 !DIR$ ENDIF
@@ -1173,6 +1173,19 @@ module  mod_tmatrix_mps
       enddo      
       write(6,*) 'Starting Bi-CGSTAB to solve T-matrix'         
       n0=nmax0*(nmax0+2)
+!DIR$   IF (USE_PERF_PROFILER .EQ. 1)
+        !DIR$ IF (HASWELL_CPU .EQ. 1)
+            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1179.txt -er203 -er105 -er108 -er2008 -er100E &
+                              -er200E -er0214 -er2424 -erC424 -er003C -er0148 -er0248 -er024C -er0151 -er015E    &
+                              -er0279 -er1879 -er0280 -er0480 -er0185 -er4188 -er019C -er01A1 -er02A1 -er04A1    &
+                              -er08A1 -er10A1 -er20A1 -er40A1 -er80A1 -er01A2 -er02A3 -er08C1 -er10C1 -er01C2    &
+                              -er01C2 -er02C2 -er07C6 -er -a sleep 1")
+            if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+            end if
+        !DIR$ ENDIF
+!DIR$ ENDIF
       do 1001 iuv=1,n0
          v=dsqrt(dble(iuv))
          iuvc=v*v
@@ -1718,8 +1731,21 @@ module  mod_tmatrix_mps
 !      enddo
 !      cext=0.d0
  !     csca=0.d0
-!      cpr=0.d0
+            !      cpr=0.d0
+
       n0=nmax0*(nmax0+2)
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+       !DIR$ IF (CPU_HASWELL .EQ. 1)
+        result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1740.txt -er100 -er203 -er105 -er108 -er100E -er200E -er0214 &
+                          -er2424 -er3024 -er3F24 -erC424 -erF824 -er003C -er0148 -er0248 -er024C -er0151 -er015E -er0279   &
+                          -er1879 -er0180 -er0280 -er0480 -er0185 -er4188 -er019C -er01A1 -er02A1 -er04A1 -er08A1 -er10A1   &
+                          -er20A1 -er40A1 -er80A1 -er01A2 -er01A8 -er00C0 -er01C2 -er07C6 -a sleep 0.001")
+         if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+         end if
+        !DIR$ ENDIF
+!DIR$ ENDIF
       do iuv=1,n0
          do iq=1,2
             do 1801 j=1,nL
