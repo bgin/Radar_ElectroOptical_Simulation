@@ -88,7 +88,7 @@ module  mod_tmatrix_mps
         
    
     use mod_kinds,    only : int4, sp, dp
-    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ,GETLASTERRORQQ
+    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ,GETLASTERRORQQ,DCLOCK
     implicit none
     !=====================================================59
     !  File and module information:
@@ -178,11 +178,13 @@ module  mod_tmatrix_mps
           integer(kind=int4), parameter :: ng0  = np*(2*np**3+10*np**2+19*np+5)/6
           integer(kind=int4), parameter :: nrc  = 4*np*(np+1)*(np+2)/3+np
           integer(kind=int4), parameter :: nij  = nLp*(nLp-1)/2
+          real(kind=dp), automatic :: start,end,duration
           integer(kind=int4) :: u,v,u0
           logical(kind=int4), automatic :: result
           integer(kind=int4), automatic :: ret
+          integer(kind=int4), automatic :: line
           integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind
-          real(kind=dp), dimension(nLp) :: x,xc
+          real(kind=dp), dimension(nLp), automatic :: x,xc
 !DIR$     ATTRIBUTES ALIGN : 64 :: x,xc
           real(kind=dp), dimension(3,nLp) :: r00
 !DIR$     ATTRIBUTES ALIGN : 64 :: R00
@@ -190,17 +192,17 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: besj,besy
           real(kind=dp), dimension(nrc,nij) :: drot
 !DIR$     ATTRIBUTES ALIGN : 64 :: drot
-          real(kind=dp), dimension(nLp)     :: c0i,c1i
+          real(kind=dp), dimension(nLp), automatic     :: c0i,c1i
 !DIR$     ATTRIBUTES ALIGN : 64 :: c0i,c1i          
           real(kind=dp), dimension(nij)     :: bes0
 !DIR$     ATTRIBUTES ALIGN : 64 :: bes0
           real(kind=dp), dimension(5,nij)   :: confg
 !DIR$     ATTRIBUTES ALIGN : 64 :: confg
-          real(kind=dp), dimension(2)       :: taup,taupj,taupg,taupjg,tau0p, &
+          real(kind=dp), dimension(2), automatic       :: taup,taupj,taupg,taupjg,tau0p, &
                                             tau1p,tau2p,tau0pg,tau1pg,     &
                                             tau2pg,tau0pj,tau1pj,tau2pj,   &
                                             tau0pjg,tau1pjg,tau2pjg
-          real(kind=dp), dimension(2,2)     :: tau20,tau11,tau02,tau20g,tau11g, &
+          real(kind=dp), dimension(2,2), automatic     :: tau20,tau11,tau02,tau20g,tau11g, &
                                             tau02g,taum,taumg
           real(kind=dp), dimension(np2+1)   :: w01s,wcf
 !DIR$     ATTRIBUTES ALIGN : 64 :: w01s,wcf
@@ -213,32 +215,32 @@ module  mod_tmatrix_mps
           integer(kind=int4), dimension(ni0) :: iga0
           real(kind=dp),    dimension(ng0) :: ga0
           real(kind=dp),    dimension(ni0) :: cof0
-          real(kind=dp),    dimension(nmp) :: cofsr
+          real(kind=dp),    dimension(nmp), automatic :: cofsr
           real(kind=dp), dimension(NPN6,NPN4,NPN4)   :: RT11,RT12,RT21,RT22, &
                                                      IT11,IT12,IT21,IT22
-          complex(16), dimension(2,2,2,2)         :: A0p,A1p,B0p,B1p,A0pg,&
+          complex(16), dimension(2,2,2,2), automatic         :: A0p,A1p,B0p,B1p,A0pg,&
                                                      A1pg,B0pg,B1pg
           complex(16), dimension(ni0,nij)         :: atr0,btr0
 !DIR$     ATTRIBUTES ALIGN : 64 :: atr0,btr0
           complex(16), dimension(2,np,nmp)        :: atr
 !DIR$     ATTRIBUTES ALIGN : 64 :: atr
-          complex(16), dimension(nmp)             :: at,bt
+          complex(16), dimension(nmp), automatic             :: at,bt
 !DIR$     ATRIBUTES ALIGN : 64 :: at,bt          
           complex(16), dimension(ni0,nij)         :: atr1,btr1
 !DIR$     ATTRIBUTES ALIGN : 64 :: atr1,btr1
           complex(16), dimension(np,nij)          :: ek
 !DIR$     ATTRIBUTES ALIGN : 64 ::  ek
-          complex(16), dimension(nLp)             :: ref,refc
+          complex(16), dimension(nLp), automatic             :: ref,refc
 !DIR$     ATTRIBUTES ALIGN : 64 ::  ref,refc
           complex(16), dimension(nLp,nmp)         :: p0,q0
 !DIR$     ATTRIBUTES ALIGN : 64 ::  p0,q0
-          complex(16), dimension(np)              :: an,bn
+          complex(16), dimension(np), automatic              :: an,bn
 !DIR$     ATTRIBUTES ALIGN : 64 ::  an,bn
-          complex(16), dimension(nLp)             :: B2i
+          complex(16), dimension(nLp), automatic             :: B2i
 !DIR$     ATTRIBUTES ALIGN : 64 ::  B2i
           complex(16), dimension(nLp,nmp)         :: at0,bt0
 !DIR$     ATTRIBUTES ALIGN : 64 ::  at0,bt0
-          complex(16), dimension(nmp)             :: at1,bt1
+          complex(16), dimension(nmp), automatic             :: at1,bt1
 !DIR$     ATTRIBUTES ALIGN : 64 ::  at1,bt1    
           complex(16), dimension(nLp,nmp)         :: as,bs,as2,bs2
 !DIR$     ATTRIBUTES ALIGN : 64 :: as,bs,as1,bs1
@@ -247,7 +249,7 @@ module  mod_tmatrix_mps
                                                         ast,bst,asp,bsp,asv,bsv
 !DIR$     ATTRIBUTES ALIGN : 64 :: tta,ttb,tta0,ttb0,asr,bsr,as0,bs0,asc,bsc
 !DIR$     ATTRIBUTES ALIGN : 64 :: as1,bs1,ast,bst,asp,bsp,asv,bsv
-          complex(16), dimension(nmp)                 :: atj,btj
+          complex(16), dimension(nmp), automatic                 :: atj,btj
 !DIR$     ATTRIBUTES ALIGN : 64 :: atj,btj
           complex(16), dimension(nLp,nLp,2,2,nmp,nmp) :: pct
 !DIR$     ATTRIBUTES ALIGN : 64 :: pct
@@ -264,7 +266,7 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: tbar          
           complex(16), dimension(2,2,nmp,nmp)         ::   tbar0
 !DIR$     ATTRIBUTES ALIGN : 64 :: tbar0
-          complex(16), dimension(2,2)                 ::   bar
+          complex(16), dimension(2,2), automatic      ::   bar
           complex(16), dimension(-2*np:2*np)          :: ekt
           
           
@@ -280,7 +282,7 @@ module  mod_tmatrix_mps
                !DIR$ ATTRIBUTES ALIGN : 8 ::  gmn4,cwmf1,theta,gn,cbak,lnfacd,gmnj
                !DIR$ ATTRIBUTES ALIGN : 8 :: guv1,guv2,xt
               
-               real(kind=dp) :: k,pih,twopi,pione,gcs,gcv,eps,fint,  &
+               real(kind=dp), automatic :: k,pih,twopi,pione,gcs,gcv,eps,fint,  &
                          temp,temp0,x0,y0,z0,gcsr,gcvr,xv,xs, &
                         ratio,RAT,DDELT,alph,beta,s,t,ca,sa, &
                         sb,cb,xd,d,cz,cext0,cext1,fuv1,fuv2, &
@@ -304,7 +306,7 @@ module  mod_tmatrix_mps
              !DIR$ ATTRIBUTES ALIGN : 4 ::  itmax,ia,iang,ik,jk,itau,itau0,jtau0
              !DIR$ ATTRIBUTES ALIGN : 4 ::  jtau,nang,nang2,nsmall,j,NDGS
               
-             integer(kind=int4) :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
+             integer(kind=int4), automatic :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
                            iuv1,nmax0,imax,n0,ii,ij,iv,inn,n1,      &     !! in original code was: in, here it was changed to: inn
                            ip,iq,is,isn,isv,nlarge,nbes,irc,        &
                            itrc,iuvc,niter,ijmax,ijmin,iuvp,        &
@@ -321,7 +323,7 @@ module  mod_tmatrix_mps
               
               !DIR$ ATTRIBUTES ALIGN : 16 ::   A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0
               !DIR$ ATTRIBUTES ALIGN : 16 ::   A1,B1,Aj1,Bj1,Aj0,Bj0,cmzj,cmzg,Ag,Bg
-               complex(16)   :: A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0,    &
+               complex(16), automatic   :: A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0,    &
                            A1,B1,Aj1,Bj1,Aj0,Bj0,cmzj,cmzg,Ag,Bg
                
          
@@ -724,6 +726,24 @@ module  mod_tmatrix_mps
 !C      "ampld.new.f" 
 !C ----------------------------------------------------------------------
       nmax0=1
+
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+      !DIR$ IF (CPU_HASWELL .EQ. 1)
+          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop744.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
+                            -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
+                            -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
+                            -er11BC -er01C2 -a sleep 0.001")
+            if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+             end if
+       !DIR$ ENDIF
+!DIR$ ENDIF
+      line     = __LINE__       
+      start    = 0.0_dp
+      end      = 0.0_dp
+      duration = 0.0_dp
+      start = DCLOCK()
 !DIR$ LOOP COUNT (10,100,300)
       do i=1,nL
          do j1=1,nmp
@@ -736,18 +756,10 @@ module  mod_tmatrix_mps
             enddo
          enddo
          if(i.eq.1) goto  12
-!DIR$ IF (USE_PERF_PROFILER .EQ. 1)
-         !DIR$ IF (CPU_HASWELL .EQ. 1)
-            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop_741.txt -er100 -er200 -er203 &
-                               -er105 -er205 -er108 -er100e -er3f24 -er0148 -er2048 -er0149 &
-                               -er0185 -r01a2 -a sleep 0.000001")
-            if(result == .false.) then
-               ret = GETLASTERRORQQ()
-               print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ",__LINE__
-            end if
-          !DIR$ ENDIF
-!DIR$ ENDIF
+
+           
 !DIR$    DISTRIBUTE POINT
+            
          do 121 j=i-1,1,-1
             if(idshp(i).eq.idshp(j).and.shp(1,i).eq.shp(1,j)) then
                if(xc(i).eq.xc(j).and.refc(i).eq.refc(j)) then
@@ -867,17 +879,7 @@ module  mod_tmatrix_mps
             stop
          endif
          uvmax(i)=nmax(i)*(nmax(i)+2)
-!DIR$ IF (USE_PERF_PROFILER .EQ. 1)
-         !DIR$ IF (CPU_HASWELL .EQ. 1)
-             result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop873.txt -er20F0 -er1FE6 -er20D1 &
-                               -er10D1 -er08D1 -er01D1 -er02D1 -er07C6 -er20C5 -er10C4 -er01C2       &
-                               -er10C1 -er08C1 -er02B1 -er01B1 -er01A2 -er0279 -er0248 -a sleep 0.0001")
-             if(result == .false.) then
-                ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret,"loop at: ", __LINE__
-             end if
-          !DIR$ ENDIF
-!DIR$ ENDIF
+
          do n=1,nmax(i)
             in0=n*(n+1)
             do v=1,nmax(i)
@@ -918,7 +920,10 @@ module  mod_tmatrix_mps
             nmax0=nmax(i)
 	    imax=i
 	 endif
-      enddo 
+      enddo
+      end = DCLOCK()
+      duration = end - start
+      print*, "Loop at line: ", line+7, " executed in: ", duration, " microseconds."
       write(6,*) 'maximum scattering order: ',imax,'   ',nmax0
       write(6,'(/)')
       write(6,*) 'input particle-positions: '
@@ -945,7 +950,7 @@ module  mod_tmatrix_mps
 
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
       !DIR$ IF (CPU_HASWELL .EQ. 1)
-          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop951.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
+          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop965.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
                             -er11BC -er01C2 -a sleep 0.001")
@@ -955,7 +960,11 @@ module  mod_tmatrix_mps
              end if
        !DIR$ ENDIF
 !DIR$ ENDIF
-      
+        line  = __LINE__     
+        start = 0.0_dp
+        end   = 0.0_dp
+        duration = 0.0_dp
+        start = DCLOCK()
 !DIR$   LOOP COUNT (10,100,300)
         do 17 i=1,nL
              if(idshp(i).eq.0) goto 17
@@ -1048,7 +1057,10 @@ module  mod_tmatrix_mps
  173           continue
             enddo
          enddo
-17      continue
+17     continue
+       end = DCLOCK()
+       duration = end - start
+       print*, "Loop at line: ", line+4, "executed in: ", duration, " microseconds."
 !        C
 !C  calculating Gaunt coefficients
 !C  the formulation used here for the calculation of Gaunt coefficients 
@@ -1066,7 +1078,7 @@ module  mod_tmatrix_mps
 
 !DIR$   IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
-           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1072.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
+           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1097.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
                             -er11BC -er01C2 -a sleep 0.1")
@@ -1076,7 +1088,11 @@ module  mod_tmatrix_mps
              end if
        !DIR$ ENDIF
 !DIR$ ENDIF
-      
+      line  = __LINE__       
+      start = 0.0_dp
+      end   = 0.0_dp
+      duration = 0.0_dp
+      start = DCLOCK()
 !DIR$ LOOP COUNT (9,99,299)
       do i=1,nL-1
 !DIR$ LOOP COUNT (10,100,300)
@@ -1137,6 +1153,9 @@ module  mod_tmatrix_mps
             enddo
          enddo
       enddo
+      end = DCLOCK()
+      duration = end  - start
+      print*, "Loop at line: ", line+4, " executed in: ", duration, " microseconds."
       if(idMie.eq.1) then
          do j=1,nL
             do iuv=1,uvmax(j)
@@ -1186,6 +1205,11 @@ module  mod_tmatrix_mps
             end if
         !DIR$ ENDIF
 !DIR$ ENDIF
+      line  = __LINE__      
+      start = 0.0_dp
+      end = 0.0_dp
+      duration = 0.0_dp
+      start = DCLOCK()
       do 1001 iuv=1,n0
          v=dsqrt(dble(iuv))
          iuvc=v*v
@@ -1718,7 +1742,12 @@ module  mod_tmatrix_mps
             niter=niter+1
             goto 62
  1002    continue
-1001  continue	
+1001  continue
+
+      end = DCLOCK()
+      duration = end - start
+      print*, "Loop at line: ", line+4, " executed in: ", duration, " microseconds."
+            
 !      C-----------------------------------------------------------------------
 !C  calculating random-orientation averaged total and 
 !C  individual-particle extinction cross-sections
@@ -1736,7 +1765,7 @@ module  mod_tmatrix_mps
       n0=nmax0*(nmax0+2)
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
-        result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1740.txt -er100 -er203 -er105 -er108 -er100E -er200E -er0214 &
+        result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1778.txt -er100 -er203 -er105 -er108 -er100E -er200E -er0214 &
                           -er2424 -er3024 -er3F24 -erC424 -erF824 -er003C -er0148 -er0248 -er024C -er0151 -er015E -er0279   &
                           -er1879 -er0180 -er0280 -er0480 -er0185 -er4188 -er019C -er01A1 -er02A1 -er04A1 -er08A1 -er10A1   &
                           -er20A1 -er40A1 -er80A1 -er01A2 -er01A8 -er00C0 -er01C2 -er07C6 -a sleep 0.001")
@@ -1746,6 +1775,11 @@ module  mod_tmatrix_mps
          end if
         !DIR$ ENDIF
 !DIR$ ENDIF
+      line = __LINE__
+      start = 0.0_dp
+      end   = 0.0_dp
+      duration = 0.0_dp
+      start = DCLOCK()
       do iuv=1,n0
          do iq=1,2
             do 1801 j=1,nL
@@ -1772,12 +1806,35 @@ module  mod_tmatrix_mps
  1801	    continue
          enddo
       enddo
+      end = DCLOCK()
+      duration = end - start
+      print*, "Loop at line: ", line+4, " executedin: ", duration, " microseconds."
 !      C-----------------------------------------------------------------------
 !C  calculating random-orientation averaged asymmetry parameter and  
 !C  total and individual-particle scattering cross-sections 
-!C-----------------------------------------------------------------------
+      !C-----------------------------------------------------------------------
+      
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+       !DIR$ IF (CPU_HASWELL .EQ. 1)
+            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1828.txt -er100 -er300 -er203 -er803 -er105 -er108 &
+                              -er100E -er200E -er400E -er0214 -er2424 -erE424 -er003C -er0148 -er248 -er0149 -er0151  &
+                              -er015E -er0263 -er0279 -er0879 -er1879 -er0180 -er0280 -er0480 -er0185 -er0187 -er0487 &
+                              -er4188 -er8188 -erFF88 -er4189 -er019C -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 &
+                              -er40A1 -er01A2 -er08A2 -er10A2 -er02B1 -er00C0 -er08C1 -er10C1 -er01C2 -er07C6         &
+                              -a sleep 1")
+             if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+         end if
+        !DIR$ ENDIF
+!DIR$ ENDIF
+        line  = __LINE__
+        start = 0.0_dp
+        end   = 0.0_dp
+        duration = 0.0_dp
+        start = DCLOCK()
         do j=1,nL
-         do iuv=1,uvmax(j)
+          do iuv=1,uvmax(j)
             v=dsqrt(dble(iuv))
             u=iuv-v*v-v
             iuv1=iuv-2*u
@@ -1947,8 +2004,11 @@ module  mod_tmatrix_mps
                enddo
             enddo
          enddo
-        enddo 
-        if(idscmt.lt.0) goto 2000
+      enddo
+      end = DCLOCK()
+      duration = end - start
+      print*, "Loop at line: ", line+5, " executed in: ", duration, " microseconds."
+      if(idscmt.lt.0) goto 2000
 !C-----------------------------------------------------------------------
 !C  calculating random-orientation averaged Mueller matrix elements
 !C-----------------------------------------------------------------------
@@ -1956,7 +2016,26 @@ module  mod_tmatrix_mps
          write(6,*) 'Calculating (Mueller) scattering matrix'
          write(6,'(/)') 
          n0=nmax0*(nmax0+2)
-         nmax2=2*nmax0      
+         nmax2=2*nmax0
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+       !DIR$ IF (CPU_HASWELL .EQ. 1)
+         result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2039.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
+                              -er100E -er200E -er400E -er0214 -er2424 -erE424 -er003C -er0148 -er248 -er0149 -er0151  &
+                              -er015E -er0263 -er0279 -er0879 -er1879 -er0180 -er0280 -er0480 -er0185 -er0187 -er0487 &
+                              -er4188 -er8188 -erFF88 -er4189 -er019C -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 &
+                              -er40A1 -er01A2 -er08A2 -er10A2 -er02B1 -er00C0 -er08C1 -er10C1 -er01C2 -er07C6         &
+                              -a sleep 1")
+             if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+         end if
+        !DIR$ ENDIF
+!DIR$ ENDIF
+         line = __LINE__
+         start = 0.0_dp
+         end   = 0.0_dp
+         duration = 0.0_dp
+         start = dclock()
          do n=1,nmax0
             do v=1,nmax0
                do m=0,n
@@ -1975,6 +2054,9 @@ module  mod_tmatrix_mps
             enddo
          enddo
       enddo
+      end = dclock()
+      duration = end - start
+      print*, "Loop at line: ", line+4, " executed in: ", duration, " microseconds."
       do n=1,nmax0
          do jn=1,nmax0
             do ip=1,2
@@ -1993,6 +2075,25 @@ module  mod_tmatrix_mps
             enddo
          enddo
       enddo
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+       !DIR$ IF (CPU_HASWELL .EQ. 1)
+         result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2092.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
+                              -er100E -er200E -er400E -er0214 -er2424 -erE424 -er003C -er0148 -er248 -er0149 -er0151  &
+                              -er015E -er0263 -er0279 -er0879 -er1879 -er0180 -er0280 -er0480 -er0185 -er0187 -er0487 &
+                              -er4188 -er8188 -erFF88 -er4189 -er019C -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 &
+                              -er40A1 -er01A2 -er08A2 -er10A2 -er02B1 -er00C0 -er08C1 -er10C1 -er01C2 -er07C6         &
+                              -a sleep 1")
+             if(result == .false.) then
+                ret = GETLASTERRORQQ()
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+         end if
+        !DIR$ ENDIF
+!DIR$ ENDIF
+      line = __LINE__
+      start = 0.0_dp
+      end   = 0.0_dp
+      duration = 0.0_dp
+      start = dclock()
       do 1900 ids=-nmax2,nmax2         
          do n=1,nmax0          
             do 19001 v=1,nmax0
@@ -2202,6 +2303,9 @@ module  mod_tmatrix_mps
             enddo
          enddo
 1900  continue
+      end =  dclock()
+      duration = end - start
+      print*, "Loop at line: ", line+4, " executed in: ", duration, " microseconds."
       do 1910 ia=1,nang
          iang=2*nang-ia
          dang(ia)=sang*dble(ia-1)
