@@ -467,10 +467,10 @@ module  mod_tmatrix_mps
                c1i(i)     = ZERO
            end do
            
-           r00  = ZERO
+          
            besj = ZERO
            besy = ZERO
-           drot = ZERO
+          
           
           
            bes0 = ZERO
@@ -501,8 +501,7 @@ module  mod_tmatrix_mps
            taumg = ZERO
            w01s = ZERO
            wcf = ZERO
-           wmf1 = ZERO
-           wm1 = ZERO
+         
            wsdt = ZERO
            bcof = ZERO
            dc = ZERO
@@ -510,22 +509,8 @@ module  mod_tmatrix_mps
            tau = ZERO
            cof0 = ZERO
            cofsr = ZERO
-          ! RT11 = ZERO     Initialzied by the do loops
-          ! RT12 = ZERO          -|| -
-          ! RT21 = ZERO          -|| -
-          ! RT22 = ZERO          -|| -
-          ! IT11 = ZERO          -|| -
-          ! IT12 = ZERO          -|| -
-          ! IT21 = ZERO          -|| -
-          ! IT22 = ZERO          -|| -
-           A0p = CZERO
-           A1p = CZERO
-           B0p = CZERO
-           B1p = CZERO
-           A0pg = CZERO
-           A1pg = CZERO
-           B0pg = CZERO
-           B1pg = CZERO
+         
+        
            atr0 = CZERO
            btr0 = CZERO
            atr  = CZERO
@@ -533,7 +518,7 @@ module  mod_tmatrix_mps
            bt   = CZERO
            atr1 = CZERO
            btr1 = CZERO
-           ek   = CZERO
+           
            ref  = CZERO
            refc = CZERO
            p0   = CZERO
@@ -546,53 +531,25 @@ module  mod_tmatrix_mps
            bt0  = CZERO
            at1  = CZERO
            bt1  = CZERO
-           as   = CZERO
-           bs   = CZERO
-           as2  = CZERO
-           bs2  = CZERO
-           tta  = CZERO
-           ttb  = CZERO
-           tta0 = CZERO
-           ttb0 = CZERO
-           asr  = CZERO
-           bsr  = CZERO
-           as0  = CZERO
-           bs0  = CZERO
-           asc  = CZERO
-           bsc  = CZERO
-           as1  = CZERO
-           bs1  = CZERO
-           ast  = CZERO
-           bst  = CZERO
-           asp  = CZERO
-           bsp  = CZERO
-           asv  = CZERO
-           bsv  = CZERO
            atj  = CZERO
            btj  = CZERO
-           pct  = CZERO
-           A1m  = CZERO
-           A2m  = CZERO
-           B11n = CZERO
-           B12n = CZERO
-           B13n = CZERO
-           B21n = CZERO
-           B22n = CZERO
-           B23n = CZERO
-           fhmf1 = CZERO
-           fmf1  = CZERO
-           fhm1v = CZERO
-           fm1v  = CZERO
-           fhm1q = CZERO
-           fm1q  = CZERO
-           fhmf1vq = CZERO
-           fmf1vq  = CZERO
-           fhas = CZERO
-           fnhs = CZERO
-           tbar = CZERO
-           tbar0 = CZERO
-           bar = CZERO
-           ekt = CZERO
+          
+          
+          
+          
+          
+           
+          
+         
+           
+          
+           
+           
+          
+          
+           
+          
+           
            pih   = dacos(0.0_dp)
            twopi  = 4.0_dp*pih
            pione  = 2.0_dp*pih
@@ -745,7 +702,8 @@ module  mod_tmatrix_mps
 !C     which are the radius, the real and imaginary parts of 
 !C     refractive index of the core, for all other shapes of particles, 
 !C     simply set these three to 0. 
-!C-----------------------------------------------------------------------
+      !C-----------------------------------------------------------------------
+         r00 = ZERO
          do 1 i=1,nL
         ! read(2,*,err=10) idshp(i),(shp(j,i),j=1,3),
     ! +                             (r0(j,i),j=1,9)
@@ -829,19 +787,19 @@ module  mod_tmatrix_mps
 !C      "ampld.new.f" 
 !C ----------------------------------------------------------------------
       nmax0=1
+      tbar = CZERO
 
-!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
-      !DIR$ IF (CPU_HASWELL .EQ. 1)
+    
           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop744.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
-                            -er11BC -er01C2 -a sleep 0.001")
+                            -er11BC -er01C2 -a sleep 0.007945060729980469")
             if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+                print*, "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
-       !DIR$ ENDIF
-!DIR$ ENDIF
+      
+
       line     = __LINE__       
       start    = 0.0_dp
       end      = 0.0_dp
@@ -1050,19 +1008,21 @@ module  mod_tmatrix_mps
 !C  calculating T-matrices of individual particles in their respective
 !C  specified orientations
 !C-----------------------------------------------------------------------
+          tbar0 = CZERO
+          ekt = CZERO
+          
 
-!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
-      !DIR$ IF (CPU_HASWELL .EQ. 1)
+    
           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop965.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
-                            -er11BC -er01C2 -a sleep 0.001")
+                            -er11BC -er01C2 -a sleep 0.000019073486328125")
             if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+                print*, "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
-       !DIR$ ENDIF
-!DIR$ ENDIF
+     
+
         line  = __LINE__     
         start = 0.0_dp
         end   = 0.0_dp
@@ -1178,7 +1138,8 @@ module  mod_tmatrix_mps
 !      C-----------------------------------------------------------------------
 !C  calculating rotational and translation coefficients
 !C-----------------------------------------------------------------------
-
+         ek = CZERO
+         drot = ZERO
 !DIR$   IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1097.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
@@ -1295,6 +1256,24 @@ module  mod_tmatrix_mps
       enddo      
       write(6,*) 'Starting Bi-CGSTAB to solve T-matrix'         
       n0=nmax0*(nmax0+2)
+      asr = CZERO
+      bsr = CZERO
+      as  = CZERO
+      bs  = CZERO
+      tta0 = CZERO
+      ttb0 = CZERO
+      tta  = CZERO
+      ttb  = CZERO
+      as1  = CZERO
+      bs1  = CZERO
+      ast  = CZERO
+      bst  = CZERO
+      as0  = CZERO
+      bs0  = CZERO
+      asp  = CZERO
+      bsp  = CZERO
+      asv  = CZERO
+      bsv  = CZERO
 !DIR$   IF (USE_PERF_PROFILER .EQ. 1)
         !DIR$ IF (HASWELL_CPU .EQ. 1)
             result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1179.txt -er203 -er105 -er108 -er2008 -er100E &
@@ -1866,6 +1845,8 @@ module  mod_tmatrix_mps
       cpr=0.0_dp
 
       n0=nmax0*(nmax0+2)
+      as2 = CZERO
+      bs2 = CZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
         result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1778.txt -er100 -er203 -er105 -er108 -er100E -er200E -er0214 &
@@ -2120,6 +2101,8 @@ module  mod_tmatrix_mps
          write(6,'(/)') 
          n0=nmax0*(nmax0+2)
          nmax2=2*nmax0
+         wmf1 = ZERO
+         wm1  = ZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2039.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
@@ -2178,6 +2161,7 @@ module  mod_tmatrix_mps
             enddo
          enddo
       enddo
+      wsdt = ZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2092.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
