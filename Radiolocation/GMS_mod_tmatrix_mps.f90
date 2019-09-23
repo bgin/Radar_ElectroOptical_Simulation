@@ -1,5 +1,5 @@
 
-!include 'GMS_config.fpp'
+include 'GMS_config.fpp'
 
 module  mod_tmatrix_mps
 
@@ -17,14 +17,12 @@ module  mod_tmatrix_mps
  !          History:
  !                        Date: 05-06-2018
  !                        Time: 18:46 GMT+2
- !                        Date: 27-08-2019 (Modified)
-  !                        Time: 19:12 GMT+2
-  !                       Date: 12-09-2019
-  !                       Time: 17:32 GMT+2
+ !                        Data: 27-08-2019 (Modified)
+ !                        Time: 19:12 GMT+2
  !          Version:
  !
- !                      Major: 2
- !                      Minor: 0
+ !                      Major: 1
+ !                      Minor: 1
  !                      Micro: 0
  !
  !          Author:  
@@ -36,7 +34,7 @@ module  mod_tmatrix_mps
  !                        For questions/comments/suggestions/bugs/problems please contact 
 !C                        Yu-lin Xu at yu-lin.xu1@nasa.gov
  !          Modified:
- !                   Bernard Gingold on 05-06-2018 (@see history)
+ !                   Bernard Gingold on 05-06-2018
  !                 
  !          References:
  !         
@@ -90,9 +88,7 @@ module  mod_tmatrix_mps
         
    
     use mod_kinds,    only : int4, sp, dp
-    use IFCORE,       only : TRACEBACKQQ
-    use IFPORT,       only : SYSTEMQQ,GETLASTERRORQQ,DCLOCK
-    use mod_lnf
+    use IFPORT,       only : TRACEBACKQQ,SYSTEMQQ,GETLASTERRORQQ,DCLOCK
     implicit none
     !=====================================================59
     !  File and module information:
@@ -100,10 +96,10 @@ module  mod_tmatrix_mps
     !=====================================================59
     
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MAJOR = 2
+    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MINOR = 0
+    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MINOR = 1
     
     ! Micro version
     integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MICRO = 0
@@ -152,15 +148,15 @@ module  mod_tmatrix_mps
     
     contains
     
-    subroutine tmatrix_mps_driver(idMie,small,MXINT,NADD,idscmt,sang,w,irat, &
+    subroutine tmatrix_mps_driver(nLp,np,idMie,small,MXINT,NADD,idscmt,sang,w,irat, &
                                   nL,idshp,shp,r0,cext,cabs,csca,assym,cextv,cabsv, &
                                   cscav,cbakv,cprv,cexts,cabss,cscas,cbaks,cprs, &
                                   dang,inat,pol,i11,i21,i12,i22,cexti,cabsi,cscai, &
                                   assymi,cpri,mue                                    )
     
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: tmatrix_mps_driver
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4)                   :: idMie
+      
+          integer(kind=int4)                   :: nLp,np,idMie
           real(kind=dp)                        :: small
           integer(kind=int4)                   :: MXINT,NADD,idscmt
           real(kind=dp)                        :: sang,w
@@ -175,20 +171,18 @@ module  mod_tmatrix_mps
           real(kind=dp),    dimension(nLp)     :: cexti,cabsi,cscai,assymi,cpri
           real(kind=dp),    dimension(4,4,NANGMAX) :: mue
           ! Locals
-          integer(kind=int4), parameter :: nmp   =   np*(np+2)       !
-          integer(kind=int4), parameter :: nmp0  =   (np+1)*(np+4)/2 
-          integer(kind=int4), parameter :: np2   =   2*np
-          integer(kind=int4), parameter :: ni0   =   np*(np+1)*(np2+1)/3+np*np
-          integer(kind=int4), parameter :: ng0   =   np*(2*np**3+10*np**2+19*np+5)/6
-          integer(kind=int4), parameter :: nrc   =   4*np*(np+1)*(np+2)/3+np
-          integer(kind=int4), parameter :: nij   =   nLp*(nLp-1)/2
+          integer(kind=int4), parameter :: nmp  = np*(np+2)
+          integer(kind=int4), parameter :: nmp0 = (np+1)*(np+4)/2 
+          integer(kind=int4), parameter :: np2  = 2*np
+          integer(kind=int4), parameter :: ni0  = np*(np+1)*(np2+1)/3+np*np
+          integer(kind=int4), parameter :: ng0  = np*(2*np**3+10*np**2+19*np+5)/6
+          integer(kind=int4), parameter :: nrc  = 4*np*(np+1)*(np+2)/3+np
+          integer(kind=int4), parameter :: nij  = nLp*(nLp-1)/2
           real(kind=dp), automatic :: start,end,duration
           integer(kind=int4) :: u,v,u0
           logical(kind=int4), automatic :: result
           integer(kind=int4), automatic :: ret
           integer(kind=int4), automatic :: line
-          integer(kind=int4), automatic :: aerr
-          character(len=256), automatic :: emsg
           integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind
           real(kind=dp), dimension(nLp), automatic :: x,xc
 !DIR$     ATTRIBUTES ALIGN : 64 :: x,xc
@@ -196,7 +190,7 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: R00
           real(kind=dp), dimension(0:np2+1) :: besj,besy
 !DIR$     ATTRIBUTES ALIGN : 64 :: besj,besy
-          real(kind=dp), allocatable, dimension(:,:) :: drot ! dynamic alloc  ! real(kind=dp), dimension(nrc,nij) 
+          real(kind=dp), dimension(nrc,nij) :: drot
 !DIR$     ATTRIBUTES ALIGN : 64 :: drot
           real(kind=dp), dimension(nLp), automatic     :: c0i,c1i
 !DIR$     ATTRIBUTES ALIGN : 64 :: c0i,c1i          
@@ -204,16 +198,16 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: bes0
           real(kind=dp), dimension(5,nij)   :: confg
 !DIR$     ATTRIBUTES ALIGN : 64 :: confg
-          real(kind=dp), dimension(2)      :: taup,taupj,taupg,taupjg,tau0p, &
+          real(kind=dp), dimension(2), automatic       :: taup,taupj,taupg,taupjg,tau0p, &
                                             tau1p,tau2p,tau0pg,tau1pg,     &
                                             tau2pg,tau0pj,tau1pj,tau2pj,   &
                                             tau0pjg,tau1pjg,tau2pjg
-          real(kind=dp), dimension(2,2)    :: tau20,tau11,tau02,tau20g,tau11g, &
+          real(kind=dp), dimension(2,2), automatic     :: tau20,tau11,tau02,tau20g,tau11g, &
                                             tau02g,taum,taumg
           real(kind=dp), dimension(np2+1)   :: w01s,wcf
 !DIR$     ATTRIBUTES ALIGN : 64 :: w01s,wcf
           real(kind=dp), dimension(0:4*(np+1)) :: fnr
-          real(kind=dp), allocatable, dimension(:,:,:,:) :: wmf1,wm1,wsdt !dynamic alloc   real(kind=dp), dimension(np,np,0:np,0:np2)
+          real(kind=dp), dimension(np,np,0:np,0:np2) :: wmf1,wm1,wsdt
 !DIR$     ATTRIBUTES ALIGN : 64 :: wmf1,wm1,wsdt
           real(kind=dp), dimension(0:np+2)       :: bcof
           real(kind=dp), dimension(-np:np,0:nmp) ::  dc
@@ -221,82 +215,81 @@ module  mod_tmatrix_mps
           integer(kind=int4), dimension(ni0) :: iga0
           real(kind=dp),    dimension(ng0) :: ga0
           real(kind=dp),    dimension(ni0) :: cof0
-          real(kind=dp),    dimension(nmp) :: cofsr
+          real(kind=dp),    dimension(nmp), automatic :: cofsr
           real(kind=dp), dimension(NPN6,NPN4,NPN4)   :: RT11,RT12,RT21,RT22, &
                                                      IT11,IT12,IT21,IT22
-          complex(16), dimension(2,2,2,2)         :: A0p,A1p,B0p,B1p,A0pg,&
+          complex(16), dimension(2,2,2,2), automatic         :: A0p,A1p,B0p,B1p,A0pg,&
                                                      A1pg,B0pg,B1pg
-          complex(16), allocatable, dimension(:,:)         :: atr0,btr0  ! dynamic alloc  complex(16), dimension(ni0,nij)
+          complex(16), dimension(ni0,nij)         :: atr0,btr0
 !DIR$     ATTRIBUTES ALIGN : 64 :: atr0,btr0
           complex(16), dimension(2,np,nmp)        :: atr
-
-          complex(16), dimension(nmp)            :: at,bt
-!DIR$     ATTRIBUTES ALIGN : 64 :: at,bt          
-          complex(16), allocatable, dimension(:,:)         :: atr1,btr1  ! dynamic alloc  complex(16), dimension(ni0,nij) 
+!DIR$     ATTRIBUTES ALIGN : 64 :: atr
+          complex(16), dimension(nmp), automatic             :: at,bt
+!DIR$     ATRIBUTES ALIGN : 64 :: at,bt          
+          complex(16), dimension(ni0,nij)         :: atr1,btr1
 !DIR$     ATTRIBUTES ALIGN : 64 :: atr1,btr1
-          complex(16), allocatable, dimension(:,:)          :: ek ! dynamic alloc   complex(16), dimension(np,nij) 
+          complex(16), dimension(np,nij)          :: ek
 !DIR$     ATTRIBUTES ALIGN : 64 ::  ek
-          complex(16), dimension(nLp)           :: ref,refc
+          complex(16), dimension(nLp), automatic             :: ref,refc
 !DIR$     ATTRIBUTES ALIGN : 64 ::  ref,refc
-          complex(16), allocatable, dimension(:,:)         :: p0,q0   !  complex(16), dimension(nLp,nmp) 
+          complex(16), dimension(nLp,nmp)         :: p0,q0
 !DIR$     ATTRIBUTES ALIGN : 64 ::  p0,q0
-          complex(16), dimension(np)            :: an,bn
+          complex(16), dimension(np), automatic              :: an,bn
 !DIR$     ATTRIBUTES ALIGN : 64 ::  an,bn
-          complex(16), dimension(nLp)           :: B2i
+          complex(16), dimension(nLp), automatic             :: B2i
 !DIR$     ATTRIBUTES ALIGN : 64 ::  B2i
-          complex(16), allocatable, dimension(:,:)         :: at0,bt0 !  complex(16), dimension(nLp,nmp) 
+          complex(16), dimension(nLp,nmp)         :: at0,bt0
 !DIR$     ATTRIBUTES ALIGN : 64 ::  at0,bt0
-          complex(16), dimension(nmp)             :: at1,bt1
+          complex(16), dimension(nmp), automatic             :: at1,bt1
 !DIR$     ATTRIBUTES ALIGN : 64 ::  at1,bt1    
-          complex(16), allocatable, dimension(:,:)         :: as,bs,as2,bs2  !  complex(16), dimension(nLp,nmp)  
-!DIR$     ATTRIBUTES ALIGN : 64 :: as,bs,as2,bs2
-          complex(16), allocatable, dimension(:,:,:)        :: tta,ttb,tta0,ttb0,asr,bsr, &  ! dynamic alloc   complex(16), dimension(nLp,nLp,nmp)
+          complex(16), dimension(nLp,nmp)         :: as,bs,as2,bs2
+!DIR$     ATTRIBUTES ALIGN : 64 :: as,bs,as1,bs1
+          complex(16), dimension(nLp,nLp,nmp)        :: tta,ttb,tta0,ttb0,asr,bsr, &
                                                         as0,bs0,asc,bsc,as1,bs1,   &
                                                         ast,bst,asp,bsp,asv,bsv
 !DIR$     ATTRIBUTES ALIGN : 64 :: tta,ttb,tta0,ttb0,asr,bsr,as0,bs0,asc,bsc
 !DIR$     ATTRIBUTES ALIGN : 64 :: as1,bs1,ast,bst,asp,bsp,asv,bsv
-          complex(16), dimension(nmp)                 :: atj,btj
+          complex(16), dimension(nmp), automatic                 :: atj,btj
 !DIR$     ATTRIBUTES ALIGN : 64 :: atj,btj
-          complex(16), allocatable, dimension(:,:,:,:,:,:) :: pct ! dynamic alloc   complex(16), dimension(nLp,nLp,2,2,nmp,nmp)
+          complex(16), dimension(nLp,nLp,2,2,nmp,nmp) :: pct
 !DIR$     ATTRIBUTES ALIGN : 64 :: pct
-          complex(16), allocatable, dimension(:,:,:,:,:)      :: A1m,A2m  ! dynamic alloc   complex(16), dimension(0:np,np,np,2,2)  
+          complex(16), dimension(0:np,np,np,2,2)      :: A1m,A2m
 !DIR$     ATTRIBUTES ALIGN : 64 :: A1m,A2m
-          complex(16), allocatable, dimension(:,:,:,:)           :: B11n,B12n,B13n,B21n,B22n,B23n  !  complex(16), dimension(np,np,2,2)  
-!DIR$     ATTRIBUTES ALIGN : 64 :: B11n,B12n,B13n,B21n,B22n,B23n    
-          complex(16), allocatable, dimension(:,:,:,:)    ::   fhmf1,fmf1,fhm1v,fm1v,fhm1q, &   ! dynamic alloc   complex(16), dimension(0:np2,np,0:np2,2) 
-                                                               fm1q,fhmf1vq,fmf1vq,fhmf4vq
+          complex(16), dimension(np,np,2,2)           :: B11n,B12n,B13n,B21n,B22n,B23n
+!DIR$     ATTRIBUTES ALIGN : 64 :: B11n,B12n,B12n,B21n,B22n,B23n    
+          complex(16), dimension(0:np2,np,0:np2,2)    ::   fhmf1,fmf1,fhm1v,fm1v,fhm1q, &
+                                                           fm1q,fhmf1vq,fmf1vq
 !DIR$     ATTRIBUTES ALIGN : 64 ::  fhmf1,fmf1,fhm1v,fm1v,fhm1q,fm1q,fhmf4vq,fmf1vq
           complex(16), dimension(0:np2,2,2)           ::   fhas,fnhs                                                
 !DIR$     ATTRIBUTES ALIGN : 64 :: fhas,fnhs    
-          complex(16), allocatable, dimension(:,:,:,:,:)     ::   tbar  ! dynamic alloc    complex(16), dimension(nLp,2,2,nmp,nmp) 
+          complex(16), dimension(nLp,2,2,nmp,nmp)     ::   tbar
 !DIR$     ATTRIBUTES ALIGN : 64 :: tbar          
-          complex(16), allocatable, dimension(:,:,:,:)         ::   tbar0 ! dynamic alloc   complex(16), dimension(2,2,nmp,nmp)  
+          complex(16), dimension(2,2,nmp,nmp)         ::   tbar0
 !DIR$     ATTRIBUTES ALIGN : 64 :: tbar0
-          complex(16), dimension(2,2)      ::   bar
+          complex(16), dimension(2,2), automatic      ::   bar
           complex(16), dimension(-2*np:2*np)          :: ekt
           
           
         
               
-               !DIR$ ATTRIBUTES ALIGN : 8 :: k,pione,gcs,gcv,eps
+               !DIR$ ATTRIBUTES ALIGN : 8 :: k,pih,twopi,pione,gcs,gcv,eps, 
                !DIR$ ATTRIBUTES ALIGN : 8 :: fint,temp,temp0,x0,y0,z0,gcsr
                !DIR$ ATTRIBUTES ALIGN : 8 :: gcvr,xv,xs,ratio,RAT,DDELT,alph
-               !DIR$ ATTRIBUTES ALIGN : 8 :: beta, s,t,ca,sa
+               !DIR$ ATTRIBUTES ALIGN : 8 :: beta s,t,ca,sa
                !DIR$ ATTRIBUTES ALIGN : 8 :: sb,cb,xd,d,cz,cext0,cext1,fuv1,fuv2
                !DIR$ ATTRIBUTES ALIGN : 8 :: fuv3,guv,guv3,guv5,guv4,guv6,rn,rm
-               !DIR$ ATTRIBUTES ALIGN : 8 :: p,fnp,fn,gmn,gmn1,gmn2,gmn3,gmn5,gmn6
+               !DIR$ ATTRIBUTES ALIGN : 8 :: p,fnp,fn,gmn,gmn1,gmn2,gmn3,gmn5
                !DIR$ ATTRIBUTES ALIGN : 8 ::  gmn4,cwmf1,theta,gn,cbak,lnfacd,gmnj
-               !DIR$ ATTRIBUTES ALIGN : 8 :: guv1,guv2,sphi,cphi,cpr,fv,fv0,cv,cwm1,cq,gt,xt,cscax,cextx,cprx,cabsx,assymx,cbakx
+               !DIR$ ATTRIBUTES ALIGN : 8 :: guv1,guv2,xt
               
-               real(kind=dp) :: k,pih,twopi,pione,gcs,gcv,eps,fint,  &
+               real(kind=dp), automatic :: k,pih,twopi,pione,gcs,gcv,eps,fint,  &
                          temp,temp0,x0,y0,z0,gcsr,gcvr,xv,xs, &
                         ratio,RAT,DDELT,alph,beta,s,t,ca,sa, &
                         sb,cb,xd,d,cz,cext0,cext1,fuv1,fuv2, &
                         fuv3,guv,guv3,guv5,guv4,guv6,rn,rm,  &
-                        p,fnp,fn,gmn,gmn1,gmn2,gmn3,gmn5,gmn6,    &
+                        p,fnp,fn,gmn,gmn1,gmn2,gmn3,gmn5,    &
                         gmn4,cwmf1,theta,gn,cbak,lnfacd,gmnj,&
-                        guv1,guv2,xt,sphi,cphi,cpr,fv,fv0,cv, &
-                        cwm1,cq,gt,cscax,cextx,cprx,cabsx,assymx,cbakx
+                        guv1,guv2,xt
                
          
           
@@ -308,22 +301,21 @@ module  mod_tmatrix_mps
              !DIR$ ATTRIBUTES ALIGN : 4 ::  itrc,iuvc,niter,ijmax,ijmin,iuvp        
              !DIR$ ATTRIBUTES ALIGN : 4 ::  jv1,iuv2,iuv3,juv1,juv2,juv3,juv4       
              !DIR$ ATTRIBUTES ALIGN : 4 ::  juv5,juv6,ntemp,n2,imn2,imn3,jmn1,jmn2
-             !DIR$ ATTRIBUTES ALIGN : 4 ::  jmn3,jmn4,jmn5,jmn6,nmax2,it,nmf1
+             !DIR$ ATTRIBUTES ALIGN : 4 ::  jmn3,jmn4,jmn5,jmn6,nmax2,it,ii,nmf1
              !DIR$ ATTRIBUTES ALIGN : 4 ::  jn,jp,ids,ms,mw,isf,iwv,iwf,nvs,itmin
              !DIR$ ATTRIBUTES ALIGN : 4 ::  itmax,ia,iang,ik,jk,itau,itau0,jtau0
-             !DIR$ ATTRIBUTES ALIGN : 4 ::  jtau,nang,nang2,nsmall,j,NDGS,in,jj,nm1,nj
+             !DIR$ ATTRIBUTES ALIGN : 4 ::  jtau,nang,nang2,nsmall,j,NDGS
               
-             integer(kind=int4) :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
+             integer(kind=int4), automatic :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
                            iuv1,nmax0,imax,n0,ii,ij,iv,inn,n1,      &     !! in original code was: in, here it was changed to: inn
                            ip,iq,is,isn,isv,nlarge,nbes,irc,        &
                            itrc,iuvc,niter,ijmax,ijmin,iuvp,        &
                            jv1,iuv2,iuv3,juv1,juv2,juv3,juv4,       &
                            juv5,juv6,ntemp,n2,imn2,imn3,jmn1,jmn2,  &
-                           jmn3,jmn4,jmn5,jmn6,nmax2,it,nmf1,    &
+                           jmn3,jmn4,jmn5,jmn6,nmax2,it,ii,nmf1,    &
                            jn,jp,ids,ms,mw,isf,iwv,iwf,nvs,itmin,   &
                            itmax,ia,iang,ik,jk,itau,itau0,jtau0,    &
-                           jtau,nang,nang2,nsmall,j,NDGS,in,jj,nm1, &
-                           nj
+                           jtau,nang,nang2,nsmall,j,NDGS
              
         
           
@@ -331,146 +323,51 @@ module  mod_tmatrix_mps
               
               !DIR$ ATTRIBUTES ALIGN : 16 ::   A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0
               !DIR$ ATTRIBUTES ALIGN : 16 ::   A1,B1,Aj1,Bj1,Aj0,Bj0,cmzj,cmzg,Ag,Bg
-               complex(16)  :: A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0,    &
+               complex(16), automatic   :: A,B,cmz,Aj,Bj,A2,B2,Aj2,Bj2,A0,B0,ephi,ci,cin,ci0,    &
                            A1,B1,Aj1,Bj1,Aj0,Bj0,cmzj,cmzg,Ag,Bg
                
          
           
           
            common/MIESUB/ twopi,pih
-           common/rot/bcof,dc
-           common/fnr/fnr
-           common/pitau/pi,tau
+           common/rot/bcof(0:np+2),dc(-np:np,0:nmp)
+           common/fnr/fnr(0:4*(np+1))
+           common/pitau/pi(nmp0),tau(nmp0)
            common/tran/atr
-           common/ig0/iga0
-           common/g0/ga0
-           common/cofmnv0/cof0
-           common/crot/cofsr
+           common/ig0/iga0(ni0)
+           common/g0/ga0(ng0)
+           common/cofmnv0/cof0(ni0)
+           common/crot/cofsr(nmp)
            common /TMAT/ RT11,RT12,RT21,RT22,IT11,IT12,IT21,IT22
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /MIESUB/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /rot/
-           
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /pitau/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: / tran/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /ig0/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /g0/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /cofmnv0/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: / crot/
-           !DIR$ ATTRIBUTES ALIGN : 64 :: /TMAT/
+           !DIR$ ATTRIBUTES ALIGN : 64 /MIESUB/
+           !DIR$ ATTRIBUTES ALIGN : 64 /rot/
+           !DIR$ ATTRIBUTES ALIGN : 64 /fnr/
+           !DIR$ ATTRIBUTES ALIGN : 64 /pitau/
+           !DIR$ ATTRIBUTES ALIGN : 64 / tran/
+           !DIR$ ATTRIBUTES ALIGN : 64 /ig0/
+           !DIR$ ATTRIBUTES ALIGN : 64 /g0/
+           !DIR$ ATTRIBUTES ALIGN : 64 /cofmnv0/
+           !DIR$ ATTRIBUTES ALIGN : 64 / crot/
+           !DIR$ ATTRIBUTES ALIGN : 64 /TMAT/
           
            !Exec code ....
-           aerr = -9999
-           emsg = " "
-           ! Begin allocation
-           allocate(drot(nrc,nij),STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(wmf1(np,np,0:np,0:np2),    &
-                    wm1(np,np,0:np,0:np2),     &
-                    wsdt(np,np,0:np,0:np2),     &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(atr0(ni0,nij),             &
-                    btr0(ni0,nij),             &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(atr1(ni0,nij),             &
-                    btr1(ni0,nij),             &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(ek(np,nij),                &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(p0(nLp,nmp),               &
-                    q0(nLp,nmp),               &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(at0(nLp,nmp),              &
-                    bt0(nLp,nmp),              &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(as(nLp,nmp),               &
-                    bs(nLp,nmp),               &
-                    as2(nLp,nmp),              &
-                    bs2(nLp,nmp),              &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(tta(nLp,nLp,nmp),          &
-                    ttb(nLp,nLp,nmp),          &
-                    tta0(nLp,nLp,nmp),         &
-                    ttb0(nLp,nLp,nmp),         &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(asr(nLp,nLp,nmp),          &
-                    bsr(nLp,nLp,nmp),          &
-                    as0(nLp,nLp,nmp),          &
-                    bs0(nLp,nLp,nmp),          &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(asc(nLp,nLp,nmp),          &
-                    bsc(nLp,nLp,nmp),          &
-                    as1(nLp,nLp,nmp),          &
-                    bs1(nLp,nLp,nmp),          &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(ast(nLp,nLp,nmp),          &
-                    bst(nLp,nLp,nmp),          &
-                    asp(nLp,nLp,nmp),          &
-                    bsp(nLp,nLp,nmp),          &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(asv(nLp,nLp,nmp),          &
-                    bsv(nLp,nLp,nmp),          &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(pct(nLp,nLp,2,2,nmp,nmp),  &
-                    A1m(0:np,np,np,2,2),       &
-                    A2m(0:np,np,np,2,2),       &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(B11n(np,np,2,2),           &
-                    B12n(np,np,2,2),           &
-                    B13n(np,np,2,2),           &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(B21n(np,np,2,2),           &
-                    B22n(np,np,2,2),           &
-                    B23n(np,np,2,2),           &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(fhmf1(0:np2,np,0:np2,2),   &
-                    fmf1(0:np2,np,0:np2,2),    &
-                    fhm1v(0:np2,np,0:np2,2),   &
-                    fm1v(0:np2,np,0:np2,2),    &
-                    fhm1q(0:np2,np,0:np2,2),   &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(fm1q(0:np2,np,0:np2,2),    &
-                    fhmf1vq(0:np2,np,0:np2,2), &
-                    fmf1vq(0:np2,np,0:np2,2),  &
-                    fhmf4vq(0:np2,np,0:np2,2), &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999
-           allocate(tbar(nLp,2,2,nmp,nmp),     &
-                    tbar0(2,2,nmp,nmp),        &
-                    STAT=aerr,ERRMSG=emsg)
-           if(aerr /= 0) goto 9999     
            ! Initialization   of arrays
            !DIR$ VECTOR ALIGNED
            !DIR$ SIMD
            do i = 1, nLp
                nmax(i)    = 0
                uvmax(i)   = 0
-              ! ind(i)     = 0
+               ind(i)     = 0
                x(i)       = ZERO
                xc(i)      = ZERO
                c0i(i)     = ZERO
                c1i(i)     = ZERO
            end do
            
-          
+           r00  = ZERO
            besj = ZERO
            besy = ZERO
-          
+           drot = ZERO
           
           
            bes0 = ZERO
@@ -501,16 +398,31 @@ module  mod_tmatrix_mps
            taumg = ZERO
            w01s = ZERO
            wcf = ZERO
-         
+           wmf1 = ZERO
+           wm1 = ZERO
            wsdt = ZERO
            bcof = ZERO
            dc = ZERO
            pi = ZERO
            tau = ZERO
-           cof0 = ZERO
+           cof = ZERO
            cofsr = ZERO
-         
-        
+          ! RT11 = ZERO     Initialzied by the do loops
+          ! RT12 = ZERO          -|| -
+          ! RT21 = ZERO          -|| -
+          ! RT22 = ZERO          -|| -
+          ! IT11 = ZERO          -|| -
+          ! IT12 = ZERO          -|| -
+          ! IT21 = ZERO          -|| -
+          ! IT22 = ZERO          -|| -
+           A0p = CZERO
+           A1p = CZERO
+           B0p = CZERO
+           B1p = CZERO
+           A0pg = CZERO
+           A1pg = CZERO
+           B0pg = CZERO
+           B1pg = CZERO
            atr0 = CZERO
            btr0 = CZERO
            atr  = CZERO
@@ -518,7 +430,7 @@ module  mod_tmatrix_mps
            bt   = CZERO
            atr1 = CZERO
            btr1 = CZERO
-           
+           ek   = CZERO
            ref  = CZERO
            refc = CZERO
            p0   = CZERO
@@ -531,25 +443,53 @@ module  mod_tmatrix_mps
            bt0  = CZERO
            at1  = CZERO
            bt1  = CZERO
+           as   = CZERO
+           bs   = CZERO
+           as2  = CZERO
+           bs2  = CZERO
+           tta  = CZERO
+           ttb  = CZERO
+           tta0 = CZERO
+           ttb0 = CZERO
+           asr  = CZERO
+           bsr  = CZERO
+           as0  = CZERO
+           bs0  = CZERO
+           asc  = CZERO
+           bsc  = CZERO
+           as1  = CZERO
+           bs1  = CZERO
+           ast  = CZERO
+           bst  = CZERO
+           asp  = CZERO
+           bsp  = CZERO
+           asv  = CZERO
+           bsv  = CZERO
            atj  = CZERO
            btj  = CZERO
-          
-          
-          
-          
-          
-           
-          
-         
-           
-          
-           
-           
-          
-          
-           
-          
-           
+           pct  = CZERO
+           A1m  = CZERO
+           A2m  = CZERO
+           B11n = CZERO
+           B12n = CZERO
+           B13n = CZERO
+           B21n = CZERO
+           B22n = CZERO
+           B23n = CZERO
+           fhmf1 = CZERO
+           fmf1  = CZERO
+           fhm1v = CZERO
+           fm1v  = CZERO
+           fhm1q = CZERO
+           fm1q  = CZERO
+           fhmf1vq = CZERO
+           fmf1vq  = CZERO
+           fhas = CZERO
+           fnhs = CZERO
+           tbar = CZERO
+           tbar0 = CZERO
+           bar = CZERO
+           ekt = CZERO
            pih   = dacos(0.0_dp)
            twopi  = 4.0_dp*pih
            pione  = 2.0_dp*pih
@@ -702,8 +642,7 @@ module  mod_tmatrix_mps
 !C     which are the radius, the real and imaginary parts of 
 !C     refractive index of the core, for all other shapes of particles, 
 !C     simply set these three to 0. 
-      !C-----------------------------------------------------------------------
-         r00 = ZERO
+!C-----------------------------------------------------------------------
          do 1 i=1,nL
         ! read(2,*,err=10) idshp(i),(shp(j,i),j=1,3),
     ! +                             (r0(j,i),j=1,9)
@@ -787,19 +726,19 @@ module  mod_tmatrix_mps
 !C      "ampld.new.f" 
 !C ----------------------------------------------------------------------
       nmax0=1
-      tbar = CZERO
 
-    
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+      !DIR$ IF (CPU_HASWELL .EQ. 1)
           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop744.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
-                            -er11BC -er01C2 -a sleep 0.007945060729980469")
+                            -er11BC -er01C2 -a sleep 0.001")
             if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print*, "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
-      
-
+       !DIR$ ENDIF
+!DIR$ ENDIF
       line     = __LINE__       
       start    = 0.0_dp
       end      = 0.0_dp
@@ -809,7 +748,7 @@ module  mod_tmatrix_mps
       do i=1,nL
          do j1=1,nmp
 !DIR$       UNROLL (2)
-            do j2=1,nmp
+            do 2=1,nmp
                tbar(i,1,1,j1,j2)=0._dp
                tbar(i,1,2,j1,j2)=0._dp
                tbar(i,2,1,j1,j2)=0._dp
@@ -869,7 +808,7 @@ module  mod_tmatrix_mps
  12      if(idshp(i).eq.0) then
            ratio=xc(i)/x(i)
             if(ratio.gt.1._dp) then
-               write(6,*) 'size of core > mantle for particle ',i
+               write(6,*) 'size of core >mantle for particle ',i
                call TRACEBACKQQ(STRING="size of core > mantle for particle", USER_EXIT_CODE= -1)
 	          stop
             endif
@@ -888,7 +827,7 @@ module  mod_tmatrix_mps
             write(6,'(a,1x,i4)')     &
               'Actual single-particle expansion truncation:',   &
                nmax(i)
-            do j=1,uvmax(i)
+            do ti4%j=1,uvmax(i)
                v=dsqrt(dble(j))
                tbar(i,1,1,j,j)=an(v)
                tbar(i,2,2,j,j)=bn(v)   
@@ -950,7 +889,7 @@ module  mod_tmatrix_mps
 	       imn=in0
                iuv=iv0
                B=dcmplx(RT11(1,n,v),IT11(1,n,v))
-               tbar(i,1,1,imn,iuv)=A*B
+               tbar(ti,1,1,imn,iuv)=A*B
                B=dcmplx(RT12(1,n,v),IT12(1,n,v))
                tbar(i,1,2,imn,iuv)=A*B
                B=dcmplx(RT21(1,n,v),IT21(1,n,v))
@@ -1008,21 +947,19 @@ module  mod_tmatrix_mps
 !C  calculating T-matrices of individual particles in their respective
 !C  specified orientations
 !C-----------------------------------------------------------------------
-          tbar0 = CZERO
-          ekt = CZERO
-          
 
-    
+!DIR$  IF (USE_PERF_PROFILER .EQ. 1)
+      !DIR$ IF (CPU_HASWELL .EQ. 1)
           result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop965.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
                             -er3F24 -er003C -er0148 -er0248 -er0149 -er024C -er0151 -er0279 -er0180 -er0280 -er0480   &
                             -er0185 -er4188 -er019c -er01A1 -er02A1 -er04A1 -er08A1 -er10A1 -er20A1 -er80A1 -er01A2   &
-                            -er11BC -er01C2 -a sleep 0.000019073486328125")
+                            -er11BC -er01C2 -a sleep 0.001")
             if(result == .false.) then
                 ret = GETLASTERRORQQ()
-                print*, "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
+                print,* "SYSTEMQQ: Failed to execute perf command -- reason: ", ret, "loop at: ", __LINE__
              end if
-     
-
+       !DIR$ ENDIF
+!DIR$ ENDIF
         line  = __LINE__     
         start = 0.0_dp
         end   = 0.0_dp
@@ -1079,7 +1016,7 @@ module  mod_tmatrix_mps
 	 ekt(0)=1._dp
          do m=1,2*n1
             ekt(m)=A**m
-	    ekt(-m)=qconjg(ekt(m))
+	    ekt(-m)=dconjg(ekt(m))
          enddo
          call rotcoef(cb,n1)
          do m=-n1,n1
@@ -1131,15 +1068,14 @@ module  mod_tmatrix_mps
 !C  (1971) and Xu, J. Comput. Appl. Math. 85, 53 (1997), J. Comput. Phys. 
 !C  139, 137 (1998)
 !C
-      call cofsrd(nmax0)	
+      call cofsrd(nmax0,np)	
       call cofd0(nmax0)
       call cofnv0(nmax0)
       call gau0(nmax0)
 !      C-----------------------------------------------------------------------
 !C  calculating rotational and translation coefficients
 !C-----------------------------------------------------------------------
-         ek = CZERO
-         drot = ZERO
+
 !DIR$   IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
            result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1097.txt -er203 -er803 -er105 -er107 -er100E -er0214 &
@@ -1256,24 +1192,6 @@ module  mod_tmatrix_mps
       enddo      
       write(6,*) 'Starting Bi-CGSTAB to solve T-matrix'         
       n0=nmax0*(nmax0+2)
-      asr = CZERO
-      bsr = CZERO
-      as  = CZERO
-      bs  = CZERO
-      tta0 = CZERO
-      ttb0 = CZERO
-      tta  = CZERO
-      ttb  = CZERO
-      as1  = CZERO
-      bs1  = CZERO
-      ast  = CZERO
-      bst  = CZERO
-      as0  = CZERO
-      bs0  = CZERO
-      asp  = CZERO
-      bsp  = CZERO
-      asv  = CZERO
-      bsv  = CZERO
 !DIR$   IF (USE_PERF_PROFILER .EQ. 1)
         !DIR$ IF (HASWELL_CPU .EQ. 1)
             result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1179.txt -er203 -er105 -er108 -er2008 -er100E &
@@ -1363,10 +1281,10 @@ module  mod_tmatrix_mps
                temp=0._dp
                do imn=iuvc,uvmax(j)
                   A=asr(j,j,imn)
-                  temp0=A*qconjg(A)
+                  temp0=A*dconjg(A)
                   temp=temp+temp0
                   A=bsr(j,j,imn)
-                  temp0=A*qconjg(A)
+                  temp0=A*dconjg(A)
                   temp=temp+temp0
                enddo
                c0i(j)=temp
@@ -1442,8 +1360,8 @@ module  mod_tmatrix_mps
  6113                continue
                      A=as1(j,i,imn)
                      B=bs1(j,i,imn)
-                     c1i(i)=c1i(i)+A*qconjg(A)
-                     c1i(i)=c1i(i)+B*qconjg(B)
+                     c1i(i)=c1i(i)+A*dconjg(A)
+                     c1i(i)=c1i(i)+B*dconjg(B)
  6112	          continue
  6111 	       continue
  611        continue
@@ -1520,7 +1438,7 @@ module  mod_tmatrix_mps
                         ijmax=max(jj,j)
                         ijmin=min(jj,j)
                         if(ijmax.eq.ijmin) then
-                           cz=1._dp
+                           cz=1._R64P
                         else
                            ij=(ijmax-1)*(ijmax-2)/2+ijmax-ijmin
                            cz=bes0(ij)
@@ -1540,12 +1458,12 @@ module  mod_tmatrix_mps
                         ast(j,i,imn)=ast(j,i,imn)+cz*Aj2
                         bst(j,i,imn)=bst(j,i,imn)+cz*Bj2
  6143                continue	          
-                     A0=A0+conjg(as0(j,i,imn))*ast(j,i,imn)
-                     A0=A0+conjg(bs0(j,i,imn))*bst(j,i,imn)
+                     A0=A0+dconjg(as0(j,i,imn))*ast(j,i,imn)
+                     A0=A0+dconjg(bs0(j,i,imn))*bst(j,i,imn)
  6142             continue
  6141          continue
  614        continue
-            if(abs(A0).lt.1.0e-200_dp) then
+            if(cdabs(A0).lt.1.d-200) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1626,14 +1544,14 @@ module  mod_tmatrix_mps
                         asc(j,i,imn)=asc(j,i,imn)+cz*Aj2
                         bsc(j,i,imn)=bsc(j,i,imn)+cz*Bj2
  6223                continue	            
-                     A2=A2+conjg(asc(j,i,imn))*asv(j,i,imn)
-                     A2=A2+conjg(bsc(j,i,imn))*bsv(j,i,imn)
-                     B2=B2+conjg(asc(j,i,imn))*asc(j,i,imn)
-                     B2=B2+conjg(bsc(j,i,imn))*bsc(j,i,imn)
+                     A2=A2+dconjg(asc(j,i,imn))*asv(j,i,imn)
+                     A2=A2+dconjg(bsc(j,i,imn))*bsv(j,i,imn)
+                     B2=B2+dconjg(asc(j,i,imn))*asc(j,i,imn)
+                     B2=B2+dconjg(bsc(j,i,imn))*bsc(j,i,imn)
  6222             continue
  6221          continue
  622        continue
-            if(abs(B2).lt.1.0e-200_dp) then
+            if(cdabs(B2).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1669,8 +1587,8 @@ module  mod_tmatrix_mps
                      Bj2=Aj*bs1(j,i,imn)+Bj*bsv(j,i,imn)
                      asr(j,i,imn)=asr(j,i,imn)+Aj2
                      bsr(j,i,imn)=bsr(j,i,imn)+Bj2
-                     c1i(i)=c1i(i)+Aj2*conjg(Aj2)
-                     c1i(i)=c1i(i)+Bj2*conjg(Bj2)
+                     c1i(i)=c1i(i)+Aj2*dconjg(Aj2)
+                     c1i(i)=c1i(i)+Bj2*dconjg(Bj2)
  6242             continue
  6241          continue
  624        continue
@@ -1709,15 +1627,15 @@ module  mod_tmatrix_mps
                write(6,*) '*** Solution may be inaccurate  ***'	
                goto 1002
             endif
-            B2=0.0_dp
+            B2=0.d0
             do 626 i=1,nL 	   
                if(ind(i).gt.0) goto 626
                B2i(i)=0.0_dp
                do imn=iuvc,uvmax(i)
                   do 6261 j=1,nL
                      if(iuv.gt.uvmax(j)) goto 6261
-                     Aj2=conjg(as0(j,i,imn))*asp(j,i,imn)
-                     Bj2=conjg(bs0(j,i,imn))*bsp(j,i,imn)
+                     Aj2=dconjg(as0(j,i,imn))*asp(j,i,imn)
+                     Bj2=dconjg(bs0(j,i,imn))*bsp(j,i,imn)
                      B2i(i)=B2i(i)+Aj2
                      B2i(i)=B2i(i)+Bj2
  6261             continue
@@ -1725,7 +1643,7 @@ module  mod_tmatrix_mps
  	       B2=B2+B2i(i)
  626        continue	
             A0=B0*Bj
-            if(abs(A0).lt.1.0E-200_dp) then
+            if(cdabs(A0).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1804,12 +1722,12 @@ module  mod_tmatrix_mps
                         ast(j,i,imn)=ast(j,i,imn)+cz*Aj2
                         bst(j,i,imn)=bst(j,i,imn)+cz*Bj2
  6293                continue	 
-                     A0=A0+conjg(as0(j,i,imn))*ast(j,i,imn)
-                     A0=A0+conjg(bs0(j,i,imn))*bst(j,i,imn)
+                     A0=A0+dconjg(as0(j,i,imn))*ast(j,i,imn)
+                     A0=A0+dconjg(bs0(j,i,imn))*bst(j,i,imn)
  6292             continue
  6291          continue
  629        continue
-            if(abs(A0).lt.1.0E-200_dp) then
+            if(cdabs(A0).lt.1.0E-200_dp) then
                do i=1,nL
                   do imn=1,uvmax(i)
                      do j=1,nL
@@ -1834,19 +1752,17 @@ module  mod_tmatrix_mps
 !C  calculating random-orientation averaged total and 
 !C  individual-particle extinction cross-sections
 !C-----------------------------------------------------------------------
- 1800 do i=1,nL
-         ind(i)=0
-         cexti(i)=0.0_dp
-         cscai(i)=0.0_dp
-         cpri(i)=0.0_dp
-      enddo
-      cext=0.0_dp
-      csca=0.0_dp
-      cpr=0.0_dp
+! 1800 do i=1,nL
+!         ind(i)=0
+!         cexti(i)=0.d0
+!         cscai(i)=0.d0
+!         cpri(i)=0.d0
+!      enddo
+!      cext=0.d0
+ !     csca=0.d0
+            !      cpr=0.d0
 
       n0=nmax0*(nmax0+2)
-      as2 = CZERO
-      bs2 = CZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
         result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop1778.txt -er100 -er203 -er105 -er108 -er100E -er200E -er0214 &
@@ -2025,7 +1941,7 @@ module  mod_tmatrix_mps
                      do iq=1,2
                         A=pct(j,i,ip,iq,imn,iuv)
                         B=sb*pct(i,j,iq,ip,iuv1,imn1)
-                        B=conjg(B)
+                        B=dconjg(B)
                         cz=B*A
                         csca=csca+cz
                         cscai(j)=cscai(j)+cz	                  
@@ -2039,7 +1955,7 @@ module  mod_tmatrix_mps
                         B=B-fuv2*pct(i,j,iq,ip,iuv2,imn1)
  1953                   if(v.eq.1.or.iabs(u).gt.v-1) goto 1954
                         B=B-fuv3*pct(i,j,iq,ip,iuv3,imn1)
- 1954                   B=sb*conjg(B)
+ 1954                   B=sb*dconjg(B)
                         cz=B*A
                         cpr=cpr+cz
                         cpri(j)=cpri(j)+cz
@@ -2059,7 +1975,7 @@ module  mod_tmatrix_mps
  1965                   if(v.eq.1) goto 1966
                         if(iabs(u-1).gt.v-1) goto 1966
                         B=B+guv6*pct(i,j,iq,ip,juv6,imn1)
- 1966                   cz=conjg(B)*A
+ 1966                   cz=dconjg(B)*A
                         temp=0.5_dp*sb*cz
                         cpr=cpr+temp
                         cpri(j)=cpri(j)+temp
@@ -2079,7 +1995,7 @@ module  mod_tmatrix_mps
  1975                   if(v.eq.1) goto 1976
                         if(iabs(u+1).gt.v-1) goto 1976
                         B=B+guv4*pct(i,j,iq,ip,juv4,imn1)
- 1976                   cz=conjg(B)*A
+ 1976                   cz=dconjg(B)*A
                         temp=0.5_dp*sb*cz
                         cpr=cpr+temp
                         cpri(j)=cpri(j)+temp
@@ -2101,8 +2017,6 @@ module  mod_tmatrix_mps
          write(6,'(/)') 
          n0=nmax0*(nmax0+2)
          nmax2=2*nmax0
-         wmf1 = ZERO
-         wm1  = ZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2039.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
@@ -2161,7 +2075,6 @@ module  mod_tmatrix_mps
             enddo
          enddo
       enddo
-      wsdt = ZERO
 !DIR$  IF (USE_PERF_PROFILER .EQ. 1)
        !DIR$ IF (CPU_HASWELL .EQ. 1)
          result = SYSTEMQQ("perf stat -o tmatrix_mps_driver_loop2092.txt  -er100 -er300 -er203 -er803 -er105 -er108 &
@@ -2278,14 +2191,14 @@ module  mod_tmatrix_mps
                               do iq=1,2
                                  cq=(-1)**iq
                                  A=cwmf1*fhas(it,ip,iq)
-                                 A=conjg(A)
+                                 A=dconjg(A)
                                  B=cv*A
                                  fhmf1(it,n,m,ip)= &
                                  fhmf1(it,n,m,ip)+A
                                  fhmf1vq(it,n,m,ip)= &
                                  fhmf1vq(it,n,m,ip)+cq*B
                                  A=cwm1*fhas(it,ip,iq)
-                                 A=conjg(A)
+                                 A=dconjg(A)
                                  B=cv*A
                                  fhm1v(it,n,m,ip)=   &
                                    fhm1v(it,n,m,ip)+B
@@ -2590,7 +2503,7 @@ module  mod_tmatrix_mps
                mue(1,2,ia)=mue(1,2,ia)+temp
                A0=A1p(ip,jp,ip,jp)+A1p(ip,jp,3-ip,3-jp)
                A0=A0-B1p(ip,jp,ip,jp)+B1p(ip,jp,3-ip,3-jp)
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(1,3,ia)=mue(1,3,ia)+temp
                temp=-A0
                mue(1,4,ia)=mue(1,4,ia)+temp
@@ -2600,19 +2513,19 @@ module  mod_tmatrix_mps
                mue(2,2,ia)=mue(2,2,ia)-temp
                A0=A1p(ip,jp,ip,jp)+A1p(ip,jp,3-ip,3-jp)
                A0=A0+B1p(ip,jp,ip,jp)-B1p(ip,jp,3-ip,3-jp)
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(2,3,ia)=mue(2,3,ia)+temp
                temp=-A0
                mue(2,4,ia)=mue(2,4,ia)+temp
-               temp=0.5_dp*imag(A1p(ip,jp,ip,3-jp))
+               temp=0.5_dp*dimag(A1p(ip,jp,ip,3-jp))
                mue(3,1,ia)=mue(3,1,ia)+temp
-               temp=-0.5_dp*imag(B1p(ip,jp,ip,3-jp))
+               temp=-0.5_dp*dimag(B1p(ip,jp,ip,3-jp))
                mue(3,2,ia)=mue(3,2,ia)+temp
                A0=A0p(ip,jp,ip,3-jp)-A0p(ip,jp,3-ip,jp)
                A0=A0-B0p(ip,jp,ip,3-jp)-B0p(ip,jp,3-ip,jp)
                temp=A0
                mue(3,3,ia)=mue(3,3,ia)+temp
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(3,4,ia)=mue(3,4,ia)+temp
                temp=-0.5_dp*A1p(ip,jp,ip,3-jp)
                mue(4,1,ia)=mue(4,1,ia)+temp
@@ -2620,7 +2533,7 @@ module  mod_tmatrix_mps
                mue(4,2,ia)=mue(4,2,ia)+temp
                A0=A0p(ip,jp,ip,3-jp)+A0p(ip,jp,3-ip,jp)
                A0=A0-B0p(ip,jp,ip,3-jp)+B0p(ip,jp,3-ip,jp)
-               temp=imag(A0)
+               temp=dimag(A0)
                mue(4,3,ia)=mue(4,3,ia)+temp
                temp=A0
                mue(4,4,ia)=mue(4,4,ia)+temp
@@ -2631,7 +2544,7 @@ module  mod_tmatrix_mps
                mue(1,2,iang)=mue(1,2,iang)+temp
                A0=A1pg(ip,jp,ip,jp)+A1pg(ip,jp,3-ip,3-jp)
                A0=A0-B1pg(ip,jp,ip,jp)+B1pg(ip,jp,3-ip,3-jp)
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(1,3,iang)=mue(1,3,iang)+temp
                temp=-A0
                mue(1,4,iang)=mue(1,4,iang)+temp
@@ -2641,19 +2554,19 @@ module  mod_tmatrix_mps
                mue(2,2,iang)=mue(2,2,iang)-temp
                A0=A1pg(ip,jp,ip,jp)+A1pg(ip,jp,3-ip,3-jp)
                A0=A0+B1pg(ip,jp,ip,jp)-B1pg(ip,jp,3-ip,3-jp)
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(2,3,iang)=mue(2,3,iang)+temp
                temp=-A0
                mue(2,4,iang)=mue(2,4,iang)+temp
-               temp=0.5_dp*imag(A1pg(ip,jp,ip,3-jp))
+               temp=0.5_dp*dimag(A1pg(ip,jp,ip,3-jp))
                mue(3,1,iang)=mue(3,1,iang)+temp
-               temp=-0.5_dp*imag(B1pg(ip,jp,ip,3-jp))
+               temp=-0.5_dp*dimag(B1pg(ip,jp,ip,3-jp))
                mue(3,2,iang)=mue(3,2,iang)+temp
                A0=A0pg(ip,jp,ip,3-jp)-A0pg(ip,jp,3-ip,jp)
                A0=A0-B0pg(ip,jp,ip,3-jp)-B0pg(ip,jp,3-ip,jp)
                temp=A0
                mue(3,3,iang)=mue(3,3,iang)+temp
-               temp=-imag(A0)
+               temp=-dimag(A0)
                mue(3,4,iang)=mue(3,4,iang)+temp
                temp=-0.5_dp*A1pg(ip,jp,ip,3-jp)
                mue(4,1,iang)=mue(4,1,iang)+temp
@@ -2661,7 +2574,7 @@ module  mod_tmatrix_mps
                mue(4,2,iang)=mue(4,2,iang)+temp
                A0=A0pg(ip,jp,ip,3-jp)+A0pg(ip,jp,3-ip,jp)
                A0=A0-B0pg(ip,jp,ip,3-jp)+B0pg(ip,jp,3-ip,jp)
-               temp=imag(A0)
+               temp=dimag(A0)
                mue(4,3,iang)=mue(4,3,iang)+temp
                temp=A0
                mue(4,4,iang)=mue(4,4,iang)+temp
@@ -2772,11 +2685,11 @@ module  mod_tmatrix_mps
 !      open(12,file=fileout,status='unknown')
 !      write(12,'(/)')
       if(irat.eq.1) then
-         write(6,'(1x,a5,f8.3)')  'xv:',xv     
-                
+         write(6,'(1x,a15,a13,a18,a4,f8.3,a5,f8.3)')          &
+                   fileout,' input file: ',FLNAME,' xv:',xv
       else
-         write(6,'(1x,a5,f8.3)')   'xs:',xs         
-                 
+         write(6,'(1x,a15,a13,a18,a4,f8.3,a5,f8.3)')           &
+                   fileout,' input file: ',FLNAME,' xs:',xs
       endif
       if(idscmt.lt.0) then
          write(6,'(/)')
@@ -2785,7 +2698,7 @@ module  mod_tmatrix_mps
       endif
       write(6,'(/)')
       write(6,221)                                                  &
-         '<Cext>','<Cabs>','<Csca>','<Cbak>','<Cpr>','<cos(theta)>' 
+         '<Cext>','<Cabs>','<Csca>','<Cbak>','<Cpr>','<cos(theta)>' &
       write(6,222)                                                  &
          cext,cabs,csca,cbak,cext-cpr,assym
       if(irat.eq.1) then 
@@ -2799,7 +2712,7 @@ module  mod_tmatrix_mps
             '<cos(theta)>'
          write(6,222) cexts,cabss,cscas,cbaks,cprs,assym
       endif
-      !if(idscmt.lt.0) goto 2001
+      if(idscmt.lt.0) goto 2001
       write(6,'(/)')
       write(6,'(2x,a4,4x,a7,4x,a6,4x,a7,6x,a7,6x,a7,6x,a7)')       &
         's.a.','<total>','<pol.>','<S1*S1>','<S4*S4>','<S3*S3>',   &
@@ -2821,9 +2734,7 @@ module  mod_tmatrix_mps
          write(6,'(7x,4e16.7)')                                    &
                    mue(4,1,i),mue(4,2,i),mue(4,3,i),mue(4,4,i)
       enddo
-9999  print*, "*****FATAL-ERROR*****"
-      print*, emsg
-      ERROR STOP 
+      
     end subroutine
                                   
                                   
@@ -2876,8 +2787,7 @@ module  mod_tmatrix_mps
                         SCS2I,UVS2R,UVS2I,CSA2R,CSA2I,CSS2R,CSS2I,CZB2R, &
                         CZB2I,SCZ2R,SCZ2I,UVZ2R,UVZ2I,CSZ2R,CSZ2I,AND,   &
                         ABANDR,ABANDI,ABANNR,ABANNI,AAAA,ABBNDR, ABBNDI, &
-                        ABBNNR,ABBNNI,BBBB,TI,YM,XM,XN,XA,QCM2A0,QCM2B0, &
-                        CM2A0I,SZB1R,SZB1I,VM2R1,BND
+                        ABBNNR,ABBNNI,BBBB,TI,YM,XM,XN
           integer(kind=int4) :: K,NX,I,J,N,ii
           ! Exec code....
 !DIR$     VECTOR ALIGNED
@@ -2925,7 +2835,7 @@ module  mod_tmatrix_mps
           YM2P=DABS(YM2)
           YM=DMAX1(YM1P,YM2P)
           XN=XB*DSQRT(XM**2+YM**2)
-          NX=1.1_dp*XN+10._dp
+          NX=1.1_R64P*XN+10._dp
       if(NX.gt.ndx) then
          write(6,*) 'parameter (ndx) in sub. scoatabd too small'
          write(6,*) 'please change ndx to ',NX
@@ -2934,7 +2844,7 @@ module  mod_tmatrix_mps
          stop
       endif
       oneth=0.3333333333333333333333333333_dp
-      NSTOP=XB+4._dp*XB**oneth
+      NSTOP=XB+4._R64P*XB**oneth
       NSTOP=NSTOP+2+NADD   
       if(NSTOP.gt.ndx) then 
          write(6,*) 'particle size too large'
@@ -3020,7 +2930,7 @@ module  mod_tmatrix_mps
       BB0=-SN1R(4)/CN1R(4)
       BDB0R=0.0_dp
       BDB0I=-1.0_dp
-      IF(Q.EQ.0.0_dp) GO TO 22
+      IF(Q.EQ.0.0_R64P) GO TO 22
       UM2R0=+SN1R(2)*SN1R(3)+SN1I(2)*SN1I(3)
       UM2R0=UM2R0/QSM2B0
       UM2I0=-SN1R(2)*SN1I(3)+SN1I(2)*SN1R(3)
@@ -3032,7 +2942,7 @@ module  mod_tmatrix_mps
 22    CONTINUE
       DO 25 N=1,NX
          CN=N
-         IF(Q.EQ.0.0_dp) GO TO 24
+         IF(Q.EQ.0.0_R64P) GO TO 24
          CM2A0R=+CN*U(2)/D1(2)-BM2A0R
          CM2A0I=-CN*V(2)/D1(2)-BM2A0I
          QCM2A=CM2A0R**2+CM2A0I**2
@@ -3051,7 +2961,7 @@ module  mod_tmatrix_mps
          QDB=DBDB0R**2+DBDB0I**2
          CM2B1R=+CM2BR(N)/QCM2B
          CM2B1I=-CM2BI(N)/QCM2B
-         CB1=1.0_dp/CB(N)
+         CB1=1.0_R64P/CB(N)
          DBDB1R=DBDB0R/QDB
          DBDB1I=-DBDB0I/QDB
          BM2BR(N)=-CN*U(3)/D1(3)+CM2B1R
@@ -3074,7 +2984,7 @@ module  mod_tmatrix_mps
          SSB2I=XM2*AM2BI(N)+YM2*AM2BR(N)
          SZB2R=XM2*AM2BR(N)-YM2*AM2BI(N)-BDBR(N)
          SZB2I=XM2*AM2BI(N)+YM2*AM2BR(N)-BDBI(N)
-         IF(Q.NE.0.0_dp) GO TO 45
+         IF(Q.NE.0.0_R64P) GO TO 45
          ANNR=SNB*SSB1R
          ANNI=SNB*SSB1I
          ANDR=SNB*SZB1R-CNB*SZB1I
@@ -3151,7 +3061,7 @@ module  mod_tmatrix_mps
          BNDR=SNB*(UVZ2R-CSZ2R)-CNB*(UVZ2I-CSZ2I)
          BNDI=CNB*(UVZ2R-CSZ2R)+SNB*(UVZ2I-CSZ2I)
 65       AND=ANDR*ANDR+ANDI*ANDI
-         IF(AND.NE.0.0_dp) GO TO 70 
+         IF(AND.NE.0.0D0) GO TO 70 
          ABANDR=DABS(ANDR)
          ABANDI=DABS(ANDI)
          ABANNR=DABS(ANNR)
@@ -3166,7 +3076,7 @@ module  mod_tmatrix_mps
          AR(N)=(ANNR*ANDR+ANNI*ANDI)/AND
          AI(N)=(ANNI*ANDR-ANNR*ANDI)/AND
 75       BND=BNDR*BNDR+BNDI*BNDI
-         IF(BND.NE.0.0_dp) GO TO 80
+         IF(BND.NE.0.0D0) GO TO 80
          ABBNDR=DABS(BNDR)
          ABBNDI=DABS(BNDI)
          ABBNNR=DABS(BNNR)
@@ -3202,23 +3112,21 @@ module  mod_tmatrix_mps
                         
     end subroutine
     
-    subroutine cofsrd(nmax)
-      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofsrd
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4) :: nmax
+    subroutine cofsrd(nmax,np)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofsrd
+          integer(kind=int4) :: nmax,np
           ! Locals
           integer(kind=int4), parameter :: nmp = np*(np+2)
           real(kind=dp), dimension(nmp) :: cofsr
-          real(kind=dp) :: c
+          real(kind=dp) :: lnfacd,c
           integer(kind=int4) :: i,n,m
           common/crot/cofsr
-          ! Exec code ....
-          
+          ! Exec code .... 
           i=0
           do n=1,nmax
              do m=-n,n
                 i=i+1       
-                c=lnf(dble(n-m))-lnf(dble(n+m))
+                c=lnfacd(dble(n-m))-lnfacd(dble(n+m))
                 cofsr(i)=0.5_dp*c
 !c               c=0.5d0*c
 !c            cofsr(i)=dexp(c)
@@ -3226,24 +3134,21 @@ module  mod_tmatrix_mps
       enddo
     end subroutine
     
-    subroutine cofd0(nmax)
+    subroutine cofd0(nmax,np)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofd0
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4) :: nmax
+          integer(kind=int4) :: nmax,np
           ! Locals
           integer(kind=int4), parameter :: nmp = np*(np+2)
           integer(kind=int4), parameter :: ni0 = np*(np+1)*(2*np+1)/3+np*np
-        
-          integer(kind=int4) :: v,i,m,ns,inm,ivm,n	
-          real(kind=dp) :: sm,c,c0,c1
+          integer(kind=int4) :: v,i,m,ns,inm,ivm	
+          real(kind=dp) :: lnfacd,sm,c,c0,c1
           real(kind=dp), dimension(ni0)        :: cof0
           real(kind=dp), dimension(nmp)        :: cofsr
           real(kind=dp), dimension(0:4*(np+1)) :: fnr
-          common/cofmnv0/cof0
-          common/crot/cofsr	
-          common/fnr/fnr
+          common/cofmnv0/cof0(ni0)
+          common/crot/cofsr(nmp)	
+          common/fnr/fnr(0:4*(np+1))
           ! Exec code ...
-          
           i=0
           sm=-0.5_dp*dble((-1)**nmax)
           do m=-nmax,nmax
@@ -3265,22 +3170,21 @@ module  mod_tmatrix_mps
           enddo
     end subroutine
     
-    subroutine cofnv0(nmax)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofnv0
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4) :: nmax
+    subroutine cofnv0(nmax,np)
+!DIR$ ATTRTIBUTES CODE_ALIGN : 32 :: cofnv0
+          integer(kind=int4) :: nmax,np
           ! Locals
           integer(kind=int4) :: n,v
-          real(kind=dp) :: c1
+          real(kind=dp) :: c1,lnfacd,cnv(np,np)
           real(kind=dp), dimension(np,np) :: cnv
           common/cfnv/cnv
           ! Exec code ...
           do n=1,nmax
              do v=n,nmax
-                c1=lnf(dble(2*n))+lnf(dble(2*v))
-                c1=c1-lnf(dble(2*n+2*v))
-                c1=c1+2.0_dp*lnf(dble(n+v))
-                c1=c1-lnf(dble(n))-lnf(dble(v))
+                c1=lnfacd(dble(2*n))+lnfacd(dble(2*v))
+                c1=c1-lnfacd(dble(2*n+2*v))
+                c1=c1+2.0_dp*lnfacd(dble(n+v))
+                c1=c1-lnfacd(dble(n))-lnfacd(dble(v))
                 cnv(n,v)=c1
             enddo
           enddo
@@ -3288,19 +3192,17 @@ module  mod_tmatrix_mps
     
 !    C  subroutine gau0.f generates tabulated values for  
 !C  Gaunt coefficients up to n=v=n_max
-      subroutine gau0(nmax)
+      subroutine gau0(nmax,np)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gau0
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4) :: nmax
-          integer(kind=int4), parameter :: ni0 =   np*(np+1)*(2*np+1)/3+np*np
-          integer(kind=int4), parameter :: ng0 =   np*(2*np**3+10*np**2+19*np+5)/6
+          integer(kind=int4) :: nmax,np
+          integer(kind=int4), parameter :: ni0 =  np*(np+1)*(2*np+1)/3+np*np
+          integer(kind=int4), parameter :: ng0 =  np*(2*np**3+10*np**2+19*np+5)/6
           integer(kind=int4) :: v,qmax,uvmax,i,na,m,ns,n
           integer(kind=int4), dimension(ni0) :: iga0
           real(kind=dp), dimension(ng0) :: ga0
           common/g0/ga0
           common/ig0/iga0
           ! Exec code ....
-          
           na=0
           uvmax=nmax*(nmax+2)
           i=0
@@ -3439,27 +3341,25 @@ module  mod_tmatrix_mps
 !c  translational parts [see Mackowski, Proc. R. Soc. Lond. A 433, 599 
 !c  (1991)]
 !c  Yu-lin Xu   12/2000   
-    subroutine rotcoef(cbe,nmax)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rotcoef
-          include 'tmatrix_mps_np.inc'
+    subroutine rotcoef(cbe,nmax,np)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rotcoef         
           real(kind=dp) :: cbe
-          integer(kind=int4) :: nmax
+          integer(kind=int4) :: nmax,np
           ! Locals
-          integer(kind=int4), parameter ::  nmp =  np*(np+2)
+          integer(kind=int4), parameter :: nmp = np*(np+2)
           real(kind=dp) :: sbe,cbe2,sben,dkt,fmn,dkm0,dkm1, &
                         dkn1,sbe2
           integer(kind=int4) :: inn,n,nn1,k,im1,m,m1,kn,IM
-          real(kind=dp), dimension(-2*np:2*np) :: dk0,dk01
+          real(kind=dp, dimension(-2*np:2*np) :: dk0,dk01
 !DIR$     ATTRIBUTES ALIGN : 64 :: dk0,dk01    
           real(kind=dp), dimension(0:np+2) :: bcof
           real(kind=dp), dimension(-np:np,0:nmp) :: dc
           real(kind=dp), dimension(0:4*(np+1)) :: fnr
-          common/rot/bcof,dc
-          common/fnr/fnr
+          common/rot/bcof(0:np+2),dc(-np:np,0:nmp)
+          common/fnr/fnr(0:4*(np+1))
           ! Exec code ....
          ! dk0  = 0._R64P
-          ! dk01 = 0._R64P
-          
+         ! dk01 = 0._R64P
           sbe=dsqrt((1._dp+cbe)*(1._dp-cbe))
           cbe2=.5_dp*(1._dp+cbe)
           sbe2=.5_dp*(1._dp-cbe)
@@ -3514,22 +3414,18 @@ module  mod_tmatrix_mps
 !c  (axial) translation coefficients for a given combination of 
 !c  (m,n,m,v) and a given dimensionless translation distance kd 
 !cu uses subroutine gid0.f 
-    subroutine cofxuds0(nmax,m,n,v,sja,sya,A,B,Aj,Bj)
+    subroutine cofxuds0(nmax,np,m,n,v,sja,sya,A,B,Aj,Bj)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cofxuds0
       implicit double precision (a-h,o-z)
-      include 'tmatrix_mps_np.inc'
-      integer(kind=int4) :: nmax,m,n
-      integer(kind=int4), parameter :: ni0 = np*(np+1)*(2*np+1)/3+np*np
-      integer(kind=int4), parameter :: ng0 = np*(2*np**3+10*np**2+19*np+5)/6
-      integer(kind=int4) :: v,p,qmax,ig,i,nv2,id
-      real(kind=dp), dimension(0:n+v+1) ::  sja,sya
-      integer(kind=int4), dimension(ni0) :: iga0
-      complex(16) ::  A,B,Aj,Bj,signz
-      common/ig0/iga0
+      !include 'gmm01f.par'
+      parameter (ni0=np*(np+1)*(2*np+1)/3+np*np)
+      parameter (ng0=np*(2*np**3+10*np**2+19*np+5)/6)
+      integer v,p,qmax
+      double precision sja(0:n+v+1),sya(0:n+v+1)
+      complex*16 A,B,Aj,Bj,signz
+      common/ig0/iga0(ni0)
       common/g0/ga0(ng0)
       common/cofmnv0/cof0(ni0)
-     
-      
       fa(m,p)=dble(-2*m*p*(p-1))
       fb(n,v,p)=dble(p*p-(n+v+1)*(n+v+1))* &
                 dble(p*p-(n-v)*(n-v))/dble(4*p*p-1)
@@ -3598,19 +3494,13 @@ module  mod_tmatrix_mps
 !c         C_mn=[(2n+1)(n-m)!/n/(n+1)/(n+m)!]^(1/2)
 !c  Yu-lin Xu    12/2000
 
-    subroutine tipitaud(nmax,x)
+    subroutine tipitaud(nmax,np,x)
       ! include 'gmm01f.par'
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: tipitaud
-     
+      parameter (nmp0=(np+1)*(np+4)/2)
       implicit double precision (a-h,o-z)
-      include 'tmatrix_mps_np.inc'
-      integer(kind=int4), parameter :: nmp0 = (np+1)*(np+4)/2
-      integer(kind=int4) :: nmax
-      integer(kind=int4) :: nt,imn,m,n,i,j,i1,i2
-     
       common/fnr/fnr(0:4*(np+1))
-      common/pitau/pi(nmp0),tau(nmp0)
-      
+      common/pitau/pi(nmp0),tau(nmp0)	
       nt=(nmax+1)*(nmax+4)/2         ! calculates pi up to nmax+1
       if(nt.gt.nmp0.or.dabs(x).gt.1.d0) then
          write(6,*) 'dimension or argument wrong in sub. tipitaud'
@@ -3688,44 +3578,38 @@ module  mod_tmatrix_mps
 !c  returns ln(z!)  z>-1.0
 !c  based on Lanczos' method [see Xu, Journal of Computational 
 !c  Physics, v.139, 137-165 (1998)]
-    
-     ! integer(kind=int4) :: i
-     ! double precision z,a,b,cp,c0(11)
-     ! data c0/0.16427423239836267d5, -0.48589401600331902d5, &
-     !         0.55557391003815523d5, -0.30964901015912058d5, &
-     !         0.87287202992571788d4, -0.11714474574532352d4, &
-     !         0.63103078123601037d2, -0.93060589791758878d0, &
-     !         0.13919002438227877d-2,-0.45006835613027859d-8,&
-     !         0.13069587914063262d-9/ 
-     ! a=1.d0
-     ! cp=2.5066282746310005d0
-    !  b=z+10.5d0
-    !  b=(z+0.5d0)*dlog(b)-b
-    !  do i=1,11
-    !    z=z+1.d0
-    !    a=a+c0(i)/z
-    !  enddo
-    !  lnfacd=b+dlog(cp*a)
-    !  
-   ! end  function lnfacd
-
-  
+      double precision function lnfacd(z)
+      integer :: i
+      double precision z,a,b,cp,c0(11)
+      data c0/0.16427423239836267d5, -0.48589401600331902d5, &
+              0.55557391003815523d5, -0.30964901015912058d5, &
+              0.87287202992571788d4, -0.11714474574532352d4, &
+              0.63103078123601037d2, -0.93060589791758878d0, &
+              0.13919002438227877d-2,-0.45006835613027859d-8,&
+              0.13069587914063262d-9/ 
+      a=1.d0
+      cp=2.5066282746310005d0
+      b=z+10.5d0
+      b=(z+0.5d0)*dlog(b)-b
+      do i=1,11
+        z=z+1.d0
+        a=a+c0(i)/z
+      enddo
+      lnfacd=b+dlog(cp*a)
+      
+      end  function
       
 !      c  gxurcd0.f to compute Gaunt coefficients a(-m,n,m,v,p)
 !cu uses lnfacd.f to compute ln(z!)
-      subroutine gxurcd0(m,n,v,qmax,na)
+      subroutine gxurcd0(m,np,n,v,qmax,na)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gxurcd0
         implicit double precision (a-h,o-z)
-        include 'tmatrix_mps_np.inc'
-        integer(kind=int4), parameter ::  ng0 = np*(2*np**3+10*np**2+19*np+5)/6
-       
-        integer(kind=int4) :: m, v,qmax,p,n,na,nq,  &
-                              i
-      double precision cnv(np,np),ga0(ng0)
+ !     include 'gmm01f.par'
+        parameter (ng0=np*(2*np**3+10*np**2+19*np+5)/6)
+        integer v,qmax,p,np
+      double precision lnfacd,cnv(np,np),ga0(ng0)
       common/cfnv/cnv
       common/g0/ga0
-      ! Exec code .....
-     
       fb(n,v,p)=dble(p-(n+v+1))*dble(p+(n+v+1))* &
                 dble(p-(n-v))*dble(p+(n-v))/ &
                 (dble(2*p+1)*dble(2*p-1))	
@@ -3741,7 +3625,7 @@ module  mod_tmatrix_mps
       else
          c1=cnv(v,n)
       endif
-      c1=c1-lnf(dble(n-m))-lnf(dble(v+m))
+      c1=c1-lnfacd(dble(n-m))-lnfacd(dble(v+m))
       ga0(na+1)=dexp(c1)
       if(qmax.lt.1) return	
       p=n+v
@@ -3783,13 +3667,13 @@ module  mod_tmatrix_mps
            
      end  subroutine
      
-     function plgndrd(l,mr,x)  
+     function plgndrd(l,mr,x)   result(val)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: plgndrd
       integer(kind=int4) ::  l,mr,m,index,i,ll
       real(kind=dp) :: x
-     
+      real(kind=dp) :: val
       real(kind=dp) :: fact,pll,pmm,pmmp1,somx2
-      real(kind=dp) ::  plgndrd
+     ! double precision plgndrd,lnfacd
       m=mr
       index=0
       if(m.lt.0) then
@@ -3801,7 +3685,7 @@ module  mod_tmatrix_mps
          stop 'bad arguments in plgndrd'
       end if
       if(m.gt.l) then
-	     plgndrd=0._dp
+	     val=0._dp
          return
       end if
       pmm=1.0_dp
@@ -3814,41 +3698,37 @@ module  mod_tmatrix_mps
 11      continue
       endif
       if(l.eq.m) then
-        plgndrd=pmm
+        val=pmm
       else
         pmmp1=x*(2*m+1)*pmm
         if(l.eq.m+1) then
-           plgndrd=pmmp1
+           val=pmmp1
         else
           do 12 ll=m+2,l
             pll=(x*(2*ll-1)*pmmp1-(ll+m-1)*pmm)/(ll-m)
             pmm=pmmp1
             pmmp1=pll
 12        continue
-          plgndrd=pll
+          val=pll
         endif
       endif
-      plgndrd=-plgndrd
-      if(m/2*2.eq.m) plgndrd=-plgndrd
+      val=-val
+      if(m/2*2.eq.m) val=-val
       if(index.gt.0) then
-         fact=lnf(dble(l-m))-lnf(dble(l+m))
+         fact=lnfacd(dble(l-m))-lnfacd(dble(l+m))
          fact=dexp(fact)
-          plgndrd=-plgndrd*fact
-         if(m/2*2.eq.m) plgndrd=-plgndrd
+          val=-val*fact
+         if(m/2*2.eq.m) val=-val
       endif 
      
      end  function
      
-    subroutine rtrT(anpt,nodrj,nodri,ekt,drot,ij1,ij2,ii1,ii2)      
-      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rtrT
-
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4), parameter ::  nmp = np*(np+2), &
-                                            nrc = 4*np*(np+1)*(np+2)/3+np, &
-                                            nij =  nLp*(nLp-1)/2
-          integer(kind=int4) :: nodrj,nodri
-          
-          
+    subroutine rtrT(anpt,np,nLp,nodrj,nodri,ekt,drot,ij1,ij2,ii1,ii2)      
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: rtrT
+          integer(kind=int4) :: np,nLp,nodrj,nodri
+          integer(kind=int4), parameter :: nmp = np*(np+2)
+          integer(kind=int4), parameter :: nrc = 4*np*(np+1)*(np+2)/3+np,    &
+                                      nij = nLp*(nLp-1)/2
           complex(16), dimension(2,nmp) :: anpt
           complex(16), dimension(np)    :: ekt
           real(kind=dp),  dimension(nrc)   :: drot
@@ -3863,13 +3743,10 @@ module  mod_tmatrix_mps
           complex(16), dimension(2,np,nmp) :: atr
           complex(16) :: a,b
           integer(kind=int4) :: nj1,nj2,ni1,ni2,nmax,irc,n,k,kn,mmax, &
-                           l,ml,inn,imn,m,n1,n1j,ip,n1i
+                           l,ml,inn,imn,m
           real(kind=dp) :: sik
           common/tran/atr
-          ! Exec code ...
-         
-        
-         
+           ! Exec code ...
           nj1=dsqrt(dble(ij1))
           nj2=dsqrt(dble(ij2))
           ni1=dsqrt(dble(ii1))
@@ -3878,7 +3755,7 @@ module  mod_tmatrix_mps
           nmax=max(nj2,ni2)
          do m=1,nmax
             ek(m)=ekt(m)
-            ek(-m)=conjg(ek(m))
+            ek(-m)=dconjg(ek(m))
         enddo
         irc=0
         do n=1,nj1-1
@@ -3981,20 +3858,17 @@ module  mod_tmatrix_mps
      
     end subroutine
     
-    subroutine transT(nL,r0,nmax,uvmax,fint,atr0,btr0,ek,      &
+    subroutine transT(nL,np,nLp,r0,nmax,uvmax,fint,atr0,btr0,ek,      &
                       drot,as,bs,as1,bs1,ind,confg,iuvc,isw)
-      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: transT
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4), parameter ::  nmp = np*(np+2), &
-                                            ni0 = np*(np+1)*(2*np+1)/3+np*np, &
-                                            nrc = 4*np*(np+1)*(np+2)/3+np, &
-                                            nij = nLp*(nLp-1)/2
-          integer(kind=int4) :: nL
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: transT
+          integer(kind=int4) :: nL,np,nLp
           real(kind=dp), dimension(6,nLp) :: r0
           integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind 
           real(kind=dp) :: fint
-          
-                                     
+          integer(kind=int4), parameter :: nmp = np*(np+2),  &
+                                      ni0 = np*(np+1)*(2*np+1)/3+np*np, &
+                                      nrc = 4*np*(np+1)*(np+2)/3+np,    &
+                                      nij = nLp*(nLp-1)/2
           complex(16), dimension(2,np,nmp) :: atr
           complex(16), dimension(ni0,nij)  :: atr0,btr0
           complex(16), dimension(np,nij)   :: ek
@@ -4007,10 +3881,9 @@ module  mod_tmatrix_mps
           complex(16), dimension(2,nmp) :: at1
           integer(kind=int4) :: i,imn,j,ij,nlarge,itrc,nsmall,m,n1,n, &
                            v,ij1,ij2,ii1,ii2,iuv
-          real(kind=dp) :: x0,y0,z0,temp,sic
+          real(kind=dp) :: x0,y0,z0,temp,sic,
           common/tran/atr
           ! Exec code ....
-         
           do i=1,nL
              do imn=1,uvmax(i)
                  as1(i,imn)=dcmplx(0._dp,0._dp)
@@ -4073,9 +3946,9 @@ module  mod_tmatrix_mps
             ii1=iuvc
             ii2=uvmax(i)
  24         if(x0.eq.0._dp.and.y0.eq.0._dp) then
-               call trvT(at1,nmax(j),nmax(i),ij1,ij2,ii1,ii2)
+               call trvT(at1,np,nmax(j),nmax(i),ij1,ij2,ii1,ii2)
             else
-               call rtrT(at1,nmax(j),nmax(i),ek(1,ij),  &
+               call rtrT(at1,np,nLp,nmax(j),nmax(i),ek(1,ij),  &
                         drot(1,ij),ij1,ij2,ii1,ii2)
             endif
             do imn=ii1,ii2
@@ -4117,9 +3990,9 @@ module  mod_tmatrix_mps
             ij1=iuvc
             ij2=uvmax(j)
  27         if(x0.eq.0._dp.and.y0.eq.0._dp) then
-               call trvT(at1,nmax(i),nmax(j),ii1,ii2,ij1,ij2)
+               call trvT(at1,np,nmax(i),nmax(j),ii1,ii2,ij1,ij2)
             else 
-               call rtrT(at1,nmax(i),nmax(j),ek(1,ij),   &
+               call rtrT(at1,np,nLp,nmax(i),nmax(j),ek(1,ij),   &
                         drot(1,ij),ii1,ii2,ij1,ij2)
             endif
             do imn=ij1,ij2
@@ -4131,21 +4004,19 @@ module  mod_tmatrix_mps
      
     end  subroutine
                      
-    subroutine trvT(anpt,nodrj,nodri,ij1,ij2,ii1,ii2)
+    subroutine trvT(anpt,np,nodrj,nodri,ij1,ij2,ii1,ii2)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: trvT
-          include 'tmatrix_mps_np.inc'
           integer(kind=int4), parameter :: nmp = np*(np+2)
           complex(16), dimension(2,nmp) :: anpt
-          integer(kind=int4) :: nodrj,nodri,ij1,ij2,ii1,ii2
+          integer(kind=int4) :: np,nodrj,nodri,ij1,ij2,ii1,ii2
           ! Locals
           complex(16), dimension(2,2*np) :: ant
           complex(16) :: a,b
           complex(16), dimension(2,np,nmp) :: atr
           integer(kind=int4) :: nji,nj2,ni1,ni2,mmax,m,n1,nj1,imn,  &
-                           ip,n1i,l,ml,n,n1j
+                           ip,n1i,l,ml,n
           common/tran/atr
           ! Exec code ...
-       
           nj1=dsqrt(dble(ij1))
           nj2=dsqrt(dble(ij2))
           ni1=dsqrt(dble(ii1))
@@ -4190,18 +4061,16 @@ module  mod_tmatrix_mps
 !c  using the algorithm described in [Xu, Journal of Computational
 !c  Physics 139, 137-165 (1998)]
 !c 
-      subroutine xuwigd(j1,j2,m1,m2,c,cf,n,kmax)
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xuwigd
-          include 'tmatrix_mps_np.inc'
-          integer(kind=int4) :: j1,j2,m1,m2,n,kmax
+      subroutine xuwigd(j1,j2,np,m1,m2,c,cf,n,kmax)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: xuwigd
+          integer(kind=int4) :: j1,j2,np,m1,m2,n,kmax
           real(kind=dp), dimension(n) :: c,cf
           real(kind=dp), dimension(0:4*(np+1)) :: fnr
           ! Locals
           integer(kind=int4) :: i,m3,j,j3f,j3,k
-          real(kind=dp) :: s,t,cr,a,b
-          real(kind=dp), parameter :: small = 0.000000000001_dp
-          common/fnr/fnr
-          !data small/1.0E-12_dp/
+          real(kind=dp) :: s,t,cr
+          common/fnr/fnr(0:4*(np+1))
+          data small/1.0E-12_dp/
          ! code ....
          a(j1,j2,j3,m1,m2)=fnr(j3+j1-j2)*fnr(j1+j2+1+j3)* &
                            fnr(j3+m1+m2)*fnr(j3-j1+j2)*   &
@@ -4217,11 +4086,11 @@ module  mod_tmatrix_mps
         if(kmax.gt.n) stop
         j3=j1+j2
         m3=-m1-m2
-        s=lnf(dble(2*j1))+lnf(dble(2*j2))
-        s=s-lnf(dble(2*j1+2*j2+1))+lnf(dble(j1+j2-m1-m2))
-        s=s-lnf(dble(j1-m1))-lnf(dble(j1+m1))
-        s=s+lnf(dble(j1+j2+m1+m2))-lnf(dble(j2-m2))
-        s=s-lnf(dble(j2+m2))
+        s=lnfacd(dble(2*j1))+lnfacd(dble(2*j2))
+        s=s-lnfacd(dble(2*j1+2*j2+1))+lnfacd(dble(j1+j2-m1-m2))
+        s=s-lnfacd(dble(j1-m1))-lnfacd(dble(j1+m1))
+        s=s+lnfacd(dble(j1+j2+m1+m2))-lnfacd(dble(j2-m2))
+        s=s-lnfacd(dble(j2+m2))
         j=j1-j2+m1+m2
         c(1)=((-1)**j)*dexp(0.5_dp*s)
         if(kmax.eq.1) return
@@ -4233,17 +4102,17 @@ module  mod_tmatrix_mps
         if(j3.eq.0) then
             c(kmax)=dble((-1)**(j1-m1))/fnr(2*j1+1)
         else
-	        s=lnf(dble(j3+j1-j2))+lnf(dble(j3-j1+j2))
-	        s=s+lnf(dble(j1+j2-j3))+lnf(dble(j1-m1))
-	        s=s+lnf(dble(j1+m1))+lnf(dble(j2-m2))
-	        s=s+lnf(dble(j2+m2))-lnf(dble(j1+j2+j3+1))
-	        s=s+lnf(dble(j3-m3))+lnf(dble(j3+m3))
+	        s=lnfacd(dble(j3+j1-j2))+lnfacd(dble(j3-j1+j2))
+	        s=s+lnfacd(dble(j1+j2-j3))+lnfacd(dble(j1-m1))
+	        s=s+lnfacd(dble(j1+m1))+lnfacd(dble(j2-m2))
+	        s=s+lnfacd(dble(j2+m2))-lnfacd(dble(j1+j2+j3+1))
+	        s=s+lnfacd(dble(j3-m3))+lnfacd(dble(j3+m3))
 	        t=0.5_dp*s
 	        if(j3.eq.j1-j2.or.j3.eq.m3) k=j2+m2
 	        if(j3.eq.j2-j1.or.j3.eq.-m3) k=j1-m1
-	        s=lnf(dble(j1+j2-j3-k))+lnf(dble(j1-m1-k))
-	        s=s+lnf(dble(k))+lnf(dble(j2+m2-k))
-	        s=s+lnf(dble(j3-j2+m1+k))+lnf(dble(j3-j1-m2+k))
+	        s=lnfacd(dble(j1+j2-j3-k))+lnfacd(dble(j1-m1-k))
+	        s=s+lnfacd(dble(k))+lnfacd(dble(j2+m2-k))
+	        s=s+lnfacd(dble(j3-j2+m1+k))+lnfacd(dble(j3-j1-m2+k))
 	        j=j1-j2-m3
 	        c(kmax)=((-1)**(k+j))*dexp(t-s)           
        endif
@@ -4306,7 +4175,7 @@ module  mod_tmatrix_mps
                                                    IT11,IT12,IT21,IT22
           integer(kind=int4) :: ICHOICE,NCHECK, IXXX,INM1,NMA,MMAX,NGAUSS,  &
                            N,N1,NNNGGG,NGGG,NGAUS,NNM,N2,NN2,NN1,M,NM, &
-                           N11,N22,M1
+                           N11,N22
           real(kind=dp) :: P,A,XEV,QEXT1,QSCA1,QEXT,QSCA,TR1NN,TI1NN, TR1NN1, &
                         TI1NN1,DN1,DSCA,DEXT,PPI,PIR,PII,ZZ1,ZZ2,ZZ3,ZZ4,ZZ5, &
                         ZZ6,ZZ7,ZZ8,QSC,QXT,WALB
@@ -4507,7 +4376,7 @@ module  mod_tmatrix_mps
              '  nmax=',I3)
   220 CONTINUE
       WALB=-QSCA/QEXT
-      IF (WALB.GT.1_dp+DDELT) PRINT 9111
+      IF (WALB.GT.1_R64P+DDELT) PRINT 9111
  9111 FORMAT ('WARNING: W IS GREATER THAN 1')
 
 !c      ITIME=MCLOCK()
@@ -4534,7 +4403,7 @@ module  mod_tmatrix_mps
           ! Locals
           integer(kind=int4) :: N,I,I2
           real(kind=dp)    :: DX,A,QS,QS1,DSI,D1,D2,QN,QN1,QN2,  &
-                           D3,DER,QNM,QNM1,QMM,DN
+                           D3,DER,D3,QNM,QNM1,QMM,DN
          DO 1 N=1,NMAX
              DV1(N)=0._dp
              DV2(N)=0._dp
@@ -4605,7 +4474,7 @@ module  mod_tmatrix_mps
           real(kind=dp), dimension(NPN1) :: DD
 !DIR$     ATTRIBUTES ALIGN : 64 :: DD          
           integer(kind=int4) :: N,NN,N1,NG,NG1,NG2,I
-          real(kind=dp)    :: D,DDD,XX,Y
+          real(kind=dp)    :: D,DDD,DD,XX,Y
           ! Exec code ...
           DO 10 N=1,NMAX
                 NN=N*(N+1)
@@ -4653,7 +4522,7 @@ module  mod_tmatrix_mps
     
     SUBROUTINE VARY (LAM,MRR,MRI,A,EPS,NP,NGAUSS,X,P,PPI,PIR,PII,    &
                       R,DR,DDR,DRR,DRI,NMAX)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VARY
+!DIR$ ATTRIBUTES CODE-ALIGN : 32 :: VARY
           real(kind=dp) :: LAM,MRR,MRI,A,EPS
           integer(kind=int4) :: NP,NGAUSS
           real(kind=dp), dimension(NPNG2) :: X
@@ -4666,7 +4535,7 @@ module  mod_tmatrix_mps
           real(kind=dp), dimension(NPNG2,NPN1) :: J,Y,JR,JI,DJ,DJR,DJI,DY
 !!DIR$     ATTRIBUTES ALIGN : 64 :: J,Y,JR,JI,DJ,DJR,DJI,DY      
           integer(kind=int4) :: NG,I,NNMAX1, NNMAX2
-          real(kind=dp) :: PI,V,PRR,PRI,TA,VV,V1,V2,TB
+          real(kind=dp) :: PI,V,PRR,PRI,TA,VV,V,V1,V2,TB,TA
           COMMON /CBESS/ J,Y,JR,JI,DJ,DY,DJR,DJI
           NG=NGAUSS*2
           IF (NP.GT.0) CALL RSP2(X,NG,A,EPS,NP,R,DR)
@@ -4813,7 +4682,7 @@ module  mod_tmatrix_mps
           real(kind=dp), dimension(NG) :: X
           integer(kind=int4) :: NG
           real(kind=dp) :: REV
-          real(kind=dp), dimension(NG) :: DR,R
+          real(kind=dp), dimension(NG) :: DR
           ! Locals
           integer(kind=int4), parameter :: NC = 10
           real(kind=dp), dimension(0:NC) :: C
@@ -4880,8 +4749,8 @@ module  mod_tmatrix_mps
           ! Locals
           real(kind=dp), dimension(800) :: Z
 !DIR$     ATTRIBUTES ALIGN : 64 :: Z          
-          integer(kind=int4) :: L,LI,L1,I1,I
-          real(kind=dp) :: XX,Z0,Y0,Y1,YI1,YI
+          integer(kind=int4) :: L,LI,L1,I1
+          real(kind=dp) :: XX,Z0,Y0,Y1,YI1
           ! Exec code ....
           L=NMAX+NNMAX
           XX=1._dp/X
@@ -5039,14 +4908,13 @@ module  mod_tmatrix_mps
                                               IG21,IG22
           real(kind=dp), dimension(NPN2,NPN2) :: QR,QI,RGQR,RGQI,TQR,TQI,TRGQR,TRGQI
           real(kind=dp), dimension(NPN2,NPN2) :: TR1,TI1
-          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,N1,NM,K1,KK1,N2,K2,KK2, &
-                                AN12
+          integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,N1,NM,K1,KK1,N2,K2,KK2
           real(kind=dp) :: FACTOR,SI,DD1,DD2,AN2,AR12,AR21,AI12,AI21,GR12,GR21, &
                         GI12,GI21,D1N1,D2N1,D1N2,D2N2,AA1,QJ1,QY1,QJR2,QJI2,QDJR2, &
                         QDJI2,QDJ1,QDY1,C1R,C1I,B1R,B1I,C2R,C2I,B2R,B2I,C3R,C3I,   &
                         B3R,B3I,C4R,C4I,B4R,B4I,DRRI,DRII,C5R,C5I,B5R,B5I,URI,RRI, &
                         F1,F2,AN1,TPIR,TPII,TPPI,TAR12,TAI12,TGR12,TGI12,TAR21,TAI21, &
-                        TGR21,TGI21,A12,A21,A22,DDRI
+                        TGR21,TGI21
           COMMON /TMAT99/           &
                  R11,R12,R21,R22,I11,I12,I21,I22,RG11,RG12,RG21,RG22,      &
                  IG11,IG12,IG21,IG22
@@ -5234,13 +5102,13 @@ module  mod_tmatrix_mps
                        DRR,DRI,NMAX,NCHECK)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TMATR
           integer(kind=int4) :: M,NGAUSS
-          real(kind=dp), dimension(NPNG2) :: X,W,S,SS
-          real(kind=dp), dimension(NPN1)  :: AN
+          real(kind=dp), dimension(NPNG2) :: X,W,AN,S,SS
+!DIR$     ASSUME_ALIGNED X:64,W:64,AN:64,S:64,SS:64
           real(kind=dp), dimension(NPN1,NPN1) :: ANN
-
+!DIR$     ASSUME_ALIGNED ANN:64
           real(kind=dp) :: PPI,PIR,PII
           real(kind=dp), dimension(NPNG2) :: R,DR,DDR,DRR,DRI
-
+!DIR$     ASSUME_ALIGNED R:64,DR:64,DDR:64,DRR:64,DRI:64
           integer(kind=int4) :: NMAX,NCHECK
           ! Locals
           real(kind=dp), dimension(NPNG2) :: SIG 
@@ -5265,7 +5133,7 @@ module  mod_tmatrix_mps
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQR
 !DIR$     ATTRIBUTES ALIGN : 64 :: TRGQI
           real(kind=sp), dimension(NPN6*NPN4*NPN4*8) :: PLUS
-
+!DIR$     ATTRIBUTES ALIGN : 64 :: PLUS
           integer(kind=int4) :: MM1,NNMAX,NG,NGSS,N,I,I1,I2,   &
                            N1,N2,K1,KK1,K2,KK2,NM
           real(kind=dp)    :: FACTOR,QM,QMM,WR,SI,DD1,DD2,AN1,AN2,     &
@@ -5274,7 +5142,7 @@ module  mod_tmatrix_mps
                            GR21,GI11,GI12,GI21,GI22,D1N1,D2N1,      &
                            A12,A21,A22,AA1,QJ1,QY1,       &
                            QJR2,QJI2,QDJR2,QDJI2,QDJ1,    &
-                           QDY1,C1R,C1I,B1R,B1I,      &
+                           QDY1,C1R,C1I,B1R,B1I,C2R,      &
                            C2R,C2I,B2R,B2I,DDRI,C3R,      &
                            C3I,B3R,B3I,C4R,C4I,B4R,       &
                            B4I,DRRI,DRII,C5R,C5I,B5R,     &
@@ -5290,7 +5158,7 @@ module  mod_tmatrix_mps
       COMMON /TMAT99/ PLUS,   &
                  R11,R12,R21,R22,I11,I12,I21,I22,RG11,RG12,RG21,RG22,  &
                  IG11,IG12,IG21,IG22
-!DIR$   ATTRIBUTES ALIGN : 64 :: /TMAT99/
+!DIR$   ATTRIBUTES ALIGN : 64 :: /TMAT/
       COMMON /CBESS/ J,Y,JR,JI,DJ,DY,DJR,DJI
 !DIR$   ATTRIBUTES ALIGN : 64 :: /CBESS/
       COMMON /CT/ TR1,TI1
@@ -5628,7 +5496,7 @@ module  mod_tmatrix_mps
      
          INTEGER(kind=int4), dimension(NPN2) ::  IPIV,IPVT
          integer(kind=int4) :: I,NDIM,NNMAX,J,ICHOICE,INFO,K,IFAIL,N1,N2
-         real(kind=dp) :: TR,TI,ARR,ARI,AR,AI,COND
+         real(kind=dp) :: TR,TI,ARR,ARI,AR,AI,TR
          COMMON /CHOICE/ ICHOICE
          COMMON /CT/ TR1,TI1
          COMMON /CTT/ QR,QI,RGQR,RGQI
@@ -5660,7 +5528,7 @@ module  mod_tmatrix_mps
                     ARR=RGQR(I,K)
                     ARI=RGQI(I,K)
                     AR=ZQ(K,J)
-                    AI=IMAG(ZQ(K,J))
+                    AI=DIMAG(ZQ(K,J))
                     TR=TR-ARR*AR+ARI*AI
                     TI=TI-ARR*AI-ARI*AR
                  ENDDO
@@ -5677,8 +5545,8 @@ module  mod_tmatrix_mps
     DO I=1,NNMAX
 !DIR$ SIMD
 	      DO J=1,NNMAX
-	         ZQ(I,J)=CMPLX(REAL(ZAFAC(I,J)),-    &
-                      IMAG(ZAFAC(I,J)))
+	         ZQ(I,J)=DCMPLX(DREAL(ZAFAC(I,J)),-    &
+                      DIMAG(ZAFAC(I,J)))
 	      ENDDO
 	   ENDDO
 	   DO I=1,NNMAX
@@ -5694,14 +5562,14 @@ module  mod_tmatrix_mps
            ENDDO
 	   DO I=1,NNMAX
 	      DO J=1,NNMAX
-	         ZT(I,J)=CMPLX(0.0_dp,0.0_dp)
+	         ZT(I,J)=DCMPLX(0.0_dp,0.0_dp)
 	         DO K=1,NNMAX
 	            ZT(I,J)=ZT(I,J)+D(I,I)* &
                        ZQ(I,K)*D(K,K)*ZQ(J,K)
 	         ENDDO
 	         ZT(I,J)=0.5_dp*(ZT(I,J)-D(I,J)**2)
-	         TR1(I,J)=REAL(ZT(I,j))
-	         TI1(I,J)=IMAG(ZT(i,j))
+	         TR1(I,J)=DREAL(ZT(I,j))
+	         TI1(I,J)=DIMAG(ZT(i,j))
               ENDDO
 	   ENDDO
 	ENDIF
@@ -5721,7 +5589,7 @@ module  mod_tmatrix_mps
       ENDIF
       CALL PROD(QR,A,C,NDIM,NNMAX)
       CALL PROD(C,QR,D,NDIM,NNMAX)
-      DO 20 N1=1,NNMAX
+      DO 20 N1=1,NNMAX#
 !DIR$ SIMD
            DO 20 N2=1,NNMAX
                 C(N1,N2)=D(N1,N2)+QI(N1,N2)
@@ -5769,10 +5637,8 @@ module  mod_tmatrix_mps
           integer(kind=int4) :: NMAX
           real(kind=dp), dimension(NPN2,NPN2) :: F,A
           ! Locals
-          real(kind=dp) :: COND
           real(kind=dp), dimension(NPN1) :: WORK
-          real(kind=dp), dimension(NPN1) :: B
-!DIR$     ATTRIBUTES ALIGN : 64 :: WORK,B
+!DIR$     ATTRIBUTES ALIGN : 64 :: WORK
           real(kind=dp), dimension(NPN1,NPN1) :: Q1,Q2,P1,P2
 !DIR$     ATTRIBUTES ALIGN : 64 :: Q1,Q2,P1,P2
           integer(kind=int4), dimension(NPN1) ::  IPVT,IND1,IND2
@@ -5850,7 +5716,7 @@ module  mod_tmatrix_mps
           integer(kind=int4), dimension(N) ::  IPVT
           real(kind=dp), dimension(N) :: WORK
           ! Locals
-          integer(kind=int4) :: NM1,J,I,K,KP1,M,KB,KM1,KP
+          integer(kind=int4) :: NM1,J,I,K,KP1,M,KB
           real(kind=dp) :: ANORM,T,EK,YNORM,ZNORM
           ! Exec code ...
           IPVT(N)=1
@@ -5941,7 +5807,7 @@ module  mod_tmatrix_mps
           real(kind=dp), dimension(N)      :: B
           integer(kind=int4), dimension(N) :: IPVT
           ! Locals
-          integer(kind=int4) :: NM1,K,KP1,I,KB,KM1,M
+          integer(kind=int4) :: NM1,K,KP1,K,I,KB,KM1,M
           real(kind=dp) :: T
           IF (N.EQ.1) GO TO 50
              NM1=N-1
@@ -5972,7 +5838,7 @@ module  mod_tmatrix_mps
 !DIR$ ATTRIBUTES INLINE :: SAREA    
     SUBROUTINE SAREA (D,RAT)
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SAREA
-          real(kind=dp) :: D,RAT
+          real(kindd=dp) :: D,RAT
           ! Locals
           real(kind=dp) :: E,R
           IF (D.GE.1) GO TO 10
@@ -5985,7 +5851,7 @@ module  mod_tmatrix_mps
           R=0.25_dp*(2._dp*D**(2._dp/3._dp) + D**(-4._dp/3._dp)*DLOG((1._dp)/(0.1_dp))/E)
     
           R=DSQRT(R)
-          RAT=1._dp/R
+          RAT=1._R64P/R
       
     END  SUBROUTINE
     
@@ -5995,9 +5861,9 @@ module  mod_tmatrix_mps
           real(kind=dp) :: E,RAT
           ! Locals
           real(kind=dp), dimension(60) :: X,W
-          integer(kind=int4) :: I,NG
+          integer(kind=dint4) :: I,NG
           real(kind=dp) :: DN,E2,EN,S,V,XI,DX,DXI,DS,DSN,DCN,A2, &
-                        A,ENS,RS,RV,DXN
+                        A,ENS,RS,RV
           DN=DFLOAT(N)
           E2=E*E
           EN=E*DN
@@ -6039,8 +5905,8 @@ module  mod_tmatrix_mps
           integer(kind=int4), parameter :: NC = 10, NG = 60
           real(kind=dp), dimension(NG) :: X,W
           real(kind=dp), dimension(0:NC) :: C
-          real(kind=dp) :: V,S,XI,WI,RI,DRI,XIN,CI,RISI,RS,RV,R0V,SI
-          integer(kind=int4) :: I,N
+          real(kind=dp) :: V,S,XI,WI,RI,DRI,XIN,CI,RISI,RS,RV,R0V
+          integer(kind=int4) :: I,N,
           COMMON /CDROP/ C,R0V
           C(0)=-0.0481_dp
           C(1)= 0.0359_dp
@@ -6102,7 +5968,7 @@ module  mod_tmatrix_mps
           real(kind=dp), parameter :: A = 1._dp, B = 2._dp, C = 3._dp
         !  DATA A,B,C /1._R64P,2D0,3D0/
           integer(kind=int4) :: IND,K,I,M,NITER,J
-          real(kind=dp) :: F,CHECK,PB,PC,X,DJ,PA,ZZ
+          real(kind=dp) :: F,CHECK,PB,PC,X,DJ,PA
           IND=MOD(N,2)
           K=N/2+IND
           F=DFLOAT(N)
