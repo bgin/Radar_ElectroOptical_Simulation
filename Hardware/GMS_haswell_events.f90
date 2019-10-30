@@ -20,7 +20,8 @@ module mod_core_events
   !  "BriefDescription": "loads blocked by overlapping with store buffer that cannot be forwarded",
   character(*),     parameter, public :: LD_BLOCKS_STORE_FORWARD     = "r203"
   !   "EventName": "LD_BLOCKS.NO_SR",
-  !   "BriefDescription": "The number of times that split load operations are temporarily blocked because all resources for handling the split accesses are in use",
+  !   "BriefDescription": "The number of times that split load operations
+  !   are temporarily blocked because all resources for handling the split accesses are in use",
   character(*),     parameter, public :: LD_BLOCKS_NO_SR             = "r803"
   !    "EventName": "MISALIGN_MEM_REF.LOADS",
   !    "BriefDescription": "Speculative cache line split load uops dispatched to L1 cache",
@@ -30,7 +31,9 @@ module mod_core_events
   character(*),     parameter, public :: MISALIGN_MEM_REF_STORES     = "r205"
   !   "EventName": "LD_BLOCKS_PARTIAL.ADDRESS_ALIAS",
   !   "BriefDescription": "False dependencies in MOB due to partial compare on address.",
-  !             "PublicDescription": "Aliasing occurs when a load is issued after a store and their memory addresses are offset by 4K.  This event counts the number of loads that aliased with a precedin  !  g store, resulting in an extended address check in the pipeline which can have a performance impact."
+  !             "PublicDescription": "Aliasing occurs when a load is issued after a store and their memory addresses are offset by 4K.
+  ! This event counts the number of loads that aliased with a precedin  !
+  ! g store, resulting in an extended address check in the pipeline which can have a performance impact."
   character(*),     parameter, public :: LD_BLOCKS_PARTIAL_ADDRESS_ALIAS = "r107"
   !  "EventName": "DTLB_LOAD_MISSES.MISS_CAUSES_A_WALK",
   !  "BriefDescription": "Load misses in all DTLB levels that cause page walks",
@@ -39,25 +42,30 @@ module mod_core_events
   !  "BriefDescription": "Demand load Miss in all translation lookaside buffer (TLB) levels causes a page walk that completes (4K)."
   character(*),     parameter, public :: DTLB_LOAD_MISSES_WALK_COMPLETED_4K  = "r208"
   !   "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED_2M_4M",
-  !   "BriefDescription": "Demand load Miss in all translation lookaside buffer (TLB) levels causes a page walk that completes (2M/4M)."
+  !   "BriefDescription": "Demand load Miss in all translation
+  !   lookaside buffer (TLB) levels causes a page walk that completes (2M/4M)."
   character(*),     parameter, public :: DTLB_LOAD_MISSES_WALK_COMPLETED_2M_4M = "r408"
   !    "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED_1G",
   !    "BriefDescription": "Load miss in all TLB levels causes a page walk that completes. (1G)"
   character(*),     parameter, public :: DTLB_LOAD_MISSES_WALK_COMPLETED_1G    = "r808"
   !    "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED",
-  !    "BriefDescription": "Demand load Miss in all translation lookaside buffer (TLB) levels causes a page walk that completes of any page size."
+  !    "BriefDescription": "Demand load Miss in all translation
+  !    lookaside buffer (TLB) levels causes a page walk that completes of any page size."
   character(*),     parameter, public :: DTLB_LOAD_MISSES_WALK_COMPLETED       = "re08"
   !    "EventName": "DTLB_LOAD_MISSES.WALK_DURATION",
   !    "BriefDescription": "Cycles when PMH is busy with page walks",
-  !    "PublicDescription": "This event counts cycles when the  page miss handler (PMH) is servicing page walks caused by DTLB load misses.",
+  !    "PublicDescription": "This event counts cycles when the
+  !    page miss handler (PMH) is servicing page walks caused by DTLB load misses.",
   character(*),     parameter, public :: DTLB_LOAD_MISSES_WALK_DURATION        = "r1008"
   !     "EventName": "DTLB_LOAD_MISSES.STLB_HIT_4K",
   !     "BriefDescription": "Load misses that miss the  DTLB and hit the STLB (4K)",
-  !     "PublicDescription": "This event counts load operations from a 4K page that miss the first DTLB level but hit the second and do not cause page walks.",
+  !     "PublicDescription": "This event counts load operations from a
+  !     4K page that miss the first DTLB level but hit the second and do not cause page walks.",
   character(*),     parameter, public :: DTLB_LOAD_MISSES_STLB_HIT_4K          = "r2008"
   !     "EventName": "DTLB_LOAD_MISSES.STLB_HIT_2M",
   !     "BriefDescription": "Load misses that miss the  DTLB and hit the STLB (2M)",
-  !     "PublicDescription": "This event counts load operations from a 2M page that miss the first DTLB level but hit the second and do not cause page walks.",
+  !     "PublicDescription": "This event counts load operations from
+  !     a 2M page that miss the first DTLB level but hit the second and do not cause page walks.",
   character(*),     parameter, public :: DTLB_LOAD_MISSES_STLB_HIT_2M          = "r4008"
   !     "EventName": "DTLB_LOAD_MISSES.STLB_HIT",
   !     "BriefDescription": "Load operations that miss the first DTLB level but hit the second and do not cause page walks"
@@ -71,7 +79,8 @@ module mod_core_events
   character(*),     parameter, public :: INT_MISC_RECOVERY_CYCLES              = "r30D"
   !     "EventName": "UOPS_ISSUED.ANY",
   !  "BriefDescription": "Uops that Resource Allocation Table (RAT) issues to Reservation Station (RS)",
-  !  "PublicDescription": "This event counts the number of uops issued by the Front-end of the pipeline to the Back-end. This event is counted at the
+  !  "PublicDescription": "This event counts the number of uops issued by the
+  !  Front-end of the pipeline to the Back-end. This event is counted at the
    ! allocation stage and will count both retired and non  !   !-retired uops.",
   character(*),     parameter, public :: UOPS_ISSUED_ANY                       = "r100E"
   !   "EventName": "UOPS_ISSUED.STALL_CYCLES",
@@ -157,7 +166,8 @@ module mod_core_events
   !  "EventName": "CPU_CLK_UNHALTED.THREAD_P",
   !  "BriefDescription": "Thread cycles when thread is not in halt state",
   !  "PublicDescription": "Counts the number of thread cycles while the thread is not in a halt state. 
-  !   The thread enters the halt state when it is running the HLT instruction. The core frequency may change from time to time due to power or thermal throttling.",
+  !   The thread enters the halt state when it is running the HLT instruction.
+  !   The core frequency may change from time to time due to power or thermal throttling.",
   character(*),     parameter, public :: CPU_CLK_UNHALTED_THREAD_P             = "r003C"
   !   "EventName": "CPU_CLK_UNHALTED.THREAD_P_ANY",
   !   "BriefDescription": "Core cycles when at least one thread on the physical core is not in halt state.",
@@ -316,29 +326,29 @@ module mod_core_events
   character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_DATA_RD = "r0160"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DEMAND_DATA_RD",
   !  "BriefDescription": "Cycles when offcore outstanding Demand Data Read transactions are present in SuperQueue (SQ), queue to uncore."
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DEMAND_DATA_RD = "r0160"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_CYCLES_WITH_DEMAND_DATA_RD = "r0160"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_DATA_RD_GE_6",
   !   "BriefDescription": "Cycles with at least 6 offcore outstanding Demand Data Read transactions in uncore queue.
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_DATA_RD_GE_6        = "r0160"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_DATA_RD_GE_6        = "r0160"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_CODE_RD",
   !  "BriefDescription": "Offcore outstanding code reads transactions in SuperQueue (SQ), queue to uncore, every cycle",
   !  "PublicDescription": "Offcore outstanding Demand code Read transactions in SQ to uncore. Set Cmask=1 to count cycles.
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_CODE_R              = "r0260"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_CODE_R              = "r0260"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DEMAND_RFO",
   !  "BriefDescription": "Offcore outstanding RFO store transactions in SuperQueue (SQ), queue to uncore",
   !  "PublicDescription": "Offcore outstanding RFO store transactions in SQ to uncore. Set Cmask=1 to count cycles."
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.DEMAND_RFO                = "r0460"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_RFO                = "r0460"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD",
   !  "BriefDescription": "Offcore outstanding cacheable Core Data Read transactions in SuperQueue (SQ), queue to uncore",
   !  "PublicDescription": "Offcore outstanding cacheable data read transactions in SQ to uncore. Set Cmask=1 to count cycles."
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD               = "r0860"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_ALL_DATA_RD               = "r0860"
   !   "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD",
   !  "BriefDescription": "Cycles when offcore outstanding cacheable Core Data Read transactions are present in SuperQueue (SQ), queue to uncore."
-  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD       = "r0860"
+  character(*),     parameter, public :: OFFCORE_REQUESTS_OUTSTANDING_CYCLES_WITH_DATA_RD       = "r0860"
   !   "EventName": "LOCK_CYCLES.SPLIT_LOCK_UC_LOCK_DURATION",
   !  "BriefDescription": "Cycles when L1 and L2 are locked due to UC or split lock",
   !  "PublicDescription": "Cycles in which the L1D and L2 are locked, due to a UC lock or split lock.
-  character(*),     parameter, public :: LOCK_CYCLES-SPLIT_LOCK_UC_LOCK_DURATION                = "r0163"
+  character(*),     parameter, public :: LOCK_CYCLES_SPLIT_LOCK_UC_LOCK_DURATION                = "r0163"
   !   "EventName": "LOCK_CYCLES.CACHE_LOCK_DURATION",
   !  "BriefDescription": "Cycles when L1D is locked",
   !  "PublicDescription": "Cycles in which the L1D is locked.
@@ -457,64 +467,64 @@ module mod_core_events
   character(*),     parameter, public :: ILD_STALL_IQ_FULL                                      = "r0487"
   ! "EventName": "BR_INST_EXEC.NONTAKEN_CONDITIONAL",
   !  "BriefDescription": "Not taken macro-conditional branches."
-  character(*),     parameter, public :: BR_INST_EXEC.NONTAKEN_CONDITIONAL                      = "r4188"
+  character(*),     parameter, public :: BR_INST_EXEC_NONTAKEN_CONDITIONAL                      = "r4188"
   !   "EventName": "BR_INST_EXEC.TAKEN_CONDITIONAL",
   !   "BriefDescription": "Taken speculative and retired macro-conditional branches.
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_CONDITIONAL                         = "r8188"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_CONDITIONAL                         = "r8188"
   !  "EventName": "BR_INST_EXEC.TAKEN_DIRECT_JUMP",
   !  "BriefDescription": "Taken speculative and retired macro-conditional branch instructions excluding calls and indirects.
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_DIRECT_JUMP                         = "r8288"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_DIRECT_JUMP                         = "r8288"
   !   "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET",
   !  "BriefDescription": "Taken speculative and retired indirect branches excluding calls and returns."
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8488"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8488"
   ! "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_NEAR_RETURN",
   !  "BriefDescription": "Taken speculative and retired indirect branches with return mnemonic."
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_NEAR_RETURN                = "r8888"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_INDIRECT_NEAR_RETURN                = "r8888"
   !  "EventName": "BR_INST_EXEC.TAKEN_DIRECT_NEAR_CALL",
   !  "BriefDescription": "Taken speculative and retired direct near calls."
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_DIRECT_NEAR_CALL                    = "r9088"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_DIRECT_NEAR_CALL                    = "r9088"
   !  "EventName": "BR_INST_EXEC.TAKEN_INDIRECT_NEAR_CALL",
   !   "BriefDescription": "Taken speculative and retired indirect calls.
-  character(*),     parameter, public :: BR_INST_EXEC.TAKEN_INDIRECT_NEAR_CALL                  = "rA088"
+  character(*),     parameter, public :: BR_INST_EXEC_TAKEN_INDIRECT_NEAR_CALL                  = "rA088"
   !  "EventName": "BR_INST_EXEC.ALL_CONDITIONAL",
   !  "BriefDescription": "Speculative and retired macro-conditional branches.",
   character(*),     parameter, public :: BR_INST_EXEC_ALL_CONDITIONAL                           = "rC188"
   !   "EventName": "BR_INST_EXEC.ALL_DIRECT_JMP",
   !  "BriefDescription": "Speculative and retired macro-unconditional branches excluding calls and indirects."
-  character(*),     parameter, public :: BR_INST_EXEC.ALL_DIRECT_JMP                            = "rC288"
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_DIRECT_JMP                            = "rC288"
   !  "EventName": "BR_INST_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET",
   !  "BriefDescription": "Speculative and retired indirect branches excluding calls and returns.
-  character(*),     parameter, public :: BR_INST_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC488"
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC488"
   !    "EventName": "BR_INST_EXEC.ALL_INDIRECT_NEAR_RETURN",
   !  "BriefDescription": "Speculative and retired indirect return branches."
-  character(*),     parameter, public :: BR_INST_EXEC.ALL_INDIRECT_NEAR_RETURN                  = "rC888"
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_INDIRECT_NEAR_RETURN                  = "rC888"
   !  "EventName": "BR_INST_EXEC.ALL_DIRECT_NEAR_CALL",
   !  "BriefDescription": "Speculative and retired direct near calls."
-  character(*),     parameter, public :: BR_INST_EXEC.ALL_DIRECT_NEAR_CALL                      = "rD088"
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_DIRECT_NEAR_CALL                      = "rD088"
   !  "EventName": "BR_INST_EXEC.ALL_BRANCHES",
   !   "BriefDescription": "Speculative and retired  branches",
-  character(*),     parameter, public :: BR_INST_EXEC.ALL_BRANCHES                              = "rFF88"
+  character(*),     parameter, public :: BR_INST_EXEC_ALL_BRANCHES                              = "rFF88"
   !  "EventName": "BR_MISP_EXEC.NONTAKEN_CONDITIONAL",
   !  "BriefDescription": "Not taken speculative and retired mispredicted macro conditional branches.
-  character(*),     parameter, public :: BR_MISP_EXEC.NONTAKEN_CONDITIONAL                      = "r4189"
+  character(*),     parameter, public :: BR_MISP_EXEC_NONTAKEN_CONDITIONAL                      = "r4189"
   !   "EventName": "BR_MISP_EXEC.TAKEN_CONDITIONAL",
   !   "BriefDescription": "Taken speculative and retired mispredicted macro conditional branches."
-  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_CONDITIONAL                         = "r4189"
+  character(*),     parameter, public :: BR_MISP_EXEC_TAKEN_CONDITIONAL                         = "r4189"
   !    "EventName": "BR_MISP_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET",
   !   "BriefDescription": "Taken speculative and retired mispredicted indirect branches excluding calls and returns.
-  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8489"
+  character(*),     parameter, public :: BR_MISP_EXEC_TAKEN_INDIRECT_JUMP_NON_CALL_RET          = "r8489"
   !   "EventName": "BR_MISP_EXEC.TAKEN_RETURN_NEAR",
   !   "BriefDescription": "Taken speculative and retired mispredicted indirect branches with return mnemonic.
   character(*),     parameter, public :: BR_MISP_EXEC_TAKEN_RETURN_NEAR                         = "r8889"
   ! "EventName": "BR_MISP_EXEC.TAKEN_INDIRECT_NEAR_CALL",
   !  "BriefDescription": "Taken speculative and retired mispredicted indirect calls.
-  character(*),     parameter, public :: BR_MISP_EXEC.TAKEN_INDIRECT_NEAR_CALL                  = "rA089"
+  character(*),     parameter, public :: BR_MISP_EXEC_TAKEN_INDIRECT_NEAR_CALL                  = "rA089"
   !  "EventName": "BR_MISP_EXEC.ALL_CONDITIONAL",
   !  "BriefDescription": "Speculative and retired mispredicted macro conditional branches.
   character(*),     parameter, public :: BR_MISP_EXEC_ALL_CONDITIONAL                           = "rC189"
   !  "EventName": "BR_MISP_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET",
   !  "BriefDescription": "Mispredicted indirect branches excluding calls and returns.
-  character(*),     parameter, public :: BR_MISP_EXEC.ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC489"
+  character(*),     parameter, public :: BR_MISP_EXEC_ALL_INDIRECT_JUMP_NON_CALL_RET            = "rC489"
   !   "EventName": "BR_MISP_EXEC.ALL_BRANCHES",
   !   "BriefDescription": "Speculative and retired mispredicted macro conditional branches"
   character(*),     parameter, public :: BR_MISP_EXEC_ALL_BRANCHES                              = "rFF89"
@@ -531,16 +541,16 @@ module mod_core_events
   !     "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_1_UOP_DELIV.CORE",
   !     "BriefDescription": "Cycles per thread when 3 or more uops are not delivered to
   !     Resource Allocation Table (RAT) when backend of the machine is not stalled.
-  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_1_UOP_DELIV.CORE      = "r019C"
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CYCLES_LE_1_UOP_DELIV_CORE      = "r019C"
   !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_2_UOP_DELIV.CORE",
   !  "BriefDescription": "Cycles with less than 2 uops delivered by the front end."
-  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_2_UOP_DELIV.CORE      = "r019C"
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CYCLES_LE_2_UOP_DELIV_CORE      = "r019C"
   !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_3_UOP_DELIV.CORE",
   !   "BriefDescription": "Cycles with less than 3 uops delivered by the front end.
-  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_LE_3_UOP_DELIV.CORE      = "r019C"
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CYCLES_LE_3_UOP_DELIV_CORE      = "r019C"
   !   "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK",
   !   "BriefDescription": "Counts cycles FE delivered 4 uops or Resource Allocation Table (RAT) was stalling FE.
-  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK                = "r019C"
+  character(*),     parameter, public :: IDQ_UOPS_NOT_DELIVERED_CYCLES_FE_WAS_OK                = "r019C"
   !    "EventName": "UOPS_EXECUTED_PORT.PORT_0",
   !    "BriefDescription": "Cycles per thread when uops are executed in port 0
   character(*),     parameter, public :: UOPS_EXECUTED_PORT_PORT_0                              = "r01A1"
@@ -665,7 +675,7 @@ module mod_core_events
   character(*),     parameter, public :: LSD_CYCLES_4_UOPS                                      = "r01A8"
   !    "EventName": "DSB2MITE_SWITCHES.PENALTY_CYCLES",
   !    "BriefDescription": "Decode Stream Buffer (DSB)-to-MITE switch true penalty cycles."
-  character(*),     parameter, public :: DSB2MITE_SWITCHES.PENALTY_CYCLES                       = "r02AB"
+  character(*),     parameter, public :: DSB2MITE_SWITCHES_PENALTY_CYCLES                       = "r02AB"
   !     "EventName": "ITLB.ITLB_FLUSH",
   !     "BriefDescription": "Flushing of the Instruction TLB (ITLB) pages, includes 4k/2M/4M pages.
   character(*),     parameter, public :: ITLB_ITLB_FLUSH                                        = "r01AE"
@@ -697,11 +707,11 @@ module mod_core_events
   !   "EventName": "UOPS_EXECUTED.CYCLES_GE_3_UOPS_EXEC",
   !  "BriefDescription": "Cycles where at least 3 uops were executed per-thread",
   !  "PublicDescription": "This events counts the cycles where at least three uop were executed. It is counted per thread.",
-  character(*),    parameter, public :: UOPS_EXECUTED.CYCLES_GE_3_UOPS_EXEC                     = "r01B1"
+  character(*),    parameter, public :: UOPS_EXECUTED_CYCLES_GE_3_UOPS_EXEC                     = "r01B1"
   !   "EventName": "UOPS_EXECUTED.CYCLES_GE_4_UOPS_EXEC",
   !  "BriefDescription": "Cycles where at least 4 uops were executed per-thread.",
   !  "PublicDescription": "Cycles where at least 4 uops were executed per-thread.",
-  character(*),    parameter, public :: UOPS_EXECUTED.CYCLES_GE_4_UOPS_EXEC                     = "r01B1"
+  character(*),    parameter, public :: UOPS_EXECUTED_CYCLES_GE_4_UOPS_EXEC                     = "r01B1"
   !   "EventName": "UOPS_EXECUTED.CORE",
   !  "BriefDescription": "Number of uops executed on the core.",
   !  "PublicDescription": "Counts total number of uops to be executed per-core each cycle.",
@@ -933,28 +943,28 @@ module mod_core_events
   character(*),    parameter, public :: ROB_MISC_EVENTS_LBR_INSERTS                           = "r20CC"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_4",
   !  "BriefDescription": "Randomly selected loads with latency value being above 4
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_4                   = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_4                   = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_8",
   !  "BriefDescription": "Randomly selected loads with latency value being above 8
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_8                   = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_8                   = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_16",
   !  "BriefDescription": "Randomly selected loads with latency value being above 16
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_16                   = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_16                   = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_32",
   !  "BriefDescription": "Randomly selected loads with latency value being above 32
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_32                   = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_32                   = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_64",
   !  "BriefDescription": "Randomly selected loads with latency value being above 64
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_64                  = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_64                  = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_128",
   !  "BriefDescription": "Randomly selected loads with latency value being above 128
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_128                  = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED#_LOAD_LATENCY_GT_128                  = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_256",
   !  "BriefDescription": "Randomly selected loads with latency value being above 256
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_256                  = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_256                  = "r01CD"
   !    "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512",
   !  "BriefDescription": "Randomly selected loads with latency value being above 512
-  character(*),    parameter, public :: MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512                   = "r01CD"
+  character(*),    parameter, public :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_512                   = "r01CD"
   !   "EventName": "MEM_UOPS_RETIRED.STLB_MISS_LOADS",
   !  "BriefDescription": "Retired load uops that miss the STLB. (precise Event)"
   character(*),    parameter, public :: MEM_UOPS_RETIRED_STLB_MISS_LOADS                        = "r11D0"
