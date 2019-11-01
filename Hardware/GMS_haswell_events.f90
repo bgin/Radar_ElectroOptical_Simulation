@@ -2,11 +2,13 @@
 
 module mod_core_events
 
+   use mod_kinds, only : int32_t
   ! Based on haswell_core_v28.json
   ! rNNNN -- as used by the perf -- UMASK+EVENT
   ! "EventName": "INST_RETIRED.ANY",
   !  "BriefDescription": "Instructions retired from execution.",
   character(*),     parameter, public :: INST_RETIRED_ANY = "r100"
+
   !  "EventName": "CPU_CLK_UNHALTED.THREAD",
   !  "BriefDescription": "Core cycles when the thread is not in halt state.",
   character(*),     parameter, public :: CPU_CLK_UNHALTED_THREAD = "r200"
@@ -81,7 +83,7 @@ module mod_core_events
   !  "BriefDescription": "Uops that Resource Allocation Table (RAT) issues to Reservation Station (RS)",
   !  "PublicDescription": "This event counts the number of uops issued by the
   !  Front-end of the pipeline to the Back-end. This event is counted at the
-   ! allocation stage and will count both retired and non  !   !-retired uops.",
+  ! allocation stage and will count both retired and non  !   !-retired uops.",
   character(*),     parameter, public :: UOPS_ISSUED_ANY                       = "r100E"
   !   "EventName": "UOPS_ISSUED.STALL_CYCLES",
   !   "BriefDescription": "Cycles when Resource Allocation Table (RAT) does not issue Uops to Reservation Station (RS) for the thread.
@@ -928,7 +930,7 @@ module mod_core_events
   character(*),    parameter, public :: FP_ASSIST_X87_INPUT                                   = "r04CA"
   !    "EventName": "FP_ASSIST.SIMD_OUTPUT",
   !  "BriefDescription": "SSE* FP micro-code assist when output value is invalid.
-  character(*),    parameter, public :: FP_ASSIST_SIMD_OUTPUT                                 = "r08CA"
+  ! character(*),    parameter, public :: FP_ASSIST_SIMD_OUTPUT                                 = "r08CA"
   !    "EventName": "FP_ASSIST.SIMD_OUTPUT",
   !  "BriefDescription": "SSE* FP micro-code assist when output value is invalid. ",
   character(*),    parameter, public :: FP_ASSIST_SIMD_OUTPUT                                 = "r08CA"
@@ -1163,8 +1165,146 @@ module mod_core_events
   !  "EventName": "OFFCORE_RESPONSE.PF_L2_CODE_RD.L3_MISS.ANY_RESPONSE",
   !  "BriefDescription": "Counts all prefetch (that bring data to LLC only) code reads miss in the L3 ",
   character(*),    parameter, public :: OFFCORE_RESPONSE_PF_L2_CODE_RD_L3_MISS_ANY_RESPONSE       = "r01B7"
-  ! 
-end module mod_core_events
+  !
+
+      type, public :: HaswellCoreEvents_t
+         public
+         sequence
+         integer(kind=int32_t) :: INST_RETIRED_ANY                      = Z'100'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD               = Z'200'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD_ANY           = Z'200'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_REF_TSC              = Z'300'
+         integer(kind=int32_t) :: LD_BLOCKS_STORE_FORWARD               = Z'203'
+         integer(kind=int32_t) :: LD_BLOCKS_NO_SR                       = Z'803'
+         integer(kind=int32_t) :: MISALIGN_MEM_REF_LOADS                = Z'105'
+         integer(kind=int32_t) :: MISALIGN_MEM_REF_STORES               = Z'205'
+         integer(kind=int32_t) :: LD_BLOCKS_PARTIAL_ADDRESS_ALIAS       = Z'107'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_CAUSES_A_WALK        = Z'108'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_WALK_COMPLETED_4K    = Z'208'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_WALK_COMPLETED_2M_4M = Z'408'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_WALK_COMPLETED_1G    = Z'608'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_WALK_COMPLETED       = Z'808'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_WALK_DURATION        = Z'1008'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_STLB_HIT_4K          = Z'2008'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_STLB_HIT_2M          = Z'4008'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_STLB_HIT             = Z'6008'
+         integer(kind=int32_t) :: DTLB_LOAD_MISSES_PDE_CACHE_MISS       = Z'8008'
+         integer(kind=int32_t) :: INT_MISC_RECOVERY_CYCLES              = Z'30D'
+         integer(kind=int32_t) :: UOPS_ISSUED_ANY                       = Z'100E'
+         integer(kind=int32_t) :: UOPS_ISSUED_STALL_CYCLES              = Z'100E'
+         integer(kind=int32_t) :: UOPS_ISSUED_CORE_STALL_CYCLES         = Z'100E'
+         integer(kind=int32_t) :: UOPS_ISSUED_FLAGS_MERGE               = Z'100E'
+         integer(kind=int32_t) :: UOPS_ISSUED_SLOW_LEA                  = Z'200E'
+         integer(kind=int32_t) :: UOPS_ISSUED_SINGLE_MUL                = Z'400E'
+         integer(kind=int32_t) :: ARITH_DIVIDER_UOPS                    = Z'0214'
+         integer(kind=int32_t) :: L2_RQSTS_DEMAND_DATA_RD_MISS          = Z'2124'
+         integer(kind=int32_t) :: L2_RQSTS_RFO_MISS                     = Z'2224'
+         integer(kind=int32_t) :: L2_RQSTS_CODE_RD_MISS                 = Z'2424'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_DEMAND_MISS              = Z'2724'
+         integer(kind=int32_t) :: L2_RQSTS_L2_PF_MISS                   = Z'3024'
+         integer(kind=int32_t) :: L2_RQSTS_MISS                         = Z'3F24'
+         integer(kind=int32_t) :: L2_RQSTS_DEMAND_DATA_RD_HIT           = Z'C124'
+         integer(kind=int32_t) :: L2_RQSTS_RFO_HIT                      = Z'C224'
+         integer(kind=int32_t) :: L2_RQSTS_CODE_RD_HIT                  = Z'C424'
+         integer(kind=int32_t) :: L2_RQSTS_L2_PF_HIT                    = Z'D024'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_DEMAND_DATA_DATA_RD      = Z'E124'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_RFO                      = Z'E224'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_CODE_RD                  = Z'E424'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_DEMAND_REFERENCES        = Z'E724'
+         integer(kind=int32_t) :: L2_RQSTS_ALL_PF                       = Z'F824'
+         integer(kind=int32_t) :: L2_RQSTS_REFERENCES                   = Z'FF24'
+         integer(kind=int32_t) :: L2_DEMAND_RQSTS_WB_HIT                = Z'5027'
+         integer(kind=int32_t) :: LONGEST_LAT_CACHE_MISS                = Z'412E'
+         integer(kind=int32_t) :: LONGEST_LAT_CACHE_REFERENCES          = Z'4F2E'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD_P             = Z'003C'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD_P_ANY         = Z'003C'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD_REF_XCLK      = Z'013C'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_THREAD_REF_XCLK_ANY  = Z'013C'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_REF_XCLK             = Z'013C'
+         integer(kind=int32_t) :: CPU_CLK_UNHALTED_REF_XCLK_ANY         = Z'013C'
+         integer(kind=int32_t) :: CPU_CLK_THREAD_UNHALTED_ONE_THREAD_ACTIVE = Z'023C'
+         integer(kind=int32_t) :: L1D_MISS_PENDING                      = Z'0148'
+         integer(kind=int32_t) :: L1D_PEND_MISS_PENDING_CYCLES          = Z'0148'
+         integer(kind=int32_t) :: L1D_PEND_MISS_PENDING_CYCLES_ANY      = Z'0148'
+         integer(kind=int32_t) :: L1D_PEND_MISS_REQUEST_FB_FULL         = Z'0248'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_MISS_CAUSES_A_WALK  = Z'0149'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_WALK_COMPLETED_4K   = Z'0249'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_WALK_COMPLETED_2M4M = Z'0449'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_WALK_COMPLETED_1G   = Z'0849'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_WALK_COMPLETED      = Z'0E49'
+         integer(kind=int32_t) :: DTLB_STORE_MISS_WALK_DURATION         = Z'1049'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_STLB_HIT_4K         = Z'2049'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_STLB_HIT_2M         = Z'4049'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_STLB_HIT            = Z'6049'
+         integer(kind=int32_t) :: DTLB_STORE_MISSES_PDE_CACHE_MISS      = Z'8049'
+         integer(kind=int32_t) :: LOAD_HIT_PRE_SW_PF                    = Z'014C'
+         integer(kind=int32_t) :: LOAD_HIT_PRE_HW_PF                    = Z'024C'
+         integer(kind=int32_t) :: EPT_WALK_CYCLES                       = Z'104F'
+         integer(kind=int32_t) :: L1D_REPLACEMENT                       = Z'0151'
+         integer(kind=int32_t) :: TX_MEM_ABORT_CONFLICT                 = Z'0154'
+         integer(kind=int32_t) :: TX_MEM_ABORT_CAPACITY_WRITE           = Z'0254'
+         integer(kind=int32_t) :: TX_MEM_ABORT_HLE_STORE_TO_ELIDED_LOCK = Z'0454'
+         integer(kind=int32_t) :: TX_MEM_ABORT_HLE_ELISION_BUFFER_NOT_EMPTY = Z'0845'
+         integer(kind=int32_t) :: TX_MEM_ABORT_HLE_ELISION_BUFFER_MISMATCH  = Z'1054'
+         integer(kind=int32_t) :: TX_MEM_ABORT_HLE_ELISION_BUFFER_UNSUPPORTED_ALIGNMENT = Z'2054'
+         integer(kind=int32_t) :: TX_MEM_HLE_ELISION_BUFFER_FULL        = Z'4054'
+         integer(kind=int32_t) :: MOVE_ELIMINATION_INT_ELIMINATED       = Z'0158'
+         integer(kind=int32_t) :: MOVE_ELIMINATION_SIMD_ELIMINATED      = Z'0258'
+         integer(kind=int32_t) :: MOVE_ELIMINATION_INT_NOT_ELIMINATED   = Z'0458'
+         integer(kind=int32_t) :: MOVE_ELIMINATION_SIMD_NOT_ELIMINATED  = Z'0858'
+         integer(kind=int32_t) :: CPL_CYCLES_RING0                      = Z'015C'
+         integer(kind=int32_t) :: CPL_CYCLES_RING0_TRANS                = Z'015C'
+         integer(kind=int32_t) :: CPL_CYCLES_RING123                    = Z'025C'
+         integer(kind=int32_t) :: TX_EXEC_MISC1                         = Z'015D'
+         integer(kind=int32_t) :: TX_EXEC_MISC2                         = Z'025D'
+         integer(kind=int32_t) :: TX_EXEC_MISC3                         = Z'045D'
+         integer(kind=int32_t) :: TX_EXEC_MISC4                         = Z'085D'
+         integer(kind=int32_t) :: TX_EXEC_MISC5                         = Z'015D'
+         integer(kind=int32_t) :: RS_EVENTS_EMPTY_CYCLES                = Z'015E'
+         integer(kind=int32_t) :: RS_EVENTS_EMPTY_END                   = Z'015E'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_DATA_RD = Z'0160'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_CYCLES_WITH_DEMAND_DATA_RD = Z'0160'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_DATA_RD_GE_6 = Z'0160'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_CODE_R = Z'0260'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_DEMAND_RFO = Z'0460'
+         integer(kind=int32_t) :: OFFCORE_REQUESTS_OUTSTANDING_ALL_DATA_RD = Z'0860'
+         integer(kind=int32_t) :: LOCK_CYCLES_SPLIT_LOCK_UC_LOCK_DURATION = Z'0263'
+         integer(kind=int32_t) :: IDQ_EMPTY                             = Z'0279'
+         integer(kind=int32_t) :: IDQ_MITE_UOPS                         = Z'0479'
+         integer(kind=int32_t) :: IDQ_MITE_CYCLES                       = Z'0479'
+         integer(kind=int32_t) :: IDQ_DSB_UOPS                          = Z'0879'
+         integer(kind=int32_t) :: IDQ_MS_DSB_UOPS                       = Z'1079'
+         integer(kind=int32_t) :: IDQ_MS_DSB_CYCLES                     = Z'1079'
+         integer(kind=int32_t) :: IDQ_MS_DSB_OCCUR                      = Z'1079'
+         integer(kind=int32_t) :: IDQ_ALL_DBS_CYCLES_4_UOPS             = Z'1879'
+         integer(kind=int32_t) :: IDQ_ALL_DBS_CYCLES_ANY_UOPS           = Z'1879'
+         integer(kind=int32_t) :: IDQ_MS_MITE_UOPS                      = Z'2079'
+         integer(kind=int32_t) :: IDQ_ALL_MITE_CYCLES_4_UOPS            = Z'2479'
+         integer(kind=int32_t) :: IDQ_ALL_MITE_CYCLES_ANY_UOPS          = Z'2479'
+         integer(kind=int32_t) :: IDQ_MS_UOPS                           = Z'3079'
+         integer(kind=int32_t) :: IDQ_MS_CYCLES                         = Z'3079'
+         integer(kind=int32_t) :: IDQ_MS_SWITCHES                       = Z'3079'
+         integer(kind=int32_t) :: IDQ_MITE_ALL_UOPS                     = Z'3C79'
+         integer(kind=int32_t) :: ICACHE_HIT                            = Z'0180'
+         integer(kind=int32_t) :: ICACHE_MISSES                         = Z'0280'
+         integer(kind=int32_t) :: ICACHE_FETCH_STALL                    = Z'0480'
+         integer(kind=int32_t) :: ICACHE_IFETCH_STALL                   = Z'0480'
+         integer(kind=int32_t) :: ITLB_MISSES_MISS_CAUSES_A_WALK        = Z'0185'
+         integer(kind=int32_t) :: ITLB_MISSES_WALK_COMPLETED_4K         = Z'0285'
+         integer(kind=int32_t) :: ITLB_MISSES_WALK_COMPLETED_2M_4M      = Z'0485'
+         integer(kind=int32_t) :: ITLB_MISSES_WALK_COMPLETED_1G         = Z'0885'
+         integer(kind=int32_t) :: ITLB_MISSES_WALK_COMPLETED            = Z'0E85'
+         integer(kind=int32_t) :: ITLB_MISSES_WALK_DURATION             = Z'1085'
+         integer(kind=int32_t) :: ITLB_MISSES_STLB_HIT_4K               = Z'2085'
+         integer(kind=int32_t) :: ITLB_MISSES_STLB_HIT_2M               = Z'4085'
+         integer(kind=int32_t) :: ITLB_MISSES_STLB_HIT                  = Z'6085'
+         integer(kind=int32_t) :: ILD_STALL_LCP                         = Z'0187'
+         integer(kind=int32_t) :: ILD_STALL_IQ_FULL                     = Z'0487'
+         Integer(kind=int32_t) :: BR_INST_EXEC_NONTAKEN_CONDITIONAL     = Z'4188'
+      end type HaswellCoreEvents_t
+
+
+   end module mod_core_events
 
 
 
