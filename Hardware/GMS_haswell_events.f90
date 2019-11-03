@@ -1437,8 +1437,68 @@ module mod_core_events
          integer(kind=int32_t) :: HLE_RETIRED_ABORTED_MISC3             = Z'20C8'
          integer(kind=int32_t) :: HLE_RETIRED_ABORTED_MISC4             = Z'40C8'
          integer(kind=int32_t) :: FP_ASSIST_X87_OUTPUT                  = Z'02CA'
-         integer(kind=int32_t) :: 
+         integer(kind=int32_t) :: FP_ASSIST_X87_INPUT                   = Z'04CA'
+         integer(kind=int32_t) :: FP_ASSIST_SIMD_OUTPUT                 = Z'08CA'
+         integer(kind=int32_t) :: FP_ASSIST_SIMD_INPUT                  = Z'10CA'
+         integer(kind=int32_t) :: FP_ASSIST_ANY                         = Z'1ECA'
+         integer(kind=int32_t) :: ROB_MISC_EVENTS_LBR_INSERTS           = Z'20CC'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_4   = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_8   = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_16  = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_32  = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_64  = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_128 = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_256 = Z'01CD'
+         integer(kind=int32_t) :: MEM_TRANS_RETIRED_LOAD_LATENCY_GT_512 = Z'01CD'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_STLB_MISS_LOADS      = Z'11D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_STLB_MISS_STORES     = Z'12D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_LOCK_LOADS           = Z'21D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_SPLIT_LOADS          = Z'41D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_SPLIT_STORES         = Z'42D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_ALL_LOADS            = Z'81D0'
+         integer(kind=int32_t) :: MEM_UOPS_RETIRED_ALL_STORES           = Z'82D0'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L1_HIT          = Z'01D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L2_HIT          = Z'02D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L3_HIT          = Z'04D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L1_MISS         = Z'08D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L2_MISS         = Z'10D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_L3_MISS         = Z'20D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_RETIRED_HIT_LFB         = Z'40D1'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_MISS = Z'02D2'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_HITM = Z'04D2'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_L3_HIT_RETIRED_XSNP_NONE = Z'08D2'
+         integer(kind=int32_t) :: MEM_LOAD_UOPS_L3_MISS_RETIRED_LOCAL_DRAM = Z'01D3'
+         integer(kind=int32_t) :: BACLEARS_ANY                          = Z'1FE6'
+         integer(kind=int32_t) :: L2_TRANS_DEMAND_DATA_RD               = Z'01F0'
+         integer(kind=int32_t) :: L2_TRANS_RFO                          = Z'02F0'
+         integer(kind=int32_t) :: L2_TRANS_CODE_RD                      = Z'04F0'
+         integer(kind=int32_t) :: L2_TRANS_ALL_PF                       = Z'08F0'
+         integer(kind=int32_t) :: L2_TRANS_L1D_WB                       = Z'10F0'
+         integer(kind=int32_t) :: L2_TRANS_L2_FILL                      = Z'20F0'
+         integer(kind=int32_t) :: L2_TRANS_L2_WB                        = Z'40F0'
+         integer(kind=int32_t) :: L2_TRANS_ALL_REQUESTS                 = Z'80F0'
+         integer(kind=int32_t) :: L2_LINES_IN_I                         = Z'01F1'
+         integer(kind=int32_t) :: L2_LINES_IN_S                         = Z'02F1'
+         integer(kind=int32_t) :: L2_LINES_IN_E                         = Z'04F1'
+         integer(kind=int32_t) :: L2_LINES_IN_ALL                       = Z'07F1'
+         integer(kind=int32_t) :: L2_LINES_OUT_DEMAND_CLEAN             = Z'05F2'
+         integer(kind=int32_t) :: L2_LINES_OUT_DEMAND_DIRTY             = Z'06F2'
+         integer(kind=int32_t) :: SQ_MISC_SPLIT_LOCK                    = Z'10F4'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_REQUESTS_L3_MISS_ANY_RESPONSE = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_REQUESTS_L3_HIT_ANY_RESPONSE  = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_READS_L3_MISS_LOCAL_DRAM      = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_READS_L3_MISS_ANY_RESPONSE    = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_READS_L3_HIT_HITM_OTHER_CORE  = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_READS_L3_HIT_HIT_OTHER_CORE_NO_FWD = Z'01B7'
+         integer(kind=int32_t) ::  OFFCORE_RESPONSE_ALL_CODE_RD_L3_MISS_LOCAL_DRAM   = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_ALL_RFO_L3_MISS_ANY_RESPONSE      = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_PF_L3_CODE_RD_L3_HIT_ANY_RESPONSE = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_PF_L3_RFO_L3_MISS_ANY_RESPONSE    = Z'01B7'
+         integer(kind=int32_t) ::  OFFCORE_RESPONSE_PF_L3_RFO_L3_HIT_ANY_RESPONS     = Z'01B7'
+         integer(kind=int32_t) :: OFFCORE_RESPONSE_PF_L2_CODE_RD_L3_MISS_ANY_RESPONSE = Z'01B7'
       end type HaswellCoreEvents_t
+
+      type(HaswellCoreEvents_t), parameter, public :: hcEvents = HaswellCoreEvents_t()
 
 
    end module mod_core_events
@@ -1506,7 +1566,7 @@ module mod_uncore_events
   character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_ANY_I            = "r8834"
   !   "EventName": "UNC_CBO_CACHE_LOOKUP.READ_MESI",
   !  "BriefDescription": "L3 Lookup read request that access cache and found line in any MESI-state.",
-  character(*),     parameter, public :: UNC-CBO_CACHE_LOOKUP_READ_MESI        = "r1F34"
+  character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_READ_MESI        = "r1F34"
   !     "EventName": "UNC_CBO_CACHE_LOOKUP.WRITE_MESI",
   !  "BriefDescription": "L3 Lookup write request that access cache and found line in MESI-state.
   character(*),     parameter, public :: UNC_CBO_CACHE_LOOKUP_WRITE_MESI       = "r2F34"
@@ -1552,6 +1612,45 @@ module mod_uncore_events
   !  "BriefDescription": "Cycles with at least one request outstanding is waiting for data return from memory controller.
   !  Account for coherent and non-coherent requests initiated by IA Cores, Processor Graphics Unit, or LLC.
   character(*),     parameter, public :: UNC_ARB_TRK_OCCUPANCY_CYCLES_WITH_ANY_REQUEST = "r0180"
+
+  type, public :: HaswellUncoreEvents_t
+     public
+     sequence
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_MISS_EXTERNAL    =  Z'2122'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_MISS_XCORE       =  Z'4122'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_MISS_EVICTION    =  Z'8122'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HIT_EXTERNAL     =  Z'2422'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HIT_XCORE        =  Z'4422'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HIT_EVICTION     =  Z'8422'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HITM_EXTERNAL    =  Z'2822'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HITM_XCORE       =  Z'4822'
+     integer(kind=int32_t) ::   UNC_CBO_XSNP_RESPONSE_HITM_EVICTION    =  Z'8822'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_READ_M            =  Z'1134'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_WRITE_M           =  Z'2134'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_EXTSNP_M          =  Z'4134'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_ANY_M             =  Z'8134'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_READ_I            =  Z'1834'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_WRITE_I           =  Z'2834'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_EXTSNP_I          =  Z'4834'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_ANY_I             =  Z'8834'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_READ_MESI         =  Z'1F34'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_WRITE_MESI        =  Z'2F34'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_EXTSNP_MESI       =  Z'4F34'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_ANY_ES            =  Z'8634'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_EXTSNP_ES         =  Z'4634'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_READ_ES           =  Z'1634'
+     integer(kind=int32_t) ::   UNC_CBO_CACHE_LOOKUP_WRITE_ES          =  Z'2634'
+     integer(kind=int32_t) ::   UNC_CLOCK_SOCKET                       =  Z'0100'
+     integer(kind=int32_t) ::   UNC_ARB_TRK_OCCUPANCY_ALL              =  Z'0180'
+     integer(kind=int32_t) ::   UNC_ARB_TRK_REQUESTS_ALL               =  Z'0181'
+     integer(kind=int32_t) ::   UNC_ARB_TRK_REQUESTS_WRITES            =  Z'2081'
+     integer(kind=int32_t) ::   UNC_ARB_COH_TRK_OCCUPANCY_ALL          =  Z'0183'
+     integer(kind=int32_t) ::   UNC_ARB_COH_TRK_REQUESTS_ALL           =  Z'0184'
+     integer(kind=int32_t) ::   UNC_ARB_TRK_OCCUPANCY_CYCLES_WITH_ANY_REQUEST = Z'0180'
+  end type HaswellUncoreEvents_t
+
+  type(HaswellUncoreEvents_t), parameter, public :: huEvents = HaswellUncoreEvents_t()
+  
 end module mod_uncore_events
 
 
