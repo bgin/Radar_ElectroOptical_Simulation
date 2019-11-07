@@ -499,6 +499,476 @@ module mod_avx512_bindings
               integer(c_char),  intent(in), value :: rounding
               type(v8f64) :: v8f64_maskz_fmaddsub_round_pd
           end function v8f64_maskz_fmaddsub_round_pd
-      end interface
+       end interface
+
+       interface
+          function v8f64_fmsub_pd(a,b,c) &
+               bind(c,name='v8f64_fmsub_pd')
+               import :: v8f64
+               type(v8f64),    intent(in) :: a
+               type(v8f64),    intent(in) :: b
+               type(v8f64),    intent(in) :: c
+               type(v8f64) :: v8f64_fmsub_pd
+          end function v8f64_fmsub_pd
+       end interface
+
+       interface
+          function v8f64_mask_fmsub_pd(a,k,b,c) &
+               bind(c,name='v8f64_mask_fmsub_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               integer(c_char), intent(in), value :: k
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               type(v8f64) :: v8f64_mask_fmsub_pd
+           end function v8f64_mask_fmsub_pd
+       end interface
+
+       interface
+          function v8f64_mask3_fmsub_pd(a,b,c,k) &
+               bind(c,name='v8f64_mask3_fmsub_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_char), intent(in), value :: k
+               type(v8f64) :: v8f64_mask3_fmsub_pd
+          end function v8f64_mask3_fmsub_pd
+       end interface
+
+       interface
+          function v8f64_maskz_fmsub_pd(a,b,c,k) &
+               bind(c,name='v8f64_maskz_fmsub_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_char), intent(in), value :: k
+               type(v8f64) :: v8f64_maskz_fmsub_pd
+          end function v8f64_maskz_fmsub_pd
+       end interface
+
+       interface
+          function v8f64_fmsubadd_pd(a,b,c) &
+               bind(c,name='v8f64_fmsubadd_pd')
+               import :: v8f64
+               type(v8f64),     intent(in) :: a
+               type(v8f64),     intent(in) :: b
+               type(v8f64),     intent(in) :: c
+               type(v8f64) :: v8f64_fmsubadd_pd
+           end function v8f64_fmsubadd_pd
+       end interface
+
+       interface
+          function v8f64_mask_fmsubadd_pd(a,k,b,c) &
+               bind(c,name='v8f64_mask_fmsubadd_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               integer(c_char), intent(in), value :: k
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               type(v8f64) :: v8f64_mask_fmsubadd_pd
+          end function v8f64_mask_fmsubadd_pd
+       end interface
+
+       interface
+          function v8f64_mask3_fmsubadd_pd(a,b,c,k) &
+               bind(c,name='v8f64_mask3_fmsubadd_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_char), intent(in), value :: k
+               type(v8f64) :: v8f64_mask3_fmsubadd_pd
+          end function v8f64_mask3_fmsubadd_pd
+       end interface
+
+       interface
+          function v8f64_maskz_fmsubadd_pd(k,a,b,c) &
+               bind(c,name='v8f64_maskz_fmsubadd_pd')
+               import :: v8f64
+               integer(c_char),  intent(in), value :: k
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               type(v8f64) :: v8f64_maskz_fmsubadd_pd
+           end function v8f64_maskz_fmsubadd_pd
+       end interface
+
+       interface
+          function v8f64_fmsubadd_round_pd(a,b,c,rounding) &
+               bind(c,name='v8f64_fmsubadd_round_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)  :: a
+               type(v8f64),     intent(in)  :: b
+               type(v8f64),     intent(in)  :: c
+               integer(c_int),  intent(in)  :: rounding
+               type(v8f64) :: v8f64_fmsubadd_round_pd
+          end function v8f64_fmsubadd_round_pd
+       end interface
+
+       interface
+          function v8f64_mask_fmsubadd_round_pd(a,k,b,c,rounding) &
+               bind(c,name='v8f64_mask_fmsubadd_round_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               integer(c_char), intent(in), value :: k
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_int),  intent(in), value :: rounding
+               type(v8f64) :: v8f64_mask_fmsubadd_round_pd
+          end function v8f64_mask_fmsubadd_round_pd
+       end interface
+
+       interface
+          function v8f64_mask3_fmsubadd_round_pd(a,b,c,k,rounding) &
+               bind(c,name='v8f64_mask3_fmsubadd_round_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_char), intent(in), value :: k
+               integer(c_int),  intent(in), value :: rounding
+               type(v8f64) :: v8f64_mask3_fmsubadd_round_pd
+          end function v8f64_mask3_fmsubadd_round_pd
+       end interface
+
+       interface
+          function v8f64_maskz_fmsubadd_round_pd(k,a,b,c,rounding) &
+               bind(c,name='v8f64_maskz_fmsubadd_round_pd')
+               import :: v8f64
+               integer(c_char),  intent(in), value :: k
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               integer(c_int),   intent(in), value :: rounding
+               type(v8f64) :: v8f64_maskz_fmsubadd_round_pd
+          end function v8f64_maskz_fmsubadd_round_pd
+       end interface
+
+       interface
+          function v8f64_fnmadd_pd(a,b,c) &
+               bind(c,name='v8f64_fnmadd_pd')
+               import :: v8f64
+               type(v8f64),  intent(in) :: a
+               type(v8f64),  intent(in) :: b
+               type(v8f64),  intent(in) :: c
+               type(v8f64) :: v8f64_fnmadd_pd
+          end function v8f64_fnmadd_pd
+       end interface
+
+       interface
+          function v8f64_mask_fnmadd_pd(a,k,b,c) &
+               bind(c,name='v8f64_mask_fnmadd_pd')
+               import :: v8f64
+               type(v8f64),      intent(in)        :: a
+               integer(c_char),  intent(in), value :: k
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               type(v8f64) :: v8f64_mask_fnmadd_pd
+          end function v8f64_mask_fnmadd_pd
+       end interface
+
+       interface
+          function v8f64_mask3_fnmadd_pd(a,b,c,k) &
+               bind(c,name='v8f64_mask3_fnmadd_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_char), intent(in), value :: k
+               type(v8f64) :: v8f64_mask3_fnmadd_pd
+           end function v8f64_mask3_fnmadd_pd
+       end interface
+
+       interface
+          function v8f64_maskz_fnmadd_pd(k,a,b,c) &
+               bind(c,name='v8f64_maskz_fnmadd_pd')
+               import :: v8f64
+               integer(c_char),  intent(in), value :: k
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               type(v8f64) :: v8f64_maskz_fnmadd_pd
+          end function v8f64_maskz_fnmadd_pd
+       end interface
+
+       interface
+          function v8f64_fnmadd_round_pd(a,b,c,rounding) &
+               bind(c,name='v8f64_fnmadd_round_pd')
+               import :: v8f64
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               integer(c_int),   intent(in), value :: rounding
+               type(v8f64) :: v8f64_fnmadd_round_pd
+          end function v8f64_fnmadd_round_pd
+       end interface
+
+       interface
+          function v8f64_mask_fnmadd_round_pd(a,k,b,c,rounding) &
+               bind(c,name='v8f64_mask_fnmad_round_pd')
+               import :: v8f64
+               type(v8f64),     intent(in)        :: a
+               integer(c_char), intent(in), value :: k
+               type(v8f64),     intent(in)        :: b
+               type(v8f64),     intent(in)        :: c
+               integer(c_int),  intent(in), value :: rounding
+               type(v8f64) :: v8f64_mask_fnmadd_round_pd
+          end function v8f64_mask_fnmadd_round_pd
+       end interface
+
+       interface
+          function v8f64_mask3_fnmadd_round_pd(a,b,c,k,rounding) &
+               bind(c,name='v8f64_mask3_fnmadd_round_pd')
+               import :: v8f64
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               integer(c_char),  intent(in), value :: k
+               integer(c_int),   intent(in), value :: rounding
+               type(v8f64) :: v8f64_mask3_fnmadd_round_pd
+          end function v8f64_mask3_fnmadd_round_pd
+       end interface
+
+       interface
+          function v8f64_maskz_fnmadd_round_pd(k,a,b,c,rounding) &
+               bind(c,name='v8f64_maskz_fnmadd_round_pd')
+               import :: v8f64
+               integer(c_char),  intent(in), value :: k
+               type(v8f64),      intent(in)        :: a
+               type(v8f64),      intent(in)        :: b
+               type(v8f64),      intent(in)        :: c
+               integer(c_int),   intent(in), value :: rounding
+               type(v8f64) :: v8f64_maskz_fnmadd_round_pd
+           end function v8f64_maskz_fnmadd_round_pd
+        end interface
+
+        interface
+           function v8f64_fnmsub_pd(a,b,c) &
+                bind(c,name='v8f64_fnmsub_pd')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                type(v8f64),      intent(in)        :: c
+                type(v8f64) :: v8f64_fnmsub_pd
+           end function v8f64_fnmsub_pd
+        end interface
+
+        interface
+           function v8f64_mask_fnmsub_pd(a,k,b,c) &
+                bind(c,name='v8f64_mask_fnmsub_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: a
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: b
+                type(v8f64),     intent(in)        :: c
+                type(v8f64) :: v8f64_mask_fnmsub_pd
+            end function v8f64_mask_fnmsub_pd
+        end interface
+
+        interface
+           function v8f64_mask3_fnmsub_pd(a,b,c,k) &
+                bind(c,name='v8f64_mask3_fnmsub_pd')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                type(v8f64),      intent(in)        :: c
+                integer(c_char),  intent(in), value :: k
+                type(v8f64) :: v8f64_mask3_fnmsub_pd
+           end function v8f64_mask3_fnmsub_pd
+        end interface
+
+        interface
+           function v8f64_maskz_fnmsub_pd(k,a,b,c) &
+                bind(c,name='v8f64_maskz_fnmsub_pd')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                type(v8f64),      intent(in)        :: c
+                type(v8f64) :: v8f64_maskz_fnmsub_pd
+           end function v8f64_maskz_fnmsub_pd
+        end interface
+
+        interface
+           function v8f64_mask_mul_pd(src,k,a,b) &
+                bind(c,name='v8f64_mask_mul_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                type(v8f64) :: v8f64_mask_mul_pd
+           end function v8f64_mask_mul_pd
+        end interface
+
+        interface
+           function v8f64_maskz_mul_pd(k,a,b) &
+                bind(c,name='v8f64_mask_mul_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                type(v8f64) :: v8f64_maskz_mul_pd
+           end function v8f64_maskz_mul_pd
+        end interface
+
+        interface
+           function v8f64_mask_mul_round_pd(src,k,a,b,rounding) &
+                bind(c,name='v8f64_mask_mul_round_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_mask_mul_round_pd
+           end function v8f64_mask_mul_round_pd
+        end interface
+
+        interface
+           function v8f64_maskz_mul_round_pd(k,a,b,rounding) &
+                bind(c,name='v8f64_maskz_mul_round_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_maskz_mul_round_pd
+           end function v8f64_maskz_mul_round_pd
+        end interface
+
+        interface
+           function v8f64_mask_reduce_add_pd(k,a) &
+                bind(c,name='v8f64_mask_reduce_add_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                real(c_double) :: v8f64_mask_reduce_add_pd
+           end function v8f64_mask_reduce_add_pd
+        end interface
+
+        interface
+           function v8f64_reduce_add_pd(a) &
+                bind(c,name='v8f64_reduce_add_pd')
+                import :: v8f64
+                type(v8f64),  intent(in) :: a
+                real(c_double) :: v8f64_reduce_add_pd
+           end function v8f64_reduce_add_pd
+        end interface
+
+        interface
+           function v8f64_mask_reduce_mul_pd(k,a) &
+                bind(c,name='v8f64_mask_reduce_mul_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                real(c_double) :: v8f64_mask_reduce_mul_pd
+           end function v8f64_mask_reduce_mul_pd
+        end interface
+
+        interface
+           function v8f64_reduce_mul_pd(a) &
+                bind(c,name='v8f64_reduce_mul_pd')
+                import :: v8f64
+                type(v8f64),  intent(in) :: a
+                real(c_double) :: v8f64_reduce_mul_pd
+           end function v8f64_reduce_mul_pd
+        end interface
+
+        interface
+           function v8f64_mask_sub_pd(src,k,a,b) &
+                bind(c,name='v8f64_mask_sub_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                type(v8f64) :: v8f64_mask_sub_pd
+           end function v8f64_mask_sub_pd
+        end interface
+
+        interface
+           function v8f64_maskz_sub_pd(k,a,b) &
+                bind(c,name='v8f64_maskz_sub_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64),     intent(in)        :: b
+                type(v8f64) :: v8f64_maskz_sub_pd
+            end function v8f64_maskz_sub_pd
+        end interface
+
+        interface
+           function v8f64_cmp_pd_mask(a,b,imm8) &
+                bind(c,name='v8f64_cmp_pd_mask')
+                import :: v8f64
+                type(v8f64),    intent(in)        :: a
+                type(v8f64),    intent(in)        :: b
+                integer(c_int), intent(in), value :: imm8
+                integer(c_char) :: v8f64_cmp_pd_mask
+           end function v8f64_cmp_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmp_pd_mask(k1,a,b,imm8) &
+                bind(c,name='v8f64_mask_cmp_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_int),   intent(in), value :: imm8
+                integer(c_char) :: v8f64_mask_cmp_pd_mask
+           end function v8f64_mask_cmp_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmp_round_pd_mask(a,b,imm8,sae) &
+                bind(c,name='v8f64_cmp_round_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_int),   intent(in), value :: imm8
+                integer(c_int),   intent(in), value :: sae
+                integer(c_char) :: v8f64_cmp_round_pd_mask
+           end function v8f64_cmp_round_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmp_round_pd_mask(k1,a,b,imm8,sae) &
+                bind(c,name='v8f64_mask_cmp_round_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_int),   intent(in), value :: imm8
+                integer(c_int),   intent(in), value :: sae
+                integer(c_char) :: v8f64_mask_cmp_round_pd_mask
+           end function v8f64_mask_cmp_round_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpeq_pd_mask(a,b) &
+                bind(c,name='v8f64_cmpeq_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpeq_pd_mask
+           end function v8f64_cmpeq_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmpeq_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpeq_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpeq_pd_mask
+            end function v8f64_mask_cmpeq_pd_mask
+        end interface
+
+         
     
 end module mod_avx512_bindings
