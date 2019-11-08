@@ -969,6 +969,417 @@ module mod_avx512_bindings
             end function v8f64_mask_cmpeq_pd_mask
         end interface
 
+        interface
+           function v8f64_mask_cmpunord_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpunord_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpunord_pd_mask
+           end function v8f64_mask_cmpunord_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpunord_pd_mask(a,b) &
+                bind(c,name='v8f64_cmpunord_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpunord_pd_mask
+           end function v8f64_cpmunord_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpord_pd_mask(a,b) &
+                bind(c,name='v8f64_cmpord_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpord_pd_mask
+           end function v8f64_cmpord_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmpord_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpord_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpord_pd_mask
+           end function v8f64_mask_cmpord_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpnlt_pd_mask(a,b) &
+                bind(c,name='v8f64_cmpnlt_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpnlt_pd_mask
+           end function v8f64_cmpnlt_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmpnlt_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpnlt_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpnlt_pd_mask
+           end function v8f64_mask_cmpnlt_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpnle_pd_mask(a,b) &
+                bind(c,name='v8f64_mask_cmpnle_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpnle_pd_mask
+           end function v8f64_cmpnle_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmpnle_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpnle_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpnle_pd_mask
+           end function v8f64_mask_cmpnle_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmpneq_pd_mask(a,b) &
+                bind(c,name='v8f64_cmpneq_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmpneq_pd_mask
+           end function v8f64_cmpneq_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmpneq_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmpneq_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmpneq_pd_mask
+           end function v8f64_mask_cmpneq_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmplt_pd_mask(a,b) &
+                bind(c,name='v8f64_cmplt_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmplt_pd_mask
+           end function v8f64_cmplt_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmplt_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmplt_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmplt_pd_mask
+           end function v8f64_mask_cmplt_pd_mask
+        end interface
+
+        interface
+           function v8f64_cmple_pd_mask(a,b) &
+                bind(c,name='v8f64_cmple_pd_mask')
+                import :: v8f64
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_cmple_pd_mask
+           end function v8f64_cmple_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_cmple_pd_mask(k1,a,b) &
+                bind(c,name='v8f64_mask_cmple_pd_mask')
+                import :: v8f64
+                integer(c_char),  intent(in), value :: k1
+                type(v8f64),      intent(in)        :: a
+                type(v8f64),      intent(in)        :: b
+                integer(c_char) :: v8f64_mask_cmple_pd_mask
+           end function v8f64_mask_cmple_pd_mask
+        end interface
+
+        interface
+           function v8f64_mask_rcp14_pd(src,k,a) &
+                bind(c,name='v8f64_mask_rcp14_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_mask_rcp14_pd
+           end function v8f64_mask_rcp14_pd
+        end interface
+
+        interface
+           function v8f64_maskz_rcp14_pd(k,a) &
+                bind(c,name='v8f64_maskz_rcp14_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_maskz_rcp14_pd
+           end function v8f64_maskz_rcp14_pd
+        end interface
+
+        interface
+           function v8f64_rcp14_pd(a) &
+                bind(c,name='v8f64_rcp14_pd')
+                import :: v8f64
+                type(v8f64),  intent(in) :: a
+                type(v8f64) :: v8f64_rcp14_pd
+           end function v8f64_rcp14_pd
+        end interface
+
+        interface
+           function v8f64_mask_rsqrt14_pd(src,k,a) &
+                bind(c,name='v8f64_mask_rsqrt14_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_mask_rsqrt14_pd
+           end function v8f64_mask_rsqrt14_pd
+        end interface
+
+        interface
+           function v8f64_maskz_rsqrt14_pd(k,a) &
+                bind(c,name='v8f64_maskz_rsqrt14_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_maskz_rsqrt14_pd
+           end function v8f64_maskz_rsqrt14_pd
+        end interface
+
+        interface
+           function v8f64_rsqrt14_pd(a) &
+                bind(c,name='v8f64_rsqrt14_pd')
+                import :: v8f64
+                type(v8f64),   intent(in) :: a
+                type(v8f64) :: v8f64_rsqrt14_pd
+           end function v8f64_rsqrt14_pd
+        end interface
+
+        interface
+           function v8f64_mask_sqrt_pd(src,k,a) &
+                bind(c,name='v8f64_mask_sqrt_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_mask_sqrt_pd
+           end function v8f64_mask_sqrt_pd
+        end interface
+
+        interface
+           function v8f64_maskz_sqrt_pd(k,a) &
+                bind(c,name='v8f64_maskz_sqrt_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                type(v8f64) :: v8f64_maskz_sqrt_pd
+           end function v8f64_maskz_sqrt_pd
+        end interface
+         
+        interface
+           function v8f64_mask_sqrt_round_pd(src,k,a,rounding) &
+                bind(c,name='v8f64_mask_sqrt_round_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_mask_sqrt_round_pd
+           end function v8f64_mask_sqrt_round_pd
+        end interface
+
+        interface
+           function v8f64_maskz_sqrt_round_pd(k,a,rounding) &
+                bind(c,name='v8f64_maskz_sqrt_round_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_maskz_sqrt_round_pd
+           end function v8f64_maskz_sqrt_round_pd
+        end interface
+
+        interface
+           function v8f64_mask_expandloadu_pd(src,k,mem_addr) &
+                bind(c,name='v8f64_mask_expandloadu_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_mask_expandloadu_pd
+           end function v8f64_mask_expandloadu_pd
+        end interface
+
+        interface
+           function v8f64_maskz_expandloadu_pd(k,mem_addr) &
+                bind(c,name='v8f64_maskz_expandloadu_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_maskz_expandloadu_pd
+           end function v8f64_maskz_expandloadu_pd
+        end interface
+
+        interface
+           function v8f64_mask_load_pd(src,k,mem_addr) &
+                bind(c,name='v8f64_mask_load_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_mask_load_pd
+           end function v8f64_mask_load_pd
+        end interface
+
+        interface
+           function v8f64_maskz_load_pd(k,mem_addr) &
+                bind(c,name='v8f64_maskz_load_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_maskz_load_pd
+           end function v8f64_maskz_load_pd
+        end interface
+
+         interface
+           function v8f64_mask_loadu_pd(src,k,mem_addr) &
+                bind(c,name='v8f64_mask_loadu_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_mask_loadu_pd
+           end function v8f64_mask_loadu_pd
+        end interface
+
+        interface
+           function v8f64_maskz_loadu_pd(k,mem_addr) &
+                bind(c,name='v8f64_maskz_loadu_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v8f64) :: v8f64_maskz_loadu_pd
+           end function v8f64_maskz_loadu_pd
+        end interface
+
+        interface
+           function v8f64_getexp_pd(a) &
+                bind(c,name='v8f64_getexp_pd')
+                import :: v8f64
+                type(v8f64),  intent(in) :: a
+                type(v8f64) :: v8f64_getexp_pd
+           end function v8f64_getexp_pd
+        end interface
+
+        interface
+           function v8f64_mask_getexp_pd(src,k,a) &
+                bind(c,name='v8f64_mask_getexp_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in), value :: a
+                type(v8f64) :: v8f64_mask_getexp_pd
+           end function v8f64_mask_getexp_pd
+        end interface
+
+        interface
+           function v8f64_maskz_getexp_pd(k,a) &
+                bind(c,name='v8f64_maskz_getexp_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in), value :: a
+           end function v8f64_maskz_getexp_pd
+        end interface
+
+        interface
+           function v8f64_getexp_round_pd(a,rounding) &
+                bind(c,name='v8f64_getexp_round_pd')
+                import :: v8f64
+                type(v8f64),    intent(in)        :: a
+                integer(c_int), intent(in), value :: rounding
+                type(v8f64) :: v8f64_getexp_round_pd
+           end function v8f64_getexp_round_pd
+        end interface
+
+        interface
+           function v8f64_mask_getexp_round_pd(src,k,a,rounding) &
+                bind(c,name='v8f64_mask_getexp_round_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_mask_getexp_round_pd
+            end function v8f64_mask_getexp_round_pd
+        end interface
+
+        interface
+           function v8f64_maskz_getexp_round_pd(k,a,rounding) &
+                bind(c,name='v8f64_maskz_getexp_round_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v8f64) :: v8f64_maskz_getexp_round_pd
+           end function v8f64_maskz_getexp_round_pd
+        end interface
+
+        interface
+           function v8f64_getmant_pd(a,interv,sc) &
+                bind(c,name='v8f64_getmant_pd')
+                import :: v8f64
+                type(v8f64),    intent(in)        :: a
+                integer(c_int), intent(in), value :: interv
+                integer(c_int), intent(in), value :: sc
+                type(v8f64) :: v8f64_getmant_pd
+           end function v8f64_getmant_pd
+        end interface
+
+        interface
+           function v8f64_mask_getmant_pd(src,k,a,interv,sc) &
+                bind(c,name='v8f64_mask_getmant_pd')
+                import :: v8f64
+                type(v8f64),     intent(in)        :: src
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int), intent(in),  value :: interv
+                integer(c_int), intent(in),  value :: sc
+                type(v8f64) :: v8f64_mask_getmant_pd
+           end function v8f64_mask_getmant_pd
+        end interface
+
+        interface
+           function v8f64_maskz_getmant_pd(k,a,interv,sc) &
+                bind(c,name='v8f64_maskz_getmant_pd')
+                import :: v8f64
+                integer(c_char), intent(in), value :: k
+                type(v8f64),     intent(in)        :: a
+                integer(c_int), intent(in),  value :: interv
+                integer(c_int), intent(in),  value :: sc
+                type(v8f64) :: v8f64_maskz_getmant_pd
+           end function v8f64_maskz_getmant_pd
+        end interface
          
     
 end module mod_avx512_bindings
