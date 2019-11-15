@@ -2153,12 +2153,31 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_rcp14_ps(k,a) &
+                bind(c,name='v16f32_maskz_rcp14_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32) :: v16f32_maskz_rcp14_ps
+           end function v16f32_maskz_rcp14_ps
+        end interface
+
+        interface
            function v8f64_rcp14_pd(a) &
                 bind(c,name='v8f64_rcp14_pd')
                 import :: v8f64
                 type(v8f64),  intent(in) :: a
                 type(v8f64) :: v8f64_rcp14_pd
            end function v8f64_rcp14_pd
+        end interface
+
+        interface
+           function v16f32_rcp14_ps(a) &
+                bind(c,name='v16f32_rcp14_ps')
+                import :: v16f32
+                type(v16f32),  intent(in) :: a
+                type(v16f32) :: v16f32_rcp14_ps
+           end function v16f32_rcp14_ps
         end interface
 
         interface
@@ -2173,6 +2192,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_rsqrt14_ps(src,k,a) &
+                bind(c,name='v16f32_mask_rsqrt14_ps')
+                import :: v16f32
+                type(v16f32),      intent(in)        :: src
+                integer(c_short),  intent(in), value :: k
+                type(v16f32),      intent(in)        :: a
+                type(v16f32) :: v16f32_mask_rsqrt14_ps
+           end function v16f32_mask_rsqrt14_ps
+        end interface
+
+
+        interface
            function v8f64_maskz_rsqrt14_pd(k,a) &
                 bind(c,name='v8f64_maskz_rsqrt14_pd')
                 import :: v8f64
@@ -2183,12 +2214,31 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_rsqrt14_ps(k,a) &
+                bind(c,name='v16f32_maskz_rsqrt14_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32) :: v16f32_maskz_rsqrt14_ps
+           end function v16f32_maskz_rsqrt14_ps
+        end interface
+
+        interface
            function v8f64_rsqrt14_pd(a) &
                 bind(c,name='v8f64_rsqrt14_pd')
                 import :: v8f64
                 type(v8f64),   intent(in) :: a
                 type(v8f64) :: v8f64_rsqrt14_pd
            end function v8f64_rsqrt14_pd
+        end interface
+
+        interface
+           function v16f32_rsqrt14_ps(a) &
+                bind(c,name='v16f32_rsqrt14_ps')
+                import :: v16f32
+                type(v16f32),   intent(in) :: a
+                type(v16f32) :: v16f32_rsqrt14_ps
+           end function v16f32_rsqrt14_ps
         end interface
 
         interface
@@ -2203,6 +2253,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_sqrt_ps(src,k,a) &
+                bind(c,name='v16f32_mask_sqrt_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32) :: v16f32_mask_sqrt_ps
+           end function v16f32_mask_sqrt_ps
+        end interface
+
+        interface
            function v8f64_maskz_sqrt_pd(k,a) &
                 bind(c,name='v8f64_maskz_sqrt_pd')
                 import :: v8f64
@@ -2210,6 +2271,16 @@ module mod_avx512_bindings
                 type(v8f64),     intent(in)        :: a
                 type(v8f64) :: v8f64_maskz_sqrt_pd
            end function v8f64_maskz_sqrt_pd
+        end interface
+
+        interface
+           function v16f32_maskz_sqrt_ps(k,a) &
+                bind(c,name='v16f32_maskz_sqrt_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32) :: v16f32_maskz_sqrt_ps
+           end function v16f32_maskz_sqrt_ps
         end interface
          
         interface
@@ -2225,6 +2296,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_sqrt_round_ps(src,k,a,rounding) &
+                bind(c,name='v16f32_mask_sqrt_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_mask_sqrt_round_ps
+           end function v16f32_mask_sqrt_round_ps
+        end interface
+
+        interface
            function v8f64_maskz_sqrt_round_pd(k,a,rounding) &
                 bind(c,name='v8f64_maskz_sqrt_round_pd')
                 import :: v8f64
@@ -2233,6 +2316,17 @@ module mod_avx512_bindings
                 integer(c_int),  intent(in), value :: rounding
                 type(v8f64) :: v8f64_maskz_sqrt_round_pd
            end function v8f64_maskz_sqrt_round_pd
+        end interface
+
+        interface
+           function v16f32_maskz_sqrt_round_ps(k,a,rounding) &
+                bind(c,name='v16f32_maskz_sqrt_round_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_maskz_sqrt_round_ps
+           end function v16f32_maskz_sqrt_round_ps
         end interface
 
         interface
@@ -2247,6 +2341,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_expandloadu_ps(src,k,mem_addr) &
+                bind(c,name='v16f32_mask_expandloadu_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),      intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_mask_expandloadu_ps
+           end function v16f32_mask_expandloadu_ps
+        end interface
+
+        interface
            function v8f64_maskz_expandloadu_pd(k,mem_addr) &
                 bind(c,name='v8f64_maskz_expandloadu_pd')
                 import :: v8f64
@@ -2254,6 +2359,16 @@ module mod_avx512_bindings
                 type(c_ptr),     intent(in), value :: mem_addr
                 type(v8f64) :: v8f64_maskz_expandloadu_pd
            end function v8f64_maskz_expandloadu_pd
+        end interface
+
+        interface
+           function v16f32_maskz_expandloadu_ps(k,mem_addr) &
+                bind(c,name='v16f32_maskz_expandloadu_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),      intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_maskz_expandloadu_ps
+           end function v16f32_maskz_expandloadu_ps
         end interface
 
         interface
@@ -2268,6 +2383,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_load_ps(src,k,mem_addr) &
+                bind(c,name='v16f32_mask_load_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),      intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_mask_load_ps
+           end function v16f32_mask_load_ps
+        end interface
+
+
+        interface
            function v8f64_maskz_load_pd(k,mem_addr) &
                 bind(c,name='v8f64_maskz_load_pd')
                 import :: v8f64
@@ -2277,7 +2404,17 @@ module mod_avx512_bindings
            end function v8f64_maskz_load_pd
         end interface
 
-         interface
+        interface
+           function v16f32_maskz_load_ps(k,mem_addr) &
+                bind(c,name='v16f32_maskz_load_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),     intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_maskz_load_ps
+           end function v16f32_maskz_load_ps
+        end interface
+
+        interface
            function v8f64_mask_loadu_pd(src,k,mem_addr) &
                 bind(c,name='v8f64_mask_loadu_pd')
                 import :: v8f64
@@ -2286,6 +2423,17 @@ module mod_avx512_bindings
                 type(c_ptr),     intent(in), value :: mem_addr
                 type(v8f64) :: v8f64_mask_loadu_pd
            end function v8f64_mask_loadu_pd
+        end interface
+
+        interface
+           function v16f32_mask_loadu_ps(src,k,mem_addr) &
+                bind(c,name='v16f32_mask_loadu_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),      intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_mask_loadu_ps
+           end function v16f32_mask_loadu_ps
         end interface
 
         interface
@@ -2299,6 +2447,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_loadu_ps(k,mem_addr) &
+                bind(c,name='v16f32_maskz_loadu_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(c_ptr),      intent(in), value :: mem_addr
+                type(v16f32) :: v16f32_maskz_loadu_ps
+           end function v16f32_maskz_loadu_ps
+        end interface
+
+
+        interface
            function v8f64_getexp_pd(a) &
                 bind(c,name='v8f64_getexp_pd')
                 import :: v8f64
@@ -2306,6 +2465,16 @@ module mod_avx512_bindings
                 type(v8f64) :: v8f64_getexp_pd
            end function v8f64_getexp_pd
         end interface
+
+        interface
+           function v16f32_getexp_ps(a) &
+                bind(c,name='v16f32_getexp_ps')
+                import :: v16f32
+                type(v16f32),  intent(in) :: a
+                type(v16f32) :: v16f32_getexp_ps
+           end function v16f32_getexp_ps
+        end interface
+
 
         interface
            function v8f64_mask_getexp_pd(src,k,a) &
@@ -2319,12 +2488,32 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_getexp_ps(src,k,a) &
+                bind(c,name='v16f32_mask_getexp_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in), value :: a
+                type(v16f32) :: v16f32_mask_getexp_ps
+           end function v16f32_mask_getexp_ps
+        end interface
+
+        interface
            function v8f64_maskz_getexp_pd(k,a) &
                 bind(c,name='v8f64_maskz_getexp_pd')
                 import :: v8f64
                 integer(c_char), intent(in), value :: k
                 type(v8f64),     intent(in), value :: a
            end function v8f64_maskz_getexp_pd
+        end interface
+
+        interface
+           function v16f32_maskz_getexp_ps(k,a) &
+                bind(c,name='v16f32_maskz_getexp_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in), value :: a
+           end function v16f32_maskz_getexp_ps
         end interface
 
         interface
@@ -2338,6 +2527,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_getexp_round_ps(a,rounding) &
+                bind(c,name='v16f32_getexp_round_ps')
+                import :: v16f32
+                type(v16f32),    intent(in)        :: a
+                integer(c_int), intent(in), value :: rounding
+                type(v16f32) :: v16f32_getexp_round_ps
+           end function v16f32_getexp_round_ps
+        end interface
+
+
+        interface
            function v8f64_mask_getexp_round_pd(src,k,a,rounding) &
                 bind(c,name='v8f64_mask_getexp_round_pd')
                 import :: v8f64
@@ -2347,7 +2547,20 @@ module mod_avx512_bindings
                 integer(c_int),  intent(in), value :: rounding
                 type(v8f64) :: v8f64_mask_getexp_round_pd
             end function v8f64_mask_getexp_round_pd
-        end interface
+         end interface
+
+         interface
+           function v16f32_mask_getexp_round_ps(src,k,a,rounding) &
+                bind(c,name='v16f32_mask_getexp_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),   intent(in), value :: rounding
+                type(v16f32) :: v16f32_mask_getexp_round_ps
+            end function v16f32_mask_getexp_round_ps
+         end interface
+
 
         interface
            function v8f64_maskz_getexp_round_pd(k,a,rounding) &
@@ -2361,6 +2574,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_getexp_round_ps(k,a,rounding) &
+                bind(c,name='v16f32_maskz_getexp_round_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_maskz_getexp_round_ps
+           end function v16f32_maskz_getexp_round_ps
+        end interface
+
+
+        interface
            function v8f64_getmant_pd(a,interv,sc) &
                 bind(c,name='v8f64_getmant_pd')
                 import :: v8f64
@@ -2369,6 +2594,17 @@ module mod_avx512_bindings
                 integer(c_int), intent(in), value :: sc
                 type(v8f64) :: v8f64_getmant_pd
            end function v8f64_getmant_pd
+        end interface
+
+        interface
+           function v16f32_getmant_ps(a,interv,sc) &
+                bind(c,name='v16f32_getmant_ps')
+                import :: v16f32
+                type(v16f32),    intent(in)        :: a
+                integer(c_int), intent(in), value :: interv
+                integer(c_int), intent(in), value :: sc
+                type(v16f32) :: v16f32_getmant_ps
+           end function v16f32_getmant_ps
         end interface
 
         interface
@@ -2385,6 +2621,19 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_getmant_ps(src,k,a,interv,sc) &
+                bind(c,name='v16f32_mask_getmant_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),   intent(in),  value :: interv
+                integer(c_int),   intent(in),  value :: sc
+                type(v16f32) :: v16f32_mask_getmant_ps
+           end function v16f32_mask_getmant_ps
+        end interface
+
+        interface
            function v8f64_maskz_getmant_pd(k,a,interv,sc) &
                 bind(c,name='v8f64_maskz_getmant_pd')
                 import :: v8f64
@@ -2394,6 +2643,18 @@ module mod_avx512_bindings
                 integer(c_int), intent(in),  value :: sc
                 type(v8f64) :: v8f64_maskz_getmant_pd
            end function v8f64_maskz_getmant_pd
+        end interface
+
+        interface
+           function v16f32_maskz_getmant_ps(k,a,interv,sc) &
+                bind(c,name='v16f32_maskz_getmant_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),   intent(in),  value :: interv
+                integer(c_int),   intent(in),  value :: sc
+                type(v16f32) :: v16f32_maskz_getmant_ps
+           end function v16f32_maskz_getmant_ps
         end interface
 
         interface
@@ -2409,6 +2670,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_getmant_round_ps(a,interv,sc,rounding) &
+                bind(c,name='v16f32_getmant_round_ps')
+                import :: v16f32
+                type(v16f32),    intent(in)        :: a
+                integer(c_int), intent(in), value :: interv
+                integer(c_int), intent(in), value :: sc
+                integer(c_int), intent(in), value :: rounding
+                type(v16f32) :: v16f32_getmant_round_ps
+           end function v16f32_getmant_round_ps
+        end interface
+
+        interface
            function v8f64_mask_getmant_round_pd(src,k,a,interv,sc,rounding) &
                 bind(c,name='v8f64_mask_getmant_round_pd')
                 import :: v8f64
@@ -2420,6 +2693,20 @@ module mod_avx512_bindings
                 integer(c_int),  intent(in), value :: rounding
                 type(v8f64) :: v8f64_mask_getmant_round_pd
             end function v8f64_mask_getmant_round_pd
+         end interface
+
+         interface
+           function v16f32_mask_getmant_round_ps(src,k,a,interv,sc,rounding) &
+                bind(c,name='v16f32_mask_getmant_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),   intent(in), value :: interv
+                integer(c_int),   intent(in), value :: sc
+                integer(c_int),   intent(in), value :: rounding
+                type(v16f32) :: v16f32_mask_getmant_round_ps
+            end function v16f32_mask_getmant_round_ps
         end interface
 
         interface
@@ -2436,6 +2723,20 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_getmant_round_ps(k,a,interv,sc,rounding) &
+                bind(c,name='v16f32_maskz_getmant_round_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: interv
+                integer(c_int),  intent(in), value :: sc
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_maskz_getmant_round_ps
+           end function v16f32_maskz_getmant_round_ps
+        end interface
+
+
+        interface
            function v8f64_mask_roundscale_pd(src,k,a,imm8) &
                 bind(c,name='v8f64_mask_roundscale_pd')
                 import :: v8f64
@@ -2446,6 +2747,20 @@ module mod_avx512_bindings
                 type(v8f64) :: v8f64_mask_roundscale_pd
            end function v8f64_mask_roundscale_pd
         end interface
+
+        interface
+           function v16f32_mask_roundscale_ps(src,k,a,imm8) &
+                bind(c,name='v16f32_mask_roundscale_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: imm8
+                type(v16f32) :: v16f32_mask_roundscale_ps
+           end function v16f32_mask_roundscale_ps
+        end interface
+
+        
 
         interface
            function v8f64_maskz_roundscale_pd(k,a,imm8) &
@@ -2459,6 +2774,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_roundscale_ps(k,a,imm8) &
+                bind(c,name='v16f32_maskz_roundscale_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: imm8
+                type(v16f32) :: v16f32_maskz_roundscale_ps
+           end function v16f32_maskz_roundscale_ps
+        end interface
+
+        interface
            function v8f64_roundscale_pd(a,imm) &
                 bind(c,name='v8f64_roundscale_pd')
                 import :: v8f64
@@ -2467,6 +2793,18 @@ module mod_avx512_bindings
                 type(v8f64) :: v8f64_roundscale_pd
            end function v8f64_roundscale_pd
         end interface
+
+        interface
+           function v16f32_roundscale_ps(a,imm) &
+                bind(c,name='v16f32_roundscale_ps')
+                import :: v16f32
+                type(v16f32),    intent(in)        :: a
+                integer(c_int), intent(in), value :: imm8
+                type(v16f32) :: v16f32_roundscale_ps
+           end function v16f32_roundscale_ps
+        end interface
+
+        
 
         interface
            function v8f64_mask_roundscale_round_pd(src,k,a,imm8,rounding) &
@@ -2482,6 +2820,19 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_roundscale_round_ps(src,k,a,imm8,rounding) &
+                bind(c,name='v16f32_mask_roundscale_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: imm8
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_mask_roundscale_round_ps
+           end function v16f32_mask_roundscale_round_ps
+        end interface
+
+        interface
            function v8f64_maskz_roundscale_round_pd(k,a,imm8,rounding) &
                 bind(c,name='v8f64_maskz_roundscale_round_pd')
                 import :: v8f64
@@ -2494,6 +2845,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_roundscale_round_ps(k,a,imm8,rounding) &
+                bind(c,name='v16f32_maskz_roundscale_round_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: imm8
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_maskz_roundscale_round_ps
+            end function v16f32_maskz_roundscale_round_ps
+        end interface 
+
+        interface
            function v8f64_roundscale_round_pd(a,imm,rounding) &
                 bind(c,name='v8f64_roundscale_round_pd')
                 import :: v8f64
@@ -2502,6 +2865,17 @@ module mod_avx512_bindings
                 integer(c_int),  intent(in), value :: rounding
                 type(v8f64) :: v8f64_roundscale_round_pd
            end function v8f64_roundscale_round_pd
+        end interface
+
+        interface
+           function v16f32_roundscale_round_ps(a,imm,rounding) &
+                bind(c,name='v16f32_roundscale_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: a
+                integer(c_int),  intent(in), value :: imm8
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_roundscale_round_ps
+           end function v16f32_roundscale_round_ps
         end interface
 
         interface
@@ -2517,6 +2891,18 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_scalef_ps(src,k,a,b) &
+                bind(c,name='v16f32_mask_scalef_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32),     intent(in)        :: b
+                type(v16f32) :: v16f32_mask_scalef_ps
+           end function v16f32_mask_scalef_ps
+        end interface
+
+        interface
            function v8f64_maskz_scalef_pd(k,a,b) &
                 bind(c,name='v8f64_maskz_scalef_pd')
                 import :: v8f64
@@ -2528,6 +2914,17 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_maskz_scalef_ps(k,a,b) &
+                bind(c,name='v16f32_maskz_scalef_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32),     intent(in)        :: b
+                type(v16f32) :: v16f32_maskz_scalef_ps
+           end function v16f32_maskz_scalef_ps
+        end interface
+
+        interface
            function v8f64_scalef_pd(a,b) &
                 bind(c,name='v8f64_scalef_pd')
                 import :: v8f64
@@ -2535,6 +2932,16 @@ module mod_avx512_bindings
                 type(v8f64),     intent(in)        :: b
                 type(v8f64) :: v8f64_scalef_pd
            end function v8f64_scalef_pd
+        end interface
+
+        interface
+           function v16f32_scalef_ps(a,b) &
+                bind(c,name='v16f32_scalef_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: a
+                type(v16f32),     intent(in)        :: b
+                type(v16f32) :: v16f32_scalef_ps
+           end function v16f32_scalef_ps
         end interface
 
         interface
@@ -2551,6 +2958,20 @@ module mod_avx512_bindings
         end interface
 
         interface
+           function v16f32_mask_scalef_round_ps(src,k,a,b,rounding) &
+                bind(c,name='v16f32_mask_scalef_round_ps')
+                import :: v16f32
+                type(v16f32),     intent(in)        :: src
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32),     intent(in)        :: b
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_mask_scalef_round_ps
+           end function v16f32_mask_scalef_round_ps
+        end interface
+
+
+        interface
            function v8f64_maskz_scalef_round_pd(k,a,b,rounding) &
                 bind(c,name='v8f64_maskz_scalef_round_pd')
                 import :: v8f64
@@ -2560,6 +2981,18 @@ module mod_avx512_bindings
                 integer(c_int),  intent(in), value :: rounding
                 type(v8f64) :: v8f64_maskz_scalef_round_pd
             end function v8f64_maskz_scalef_round_pd
+         end interface
+
+         interface
+           function v16f32_maskz_scalef_round_ps(k,a,b,rounding) &
+                bind(c,name='v16f32_maskz_scalef_round_ps')
+                import :: v16f32
+                integer(c_short), intent(in), value :: k
+                type(v16f32),     intent(in)        :: a
+                type(v16f32),     intent(in)        :: b
+                integer(c_int),  intent(in), value :: rounding
+                type(v16f32) :: v16f32_maskz_scalef_round_ps
+            end function v16f32_maskz_scalef_round_ps
          end interface
 
          interface
@@ -2574,6 +3007,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_scalef_round_ps(a,b,rounding) &
+                 bind(c,name='v16f32_scalef_round_ps')
+                 import :: v16f32
+                 type(v16f32),      intent(in)        :: a
+                 type(v16f32),      intent(in)        :: b
+                 integer(c_int),    intent(in), value :: rounding
+                 type(v16f32) :: v16f32_scalef_round_ps
+            end function v16f32_scalef_round_ps
+         end interface
+
+         interface
             function v8f64_mask_mov_pd(src,k,a) &
                  bind(c,name='v8f64_mask_mov_pd')
                  import :: v8f64
@@ -2582,6 +3026,17 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: a
                  type(v8f64) :: v8f64_mask_mov_pd
             end function v8f64_mask_mov_pd
+         end interface
+
+         interface
+            function v16f32_mask_mov_ps(src,k,a) &
+                 bind(c,name='v16f32_mask_mov_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_mask_mov_ps
+            end function v16f32_mask_mov_ps
          end interface
 
          interface
@@ -2595,6 +3050,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_mov_ps(k,a) &
+                 bind(c,name='v16f32_maskz_mov_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_maskz_mov_ps
+            end function v16f32_maskz_mov_ps
+         end interface
+
+
+         interface
             function v8f64_mask_movedup_pd(src,k,a) &
                  bind(c,name='v8f64_mask_movedup_pd')
                  import :: v8f64
@@ -2603,6 +3069,17 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: a
                  type(v8f64) :: v8f64_mask_movedup_pd
             end function v8f64_mask_movedup_pd
+         end interface
+
+         interface
+            function v16f32_mask_movedup_ps(src,k,a) &
+                 bind(c,name='v16f32_mask_movedup_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_mask_movedup_ps
+            end function v16f32_mask_movedup_ps
          end interface
 
          interface
@@ -2616,12 +3093,31 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_movedup_ps(k,a) &
+                 bind(c,name='v16f32_maskz_movedup_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_maskz_movedup_ps
+            end function v16f32_maskz_movedup_ps
+         end interface
+
+         interface
             function v8f64_movedup_pd(a) &
                  bind(c,name='v8f64_movedup_pd')
                  import :: v8f64
                  type(v8f64),     intent(in)        :: a
                  type(v8f64) :: v8f64_movedup_pd
             end function v8f64_movedup_pd
+         end interface
+
+         interface
+            function v16f32_movedup_ps(a) &
+                 bind(c,name='v16f32_movedup_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_movedup_ps
+            end function v16f32_movedup_ps
          end interface
 
          interface
@@ -2636,6 +3132,8 @@ module mod_avx512_bindings
             end function v8f64_set4_pd
          end interface
 
+         
+
          interface
             function v8f64_mask_max_pd(src,k,a,b) &
                  bind(c,name='v8f64_mask_max_pd')
@@ -2646,6 +3144,18 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: b
                  type(v8f64) :: v8f64_mask_max_pd
              end function v8f64_mask_max_pd
+          end interface
+
+          interface
+            function v16f32_mask_max_ps(src,k,a,b) &
+                 bind(c,name='v16f32_mask_max_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_max_ps
+             end function v16f32_mask_max_ps
          end interface
 
          interface
@@ -2660,6 +3170,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_max_ps(k,a,b) &
+                 bind(c,name='v16f32_maskz_max_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_maskz_max_ps
+            end function v16f32_maskz_max_ps
+         end interface
+
+         interface
             function v8f64_max_pd(a,b) &
                  bind(c,name='v8f64_max_pd')
                  import :: v8f64
@@ -2667,6 +3188,16 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: b
                  type(v8f64) :: v8f64_max_pd
             end function v8f64_max_pd
+         end interface
+
+         interface
+            function v16f32_max_ps(a,b) &
+                 bind(c,name='v16f32_max_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_max_ps
+            end function v16f32_max_ps
          end interface
 
          interface
@@ -2683,6 +3214,20 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_max_round_ps(src,k,a,b,sae) &
+                 bind(c,name='v16f32_mask_max_round_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: sae
+                 type(v16f32) :: v16f32_mask_max_round_ps
+            end function v16f32_mask_max_round_ps
+         end interface
+
+
+         interface
             function v8f64_maskz_max_round_pd(k,a,b,sae) &
                  bind(c,name='v8f64_maskz_max_round_pd')
                  import :: v8f64
@@ -2692,6 +3237,18 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: sae
                  type(v8f64) :: v8f64_maskz_max_round_pd
             end function v8f64_maskz_max_round_pd
+         end interface
+
+         interface
+            function v16f32_maskz_max_round_ps(k,a,b,sae) &
+                 bind(c,name='v16f32_maskz_max_round_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),   intent(in), value :: sae
+                 type(v16f32) :: v16f32_maskz_max_round_ps
+            end function v16f32_maskz_max_round_ps
          end interface
 
          interface
@@ -2705,7 +3262,19 @@ module mod_avx512_bindings
             end function v8f64_max_round_pd
          end interface
 
-            interface
+         interface
+            function v16f32_max_round_ps(a,b,sae) &
+                 bind(c,name='v16f32_max_round_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: sae
+                 type(v16f32) :: v16f32_max_round_ps
+            end function v16f32_max_round_ps
+         end interface
+
+
+         interface
             function v8f64_mask_min_pd(src,k,a,b) &
                  bind(c,name='v8f64_mask_min_pd')
                  import :: v8f64
@@ -2716,6 +3285,18 @@ module mod_avx512_bindings
                  type(v8f64) :: v8f64_mask_min_pd
              end function v8f64_mask_min_pd
          end interface
+
+         interface
+            function v16f32_mask_min_ps(src,k,a,b) &
+                 bind(c,name='v16f32_mask_min_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_min_ps
+             end function v16f32_mask_min_ps
+         end interface 
 
          interface
             function v8f64_maskz_min_pd(k,a,b) &
@@ -2729,6 +3310,18 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_min_ps(k,a,b) &
+                 bind(c,name='v16f32_maskz_min_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_maskz_min_ps
+            end function v16f32_maskz_min_ps
+         end interface
+
+
+         interface
             function v8f64_min_pd(a,b) &
                  bind(c,name='v8f64_min_pd')
                  import :: v8f64
@@ -2736,6 +3329,16 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: b
                  type(v8f64) :: v8f64_min_pd
             end function v8f64_min_pd
+         end interface
+
+         interface
+            function v16f32_min_ps(a,b) &
+                 bind(c,name='v16f32_min_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_min_ps
+            end function v16f32_min_ps
          end interface
 
          interface
@@ -2752,6 +3355,20 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_min_round_ps(src,k,a,b,sae) &
+                 bind(c,name='v16f32_mask_min_round_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: sae
+                 type(v16f32) :: v16f32_mask_min_round_ps
+            end function v16f32_mask_min_round_ps
+         end interface
+
+
+         interface
             function v8f64_maskz_min_round_pd(k,a,b,sae) &
                  bind(c,name='v8f64_maskz_min_round_pd')
                  import :: v8f64
@@ -2761,6 +3378,18 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: sae
                  type(v8f64) :: v8f64_maskz_min_round_pd
             end function v8f64_maskz_min_round_pd
+         end interface
+
+         interface
+            function v16f32_maskz_min_round_ps(k,a,b,sae) &
+                 bind(c,name='v16f32_maskz_min_round_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: sae
+                 type(v16f32) :: v16f32_maskz_min_round_ps
+            end function v16f32_maskz_min_round_ps
          end interface
 
          interface
@@ -2775,6 +3404,18 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_min_round_ps(a,b,sae) &
+                 bind(c,name='v16f32_min_round_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: sae
+                 type(v16f32) :: v16f32_min_round_ps
+            end function v16f32_min_round_ps
+         end interface
+
+
+         interface
             function v8f64_mask_reduce_max_pd(k,a) &
                  bind(c,name='v8f64_mask_reduce_max_pd')
                  import :: v8f64
@@ -2785,6 +3426,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_reduce_max_ps(k,a) &
+                 bind(c,name='v16f32_mask_reduce_max_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 real(c_float) :: v16f32_mask_reduce_max_ps
+            end function v16f32_mask_reduce_max_ps
+         end interface
+
+
+         interface
             function v8f64_reduce_max_pd(a) &
                  bind(c,name='v8f64_reduce_max_pd')
                  import :: v8f64
@@ -2792,6 +3444,16 @@ module mod_avx512_bindings
                  real(c_double) :: v8f64_reduce_max_pd
             end function v8f64_reduce_max_pd
          end interface
+
+         interface
+            function v16f32_reduce_max_ps(a) &
+                 bind(c,name='v16f32_reduce_max_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 real(c_float) :: v16f32_reduce_max_ps
+            end function v16f32_reduce_max_ps
+         end interface
+
 
          interface
             function v8f64_mask_reduce_min_pd(k,a) &
@@ -2804,6 +3466,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_reduce_min_ps(k,a) &
+                 bind(c,name='v16f32_mask_reduce_min_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 real(c_float) :: v16f32_mask_reduce_min_ps
+            end function v16f32_mask_reduce_min_ps
+         end interface
+
+
+         interface
             function v8f64_reduce_min_pd(a) &
                  bind(c,name='v8f64_reduce_min_pd')
                  import :: v8f64
@@ -2811,6 +3484,16 @@ module mod_avx512_bindings
                  real(c_double) :: v8f64_reduce_min_pd
             end function v8f64_reduce_min_pd
          end interface
+
+         interface
+            function v16f32_reduce_min_ps(a) &
+                 bind(c,name='v16f32_reduce_min_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 real(c_float) :: v16f32_reduce_min_ps
+            end function v16f32_reduce_min_ps
+         end interface
+
          
          interface
             function v8f64_mask_unpacklo_pd(src,k,a,b) &
@@ -2825,6 +3508,18 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_unpacklo_ps(src,k,a,b) &
+                 bind(c,name='v16f32_mask_unpacklo_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_unpacklo_ps
+            end function v16f32_mask_unpacklo_ps
+         end interface
+
+         interface
             function v8f64_maskz_unpacklo_pd(k,a,b) &
                  bind(c,name='v8f64_maskz_unpacklo_pd')
                  import :: v8f64
@@ -2836,6 +3531,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_unpacklo_ps(k,a,b) &
+                 bind(c,name='v16f32_maskz_unpacklo_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_unpacklo_ps
+            end function v16f32_maskz_unpacklo_ps
+         end interface
+
+         interface
             function v8f64_unpacklo_pd(a,b) &
                  bind(c,name='v8f64_unpacklo_pd')
                  import :: v8f64
@@ -2844,6 +3550,17 @@ module mod_avx512_bindings
                  type(v8f64) :: v8f64_unpacklo_pd
             end function v8f64_unpacklo_pd
          end interface
+
+         interface
+            function v16f32_unpacklo_ps(a,b) &
+                 bind(c,name='v16f32_unpacklo_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_unpacklo_ps
+            end function v16f32_unpacklo_ps
+         end interface
+
 
          interface
             function v8f64_mask_unpackhi_pd(src,k,a,b) &
@@ -2858,6 +3575,18 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_unpackhi_ps(src,k,a,b) &
+                 bind(c,name='v16f32_mask_unpackhi_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_unpackhi_ps
+            end function v16f32_mask_unpackhi_ps
+         end interface
+
+         interface
             function v8f64_maskz_unpackhi_pd(k,a,b) &
                  bind(c,name='v8f64_maskz_unpackhi_pd')
                  import :: v8f64
@@ -2869,6 +3598,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_unpackhi_ps(k,a,b) &
+                 bind(c,name='v16f32_maskz_unpackhi_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_maskz_unpackhi_ps
+            end function v16f32_maskz_unpackhi_ps
+         end interface
+
+         interface
             function v8f64_unpackhi_pd(a,b) &
                  bind(c,name='v8f64_unpackhi_pd')
                  import :: v8f64
@@ -2876,7 +3616,18 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: b
                  type(v8f64) :: v8f64_unpackhi_pd
              end function v8f64_unpackhi_pd
-         end interface
+          end interface
+
+          interface
+            function v16f32_unpackhi_ps(a,b) &
+                 bind(c,name='v16f32_unpackhi_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_unpackhi_ps
+             end function v16f32_unpackhi_ps
+          end interface
+
 
          interface
             function v8f64_mask_shuffle_pd(src,k,a,b,imm8) &
@@ -2892,6 +3643,19 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_shuffle_ps(src,k,a,b,imm8) &
+                 bind(c,name='v16f32_mask_shuffle_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),   intent(in), value :: imm8
+                 type(v16f32) :: v16f32_mask_shuffle_ps
+            end function v16f32_mask_shuffle_ps
+         end interface
+
+         interface
             function v8f64_maskz_shuffle_pd(k,a,b,imm8) &
                  bind(c,name='v8f64_maskz_shuffle_pd')
                  import :: v8f64
@@ -2902,6 +3666,19 @@ module mod_avx512_bindings
                  type(v8f64) :: v8f64_maskz_shuffle_pd
             end function v8f64_maskz_shuffle_pd
          end interface
+
+         interface
+            function v16f32_maskz_shuffle_ps(k,a,b,imm8) &
+                 bind(c,name='v16f32_maskz_shuffle_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_maskz_shuffle_ps
+            end function v16f32_maskz_shuffle_ps
+         end interface
+
 
          interface
             function v8f64_shuffle_pd(a,b,imm8) &
@@ -2915,6 +3692,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_shuffle_ps(a,b,imm8) &
+                 bind(c,name='v16f32_shuffle_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_shuffle_ps
+            end function v16f32_shuffle_ps
+         end interface
+
+         interface
             function v8f64_mask_shuffle_f64x2(src,k,a,b,imm8) &
                  bind(c,name='v8f64_mask_shuffle_f64x2')
                  import :: v8f64
@@ -2925,7 +3713,9 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: imm8
                  type(v8f64) :: v8f64_mask_shuffle_f64x2
              end function v8f64_mask_shuffle_f64x2
-         end interface
+          end interface
+
+       
 
          interface
             function v8f64_maskz_shuffle_f64x2(k,a,b,imm8) &
@@ -2960,6 +3750,18 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: imm8
                  type(v8f64) :: v8f64_mask_permutex_pd
             end function v8f64_mask_permutex_pd
+         end interface
+
+         interface
+            function v16f32_mask_permutex_ps(src,k,a,imm8) &
+                 bind(c,name='v16f32_mask_permutex_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_mask_permutex_ps
+            end function v16f32_mask_permutex_ps
          end interface
 
          interface
@@ -3047,6 +3849,16 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_expand_ps(k,a) &
+                 bind(c,name='v16f32_maskz_expand_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_maskz_expand_ps
+            end function v16f32_maskz_expand_ps
+         end interface
+
+         interface
             function v8f64_mask_permute_pd(src,k,a,imm8) &
                  bind(c,name='v8f64_mask_permute_pd')
                  import :: v8f64
@@ -3056,6 +3868,18 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: imm8
                  type(v8f64) :: v8f64_mask_permute_pd
              end function v8f64_mask_permute_pd
+         end interface
+
+         interface
+            function v16f32_mask_permute_ps(src,k,a,imm8) &
+                 bind(c,name='v16f32_mask_permute_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),   intent(in), value :: imm8
+                 type(v16f32) :: v16f32_mask_permute_ps
+             end function v16f32_mask_permute_ps
          end interface
 
          interface
@@ -3069,6 +3893,18 @@ module mod_avx512_bindings
              end function v8f64_maskz_permute_pd
          end interface
 
+         
+        interface
+            function v16f32_maskz_permute_ps(k,a,imm8) &
+                 bind(c,name='v16f32_maskz_permute_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_maskz_permute_ps
+             end function v16f32_maskz_permute_ps
+         end interface 
+
          interface
             function v8f64_permute_pd(a,imm8) &
                  bind(c,name='v8f64_permute_pd')
@@ -3078,6 +3914,16 @@ module mod_avx512_bindings
                  type(v8f64) :: v8f64_permute_pd
              end function v8f64_permute_pd
          end interface
+
+        interface
+            function v16f32_permute_ps(a,imm8) &
+                 bind(c,name='v16f32_permute_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_permute_ps
+             end function v16f32_permute_ps
+         end interface  
 
           
 
