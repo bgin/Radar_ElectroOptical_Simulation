@@ -3776,6 +3776,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_permutex_ps(k,a,imm8) &
+                 bind(c,name='v16f32_maskz_permutex_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_maskz_permutex_ps
+            end function v16f32_maskz_permutex_ps
+         end interface
+
+         interface
             function v8f64_permutex_pd(a,imm8) &
                  bind(c,name='v8f64_permutex_pd')
                  import :: v8f64
@@ -3783,6 +3794,16 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: imm8
                  type(v8f64) :: v8f64_permutex_pd
             end function v8f64_permutex_pd
+         end interface
+
+         interface
+            function v16f32_permutex_ps(a,imm8) &
+                 bind(c,name='v16f32_permutex_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: a
+                 integer(c_int),  intent(in), value :: imm8
+                 type(v16f32) :: v16f32_permutex_ps
+            end function v16f32_permutex_ps
          end interface
 
          interface
@@ -3797,6 +3818,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_mask_blend_ps(k,a,b) &
+                 bind(c,name='v16f32_mask_blend_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32),     intent(in)        :: b
+                 type(v16f32) :: v16f32_mask_blend_ps
+            end function v16f32_mask_blend_ps
+         end interface
+
+         interface
             function v8f64_mask_compress_pd(src,k,a) &
                  bind(c,name='v8f64_mask_compress_pd')
                  import :: v8f64
@@ -3805,6 +3837,17 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: a
                  type(v8f64) :: v8f64_mask_compress_pd
             end function v8f64_mask_compress_pd
+         end interface
+
+         interface
+            function v16f32_mask_compress_ps(src,k,a) &
+                 bind(c,name='v16f32_mask_compress_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_mask_compress_ps
+            end function v16f32_mask_compress_ps
          end interface
 
          interface
@@ -3818,6 +3861,17 @@ module mod_avx512_bindings
          end interface
 
          interface
+            function v16f32_maskz_compress_ps(k,a) &
+                 bind(c,name='v16f32_maskz_compress_ps')
+                 import :: v16f32
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_maskz_compress_ps
+            end function v16f32_maskz_compress_ps
+         end interface
+
+
+         interface
             subroutine  v8f64_mask_compressstoreu_pd(base_addr,k,a) &
                  bind(c,name='v8f64_mask_compressstoreu_pd')
                  import :: v8f64
@@ -3825,6 +3879,16 @@ module mod_avx512_bindings
                  integer(c_char), intent(in),  value :: k
                  type(v8f64),     intent(in)         :: a
             end subroutine v8f64_mask_compressstoreu_pd
+         end interface
+
+         interface
+            subroutine  v16f32_mask_compressstoreu_ps(base_addr,k,a) &
+                 bind(c,name='v16f32_mask_compressstoreu_ps')
+                 import :: v16f32
+                 type(c_ptr),     intent(out), value :: base_addr
+                 integer(c_short), intent(in),  value :: k
+                 type(v16f32),     intent(in)         :: a
+            end subroutine v16f32_mask_compressstoreu_ps
          end interface
 
          interface
@@ -3836,6 +3900,17 @@ module mod_avx512_bindings
                  type(v8f64),     intent(in)        :: a
                  type(v8f64) :: v8f64_mask_expand_pd
             end function v8f64_mask_expand_pd
+         end interface
+
+         interface
+            function v16f32_mask_expand_ps(src,k,a) &
+                 bind(c,name='v16f32_mask_expand_ps')
+                 import :: v16f32
+                 type(v16f32),     intent(in)        :: src
+                 integer(c_short), intent(in), value :: k
+                 type(v16f32),     intent(in)        :: a
+                 type(v16f32) :: v16f32_mask_expand_ps
+            end function v16f32_mask_expand_ps
          end interface
 
          interface
@@ -3858,6 +3933,8 @@ module mod_avx512_bindings
             end function v16f32_maskz_expand_ps
          end interface
 
+       
+
          interface
             function v8f64_mask_permute_pd(src,k,a,imm8) &
                  bind(c,name='v8f64_mask_permute_pd')
@@ -3868,8 +3945,9 @@ module mod_avx512_bindings
                  integer(c_int),  intent(in), value :: imm8
                  type(v8f64) :: v8f64_mask_permute_pd
              end function v8f64_mask_permute_pd
-         end interface
+          end interface
 
+        
          interface
             function v16f32_mask_permute_ps(src,k,a,imm8) &
                  bind(c,name='v16f32_mask_permute_ps')
