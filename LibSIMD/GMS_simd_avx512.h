@@ -503,89 +503,175 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 
 	v8f64  v8f64_mask_roundscale_pd(v8f64, unsigned char, v8f64, int);
 
+        v16f32 v16f32_mask_roundscale_ps(v16f32, unsigned short, v16f32, int);
+
         v8f64  v8f64_maskz_roundscale_pd(unsigned char, v8f64, int);
+
+	v16f32 v16f32_maskz_roundscale_ps(unsigned short, v16f32, int);
 
 	v8f64  v8f64_roundscale_pd(v8f64, int);
 
+	v16f32 v16f32_roundscale_ps(v16f32, int);
+
 	v8f64  v8f64_mask_roundscale_round_pd(v8f64, unsigned char, v8f64, int, int);
+
+	v16f32 v16f32_mask_roundscale_round_ps(v16f32, unsigned short, v16f32, int, int);
 
 	v8f64  v8f64_maskz_roundscale_round_pd(unsigned char, v8f64, int, int);
 
+	v16f32 v16f32_maskz_roundscale_round_ps(unsigned short, v16f32, int, int);
+
 	v8f64  v8f64_roundscale_round_pd(v8f64, int, int);
+
+	v16f32 v16f32_roundscale_round_ps(v16f32, int, int);
 
 	v8f64  v8f64_mask_scalef_pd(v8f64, unsigned char, v8f64, v8f64);
 
+	v16f32 v16f32_mask_scalef_ps(v16f32, unsigned short, v16f32, v16f32);
+
 	v8f64  v8f64_maskz_scalef_pd(unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_maskz_scalef_ps(unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_scalef_pd(v8f64, v8f64);
 
+	v16f32 v16f32_scalef_ps(v16f32, v16f32);
+
 	v8f64  v8f64_mask_scalef_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
+
+	v16f32 v16f32_mask_scalef_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
 
 	v8f64  v8f64_maskz_scalef_round_pd(unsigned char, v8f64, v8f64, int);
 
+	v16f32 v16f32_maskz_scalef_round_ps(unsigned short, v16f32, v16f32, int);
+
 	v8f64  v8f64_scalef_round_pd(v8f64, v8f64, int);
+
+	v16f32 v16f32_scalef_round_ps(v16f32, v16f32, int);
 
 	v8f64  v8f64_mask_mov_pd(v8f64, unsigned char, v8f64);
 
+	v16f32 v16f32_mask_mov_ps(v16f32, unsigned short, v16f32);
+
 	v8f64  v8f64_maskz_mov_pd(unsigned char, v8f64);
+
+	v16f32 v16f32_maskz_mov_ps(unsigned short, v16f32);
 
 	v8f64  v8f64_mask_movedup_pd(v8f64, unsigned char, v8f64);
 
+	v16f32 v16f32_mask_movedup_ps(v16f32, unsigned short, v16f32);
+
 	v8f64  v8f64_maskz_movedup_pd(unsigned char, v8f64);
+
+	v16f32 v16f32_maskz_movedup_ps(unsigned short, v16f32);
 
 	v8f64  v8f64_movedup_pd(v8f64);
 
+	v16f32 v16f32_movedup_ps(v16f32);
+
 	v8f64  v8f64_set4_pd(double, double, double, double);
+
+        
 
 	v8f64  v8f64_mask_max_pd(v8f64, unsigned char, v8f64, v8f64);
 
+	v16f32 v16f32_mask_max_ps(v16f32, unsigned short, v16f32, v16f32);
+
 	v8f64  v8f64_maskz_max_pd(unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_maskz_max_ps(unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_max_pd(v8f64, v8f64);
 
+	v16f32 v16f32_max_ps(v16f32, v16f32);
+
 	v8f64  v8f64_mask_max_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
+
+	v16f32 v16f32_mask_max_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
 
 	v8f64  v8f64_maskz_max_round_pd(unsigned char, v8f64, v8f64, int);
 
+	v16f32 v16f32_maskz_max_round_ps(unsigned short, v16f32, v16f32, int);
+
 	v8f64  v8f64_max_round_pd(v8f64, v8f64, int);
+
+	v16f32 v16f32_max_round_ps(v16f32, v16f32, int);
 
 	v8f64  v8f64_mask_min_pd(v8f64, unsigned char, v8f64, v8f64);
 
+	v16f32 v16f32_mask_min_ps(v16f32, unsigned short, v16f32, v16f32);
+
 	v8f64  v8f64_maskz_min_pd(unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_maskz_min_ps(unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_min_pd(v8f64, v8f64);
 
+	v16f32 v16f32_min_ps(v16f32, v16f32);
+
 	v8f64  v8f64_mask_min_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
+
+	v16f32 v16f32_mask_min_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
 
 	v8f64  v8f64_maskz_min_round_pd(unsigned char, v8f64, v8f64, int);
 
+	v16f32 v16f32_maskz_min_round_ps(unsigned short, v16f32, v16f32, int);
+
 	v8f64  v8f64_min_round_pd(v8f64, v8f64, int);
 
-	v8f64  v8f64_mask_reduce_max_pd(unsigned char, v8f64);
+	v16f32 v16f32_min_round_ps(v16f32, v16f32, int);
 
-	v8f64  v8f64_reduce_max_pd(v8f64);
+	double  v8f64_mask_reduce_max_pd(unsigned char, v8f64);
 
-	v8f64  v8f64_mask_reduce_min_pd(unsigned char, v8f64);
+	float  v16f32_mask_reduce_max_ps(unsigned short, v16f32);
 
-	v8f64  v8f64_reduce_min_pd(v8f64);
+	double  v8f64_reduce_max_pd(v8f64);
+
+	float  v16f32_reduce_max_ps(v16f32);
+
+	double  v8f64_mask_reduce_min_pd(unsigned char, v8f64);
+
+	float  v16f32_mask_reduce_min_ps(unsigned short, v16f32);
+
+	double  v8f64_reduce_min_pd(v8f64);
+
+	float  v16f32_reduce_min_ps(v16f32);
 
 	v8f64  v8f64_mask_unpacklo_pd(v8f64, unsigned char, v8f64, v8f64);
 
+	v16f32 v16f32_mask_unpacklo_ps(v16f32, unsigned short, v16f32, v16f32);
+
 	v8f64  v8f64_maskz_unpacklo_pd(unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_maskz_unpacklo_ps(unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_unpacklo_pd(v8f64, v8f64);
 
+	v16f32 v16f32_unpacklo_ps(v16f32, v16f32);
+
 	v8f64  v8f64_mask_unpackhi_pd(v8f64, unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_mask_unpackhi_ps(v16f32, unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_maskz_unpackhi_pd(unsigned char, v8f64, v8f64);
 
+	v16f32 v16f32_maskz_unpackhi_ps(unsigned short, v16f32, v16f32);
+
 	v8f64  v8f64_unpackhi_pd(v8f64, v8f64);
+
+	v16f32 v16f32_unpackhi_ps(v16f32, v16f32);
 
 	v8f64  v8f64_mask_shuffle_pd(v8f64, unsigned char, v8f64, v8f64, int);
 
+	v16f32 v16f32_mask_shuffle_ps(v16f32, unsigned short, v16f32, v16f32, int);
+
 	v8f64  v8f64_maskz_shuffle_pd(unsigned char, v8f64, v8f64, int);
 
+	v16f32 v16f32_maskz_shuffle_ps(unsigned short, v16f32, v16f32, int);
+
 	v8f64  v8f64_shuffle_pd(v8f64, v8f64, int);
+
+	v16f32 v16f32_shuffle_ps(v16f32, v16f32, int);
 
 	v8f64  v8f64_mask_shuffle_f64x2(v8f64, unsigned char, v8f64, v8f64, int);
 
@@ -595,27 +681,51 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 
 	v8f64  v8f64_mask_permutex_pd(v8f64, unsigned char, v8f64, int);
 
+	v16f32 v16f32_mask_permutex_ps(v16f32, unsigned short, v16f32, int);
+
 	v8f64  v8f64_maskz_permutex_pd(unsigned char, v8f64, int);
+
+	v16f32 v16f32_maskz_permutex_ps(unsigned short, v16f32, int);
 
 	v8f64  v8f64_permutex_pd(v8f64, int);
 
+	v16f32 v16f32_permutex_ps(v16f32, int);
+
 	v8f64  v8f64_mask_blend_pd(unsigned char, v8f64, v8f64);
+
+	v16f32 v16f32_mask_blend_ps(unsigned short, v16f32, v16f32);
 
 	v8f64  v8f64_mask_compress_pd(v8f64, unsigned char, v8f64);
 
+	v16f32 v16f32_mask_compress_ps(v16f32, unsigned short, v16f32);
+
 	v8f64  v8f64_maskz_compress_pd(unsigned char, v8f64);
+
+	v16f32 v16f32_maskz_compress_ps(unsigned short, v16f32);
 
 	void   v8f64_mask_compressstoreu_pd(void *, unsigned char, v8f64);
 
+	void   v16f32_mask_compressstoreu_ps(void *, unsigned short, v16f32);
+
 	v8f64  v8f64_mask_expand_pd(v8f64, unsigned char, v8f64);
+
+	v16f32 v16f32_mask_expand_ps(v16f32, unsigned short, v16f32);
 
 	v8f64  v8f64_maskz_expand_pd(unsigned char, v8f64);
 
+	v16f32 v16f32_maskz_expand_ps(unsigned short, v16f32);
+
 	v8f64  v8f64_mask_permute_pd(v8f64, unsigned char, v8f64, int);
+
+	v16f32 v16f32_mask_permute_ps(v16f32, unsigned short, v16f32, int);
 
 	v8f64  v8f64_maskz_permute_pd(unsigned char, v8f64, int);
 
+	v16f32 v16f32_maskz_permute_ps(unsigned short, v16f32, int);
+
 	v8f64  v8f64_permute_pd(v8f64, int);
+
+	v16f32 v16f32_permute_ps(v16f32, int);
 
 
 #endif /*__SIMD_AVX512_H__*/
