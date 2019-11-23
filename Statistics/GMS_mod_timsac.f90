@@ -370,21 +370,21 @@ module mod_timsac
 
           INTEGER(I32P), dimension(NMAX) :: IQI, IPI, IPO, IQO
 !DIR$  ATTRIBUTES ALIGN : 64 :: IQI,IPI,IPO,IQO
-          REAL(8), dimension(LMAX*2+1) :: CYY
+          REAL(kind=dp), dimension(LMAX*2+1) :: CYY
 !DIR$  ATTRIBUTES ALIGN : 64 :: CYY
-          REAL(R64P), dimension(MMAX) :: A,B,OA,OB,X,C
+          REAL(kind=dp), dimension(MMAX) :: A,B,OA,OB,X,C
 !DIR$ ATTRIBUTES ALIGN : 64 :: A,B,OA,OB,X
-          REAL(R64P), dimension(ICST) ::  CC
+          REAL(kind=dp), dimension(ICST) ::  CC
 !DIR$ ATTRIBUTES ALIGN : 64 :: CC
-          REAL(R64P), dimension(MMAX,MMAX) :: VD
+          REAL(kind=dp), dimension(MMAX,MMAX) :: VD
 !DIR$ ATTRIBUTES ALIGN : 64 :: VD
-          REAL(R64P), dimension(MMAX+1) ::  CN 
+          REAL(kind=dp), dimension(MMAX+1) ::  CN 
 !DIR$ ATTRIBUTES ALIGN : 64 :: CN 
-          REAL(R64P), dimension(NMAX) :: SMAIC2
+          REAL(kind=dp), dimension(NMAX) :: SMAIC2
 !DIR$ ATTRIBUTES ALIGN : 64 :: SMAIC2
-          REAL(R64P)    ::            CST0, CST1, CST2, CST05, SMAIC, AN, CXX0, SUM,    &
+          REAL(kind=dp)    ::            CST0, CST1, CST2, CST05, SMAIC, AN, CXX0, SUM,    &
                                       AIPQ, DMAIC, CONST1, SAN, SMAIC, 
-          INTEGER(I32P) :: LAGH4,I,LAGH1,LAGH2,IIM,IIP,JQO,JPO,NEWL,JP,JQ,  &
+          INTEGER(kind=int4) :: LAGH4,I,LAGH1,LAGH2,IIM,IIP,JQO,JPO,NEWL,JP,JQ,  &
                            NEWLM1,IDOS,ISIK,ISWRO,II,IPQ,J,ISFIN,IG,IQM1,IPM1, &
                            IDO,IDE
         
@@ -392,10 +392,10 @@ module mod_timsac
           COMMON /COM71/IDOS
           COMMON /COM72/ISIK
 
-      CST0=0.0_R64P
-      CST1=1.0_R64P
-      CST2=2.0_R64P
-      CST05=0.00005_R64P
+      CST0=0.0_dp
+      CST1=1.0_dp
+      CST2=2.0_dp
+      CST05=0.00005_dp
 !c!c      DO 8 I=1,1001
       DO 8 I=1,2*LMAX+1
 !cxx    8 CYY(I)=CST0
@@ -846,39 +846,39 @@ module mod_timsac
 !cc      COMMON /COM50/AL
      
 
-      INTEGER(I32P)  :: IP, IQ, MM, LL, ICST
+      INTEGER(kind=int4)  :: IP, IQ, MM, LL, ICST
       !INTEGER(I32P) :: XG_LEN = IP+IQ
-      REAL(R64P, dimension(IP+IQ)   :: X,G 
-      REAL(R64P), dimension(LL*2+1) :: CYY
-      REAL(R64P), dimension(MM+1)   :: CN
-      REAL(R64P), dimension(MM,MM)  :: AL
-      REAL(R64P) ::            CXX0 
+      REAL(kind=dp), dimension(IP+IQ)   :: X,G 
+      REAL(kind=dp), dimension(LL*2+1) :: CYY
+      REAL(kind=dp), dimension(MM+1)   :: CN
+      REAL(kind=dp), dimension(MM,MM)  :: AL
+      REAL(kind=dp) ::            CXX0 
 
-      REAL(R64P), dimension(IP)   :: A
-      REAL(R64P), dimension(IQ)   :: B 
-      REAL(R64P), dimension(IP*2) :: A2 
-      REAL(R64P), dimension(ICST) :: AI,A2B, AIB
+      REAL(kind=dp), dimension(IP)   :: A
+      REAL(kind=dp), dimension(IQ)   :: B 
+      REAL(kind=dp), dimension(IP*2) :: A2 
+      REAL(kind=dp), dimension(ICST) :: AI,A2B, AIB
 !DIR$ ATTRIBUTES ALIGN : 64 :: A,B,A2,AI,A2B,AIB
-      REAL(R64P), dimension(LL*2+1) :: Y,CXX,CXY,CYX,CUZ,CYU,CZY
+      REAL(kind=dp), dimension(LL*2+1) :: Y,CXX,CXY,CYX,CUZ,CYU,CZY
 !DIR$ ATTRIBUTES ALIGN : 64 :: Y,CXX,CXY,CYX,CUZ,CYU,CZY    
-      REAL(R64P) :: CST0, CST1, DSR2, CAI1
-      INTEGER(I32P) :: ISWRO,IDOS,ISIK,IORIG,I,II,IG,IPQ1,IPM1, &
+      REAL(kind=dp) :: CST0, CST1, DSR2, CAI1
+      INTEGER(kind=int4) :: ISWRO,IDOS,ISIK,IORIG,I,II,IG,IPQ1,IPM1, &
                        IJ,IK,IA,L2,M2,I2P,LXX,MXX,LYZ,MYX,IAIB, &
                        LZX,MZX,MZY,LZX,LZZ,MZZ,IQM1,LZYZ,MZYZ,  &
                        MYZ,LUX,MUX,LUY,MUY,LUU,MUU,LUYU,MUU,    &
                        MUYU,IA2B,LUZ,LUYZ,MUYZ,LYU,MYU,IST,IEN, &
-                       IJ1,JJ,MXY,LXY,LZY,MUZ,
-      REAL(R64P) :: 
+                       IJ1,JJ,MXY,LXY,LZY,MUZ
+      
                  
       COMMON /COM70/ISWRO
       COMMON /COM71/IDOS
       COMMON /COM72/ISIK
 
-      CST0=0.0D-00
-      CST1=1.0D-00
+      CST0=0.0_dp
+      CST1=1.0_dp
 !cc      IORIG=501
       IORIG=LL+1
-      DSR2=0.95D-00
+      DSR2=0.95_dp
       DO 100 I=1,IP
 !cxx  100 A(I)=X(I)
       A(I)=X(I)
@@ -1130,29 +1130,30 @@ module mod_timsac
 
     SUBROUTINE SC0GR1(X,CYY,G,CXX0,IP,IQ,IG,LL,ICST)
 !C     THIS SUBROUTINE COMPUTES CXX0 AND GRADIENT.
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: SC0GR1
           implicit none
-          INTEGER(I32P) :: IP, IQ, IG, LL, ICST
-          REAL(R64P), dimension(IP+IQ) :: X,G  
-          REAL(R64P), dimension(LL*2+1) :: CYY
-          REAL(R64P) :: CXX0
+          INTEGER(kind=int4) :: IP, IQ, IG, LL, ICST
+          REAL(kind=dp), dimension(IP+IQ) :: X,G  
+          REAL(kind=dp), dimension(LL*2+1) :: CYY
+          REAL(kind=dp) :: CXX0
           ! Locals
-          REAL(R64P), dimension(IP)   :: A
-          REAL(R64P), dimension(IQ)   :: B 
-          REAL(R64P), dimension(ICST) :: AI, A2B, AIB 
+          REAL(kind=dp), dimension(IP)   :: A
+          REAL(kind=dp), dimension(IQ)   :: B 
+          REAL(kind=dp), dimension(ICST) :: AI, A2B, AIB 
 !DIR$ ATTRIBUTES ALIGN : 64 :: AI,A2B
-          REAL(R64P), dimension(IP*2) :: A2 
+          REAL(kind=dp), dimension(IP*2) :: A2 
 !DIR$ ATTRIBUTES ALIGN : 64 :: A2
-          REAL(R64P), dimension(LL*2+1) ::  Y, CXX, CYX, &
+          REAL(kind=dp), dimension(LL*2+1) ::  Y, CXX, CYX, &
                                         CUY, CYU, CZY
 !DIR$ ATTRIBUTES ALIGN : 64 :: Y,CXX,CYX,CUY,CYU,CZY
-          REAL(R64P)    ::     CST0, CST1
-          INTEGER(I32P) ::     I,IORIG,IGA2B,II,IB,IA,IPM1,IQM1,IGAIB,  &
+          REAL(kind=dp)    ::     CST0, CST1
+          INTEGER(kind=int4) ::     I,IORIG,IGA2B,II,IB,IA,IPM1,IQM1,IGAIB,  &
                            IJ,IK,L2,M2,I2P,LXX,MXX,LXY,MXY,LYX,MYX, &
                            LZX,MZX,LZY,MZY,LYZ,MYZ,LUX,MUX,LUY,MUY, &
                            LYU,MYU,IAIB,I1,IPQ
 
-         CST0=0.0_R64P
-         CST1=1.0_R64P
+         CST0=0.0_dp
+         CST1=1.0_dp
 !cc      IORIG=501
          IORIG=LL+1
          IGA2B=IG
@@ -1300,34 +1301,35 @@ module mod_timsac
 
     SUBROUTINE SDAV1(X,CYY,CXX0,G,C,IP,IQ,N,VD,NN,LL,ICST)
 !C      DADIDON'S (MINIMIZATION) PROCEDURE
-          implicit none
+          
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: SDAV1
      
 
-          INTEGER(I32P) :: IP, IQ, N, NN, LL, ICST
-          REAL(R64P), dimension(IP+IQ)  :: X, G, C 
-          REAL(R64P), dimension(LL*2+1) :: CYY
-          REAL(R64P), dimension(NN,NN) :: VD
-          REAL(R64P) :: CXX0
-          REAL(R64P), dimension(IP+IQ)  :: SX, SG, SR
+          INTEGER(kind=int4) :: IP, IQ, N, NN, LL, ICST
+          REAL(kind=dp), dimension(IP+IQ)  :: X, G, C 
+          REAL(kind=dp), dimension(LL*2+1) :: CYY
+          REAL(kind=dp), dimension(NN,NN) :: VD
+          REAL(kind=dp) :: CXX0
+          REAL(kind=dp), dimension(IP+IQ)  :: SX, SG, SR
 !DIR$     ATTRIBUTES ALIGN : 64 :: SX,SG,SR
-          REAL(R64P) :: CST0, CST1, CST2,                                     &   
+          REAL(kind=dp) :: CST0, CST1, CST2,                                     &   
                         CST05, CONSTA, CONSTB, EPS1, EPS3, EPS4,              &
                         AIPQ, AN, PHAI, EPHAI1, T1, RO, RAM, RAMRO, RAMROT,   &
                         SUM, SRO, SROD, DGAM, DGAM1, GSR, RAMT, RAMSRO,       &
                         RAM1, CONSDR, SPHAI, OAIC, OPHAI, AIC, DAIC
-         INTEGER(I32P) :: ISWRO,ISPHAI,ITN,IPHAI,IPQ,ITNS,I,J,IG,IRAM        
+         INTEGER(kind=int4) :: ISWRO,ISPHAI,ITN,IPHAI,IPQ,ITNS,I,J,IG,IRAM        
          COMMON /COM70/ISWRO
          ! Locals
 !C     CONSTANT
-        CST0=0.0_R64P
-        CST1=1.0_R64P
-        CST2=2.0_R64P
-        CST05=0.5_R64P
-        CONSTA=0.5_R64P
-        CONSTB=2.0_R64P
-        EPS1=0.01_R64P
-        EPS3=0.000001_R64P
-        EPS4=0.0000000001_R64P
+        CST0=0.0_dp
+        CST1=1.0_dp
+        CST2=2.0_dp
+        CST05=0.5_dp
+        CONSTA=0.5_dp
+        CONSTB=2.0_dp
+        EPS1=0.01_dp
+        EPS3=0.000001_dp
+        EPS4=0.0000000001_dp
         ISPHAI=0
         ITN=1
         IPHAI=1
@@ -1407,7 +1409,7 @@ module mod_timsac
       CALL INNERP(G,SR,GSR,IPQ)
       DGAM=-GSR/SRO
       DGAM1=DGAM+CST1
-      DGAM1=DABS(DGAM1)+0.1D-70
+      DGAM1=DABS(DGAM1)+0.1e-70_dp
       RAM=DABS(DGAM)/DGAM1
 !C     IF RAM . LE. CONSTA THEN RAM=CONSTA
       IF(RAM.GT.CONSTA) GO TO 430
@@ -1481,13 +1483,13 @@ module mod_timsac
     
 
     SUBROUTINE SCONVL(Y,A,Z,K,L,M,LL)
-          implicit none
-          INTEGER(I32P) :: K, L, M, LL
-          REAL(R64P), dimension(LL*2+1) :: Y,Z 
-          REAL(R64P), dimension(K) :: A
-          REAL(R64P) :: SUM
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: SCONVL
+          INTEGER(kind=int4) :: K, L, M, LL
+          REAL(kind=dp), dimension(LL*2+1) :: Y,Z 
+          REAL(kind=dp), dimension(K) :: A
+          REAL(kind=dp) :: SUM
           ! Locals
-          INTEGER(I32P) :: IORIG,I,J,IST,IEN,IJ
+          INTEGER(kind=int4) :: IORIG,I,J,IST,IEN,IJ
           IORIG=LL+1
           IST=IORIG+L
           IEN=IORIG+M
@@ -1506,12 +1508,12 @@ module mod_timsac
     
 
     SUBROUTINE TURN(Y,Z,L,M,LL)
-          implicit none
-          INTEGER(I32P) :: L, M, LL
-          REAL(R64P), dimension(LL+M+1) :: Y
-          REAL(R64P), dimension(LL-L+1) :: Z
+           !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: TURN
+          INTEGER(kind=int4) :: L, M, LL
+          REAL(kind=dp), dimension(LL+M+1) :: Y
+          REAL(kind=dp), dimension(LL-L+1) :: Z
           ! Locals
-          INTEGER(I32P) :: IORIG,IST,IEN,I,IJ
+          INTEGER(kind=int4) :: IORIG,IST,IEN,I,IJ
           IORIG=LL+1
           IST=IORIG+L
           IEN=IORIG+M
@@ -1526,28 +1528,28 @@ module mod_timsac
     
 
     SUBROUTINE INVERS(A,IP,B,IQ,X,IX,ICST,IG)
-          implicit none
+        !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: INVERS
 !C     X=(INVERSE OF B )*A
 !C     W(I)+B(1)W(I-1)+...B(IQ)W(I-IQ)=X(I)+A(1)X(I-1)+...+A(IP)X(I-IP)
 !C     INPUT W(0)=1, W(I)=0 FOR I. NE. 0
 !C     OUTPUT X(I) (I=1,IX)
 
-          INTEGER(I32P) :: IP, IQ, IX, ICST, IG
-          REAL(R64P), dimension(IP)   :: A
-          REAL(R64P), dimension(IQ)   :: B
-          REAL(R64P), dimension(ICST) :: X
-          REAL(R64P) :: CST0, GCONST, GAMMAX, SUM, GAM2
-          INTEGER(I32P) :: IPQ,I,K,LH,IH,IM1,JM,IMJ,J
-          CST0=0.0D-00
+          INTEGER(kind=int4) :: IP, IQ, IX, ICST, IG
+          REAL(kind=dp), dimension(IP)   :: A
+          REAL(kind=dp), dimension(IQ)   :: B
+          REAL(kind=dp), dimension(ICST) :: X
+          REAL(kind=dp) :: CST0, GCONST, GAMMAX, SUM, GAM2
+          INTEGER(kind=int4) :: IPQ,I,K,LH,IH,IM1,JM,IMJ,J
+          CST0=0.0_dp
           IPQ=IP+IQ
           IF(IPQ.LE.0) GO TO 999
-          GCONST=0.0005_R64P
-          GAMMAX=1.0E+10_R64P
+          GCONST=0.0005_dp
+          GAMMAX=1.0E+10_dp
           K=0
           LH=6
           IH=0
           IF(IG.EQ.0) GO TO 13
-             GCONST=0.01_R64P
+             GCONST=0.01_dp
           IG=0
 !c!x   13 DO 10 I=1,190
    13     DO 10 I=1,ICST
@@ -1590,7 +1592,7 @@ module mod_timsac
     END SUBROUTINE
     
     SUBROUTINE AUTCORF(X,N,CXX,CN,LAGH1,XMEAN)
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: AUTCORF
       
 !C
 !C     PROGRAM 5.1.1   AUTO CORRELATION
@@ -1621,14 +1623,14 @@ module mod_timsac
 !c	 REAL*4 DFORM
 !c      DIMENSION  DFORM(20)
 !cxx      DIMENSION X(N),X1(N),CXX(LAGH1),CN(LAGH1)
-          INTEGER(I32P) :: N, LAGH1
-          REAL(R64P), dimension(N) :: X 
-          REAL(R64P), dimension(LAGHI) :: CXX,CN
-          REAL(R64P) :: XMEAN
-          REAL(R64P), dimension(N) :: X1
+          INTEGER(kind=int4) :: N, LAGH1
+          REAL(kind=dp), dimension(N) :: X 
+          REAL(kind=dp), dimension(LAGHI) :: CXX,CN
+          REAL(kind=dp) :: XMEAN
+          REAL(kind=dp), dimension(N) :: X1
 !DIR$     ATTRIBUTES ALIGN : 64 :: X1
-          REAL(R64P) :: CX0
-          INTEGER(I32P) :: I
+          REAL(kind=dp) :: CX0
+          INTEGER(kind=int4) :: I
           DO 220 I=1,N
 !cxx  220 X1(I)=X(I)
               X1(I)=X(I)
@@ -1654,7 +1656,7 @@ module mod_timsac
                          IRREG,ADJUST,EST,PSDS,PSDT,AVABIC,             &
                          IPARA,PARA,ARFT,ARFS,ARFN,IART,IARS,IARN)
                                                                       
-          implicit none
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: BAYSEAF
 !C
 !C     ---      --       -                                               
 !C     BAYESIAN SEASONAL ADJUSTMENT PROCEDURE                            
@@ -2002,36 +2004,36 @@ module mod_timsac
 !C                             +-MOD                                     
 !C                                                                       
 
-          INTEGER(I32P) :: NDATA, FOCAST, IART, IARS, IARN
-          INTEGER(I32P), dimension(12) :: IPARA(12) 
-          REAL(R64P), dimension(NDATA)  :: Y,CDATA,DMOI,IRREG,ADJUST
-          REAL(R64P), dimension(NDATA+FOCAST) :: TREND,SEASON,TDCMP,EST,PSDS,PSDT
-          REAL(R64P), dimension(8) :: PARA
-          REAL(R64P), dimension(3) :: ARFT,ARFS,ARFN
-          REAL(R64P) :: AVABIC
+          INTEGER(kind=int4) :: NDATA, FOCAST, IART, IARS, IARN
+          INTEGER(kind=int4), dimension(12) :: IPARA(12) 
+          REAL(kind=dp), dimension(NDATA)  :: Y,CDATA,DMOI,IRREG,ADJUST
+          REAL(kind=dp), dimension(NDATA+FOCAST) :: TREND,SEASON,TDCMP,EST,PSDS,PSDT
+          REAL(kind=dp), dimension(8) :: PARA
+          REAL(kind=dp), dimension(3) :: ARFT,ARFS,ARFN
+          REAL(kind=dp) :: AVABIC
     
 
-          INTEGER(I32P) :: ORDER, SORDER, PERIOD, SPAN, OVLAP, HEAD, SHIFT,     &
+          INTEGER(kind=int4) :: ORDER, SORDER, PERIOD, SPAN, OVLAP, HEAD, SHIFT,     &
                        TAIL, YEAR, SPEC
-          REAL(R64P), dimension(NDATA+FOCAST) :: TREND0, SEAS0, TDCMP0,IRREG0,ADJ0,EST0,
+          REAL(kind=dp), dimension(NDATA+FOCAST) :: TREND0, SEAS0, TDCMP0,IRREG0,ADJ0,EST0,
                                              PSDS0,PSDT0
 !DIR$ ATTRIBUTES ALIGN : 64 :: TREND0,SEAS0,TDCMP0,IRREG0,ADJ0,EST0,PSDS0,PSDT0
-          REAL(R64P), dimension(IPARA(4)+2) :: FTRN
-          REAL(R64P), dimension((IPARA(5)+3)*IPARA(1)+3) :: FSEA
-          REAL(R64P), dimension(NDATA+FOCAST+1) :: F
-          REAL(R64P), dimension(7,NDATA+FOCAST) :: WEEK
-          REAL(R64P), dimension(NDATA) :: YS,YS1,YO
+          REAL(kind=dp), dimension(IPARA(4)+2) :: FTRN
+          REAL(kind=dp), dimension((IPARA(5)+3)*IPARA(1)+3) :: FSEA
+          REAL(kind=dp), dimension(NDATA+FOCAST+1) :: F
+          REAL(kind=dp), dimension(7,NDATA+FOCAST) :: WEEK
+          REAL(kind=dp), dimension(NDATA) :: YS,YS1,YO
 !DIR$ ATTRIBUTES ALIGN : 64 :: FTRN,FSEA,F,WEEK,YS,YS1,YSO
-          REAL(R64P) ::   RLIM, RIGID,  WTRD, DD, ZERSUM, DELTA, ALPHA, BETA, GAMMA,  &
+          REAL(kind=dp) ::   RLIM, RIGID,  WTRD, DD, ZERSUM, DELTA, ALPHA, BETA, GAMMA,  &
                           AP, ZER, SMTH, SMTH2, ROUT, SY, YTEM, COUNT,                &
                           ABIC,AN
-          INTEGER(I32P) :: NPF, LOGT, MONTH, NDAY, IOUTD, IDC, IS, LFTRN, LFSEA, NH, N2,  &
+          INTEGER(kind=int4) :: NPF, LOGT, MONTH, NDAY, IOUTD, IDC, IS, LFTRN, LFSEA, NH, N2,  &
                            I, NF, OVLAP, LIMIT, IQ, N, IEND, ICNT1, ICNT, NEXT, LINKT,    &
                            LINKS, ITRN, IOUT, NTEM, L, LF, I1, ISTEM, I2
                                                             
           NPF = NDATA+FOCAST                                                
                                                       
-          RLIM = 0.0_R64P                                                        
+          RLIM = 0.0_dp                                                      
                                                        
           PERIOD=IPARA(1)
           SPAN=IPARA(2)
@@ -2067,13 +2069,13 @@ module mod_timsac
           IF(YEAR .NE. 0) N2=8                                              
 !C  ************                                                         
           ZER=ZERSUM/DSQRT(AP)*RIGID                                        
-          SMTH = 1._R64P/RIGID                                                 
-          SMTH2=1._R64P                                                        
+          SMTH = 1._dp/RIGID                                                 
+          SMTH2=1._dp                                                        
 !C  ************                                                         
 
           IF(IOUTD .EQ. 0) GO TO 1212                                       
-          ROUT = 1.0E+60_R64P                                                      
-          RLIM = 1.0E+50_R64P                                                      
+          ROUT = 1.0E+60_dp                                                     
+          RLIM = 1.0E+50_dp                                                      
           IF(LOGT .EQ. 0) GO TO 1212                                        
           ROUT = DLOG(ROUT)                                                 
           RLIM = DLOG(RLIM)                                                 
@@ -2093,13 +2095,13 @@ module mod_timsac
 !C     N=LENGTH OF A SPAN                                                
           OVLAP = SPAN - 1                                                  
           LIMIT = NDATA - OVLAP*PERIOD                                      
-          SY = 0._R64P                                                         
+          SY = 0._dp                                                        
 !c-----
           IQ = 0
 !c-----
           DO 2468 I=1,NDATA                                                 
                   YTEM = Y(I)                                                       
-                  IF(RLIM .LE. 0._R64P) GO TO 4681                                     
+                  IF(RLIM .LE. 0._dp) GO TO 4681                                     
                   IF(YTEM .GE. RLIM) GO TO 2468                                     
  4681             IQ = IQ + 1                   
                   SY = SY + YTEM                                                    
@@ -2114,11 +2116,11 @@ module mod_timsac
          IF(LFSEA .EQ. 0) GO TO 998                                        
 !cxx      DO 9  I=1,LFSEA                                                   
 !cxx    9 FSEA(I) = 0.D0
-          FSEA(1:LFSEA) = 0._R64P                                                    
+          FSEA(1:LFSEA) = 0._dp                                                  
      998 CONTINUE                                                          
           N = (SPAN*2-1)*PERIOD                                             
-          AVABIC  = 0._R64P                                                    
-          COUNT   = 0._R64P                                                      
+          AVABIC  = 0._dp                                                
+          COUNT   = 0._dp                                                      
           IEND = 0                                                          
 !C                                                                       
 !C     ***************                                                   
@@ -2243,9 +2245,9 @@ module mod_timsac
 !cxx      CALL BCOPY(FSEA,ISTEM,1,ISTEM,1,1,SEASON,ISTEM,1,IOUT,LINKS,1)
                   CALL BCOPY(FSEA,ISTEM,1,1,1,SEASON,ISTEM,1,LINKS,1)
                   IF(ICNT1 .GT. 1) GO TO 1000                                       
-                  ALPHA = 1._R64P                                                     
-                  BETA = 1._R64P                                                       
-                  GAMMA = 1._R64P                                                      
+                  ALPHA = 1._dp                                                   
+                  BETA = 1._dp                                                       
+                  GAMMA = 1._dp                                                      
                   N = SPAN*PERIOD                                                   
                   IF(N .GT. NDATA) N=NDATA                                          
                   OVLAP = SPAN-SHIFT                                                
@@ -2264,14 +2266,14 @@ module mod_timsac
            DO 4444 I=1,NDATA                                                 
                       CDATA(I)=Y(I) - CDATA(I)                                          
                       DMOI(I) = Y(I)                                                    
-                      IF(RLIM .LE. 0._R64P) GO TO 4444                                     
+                      IF(RLIM .LE. 0._dp) GO TO 4444                                     
                       IF(Y(I) .LT. RLIM.AND.IOUTD.EQ.0) GO TO 4444                      
                       IF(IOUTD .NE. 0 .AND. Y(I) .GT. RLIM) GO TO 4442                  
                       IF(IOUTD.NE.0.AND.-CDATA(I).LT.RLIM)GO TO 4443                    
  4442     CONTINUE                                                          
                       ADJUST(I)=TREND(I)                                                
                       DMOI(I)=EST(I)                                                    
-                      IRREG(I)=0._R64P                                                   
+                      IRREG(I)=0._dp                                                   
  4443                 CDATA(I) = Y(I) - DMOI(I)                                         
  4444 CONTINUE                                                          
 !cc      NPF = NDATA+FOCAST                                                
@@ -2288,7 +2290,7 @@ module mod_timsac
                     CDATA(I) = DEXP(CDATA(I))                                         
                     DMOI(I) = DEXP(DMOI(I))                                           
  1240      CONTINUE                                                          
-           IF(RLIM .GT. 0.D0) RLIM = DEXP(RLIM)                              
+           IF(RLIM .GT. 0.0_dp) RLIM = DEXP(RLIM)                              
  1250      CONTINUE                                                          
                                                           
            AVABIC = AVABIC/COUNT                                             
@@ -2297,7 +2299,7 @@ module mod_timsac
     END  SUBROUTINE
                          
     SUBROUTINE  ADD(X,MX,Y,MY,Z,MZ) 
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: ADD
 !C     THIS SUBROUTINE COMPUTES                                          
 !C          X = Y + Z.                                                   
 !C     INPUTS:                                                           
@@ -2306,16 +2308,16 @@ module mod_timsac
 !C       Z:     MZ-VECTOR                                                
 !C                                                                       
                                       
-          INTEGER(I32P) :: MX, MY, MZ
-          REAL(R64P) :: TEM
-          REAL(R64P), dimension(MX) :: X
-          REAL(R64P), dimension(MY) :: Y
-          REAL(R64P), dimension(MZ) :: Z
+          INTEGER(kind=int4) :: MX, MY, MZ
+          REAL(kind=dp) :: TEM
+          REAL(kind=dp), dimension(MX) :: X
+          REAL(kind=dp), dimension(MY) :: Y
+          REAL(kind=dp), dimension(MZ) :: Z
       ! Locals
-          INTEGER(I32P) :: I
+          INTEGER(kind=int4) :: I
       ! Exec code ....
           DO 100 I=1,MX                                                     
-             TEM = 0._R64P                              
+             TEM = 0._dp                            
              IF( I .LE. MY )  TEM = Y(I)                                       
              IF( I .LE. MZ )  TEM = TEM + Z(I)                                 
 !cxx  100 X(I) = TEM
@@ -2325,7 +2327,7 @@ module mod_timsac
     END   SUBROUTINE
     
     SUBROUTINE CLEAR(X,M,N,MJ,I0,J0)   
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: CLEAR
 !C                                                                       
 !C     THIS SUBROUTINE CLEARS MATRIX X.                                  
 !C     INPUTS:                                                           
@@ -2335,17 +2337,17 @@ module mod_timsac
 !C       J0:    ABSOLUTE POSITION OF THE FIRST COLUMN OF X               
 !C                                                                       
                                               
-          INTEGER(I32P) :: N, MJ, I0, J0, M
-          REAL(R64P), dimension(MJ,I0+N-1) :: X
+          INTEGER(kind=int4) :: N, MJ, I0, J0, M
+          REAL(kind=dp), dimension(MJ,I0+N-1) :: X
           ! Locals
-          INTEGER(I32P) :: I0M1,J0M1,J,I
+          INTEGER(kind=dp) :: I0M1,J0M1,J,I
           I0M1 = I0 - 1                                                     
           J0M1 = J0 - 1                                                     
 
           DO 20 J=1,N                                                       
              DO 10 I=1,M                                                       
 
-                X(I0M1+I,J0M1+J) = 0._R64P
+                X(I0M1+I,J0M1+J) = 0._dp
           10 CONTINUE
    20 CONTINUE
                                                              
@@ -2353,7 +2355,7 @@ module mod_timsac
     
 
     SUBROUTINE BCOPY(X,MX,NX,IX,JX,Y,MY,NY,IY,JY)
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: BCOPY
 !C     THIS SUBROUTINE COPIES Y INTO X.                                  
 !C     INPUTS:                                                           
 !C       X:     MX*NX MATRIX                                             
@@ -2366,12 +2368,12 @@ module mod_timsac
 !C       JY:    ABSOLUTE POSITION OF THE FIRST COLUMN OF Y               
 !C                                                                       
 
-          INTEGER(I32P) :: MX, NX, IX, JX, MY, NY, IY, JY
-          REAL(R64P) :: TEM
-          REAL(R64P), dimension(MX+IX-1,JX+NX-1) :: X 
-          REAL(R64P), dimension(MY+IY-1,NY+JY-1) :: Y 
+          INTEGER(kind=int4) :: MX, NX, IX, JX, MY, NY, IY, JY
+          REAL(kind=dp) :: TEM
+          REAL(kind=dp), dimension(MX+IX-1,JX+NX-1) :: X 
+          REAL(kind=dp), dimension(MY+IY-1,NY+JY-1) :: Y 
           ! Locals
-          INTEGER(I32P) :: IXM1,IYM1,JYM1,JXM1,J,I
+          INTEGER(kind=int4) :: IXM1,IYM1,JYM1,JXM1,J,I
           IXM1 = IX-1                                                       
           JXM1 = JX - 1                                                     
           IYM1 = IY - 1                                                     
@@ -2391,7 +2393,7 @@ module mod_timsac
     
     SUBROUTINE DECODE(SEAS0,TREND0,EST0,ADJ0,IRREG0,TDC0,W,    &       
                          A,Y,NN,NF,WEEK,ERR,PSDS,PSDT,SQE, IP,YEAR,NDAY)      
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: DECODE
 !C   THIS SUBROUTINE COMPUTES                                            
 !C       TREND0                                                          
 !C       SEAS0                                                           
@@ -2400,23 +2402,23 @@ module mod_timsac
 !C       IRREG0=Y - EST0                                                 
 !C                                                                       
 
-          INTEGER(I32P) :: NN, NF, IP, YEAR, NDAY
-          REAL(R64P) ::  SQE, SD2
-          REAL(R64P), dimension(NN+NF) :: SEAS0, TREND0, EST0, ADJ0, IRREG0, TDC0, PSDS, PSDT
-          REAL(R64P), dimension(NDAY+6) :: W
-          REAL(R64P), dimension(2*(NN+NF)+NDAY+6) :: A
-          REAL(R64P), dimension(NN) :: Y
-          REAL(R64P), dimension(7,NN+NF) :: WEEK
-          REAL(R64P), dimension(2*(NN+NF)) :: ERR 
+          INTEGER(kind=int4) :: NN, NF, IP, YEAR, NDAY
+          REAL(kind=dp) ::  SQE, SD2
+          REAL(kind=dp), dimension(NN+NF) :: SEAS0, TREND0, EST0, ADJ0, IRREG0, TDC0, PSDS, PSDT
+          REAL(kind=dp), dimension(NDAY+6) :: W
+          REAL(kind=dp), dimension(2*(NN+NF)+NDAY+6) :: A
+          REAL(kind=dp), dimension(NN) :: Y
+          REAL(kind=dp), dimension(7,NN+NF) :: WEEK
+          REAL(kind=dp), dimension(2*(NN+NF)) :: ERR 
           ! Locals
-          INTEGER(I32P) :: N,NR,I,I1,I2,NTEM,N7
+          INTEGER(kind=int4) :: N,NR,I,I1,I2,NTEM,N7
                                                                        
           N=NN+NF                                                           
           NR = 2                                                            
           IF( IP .EQ. 1 )   NR = 1                                          
           CALL  CLEAR( SEAS0,N,1,N,1,1 )                                    
           CALL  CLEAR( PSDS,N,1,N,1,1)                                      
-          SD2 = DSQRT(SQE) * 2._R64P                                          
+          SD2 = DSQRT(SQE) * 2._dp                                        
           DO 10 I=1,N                                                       
                   I1=NR*(I-1)+1                                                     
                   I2=NR*I                                                           
@@ -2445,7 +2447,7 @@ module mod_timsac
                          
                             
     SUBROUTINE  BHUSHLD( X,N,K,MJ1,ICNT )
-          implicit none
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: BHUSHLD
 !C                                                                       
 !C                                                                       
 !C     THIS SUBROUTINE  TRANSFORMS MATRIX X INTO AN UPPER TRIANGULAR FORM
@@ -2467,22 +2469,22 @@ module mod_timsac
 !C          X:     IN UPPER TRIANGULAR FORM                              
 !C                                                                       
 
-          INTEGER(I32P) :: N, K, MJ1, ICNT
-          REAL(R64P), dimension(MJ1,K) :: X
+          INTEGER(kind=int4) :: N, K, MJ1, ICNT
+          REAL(kind=dp), dimension(MJ1,K) :: X
           ! Locals
-          INTEGER(I32P) :: MNK,I,II,IIOTEM,IITEM,II1,KTEM,II10,JTEM
-          REAL(R64P) :: TOL, DIIO, H, ABSLD, F, G, S
-          REAL(R64P), dimension(N) :: D 
+          INTEGER(kind=int4) :: MNK,I,II,IIOTEM,IITEM,II1,KTEM,II10,JTEM
+          REAL(kind=dp) :: TOL, DIIO, H, ABSLD, F, G, S
+          REAL(kind=dp), dimension(N) :: D 
 !DIR$     ATTRIBUTES ALIGN : 64 :: DC   
           
-          TOL=1.0E-38_R64P                                                       
-          DIIO=0.0_R64P
+          TOL=1.0E-38_dp                                                       
+          DIIO=0.0_dp
                                                                        
           MNK=K                                                             
           IF(N.LE.K) MNK=N-1                                                
                                                  
           DO 101 II=1,MNK 
-                 H = 0.0_R64P                                                     
+                 H = 0.0_dp                                                     
                  IIOTEM = II                                                       
                  IITEM = II                                                        
                  IF( ICNT .LE. 0 )   GO TO 5                                       
@@ -2494,16 +2496,16 @@ module mod_timsac
           DO 10  I=IIOTEM,N                                                 
                 D(I) = X(I,IITEM)                                                 
                 ABSLD=DABS(D(I))                                                  
-                IF(ABSLD.LE.TOL) D(I)=0.0D-00                                     
+                IF(ABSLD.LE.TOL) D(I)=0.0_dp                                    
 !cxx   10       H = H + D(I)*D(I)                                           
                 H = H + D(I)*D(I)
    10       CONTINUE
           IF( H .GT. TOL )  GO TO 20                                     
-          G = 0.0_R64P                                                    
+          G = 0.0_dp                                                  
           GO TO 100                                                      
    20     G = DSQRT( H )                                                 
           F=X(II,II)                                                        
-          IF( F .GE. 0.0_R64P )   G = -G                                   
+          IF( F .GE. 0.0_dp )   G = -G                                   
           IF( ICNT .LE. 0 )   D(II) = F-G                                   
           IF( ICNT .GT. 0 )   DIIO = F-G                                    
           H = H - F*G                                                    
@@ -2520,11 +2522,11 @@ module mod_timsac
           IF( ICNT .GT. 0 )   II10 = IIOTEM                                 
           DO 30 I=II10,N                                                    
 !cxx   30 X(I,IITEM) = 0.D0                                                 
-                X(I,IITEM) = 0._R64P
+                X(I,IITEM) = 0._dp
    30    CONTINUE
          IF( II .EQ. K )  GO TO 100                                     
          DO 60  J=II1,KTEM                                              
-                S = 0.0_R64P                                                 
+                S = 0.0_dp                                                
                 JTEM = K+1-J                                                   
                 IF(ICNT .GT. 0 ) S = DIIO*X(II,JTEM)                              
             DO 40  I=IIOTEM,N                                                 
@@ -2546,7 +2548,7 @@ module mod_timsac
                                                                        
                                                                   
     SUBROUTINE  PRDCT(X,MX,NX,MMX,Y,MY,NY,MMY,Z,MZ,NZ,MMZ)  
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: PRDCT
 !C     THIS SUBROUTINE COMPUTES                                          
 !C          X = Y * Z                                                    
 !C     INPUTS:                                                           
@@ -2558,21 +2560,21 @@ module mod_timsac
 !C       MMZ:   ABSOLUTE DIMENSION OF Z                                  
 !C                                                                       
 
-          INTEGER(I32P) :: MX, NX, MMX, MY, NY, MMY, MZ, NZ, MMZ
-          REAL(R64P), dimension(MMX,NX) :: X 
-          REAL(R64P), dimension(MMY,NY) :: Y  
-          REAL(R64P), dimension(MMZ,NZ) :: Z 
+          INTEGER(kind=int4) :: MX, NX, MMX, MY, NY, MMY, MZ, NZ, MMZ
+          REAL(kind=dp), dimension(MMX,NX) :: X 
+          REAL(kind=dp), dimension(MMY,NY) :: Y  
+          REAL(kind=dp), dimension(MMZ,NZ) :: Z 
           ! Locals
         
-          INTEGER(I32P) :: KK,I,J,K
-          REAL(R64P)    :: SUM
+          INTEGER(kind=int4) :: KK,I,J,K
+          REAL(kind=dp)    :: SUM
           
           KK = NY                                                           
           IF( KK .GT. MZ ) KK = MZ                                          
           DO 100 J=1,NX                                                     
 !cxx      DO 50 I=1,MX
               DO 51 I=1,MX
-                    SUM = 0._R64P                                                        
+                    SUM = 0._dp                                                        
                     IF(I .GT. MY) GO TO 50                                            
                     IF( J .GT. NZ ) GO TO 50 
 !DIR$  SIMD REDUCTION(+:SUM)
@@ -2587,7 +2589,7 @@ module mod_timsac
     END  SUBROUTINE
     
     SUBROUTINE  SBTRCT(X,MX,Y,MY,Z,MZ)   
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: SBTRCT
 !C     THIS SUBROUTINE COMPUTES                                          
 !C          X = Y - Z                                                    
 !C     INPUTS:                                                           
@@ -2596,16 +2598,16 @@ module mod_timsac
 !C       Z:     MZ-VECTOR                                                
 !C                                                                       
 
-          INTEGER(I32P) :: MX, MY, MZ
-          REAL(R64P), dimension(MX) :: X  
-          REAL(R64P), dimension(MY) :: Y 
-          REAL(R64P), dimension(MZ) :: Z 
+          INTEGER(kind=int4) :: MX, MY, MZ
+          REAL(kind=dp), dimension(MX) :: X  
+          REAL(kind=dp), dimension(MY) :: Y 
+          REAL(kind=dp), dimension(MZ) :: Z 
           ! Locals
-          INTEGER(I32P) :: I
-          REAL(R64P) :: TEM
+          INTEGER(kind=int4) :: I
+          REAL(kind=dp) :: TEM
           ! Exec code .....
           DO 100 I=1,MX                                                     
-                 TEM = 0._R64P                                                       
+                 TEM = 0._dp                                                      
                  IF( I .LE. MY )  TEM = Y(I)                                       
                  IF( I .LE. MZ )  TEM = TEM - Z(I)                                 
                  X(I) = TEM
@@ -2619,57 +2621,57 @@ module mod_timsac
                         FSEA,LFSEA,FTRN,YS,N,NF,RLIM,WEEK,IDC,NH,F,N2,ITRN,IARS,ARFS, &
                         IART,ARFT,IARN,ARFN,PSDT,PSDS,NPF,PERIOD,IORD,ISOD,YEAR,NDAY, &
                         LOGT,ALPHA,BETA,GAMMA,ZER,SMTH,SMTH2,DD,WTRD,DELTA)
-          implicit none
+          !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: SUBSEA
 !C     SEASONAL DECOMPOSITION PROCEDURE                                  
 !C     FOR THE DEFINITIONS OF THE VARIABLES APPEARING IN THE ARGUMENTS,  
 !C     SEE THE COMMENTS IN THE MAIN ROUTINE                              
       
-          INTEGER(I32P) :: LFSEA, N, NF, IDC, NH, N2, ITRN, IARS, IART, IARN, NPF, &
+          INTEGER(kind=int4) :: LFSEA, N, NF, IDC, NH, N2, ITRN, IARS, IART, IARN, NPF, &
                             PERIOD, IORD, ISOD, YEAR, NDAY, LOGT
-          REAL(R64P) :: ABICM 
-          REAL(R64P), dimension(NPF) :: SEASON, TREND, EST, ADJ, IRREG, TDC, PSDT, PSDS
-          REAL(R64P), dimension(LFSEA) :: FSEA
-          REAL(R64P), dimension(IORD+3) :: FTRN
-          REAL(R64P), dimension(N) :: YS
-          REAL(R64P), dimension(7,1) :: WEEK
-          REAL(R64P), dimension(NPF+1) :: F
-          REAL(R64P), dimension(3) :: ARFS,ARFT,ARFN
-          REAL(R64P) :: RLIM ,ALPHA, BETA, GAMMA, &
+          REAL(kind=dp) :: ABICM 
+          REAL(kind=dp), dimension(NPF) :: SEASON, TREND, EST, ADJ, IRREG, TDC, PSDT, PSDS
+          REAL(kind=dp), dimension(LFSEA) :: FSEA
+          REAL(kind=dp), dimension(IORD+3) :: FTRN
+          REAL(kind=dp), dimension(N) :: YS
+          REAL(kind=dp), dimension(7,1) :: WEEK
+          REAL(kind=dp), dimension(NPF+1) :: F
+          REAL(kind=dp), dimension(3) :: ARFS,ARFT,ARFN
+          REAL(kind=dp) :: RLIM ,ALPHA, BETA, GAMMA, &
                         ZER, SMTH, SMTH2, DD, WTRD, DELTA
           ! LOcals
-          INTEGER(I32P) ::   IFLAG,MODE,ND,N7,ITRN0,IIII,I,M1,ICOUNT,K,N2M1,J, &
+          INTEGER(kind=int4) ::   IFLAG,MODE,ND,N7,ITRN0,IIII,I,M1,ICOUNT,K,N2M1,J, &
                              NMJ,IPM1
-          REAL(R64P)    ::   DMAX0, DMIN0, RO, DMIN, APRD,                             &
+          REAL(kind=dp)    ::   DMAX0, DMIN0, RO, DMIN, APRD,                             &
                              AN, ANN, ALNDTD, ALNDT0, WT, TEM, ALNDN, ALSQE,     &
                              SQE, ABIC, AJACOB, SSTR, SSEA, SSIR, SSAS, SAS
-          REAL(R64P), dimension(IDC,2*NPF+N2)    :: DC
-          REAL(R64P), dimension(NH,NPF)          :: H
-          REAL(R64P), dimension(N2,2*NPF+N2)     :: H2 
-          REAL(R64P), dimension(7)               :: WEEK0,WEEK1
-          REAL(R64P), dimension(2*(N+NF)+NDAY+7) :: ERR,A
-          REAL(R64P), dimension(NPF) :: DTRN,DSEAS
+          REAL(kind=dp), dimension(IDC,2*NPF+N2)    :: DC
+          REAL(kind=dp), dimension(NH,NPF)          :: H
+          REAL(kind=dp), dimension(N2,2*NPF+N2)     :: H2 
+          REAL(kind=dp), dimension(7)               :: WEEK0,WEEK1
+          REAL(kind=dp), dimension(2*(N+NF)+NDAY+7) :: ERR,A
+          REAL(kind=dp), dimension(NPF) :: DTRN,DSEAS
 !DIR$     ATTRIBUTES ALIGN : 64 :: DC,H,H2,ERR,A,DTRN,DSEAS         
                                       
           IFLAG=0                                                           
-          DMAX0 = 1000._R64P                                                   
-          DMIN0 = 1._R64P
+          DMAX0 = 1000._dp                                                   
+          DMIN0 = 1._dp
           MODE = 0                                                          
-          RO = 1.41421_R64P                                                    
+          RO = 1.41421_dp                                                    
           IF(ITRN .NE. 0) RO = DSQRT(RO)                                    
           ND=(N+NF)*2                                                       
           IF(PERIOD .EQ. 1) ND=N+NF                                         
           N7 = NDAY + 6                                                     
           IF(YEAR .NE. 0) ND=ND+N7                                          
-          ABICM = 1.0E+50_R64P                                                     
+          ABICM = 1.0E+50_dp                                                     
 !c-----
           DMIN = DMIN0
           ANN = ND
 !c-----                                                     
 !C                                                                       
-          ALNDT0=0._R64P                                                       
+          ALNDT0=0._dp                                                      
           ITRN0 = 30                                                        
           DD=DMIN
-          IF(ITRN.EQ.1) DD=5._R64P                                            
+          IF(ITRN.EQ.1) DD=5._dp                                            
           DO 9999  IIII=1,ITRN0                                             
 !C                                                                       
 !C     BASIC ROUTINE : SEASONAL ADJUSTMENT UNDER GIVEN PRIOR DISTRIBUTION
@@ -2684,7 +2686,7 @@ module mod_timsac
                   CALL SETDC(H,NH,F,M1,FSEA,N+NF,SMTH2,ZER,IARS,ARFS,IARN,ARFN,     &
                              BETA,GAMMA,PERIOD,ISOD,NPF)
            
-                 ALNDT0=0._R64P                                                       
+                 ALNDT0=0._dp                                                      
                  DO 2233 I=1,M1                                                    
                          TEM=DABS(H(1,I))                                                  
 !cxx 2233 ALNDT0=ALNDT0+DLOG(TEM)                                           
@@ -2723,7 +2725,7 @@ module mod_timsac
 !C                                                                       
                  AN = ICOUNT                                                      
                  ANN = ICOUNT + ND                                                 
-                 ALNDN=0._R64P                                                        
+                 ALNDN=0._dp                                                       
                  DO 3344 I=1,M1                                                    
                          TEM=DABS(DC(1,I))                                                
 !cxx 3344 ALNDN=ALNDN + DLOG(TEM)                                           
@@ -2738,8 +2740,8 @@ module mod_timsac
            3345 CONTINUE
       3346 CONTINUE                                                          
                 ALSQE=AN*DLOG(SQE/AN)                                             
-                ABIC=ALSQE + 2._R64P*(ALNDN-ALNDTD)                                  
-                IF(YEAR .NE. 0 .AND. WTRD .LE. 0._R64P) ABIC=ABIC+N7*2._R64P             
+                ABIC=ALSQE + 2._dp*(ALNDN-ALNDTD)                                  
+                IF(YEAR .NE. 0 .AND. WTRD .LE. 0._dp) ABIC=ABIC+N7*2._dp            
 !cc      WRITE( 6,3 )    DD, ABIC, ALSQE, ALNDN, ALNDTD                    
 !C                                                                       
 !C     END OF BASIC ROUTINE                                              
@@ -2757,7 +2759,7 @@ module mod_timsac
                  GO TO 2345                                                        
             9000 IF(MODE .EQ. 1) GO TO 6000                                        
             9001 MODE = 1                                                          
-                 RO = 1._R64P/RO                                                      
+                 RO = 1._dp/RO                                                      
                  DD = DD*RO*RO                                                     
            2345  IF(DD .LE. DMAX0) GO TO 1234                                      
                  IF(MODE .EQ. 0) GO TO 9001                                        
@@ -2787,10 +2789,10 @@ module mod_timsac
                       A,YS,N,NF,WEEK,ERR,PSDS,PSDT,SQE,PERIOD,YEAR,NDAY)
                  
           IF(LOGT .EQ. 0) GO TO 6200                                        
-          AJACOB=0._R64P                                                       
+          AJACOB=0._dp                                                      
           DO 6100 I=1,N                                                     
    
-                 IF(YS(I) .LT. RLIM .OR. RLIM .LE. 0.D0) AJACOB=AJACOB+YS(I)
+                 IF(YS(I) .LT. RLIM .OR. RLIM .LE. 0.0_dp) AJACOB=AJACOB+YS(I)
      6100 CONTINUE
           AJACOB=AJACOB+AJACOB                                              
           ABICM=ABICM+AJACOB                                                
@@ -2823,11 +2825,11 @@ module mod_timsac
                        DSEAS(I)=DSEAS(I+PERIOD)-DSEAS(I)
               3324 CONTINUE
        3327 CONTINUE
- 3325     SSTR=0._R64P                                                         
-          SSEA=0._R64P                                                         
-          SSIR=0._R64P                                                         
-          SSAS=0._R64P                                                         
-          SAS=0._R64P                                                          
+ 3325     SSTR=0._dp                                                       
+          SSEA=0._dp                                                         
+          SSIR=0._dp                                                         
+          SSAS=0._dp                                                         
+          SAS=0._dp                                                         
           IPM1=PERIOD-1                                                     
           DO 3326 I=1,IPM1                                                  
 
@@ -2859,18 +2861,18 @@ module mod_timsac
                         
                         
     SUBROUTINE CALEND(WEEK,YEAR0,MONTH0,N)  
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: CALEND
 !C      THIS SUBROUTINE COMPUTES THE DAYS-OF-WEEK DISTRIBUTION OF        
 !C     N SUCCESSIVE MONTHS STARTING AT MONTH0 OF YEAR0                   
 !C     NOTE:  THIS SUBROUTINE WORKS FOR YEARS                            
 !C              AD.1901 - AD.2099                                        
 !C                                                                       
 
-           INTEGER(I32P) :: YEAR0, MONTH0, N
-           REAL(R64P), dimension(7,N) :: WEEK
+           INTEGER(kind=int4) :: YEAR0, MONTH0, N
+           REAL(kind=dp), dimension(7,N) :: WEEK
            ! Locals
-           INTEGER :: DYEAR, YEAR, LEAP, Y, L, D, DAY, MONTH, DIFF, WDAY,I,J
-           REAL(R64P), dimension(8) :: W0
+           INTEGER(kind=int4) :: DYEAR, YEAR, LEAP, Y, L, D, DAY, MONTH, DIFF, WDAY,I,J
+           REAL(kind=dp), dimension(8) :: W0
                                                                       
            DYEAR=(MONTH0-1)/12                                               
            IF(MONTH0 .GE. 1) GO TO 20                                        
@@ -2908,7 +2910,7 @@ module mod_timsac
       DO 100 I=1,N                                                      
 !cxx      DO 10 J=1,7                                                       
 !cxx   10 W0(J) = 4.D0
-          W0(1:7) = 4._R64P
+          W0(1:7) = 4._dp
 !cxx      GO TO (331,328,331,330,331,330,331,331,330,331,330,331), MONTH    
           IF (MONTH .EQ. 2) GO TO 328
           IF (MONTH .EQ. 4 .OR. MONTH .EQ. 6 .OR.     &
@@ -2917,19 +2919,19 @@ module mod_timsac
 !C        .OR. MONTH .EQ. 8 .OR. MONTH .EQ. 10 .OR. MONTH .EQ. 12) GO TO 331
 !cxx  331 DIFF=3                                                            
            DIFF=3                                                            
-           W0(8)=31._R64P                                                      
+           W0(8)=31._dp                                                     
            GO TO 300                                                         
        330 DIFF=2                                                            
-           W0(8)=30._R64P                                                       
+           W0(8)=30._dp                                                       
            GO TO 300                                                         
        328 DIFF=0                                                            
-           W0(8)=28._R64P                                                      
+           W0(8)=28._dp                                                      
            IF(LEAP .NE. 0) GO TO 50                                          
            DIFF=1                                                            
-           W0(8)=29._R64P                                                      
+           W0(8)=29._dp                                                      
        300 WDAY=8-DAY                                                        
            DO 400 J=1,DIFF                                                   
-                  W0(WDAY) = 5.D0                                                   
+                  W0(WDAY) = 5.0_dp                                                   
                   IF(J .EQ. DIFF) GO TO 50                                          
                   WDAY=WDAY-1                                                       
 !cxx  400 IF(WDAY .EQ. 0) WDAY=7
@@ -2938,7 +2940,7 @@ module mod_timsac
    50 CONTINUE                                                          
           DO 410 J=1,7                                                      
 !cxx  410 WEEK(J,I)=W0(J)-30.4375D0/7.D0
-                  WEEK(J,I)=W0(J)-30.4375D0/7.D0
+                  WEEK(J,I)=W0(J)-30.43567_dp/7.0_dp
        410 CONTINUE
            IF(I .EQ. N) GO TO 900                                            
            DAY = DAY + DIFF                                                  
@@ -2954,11 +2956,11 @@ module mod_timsac
     
     
                                             
-    DOUBLE PRECISION FUNCTION AMAX(A,N)
+    real(kind=dp) FUNCTION AMAX(A,N)
 !C     COMMON SUBROUTINE                                                 
-!C     MAXIMUM OF A(I)(I=1,N) SEARCH                                     
-      DOUBLE PRECISION A
-      DIMENSION A(N)                                                    
+!C     MAXIMUM OF A(I)(I=1,N) SEARCH   
+      real(kind=dp), dimension(N) :: A                                  
+      !                                               
       AMAX=A(1)                                                         
       DO 10 I=2,N                                                       
       IF(AMAX.LT.A(I)) AMAX=A(I)                                        
@@ -2967,20 +2969,20 @@ module mod_timsac
       END                                                               
 !C                                                                       
 !CC      FUNCTION AMIN(A,N)                                                
-      DOUBLE PRECISION FUNCTION AMIN(A,N)
+    real(kind=dp) FUNCTION AMIN(A,N)
 !C     COMMON SUBROUTINE                                                 
-!C     MINIMUM OF A(I)(I=1,N) SEARCH                                     
-      DOUBLE PRECISION A
-      DIMENSION A(N)                                                    
-      AMIN=A(1)                                                         
-      DO 10 I=2,N                                                       
-      IF(AMIN.GT.A(I)) AMIN=A(I)                                        
-   10 CONTINUE                                                          
-      RETURN                                                            
-      END                                                               
+!C     MINIMUM OF A(I)(I=1,N) SEARCH  
+       real(kind=dp), dimension(N) :: A                                 
+                                                        
+       AMIN=A(1)                                                         
+       DO 10 I=2,N                                                       
+       IF(AMIN.GT.A(I)) AMIN=A(I)                                        
+   10  CONTINUE                                                          
+       RETURN                                                            
+       END                                                               
 !C                                                                       
     SUBROUTINE  POOLAV( Z,K,X,SD1 ) 
-          implicit none
+         !DIR$ ATTRIBUTE CODE_ALIGN : 32 :: POOLAV
 !C                                                                       
 !C     THIS SUBROUTINE SEARCHES FOR THE MINIMUM OF                       
 !C          F(X;Z) = (Z(1)-X(1))**2 + ... + (Z(K)-X(K))**2               
@@ -2995,13 +2997,13 @@ module mod_timsac
 !C        SD1:          MINIMUM OF F(X;Z)                                
 !C                                                                       
                                   
-          INTEGER(I32P) :: K
-          REAL(R64P), dimension(K)  :: Z, X, 
-          REAL(R64P) :: SD1
+          INTEGER(kind=int4) :: K
+          REAL(kind=dp), dimension(K)  :: Z, X, 
+          REAL(kind=dp) :: SD1
           ! Locals
-          INTEGER(I32P) :: I,N0,I0,IFG
-          REAL(R64P)    :: SUM
-          REAL(R64P), dimension(K) :: Y 
+          INTEGER(kind=int4) :: I,N0,I0,IFG
+          REAL(kind=dp)    :: SUM
+          REAL(kind=dp), dimension(K) :: Y 
 !DIR$     ATTRIBUTES ALIGN : 64 :: Y
           DO 10  I=1,K                                                      
                                                     
@@ -3038,7 +3040,7 @@ module mod_timsac
           110 IF( IFG .EQ. 0 )  GO TO 200                                       
               IFG = 0                                                           
   115         CONTINUE                                                          
-              SUM = 0._R64P                                                        
+              SUM = 0._dp                                                       
 !CC      DO 120  J=N0,I
 !DIR$    SIMD REDUCTION(+:SUM)
               DO 120 J=N0,I0
@@ -3060,7 +3062,7 @@ module mod_timsac
               X(I) = Y(I)
   210 CONTINUE
       GO TO 100                                                         
-  300 SD1 = 0._R64P                                                        
+  300 SD1 = 0._dp                                                        
       DO 310  I=1,K                                                     
 !cxx  310 SD1 = SD1 + (X(I) - Z(I))**2                                      
                 SD1 = SD1 + (X(I) - Z(I))**2
@@ -18822,7 +18824,7 @@ C
 !C     CROSS COVARIANCE COMPUTATION
                   CALL CROSCO(X,Y,N,C1,LAGH1)
                   CALL CROSCO(Y,X,N,C2,LAGH1)
-!C Å@Å@NORMALIZATION
+!C \81@\81@NORMALIZATION
                   CX0=C0(II)
                   CY0=C0(JJ)
                   CALL CORNOM(C1,CN1,LAGH1,CX0,CY0)
