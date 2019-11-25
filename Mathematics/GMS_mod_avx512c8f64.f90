@@ -134,55 +134,106 @@ module mod_avx512c8f64
          module procedure v8_div_c8
          module procedure s1_div_c8
       end interface operator (/)
-
+      
+#if (USE_INTRINSIC_VECTOR_COMPARE) == 1
       interface operator (==)
          module procedure c8_eq_c8
          module procedure c8_eq_c2
-         module procedure c8_eq_v8
+       
          module procedure c2_eq_c8
-         module procedure v8_eq_c8
+        
       end interface operator (==)
 
       interface operator (/=)
          module procedure c8_neq_c8
          module procedure c8_neq_c2
-         module procedure c8_neq_v8
+       
          module procedure c2_neq_c8
-         module procedure v8_neq_c8
+      
       end interface operator (/=)
 
       interface operator (>)
          module procedure c8_gt_c8
          module procedure c8_gt_c2
-         module procedure c8_gt_v8
+        
          module procedure c2_gt_c8
-         module procedure v8_gt_c8 
+     
       end interface operator (>)
 
       interface operator (<)
          module procedure c8_lt_c8
          module procedure c8_lt_c2
-         module procedure c8_lt_v8
+        
          module procedure c2_lt_c8
-         module procedure v8_lt_c8
+        
       end interface operator (<)
 
       interface operator (>=)
          module procedure c8_ge_c8
          module procedure c8_ge_c2
-         module procedure c8_ge_v8
+       
          module procedure c2_ge_c8
-         module procedure v8_ge_c8
+        
       end interface operator (>=)
 
       interface operator (<=)
          module procedure c8_le_c8
          module procedure c8_le_c2
-         module procedure c8_le_v8
+        
          module procedure c2_le_c8
-         module procedure v8_le_c8
+        
       end interface operator (<=)
+#else
+        interface operator (==)
+         module procedure c8_eq_c8
+         module procedure c8_eq_c2
+        
+         module procedure c2_eq_c8
+        
+      end interface operator (==)
 
+      interface operator (/=)
+         module procedure c8_neq_c8
+         module procedure c8_neq_c2
+       
+         module procedure c2_neq_c8
+       
+      end interface operator (/=)
+
+      interface operator (>)
+         module procedure c8_gt_c8
+         module procedure c8_gt_c2
+        
+         module procedure c2_gt_c8
+        
+      end interface operator (>)
+
+      interface operator (<)
+         module procedure c8_lt_c8
+         module procedure c8_lt_c2
+        
+         module procedure c2_lt_c8
+       
+      end interface operator (<)
+
+      interface operator (>=)
+         module procedure c8_ge_c8
+         module procedure c8_ge_c2
+        
+         module procedure c2_ge_c8
+        
+      end interface operator (>=)
+
+      interface operator (<=)
+         module procedure c8_le_c8
+         module procedure c8_le_c2
+        
+         module procedure c2_le_c8
+        
+      end interface operator (<=)
+#endif
+
+      
       contains
 !DIR$ ATTRIBUTES INLINE :: default_init
      pure   function default_init() result(iq)
@@ -534,8 +585,825 @@ module mod_avx512c8f64
        iq.im  = zmm2.v-zmm3.v
      end function c2_mul_c8
 
+!DIR$ ATTRIBUTES INLINE :: v8_mul_c8
+     pure elemental function v8_mul_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_mul_c8
+       !DIR$ ATTRIBUTES VECTOR :: v8_mul_c8
+       type(ZMM8r8_t),        intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: v8_mul_c8
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs.v*rhs.re
+       iq.im = lhs.v*rhs.im
+     end function v8_mul_c8
 
+!DIR$ ATTRIBUTES INLINE :: s1_mul_c8
+     pure elemental function s1_mul_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_mul_c8
+       !DIR$ ATTRIBUTES VECTOR :: s1_mul_c8
+       real(kind=dp),       intent(in) :: lhs
+       type(AVX512c8f64_t), intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs*rhs.re
+       iq.im = lhs*rhs.im
+     end function s1_mul_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_div_c8     
+     pure elemental function c8_div_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_div_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_div_c8
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(AVX512c8f64_t),    intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+       type(ZMM8r8_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+#if (USE_SAFE_COMPLEX_DIVISION) == 1
+       iq = cdiv_smith(lhs,rhs)
+#else
+       zmm0.v = lhs.re*rhs.re
+       zmm1.v = lhs.im*rhs.im
+       zmm2.v = lhs.im*rhs.re
+       zmm3.v = lhs.re*rhs.im
+       den.v  = (rhs.re*rhs.re)+(rhs.im*rhs.im)
+       iq.re  = (zmm0.v+zmm1.v)/den.v
+       iq.im  = (zmm2.v-zmm3.v)/den.v
+#endif
+     end function c8_div_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_div_c2
+     pure elemental function c8_div_c2(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_div_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_div_c2
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       complex(kind=dp),      intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+       type(AVX512c8f64_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+       zmm0.v = lhs.re*real(rhs,kind=dp)
+       zmm1.v = lhs.im*aimag(rhs,kind=dp)
+       zmm2.v = lhs.im*real(rhs,kind=dp)
+       zmm3.v = lhs.re*aimag(rhs,kind=dp)
+       den.v  = (real(rhs,kind=dp)*real(rhs,kind=dp))+ &
+            (aimag(rhs,kind=dp)*aimag(rhs,kind=dp))
+       iq.re = (zmm0.v+zmm1.v)/den.v
+       iq.im = (zmm2.v-zmm3.v)/den.v
+     end function c8_div_c2
+
+!DIR$ ATTRIBUTES INLINE :: c8_div_v8
+     pure elemental function c8_div_v8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_div_v8
+       !DIR$ ATTRIBUTES VECTOR :: c8_div_v8
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8r8_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs.re/rhs.v
+       iq.im = lhs.im/rhs.v
+     end function c8_div_v8
+
+!DIR$ ATTRIBUTES INLINE :: c8_div_s1
+     pure elemental function c8_div_s1(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_div_s1
+       !DIR$ ATTRIBUTES VECTOR :: c8_div_s1
+       type(AVX512c8f64_t),     intent(in) :: lhs
+       real(kind=dp),           intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs.re/rhs
+       iq.im = lhs.im/rhs
+     end function c8_div_s1
+
+!DIR$ ATTRIBUTES INLINE :: c2_div_c8
+     pure elemental function c2_div_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_div_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_div_c8
+       complex(kind=dp),       intent(in) :: lhs
+       type(AVX512c8f64),      intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+       type(AVX512c8f64_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+       real(kind=dp), automatic :: r,i
+       r = real(lhs,kind=dp)
+       i = aimag(lhs,kind=dp)
+       zmm0.v = r*rhs.re
+       zmm1.v = i*rhs.im
+       zmm2.v = i*rhs.re
+       zmm3.v = r*rhs.im
+       den.v  = (rhs.re*rhs.re)+(rhs.im*rhs.im)
+       iq.re  = (zmm0.v+zmm1.v)/den.v
+       iq.im  = (zmm2.v-zmm3.v)/den.v
+     end function c2_div_c8
+
+!DIR$ ATTRIBUTES INLINE :: v8_div_c8
+     pure elemental function v8_div_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_div_c8
+       !DIR$ ATTRIBUTES VECTOR :: v8_div_c8
+       type(ZMM8r8_t),      intent(in) :: lhs
+       type(AVX512c8f64_t), intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs.v/rhs.re
+       iq.im = lhs.v/rhs.im
+     end function v8_div_c8
+
+!DIR$ ATTRIBUTES INLINE :: s1_div_c8
+     pure elemental function s1_div_c8(lhs,rhs) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_c8
+       !DIR$ ATTRIBUTES VECTOR :: s1_div_c8
+       real(kind=dp),       intent(in) :: lhs
+       type(AVX512c8f64_t), intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = lhs/rhs.re
+       iq.im = lhs/rhs.im
+     end function s1_div_c8
+
+!DIR$ ATTRIBUTES INLINE :: conjugate
+     pure elemental function conjugate(x) result(iq)
+       use mod_vecconsts, only : v8_n0
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: conjugate
+       !DIR$ ATTRIBUTES VECTOR :: conjugate
+       type(AVX512c8f64_t),  intent(in) :: x
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq.re = v8_n0.v-x.re
+       iq.im = x.im
+     end function conjugate
      
+#if (USE_INTRINSIC_VECTOR_COMPARE) == 1
+     
+!DIR$ ATTRIBUTES INLINE :: c8_eq_c8     
+     pure elemental function c8_eq_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
+     end function c8_eq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_eq_c2
+     pure elemental function c8_eq_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
+     end function c8_eq_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_eq_c8
+     pure elemental function c2_eq_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_eq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_eq_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
+     end function c2_eq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_neq_c8     
+     pure elemental function c8_neq_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
+     end function c8_neq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_neq_c2
+     pure elemental function c8_neq_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
+     end function c8_neq_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_neq_c8
+     pure elemental function c2_neq_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_neq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_neq_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
+     end function c2_neq_c8
+     
+!DIR$ ATTRIBUTES INLINE :: c8_gt_c8     
+     pure elemental function c8_gt_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
+     end function c8_gt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_gt_c2
+     pure elemental function c8_gt_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
+     end function c8_gt_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_gt_c8
+     pure elemental function c2_eq_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_gt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_gt_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
+     end function c2_gt_c8
+     
+!DIR$ ATTRIBUTES INLINE :: c8_lt_c8     
+     pure elemental function c8_lt_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,17)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,17)
+     end function c8_lt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_lt_c2
+     pure elemental function c8_lt_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_lt_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,17)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,17)
+     end function c8_lt_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_lt_c8
+     pure elemental function c2_lt_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_lt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_lt_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
+     end function c2_lt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_ge_c8     
+     pure elemental function c8_ge_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
+     end function c8_ge_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_ge_c2
+     pure elemental function c8_ge_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
+     end function c8_ge_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_ge_c8
+     pure elemental function c2_ge_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_ge_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_ge_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
+     end function c2_ge_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_le_c8     
+     pure elemental function c8_le_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
+       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(AVX512c8f64_t),   intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,18)
+       lim.zmm = lhs.im
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,18)
+     end function c8_le_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_le_c2
+     pure elemental function c8_le_c2(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_le_c2
+       type(AVX512c8f64_t),  intent(in) :: lhs
+       complex(kind=dp),     intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = lhs.re
+       rre.zmm = real(rhs,kind=dp)
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,18)
+       lim.zmm = lhs.im
+       rim.zmm = aimag(rhs,kind=dp)
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,18)
+     end function c8_le_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_le_c8
+     pure elemental function c2_le_c8(lhs,rhs) result(mmask8)
+       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_le_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_le_c8
+       complex(kind=dp),     intent(in) :: lhs
+       type(AVX512c8f64_t),  intent(in) :: rhs
+       integer(c_char), dimension(0:1) :: mmask8
+       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+       type(v8f64), automatic :: lre,lim,rre,rim
+       mmask8 = 0
+       lre.zmm = real(lhs,kind=dp)
+       rre.zmm = rhs.re
+       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
+       lim.zmm = aimag(lhs,kind=dp)
+       rim.zmm = rhs.im
+       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
+     end function c2_le_c8     
+#else
+!DIR$ ATTRIBUTES INLINE :: c8_eq_c8
+     pure elemental function c8_eq_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re == rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im == rhs.im
+       bres(1) = all(mim)
+     end function c8_eq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_eq_c2
+     pure elemental function c8_eq_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re == real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im == aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_eq_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_eq_c8
+     pure elemental function c2_eq_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_eq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_eq_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp)  == rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) == rhs.im
+       bres(1) = all(mim)
+     end function c2_eq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_neq_c8
+     pure elemental function c8_neq_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re /= rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im /= rhs.im
+       bres(1) = all(mim)
+     end function c8_neq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_neq_c2
+     pure elemental function c8_neq_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re /= real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im /= aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_neq_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_neq_c8
+     pure elemental function c2_neq_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_neq_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_neq_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp)  /= rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) /= rhs.im
+       bres(1) = all(mim)
+     end function c2_neq_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_gt_c8
+     pure elemental function c8_gt_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re > rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im > rhs.im
+       bres(1) = all(mim)
+     end function c8_gt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_gt_c2
+     pure elemental function c8_gt_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re > real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im > aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_gt_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_gt_c8
+     pure elemental function c2_gt_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_gt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_gt_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp)  > rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) > rhs.im
+       bres(1) = all(mim)
+     end function c2_gt_c8
+     
+!DIR$ ATTRIBUTES INLINE :: c8_lt_c8
+     pure elemental function c8_lt_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_lt_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re < rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im < rhs.im
+       bres(1) = all(mim)
+     end function c8_lt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_lt_c2
+     pure elemental function c8_lt_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_lt_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re < real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im < aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_lt_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_lt_c8
+     pure elemental function c2_lt_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_lt_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_lt_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp) < rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) < rhs.im
+       bres(1) = all(mim)
+     end function c2_lt_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_ge_c8
+     pure elemental function c8_ge_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re >= rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im >= rhs.im
+       bres(1) = all(mim)
+     end function c8_ge_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_ge_c2
+     pure elemental function c8_ge_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re >= real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im >= aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_ge_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_ge_c8
+     pure elemental function c2_ge_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_ge_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_ge_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp) >= rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) >= rhs.im
+       bres(1) = all(mim)
+     end function c2_ge_c8
+     
+!DIR$ ATTRIBUTES INLINE :: c8_le_c8
+     pure elemental function c8_le_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
+       !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
+       type(AVX512c8f64_t),       intent(in) :: lhs
+       type(AVX512c8f64_t),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re <= rhs.re
+       bres(0) = all(mre)
+       mim = lhs.im <= rhs.im
+       bres(1) = all(mim)
+     end function c8_le_c8
+
+!DIR$ ATTRIBUTES INLINE :: c8_le_c2
+     pure elemental function c8_le_c2(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c2
+       !DIR$ ATTRIBUTES VECTOR :: c8_le_c2
+       type(AVX512c8f64_t),    intent(in) :: lhs
+       complex(kind=dp),       intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = lhs.re <= real(rhs,kind=dp)
+       bres(0) = all(mre)
+       mim = lhs.im <= aimag(rhs,kind=dp)
+       bres(1) = all(mim)
+     end function c8_le_c2
+
+!DIR$ ATTRIBUTES INLINE :: c2_le_c8
+     pure elemental function c2_le_c8(lhs,rhs) result(bres)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_le_c8
+       !DIR$ ATTRIBUTES VECTOR :: c2_le_c8
+       complex(kind=dp),        intent(in) :: lhs
+       type(AVX512c8f64_t),     intent(in) :: rhs
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
+       logical(kind=int4), dimension(0:7) :: mre,mim
+       logical(kind=int1), dimension(0:1) :: bres
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(lhs,kind=dp) <= rhs.re
+       bres(0) = all(mre)
+       mim = aimag(lhs,kind=dp) <= rhs.im
+       bres(1) = all(mim)
+     end function c2_le_c8
+     
+     
+#endif
 !DIR$ ATTRIBUTES INLINE :: polar
      pure elemental function polar(rho,theta) result (iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: polar
@@ -709,6 +1577,26 @@ module mod_avx512c8f64
        iq.im = exp(tre.v)*sin(tim.v)
      end function cexp_zmm8c8
 
+!DIR$ ATTRIBUTES INLINE :: ctan_zmm8c8
+     pure elemental function ctan_zmm8c8(x) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_zmm8c8
+       !DIR$ ATTRIBUTES VECTOR :: ctan_zmm8c8
+       type(AVX512c8f64_t),  intent(in) :: x
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq = csin_zmm8c8(x)/ccos_zmm8c8(x)
+     end function ctan_zmm8c8
+
+!DIR$ ATTRIBUTES INLINE :: ctanh_zmm8c8
+     pure elemental function ctanh_zmm8c8(x) result(iq)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctanh_zmm8c8
+       !DIR$ ATTRIBUTES VECTOR :: ctanh_zmm8c8
+       type(AVX512c8f64_t),  intent(in) :: x
+       !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+       type(AVX512c8f64_t) :: iq
+       iq = csinh_zmm8c8(x)/ccosh_zmm8c8(x)
+     end function ctanh_zmm8c8
+     
 !DIR$ ATTRIBUTES INLINE :: cexp_zmm8r8
      pure elemental function cexp_zmm8r8(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_zmm8r8
