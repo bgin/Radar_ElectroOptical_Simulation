@@ -371,9 +371,9 @@ module mod_blas
       type(AVX512c8f64_t), dimension(*), intent(inout) :: cy
       !DIR$ ASSUME_ALIGNED cy:64
       integer(kind=int4),                intent(in)    :: incy
-      type(ZMM8r8_t),                    intent(in)    :: c
+      type(ZMM8r8_t),                    intent(in)    :: c ! scalar extended to vector
       !DIR$ ASSUME_ALIGNED c:64
-      type(ZMM8r8_t),                    intent(in)    :: s
+      type(ZMM8r8_t),                    intent(in)    :: s ! scalar extended to vector
       !DIR$ ASSUME_ALIGNED s:64
       !DIR$ ATTRIBUTES ALIGN : 64 :: ztemp
       type(AVX512c8f64_t), automatic :: ztemp
@@ -437,7 +437,7 @@ module mod_blas
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdscal
        !DIR$ ATTRIBUTES VECTOR :: gms_zdscal
        integer(kind=int4),                intent(in)    :: n
-       complex(kind=dp),                  intent(in)    :: da
+       type(AVX512c8f64_t),               intent(in)    :: da
        type(AVX512c8f64_t), dimension(*), intent(inout) :: zx
        !DIR$ ASSUME_ALIGNED zx:64
        integer(kind=int4),                intent(in)    :: incx
@@ -491,30 +491,39 @@ module mod_blas
         integer(kind=int4),                    intent(in) :: n
         integer(kind=int4),                    intent(in) :: kl
         integer(kind=int4),                    intent(in) :: ku
-        complex(kind=dp),                      intent(in) :: alpha
-        complex(kind=dp),                      intent(in) :: beta
+        type(AVX512c8f64_t),                   intent(in) :: alpha
         type(AVX512c8f64_t), dimension(lda,*), intent(in) :: a
         !DIR$ ASSUME_ALIGNED a:64
         integer(kind=int4),                    intent(in) :: lda
         type(AVX512c8f64_t), dimension(*),     intent(in) :: x
         !DIR$ ASSUME_ALIGNED x:64
         integer(kind=int4),                    intent(in) :: incx
-        complex(kind=dp),                      intent(in) :: beta
+        type(AVX512c8f64_t),                   intent(in) :: beta
         type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
         integer(kind=int4),                    intent(in) :: incy
         ! LOcals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
-        !DIR$ ATTRIBUTES ALIGN : 64 :: VCZERO
-        type(AVX512c8f64_t), automatic :: VCZERO
+        !
         integer(kind=dp),    automatic :: i,info,ix,iy,j,jk,k,kup1,kx,ky,lenx,leny
         logical(kind=int4),  automatic :: noconj
-        complex(kind=dp), parameter :: ONE  = (1.0_dp,0.0_dp)
-        complex(kind=dp), parameter :: ZERO = (0.0_dp,0.0_dp)
+        logical(kind=int1),  automatic :: beq0,aeq0,bneq0,aneq0,beq1,aeq1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
+        type(AVX512c8f64_t), parameter :: ONE  = AVX512c8f64_t([1.0_dp,1.0_dp,1.0_dp,1.0_dp, &
+                                                                1.0_dp,1.0_dp,1.0_dp,1.0_dp],&
+                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+            
+             
         ! EXec code ....
         info = 0
-        if(.not.lsame(TRANS,'N') .and. .not.lsame(TRANS,'T') .and. &
-           .not.lsame(TRANS,'C')) then
+        if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+           .not.lsame(trans,'C')) then
            info = 1
         else if(m<0) then
            info = 2
@@ -536,12 +545,14 @@ module mod_blas
            return
         end if
         !  Quick return if possible.
+        aeqz=all(alpha==ZERO)
+        beq1=all(beta==ONE)
         if((m==0) .or. (n==0) .or. &
-             ((alpha==ZERO) .and. (beta==ONE))) return
-        noconj = lsame(TRANS,'T')
+             ((aeqz) .and. (beq1))) return
+        noconj = lsame(trans,'T')
         !  Set  LENX  and  LENY, the lengths of the vectors x and y, and set
         !*     up the start points in  X  and  Y.
-        if(lsame(TRANS,'N')) then
+        if(lsame(trans,'N')) then
            lenx = n
            leny = m
         else
@@ -563,13 +574,15 @@ module mod_blas
         ! *
         ! *     First form  y := beta*y.
         VCZERO = default_init()
-        if(beta/=one) then
+        bneq1=all(beta/=ONE)
+        beq0=all(beta==ZERO)
+        if(bneq1) then
            if(incy==1) then
-              if(beta==zero) then
+              if(beq0) then
                  !DIR$ VECTOR ALIGNED
                  !DIR$ VECTOR ALWAYS
                  do i=1,leny
-                    y(i) = VCZERO
+                    y(i) = ZERO
                  end do
               else
                  !DIR$ VECTOR ALIGNED
@@ -580,11 +593,11 @@ module mod_blas
               end if
            else
               iy=ky
-              if(beta==zero) then
+              if(beq0) then
                  !DIR$ VECTOR ALIGNED
                  !DIR$ VECTOR ALWAYS
                  do i=1,leny
-                    y(iy) = VCZERO
+                    y(iy) = ZERO
                     iy = iy+incy
                  end do
               else
@@ -597,9 +610,445 @@ module mod_blas
               end if
            end if
         end if
-        if(alpha==zero) return
+        if(aeq0) return
         kup1 = ku+1
+        if(lsame(trans,'N')) then
+           !   Form  y := alpha*A*x + y.
+           jx=kx
+           if(incy==1) then
+              do j=1,n
+                 temp=alpha*x(jx)
+                 k=kup1-j
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=max(1,j-ku),min(m,j+kl)
+                    y(i) = y(i)+temp*a(k+1,j)
+                 end do
+                 jx = jx+incx
+              end do
+           else
+              do j=1,n
+                 temp=alpha*x(jx)
+                 iy=ky
+                 k=kup1-j
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=max(1,j-ku),min(m,j+kl)
+                    y(iy) = y(iy)+temp*a(k+1,j)
+                    iy=iy+incy
+                 end do
+                 jx=jx+incx
+                 if(j>ku) ky=ky+incy
+              end do
+           end if
+        else
+           !  Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
+           jy=ky
+           if(incx==1) then
+              do j=1,n
+                 temp=ZERO
+                 k=kup1-j
+                 if(noconj) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    do i=max(1,j-ku),min(m,j+kl)
+                       temp = temp+a(k+i,j)*x(i)
+                    end do
+                 else
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    do i=,max(1,j-ku),min(m,j+kl)
+                       temp = temp+conjugate(a(k+i,j))*x(i)
+                    end do
+                 end if
+                 y(jy) = y(jy)+alpha*temp
+                 jy=jy+incy
+              end do
+           else
+              do j=1,n
+                 temp=ZERO
+                 ix=kx
+                 k=kup1-j
+                 if(noconj) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    do i=max(1,j-ku),min(m,j+kl)
+                       temp = temp+a(k+i,j)*x(ix)
+                       ix = ix+incx
+                    end do
+                 else
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    do i=max(1,j-ku),min(m,j+kl)
+                       temp = temp+conjugate(a(k+i,j)*x(ix)
+                       ix = ix+incx
+                    end do
+                 end if
+                 y(jy) = y(jy)+alpha*temp
+                 jy = jy+incy
+                 if(j>ku) kx = kx+incx
+              end do
+           end if
+        end if
         
     end subroutine gms_zgbmv
+
+!    *  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level3
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 3 Blas routine.
+!*>
+!1*>  -- Written on 8-February-1989.
+!*>     Jack Dongarra, Argonne National Laboratory.
+!*>     Iain Duff, AERE Harwell.
+!*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+    !*>     Sven Hammarling, Numerical Algorithms Group Ltd.
+!     Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+!1*> \endverbatim
+    !*>
+
+    subroutine gms_zgemm(transa,transb,m,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgemm
+       character(len=6),                      intent(in)    :: transa
+       character(len=6),                      intent(in)    :: transb
+       integer(kind=int4),                    intent(in)    :: m
+       integer(kind=int4),                    intent(in)    :: n
+       integer(kind=int4),                    intent(in)    :: k
+       type(AVX512c8f64_t),                   intent(in)    :: alpha
+       type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+       !DIR$ ASSUME_ALIGNED a:64
+       integer(kind=int4),                    intent(in)    :: lda
+       type(AVX512c8f64_t), dimension(ldb,*), intent(in)    :: b
+       !DIR$ ASSUME_ALIGNED b:64
+       integer(kind=int4),                    intent(in)    :: ldb
+       type(AVX512c8f64_t),                   intent(in)    :: beta
+       type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+       !DIR$ ASSUME_ALIGNED c:64
+       integer(kind=int4),                    intent(in)    :: ldc
+       ! Locals
+       !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+       type(AVX512c8f64_t), automatic :: temp
+       integer(kind=int4),  automatic :: i,info,j,l,ncola,nrowa,nrowb
+       logical(kind=int4),  automatic :: conja,conjb,nota,notb
+       logical(kind=int1),  automatic :: aeq0,beq0,beq1,bneq1
+       !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
+       type(AVX512c8f64_t), parameter :: ONE  = AVX512c8f64_t([1.0_dp,1.0_dp,1.0_dp,1.0_dp, &
+                                                                1.0_dp,1.0_dp,1.0_dp,1.0_dp],&
+                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+       !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+       type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+       ! EXec code ....
+!      Set  NOTA  and  NOTB  as  true if  A  and  B  respectively are not
+!*     conjugated or transposed, set  CONJA and CONJB  as true if  A  and
+!*     B  respectively are to be  transposed but  not conjugated  and set
+!*     NROWA, NCOLA and  NROWB  as the number of rows and  columns  of  A
+!1*    and the number of rows of  B  respectively.
+        nota  = lsame(transa,'N')
+        notb  = lsame(transb,'N')
+        conja = lsame(transa,'C')
+        conjb = lsame(transb,'C')
+        if(nota) then
+          nrowa = m
+          ncola = k
+        else
+          nrowa = k
+          ncola = m
+        end if
+        if(notb) then
+          nrowb = k
+        else
+          nrowb = n
+        end if
+        !    Test the input parameters.
+        info = 0
+        if((.not.nota) .and. (.not.conja) .and. &
+           (.not.lsame(transa,'T'))) then
+           info = 1
+        else if((.not.notb) .and. (.not.conjb) .and. &
+           (.not.lsame(transb,'T'))) then
+           info = 2
+        else if(m<0) then
+           info = 3
+        else if(n<0) then
+           info = 4
+        else if(k<0) then
+           info = 5
+        else if(lda < max(1,nrowa)) then
+           info = 8
+        else if(ldb < max(1,nrowb)) then
+           info = 10
+        else if(ldc < max(1,m)) then
+           info = 13
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZGEMM',info)
+        end if
+        aeq0 = all(alpha==ZERO)
+        beq1 = all(beta==ONE)
+        ! Early exit
+        if((m==0) .or. (n==0) .or. &
+             (((aeq0) .or. (k==0)) .and. (beq1))) return
+        !   And when  alpha.eq.zero.
+        beq0 = all(beta==ZERO)
+        if(aeq0) then
+           if(beq0) then
+              do j=1,n
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    c(i,j) = ZERO
+                 end do
+              end do
+           else
+              do j=1,n
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    c(i,j) = beta*c(i,j)
+                 end do
+              end do
+           end if
+           return
+        end if
+        !  Start the operations.
+        bneq1 = all(beta/=ONE)
+        if(notb) then
+           if(nota) then
+              !  Form  C := alpha*A*B + beta*C.
+              do j=1,n
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,m
+                       c(i,j) = ZERO
+                    end do
+                 else if(bneq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,m
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end if
+                 do l=1,k
+                    temp = alpha*b(l,j)
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,m
+                       c(i,j) = c(i,j)+temp*a(i,l)
+                    end do
+                 end do
+              end do
+           else if(conja) then
+              !   Form  C := alpha*A**H*B + beta*C.
+              do j=1,n
+                 do i=1,m
+                    temp = ZERO
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION (+:TEMP)
+                    do l=1,k
+                       temp = temp+conjugate(a(l,i))*b(l,j)
+                    end do
+                    if(beq0) then
+                       c(i,j) = alpha*temp
+                    else
+                       c(i,j) = alpha*temp+beta*c(i,j)
+                    end if
+                 end do
+              end do
+           else
+              !  Form  C := alpha*A**T*B + beta*C
+              do j=1,n
+                 do i=1,m
+                    temp = ZERO
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ SIMD REDUCTION (+:TEMP)
+                    do l=1,k
+                       temp = temp+a(l,i)*b(l,j)
+                    end do
+                    if(beq0) then
+                       c(i,j) = alpha*temp
+                    else
+                       c(i,j) = alpha*temp+beta*c(i,j)
+                    end if
+                 end do
+              end do
+           end if
+        else if(nota) then
+               if(conjb) then
+                 !  Form  C := alpha*A*B**H + beta*C.
+                  do j=1,n
+                     if(beq0) then
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ VECTOR ALWAYS
+                        do i=1,m
+                           c(i,j) = ZERO
+                        end do
+                     else if(bneq1) then
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ VECTOR ALWAYS
+                        do i=1,m
+                           c(i,j) = beta*c(i,j)
+                        end do
+                     end if
+                     do l=1,k
+                        temp = alpha*conjugate(b(j,l))
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ VECTOR ALWAYS
+                        do i=1,m
+                           c(i,j) = c(i,j)+temp*a(i,l)
+                        end do
+                     end do
+                  end do
+               else
+                  !  Form  C := alpha*A*B**T + beta*C
+                  do j=1,n
+                     if(beq0) then
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ VECTOR ALWAYS
+                        do i=1,m
+                           c(i,j) = ZERO
+                        end do
+                     else if(bneq1) then
+                        do i=1,m
+                           c(i,j) = beta*c(i,j)
+                        end do
+                     end if
+                     do l=1,k
+                        temp = alpha*b(j,l)
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ VECTOR ALWAYS
+                        do i=1,m
+                           c(i,j) = c(i,j)+temp*a(i,l)
+                        end do
+                     end do
+                  end do
+               end if
+            else if(conja) then
+                  if(conjb) then
+                     !   Form  C := alpha*A**H*B**H + beta*C.
+                     do j=1,n
+                        do i=1,m
+                           temp = ZERO
+                           !DIR$ VECTOR ALIGNED
+                           !DIR$ SIMD REDUCTION(+:TEMP)
+                           do l=1,k
+                              temp = temp+conjugate(a(l,i))*conjugate(b(j,l))
+                           end do
+                           if(beq0) then
+                              c(i,j) = alpha*temp
+                           else
+                              c(i,j) = alpha*temp+beta*c(i,j)
+                           end if
+                        end do
+                     end do
+                  else
+                     !   Form  C := alpha*A**H*B**T + beta*C
+                     do j=1,n
+                        do i=1,m
+                           temp = ZERO
+                           !DIR$ VECTOR ALIGNED
+                           !DIR$ SIMD REDUCTION(+:TEMP)
+                           do l=1,k
+                              temp = temp+conjugate(a(l,i))*b(j,l)
+                           end do
+                           if(beq0) then
+                              c(i,j) = alpha*temp
+                           else
+                              c(i,j) = alpha*temp+beta*c(i,j)
+                           end if
+                        end do
+                     end do
+                  end if
+               else
+                  if(conjb) then
+                     !  Form  C := alpha*A**T*B**H + beta*C
+                     do j=1,n
+                        do i=1,m
+                           temp = ZERO
+                           !DIR$ VECTOR ALIGNED
+                           !DIR$ SIMD REDUCTION(+:TEMP)
+                           do l=1,k
+                              temp = temp+a(l,i)*conjugate(b(j,l))
+                           end do
+                           if(beq0) then
+                              c(i,j) = alpha*temp
+                           else
+                              c(i,j) = alpha*temp+beta*c(i,j)
+                           end if
+                        end do
+                     end do
+                  else
+                     !  Form  C := alpha*A**T*B**T + beta*C
+                     do j=1,n
+                        do i=1,m
+                           temp = ZERO
+                           !DIR$ VECTOR ALIGNED
+                           !DIR$ SIMD REDUCTION(+:TEMP)
+                           do l=1,k
+                              temp = temp+a(l,i)*b(j,l)
+                           end do
+                           if(beq0) then
+                              c(i,j) = alpha*temp
+                           else
+                              c(i,j) = alpha*temp+beta*c(i,j)
+                           end if
+                        end do
+                     end do
+                  end if
+               end if
+               ! End of GMS_ZGEMM
+      end subroutine gms_zgemm
+
+!       Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+      !*>     Richard Hanson, Sandia National Labs.
+      !  Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+      !*> \endverbatim
+
+      subroutine gms_zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgmev
+
+        
+      end subroutine gms_zgemv
     
 end module mod_blas
