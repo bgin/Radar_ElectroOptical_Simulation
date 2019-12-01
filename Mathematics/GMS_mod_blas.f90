@@ -1047,8 +1047,626 @@ module mod_blas
 
       subroutine gms_zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgmev
+          character(len=1),                      intent(in) :: trans
+          integer(kind=int4),                    intent(in) :: m
+          integer(kind=int4),                    intent(in) :: n
+          type(AVX512c8f64_t),                   intent(in) :: alpha
+          type(AVX512c8f64_t), dimension(lda,*), intent(in) :: a
+          !DIR$ ASSUME_ALIGNED a:64
+          integer(kind=int4),                    intent(in) :: lda
+          type(AVX512c8f64_t), dimension(*),     intent(in) :: x
+          !DIR$ ASSUME_ALIGNED x:64
+          integer(kind=int4),                    intent(in)    :: incx
+          type(AVX512c8f64_t),                   intent(in)    :: beta
+          type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
+          !DIR$ ASSUME_ALIGNED y:64
+          integer(kind=int4),                    intent(in)    :: incy
+          ! LOcals
+          !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+          type(AVX512c8f64_t), automatic :: temp
+          integer(kind=int4),  automatic :: i,info,ix,iy,j,jx.jy,kx,ky,lenx,leny
+          logical(kind=int4),  automatic :: noconj
+          logical(kind=int1),  automatic :: aeq0,beq1,bneq1,beq0
+          !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
+          type(AVX512c8f64_t), parameter :: ONE  = AVX512c8f64_t([1.0_dp,1.0_dp,1.0_dp,1.0_dp, &
+                                                                1.0_dp,1.0_dp,1.0_dp,1.0_dp],&
+                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+          !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+          type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+          ! EXec code .....
+          info = 0
+          if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+             .not.lsame(trans,'C')) then
+             info = 1
+          else if(m<0) then
+             info = 2
+          else if(n<0) then
+             info = 3
+          else if(lda < max(1,m)) then
+             info = 6
+          else if(incx==0) then
+             info = 8
+          else if(incy==0) then
+             info = 11
+          end if
+          if(info/=0) then
+             call xerbla('GMS_ZGEMV',info)
+             return
+          end if
+          aeq0  = .false.
+          beq1  = .false.
+          bneq1 = .false.
+          beq0  = .false.
+          ! Quick return if possible.
+          aeq0 = all(alpha==ZERO)
+          beq1 = all(beta==ONE)
+          if((m==0)  .or. (n==0) .or. &
+               ((aeq0) .and. (beq1))) return
+          noconj = lsame(trans,'T')
+          !  Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+          !  *     up the start points in  X  and  Y.
+          if (lsame(trans,'N')) then
+             lenx = n
+             leny = m
+          else
+             lenx = m
+             leny = n
+          end if
+          if (incx>0) then
+             kx = 1
+          else
+             kx = 1-(lenx-1)*incx
+          end if
+          if (incx>0) then
+             ky = 1
+          else
+             ky = 1-(leny-1)*incy
+          end if
+          ! *     Start the operations. In this version the elements of A are
+          ! *     accessed sequentially with one pass through A.
+          ! *
+          ! *     First form  y := beta*y.
+          bneq1 = all(beta/=ONE)
+          beq0  = all(beta==ZERO)
+          if(bneq1) then
+             if(incy==1) then
+                 if(beq0)  then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,leny
+                       y(i) = ZERO
+                    end do
+                 else
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,leny
+                       y(i) = beta*leny(i)
+                    end do
+                 end if
+              else
+                 iy = ky
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,leny
+                       y(iy) = ZERO
+                       iy = iy+incy
+                    end do
+                 else
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,leny
+                       y(iy) = beta*y(iy)
+                       iy = iy+incy
+                    end do
+                 end if
+              end if
+           end if
+           if(aeq0) return
+           if(lsame(trans,'N')) then
+              ! Form  y := alpha*A*x + y.
+              jx = kx
+              if(incy==1) then
+                 do j=1,n
+                    temp = alpha*x(jx)
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,m
+                       y(i) = y(i)+temp*a(i,j)
+                    end do
+                    jx = jx+incx
+                 end do
+              else
+                 do j=1,n
+                    temp = alpha*x(jx)
+                    iy = ky
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,m
+                       y(iy) = y(iy)+temp*a(i,j)
+                       iy = iy+incy
+                    end do
+                    jx = jx+incx
+                 end do
+              end if
+           else
+              !  Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
+              jy = ky
+              if(incx==1) then
+                 do j=1,n
+                    temp = zero
+                    if(noconj) then
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ SIMD REDUCTION(+:temp)
+                       do i=1,m
+                          temp = temp+a(i,j)*x(i)
+                       end do
+                    else
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ SIMD REDUCTION(+:temp)
+                       do i=1,m
+                          temp = temp+conjugate(a(i,j))*x(i)
+                       end do
+                    end if
+                    y(jy) = y(jy)+alpha*temp
+                    jy = jy+incy
+                 end do
+              else
+                 do j=1,n
+                    temp = zero
+                    ix = ky
+                    if (noconj) then
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ SIMD REDUCTION(+:temp)
+                       do i=1,m
+                          temp = temp+a(i,j)*x(ix)
+                          ix = ix+incx
+                       end do
+                    else
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ SIMD REDUCTION(+:temp)
+                       do i=1,m
+                          temp = temp+conjugate(a(i,j))*x(ix)
+                          ix = ix+incx
+                       end do
+                    end if
+                       y(jy) = y(jy)+alpha*temp
+                       jy = jy+incy
+                  end do
+               end if
+            end if
+            ! End of ZGEMV
+     end subroutine gms_zgemv
 
+!      Authors:
+!1*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!1*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!1*>     Jack Dongarra, Argonne National Lab.
+!1*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+     !*>     Richard Hanson, Sandia National Labs.
+     !   Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+!*> \endverbatim
+     !*>
+
+     subroutine gms_zgerc(m,n,alpha,x,incx,y,incy,a,lda)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgerc
+        integer(kind=int4),                    intent(in)    :: m
+        integer(kind=int4),                    intent(in)    :: n
+        type(AVX512c8f64_t),                   intent(in)    :: alpha
+        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        !DIR$ ASSUME_ALIGNED x:64
+        integer(kind=int4),                    intent(in)    :: incx
+        type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+        !DIR$ ASUME_ALIGNED y:64
+        integer(kind=int4),                    intent(in)    :: incy
+        type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+        !DIR$ ASSUME_ALIGNED a:64
+        integer(kind=int4),                    intent(in)    :: lda
+        ! Locals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+        type(AVX512c8f64_t), automatic :: temp
+        integer(kind=int4),  automatic :: i,info,ix,j,jy,kx
+        logical(kind=int1),  automatic :: aeq0
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! EXec code .....
+        info = 0
+        if(m<0) then
+           info = 1
+        else if(n<0) then
+           info = 2
+        else if(incx==0) then
+           info = 5
+        else if(incy==0) then
+           info = 7
+        else if(lds < max(1,m)) then
+           info = 9
+        end if
+        if(info/=0) then
+           call xerbla('ZGERC',info)
+           return
+        end if
+        !  Quick return if possible.
+        aeq0 = .false.
+        aeq0 = all(alpha==ZERO)
+        if((m==0) .or. (n==0) .or. (aeq0)) return
+        ! Start the operations. In this version the elements of A are
+        ! *     accessed sequentially with one pass through A.
+        if(incy>0) then
+           jy = 1
+        else
+           jy = 1-(n-1)*incy
+        end if
+        if(incx==1) then
+           do j=1,n
+              if(all(y(jy)/=ZERO)) then
+                 temp = alpha*conjugate(y(jy))
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    a(i,j) = a(i,j)+x(i)*temp
+                 end do
+              end if
+              jy = jy+incy
+           end do
+        else
+           if(incx>0) then
+              kx = 1
+           else
+              kx = 1-(m-1)*incx
+           end if
+           do j=1,n
+              if(all(y(jy)/=ZERO)) then
+                 temp = alpha*conjugate(y(jy))
+                 ix = kx
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    a(i,j) = a(i,j)+x(ix)*temp
+                    ix = ix+incx
+                 end do
+              end if
+              jy = jy+incy
+           end do
+        end if
+        ! End of zgerc
+     end subroutine gms_zgerc
+
+!      Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!1*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+     !*>     Richard Hanson, Sandia National Labs.
+     !   Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+     !*> \endverbatim
+
+     subroutine gms_zgeru(m,n,alpha,x,incx,y,incy,a,lda)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgeru
+        integer(kind=int4),                    intent(in)    :: m
+        integer(kind=int4),                    intent(in)    :: n
+        type(AVX512c8f64_t),                   intent(in)    :: alpha
+        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        !DIR$ ASSUME_ALIGNED x:64
+        integer(kind=int4),                    intent(in)    :: incx
+        type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+        !DIR$ ASSUME_ALIGNED y:64
+        integer(kind=int4),                    intent(in)    :: incy
+        type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+        integer(kind=int4),                    intent(in)    :: lda
+        ! Locals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+        type(AVX512c8f64_t), automatic :: temp
+        integer(kind=int4),  automatic :: i,info,ix,j,jy,kx
+        logical(kind=int1),  automatic :: aeq0
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        !  Test the input parameters.
+        info = 0
+        aeq0 = .false.
+        if(m<0) then
+           info = 1
+        else if(n<0) then
+           info = 2
+        else if(incx==0) then
+           info = 5
+        else if(incy==0) then
+           info = 7
+        else if(lda < max(1,m)) then
+           info = 9
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZGERU',info)
+           return
+        end if
+        !  Quick return if possible.
+        aeq0 = all(alpha==ZERO)
+        if((m==0) .or. (n==0) .or. (aeq0)) return
+        !   Start the operations. In this version the elements of A are
+        ! *     accessed sequentially with one pass through A.
+        if(incy>0) then
+           jy = 1
+        else
+           jy = 1-(n-1)*incy
+        end if
+        if(incx==1) then
+           do j=1,n
+              if(all(y(jy)/=ZERO)) then
+                 temp = alpha*y(jy)
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    a(i,j) = a(i,j)+x(i)*temp
+                 end do
+              end if
+              jy = jy+incy
+           end do
+        else
+           if(incx>0) then
+              kx=1
+           else
+              kx = 1-(m-1)*incx
+           end if
+           do j=1,n
+              if(all(y(jy)/=ZERO)) then
+                 temp = alpha*y(jy)
+                 ix = kx
+                 !DIR$ VECTOR ALIGNED
+                 !DIR$ VECTOR ALWAYS
+                 do i=1,m
+                    a(i,j) = a(i,j)+x(ix)*temp
+                    ix = ix+incx
+                 end do
+              end if
+              jy = jy+incy
+           end do
+        end if
+        ! End of ZGERU
+     end subroutine gms_zgeru
+
+     subroutine gms_zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhbmv
+        character(len=1),                      intent(in)    :: uplo
+        integer(kind=int4),                    intent(in)    :: n
+        integer(kind=int4),                    intent(in)    :: k
+        type(AVX512c8f64_t),                   intent(in)    :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+        !DIR$ ASSUME_ALIGNED a:64
+        integer(kind=int4),                    intent(in)    :: lda
+        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        !DIR$ ASSUME_ALIGNED x:64
+        integer(kind=int4),                    intent(in)    :: incx
+        type(AVX512c8f64_t),                   intent(in)    :: beta
+        type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
+        !DIR$ ASSUME_ALIGNED y:64
+        integer(kind=int4),                    intent(in)    :: incy
+        ! Locals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
+        type(AVX512c8f64_t), automatic :: temp1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp2
+        type(AVX512c8f64_t), automatic :: temp2
+        integer(kind=int4),  automatic :: i,info,ix,iy,j,jx,jy,kplus1,kx,ky,l
+        logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
+        type(AVX512c8f64_t), parameter :: ONE  = AVX512c8f64_t([1.0_dp,1.0_dp,1.0_dp,1.0_dp, &
+                                                                1.0_dp,1.0_dp,1.0_dp,1.0_dp],&
+                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! EXec code ....
+        ! Test the input parameters.
         
-      end subroutine gms_zgemv
+        info = 1
+        if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+           info = 1
+        else if(n<0) then
+           info = 2
+        else if(k<0) then
+           info = 3
+        else if(lda<(k+1)) then
+           info = 6
+        else if(incx==0) then
+           info = 8
+        else if(incy==0) then
+           info = 11
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZHBMV',info)
+           return
+        end if
+        ! Quick return if possible
+        aeq0 = .false.
+        beq1 = .false.
+        aeq0 = all(alpha==ZERO)
+        beq1 = all(beta==ONE)
+        if((n==0) .or. ((aeq0) .and. (beq1))) return
+        !  Set up the start points in  X  and  Y.
+        if(incx>0) then
+           kx = 1
+        else
+           kx = 1-(n-1)*incx
+        end if
+        if(incy>0) then
+           ky = 1
+        else
+           ky = 1-(n-1)*incx
+        end if
+!      Start the operations. In this version the elements of the array A
+!*     are accessed sequentially with one pass through A.
+!*
+        !1*     First form  y := beta*y.
+        bneq1 = .false.
+        beq0  = .false.
+        bneq1 = all(beta/=ONE)
+        beq0  = all(beta==ZERO)
+        if(bneq1) then
+           if(incy==1) then
+                if(beq0) then
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=1,n
+                      y(i) = ZERO
+                   end do
+                else
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=1,m
+                      y(i) = beta*y(i)
+                   end do
+                end if
+             else
+                iy = ky
+                if(beq0) then
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=1,n
+                      y(iy) = ZERO
+                      iy = iy+incy
+                   end do
+                else
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=1,n
+                      y(iy) = beta*y(iy)
+                      iy = iy+incy
+                   end do
+                end if
+             end if
+          end if
+          if(aeq0) return
+          if(lsame(uplo,'U')) then
+             !  Form  y  when upper triangle of A is stored.
+             kplus1 = k+1
+             if((incx==1) .and. (incy==1)) then
+                do j=1,n
+                   temp1 = alpha*x(j)
+                   temp2 = ZERO
+                   l = kplus1-j
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do u=max(1,j-k),j-1
+                      y(i) = y(i)+temp1*a(l+i,j)
+                      temp2 = temp2+conjugate(a(l+i,j))*x(i)
+                   end do
+                   y(j) = y(j)+temp1*a(kplus1,j).re+alpha*temp2
+                end do
+             else
+                jx = kx
+                jy = ky
+                do j=1,n
+                   temp1 = alpha*x(jx)
+                   temp2 = ZERO
+                   ix = kx
+                   iy = ky
+                   l = kplus1-j
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=max(1,j-k),j-1
+                      y(iy) = y(iy)+temp1*a(l+i,j)
+                      temp2 = temp2+conjugate(a(l+i,j))*x(ix)
+                      ix = ix+incx
+                      iy = iy+incy
+                   end if
+                   y(jy) = y(jy)+temp1*a(kplus1,j).re+alpha*temp2
+                   jx = jx+incx
+                   jy = jy+incy
+                   if(j>k) then
+                      kx = kx+incx
+                      ky = ky+incy
+                   end if
+                end do
+             end if
+          else
+             !  Form  y  when lower triangle of A is stored.
+             if((incx==1) .and. (incy==1)) then
+                do j=1,n
+                   temp1 = alpha*x(j)
+                   temp2 = ZERO
+                   y(j) = y(j)+temp1*a(1,j).re
+                   l = 1-j
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=j+1,min(n,j+k)
+                      y(i) = y(i)+temp1*a(l+i,j)
+                      temp2 = temp2+conjugate(a(l+i,j))*x(i)
+                   end do
+                   y(j) = y(j)+alpha*temp2
+                end do
+             else
+                jx = kx
+                jy = ky
+                do j=1,n
+                   temp1 = alpha*x(jx)
+                   temp2 = ZERO
+                   y(jy) = y(jy)+temp1*a(1,j).re
+                   l = 1-j
+                   ix = jx
+                   iy = jy
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ VECTOR ALWAYS
+                   do i=j+1,min(n,j+k)
+                      ix = ix+incx
+                      iy = iy+incy
+                      y(iy) = y(iy) + temp1*a(l+i,j)
+                      temp2 = temp2+conjugate(a(l+i,j))*x(ix)
+                   end do
+                   y(jy) = y(jy)+alpha*temp2
+                   jx = jx+incx
+                   jy = jy+incy
+                end do
+             end if
+          end if
+          ! End of zhbmv
+     end subroutine gms_zhbmv
     
 end module mod_blas
