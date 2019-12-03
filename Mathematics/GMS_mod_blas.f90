@@ -2311,5 +2311,720 @@ module mod_blas
           end do
        end if 
      end subroutine gms_zscal
+
+!      Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!1*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!1*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+     !1*>     Richard Hanson, Sandia National Labs.
+     ! !!Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+     !*> \endverbatim
+
+     subroutine gms_zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
+         !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: gms_zher2
+         character(len=1),                      intent(in)    :: uplo
+         integer(kind=int4),                    intent(in)    :: n
+         type(AVX512c8f64_t),                   intent(in)    :: alpha
+         type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+         !DIR$ ASSUME_ALIGNED x:64
+         integer(kind=int4),                    intent(in)    :: incx
+         type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+         !DIR$ ASSUME_ALIGNED y:64
+         integer(kind=int4),                    intent(in)    :: incy
+         type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+         !DIR$ ASSUME_ALIGNED a:64
+         integer(kind=int4),                    intent(in)    :: lda
+         ! LOcals ....
+         !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
+         type(AVX512c8f64_t), automatic :: temp1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: temp2
+         type(AVX512c8f64_t), automatic :: temp2
+         integer(kind=int4),  automatic :: i,info,ix,iy,j,jx,jy,kx,ky
+         logical(kind=int1),  automatic :: aeq0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+         type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+         ! EXec code ....
+         aeq0 = .false.
+         info = 0
+         if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+            info = 1
+         else if(n<0) then
+            info = 2
+         else if(incx==0) then
+            info = 5
+         else if(incy==0) then
+            info = 7
+         else if(lda < max(1,n)) then
+            info = 9
+         end if
+         if(info/=0) then
+            call xerbla('GMS_ZHER2',info)
+            return
+         end if
+         !  Quick return if possible.
+         aeq0 = all(alpha==ZERO)
+         if((n==0) .or. (aeq0)) return
+         !  Set up the start points in X and Y if the increments are not both
+         !*     unity.
+         if((incx/=1) .or. (incy/=1)) then
+            if(incx>0) then
+               kx = 1
+            else
+               kx = 1-(n-1)*incx
+            end if
+            if(incy.0) then
+               ky = 1
+            else
+               ky = 1-(n-1)*incy
+            end if
+            jx = kx
+            jy = ky
+         end if
+         !  Start the operations. In this version the elements of A are
+         !*     accessed sequentially with one pass through the triangular part
+         !*     of A.
+         if(lsame(uplo,'U')) then
+            !  Form  A  when A is stored in the upper triangle.
+            if((incx==1) .and. (incy==1)) then
+               do j=1,n
+                  if((all(x(j)/=ZERO)) .or. (all(y(j)/=ZERO))) then
+                     temp1 = alpha*conjugate(y(j))
+                     temp2 = conjugate(alpha*x(j))
+                     !DIR$ VECTOR ALIGNED
+                     !DIR$ VECTOR ALWAYS
+                     do i=1,j-1
+                        a(i,j) = a(i,j)+x(i)*temp1+y(i)*temp2
+                     end do
+                     a(j,j) = a(j,j).re+x(j).re*temp1.re+x(j).re*temp2.re
+                  else
+                     a(j,j) = a(j,j).re
+                  end if
+               end do
+            else
+               do j=1,n
+                  if((all(x(jx)/=ZERO)) .or. (all(y(jy)/=ZERO))) then
+                     temp1 = alpha*conjugate(y(jy))
+                     temp2 = conjugate(alpha*x(jx))
+                     ix = kx
+                     iy = ky
+                     !DIR$ VECTOR ALIGNED
+                     !DIR$ VECTOR ALWAYS
+                     do i=1,j-1
+                        a(i,j) = a(i,j)+x(ix)*temp1+y(iy)*temp2
+                        ix = ix+incx
+                        iy = iy+incy
+                     end do
+                     a(j,j) = a(j,j).re+x(jx).re*temp1.re+y(jy).re*temp2.re
+                  else
+                     a(j,j) = a(j,j).re
+                  end if
+                  jx = jx+incx
+                  jy = jy+incy
+               end do
+            end if
+         else
+            !  Form  A  when A is stored in the lower triangle.
+            if((incx==1) .and. (incy==1)) then
+               do j=1,n
+                  if((all(x(j)/=ZERO)) .or. (all(y(j)/=ZERO))) then
+                     temp1 = alpha*conjugate(y(j))
+                     temp2 = conjugate(alpha*x(j))
+                     a(j,j) = a(j,j).re+ &
+                          x(j).re*temp1.re+y(j).re*temp2.re
+                     !DIR$ VECTOR ALIGNED
+                     !DIR$ VECTOR ALWAYS
+                     do i=j+1,n
+                        a(i,j) = a(i,j)+x(i)*temp1+y(i)*temp2
+                     end do
+                  else
+                     a(j,j) = a(j,j).re
+                  end if
+               end do
+            else
+               do j=1,n
+                  if((all(x(jx)/=ZERO)) .or. (all(y(jx)/=ZERO))) then
+                     temp1 = alpha*conjugate(y(jy))
+                     temp2 = conjugate(alpha*x(jx))
+                     a(j,j) = a(j,j).re + &
+                          x(jx).re*temp1.re+y(jy).re*temp2.re
+                     ix = jx
+                     iy = jy
+                     !DIR$ VECTOR ALIGNED
+                     !DIR$ VECTOR ALWAYS
+                     do i=j+1,n
+                        ix = ix+incx
+                        iy = iy+incy
+                        a(i,j) = a(i,j)+x(ix)*temp1+y(iy)*temp2
+                     end do
+                  else
+                     a(j,j) = a(j,j).re
+                  end if
+                  jx = jx+incx
+                  jy = jy+incy
+               end do
+            end if
+         end if
+         ! End of ZHER2
+       end subroutine gms_zher2
+
+!        Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level3
+!*
+!*> \par Further Details:
+!*  =====================
+!1*>
+!*> \verbatim
+!*>
+!*>  Level 3 Blas routine.
+!*>
+!*>  -- Written on 8-February-1989.
+!*>     Jack Dongarra, Argonne National Laboratory.
+!*>     Iain Duff, AERE Harwell.
+!*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+!*>     Sven Hammarling, Numerical Algorithms Group Ltd.
+!*>
+!*>  -- Modified 8-Nov-93 to set C(J,J) to DBLE( C(J,J) ) when BETA = 1.
+       !*>     Ed Anderson, Cray Research Inc.
+       !!Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+!*> \endverbatim
+       !*>
+
+       subroutine gms_zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zher2k
+          use mod_vecconst, only : v8_n1
+          character(len=1),                      intent(in)    :: uplo
+          character(len=1),                      intent(in)    :: trans
+          integer(kind=int4),                    intent(in)    :: n
+          integer(kind=int4),                    intent(in)    :: k
+          type(AVX512c8f64_t),                   intent(in)    :: alpha
+          type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+          !DIR$ ASSUME_ALIGNED a:64
+          integer(kind=int4),                    intent(in)    :: lda
+          type(AVX512c8f64_t), dimension(ldb,*), intent(in)    :: b
+          !DIR$ ASSUME_ALIGNED b:64
+          integer(kind=int4),                    intent(in)    :: ldb
+          type(ZMM8r8_t),                        intent(in)    :: beta
+          type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+          !DIR$ ASSUME_ALIGNED c:64
+          integer(kind=int4),                    intent(in)    :: ldc
+          ! Locals
+          !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
+          type(AVX512c8f64_t), automatic :: temp1
+          !DIR$ ATTRIBUTES ALIGN : 64 :: temp2
+          type(AVX512c8f64_t), automatic :: temp2
+          !DIR$ ATTRIBUTES ALIGN : 64 :: temp3
+          type(AVX512c8f64_t), automatic :: temp3
+          integer(kind=int4),  automatic :: i,info,j,l,nrowa
+          logical(kind=int4),  automatic :: upper
+          logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+          !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+          type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+          ! EXec code ....
+          ! Test the input parameters.
+          
+          aeq0  = .false.
+          beq1  = .false.
+          beq0  = .false.
+          bneq1 = .false.
+          if(lsame(trans,'N')) then
+             nrowa = n
+          else
+             nrowa = k
+          end if
+          upper = lsame(uplo,'U')
+          info = 0
+          if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+             info = 1
+          else if((.not.lsame(trans,'N')) .and. &
+               (.not.lsame(trans,'C'))) then
+             info = 2
+          else if(n<0) then
+             info = 3
+          else if(k<0) then
+             info = 4
+          else if(lda < max(1,nrowa)) then
+             info = 7
+          else if(ldb < max(1,nrowa)) then
+             info = 9
+          else if(ldc < max(1,n)) then
+             info = 12
+          end if
+          if(info/=0) then
+             call xerbla('GMS_ZHER2K',info)
+             return
+          end if
+          !  Quick return if possible.
+          aeq0 = all(alpha==ZERO)
+          beq1 = all(beta.v==v8_n1.v)
+          if((n==0) .or. ((aeq0) .or. &
+               (k==0) .and. (beq1))) return
+          !  And when  alpha.eq.zero.
+          beq0 = all(beta.v==ZERO.re)
+          if(aeq0) then
+             if(upper) then
+                if(beq0)  then
+                   do j=1,n
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=1,j
+                         c(i,j) = ZERO
+                      end do
+                   end do
+                else
+                   do j=1,n
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=1,j-1
+                         c(i,j) = beta*c(i,j)
+                      end do
+                      c(j,j) = beta.v*c(i,j).re
+                   end do
+                end if
+             else
+                if(beq0) then
+                   do j=1,n
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=j,n
+                         c(i,j) = ZERO
+                      end do
+                   end do
+                else
+                   do j=1,n
+                      c(j,j) = beta.v*c(j,j).re
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=j+1,n
+                         c(i,j) = beta*c(i,j)
+                      end do
+                   end do
+                end if
+             end if
+             return
+          end if
+          !  Start the operations.
+          bneq1 = all(beta.v/=v8_n1.v)
+          if(lsame(trans,'N')) then
+             !   Form  C := alpha*A*B**H + conjg( alpha )*B*A**H +
+             !*                   C.
+             if(upper) then
+                do j=1,n
+                   if(beq0) then
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=1,j
+                         c(i,j) = ZERO
+                      end do
+                   else if(bneq1) then
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=1,j-1
+                         c(i,j) = beta*c(i,j)
+                      end do
+                      c(j,j) = beta.v*c(j,j).re
+                   else
+                      c(j,j) = c(j,j).re
+                   end if
+                   do l=1,k
+                      if((all(a(j,l)/=ZERO)) .or. (all(b(j,l)/=ZERO))) then
+                         temp1 = alpha*conjugate(b(j,l))
+                         temp2 = conjugate(alpha*a(j,l))
+                         !DIR$ VECTOR ALIGNED
+                         !DIR$ VECTOR ALWAYS
+                         do i=1,j-1
+                            c(i,j) = c(i,j)+a(i,l)*temp1+ &
+                                 b(i,l)*temp2
+                         end do
+                         c(j,j) = c(j,j).re+a(j,l).re*temp1.re+&
+                              b(j,l).re*temp2.re
+                      end if
+                   end do
+                end do
+             else
+                do j=1,n
+                   if(beq0) then
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=j,n
+                         c(i,j) = ZERO
+                      end do
+                   else if(bneq1) then
+                      !DIR$ VECTOR ALIGNED
+                      !DIR$ VECTOR ALWAYS
+                      do i=j+1,n
+                         c(i,j) = beta*c(i,j)
+                      end do
+                      c(j,j) = beta.v*c(j,j).re
+                   else
+                      c(j,j) = c(j,j).re
+                   end if
+                   do l=1,k
+                      if((all(a(j,l)/=ZERO)) .or. (all(b(j,l)/=ZERO))) then
+                         temp1 = alpha*conjugate(b(j,l))
+                         temp2 = conjugate(alpha*a(j,l))
+                         !DIR$ VECTOR ALIGNED
+                         !DIR$ VECTOR ALWAYS
+                         do i=j+1,n
+                            c(i,j) = c(i,j)+a(i,l)*temp1+&
+                                 b(i,l)*temp2
+                         end do
+                         c(j,j) = c(j,j).re+a(j,l).re*temp1.re+&
+                              b(j,l).re*temp2.re
+                      end if
+                   end do
+                end do
+             end if
+          else
+             !   Form  C := alpha*A**H*B + conjg( alpha )*B**H*A +
+             if(upper) then
+                temp3 = default_init()
+                do j=1,n
+                   do i=1,j
+                      temp1 = ZERO
+                      temp2 = ZERO
+                      !DIR$ VECTOR ALWAYS
+                      !DIR$ SIMD REDUCTION(+:temp1)
+                      !DIR$ SIMD REDUCTION(+:temp2)
+                      do l=1,k
+                         temp1 = temp1+conjugate(a(l,i))*b(l,j)
+                         temp2 = temp2+conjugate(b(l,i))*a(l,j)
+                      end do
+                      if(i==j) then
+                         if(beq0) then
+                            temp3=conjugate(alpha)
+                            c(j,j) = alpha.re*temp1.re+temp3.re* &
+                                     temp2.re
+                         else
+                            temp3=conjugate(alpha)
+                            c(j,j) = beta.v*c(j,j).re+alpha.re* &
+                                 temp1.re+temp3.re*temp2.re
+                         end if
+                      else
+                         if(beq0) then
+                            c(i,j) = alpha*temp1+conjugate(alpha)*temp2
+                         else
+                            c(i,j) = beta*c(i,j)+alpha*temp1+ &
+                                 conjugate(alpha)*temp2
+                         end if
+                      end if
+                   end do
+                end do
+             else
+                do j=1,n
+                   do i=1,n
+                      temp1 = ZERO
+                      temp2 = ZERO
+                      !DIR$ VECTOR ALWAYS
+                      !DIR$ SIMD REDUCTION(+:temp1)
+                      !DIR$ SIMD REDUCTION(+:temp2)
+                      do l=1,k
+                         temp1 = temp1+conjugate(a(l,i))*b(l,j)
+                         temp2 = temp2+conjugate(b(l,i))*a(l,j)
+                      end do   
+                      if(i==j) then
+                         if(beq0) then
+                            temp3=conjugate(alpha)
+                            c(j,j) = alpha.re+temp1.re+temp3.re* &
+                                 temp2.re
+                         else
+                            temp3=conjugate(alpha)
+                            c(j,j) = beta.v*c(j,j).re+alpha.re*temp1.re+ &
+                                 temp3.re*temp2.re
+                         end if
+                      else
+                         if(beq0) then
+                            c(i,j) = alpha*temp1+conjugate(alpha)*temp2
+                         else
+                            c(i,j) = beta*c(i,j)+alpha*temp1+ &
+                                 conjugate(alpha)*temp2
+                         end if
+                      end if
+                   end do
+                end do
+             end if
+          end if
+          ! End of ZHER2K
+     end subroutine gms_zher2k
+
+!      Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level3
+!*
+!*> \par Further Details:
+!*  =====================
+!1*>
+!*> \verbatim
+!*>
+!*>  Level 3 Blas routine.
+!*>
+!*>  -- Written on 8-February-1989.
+!*>     Jack Dongarra, Argonne National Laboratory.
+!*>     Iain Duff, AERE Harwell.
+!*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+!*>     Sven Hammarling, Numerical Algorithms Group Ltd.
+!*>
+!*>  -- Modified 8-Nov-93 to set C(J,J) to DBLE( C(J,J) ) when BETA = 1.
+     !*>     Ed Anderson, Cray Research Inc.
+     !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
+     !*> \endverbatim
+
+     subroutine gms_zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zherk
+        use mod_vecconst, only : v8_n1,v8_n0
+        character(len=1),                      intent(in)    :: uplo
+        character(len=1),                      intent(in)    :: trans
+        integer(kind=int4),                    intent(in)    :: n
+        type(ZMM8r8_t),                        intent(in)    :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+        !DIR$ ASSUME_ALIGNED a:64
+        integer(kind=int4),                    intent(in)    :: lda
+        type(ZMM8r8_t),                        intent(in)    :: beta
+        type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+        !DIR$ ASUME_ALIGNED c:64
+        integer(kind=int4),                    intent(in)    :: ldc
+        ! Locals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+        type(AVX512c8f64_t), automatic :: temp
+        !DIR$ ATTRIBUTES ALIGN : 64 :: rtemp
+        type(ZMM8r8_t),      automatic :: rtemp
+        integer(kind=int4),  automatic :: i,info,j,l,nrowa
+        logical(kind=int4),  automatic :: upper
+        logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! EXec code....
+        if(lsame(trans,'N')) then
+           nrowa = n
+        else
+           nrowa = k
+        end if
+        upper = lsame(uplo,'U')
+        info = 0
+        if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+           info = 1
+        else if((.not.lsame(trans,'N')) .and. &
+             (.not.lsame(trans,'C'))) then
+           info = 2
+        else if(n<0) then
+           info = 3
+        else if(k<0) then
+           info = 4
+        else if(lda < max(1,nrowa)) then
+           info = 7
+        else if(ldc < max(1,n)) then
+           info = 10
+        endif
+        if(info/=0) then
+           call xerbla('GMS_ZHERK',info)
+           return
+        end if
+        aeq0 = .false.
+        beq1 = .false.
+        aeq0 = all(alpha.v==v8_n0.v)
+        beq1 = all(beta.v==v8_n1.v)
+        if((n==0) .or. (aeq0) .or. &
+             ((k==0) .and. (beq1))) return
+        !  And when  alpha.eq.zero.
+        beq0 = .false.
+        beq0 = all(beta.v==v8_n0.v)
+        if(aeq0) then
+           if(upper) then
+              if(beq0)  then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,j
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,j-1
+                       c(i,j) = beta*c(i,j)
+                    end do
+                    c(j,j) = beta.v*c(j,j).re
+                 end do
+              end if
+           else
+              if(beq0) then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=j,n
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+                    c(j,j) = beta.v*c(j,j).re
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=j+1,n
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end do
+              end if
+           end if
+           return
+        end if
+        !  Start the operations.
+        if(lsame(trans,'N')) then
+           bneq1 = .false.
+           bneq1 = all(beta.v/=v8_n1.v)
+           !   Form  C := alpha*A*A**H + beta*C.
+           if(upper) then
+              do j=1,n
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,j
+                       c(i,j) = ZERO
+                    end do
+                 else if(bneq1) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=1,j-1
+                       c(i,j) = beta*c(i,j)
+                    end do
+                    c(j,j) = beta.v*c(j,j).re
+                 else
+                    c(j,j) = c(j,j).re
+                 end if
+                 do l=1,k
+                    if((all(a(j,l)/=ZERO))) then
+                       temp = alpha*conjugate(a(j,l))
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ VECTOR ALWAYS
+                       do i=1,j-1
+                          c(i,j) = c(i,j)+temp*a(i,l)
+                       end do
+                       c(j,j) = c(j,j).re+temp.re*a(i,l).re
+                    end if
+                 end do
+              end do
+           else
+              do j=1,n
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=j,n
+                       c(i,j) = ZERO
+                    end do
+                 else if(bneq1) then
+                    c(j,j) = beta.v*c(j,j).re
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    do i=j+1,n
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 else
+                    c(j,j) = c(j,j).re
+                 end if
+                 do l=1,k
+                    if(all(a(j,l)/=ZERO)) then
+                       temp = alpha*conjugate(a(j,l))
+                       c(j,j) = c(j,j).re+temp.re*a(j,l).re
+                       !DIR$ VECTOR ALIGNED
+                       !DIR$ VECTOR ALWAYS
+                       do i=j+1,n
+                          c(i,j) = c(i,j)+temp*a(i,l)
+                       end do
+                    end if
+                 end do
+               end do
+            end if
+         else
+            ! Form  C := alpha*A**H*A + beta*C.
+            if(upper) then
+               do j=1,n
+                  do i=1,j-1
+                     temp = ZERO
+                     !DIR$ VECTOR ALWAYS
+                     !DIR$ SIMD REDUCTION(+:temp)
+                     do l=1,k
+                        temp = temp+conjugate(a(l,i))*a(l,j)
+                     end do
+                     if(beq0) then
+                        c(i,j) = alpha*temp
+                     else
+                        c(i,j) = alpha*temp+beta*c(i,j)
+                     end if
+                  end do
+                  rtemp = v8_n0
+                  !DIR$ VECTOR ALWAYS
+                  !DIR$ SIMD REDUCTION(+:rtemp)
+                  do l=1,k
+                     rtemp = rtemp+conjugate(a(l,j))*a(l,j)
+                  end do
+                  if(beq0) then
+                     c(j,j) = alpha*rtemp
+                  else
+                     c(j,j) = alpha*rtemp+beta.v*c(j,j).re
+                  end if
+                  do i=j+1,n
+                     temp = ZERO
+                     !DIR$ VECTOR ALWAYS
+                     !DIR$ SIMD REDUCTION(+:temp)
+                     do l=1,k
+                        temp = temp+conjugate(a(l,i))*a(l,j)
+                     end do
+                     if(beq0) then
+                        c(i,j) = alpha*temp
+                     else
+                        c(i,j) = alpha*temp+beta*c(i,j)
+                     end if
+                  end do
+               end do
+            end if
+         end if
+         !End of ZHERK
+      end subroutine gms_zherk
     
 end module mod_blas
