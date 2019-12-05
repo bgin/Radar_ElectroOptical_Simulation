@@ -112,14 +112,14 @@ module mod_blas
       !DIR$ ATTRIBUTES CODE_ALIGNED : 32 :: gms_zaxpy
       !DIR$ ATTRIBUTES VECTOR :: gms_zaxpy
       use mod_vecconsts, only : v8_n0
-      integer(kind=int4),                intent(in)    :: n
-      type(AVX512c8f64_t),               intent(in)    :: za
-      type(AVX512c8f64_t), dimension(*), intent(in)    :: zx
+      integer(kind=int4),                intent(in),value    :: n
+      type(AVX512c8f64_t),               intent(in)          :: za
+      type(AVX512c8f64_t), dimension(*), intent(in)          :: zx
       !DIR$ ASSUME_ALIGNED zx:64
-      integer(kind=int4),                intent(in)    :: incx
-      type(AVX512c8f64_t), dimension(*), intent(inout) :: zy
+      integer(kind=int4),                intent(in),value    :: incx
+      type(AVX512c8f64_t), dimension(*), intent(inout)       :: zy
       !DIR$ ASSUME_ALIGNED zy:64
-      integer(kind=int4),                intent(in)    :: incy
+      integer(kind=int4),                intent(in),value    :: incy
       ! Locals
       integer(kind=int4), automatic :: i,ix,iy
       ! EXec code .....
@@ -176,12 +176,12 @@ module mod_blas
     subroutine gms_zcopy(n,zx,incx,zy,incy)
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zcopy
       !DIR$ ATTRIBUTES VECTOR :: gms_zcopy
-      integer(kind=int4),                intent(in)  :: n
-      type(AVX512c8f64_t), dimension(*), intent(in)  :: zx
+      integer(kind=int4),                intent(in),value  :: n
+      type(AVX512c8f64_t), dimension(*), intent(in)        :: zx
       !DIR$ ASSUME_ALIGNED zx:64
-      integer(kind=int4),                intent(in)  :: incx
-      type(AVX512c8f64_t), dimension(*), intent(out) :: zy
-      integer(kind=dint4),               intent(in)  :: incy
+      integer(kind=int4),                intent(in),value  :: incx
+      type(AVX512c8f64_t), dimension(*), intent(out)       :: zy
+      integer(kind=dint4),               intent(in),value  :: incy
       ! LOcals
       integer(kind=int4), automatic :: i,ix,iy
       ! EXec code ...
@@ -237,13 +237,13 @@ module mod_blas
     function gms_zdotc(n,zx,incx,zy,incy) result(dotc)
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdotc
       !DIR$ ATTRIBUTES VECTOR :: gms_zdotc
-      integer(kind=int4),                intent(in) :: n
-      type(AVX512c8f64_t), dimension(*), intent(in) :: zx
+      integer(kind=int4),                intent(in),value :: n
+      type(AVX512c8f64_t), dimension(*), intent(in)       :: zx
       !DIR$ ASSUME_ALIGNED zx:64
-      integer(kind=int4),                intent(in) :: incx
-      type(AVX512c8f64_t), dimension(*), intent(in) :: zy
+      integer(kind=int4),                intent(in),value :: incx
+      type(AVX512c8f64_t), dimension(*), intent(in)       :: zy
       !DIR$ ASSUME_ALIGNED zy:64
-      integer(kind=int4),                intent(in) :: incy
+      integer(kind=int4),                intent(in),value :: incy
       !DIR$ ATTRIBUTES ALIGN : 64 :: dotc
       type(AVX512c8f64_t) :: dotc
       !DIR$ ATTRIBUTES ALIGN : 64 :: ztemp
@@ -305,13 +305,13 @@ module mod_blas
     function gms_zdotu(n,zx,incx,zy,incy) result(zdotu)
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdotu
       !DIR$ ATTRIBUTES VECTOR :: gms_zdotu
-      integer(kind=int4),                intent(in) :: n
-      type(AVX512c8f64_t), dimension(*), intent(in) :: zx
+      integer(kind=int4),                intent(in),value :: n
+      type(AVX512c8f64_t), dimension(*), intent(in)       :: zx
       !DIR$ ASSUME_ALIGNED zx:64
-      integer(kind=int4),                intent(in) :: incx
-      type(AVX512c8f64_t), dimension(*), intent(in) :: zy
+      integer(kind=int4),                intent(in),value :: incx
+      type(AVX512c8f64_t), dimension(*), intent(in)       :: zy
       !DIR$ ASSUME_ALIGNED zy:64
-      integer(kind=int4),                intent(in) :: incy
+      integer(kind=int4),                intent(in),value :: incy
       ! LOcals
       !DIR$ ATTRIBUTES ALIGN : 64 :: zdotu
       type(AVX512c8f64_t) :: zdotu
@@ -364,16 +364,16 @@ module mod_blas
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdrot
       !DIR$ ATTRIBUTES VECTOR :: gms_zdrot
       use mod_vectypes, only : ZMM8r8_t
-      integer(kind=int4),                intent(in)    :: n
-      type(AVX512c8f64_t), dimension(*), intent(inout) :: cx
+      integer(kind=int4),                intent(in),value    :: n
+      type(AVX512c8f64_t), dimension(*), intent(inout)       :: cx
       !DIR$ ASSUME_ALIGNED cx:64
-      integer(kind=int4),                intent(in)    :: incx
-      type(AVX512c8f64_t), dimension(*), intent(inout) :: cy
+      integer(kind=int4),                intent(in),value    :: incx
+      type(AVX512c8f64_t), dimension(*), intent(inout)       :: cy
       !DIR$ ASSUME_ALIGNED cy:64
-      integer(kind=int4),                intent(in)    :: incy
-      type(ZMM8r8_t),                    intent(in)    :: c ! scalar extended to vector
+      integer(kind=int4),                intent(in),value    :: incy
+      type(ZMM8r8_t),                    intent(in)          :: c ! scalar extended to vector
       !DIR$ ASSUME_ALIGNED c:64
-      type(ZMM8r8_t),                    intent(in)    :: s ! scalar extended to vector
+      type(ZMM8r8_t),                    intent(in)          :: s ! scalar extended to vector
       !DIR$ ASSUME_ALIGNED s:64
       !DIR$ ATTRIBUTES ALIGN : 64 :: ztemp
       type(AVX512c8f64_t), automatic :: ztemp
@@ -436,11 +436,11 @@ module mod_blas
     subroutine gms_zdscal(n,da,zx,incx)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdscal
        !DIR$ ATTRIBUTES VECTOR :: gms_zdscal
-       integer(kind=int4),                intent(in)    :: n
-       type(AVX512c8f64_t),               intent(in)    :: da
-       type(AVX512c8f64_t), dimension(*), intent(inout) :: zx
+       integer(kind=int4),                intent(in),value    :: n
+       type(AVX512c8f64_t),               intent(in)          :: da
+       type(AVX512c8f64_t), dimension(*), intent(inout)       :: zx
        !DIR$ ASSUME_ALIGNED zx:64
-       integer(kind=int4),                intent(in)    :: incx
+       integer(kind=int4),                intent(in),value    :: incx
        ! LOcals
        integer(kind=int4), automatic :: i,nincx
        ! Exec code ....
@@ -486,21 +486,21 @@ module mod_blas
     subroutine gms_zgbmv(trans,m,n,kl,ku,alpha,a,lda,x,incx,beta,y,incy)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgbmv
         !
-        character(len=5),                      intent(in) :: trans
-        integer(kind=int4),                    intent(in) :: m
-        integer(kind=int4),                    intent(in) :: n
-        integer(kind=int4),                    intent(in) :: kl
-        integer(kind=int4),                    intent(in) :: ku
-        type(AVX512c8f64_t),                   intent(in) :: alpha
-        type(AVX512c8f64_t), dimension(lda,*), intent(in) :: a
+        character(len=1),                      intent(in),value :: trans
+        integer(kind=int4),                    intent(in),value :: m
+        integer(kind=int4),                    intent(in),value :: n
+        integer(kind=int4),                    intent(in),value :: kl
+        integer(kind=int4),                    intent(in),value :: ku
+        type(AVX512c8f64_t),                   intent(in)       :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)       :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                    intent(in) :: lda
-        type(AVX512c8f64_t), dimension(*),     intent(in) :: x
+        integer(kind=int4),                    intent(in),value :: lda
+        type(AVX512c8f64_t), dimension(*),     intent(in)       :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                    intent(in) :: incx
-        type(AVX512c8f64_t),                   intent(in) :: beta
-        type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
-        integer(kind=int4),                    intent(in) :: incy
+        integer(kind=int4),                    intent(in),value :: incx
+        type(AVX512c8f64_t),                   intent(in)       :: beta
+        type(AVX512c8f64_t), dimension(*),     intent(inout)    :: y
+        integer(kind=int4),                    intent(in),value :: incy
         ! LOcals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
@@ -723,22 +723,22 @@ module mod_blas
 
     subroutine gms_zgemm(transa,transb,m,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgemm
-       character(len=6),                      intent(in)    :: transa
-       character(len=6),                      intent(in)    :: transb
-       integer(kind=int4),                    intent(in)    :: m
-       integer(kind=int4),                    intent(in)    :: n
-       integer(kind=int4),                    intent(in)    :: k
-       type(AVX512c8f64_t),                   intent(in)    :: alpha
-       type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+       character(len=1),                      intent(in),value    :: transa
+       character(len=1),                      intent(in),value    :: transb
+       integer(kind=int4),                    intent(in),value    :: m
+       integer(kind=int4),                    intent(in),value    :: n
+       integer(kind=int4),                    intent(in),value    :: k
+       type(AVX512c8f64_t),                   intent(in)          :: alpha
+       type(AVX512c8f64_t), dimension(lda,*), intent(in)          :: a
        !DIR$ ASSUME_ALIGNED a:64
-       integer(kind=int4),                    intent(in)    :: lda
-       type(AVX512c8f64_t), dimension(ldb,*), intent(in)    :: b
+       integer(kind=int4),                    intent(in),value    :: lda
+       type(AVX512c8f64_t), dimension(ldb,*), intent(in)          :: b
        !DIR$ ASSUME_ALIGNED b:64
-       integer(kind=int4),                    intent(in)    :: ldb
-       type(AVX512c8f64_t),                   intent(in)    :: beta
-       type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+       integer(kind=int4),                    intent(in),value    :: ldb
+       type(AVX512c8f64_t),                   intent(in)          :: beta
+       type(AVX512c8f64_t), dimension(ldc,*), intent(inout)       :: c
        !DIR$ ASSUME_ALIGNED c:64
-       integer(kind=int4),                    intent(in)    :: ldc
+       integer(kind=int4),                    intent(in),value    :: ldc
        ! Locals
        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
        type(AVX512c8f64_t), automatic :: temp
@@ -1047,20 +1047,20 @@ module mod_blas
 
       subroutine gms_zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgmev
-          character(len=1),                      intent(in) :: trans
-          integer(kind=int4),                    intent(in) :: m
-          integer(kind=int4),                    intent(in) :: n
-          type(AVX512c8f64_t),                   intent(in) :: alpha
-          type(AVX512c8f64_t), dimension(lda,*), intent(in) :: a
+          character(len=1),                      intent(in),value :: trans
+          integer(kind=int4),                    intent(in),value :: m
+          integer(kind=int4),                    intent(in),value :: n
+          type(AVX512c8f64_t),                   intent(in)       :: alpha
+          type(AVX512c8f64_t), dimension(lda,*), intent(in)       :: a
           !DIR$ ASSUME_ALIGNED a:64
-          integer(kind=int4),                    intent(in) :: lda
-          type(AVX512c8f64_t), dimension(*),     intent(in) :: x
+          integer(kind=int4),                    intent(in),value :: lda
+          type(AVX512c8f64_t), dimension(*),     intent(in)       :: x
           !DIR$ ASSUME_ALIGNED x:64
-          integer(kind=int4),                    intent(in)    :: incx
-          type(AVX512c8f64_t),                   intent(in)    :: beta
-          type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
+          integer(kind=int4),                    intent(in),value    :: incx
+          type(AVX512c8f64_t),                   intent(in)          :: beta
+          type(AVX512c8f64_t), dimension(*),     intent(inout)       :: y
           !DIR$ ASSUME_ALIGNED y:64
-          integer(kind=int4),                    intent(in)    :: incy
+          integer(kind=int4),                    intent(in),value    :: incy
           ! LOcals
           !DIR$ ATTRIBUTES ALIGN : 64 :: temp
           type(AVX512c8f64_t), automatic :: temp
@@ -1272,18 +1272,18 @@ module mod_blas
 
      subroutine gms_zgerc(m,n,alpha,x,incx,y,incy,a,lda)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgerc
-        integer(kind=int4),                    intent(in)    :: m
-        integer(kind=int4),                    intent(in)    :: n
-        type(AVX512c8f64_t),                   intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        integer(kind=int4),                    intent(in),value    :: m
+        integer(kind=int4),                    intent(in),value    :: n
+        type(AVX512c8f64_t),                   intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                    intent(in)    :: incx
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+        integer(kind=int4),                    intent(in),value    :: incx
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: y
         !DIR$ ASUME_ALIGNED y:64
-        integer(kind=int4),                    intent(in)    :: incy
-        type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+        integer(kind=int4),                    intent(in),value    :: incy
+        type(AVX512c8f64_t), dimension(lda,*), intent(inout)       :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                    intent(in)    :: lda
+        integer(kind=int4),                    intent(in),value    :: lda
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
@@ -1386,17 +1386,17 @@ module mod_blas
 
      subroutine gms_zgeru(m,n,alpha,x,incx,y,incy,a,lda)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zgeru
-        integer(kind=int4),                    intent(in)    :: m
-        integer(kind=int4),                    intent(in)    :: n
-        type(AVX512c8f64_t),                   intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        integer(kind=int4),                    intent(in),value    :: m
+        integer(kind=int4),                    intent(in),value    :: n
+        type(AVX512c8f64_t),                   intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                    intent(in)    :: incx
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+        integer(kind=int4),                    intent(in),value    :: incx
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: y
         !DIR$ ASSUME_ALIGNED y:64
-        integer(kind=int4),                    intent(in)    :: incy
-        type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
-        integer(kind=int4),                    intent(in)    :: lda
+        integer(kind=int4),                    intent(in),value    :: incy
+        type(AVX512c8f64_t), dimension(lda,*), intent(inout)       :: a
+        integer(kind=int4),                    intent(in),value    :: lda
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
@@ -1472,20 +1472,20 @@ module mod_blas
 
      subroutine gms_zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhbmv
-        character(len=1),                      intent(in)    :: uplo
-        integer(kind=int4),                    intent(in)    :: n
-        integer(kind=int4),                    intent(in)    :: k
-        type(AVX512c8f64_t),                   intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+        character(len=1),                      intent(in),value    :: uplo
+        integer(kind=int4),                    intent(in),value    :: n
+        integer(kind=int4),                    intent(in),value    :: k
+        type(AVX512c8f64_t),                   intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)          :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                    intent(in)    :: lda
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        integer(kind=int4),                    intent(in),value    :: lda
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                    intent(in)    :: incx
-        type(AVX512c8f64_t),                   intent(in)    :: beta
-        type(AVX512c8f64_t), dimension(*),     intent(inout) :: y
+        integer(kind=int4),                    intent(in),value    :: incx
+        type(AVX512c8f64_t),                   intent(in)          :: beta
+        type(AVX512c8f64_t), dimension(*),     intent(inout)       :: y
         !DIR$ ASSUME_ALIGNED y:64
-        integer(kind=int4),                    intent(in)    :: incy
+        integer(kind=int4),                    intent(in),value    :: incy
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
         type(AVX512c8f64_t), automatic :: temp1
@@ -1700,21 +1700,21 @@ module mod_blas
 
       subroutine gms_zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhemm
-          character(len=1),                      intent(in)    :: side
-          character(len=1),                      intent(in)    :: uplo
-          integer(kind=int4),                    intent(in)    :: m
-          integer(kind=int4),                    intent(in)    :: n
-          type(AVX512c8f64_t),                   intent(in)    :: alpha
-          type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+          character(len=1),                      intent(in),value    :: side
+          character(len=1),                      intent(in),value    :: uplo
+          integer(kind=int4),                    intent(in),value    :: m
+          integer(kind=int4),                    intent(in),value    :: n
+          type(AVX512c8f64_t),                   intent(in)          :: alpha
+          type(AVX512c8f64_t), dimension(lda,*), intent(in)          :: a
           !DIR$ ASSUME_ALIGNED a:64
-          integer(kind=int4),                    intent(in)    :: lda
-          type(AVX512c8f64_t), dimension(ldb,*), intent(in)    :: b
+          integer(kind=int4),                    intent(in),value    :: lda
+          type(AVX512c8f64_t), dimension(ldb,*), intent(in)          :: b
           !DIR$ ASSUME_ALIGNED b:64
-          integer(kind=int4),                    intent(in)    :: ldb
-          type(AVX512c8f64_t),                   intent(in)    :: beta
-          type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+          integer(kind=int4),                    intent(in),value    :: ldb
+          type(AVX512c8f64_t),                   intent(in)          :: beta
+          type(AVX512c8f64_t), dimension(ldc,*), intent(inout)       :: c
           !DIR$ ASSUME_ALIGNED c:64
-          integer(kind=int4),                    intent(in)    :: ldc
+          integer(kind=int4),                    intent(in),value    :: ldc
           ! LOcals
           !DIR$ ATTRIBUTES ALIGN : 64 :: temp1,temp2
           type(AVX512c8f64_t), automatic :: temp1,temp2
@@ -1909,18 +1909,18 @@ module mod_blas
 
      subroutine gms_zhemv(uplo,n,alpha,a,lda,x,incx,beta,y,incy)
          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhemv
-        character(len=1),                       intent(in)    :: uplo
-        integer(kind=int4),                     intent(in)    :: n
-        type(AVX512c8f64_t),                    intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(lda,*),  intent(in)    :: a
+        character(len=1),                       intent(in),value    :: uplo
+        integer(kind=int4),                     intent(in),value    :: n
+        type(AVX512c8f64_t),                    intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(lda,*),  intent(in)          :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                     intent(in)    :: lda
-        type(AVX512c8f64_t), dimension(*),      intent(in)    :: x
+        integer(kind=int4),                     intent(in),value    :: lda
+        type(AVX512c8f64_t), dimension(*),      intent(in)          :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                     intent(in)    :: incx
-        type(AVX512c8f64_t),                    intent(in)    :: beta
-        type(AVX512c8f64_t), dimension(*),      intent(inout) :: y
-        integer(kind=int4),                     intent(in)    :: incy
+        integer(kind=int4),                     intent(in),value    :: incx
+        type(AVX512c8f64_t),                    intent(in)          :: beta
+        type(AVX512c8f64_t), dimension(*),      intent(inout)       :: y
+        integer(kind=int4),                     intent(in),value    :: incy
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
         type(AVX512c8f64_t), automatic :: temp1
@@ -2123,15 +2123,15 @@ module mod_blas
 !*>
      subroutine gms_zher(uplo,n,alpha,x,incx,a,lda)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zher
-        character(len=1),                      intent(in)    :: uplo
-        integer(kind=int4),                    intent(in)    :: n
-        type(ZMM8r4_t),                        intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+        character(len=1),                      intent(in),value    :: uplo
+        integer(kind=int4),                    intent(in),value    :: n
+        type(ZMM8r4_t),                        intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(*),     intent(in)          :: x
         !DIR$ ASSUME_ALIGNED x:64
-        integer(kind=int4),                    intent(in)    :: incx
-        type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+        integer(kind=int4),                    intent(in),value    :: incx
+        type(AVX512c8f64_t), dimension(lda,*), intent(inout)       :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                    intent(in)    :: lda
+        integer(kind=int4),                    intent(in),value    :: lda
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
@@ -2285,11 +2285,11 @@ module mod_blas
      subroutine gms_zscal(n,za,zx,incx)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zscal
        !DIR$ ATTIRBUTES VECTOR  :: gms_zscal
-       integer(kind=int4),                     intent(in)    :: n
-       type(AVX512c8f64_t),                    intent(in)    :: za
-       type(AVX512c8f64_t), dimension(*),      intent(inout) :: zx
+       integer(kind=int4),                     intent(in),value    :: n
+       type(AVX512c8f64_t),                    intent(in)          :: za
+       type(AVX512c8f64_t), dimension(*),      intent(inout)       :: zx
        !DIR$ ASSUME_ALIGNED zx:64
-       integer(kind=int4),                     intent(in)    :: incx
+       integer(kind=int4),                     intent(in),value    :: incx
        ! Locals
        integer(kind=int4), automatic :: i,nincx
        ! Exec code ....
@@ -2341,18 +2341,18 @@ module mod_blas
 
      subroutine gms_zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
          !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: gms_zher2
-         character(len=1),                      intent(in)    :: uplo
-         integer(kind=int4),                    intent(in)    :: n
-         type(AVX512c8f64_t),                   intent(in)    :: alpha
-         type(AVX512c8f64_t), dimension(*),     intent(in)    :: x
+         character(len=1),                      intent(in),value    :: uplo
+         integer(kind=int4),                    intent(in),value    :: n
+         type(AVX512c8f64_t),                   intent(in)          :: alpha
+         type(AVX512c8f64_t), dimension(*),     intent(in)          :: x
          !DIR$ ASSUME_ALIGNED x:64
-         integer(kind=int4),                    intent(in)    :: incx
-         type(AVX512c8f64_t), dimension(*),     intent(in)    :: y
+         integer(kind=int4),                    intent(in),value    :: incx
+         type(AVX512c8f64_t), dimension(*),     intent(in)          :: y
          !DIR$ ASSUME_ALIGNED y:64
-         integer(kind=int4),                    intent(in)    :: incy
-         type(AVX512c8f64_t), dimension(lda,*), intent(inout) :: a
+         integer(kind=int4),                    intent(in),value    :: incy
+         type(AVX512c8f64_t), dimension(lda,*), intent(inout)       :: a
          !DIR$ ASSUME_ALIGNED a:64
-         integer(kind=int4),                    intent(in)    :: lda
+         integer(kind=int4),                    intent(in),value    :: lda
          ! LOcals ....
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
          type(AVX512c8f64_t), automatic :: temp1
@@ -2523,21 +2523,21 @@ module mod_blas
        subroutine gms_zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zher2k
           use mod_vecconst, only : v8_n1
-          character(len=1),                      intent(in)    :: uplo
-          character(len=1),                      intent(in)    :: trans
-          integer(kind=int4),                    intent(in)    :: n
-          integer(kind=int4),                    intent(in)    :: k
-          type(AVX512c8f64_t),                   intent(in)    :: alpha
-          type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+          character(len=1),                      intent(in),value    :: uplo
+          character(len=1),                      intent(in),value    :: trans
+          integer(kind=int4),                    intent(in),value    :: n
+          integer(kind=int4),                    intent(in),value    :: k
+          type(AVX512c8f64_t),                   intent(in)          :: alpha
+          type(AVX512c8f64_t), dimension(lda,*), intent(in)          :: a
           !DIR$ ASSUME_ALIGNED a:64
-          integer(kind=int4),                    intent(in)    :: lda
-          type(AVX512c8f64_t), dimension(ldb,*), intent(in)    :: b
+          integer(kind=int4),                    intent(in),value    :: lda
+          type(AVX512c8f64_t), dimension(ldb,*), intent(in)          :: b
           !DIR$ ASSUME_ALIGNED b:64
-          integer(kind=int4),                    intent(in)    :: ldb
-          type(ZMM8r8_t),                        intent(in)    :: beta
-          type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+          integer(kind=int4),                    intent(in),value    :: ldb
+          type(ZMM8r8_t),                        intent(in)          :: beta
+          type(AVX512c8f64_t), dimension(ldc,*), intent(inout)       :: c
           !DIR$ ASSUME_ALIGNED c:64
-          integer(kind=int4),                    intent(in)    :: ldc
+          integer(kind=int4),                    intent(in),value    :: ldc
           ! Locals
           !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
           type(AVX512c8f64_t), automatic :: temp1
@@ -2813,17 +2813,17 @@ module mod_blas
      subroutine gms_zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zherk
         use mod_vecconst, only : v8_n1,v8_n0
-        character(len=1),                      intent(in)    :: uplo
-        character(len=1),                      intent(in)    :: trans
-        integer(kind=int4),                    intent(in)    :: n
-        type(ZMM8r8_t),                        intent(in)    :: alpha
-        type(AVX512c8f64_t), dimension(lda,*), intent(in)    :: a
+        character(len=1),                      intent(in),value    :: uplo
+        character(len=1),                      intent(in),value    :: trans
+        integer(kind=int4),                    intent(in),value    :: n
+        type(ZMM8r8_t),                        intent(in)          :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)          :: a
         !DIR$ ASSUME_ALIGNED a:64
-        integer(kind=int4),                    intent(in)    :: lda
-        type(ZMM8r8_t),                        intent(in)    :: beta
-        type(AVX512c8f64_t), dimension(ldc,*), intent(inout) :: c
+        integer(kind=int4),                    intent(in),value    :: lda
+        type(ZMM8r8_t),                        intent(in)          :: beta
+        type(AVX512c8f64_t), dimension(ldc,*), intent(inout)       :: c
         !DIR$ ASUME_ALIGNED c:64
-        integer(kind=int4),                    intent(in)    :: ldc
+        integer(kind=int4),                    intent(in),value    :: ldc
         ! Locals
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
         type(AVX512c8f64_t), automatic :: temp
