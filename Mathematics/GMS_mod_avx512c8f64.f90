@@ -79,7 +79,7 @@ module mod_avx512c8f64
      public :: operator(<)
      public :: operator(>=)
      public :: operator(<=)
-     public :: operator .conjugate.
+    
 
      type, public :: AVX512c8f64_t
         !
@@ -240,10 +240,11 @@ module mod_avx512c8f64
           !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: default_init
           !DIR$ ATTRIBUTES VECTOR :: default_init 
           !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+          use mod_vecconsts, only : v8_n0
           type(AVX512c8f64_t) :: iq
           ! Exec code
-          iq.re = 0.0_dp
-          iq.im = 0.0_dp
+          iq.re = v8_n0.v
+          iq.im = v8_n0.v
         end function default_init
 
 !DIR$ ATTRIBUTES INLINE :: array_init
@@ -579,7 +580,7 @@ module mod_avx512c8f64
        type(ZMM8r8_t) :: zmm0,zmm1,zmm2,zmm3
        zmm0.v = real(lhs,kind=dp)*rhs.re
        zmm1.v = aimag(lhs,kind=dp)*rhs.im
-       iq.re  = zmm0.v-zmm1.v
+       iq.re  = zmm0.v+zmm1.v
        zmm2.v = real(lhs,kind=dp)*rhs.im
        zmm3.v = aimag(lhs,kind=dp)*rhs.re
        iq.im  = zmm2.v-zmm3.v
