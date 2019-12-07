@@ -1,5 +1,7 @@
 
 
+#include "Config.fpp"
+
 module mod_blas
 
 
@@ -127,8 +129,18 @@ module mod_blas
       if(all(cabs_zmm8c8(za) == v8_n0.v)) return
       if(incx==1 .and. incy==1) then
          ! *        code for both increments equal to 1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             zy(i) = zy(i)+za*zx(i)
          end do
@@ -140,8 +152,18 @@ module mod_blas
          iy=1
          if(incx<0) ix=(-n+1)*incx+1
          if(incy<0) iy=(-n+1)*incy+1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             zy(iy) = zy(iy)+za*zx(ix)
             ix = ix+incx
@@ -255,9 +277,18 @@ module mod_blas
       ztemp = default_init()
       if(incx==1 .and. incy==1) then
          !   code for both increments equal to 1
-         
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER         
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             ztemp = ztemp+conjugate(zx(i))*zy(i)
          end do
@@ -268,8 +299,18 @@ module mod_blas
          iy=1
          if(incx<0) ix=(-n+1)*incx+1
          if(incy<0) iy=(-n+1)*incy+1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             ztemp = ztemp+conjugate(zx(ix))*zy(iy)
             ix = ix+incx
@@ -324,8 +365,18 @@ module mod_blas
       if(incx==1 .and. incy==1) then
 
          !  code for both increments equal to 1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif        
          do i = 1,n
             ztemp = ztemp+zx(i)*zy(i)
          end do
@@ -337,8 +388,18 @@ module mod_blas
          iy=1
          if(incx<0) ix=(-n+1)*incx+1
          if(incy<0) iy=(-n+1)*incy+1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             ztemp = ztemp+zx(ix)*zy(iy)
             ix = ix+incx
@@ -383,8 +444,18 @@ module mod_blas
       ctemp = default_init()
       if(incx==1 .and. incy==1) then
          !  code for both increments equal to 1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             ctemp = c*cx(i)+s*cy(i)
             cy(i) = c*cy(i)-s*cx(i)
@@ -398,8 +469,18 @@ module mod_blas
          iy=1
          if(incx<0) ix=(-n+1)*incx+1
          if(incy<0) iy=(-n+1)*incy+1
-         !DIR$ VECTOR ALIGNED
-         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
          do i = 1,n
             ctemp  = c*cx(ix)+s*cy(iy)
             cy(iy) = c*cy(iy)-s*cx(ix)
@@ -447,16 +528,36 @@ module mod_blas
        if(n<=0 .or. incx<0) return
        if(incx==1) then
           !  code for increment equal to 1
-          !DIR$ VECTOR ALIGNED
-          !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
           do i = 1,n
              zx(i) = da*zx(i)
           end do
        else
           !   *        code for increment not equal to 1
           nincx=n*incx
-          !DIR$ VECTOR ALIGNED
-          !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
           do i = 1,nincx,incx
              zx(i) = da*zx(i)
           end do
@@ -619,8 +720,18 @@ module mod_blas
               do j=1,n
                  temp=alpha*x(jx)
                  k=kup1-j
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                 
                  do i=max(1,j-ku),min(m,j+kl)
                     y(i) = y(i)+temp*a(k+1,j)
                  end do
@@ -631,8 +742,18 @@ module mod_blas
                  temp=alpha*x(jx)
                  iy=ky
                  k=kup1-j
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                  do i=max(1,j-ku),min(m,j+kl)
                     y(iy) = y(iy)+temp*a(k+1,j)
                     iy=iy+incy
@@ -649,14 +770,34 @@ module mod_blas
                  temp=ZERO
                  k=kup1-j
                  if(noconj) then
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=max(1,j-ku),min(m,j+kl)
                        temp = temp+a(k+i,j)*x(i)
                     end do
                  else
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=,max(1,j-ku),min(m,j+kl)
                        temp = temp+conjugate(a(k+i,j))*x(i)
                     end do
@@ -670,15 +811,35 @@ module mod_blas
                  ix=kx
                  k=kup1-j
                  if(noconj) then
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=max(1,j-ku),min(m,j+kl)
                        temp = temp+a(k+i,j)*x(ix)
                        ix = ix+incx
                     end do
                  else
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION(+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=max(1,j-ku),min(m,j+kl)
                        temp = temp+conjugate(a(k+i,j)*x(ix)
                        ix = ix+incx
@@ -849,8 +1010,18 @@ module mod_blas
                  end if
                  do l=1,k
                     temp = alpha*b(l,j)
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,m
                        c(i,j) = c(i,j)+temp*a(i,l)
                     end do
@@ -861,8 +1032,18 @@ module mod_blas
               do j=1,n
                  do i=1,m
                     temp = ZERO
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION (+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do l=1,k
                        temp = temp+conjugate(a(l,i))*b(l,j)
                     end do
@@ -878,8 +1059,18 @@ module mod_blas
               do j=1,n
                  do i=1,m
                     temp = ZERO
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
-                    !DIR$ SIMD REDUCTION (+:TEMP)
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do l=1,k
                        temp = temp+a(l,i)*b(l,j)
                     end do
@@ -910,8 +1101,18 @@ module mod_blas
                      end if
                      do l=1,k
                         temp = alpha*conjugate(b(j,l))
-                        !DIR$ VECTOR ALIGNED
-                        !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                         do i=1,m
                            c(i,j) = c(i,j)+temp*a(i,l)
                         end do
@@ -933,8 +1134,18 @@ module mod_blas
                      end if
                      do l=1,k
                         temp = alpha*b(j,l)
-                        !DIR$ VECTOR ALIGNED
-                        !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                         do i=1,m
                            c(i,j) = c(i,j)+temp*a(i,l)
                         end do
@@ -947,8 +1158,18 @@ module mod_blas
                      do j=1,n
                         do i=1,m
                            temp = ZERO
-                           !DIR$ VECTOR ALIGNED
-                           !DIR$ SIMD REDUCTION(+:TEMP)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                            do l=1,k
                               temp = temp+conjugate(a(l,i))*conjugate(b(j,l))
                            end do
@@ -964,8 +1185,18 @@ module mod_blas
                      do j=1,n
                         do i=1,m
                            temp = ZERO
-                           !DIR$ VECTOR ALIGNED
-                           !DIR$ SIMD REDUCTION(+:TEMP)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                            do l=1,k
                               temp = temp+conjugate(a(l,i))*b(j,l)
                            end do
@@ -983,8 +1214,18 @@ module mod_blas
                      do j=1,n
                         do i=1,m
                            temp = ZERO
-                           !DIR$ VECTOR ALIGNED
-                           !DIR$ SIMD REDUCTION(+:TEMP)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                            do l=1,k
                               temp = temp+a(l,i)*conjugate(b(j,l))
                            end do
@@ -1000,8 +1241,18 @@ module mod_blas
                      do j=1,n
                         do i=1,m
                            temp = ZERO
-                           !DIR$ VECTOR ALIGNED
-                           !DIR$ SIMD REDUCTION(+:TEMP)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                            do l=1,k
                               temp = temp+a(l,i)*b(j,l)
                            end do
@@ -1173,8 +1424,18 @@ module mod_blas
               if(incy==1) then
                  do j=1,n
                     temp = alpha*x(jx)
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,m
                        y(i) = y(i)+temp*a(i,j)
                     end do
@@ -1184,8 +1445,18 @@ module mod_blas
                  do j=1,n
                     temp = alpha*x(jx)
                     iy = ky
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,m
                        y(iy) = y(iy)+temp*a(i,j)
                        iy = iy+incy
@@ -1200,14 +1471,34 @@ module mod_blas
                  do j=1,n
                     temp = zero
                     if(noconj) then
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=1,m
                           temp = temp+a(i,j)*x(i)
                        end do
                     else
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=1,m
                           temp = temp+conjugate(a(i,j))*x(i)
                        end do
@@ -1220,15 +1511,35 @@ module mod_blas
                     temp = zero
                     ix = ky
                     if (noconj) then
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=1,m
                           temp = temp+a(i,j)*x(ix)
                           ix = ix+incx
                        end do
                     else
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=1,m
                           temp = temp+conjugate(a(i,j))*x(ix)
                           ix = ix+incx
@@ -1326,8 +1637,18 @@ module mod_blas
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*conjugate(y(jy))
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                  do i=1,m
                     a(i,j) = a(i,j)+x(i)*temp
                  end do
@@ -1344,8 +1665,18 @@ module mod_blas
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*conjugate(y(jy))
                  ix = kx
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                  do i=1,m
                     a(i,j) = a(i,j)+x(ix)*temp
                     ix = ix+incx
@@ -1439,8 +1770,18 @@ module mod_blas
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*y(jy)
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                  do i=1,m
                     a(i,j) = a(i,j)+x(i)*temp
                  end do
@@ -1457,8 +1798,18 @@ module mod_blas
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*y(jy)
                  ix = kx
-                 !DIR$ VECTOR ALIGNED
-                 !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                  do i=1,m
                     a(i,j) = a(i,j)+x(ix)*temp
                     ix = ix+incx
@@ -1592,8 +1943,18 @@ module mod_blas
                    temp1 = alpha*x(j)
                    temp2 = ZERO
                    l = kplus1-j
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do u=max(1,j-k),j-1
                       y(i) = y(i)+temp1*a(l+i,j)
                       temp2 = temp2+conjugate(a(l+i,j))*x(i)
@@ -1609,8 +1970,18 @@ module mod_blas
                    ix = kx
                    iy = ky
                    l = kplus1-j
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=max(1,j-k),j-1
                       y(iy) = y(iy)+temp1*a(l+i,j)
                       temp2 = temp2+conjugate(a(l+i,j))*x(ix)
@@ -1634,8 +2005,18 @@ module mod_blas
                    temp2 = ZERO
                    y(j) = y(j)+temp1*a(1,j).re
                    l = 1-j
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=j+1,min(n,j+k)
                       y(i) = y(i)+temp1*a(l+i,j)
                       temp2 = temp2+conjugate(a(l+i,j))*x(i)
@@ -1652,8 +2033,18 @@ module mod_blas
                    l = 1-j
                    ix = jx
                    iy = jy
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=j+1,min(n,j+k)
                       ix = ix+incx
                       iy = iy+incy
@@ -1798,8 +2189,18 @@ module mod_blas
                    do i=1,m
                       temp1 = alpha*b(i,j)
                       temp2 = ZERO
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ SIMD REDUCTION(+:temp2)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                       do k=1,i-1
                          c(k,j) = c(k,j)+temp1*a(k,i)
                          temp2 = temp2+b(k,j)*conjugate(a(k,i))
@@ -1817,8 +2218,18 @@ module mod_blas
                    do i=m,1,-1
                       temp1 = alpha*b(i,j)
                       temp2 = ZERO
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ SIMD REDUCTION(+:temp2)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                       do k=i+1,m
                          c(k,j) = c(k,j)+temp1*a(k,i)
                          temp2 = temp2+b(k,j)*conjugate(a(k,i))
@@ -1843,8 +2254,18 @@ module mod_blas
                       c(i,j) = temp*b(i,j)
                    end do
                 else
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,m
                       c(i,j) = beta*c(i,j)+temp1*b(i,j)
                    end do
@@ -1855,8 +2276,18 @@ module mod_blas
                    else
                       temp1 = alpha*conjugate(a(j,k))
                    end if
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
@@ -1867,8 +2298,18 @@ module mod_blas
                    else
                       temp1 = alpha*a(k,j)
                    end if
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
@@ -2020,9 +2461,18 @@ module mod_blas
                  do j=1,n
                     temp1 = alpha*x(j)
                     temp2 = ZERO
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
-                    !DIR$ SIMD REDUCTION(+:temp2)
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,j-1
                        y(i) = y(i)+temp1*a(i,j)
                        temp2 = temp2+conjugate(a(i,j))*x(i)
@@ -2037,9 +2487,18 @@ module mod_blas
                     temp2 = ZERO
                     ix = kx
                     iy = ky
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
-                    !DIR$ SIMD REDUCTION(+:temp2)
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,j-1
                        y(iy) = y(iy)+temp1*a(i,j)
                        temp2 = temp2+conjugate(a(i,j))*x(ix)
@@ -2058,9 +2517,18 @@ module mod_blas
                     temp1 = alpha*x(j)
                     temp2 = ZERO
                     y(j) = y(j)+temp1*a(j,j).re
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
-                    !DIR$ SIMD REDUCTION(+:temp2)
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=j+1,n
                        y(i) = y(i)+temp1*a(i,j)
                        temp2 = temp2+conjugate(a(i,j))*x(i)
@@ -2076,9 +2544,18 @@ module mod_blas
                     y(jy) = y(jy)+temp1*a(j,j).re
                     ix = jx
                     iy = jy
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
-                    !DIR$ SIMD REDUCTION(+:temp2)
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=j+1,n
                        ix = ix+incx
                        iy = iy+incy
@@ -2176,8 +2653,18 @@ module mod_blas
               do j=1,n
                  if(all(x(j)/=ZERO)) then
                     temp = alpha*conjugate(x(j))
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,j-1
                        a(i,j) = a(i,j)+x(i)*temp
                     end do
@@ -2192,8 +2679,18 @@ module mod_blas
                  if(all(x(jx)/=ZERO)) then
                     temp = alpha*conjugate(x(jx))
                     ix = kx
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,j-1
                        a(i,j) = a(i,j)+x(ix)*temp
                        ix = ix+incx
@@ -2209,8 +2706,18 @@ module mod_blas
                  if(all(x(jx)/=ZERO)) then
                     temp = alpha*conjugate(x(jx))
                     ix = kx
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=1,j-1
                        a(i,j) = a(i,j)+x(ix)*temp
                        ix = ix+incx
@@ -2229,8 +2736,18 @@ module mod_blas
                  if(all(x(j)/=ZERO)) then
                     temp = alpha*conjugate(x(j))
                     a(j,j) = a(j,j).re+temp.re*x(j).re
+#if defined __INTEL_COMPILER
                     !DIR$ VECTOR ALIGNED
                     !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                     do i=j+1,n
                        a(i,j) = a(i,j)+x(i)*temp
                     end do
@@ -2245,6 +2762,18 @@ module mod_blas
                     temp = alpha*conjugate(x(jx))
                     a(j,j) = a(j,j).re+temp.re*x(jx).re
                     ix = jx
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                    
                     do i=j+1,n
                        ix = ix+incx
                        a(i,j) = a(i,j)+x(ix)*temp
@@ -2412,8 +2941,18 @@ module mod_blas
                   if((all(x(j)/=ZERO)) .or. (all(y(j)/=ZERO))) then
                      temp1 = alpha*conjugate(y(j))
                      temp2 = conjugate(alpha*x(j))
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do i=1,j-1
                         a(i,j) = a(i,j)+x(i)*temp1+y(i)*temp2
                      end do
@@ -2429,8 +2968,18 @@ module mod_blas
                      temp2 = conjugate(alpha*x(jx))
                      ix = kx
                      iy = ky
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                     
                      do i=1,j-1
                         a(i,j) = a(i,j)+x(ix)*temp1+y(iy)*temp2
                         ix = ix+incx
@@ -2453,8 +3002,18 @@ module mod_blas
                      temp2 = conjugate(alpha*x(j))
                      a(j,j) = a(j,j).re+ &
                           x(j).re*temp1.re+y(j).re*temp2.re
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                   
                      do i=j+1,n
                         a(i,j) = a(i,j)+x(i)*temp1+y(i)*temp2
                      end do
@@ -2471,8 +3030,18 @@ module mod_blas
                           x(jx).re*temp1.re+y(jy).re*temp2.re
                      ix = jx
                      iy = jy
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                  
                      do i=j+1,n
                         ix = ix+incx
                         iy = iy+incy
@@ -2663,8 +3232,18 @@ module mod_blas
                       if((all(a(j,l)/=ZERO)) .or. (all(b(j,l)/=ZERO))) then
                          temp1 = alpha*conjugate(b(j,l))
                          temp2 = conjugate(alpha*a(j,l))
-                         !DIR$ VECTOR ALIGNED
-                         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
                          do i=1,j-1
                             c(i,j) = c(i,j)+a(i,l)*temp1+ &
                                  b(i,l)*temp2
@@ -2696,8 +3275,18 @@ module mod_blas
                       if((all(a(j,l)/=ZERO)) .or. (all(b(j,l)/=ZERO))) then
                          temp1 = alpha*conjugate(b(j,l))
                          temp2 = conjugate(alpha*a(j,l))
-                         !DIR$ VECTOR ALIGNED
-                         !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                      
                          do i=j+1,n
                             c(i,j) = c(i,j)+a(i,l)*temp1+&
                                  b(i,l)*temp2
@@ -2716,9 +3305,18 @@ module mod_blas
                    do i=1,j
                       temp1 = ZERO
                       temp2 = ZERO
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ SIMD REDUCTION(+:temp1)
-                      !DIR$ SIMD REDUCTION(+:temp2)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                    
                       do l=1,k
                          temp1 = temp1+conjugate(a(l,i))*b(l,j)
                          temp2 = temp2+conjugate(b(l,i))*a(l,j)
@@ -2748,9 +3346,18 @@ module mod_blas
                    do i=1,n
                       temp1 = ZERO
                       temp2 = ZERO
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ SIMD REDUCTION(+:temp1)
-                      !DIR$ SIMD REDUCTION(+:temp2)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                   
                       do l=1,k
                          temp1 = temp1+conjugate(a(l,i))*b(l,j)
                          temp2 = temp2+conjugate(b(l,i))*a(l,j)
@@ -2940,8 +3547,18 @@ module mod_blas
                  do l=1,k
                     if((all(a(j,l)/=ZERO))) then
                        temp = alpha*conjugate(a(j,l))
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=1,j-1
                           c(i,j) = c(i,j)+temp*a(i,l)
                        end do
@@ -2971,8 +3588,18 @@ module mod_blas
                     if(all(a(j,l)/=ZERO)) then
                        temp = alpha*conjugate(a(j,l))
                        c(j,j) = c(j,j).re+temp.re*a(j,l).re
-                       !DIR$ VECTOR ALIGNED
-                       !DIR$ VECTOR ALWAYS
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                        do i=j+1,n
                           c(i,j) = c(i,j)+temp*a(i,l)
                        end do
@@ -2986,8 +3613,18 @@ module mod_blas
                do j=1,n
                   do i=1,j-1
                      temp = ZERO
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do l=1,k
                         temp = temp+conjugate(a(l,i))*a(l,j)
                      end do
@@ -2998,8 +3635,18 @@ module mod_blas
                      end if
                   end do
                   rtemp = v8_n0
-                  !DIR$ VECTOR ALWAYS
-                  !DIR$ SIMD REDUCTION(+:rtemp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                   do l=1,k
                      rtemp = rtemp+conjugate(a(l,j))*a(l,j)
                   end do
@@ -3010,8 +3657,18 @@ module mod_blas
                   end if
                   do i=j+1,n
                      temp = ZERO
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ SIMD REDUCTION(+:temp)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do l=1,k
                         temp = temp+conjugate(a(l,i))*a(l,j)
                      end do
@@ -3175,9 +3832,18 @@ module mod_blas
                    temp1 = alpha*x(j)
                    temp2 = ZERO
                    k = kk
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,j-1
                       y(i) = y(i)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(i)
@@ -3194,9 +3860,18 @@ module mod_blas
                    temp2 = ZERO
                    ix = kx
                    iy = ky
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do k=kk,kk+j-2
                       y(iy) = y(iy)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(ix)
@@ -3218,9 +3893,18 @@ module mod_blas
                    temp2 = ZERO
                    y(j) = y(j)+temp1*ap(kk).re
                    k = kk+1
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=j+1,n
                       y(i) = y(i)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(i)
@@ -3238,9 +3922,18 @@ module mod_blas
                    y(jy) = y(jy)+temp1*ap(kk).re
                    ix = jx
                    iy = jy
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do k=kk+1,kk+n-j
                       ix = ix+incx
                       iy = iy+incy
@@ -3342,9 +4035,18 @@ module mod_blas
                      vtemp = conjugate(x(j))
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      k = kk
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do i=1,j-1
                         ap(k) = ap(k)+x(i)*temp
                         k = k+1
@@ -3361,9 +4063,18 @@ module mod_blas
                   if(all(x(jx)/=ZERO)) then
                      vtemp = conjugate(x(j))
                      ix = kx
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do k=kk,kk+j-2
                         ap(k) = ap(k)+x(ix)*temp
                         ix = ix+incx
@@ -3385,9 +4096,18 @@ module mod_blas
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      ap(kk).re = ap(kk).re+temp.v*x(j).re
                      k = kk+1
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do i=j+1,n
                         ap(k) = ap(k)+x(i)*temp
                         k = k+1
@@ -3405,9 +4125,18 @@ module mod_blas
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      ap(kk).re = app(kk).re+temp.v*x(jx).re
                      ix = jx
-                     !DIR$ VECTOR ALIGNED
-                     !DIR$ VECTOR ALWAYS
-                     !DIR$ UNROLL(10)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do k=kk+1,kk+n-j
                         ix = ix+incx
                         ap(k) = ap(k)+x(ix)*temp
@@ -3552,9 +4281,18 @@ module mod_blas
                   do i=1,m
                      temp1 = alpha*b(i,j)
                      temp2 = ZERO
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do k=1,i-1
                         c(k,j) = c(k,j)+temp1*a(k,i)
                         temp2 = temp2+b(k,j)*a(k,i)
@@ -3572,9 +4310,18 @@ module mod_blas
                   do i=m,1,-1
                      temp1 = alpha*b(i,j)
                      temp2 = ZERO
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                      do k=i+1,m
                         c(k,j) = c(k,j)+temp1*a(k,i)
                         temp2 = temp2+b(k,j)*a(k,i)
@@ -3600,9 +4347,18 @@ module mod_blas
                      c(i,j) = temp1*b(i,j)
                   end do
                else
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                   do i=1,m
                      c(i,j) = beta*c(i,j)+temp1*b(i,j)
                   end do
@@ -3613,9 +4369,18 @@ module mod_blas
                   else
                      temp1 = alpha*a(j,k)
                   end if
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
@@ -3626,9 +4391,18 @@ module mod_blas
                    else
                       temp1 = alpha*a(k,j)
                    end if
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
@@ -3732,7 +4506,919 @@ module mod_blas
         beq1 = .false.
         aeq0 = all(alpha==ZERO)
         beq1 = all(beta==ONE)
-        
-     end subroutine gms_zsyr2k
+        if((n==0) .or. (((aeq0) .or. &
+             (k==0)) .and. (beq1))) return
+        !  And when  alpha.eq.zero.
+        if(aeq0) then
+           if(upper) then
+              if(beq0) then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=1,j
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+                    do i=1,j
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end do
+              end if
+           else
+              if(beq0) then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=j,n
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+                    
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+                    do i=j,n
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end do
+              end if
+           end if
+           return
+        end if
+        !  Start the operations.
+        if(upper) then
+           do j=1,n
+              if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                 do i=1,j
+                    c(i,j) = ZERO
+                 end do
+              else if(bneq1) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif   
+                 do i=1,j
+                    c(i,j) = beta*c(i,j)
+                 end do
+              end if
+              do l=1,k
+                 if(all(a(j,l)/=ZERO) .or. all(b(j,l)/=ZERO)) then
+                    temp1 = alpha*b(j,l)
+                    temp2 = alpha*a(j,l)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                  
+                    do i=1,j
+                      
+                       c(i,j) = c(i,j)+a(i,l)*temp1 +
+                       b(i,l)*temp2
+                    end do
+                 end if
+              end do
+           end do
+        else
+           do j=1,n
+              if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                 do i=j,n
+                    c(i,j) = ZERO
+                 end do
+              else if(bneq1) then
+                  !DIR$ VECTOR ALIGNED
+                  !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif   
+                 do i=j,n
+                    c(i,j) = beta*c(i,j)
+                 end do
+              end if
+              do l=1,k
+                 if(all(a(j,l)/=ZERO) .or. all(b(j,l)/=ZERO)) then
+                    temp1 = alpha*b(j,l)
+                    temp2 = alpha*a(j,l)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                    
+                    do i=j,n
+                       c(i,j) = c(i,j)+a(i,l)*temp1 + &
+                            b(i,l)*temp2
+                    end do
+                 end if
+              end do
+           end do
+        end if
+     else
+        !  Form  C := alpha*A**T*B + alpha*B**T*A + C.
+        if(upper) then
+           do j=1,n
+              do i=1,j
+                 temp1 = ZERO
+                 temp2 = ZERO
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+                 do l=1,k
+                    temp1 = temp1+a(l,i)*b(l,j)
+                    temp2 = temp2+b(l,i)*a(l,j)
+                 end do
+                 if(beq0) then
+                    c(i,j) = alpha*temp1+alpha*temp2
+                 else
+                    c(i,j) = beta*c(i,j)+alpha*temp1 + &
+                         alpha*temp2
+                 end if
+              end do
+           end do
+        else
+           do j=1,n
+              do i=j,n
+                 temp1 = ZERO
+                 temp = ZERO
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                 do l=1,k
+                    temp1 = temp1+a(l,i)*b(l,j)
+                    temp2 = temp2+b(l,i)*a(l,j)
+                 end do
+                 if(beq0) then
+                    c(i,j) = alpha*temp1+alpha*temp2
+                 else
+                    c(i,j) = beta*c(i,j)+alpha*temp1 + &
+                         alpha*temp2
+                 end if
+              end do
+           end do
+        end if
+     end if
+      ! End of ZSYR2K
+   end subroutine gms_zsyr2k
+
+!     Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level3
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 3 Blas routine.
+!*>
+!*>  -- Written on 8-February-1989.
+!*>     Jack Dongarra, Argonne National Laboratory.
+!*>     Iain Duff, AERE Harwell.
+!*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+   !*>     Sven Hammarling, Numerical Algorithms Group Ltd.
+   ! !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
+     !*> \endverbatim
+
+     subroutine gms_zsyrk(uplo,trans,n,k,alpha,a,lda,beta,c,ldc)
+#if defined __INTEL_COMPILER     
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zsyrk
+#endif
+        character(len=1),                      intent(in),value  :: uplo
+        character(len=1),                      intent(in),value  :: trans
+        integer(kind=int4),                    intent(in),value  :: n
+        integer(kind=int4),                    intent(in),value  :: k
+        type(AVX512c8f64_t),                   intent(in)        :: alpha
+        type(AVX512c8f64_t), dimension(lda,*), intent(in)        :: a
+        !DIR$ ASSUME_ALIGNED a:64
+        integer(kind=int4),                    intent(in),value  :: lda
+        type(AVX512c8f64_t),                   intent(in)        :: beta
+        type(AVX512c8f64_t), dimension(ldc,*), intent(inout)     :: c
+        integer(kind=int4),                    intent(in),value  :: ldc
+        ! LOcals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+        type(AVX512c8f64_t), automatic :: temp
+        integer(kind=int4),  automatic :: i,info,j,l,nrowa
+        logical(kind=int4),  automatic :: upper
+        logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
+        type(AVX512c8f64_t), parameter :: ONE  = AVX512c8f64_t([1.0_dp,1.0_dp,1.0_dp,1.0_dp, &
+                                                                1.0_dp,1.0_dp,1.0_dp,1.0_dp],&
+                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! Test the input parameters.
+        if(lsame(trans,'N')) then
+           nrowa = n
+        else
+           nrowa = k
+        end if
+        upper = lsame(uplo,'U')
+        info = 0
+        if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+           info = 1
+        else if((.not.lsame(trans,'N')) .and. &
+             (.not.lsame(trans,'T'))) then
+           info = 2
+        else if(n<0) then
+           info = 3
+        else if(k<0) then
+           info = 4
+        else if(lda < max(1,nrowa)) then
+           info = 7
+        else if(ldc < max(1,n)) then
+           info = 10
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZSYRK',info)
+           return
+        end do
+        ! Quick return if possible.
+        aeq0 = .false.
+        beq1 = .false.
+        aeq0 = all(alpha==ZERO)
+        beq1 = all(beta==ONE)
+        if((n==0) .or. (((aeq0) .or. &
+             (k==0)) .and.(beq1))) return
+        !  And when  alpha.eq.zero.
+        if(aeq0) then
+           if(upper) then
+              if(beq0) then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=1,j
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+#endif
+                    do i=1,j
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end do
+              end if
+           else
+              if(beq0) then
+                 do j=1,n
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=j,n
+                       c(i,j) = ZERO
+                    end do
+                 end do
+              else
+                 do j=1,n
+#if defined __INTEL_COMPILER                    
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+#endif
+                    do i=j,n
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end do
+              end if
+           end if
+           return
+        end if
+        !  Start the operations.
+        bneq1 = .false.
+        beq0  = .false.
+        bneq1 = all(beta/=ONE)
+        beq0  = all(beta==ZERO)
+        if(lsame(trans,'N')) then
+           !  Form  C := alpha*A*A**T + beta*C.
+           if(upper) then
+              do j=1,n
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=1,j
+                       c(i,j) = ZERO
+                    end do
+                 else if(bneq1) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+#endif
+                    do i=1,j
+                       c(i,j) = beta*c(i,j)
+                    end do
+                 end if
+                 do l=1,k
+                    if(all(a(j,l)/=ZERO)) then
+                       temp = alpha*a(j,l)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=1,j
+                          c(i,j) = c(i,j)+temp*a(i,l)
+                       end do
+                    end if
+                 end do
+              end do
+           else
+              do j=1,n
+                 if(beq0) then
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ UNROLL(6)
+                    do i=j,n
+                       c(i,j) = ZERO
+                    end do
+                 else if(bneq1) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(4)
+#endif
+#endif
+                    do i=j,n  
+                      c(i,j) = beta*c(i,j)
+                   end do
+                end if
+                do l=1,k
+                   if(all(a(j,l)/=ZERO)) then
+                      temp = alpha*a(j,l)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                      do i=j,n
+                         c(i,j) = c(i,j)+temp*a(i,l)
+                      end do
+                   end if
+                end do
+             end do
+          end if
+       else
+          !   Form  C := alpha*A**T*A + beta*C.
+          if(upper) then
+             do j=1,n
+                do i=1,j
+                   temp = ZERO
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                   do l=1,k
+                      temp = temp+a(l,i)*a(l,j)
+                   end do
+                   if(beq0) then
+                      c(i,j) = alpha*temp
+                   else
+                      c(i,j) = alpha*temp+beta*c(i,j)
+                   end if
+                end do
+             end do
+          else
+             do j=1,n
+                do i=1,n
+                   temp = ZERO
+#if defined __INTE_COMPILER
+                     !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                   do l=1,k
+                      temp = temp+a(l,i)*a(l,j)
+                   end do
+                   if(beq0) then
+                      c(i,j) = alpha*temp
+                   else
+                      c(i,j) = alpha*temp+beta*c(i,j)
+                   end if
+                end do
+             end do
+          end if
+       end if
+       ! End of ZSYRK
+     end subroutine gms_zsyrk
+
+!  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+     !*>     Richard Hanson, Sandia National Labs.
+      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
+     !*> \endverbatim
+
+     subroutine gms_ztbsv(uplo,trans,diag,n,k,a,lda,x,incx)
+#if defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztbsv
+#endif
+        character(len=1),                         intent(in),value  :: uplo
+        character(len=1),                         intent(in),value  :: trans
+        character(len=1),                         intent(in),value  :: diag
+        integer(kind=int4),                       intent(in),value  :: n
+        integer(kind=int4),                       intent(in),value  :: k
+        type(AVX512c8f64_t), dimension(lda,*),    intent(in)        :: a
+        !DIR$ ASSUME_ALIGNED a:64
+        integer(kind=int4),                       intent(in),value  :: lda
+        type(AVX512c8f64_t), dimension(*),        intent(inout)     :: x
+        !DIR$ ASSUME_ALIGNED x:64
+        integer(kind=int4),                       intent(in),value  :: incx
+        ! Locals
+        !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+        type(AVX512c8f64_t), automatic :: temp
+        integer(kind=int4),  automatic :: i,info,ix,j,jx,kplus1,kx,l
+        logical(kind=int4),  automatic :: noconj,nounit
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! Test the input parameters.
+        info = 0
+        if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+           info = 1
+        else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+             .not.lsame(trans,'C')) then
+           info = 2
+        else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+           info = 3
+        else if(n<0) then
+           info = 4
+        else if(k<0) then
+           info = 5
+        else if(lda<(k+1)) then
+           info = 7
+        else if(incx==0) then
+           info = 9
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZTBSV',info)
+           return
+        end if
+        !  Quick return if possible.
+        if(n==0) return
+        noconj = lsame(trans,'T')
+        nounit = lsame(diag,'N')
+        !   Set up the start point in X if the increment is not unity. This
+        !   *     will be  ( N - 1 )*INCX  too small for descending loops.
+        if(incx<0) then
+           kx = 1-(n-1)*incx
+        else if(incx/=1) then
+           kx = 1
+        end if
+        !   Start the operations. In this version the elements of A are
+        !*     accessed by sequentially with one pass through A.
+        if(lsame(trans,'N')) then
+           !   Form  x := inv( A )*x.
+           if(lsame(uplo,'U')) then
+              kplus1 = k+1
+              if(incx==1) then
+                 do j=n,1,-1
+                    if(all(x(j)/=ZERO)) then
+                       l = kplus1-j
+                       if(nounit) x(j)/a(kplus1,j)
+                       temp = x(j)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=j-1,max(1,j-k),-1
+                          x(i) = x(i)-temp*a(l+i,j)
+                       end do
+                    end if
+                 end do
+              else
+                 kx = kx+(n-1)*incx
+                 jx = kx
+                 do j=n,1,-1
+                    kx = kx-incx
+                    if(all(x(jx)/=ZERO)) then
+                       ix = kx
+                       l = kplus1-j
+                       if(nounit) x(jx) = x(jx)/a(kplus1,j)
+                       temp = x(jx)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=j-1,max(1,j-k),-1
+                          x(ix) = x(ix)-temp*a(l+i,j)
+                       end do
+                    end if
+                    jx = kx-incx
+                 end do
+              end if
+           else
+              if(incx==1) then
+                 do j=1,n
+                    if(all(x(j)/=ZERO)) then
+                       l = 1-j
+                       if(nounit) x(j) = x(j)/a(1,j)
+                       temp = x(j)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=j+1,min(n,j+k)
+                          x(i) = x(i)-temp*a(l+i,j)
+                       end do
+                    end if
+                 end do
+              else
+                 jx = kx
+                 do j=1,n
+                    kx = kx+incx
+                    if(all(x(jx)/=ZERO)) then
+                       ix = kx
+                       l = 1-j
+                       if(nounit) x(jx) = x(jx)/a(1,j)
+                       temp = x(jx)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                  
+                       do i=j+1,min(n,j+k)
+                          x(ix) = x(ix)-temp*a(l+i,j)
+                          ix = ix+incx
+                       end do
+                    end if
+                    jx = jx+incx
+                 end do
+              end if
+           end if
+        else
+           !  Form  x := inv( A**T )*x  or  x := inv( A**H )*x.
+           if(lsame(uplo,'U')) then
+              kplus1 = k+1
+              if(incx==1) then
+                 do j=1,n
+                    temp = x(j)
+                    l = kplus1-j
+                    if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                   
+                       do i=max(1,j-k),j-1
+                          temp = temp-a(l+i,j)*x(i)
+                       end do
+                       if(nounit) temp = temp/a(kplus1,j)
+                    else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                  
+                       do i=max(1,j-k),j-1
+                          temp = temp-conjugate(a(l+i,j))*x(i)
+                       end do
+                       if(nounit) temp = temp/conjugate(a(kplus1,j))
+                    end if
+                    x(j) = temp
+                 end do
+              else
+                 jx = kx
+                 do j=1,n
+                    temp = x(jx)
+                    ix = kx
+                    l = kplus1-j
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                 
+                       do i=max(1,j-k),j-1
+                          temp = temp-a(l+i,j)*x(ix)
+                          ix = ix+incx
+                       end do
+                       if(nounit) temp = temp/a(kplus1,j)
+                    else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                  
+                       do i=max(1,j-k),j-1
+                          temp = temp-conjugate(a(l+i,j))*x(ix)
+                          ix = ix+incx
+                       end do
+                       if(nounit) temp = temp/conjugate(a(kplus1,j))
+                    end if
+                    x(jx) = temp
+                    jx = jx+incx
+                    if(j>k) kx = kx+incx
+                 end do
+              end if
+           else
+              if(incx==1) then
+                 do j=n,1,-1
+                    temp = x(j)
+                    l =1-j
+                    if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                   
+                       do i=min(n,j+k),j+1,-1
+                          temp = temp-a(l+i,j)*x(i)
+                       end do
+                       if(nounit) temp = temp/a(1,j)
+                    else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=min(n,j+k),j+1,-1
+                          temp = temp-conjugate(a(l+i,j))*x(i)
+                       end do
+                       if(nounit) temp = temp/conjugate(a(1,j))
+                    end if
+                    x(j) = temp
+                 end do
+              else
+                 kx = kx+(n-1)*incx
+                 jx = kx
+                 do j=n,1,-1
+                    temp = x(jx)
+                    ix = kx
+                    l = 1-j
+                    if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif
+                       do i=min(n,j+k),j+1,-1
+                          temp = temp-a(l+i,j)*x(i)
+                          ix = ix+incx
+                       end do
+                       if(nounit) temp = temp/a(1,j)
+                    else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                       
+                       do i=min(n,j+k),j+1,-1
+                          temp = temp-conjugate(a(l+i,j))*x(ix)
+                          ix = ix+incx
+                       end do
+                       if(nounit) temp = temp/conjugate(a(1,j))
+                    end if
+                    x(jx) = temp
+                    jx = jx-incx
+                    if((n-j)>=k) kx = kx-incx
+                 end do
+              end if
+           end if
+        end if
+        !End of ZTBSV
+     end subroutine gms_ztbsv
     
 end module mod_blas
