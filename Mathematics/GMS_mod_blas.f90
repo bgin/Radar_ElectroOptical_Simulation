@@ -110,17 +110,22 @@ module mod_blas
 !*>
 
     subroutine gms_zaxpy(n,za,zx,incx,zy,incy)
-      
+#if defined __INTEL_COMPILER      
       !DIR$ ATTRIBUTES CODE_ALIGNED : 32 :: gms_zaxpy
       !DIR$ ATTRIBUTES VECTOR :: gms_zaxpy
+#endif
       use mod_vecconsts, only : v8_n0
       integer(kind=int4),                intent(in),value    :: n
       type(AVX512c8f64_t),               intent(in)          :: za
       type(AVX512c8f64_t), dimension(*), intent(in)          :: zx
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zx:64
+#endif
       integer(kind=int4),                intent(in),value    :: incx
       type(AVX512c8f64_t), dimension(*), intent(inout)       :: zy
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zy:64
+#endif
       integer(kind=int4),                intent(in),value    :: incy
       ! Locals
       integer(kind=int4), automatic :: i,ix,iy
@@ -196,13 +201,20 @@ module mod_blas
 !*>
 
     subroutine gms_zcopy(n,zx,incx,zy,incy)
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zcopy
       !DIR$ ATTRIBUTES VECTOR :: gms_zcopy
+#endif
       integer(kind=int4),                intent(in),value  :: n
       type(AVX512c8f64_t), dimension(*), intent(in)        :: zx
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zx:64
+#endif
       integer(kind=int4),                intent(in),value  :: incx
       type(AVX512c8f64_t), dimension(*), intent(out)       :: zy
+#if defined __INTEL_COMPILER
+      !DIR$ ASSUME_ALIGNED zy:64
+#endif
       integer(kind=dint4),               intent(in),value  :: incy
       ! LOcals
       integer(kind=int4), automatic :: i,ix,iy
@@ -257,18 +269,28 @@ module mod_blas
 !*> \endverbatim
     
     function gms_zdotc(n,zx,incx,zy,incy) result(dotc)
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdotc
       !DIR$ ATTRIBUTES VECTOR :: gms_zdotc
+#endif
       integer(kind=int4),                intent(in),value :: n
       type(AVX512c8f64_t), dimension(*), intent(in)       :: zx
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zx:64
+#endif
       integer(kind=int4),                intent(in),value :: incx
       type(AVX512c8f64_t), dimension(*), intent(in)       :: zy
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zy:64
+#endif
       integer(kind=int4),                intent(in),value :: incy
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES ALIGN : 64 :: dotc
+#endif
       type(AVX512c8f64_t) :: dotc
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES ALIGN : 64 :: ztemp
+#endif
       type(AVX512c8f64_t), automatic :: ztemp
       integer(kind=int4), automatic :: i,ix,iy
       ! EXec code ....
@@ -344,19 +366,29 @@ module mod_blas
 !*> \endverbatim
 
     function gms_zdotu(n,zx,incx,zy,incy) result(zdotu)
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zdotu
       !DIR$ ATTRIBUTES VECTOR :: gms_zdotu
+#endif
       integer(kind=int4),                intent(in),value :: n
       type(AVX512c8f64_t), dimension(*), intent(in)       :: zx
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zx:64
+#endif
       integer(kind=int4),                intent(in),value :: incx
       type(AVX512c8f64_t), dimension(*), intent(in)       :: zy
+#if defined __INTEL_COMPILER
       !DIR$ ASSUME_ALIGNED zy:64
+#endif
       integer(kind=int4),                intent(in),value :: incy
       ! LOcals
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES ALIGN : 64 :: zdotu
+#endif
       type(AVX512c8f64_t) :: zdotu
+#if defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES ALIGN : 64 :: ztemp
+#endif
       type(AVX512c8f64_t), automatic :: ztemp
       integer(kind=int4),  automatic :: i,ix,iy
       ! Exec code ....
@@ -5073,17 +5105,25 @@ module mod_blas
         integer(kind=int4),                       intent(in),value  :: n
         integer(kind=int4),                       intent(in),value  :: k
         type(AVX512c8f64_t), dimension(lda,*),    intent(in)        :: a
+#if defined __INTEL_COMPILER
         !DIR$ ASSUME_ALIGNED a:64
+#endif
         integer(kind=int4),                       intent(in),value  :: lda
         type(AVX512c8f64_t), dimension(*),        intent(inout)     :: x
+#if defined __INTEL_COMPILER
         !DIR$ ASSUME_ALIGNED x:64
+#endif
         integer(kind=int4),                       intent(in),value  :: incx
         ! Locals
+#if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+#endif
         type(AVX512c8f64_t), automatic :: temp
         integer(kind=int4),  automatic :: i,info,ix,j,jx,kplus1,kx,l
         logical(kind=int4),  automatic :: noconj,nounit
+#if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+#endif
         type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                 0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
@@ -5420,5 +5460,777 @@ module mod_blas
         end if
         !End of ZTBSV
      end subroutine gms_ztbsv
+
+! Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+     !*>     Richard Hanson, Sandia National Labs.
+     !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
+     !*> \endverbatim
+
+     subroutine gms_ztpmv(uplo,trans,diag,n,ap,x,incx)
+#if defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztpmv
+#endif
+         character(len=1),                         intent(in),value :: uplo
+         character(len=1),                         intent(in),value :: trans
+         character(len=1),                         intent(in),value :: diag
+         integer(kind=int4),                       intent(in),value :: n
+         type(AVX512c8f64_t), dimension(*),        intent(in)       :: ap
+#if defined __INTEL_COMPILER
+         !DIR$ ASSUME_ALIGNED ap:64
+#endif
+         type(AVX512c8f64_t), dimension(*),        intent(inout)    :: x
+#if defined __INTEL_COMPILER
+         !DIR$ ASSUME_ALIGNED x:64
+#endif
+         integer(kind=int4),                       intent(in),value :: incx
+         ! LOcals
+#if defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+#endif
+         type(AVX512c8f64_t), automatic :: temp
+         integer(kind=int4),  automatic :: i,info,ix,j,jx,k,kk,kx
+         logical(kind=int4),  automatic :: noconj,nounit
+#if defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+#endif
+        type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+        ! Exec code ....
+        info = 0
+        if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+           info = 1
+        else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+             .not.lsame(trans,'C')) then
+           info = 2
+        else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+           info = 3
+        else if(n<0) then
+           info = 4
+        else if(incx==0) then
+           info = 7
+        end if
+        if(info/=0) then
+           call xerbla('GMS_ZTPMV',info)
+           return
+        end if
+        !  Quick return if possible.
+        if(n==0) return
+        noconj = lsame(trans,'T')
+        nounit = lsame(diag,'N')
+        ! Set up the start point in X if the increment is not unity. This
+        !*     will be  ( N - 1 )*INCX  too small for descending loops.
+        if(incx<=0) then
+           kx = 1-(n-1)*incx
+        else if(incx/=1) then
+           kx = 1
+        end if
+        !   Start the operations. In this version the elements of AP are
+        !*     accessed sequentially with one pass through AP.
+        if(lsame(trans,'N')) then
+           !    Form  x:= A*x.
+           if(lsame(uplo,'U')) then
+              kk = 1
+              if(incx==1) then
+                 do j=1,n
+                    if(all(x(j)/=ZERO)) then
+                       temp = x(j)
+                       k = kk
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                       do i=1,j-1
+                          x(i) = x(i)+temp*ap(k)
+                          k = k+1
+                       end do
+                       if(nounit) x(j) = x(j)*ap(kk+j-1)
+                    end if
+                    kk = kk+j
+                 end do
+              else
+                 jx = kx
+                 do j=1,n
+                    if(all(x(jx)/=ZERO)) then
+                       temp = x(jx)
+                       ix = kx
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                       do k=kk,kk+j-2
+                          x(ix) = x(ix)+temp*ap(k)
+                          ix = ix+incx
+                       end do
+                       if(nounit) x(jx) = x(jx)*ap(kk+j-1)
+                    end if
+                    jx = jx+incx
+                    kk = kk+j
+                 end do
+              end if
+           else
+              kk = (n*(n+1))/2
+              if(incx==1) then
+                 do j=n,1,-1
+                    if(all(x(j)/=ZERO)) then
+                       temp = x(j)
+                       k = kk
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif   
+                       do i=n,j+1,-1
+                          x(i) = x(i)+temp*ap(k)
+                          k = k-1
+                       end do
+                       if(nounity) x(j) = x(j)*ap(kk-n+j)
+                    end if
+                    kk = kk-(n-j+1)
+                 end do
+              else
+                 kx = kx+(n-1)*incx
+                 jx = kx
+                 do j=n,1,-1
+                    if(all(x(jx)/=ZERO)) then
+                       temp = x(jx)
+                       ix = kx
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif   
+                       do k=kk,kk-(n-(j+1)),-1
+                          x(ix) = x(ix)+temp*ap(k)
+                          ix = ix+incx
+                       end do
+                       if(nounit) x(jx) = x(jx)*ap(kk-n+j)
+                    end if
+                    jx = jx-incx
+                    kk = kk-(n-j+1)
+                 end do
+              end if
+            end if
+         else
+            !   Form  x := A**T*x  or  x := A**H*x.
+            if(lsame(uplo,'U')) then
+               kk = (n*(n+1))/2
+               if(incx==1) then
+                  do j=n,1,-1
+                     temp = x(j)
+                     k = kk-1
+                     if(noconj) then
+                        if(nounit) temp = temp*ap(kk)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do i=j-1,1,-1
+                           temp = temp+ap(k)*x(i)
+                           k = k-1
+                        end do
+                     else
+                        if(nounit) temp = temp*conjugate(ap(kk))
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do i=j-1,1,-1
+                           temp = temp+conjugate(ap(k))*x(i)
+                           k = k-1
+                        end do
+                     end if
+                     x(j) = temp
+                     kk = kk-j
+                  end do
+               else
+                  jx = kx+(n-1)*incx
+                  do j=n,1,-1
+                     temp = x(jx)
+                     ix = jx
+                     if(noconj) then
+                        if(nounit) temp = temp*ap(kk)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do k=kk-1,kk-j+1,-1
+                           ix = ix-incx
+                           temp = temp+ap(k)*x(ix)
+                        end do
+                     else
+                        if(nounit) temp = temp*conjugate(ap(kk))
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do k=kk-1,kk-j+1,-1
+                           ix = ix-incx
+                           temp = temp+conjugate(ap(k))*x(ix)
+                        end do
+                     end if
+                     x(jx) = temp
+                     jx = jx-incx
+                     kk = kk-j
+                  end do
+               end if
+            else
+               kk = 1
+               if(incx==1) then
+                  do j=1,n
+                     temp = x(j)
+                     k = kk+1
+                     if(noconj) then
+                        if(nounit) temp = temp*ap(kk)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do i=j+1,n
+                           temp = temp+ap(k)*x(i)
+                           k = k+1
+                        end do
+                     else
+                        if(nounit) temp = temp+conjugate(ap(kk))
+                        do i=j+1,n
+                           temp = temp+conjugate(ap(k))*x(i)
+                           k = k+1
+                        end do
+                     end if
+                     x(j) = temp
+                     kk = kk+(n-j+1)
+                  end do
+               else
+                  jx = kx
+                  do j=1,n
+                     temp = x(jx)
+                     ix = jx
+                     if(noconj) then
+                        if(nounit) temp = temp*ap(kk)
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                        do k=kk+1,kk+n-j
+                           ix = ix+incx
+                           temp = temp+ap(k)*x(ix)
+                        end do
+                     else
+                        if(nounit) temp = temp*conjugate(ap(k))
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                         
+                       do k=kk+1,kk+n-j
+                          ix = ix+incx
+                          temp = temp+conjugate(ap(k))*x(ix)
+                       end do
+                    end if
+                    x(jx) = temp
+                    jx = jx+incx
+                    kk = kk+(n-j+1)
+                 end do
+              end if
+            end if
+         end if
+         ! End of ZTPMV
+      end subroutine gms_ztpmv
+
+! Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!1*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!1*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!1*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+      !*>     Richard Hanson, Sandia National Labs.
+      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
+!*> \endverbatim
+      !*>
+
+      subroutine gms_ztpsv(uplo,trans,diag,n,ap,x,incx)
+#if defined __INTEL_COMPILER
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztpsv
+#endif
+           character(len=1),                    intent(in),value :: uplo
+           character(len=1),                    intent(in),value :: trans
+           character(len=1),                    intent(in),value :: diag
+           integer(kind=int4),                  intent(in),value :: n
+           type(AVX512c8f64_t), dimension(*),   intent(in)       :: ap
+#if defined __INTEL_COMPILER
+           !DIR$ ASSUME_ALIGNED ap:64
+#endif
+           type(AVX512c8f64_t), dimension(*),   intent(inout)    :: x
+#if defined __INTEL_COMPILER
+           !DIR$ ASSUME_ALIGNED x:64
+#endif
+           integer(kind=int4),                  intent(in),value :: incx
+           ! LOcals
+#if defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
+#endif
+           type(AVX512c8f64_t), automatic :: temp
+           integer(kind=int4),  automatic :: i,info,ix,j,jx,k,kk,kx
+           logical(kind=int4),  automatic :: noconj,nounit           
+         
+#if defined __INTEL_COMPILER
+          !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
+#endif
+           type(AVX512c8f64_t), parameter :: ZERO = AVX512c8f64_t([0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp],&
+                                                               [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
+                                                               0.0_dp,0.0_dp,0.0_dp,0.0_dp])
+           ! Exec code ....
+           info = 0
+           if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+              info = 1
+           else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+              .not.lsame(trans,'C')) then
+              info = 2
+           else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+              info = 3
+           else if(n<0) then
+              info = 4
+           else if(incx==0) then
+              info = 7
+           end if
+           if(info/=0) then
+              call xerbla('GMS_ZTPSV',info)
+              return
+           end if
+           ! Quick return if possible.
+           if(n==0) return
+           noconj = lsame(trans,'T')
+           nounit = lsame(diag,'N')
+           !  Set up the start point in X if the increment is not unity. This
+           !  *     will be  ( N - 1 )*INCX  too small for descending loops.
+           if(incx<=0) then
+              kx = 1-(n-1)*incx
+           else if(incx/=1) then
+              kx = 1
+           end if
+           !  Start the operations. In this version the elements of AP are
+           !*     accessed sequentially with one pass through AP.
+           if(lsame(trans,'N')) then
+              !  Form  x := inv( A )*x.
+              if(lsame(uplo,'U')) then
+                 kk = (n*(n+1))/2
+                 if(incx==1) then
+                    do j=n,1,-1
+                       if(all(x(j)/=ZERO)) then
+                          if(nounit) x(j) = x(j)/ap(kk)
+                          temp = x(j)
+                          k = kk-1
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do i=j-1,1,-1
+                             x(i) = x(i)-temp*ap(k)
+                             k = k-1
+                          end do
+                       end if
+                       kk = kk-j
+                    end do
+                 else
+                    jx = kx+(n-1)*incx
+                    do j=n,1,-1
+                       if(all(x(jx)/=ZERO)) then
+                          if(nounit) x(jx) = x(jx)/ap(kk)
+                          temp = x(jx)
+                          ix = jx
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk-1,kk-j+1,-1
+                             ix = ix-incx
+                             x(ix) = x(ix)-temp*ap(k)
+                          end do
+                       end if
+                       jx = jx-incx
+                       kk = kk-j
+                    end do
+                 end if
+              else
+                 kk = 1
+                 if(incx==1) then
+                    do j=1,n
+                       if(all(x(j)/=ZERO)) then
+                          if(nounit) x(j) = x(j)/ap(kk)
+                          temp = x(j)
+                          k = kk+1
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do i=j+1,n
+                             x(i) = x(i)-temp*ap(k)
+                             k = k+1
+                          end do
+                       end if
+                       kk = kk+(n-j+1)
+                    end do
+                 else
+                    jx = kx
+                    do j=1,n
+                       if(all((jx)/=ZERO)) then
+                          if(nounit) x(jx) = x(jx)/ap(kk)
+                          temp = x(jx)
+                          ix = jx
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk+1,kk+n-j
+                             ix = ix+incx
+                             x(ix) = x(ix)-temp*ap(k)
+                          end do
+                       end if
+                       jx = jx+incx
+                       kk = kk+(n-j+1)
+                    end do
+                 end if
+              end if
+           else
+              !  Form  x := inv( A**T )*x  or  x := inv( A**H )*x.
+              if(lsame(uplo,'U')) then
+                 kk = 1
+                 if(incx==1) then
+                    do j=1,n
+                       temp = x(j)
+                       k = kk
+                       if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do i=1,j-1
+                             temp = temp-ap(k)*x(i)
+                             k = k+1
+                          end do
+                          if(nounit) temp = temp/ap(kk+j-1)
+                       else
+                          do i=1,j-1
+                             temp = temp-conjugate(ap(k))*x(i)
+                             k = k+1
+                          end do
+                          if(nounit) temp = temp/conjugate(ap(kk+j-1))
+                       end if
+                       x(j) = temp
+                       kk = kk+j
+                    end do
+                 else
+                    jx = kx
+                    do j=1,n
+                       temp = x(jx)
+                       ix = kx
+                       if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk,kk+j-2
+                             temp = temp-ap(k)*x(ix)
+                             ix = ix+incx
+                          end do
+                          if(nounit) temp = temp/ap(kk+j-1)
+                       else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk,kk+j-2
+                             temp = temp-conjugate(ap(k))*x(ix)
+                             ix = ix+incx
+                          end do
+                          if(nounit) temp = temp/conjugate(ap(kk+j-1))
+                       end if
+                       x(jx) = temp
+                       jx = jx+incx
+                       kk = kk+j
+                    end do
+                 end if
+              else
+                 kk = (n*(n+1))/2
+                 if(incx==1) then
+                    do j=n,1,-1
+                       temp = x(j)
+                       k = kk
+                       if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do i=n,j+1,-1
+                             temp = temp-ap(k)*x(i0
+                             k = k-1
+                          end do
+                          if(nounit) temp = temp/ap(kk-n+j)
+                       else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do i=n,j+1,-1
+                             temp = temp/conjugate(ap(kk-n+j))
+                             k = k-1
+                          end do
+                          if(nounit) temp = temp/conjugate(ap(kk-n+j))
+                       end if
+                       x(j) = temp
+                       kk = kk-(n-j+1)
+                    end do
+                 else
+                    kx = kx+(n-1)*incx
+                    jx = kx
+                    do j=n,1,-1
+                       temp = x(jx)
+                       ix = kx
+                       if(noconj) then
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk,kk-(n-(j+1)),-1
+                             temp = temp-ap(k)*x(ix)
+                             ix = ix-incx
+                          end do
+                          if(nounit) temp = temp/ap(kk-n+j)
+                       else
+#if defined __INTEL_COMPILER
+                    !DIR$ VECTOR ALIGNED
+                    !DIR$ VECTOR ALWAYS
+                    !DIR$ FMA
+#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
+                    !DIR$ UNROLL(10)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
+                    !DIR$ UNROLL(8)
+#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
+                    !DIR$ UNROLL(5)
+#endif
+#endif                           
+                          do k=kk,kk-(n-(j+1)),-1
+                             temp = temp-conjugate(ap(k))*x(ix)
+                             ix = ix-incx
+                          end do
+                          if(nounit) temp = temp/conjugate(ap(kk-n+j))
+                       end if
+                       x(jx) = temp
+                       jx = jx-incx
+                       kk = kk-(n-j+1)
+                    end do
+                 end if
+              end if
+           end if
+           ! End of ZTPSV
+      end subroutine gms_ztpsv
+        
     
 end module mod_blas
