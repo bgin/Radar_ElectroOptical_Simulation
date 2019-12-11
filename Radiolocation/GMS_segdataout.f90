@@ -17,7 +17,11 @@ module mod_segdataout
  !          History:
  !                        
  !                        Date: 05-11-2018
- !                        Time: 15:37 GMT+2
+  !                       Time: 15:37 GMT+2
+  !                       Modified on
+  !                       Date: 10-12-2019
+  !                       Time: 16:42 GMT+2
+  !
  !          Version:
  !
  !                      Major: 1
@@ -69,7 +73,7 @@ module mod_segdataout
     character(*),       parameter, public :: MOD_SEGDATAOUT_CREATION_DATE = "05-11-2018 15:39 +00200 (MON 05 NOV 2018 GMT+2)"
     
     ! Module build date
-    character(*),       parameter, public :: MOD_SEGDATAOUT_BUILD_DATE = "00-00-0000 00:00"
+    character(*),       parameter, public :: MOD_SEGDATAOUT_BUILD_DATE =  __DATE__ " " __TIME__
     
     ! Module author info
     character(*),       parameter, public :: MOD_SEGDATAOUT_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -77,53 +81,78 @@ module mod_segdataout
     ! Module short description
     character(*),       parameter, public :: MOD_SEGDATAOUT_SYNOPSIS = "NEC segmentation data output for target mesh geometry representation." 
     
-!DIR$ IF .NOT. DEFINED (GMS_SEGDATAOUT_ADD_PADDING)
-    !DIR$ DEFINE GMS_SEGDATAOUT_ADD_PADDING = 1
-!DIR$ ENDIF
+
+#if !defined(GMS_SEGDATAOUT_ADD_PADDING)
+#define GMS_SEGDATAOUT_ADD_PADDING 1
+#endif
     
     type, public :: NECWireDataOut_t
         
           sequence
           ! Number of data columns
           integer(kind=int4)  :: m_ncols
-!DIR$     IF (GMS_SEGDATAOUT_ADD_PADDING .EQ. 1)
+#if (GMS_SEGDATAOUT_ADD_PADDING) == 1
           integer(kind=int1), dimension(0:3) :: pad
-!DIR$     ENDIF
+#endif
           ! Wire number
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_wirenum
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_wirenum
+#endif
           integer(kind=int4), allocatable, dimension(:) :: m_wirenum
           ! X1 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_x1
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_x1
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_x1
           ! Y1 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_y1
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_y1
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_y1
           ! Z1 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_z1
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_z1
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_z1
           ! X2 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_x2
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_x2
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_x2
           ! Y2 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_y2
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_y2
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_y2
           ! Z2 coordinate
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_z2
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_z2
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_z2
           ! Radius
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_radius
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_radius
+#endif
           real(kind=sp),      allocatable, dimension(:) :: m_radius
           ! Number of segments per single wire
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_nsegs
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_nsegs
+#endif
           integer(kind=int4), allocatable, dimension(:) :: m_nsegs
           ! First segment value (interval in number of segments per wire)
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_firstseg
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_firstseg
+#endif
           integer(kind=int4), allocatable, dimension(:) :: m_firstseg
           ! Last segment value (interval in number of segments per wire)
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_lastseg
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_lastseg
+#endif
           integer(kind=int4), allocatable, dimension(:) :: m_lastseg
           ! Tag number
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_tagnum
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_tagnum
+#endif
           integer(kind=int4), allocatable, dimension(:) :: m_tagnum
     end type NECWireDataOut_t
     
@@ -133,50 +162,77 @@ module mod_segdataout
         
           ! Number of data columns
           integer(kind=int4)  :: m_ncols
-!DIR$     IF (GMS_SEGDATAOUT_ADD_PADDING .EQ. 1)
+#if (GMS_SEGDATAOUT_ADD_PADDING) == 1
           integer(kind=int1), dimension(0:3) :: pad
-!DIR$     ENDIF
+#endif
           ! Segment number
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_segnum
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_segnum
+#endif
           integer(kind=int4),   allocatable, dimension(:) :: m_segnum
           !  X -- COORDINATE OF SEG. CENTER
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_xcoord
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_xcoord
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_xcoord
           !  Y -- COORDINATE OF SEG. CENTER
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_ycoord
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_ycoord
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_ycoord
           !  Z -- COORDINATE OF SEG. CENTER
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_zcoord
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_zcoord
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_zcoord
           ! Segment length
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_seglen
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_seglen
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_seglen
-          ! ORIENTATION ANGLES: alpha 
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_alpha
+          ! ORIENTATION ANGLES: alpha
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_alpha
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_alpha
           ! ORIENTATION ANGLES: beta
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_beta
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_beta
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_beta
           ! Wire radius
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_wradius
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_wradius
+#endif
           real(kind=sp),        allocatable, dimension(:) :: m_wradius
-          ! I-   -- CONNECTION DATA 
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_Iminus
+          ! I-   -- CONNECTION DATA
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_Iminus
+#endif
           integer(kind=int4),   allocatable, dimension(:) :: m_Iminus
           ! I    -- CONNECTION DATA
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_I
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_I
+#endif
           integer(kind=int4),   allocatable, dimension(:) :: m_I
           ! I+   -- CONNECTION DATA
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_Iplus
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_Iplus
+#endif
           integer(kind=int4),   allocatable, dimension(:) :: m_Iplus
           ! Tag number
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_tagnum
+#if defined __INTEL_COMPILER
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_tagnum
+#endif
           integer(kind=int4),   allocatable, dimension(:) :: m_tagnum
     end type NECSegmentDataOut_t
     
     contains
     
-    subroutine initNECWireDataOut(wo,ncols,errstate,iounit,logging,verbose,append,fname)
+      subroutine initNECWireDataOut(wo,ncols,errstate,iounit,logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: initNECWireDataOut
+#endif
           use mod_constants, only : INITVAL
           use mod_print_error, only : print_non_fatal_error,  &
                                       handle_fatal_memory_error
@@ -337,23 +393,41 @@ module mod_segdataout
           errstate = .true.
           return
 9999      call handle_fatal_memory_error( iounit,logging,verbose,append,fname,                                                    &
-                             "logger: "// __FILE__ // "module: mod_segdataout, subroutine: initNECWireDataOut -- Memory Allocation Failure !!", &                                                        &
+                             "logger: "// __FILE__ // "module: mod_segdataout, subroutine: initNECWireDataOut -- Memory Allocation Failure !!", &
                               "module: mod_segdataout, subroutine: initNECWireDataOut -- Memory Allocation Failure !!", &
                                                     emsg,__LINE__ )
     end subroutine initNECWireDataOut
     
-    subroutine readNECWireDataOut(wo,iounit,filename,errmsg,ioerr,iounit2,logging,verbose,append,fname)
+    subroutine readNECWireDataOut(wirenum,x1,y1,z1,x2,y2,z2,   &
+                                  radius,nsegs,firstseg,lastseg,tagnum, &
+                                  ncols,iounit,filename,errmsg,ioerr,&
+                                  iounit2,logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES ALIGN : 32 :: readNECWireDataOut
+#endif
           use mod_print_error,          only : handle_fatal_fileio_error
-          type(NECWireDataOut_t),       intent(inout) :: wo
-          integer(kind=int4),           intent(in)    :: iounit
-          character(len=*),             intent(in)    :: filename
-          character(len=256),           intent(inout) :: errmsg
-          integer(kind=int4),           intent(inout) :: ioerr
-          integer(kind=int4),           intent(in)    :: iounit2
-          logical(kind=int4),           intent(in)    :: logging,   &
-                                                         verbose,   &
-                                                         append
-          character(len=*),             intent(in)    :: fname
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: wirenum
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: x1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: y1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: z1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: x2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: y2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: z2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: radius
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: msegs
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: firstseg
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: lastseg
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: tagnum
+          integer(kind=int4),                           intent(in)    :: ncols
+          integer(kind=int4),                           intent(in)    :: iounit
+          character(len=*),                             intent(in)    :: filename
+          character(len=256),                           intent(inout) :: errmsg
+          integer(kind=int4),                           intent(inout) :: ioerr
+          integer(kind=int4),                           intent(in)    :: iounit2
+          logical(kind=int4),                           intent(in)    :: logging,   &
+                                                                          verbose,   &
+                                                                         append
+          character(len=*),                             intent(in)    :: fname
           ! Locals
           integer(kind=int4) :: idx
           logical(kind=int4) :: is_present = .false.
@@ -374,14 +448,14 @@ module mod_segdataout
                      "module: mod_segdataout, subroutine: readNECWireDataOut -- File Open I/O Failure !! ",  &
                                             errmsg,375)
           end if
-          do idx = 1, wo.m_ncols
-              read(iounit,'(i6,7F22.15,i6,i6,i6,i6)',IOSTAT=ioerr,IOMSG=errmsg)         &
-                           wo.m_wirenum(idx),   wo.m_x1(idx),       &
-                           wo.m_y1(idx),        wo.m_z1(idx),       &
-                           wo.m_x2(idx),        wo.m_y2(idx),       &
-                           wo.m_z2(idx),        wo.m_radius(idx),   &
-                           wo.m_nsegs(idx),     wo.m_firstseg(idx), &
-                           wo.m_lastseg(idx),   wo.m_tagnum(idx)
+          do idx = 1, ncols
+              read(iounit,'(i6,7F10.7,i6,i6,i6,i6)',IOSTAT=ioerr,IOMSG=errmsg)         &
+                           wirenum(idx),   x1(idx),       &
+                           y1(idx),        z1(idx),       &
+                           x2(idx),        y2(idx),       &
+                           z2(idx),        radius(idx),   &
+                           nsegs(idx),     firstseg(idx), &
+                           lastseg(idx),   tagnum(idx)
               if(ioerr > 0 .or. ioerr < 0) goto 9999
           end do
           close(UNIT=iounit,STATUS='KEEP')
@@ -394,7 +468,18 @@ module mod_segdataout
                                            errmsg,394)
     end subroutine readNECWireDataOut
     
-    subroutine copyNECWireDataOut_ymm8r4_ymm8i4(wo,               &
+    subroutine copyNECWireDataOut_ymm8r4_ymm8i4(wirenum,          &
+                                                x1,               &
+                                                y1,               &
+                                                z1,               &
+                                                x2,               &
+                                                y2,               &
+                                                z2,               &
+                                                radius,           &
+                                                nsegs,            &
+                                                firstseg,         &
+                                                lastseg,          &
+                                                tagnum,           &
                                                 ymm8i4_wirenum,   &
                                                 ymm8r4_x1,        &
                                                 ymm8r4_y1,        &
@@ -408,13 +493,27 @@ module mod_segdataout
                                                 ymm8i4_lastseg,   &
                                                 ymm8i4_tagnum,    &
                                                 errstate            )
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copyNECWireDataOut_ymm8r4_ymm8i4
+#endif
           use mod_print_error,      only : print_non_fatal_error
           use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
                                            copy_r4_ymm8r4
-          type(NECWireDataOut_t),                   intent(in)    :: wo
-          type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_wirenum
-          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_x1,       &
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: wirenum
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: x1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: y1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: z1
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: x2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: y2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: z2
+          real(kind=sp),      contiguous,dimension(:),  intent(out)   :: radius
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: msegs
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: firstseg
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: lastseg
+          integer(kind=int4), contiguous,dimension(:),  intent(out)   :: tagnum
+          type(YMM8i4_t),     contiguous, dimension(:), intent(inout) :: ymm8i4_wirenum
+          type(YMM8r4_t),     contiguous, dimension(:), intent(inout) :: ymm8r4_x1,       &
                                                                      ymm8r4_y1,       &
                                                                      ymm8r4_z1,       &
                                                                      ymm8r4_x2,       &
@@ -425,23 +524,23 @@ module mod_segdataout
                                                                      ymm8i4_firstseg, &
                                                                      ymm8i4_lastseg,  &
                                                                      ymm8i4_tagnum
-          logical(kind=int4),                       intent(inout) :: errstate
+          logical(kind=int4),                        intent(inout) :: errstate
           ! Locals
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code ....
           errstate = .false.
-          is_conforming = (8*size(wo.m_wirenum)   == size(ymm8i4_wirenum))  .and.  &
-                          (8*size(wo.m_x1)        == size(ymm8r4_x1))       .and.  &
-                          (8*size(wo.m_y1)        == size(ymm8r4_y1))       .and.  &
-                          (8*size(wo.m_z1)        == size(ymm8r4_z1))       .and.  &
-                          (8*size(wo.m_x2)        == size(ymm8r4_x2))       .and.  &
-                          (8*size(wo.m_y2)        == size(ymm8r4_y2))       .and.  &
-                          (8*size(wo.m_z2)        == size(ymm8r4_z2))       .and.  &
-                          (8*size(wo.m_radius)    == size(ymm8r4_radius))   .and.  &
-                          (8*size(wo.m_nsegs)     == size(ymm8i4_nsegs))    .and.  &
-                          (8*size(wo.m_firstseg)  == size(ymm8i4_firstseg)) .and.  &
-                          (8*size(wo.m_lastseg)   == size(ymm8i4_lastseg))  .and.  &
-                          (8*size(wo.m_tagnum)    == size(ymm8i4_tagnum)) 
+          is_conforming = (8*size(wirenum)   == size(ymm8i4_wirenum))  .and.  &
+                          (8*size(x1)        == size(ymm8r4_x1))       .and.  &
+                          (8*size(y1)        == size(ymm8r4_y1))       .and.  &
+                          (8*size(z1)        == size(ymm8r4_z1))       .and.  &
+                          (8*size(x2)        == size(ymm8r4_x2))       .and.  &
+                          (8*size(y2)        == size(ymm8r4_y2))       .and.  &
+                          (8*size(z2)        == size(ymm8r4_z2))       .and.  &
+                          (8*size(radius)    == size(ymm8r4_radius))   .and.  &
+                          (8*size(nsegs)     == size(ymm8i4_nsegs))    .and.  &
+                          (8*size(firstseg)  == size(ymm8i4_firstseg)) .and.  &
+                          (8*size(lastseg)   == size(ymm8i4_lastseg))  .and.  &
+                          (8*size(tagnum)    == size(ymm8i4_tagnum)) 
               if(.not. is_conforming) then
                     call print_non_fatal_error(" ================= Non-Fatal ================== " , &
                                         " Module: mod_segdataout, subroutine: copyNECWireDataOut_ymm4r8_ymm8i4: Nonconforming arrays!! ",  &
@@ -450,22 +549,25 @@ module mod_segdataout
                     return
               end if
               
-         call copy_i4_ymm8i4(ymm8i4_wirenum , wo.m_wirenum)
-         call copy_r4_ymm8r4(ymm8r4_x1,     wo.m_x1)
-         call copy_r4_ymm8r4(ymm8r4_y1,     wo.m_y1)
-         call copy_r4_ymm8r4(ymm8r4_z1,     wo.m_z1)
-         call copy_r4_ymm8r4(ymm8r4_x2,     wo.m_x2)
-         call copy_r4_ymm8r4(ymm8r4_y2,     wo.m_y2)
-         call copy_r4_ymm8r4(ymm8r4_z2,     wo.m_z2)
-         call copy_r4_ymm8r4(ymm8r4_radius, wo.m_radius)
-         call copy_i4_ymm8i4(ymm8i4_nsegs,  wo.m_nsegs)
-         call copy_i4_ymm8i4(ymm8i4_firstseg, wo.m_firstseg)
-         call copy_i4_ymm8i4(ymm8i4_lastseg,  wo.m_lastseg)
-         call copy_i4_ymm8i4(ymm8i4_tagnum,   wo.m_tagnum)
+         call copy_i4_ymm8i4(ymm8i4_wirenum ,wirenum)
+         call copy_r4_ymm8r4(ymm8r4_x1,     x1)
+         call copy_r4_ymm8r4(ymm8r4_y1,     y1)
+         call copy_r4_ymm8r4(ymm8r4_z1,     z1)
+         call copy_r4_ymm8r4(ymm8r4_x2,     x2)
+         call copy_r4_ymm8r4(ymm8r4_y2,     y2)
+         call copy_r4_ymm8r4(ymm8r4_z2,     z2)
+         call copy_r4_ymm8r4(ymm8r4_radius, radius)
+         call copy_i4_ymm8i4(ymm8i4_nsegs,  nsegs)
+         call copy_i4_ymm8i4(ymm8i4_firstseg, firstseg)
+         call copy_i4_ymm8i4(ymm8i4_lastseg,  lastseg)
+         call copy_i4_ymm8i4(ymm8i4_tagnum,   tagnum)
           
     end subroutine copyNECWireDataOut_ymm8r4_ymm8i4
     
     subroutine initNECSegmentDataOut(so,ncols,errstate,iounit,logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: initNECSegmentDataOut
+#endif
           use mod_constants,    only : INITVAL
           use mod_print_error,  only : print_non_fatal_error,   &
                                        handle_fatal_memory_error
@@ -631,18 +733,37 @@ module mod_segdataout
                                                     emsg,__LINE__) 
     end subroutine initNECSegmentDataOut
     
-    subroutine readNECSegmentDataOut(so,iounit,filename,errmsg,iounit2,ioerr,logging,verbose,append,fname)
+    subroutine readNECSegmentDataOut(segnum,xcoord,ycoord,zcoord,       &
+                                     seglen,alpha,beta,wradius,         &
+                                     Iminus,I,Iplus,tagnum,
+                                     ncols,iounit,filename,errmsg,iounit2,&
+                                     ioerr,logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: readNECSegmentDataOut
+#endif
           use mod_print_error,  only : handle_fatal_fileio_error
-          type(NECSegmentDataOut_t),        intent(inout) :: so
-          integer(kind=int4),               intent(in)    :: iounit
-          character(len=*),                 intent(in)    :: filename
-          character(len=256),               intent(inout) :: errmsg
-          integer(kind=int4),               intent(in)    :: iounit2
-          integer(kind=int4),               intent(inout) :: ioerr
-          logical(kind=int4),               intent(in)    :: logging,   &
-                                                             verbose,   &
-                                                             append
-          character(len=*),                 intent(in)    :: fname
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: segnum
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: xcoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: ycoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: zcoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: seglen
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: alpha
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: beta
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: wradius
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: Iminus
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: I
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: Iplus
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: tagnum
+          integer(kind=int4),                          intent(in)  :: ncols
+          integer(kind=int4),                          intent(in)    :: iounit
+          character(len=*),                            intent(in)    :: filename
+          character(len=256),                          intent(inout) :: errmsg
+          integer(kind=int4),                          intent(in)    :: iounit2
+          integer(kind=int4),                          intent(inout) :: ioerr
+          logical(kind=int4),                          intent(in)    :: logging,   &
+                                                                        verbose,   &
+                                                                        append
+          character(len=*),                            intent(in)    :: fname
           ! Locals
           integer(kind=int4) :: idx
           logical(kind=int4) :: is_present = .false.
@@ -664,13 +785,13 @@ module mod_segdataout
                                         errmsg, 664         )
           end if
           do idx = 1, so.m_ncols
-              read(iounit,'(i6,7F22.15,i6,i6,i6,i6)',IOSTAT=ioerr,IOMSG=errmsg)     &
-                            so.m_segnum(idx),   so.m_xcoord(idx),                   &
-                            so.m_ycoord(idx),   so.m_zcoord(idx),                   &
-                            so.m_seglen(idx),   so.m_alpha(idx),                    &
-                            so.m_beta(idx),     so.m_wradius(idx),                  &
-                            so.m_Iminus(idx),   so.m_I(idx),                        &
-                            so.m_Iplus(idx),    so.m_tagnum(idx)
+              read(iounit,'(i6,7F10.7,i6,i6,i6,i6)',IOSTAT=ioerr,IOMSG=errmsg)     &
+                            segnum(idx),   xcoord(idx),                   &
+                            ycoord(idx),   zcoord(idx),                   &
+                            seglen(idx),   alpha(idx),                    &
+                            beta(idx),     wradius(idx),                  &
+                            Iminus(idx),   I(idx),                        &
+                            Iplus(idx),    tagnum(idx)
               if(ioerr > 0 .or. ioerr < 0) goto 9999
           end do
           close(UNIT=iounit,STATUS='KEEP')
@@ -683,27 +804,52 @@ module mod_segdataout
                                         errmsg, 682         )
     end subroutine readNECSegmentDataOut
     
-    subroutine copyNECSegmentDataOut_ymm8i4_ymm8r4(so,     &
-                                                    ymm8i4_segnum,   &
-                                                    ymm8r4_xcoord,   &
-                                                    ymm8r4_ycoord,   &
-                                                    ymm8r4_zcoord,   &
-                                                    ymm8r4_seglen,   &
-                                                    ymm8r4_alpha,    &
-                                                    ymm8r4_beta,     &
-                                                    ymm8r4_wradius,  &
-                                                    ymm8i4_Iminus,   &
-                                                    ymm8i4_I,        &
-                                                    ymm8i4_Iplus,    &
-                                                    ymm8i4_tagnum,   &
+    subroutine copyNECSegmentDataOut_ymm8i4_ymm8r4( segnum,           &
+                                                    xcoord,           &
+                                                    ycoord,           &
+                                                    zcoord,           &
+                                                    seglen,           &
+                                                    alpha,            &
+                                                    beta,             &
+                                                    wradius,          &
+                                                    Iminus,           &
+                                                    I,                &
+                                                    Iplus,            &
+                                                    tagnum,           &
+                                                    ymm8i4_segnum,    &
+                                                    ymm8r4_xcoord,    &
+                                                    ymm8r4_ycoord,    &
+                                                    ymm8r4_zcoord,    &
+                                                    ymm8r4_seglen,    &
+                                                    ymm8r4_alpha,     &
+                                                    ymm8r4_beta,      &
+                                                    ymm8r4_wradius,   &
+                                                    ymm8i4_Iminus,    &
+                                                    ymm8i4_I,         &
+                                                    ymm8i4_Iplus,     &
+                                                    ymm8i4_tagnum,    &
                                                     errstate     )
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copyNECSegmentDataOut_ymm8i4_ymm8r4
+#endif
           use mod_print_error,      only : print_non_fatal_error
           use mod_vectypes,         only : YMM8i4_t, YMM8r4_t
           use mod_copypaos,         only : copy_i4_ymm8i4,   &
                                            copy_r8_ymm8r4
-          type(NECSegmentDataOut_t),                intent(in) :: so
-          type(YMM8i4_t), contiguous, dimension(:), intent(inout) :: ymm8i4_segnum
-          type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_xcoord,  &
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: segnum
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: xcoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: ycoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: zcoord
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: seglen
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: alpha
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: beta
+          real(kind=sp),      contiguous,dimension(:), intent(out) :: wradius
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: Iminus
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: I
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: Iplus
+          integer(kind=int4), contiguous,dimension(:), intent(out) :: tagnum
+          type(YMM8i4_t),     contiguous,dimension(:), intent(inout) :: ymm8i4_segnum
+          type(YMM8r4_t),     contiguous,dimension(:), intent(inout) :: ymm8r4_xcoord,  &
                                                                      ymm8r4_ycoord,  &
                                                                      ymm8r4_zcoord,  &
                                                                      ymm8r4_seglen,  &
@@ -719,18 +865,18 @@ module mod_segdataout
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code....
           errstate = .false.
-          is_conforming = (8*size(so.m_segnum,dim=1)  == size(ymm8i4_segnum,dim=1))  .and. &
-                          (8*size(so.m_xcoord,dim=1)  == size(ymm8r4_xcoord,dim=1))  .and. &
-                          (8*size(so.m_ycoord,dim=1)  == size(ymm8r4_ycoord,dim=1))  .and. &
-                          (8*size(so.m_zcoord,dim=1)  == size(ymm8r4_zcoord,dim=1))  .and. &
-                          (8*size(so.m_seglen,dim=1)  == size(ymm8r4_seglen,dim=1))  .and. &
-                          (8*size(so.m_alpha,dim=1)   == size(ymm8r4_alpha, dim=1))  .and. &
-                          (8*size(so.m_beta,dim=1)    == size(ymm8r4_beta,  dim=1))  .and. &
-                          (8*size(so.m_wradius,dim=1) == size(ymm8r4_wradius,dim=1)) .and. &
-                          (8*size(so.m_Iminus,dim=1)  == size(ymm8i4_Iminus,dim=1))  .and. &
-                          (8*size(so.m_I,  dim=1)     == size(ymm8i4_I,  dim=1))     .and. &
-                          (8*size(so.m_Iplus,dim=1)   == size(ymm8i4_Iplus,dim=1))   .and. &
-                          (8*size(so.m_tagnum,dim=1)  == size(ymm8i4_tagnum,dim=1))
+          is_conforming = (8*size(segnum,dim=1)  == size(ymm8i4_segnum,dim=1))  .and. &
+                          (8*size(xcoord,dim=1)  == size(ymm8r4_xcoord,dim=1))  .and. &
+                          (8*size(ycoord,dim=1)  == size(ymm8r4_ycoord,dim=1))  .and. &
+                          (8*size(zcoord,dim=1)  == size(ymm8r4_zcoord,dim=1))  .and. &
+                          (8*size(seglen,dim=1)  == size(ymm8r4_seglen,dim=1))  .and. &
+                          (8*size(alpha,dim=1)   == size(ymm8r4_alpha, dim=1))  .and. &
+                          (8*size(beta,dim=1)    == size(ymm8r4_beta,  dim=1))  .and. &
+                          (8*size(wradius,dim=1) == size(ymm8r4_wradius,dim=1)) .and. &
+                          (8*size(Iminus,dim=1)  == size(ymm8i4_Iminus,dim=1))  .and. &
+                          (8*size(I,  dim=1)     == size(ymm8i4_I,  dim=1))     .and. &
+                          (8*size(Iplus,dim=1)   == size(ymm8i4_Iplus,dim=1))   .and. &
+                          (8*size(tagnum,dim=1)  == size(ymm8i4_tagnum,dim=1))
           if(.not. is_conforming) then
                 call print_non_fatal_error(  "================ Non-Fatal ===================", &
                                           "Module: mod_segdataout, subroutine: copyNECSegmentDataOut_ymm8i4_ymm4r8: -- Nonconforming arrays !!", &
@@ -738,18 +884,18 @@ module mod_segdataout
                 errstate = .true.
                 return
           end if
-          call copy_i4_ymm8i4( ymm8i4_segnum,  so.m_segnum)
-          call copy_r4_ymm8r4( ymm8r4_xcoord,  so.m_xcoord)
-          call copy_r4_ymm8r4( ymm8r4_ycoord,  so.m_ycoord)
-          call copy_r4_ymm8r4( ymm8r4_zcoord,  so.m_zcoord)
-          call copy_r4_ymm8r4( ymm8r4_seglen,  so.m_seglen)
-          call copy_r4_ymm8r4( ymm8r4_alpha,   so.m_alpha)
-          call copy_r4_ymm8r4( ymm8r4_beta,    so.m_beta)
-          call copy_r4_ymm8r4( ymm8r4_wradius, so.m_wradius)
-          call copy_i4_ymm8i4( ymm8i4_Iminus,  so.m_Iminus)
-          call copy_i4_ymm8i4( ymm8i4_I,       so.m_I)
-          call copy_i4_ymm8i4( ymm8i4_Iplus,   so.m_Iplus)
-          call copy_i4_ymm8i4( ymm8i4_tagnum,  so.m_tagnum)
+          call copy_i4_ymm8i4( ymm8i4_segnum,  segnum)
+          call copy_r4_ymm8r4( ymm8r4_xcoord,  xcoord)
+          call copy_r4_ymm8r4( ymm8r4_ycoord,  ycoord)
+          call copy_r4_ymm8r4( ymm8r4_zcoord,  zcoord)
+          call copy_r4_ymm8r4( ymm8r4_seglen,  seglen)
+          call copy_r4_ymm8r4( ymm8r4_alpha,   alpha)
+          call copy_r4_ymm8r4( ymm8r4_beta,    beta)
+          call copy_r4_ymm8r4( ymm8r4_wradius, wradius)
+          call copy_i4_ymm8i4( ymm8i4_Iminus,  Iminus)
+          call copy_i4_ymm8i4( ymm8i4_I,       I)
+          call copy_i4_ymm8i4( ymm8i4_Iplus,   Iplus)
+          call copy_i4_ymm8i4( ymm8i4_tagnum,  tagnum)
           
    end subroutine copyNECSegmentDataOut_ymm8i4_ymm8r4
                                                     
