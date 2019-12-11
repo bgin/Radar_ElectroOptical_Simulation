@@ -65,7 +65,7 @@ module mod_targetrp
     character(*),       parameter, public :: MOD_TARGETRP_CREATE_DATE = "19-11-2018 19:18 +00200 (MON 19 NOV 2018 GMT+2)"
     
     ! Module build date
-    character(*),       parameter, public :: MOD_TARGETRP_BUILD_DATE = "00-00-0000 00:00"
+    character(*),       parameter, public :: MOD_TARGETRP_BUILD_DATE = __DATE__ " " __TIME__ 
     
     ! Module author info
     character(*),       parameter, public :: MOD_TARGETRP_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -73,56 +73,83 @@ module mod_targetrp
     ! Module short description
     character(*),       parameter, public :: MOD_TARGETRP_SYNOPSIS = "  Target radiation pattern as function of angle -- computed by NEC program."
     
-!DIR$ IF .NOT. DEFINED (GMS_TARGETRP_ADD_PADDING)
-    !DIR$ DEFINE GMS_TARGETRP_ADD_PADDING = 1
-!DIR$ ENDIF
+
+#if !defined(GMS_TARGETRP_ADD_PADDING)
+#define GMS_TARGETRP_ADD_PADING 1
+#endif
     
         type, public :: NECTargetRadPattern_t
             
               
               ! Number of data columns (per angle)
               integer(kind=int4) :: m_ncols
-!DIR$   IF (GMS_TARGETRP_ADD_PADDING .EQ. 1 )
+#if (GMS_TARGETRP_ADD_PADDING) == 1
               integer(kind=int1), dimension(0:3) :: pad0
-!DIR$   ENDIF
+#endif
               ! Angle theta
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_angth
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_angth
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_angth
               ! Angle phi
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_angphi
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_angphi
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_angphi
               ! Cross section: vertical (db)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_csvert
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_csvert
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_csvert
               ! Cross section: horizontal  (db)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_cshor
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_cshor
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_cshor
               ! Cross section total    (db)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_cstot
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_cstot
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_cstot
               ! Polarization: axial ratio unitless
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_axratio
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_axratio
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_axratio
               ! Polarization: tilt (deg)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_tilt
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_tilt
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_tilt
               ! E-field theta magnitude (volts)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethmag
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethmag
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_Ethmag
               ! E-field theta phase (deg)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethphase
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ethphase
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_Ethphase
               ! E-field phi magnitude (volts)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephimag
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephimag
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_Ephimag
               ! E-field phi phase (deg)
-!DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephiphase
+#if defined __INTEL_COMPILER
+              !DIR$         ATTRIBUTES ALIGN : 64 :: m_Ephiphase
+#endif
               real(kind=sp),    allocatable, dimension(:) :: m_Ephiphase
         end type NECTargetRadPattern_t
         
     contains
     
-    subroutine initNECTargetRadPattern(rp,ncols,errstate,iounit,logging,verbose,append,fname)
+      subroutine initNECTargetRadPattern(rp,ncols,errstate,iounit, &
+                                         logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: initNECTargetRadPattern
+#endif
           use mod_constants,    only : INITVAL
           use mod_print_error,  only : print_non_fatal_error,   &
                                        handle_fatal_memory_error
@@ -271,23 +298,41 @@ module mod_targetrp
           rp.m_Ephiphase(:) = INITVAL
           return
 9999      call  handle_fatal_memory_error(iounit, logging,verbose,append,fname,                                                    &
-                             "logger: "// __FILE__ // "module: mod_targetrp, subroutine: initNECTargetRadPattern -- Memory Allocation Failure !!", &                                                        &
+                             "logger: "// __FILE__ // "module: mod_targetrp, subroutine: initNECTargetRadPattern -- Memory Allocation Failure !!", &
                               "module: mod_targetrp, subroutine: initNECTargetRadPattern -- Memory Allocation Failure !!", &
                                                     emsg,273 ) 
     end subroutine initNECTargetRadPattern
     
-    subroutine readNECTargetRadPattern(rp,iounit,filename,errmsg,ioerr,iounit2,logging,verbose,append,fname)
+    subroutine readNECTargetRadPattern(angth,angphi,csvert,cshor,cstot, &
+                                       axratio,tilt,Ethmag,Ethphase,    &
+                                       Ephimag,Ephiphase,                &
+                                       ncols,iounit,filename,errmsg,ioerr,     &
+                                       iounit2,logging,verbose,append,fname)
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: readNECTargetRadPattern
+#endif
           use mod_print_error, only : handle_fatal_fileio_error
-          type(NECTargetRadPattern_t),      intent(inout) :: rp
-          integer(kind=int4),               intent(in)    :: iounit
-          character(len=*),                 intent(in)    :: filename
-          character(len=256),               intent(inout) :: errmsg
-          integer(kind=int4),               intent(inout) :: ioerr
-          integer(kind=int4),               intent(in)    :: iounit2
-          logical(kind=int4),               intent(in)    :: logging,  &
-                                                             verbose,  &
-                                                             append
-          character(len=*),                 intent(in)    :: fname
+          real(kin=sp),   contiguous, dimension(:), intent(out) :: angth
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: angphi
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: csvert
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: cshor
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: cstot
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: axratio
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: tilt
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ethmag
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ethphase
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ephimag
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ephiphase
+          integer(kind=int4),                       intent(in)  :: ncols
+          integer(kind=int4),                       intent(in)  :: iounit
+          character(len=*),                         intent(in)  :: filename
+          character(len=256),                       intent(inout) :: errmsg
+          integer(kind=int4),                       intent(inout) :: ioerr
+          integer(kind=int4),                       intent(in)    :: iounit2
+          logical(kind=int4),                       intent(in)    :: logging,  &
+                                                                  verbose,  &
+                                                                  append
+          character(len=*),                         intent(in)    :: fname
           ! Locals
           integer(kind=int4) :: idx
           logical(kind=int4) :: is_present = .false.
@@ -308,19 +353,19 @@ module mod_targetrp
                      "module: mod_targetrp, subroutine: readNECTargetRadPattern -- File Open I/O Failure !! ",  &
                                             errmsg,308)
           end if
-          do idx = 1,  rp.m_ncols   
-                read(iounit, '(11F22.15)', IOMSG=errmsg,IOSTAT=ioerr)       &
-                            rp.m_angth(idx),                                &
-                            rp.m_angphi(idx),                               &
-                            rp.m_csvert(idx),                               &
-                            rp.m_cshor(idx),                                &
-                            rp.m_cstot(idx),                                &
-                            rp.m_axratio(idx),                              &
-                            rp.m_tilt(idx),                                 &
-                            rp.m_Ethmag(idx),                               &
-                            rp.m_Ethphase(idx),                             &
-                            rp.m_Ephimag(idx),                              &
-                            rp.m_Ephiphase(idx)
+          do idx = 1,  ncols   
+                read(iounit, '(11F10.7)', IOMSG=errmsg,IOSTAT=ioerr)       &
+                            angth(idx),                                &
+                            angphi(idx),                               &
+                            csvert(idx),                               &
+                            cshor(idx),                                &
+                            cstot(idx),                                &
+                            axratio(idx),                              &
+                            tilt(idx),                                 &
+                            Ethmag(idx),                               &
+                            Ethphase(idx),                             &
+                            Ephimag(idx),                              &
+                            Ephiphase(idx)
                 if(ioerr > 0 .or. ioerr < 0) goto 9999
           end do
           close(UNIT=iounit,STATUS='KEEP')
@@ -333,23 +378,46 @@ module mod_targetrp
                                            errmsg, 333)
     end subroutine readNECTargetRadPattern
     
-    subroutine copyNECTargetRadPattern_ymm8r4(rp,      &
-                                       ymm8r4_angth,    &
-                                       ymm8r4_angphi,   &
-                                       ymm8r4_csvert,   &
-                                       ymm8r4_cshor,    &
-                                       ymm8r4_cstot,    &
-                                       ymm8r4_axratio,  &
-                                       ymm8r4_tilt,     &
-                                       ymm8r4_Ethmag,   &
-                                       ymm8r4_Ethphase, &
-                                       ymm8r4_Ephimag,  &
-                                       ymm8r4_Ephiphase,    &
-                                       errstate  )
+    subroutine copyNECTargetRadPattern_ymm8r4(angth,           &
+                                              angphi,          &
+                                              csvert,          &
+                                              cshor,           &
+                                              cstot,           &
+                                              axratio,         &
+                                              tilt,            &
+                                              Ethmag,          &
+                                              Ethphase,        &
+                                              Ephimag,         &
+                                              Ephiphase,       &
+                                              ymm8r4_angth,    &
+                                              ymm8r4_angphi,   &
+                                              ymm8r4_csvert,   &
+                                              ymm8r4_cshor,    &
+                                              ymm8r4_cstot,    &
+                                              ymm8r4_axratio,  &
+                                              ymm8r4_tilt,     &
+                                              ymm8r4_Ethmag,   &
+                                              ymm8r4_Ethphase, &
+                                              ymm8r4_Ephimag,  &
+                                              ymm8r4_Ephiphase,    &
+                                              errstate  )
+#if defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copyNECTargetRadPattern
+#endif
           use mod_print_error, only : print_non_fatal_error
           use mod_vectypes,    only :  YMM8r4_t
           use mod_copypaos,    only : copy_r4_ymm8r4
-          type(NECTargetRadPattern_t),              intent(in)    :: rp
+          real(kin=sp),   contiguous, dimension(:), intent(out) :: angth
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: angphi
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: csvert
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: cshor
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: cstot
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: axratio
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: tilt
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ethmag
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ethphase
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ephimag
+          real(kind=sp),  contiguous, dimension(:), intent(out) :: Ephiphase
           type(YMM8r4_t), contiguous, dimension(:), intent(inout) :: ymm8r4_angth,    &
                                                                      ymm8r4_angphi,   &
                                                                      ymm8r4_csvert,   &
@@ -366,17 +434,17 @@ module mod_targetrp
           logical(kind=int4) :: is_conforming = .false.
           ! Exec code ....
           errstate = .false.
-          is_conforming = (8*size(rp.m_angth)     == size(ymm8r4_angth))    .and.  &
-                          (8*size(rp.m_angphi)    == size(ymm8r4_angphi))   .and.  &
-                          (8*size(rp.m_csvert)    == size(ymm8r4_csvert))   .and.  &
-                          (8*size(rp.m_cshor)     == size(ymm8r4_cshor))    .and.  &
-                          (8*size(rp.m_cstot)     == size(ymm8r4_cstot))    .and.  &
-                          (8*size(rp.m_axratio)   == size(ymm8r4_axratio))  .and.  &
-                          (8*size(rp.m_tilt)      == size(ymm8r4_tilt))     .and.  &
-                          (8*size(rp.m_Ethmag)    == size(ymm8r4_Ethmag))   .and.  &
-                          (8*size(rp.m_Ethphase)  == size(ymm8r4_Ethphase)) .and.  &
-                          (8*size(rp.m_Ephimag)   == size(ymm8r4_Ephimag))  .and.  &
-                          (8*size(rp.m_Ephiphase) == size(ymm8r4_Ephiphase))
+          is_conforming = (8*size(angth)     == size(ymm8r4_angth))    .and.  &
+                          (8*size(angphi)    == size(ymm8r4_angphi))   .and.  &
+                          (8*size(csvert)    == size(ymm8r4_csvert))   .and.  &
+                          (8*size(cshor)     == size(ymm8r4_cshor))    .and.  &
+                          (8*size(cstot)     == size(ymm8r4_cstot))    .and.  &
+                          (8*size(axratio)   == size(ymm8r4_axratio))  .and.  &
+                          (8*size(tilt)      == size(ymm8r4_tilt))     .and.  &
+                          (8*size(Ethmag)    == size(ymm8r4_Ethmag))   .and.  &
+                          (8*size(Ethphase)  == size(ymm8r4_Ethphase)) .and.  &
+                          (8*size(Ephimag)   == size(ymm8r4_Ephimag))  .and.  &
+                          (8*size(Ephiphase) == size(ymm8r4_Ephiphase))
           if(.not. is_conforming) then 
                  call  print_non_fatal_error(" ================= Non-Fatal ================== " , &
                                           " Module: mod_targetrp, subroutine: copyNECTargetRadPattern_ymm4r8: Nonconforming array(s) detected!! ",  &
@@ -384,17 +452,17 @@ module mod_targetrp
                  errstate = .true.
                  return
           end if
-          call copy_r4_ymm4r8(ymm8r4_angth,    rp.m_angth)
-          call copy_r4_ymm4r8(ymm8r4_angphi,   rp.m_angphi)
-          call copy_r4_ymm4r8(ymm8r4_csvert,   rp.m_csvert)
-          call copy_r4_ymm4r8(ymm8r4_cshor,    rp.m_cshor)
-          call copy_r4_ymm4r8(ymm8r4_cstot,    rp.m_cstot)
-          call copy_r4_ymm4r8(ymm8r4_axratio,  rp.m_axratio)
-          call copy_r4_ymm4r8(ymm8r4_tilt,     rp.m_tilt)
-          call copy_r4_ymm4r8(ymm8r4_Ethmag,   rp.m_Ethmag)
-          call copy_r4_ymm4r8(ymm8r4_Ethphase, rp.m_Ethphase)
-          call copy_r4_ymm4r8(ymm8r4_Ephimag,  rp.m_Ephimag)
-          call copy_r4_ymm4r8(ymm8r4_Ephiphase,rp.m_Ephiphase)
+          call copy_r4_ymm4r8(ymm8r4_angth,    angth)
+          call copy_r4_ymm4r8(ymm8r4_angphi,   angphi)
+          call copy_r4_ymm4r8(ymm8r4_csvert,   csvert)
+          call copy_r4_ymm4r8(ymm8r4_cshor,    cshor)
+          call copy_r4_ymm4r8(ymm8r4_cstot,    cstot)
+          call copy_r4_ymm4r8(ymm8r4_axratio,  axratio)
+          call copy_r4_ymm4r8(ymm8r4_tilt,     tilt)
+          call copy_r4_ymm4r8(ymm8r4_Ethmag,   Ethmag)
+          call copy_r4_ymm4r8(ymm8r4_Ethphase, Ethphase)
+          call copy_r4_ymm4r8(ymm8r4_Ephimag,  phimag)
+          call copy_r4_ymm4r8(ymm8r4_Ephiphase,Ephiphase)
           
     end subroutine copyNECTargetRadPattern_ymm8r4
 
