@@ -90,9 +90,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Hope it will enable auto-vectorization of this subroutine.
-    ! 2*size(output,dim=1) == size(input,dim=1) 
+      ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+      subroutine copy_r8_xmm2r8(output,input) !GCC$ ATTRIBUTES cold :: copy_r8_xmm2r8  !GCC$ ATTRIBUTES always_inline :: copy_r8_xmm2r8 !GCC$ ATTRIBUTES align(32) :: copy_r8_xmm2r8
+#elif defined __INTEL_COMPILER
       subroutine copy_r8_xmm2r8(output,input)
-#if defined __INTEL_COMPILER
+
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r8_xmm2r8
         !DIR$ ATTRIBUTES VECTOR :: copy_r8_xmm2r8
 #endif
@@ -110,6 +113,8 @@ module mod_copypaos
           do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 1
 #if defined __INTEL_COMPILER
@@ -123,9 +128,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Hope it will enable auto-vectorization of this subroutine.
-    ! 2*size(output,dim=1) == size(input,dim=1) 
+    ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm2r8_r8(output,inout) !GCC$ ATTRIBUTES cold :: copy_xmm2r8_r8 !GCC$ ATTRIBUTES always_inline :: copy_xmm2r8_r8 !GCC$ ATTRIBUTES align(32) :: copy_xmm2r8_r8
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm2r8_r8(output,input)
-#if defined __INTEL_COMPILER
+
       !DIR$ ATTRIBUTES VECTOR :: copy_xmm2r8_r8
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm2r8_r8
 #endif
@@ -136,32 +144,32 @@ module mod_copypaos
    
          integer(kind=int4),automatic :: i
          integer(kind=int4),automatic :: j
-#if defined __INTEL_COMPILER   
-         !DIR$ ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-    type(XMM2r8_t) :: tmp
 
-   
     ! Exec code ....
     do i = 0, size(input,dim=1)-1
-       tmp = input(i)
+      
 #if defined __INTEL_COMPILER
        !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+       !GCC$ VECTOR
 #endif
        do j = 0, 1
 #if defined __INTEL_COMPILER
-          !DIR$ ASSUME_ALIGNED output:64
+          !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-            output(i*v2len+j) = tmp.v(j)
+            output(i*v2len+j) = input(i).v(j)
         end do
     end do
     end subroutine copy_xmm2r8_r8
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 2*size(output,dim=1) == size(input,dim=1) 
+    ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_i4_xmm2i4(output,input) !GCC$ ATTRIBUTES cold :: copy_i4_xmm2i4 !GCC$ ATTRIBUTES always_inline :: copy_i4_xmm2i4 !GCC$ ATTRIBUTES align(32) :: copy_i4_xmm2i4
+#elif defined __INTEL_COMPILER
     subroutine copy_i4_xmm2i4(output,input)
-#if defined __INTEL_COMPILER
+
       !DIR$ ATTRIBUTES VECTOR :: copy_i4_xmm2i4
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_i4_xmm2i4
 #endif
@@ -179,6 +187,8 @@ module mod_copypaos
           do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER             
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 3
 #if defined __INTEL_COMPILER
@@ -192,9 +202,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 2*size(output,dim=1) == size(input,dim=1) 
+    ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm2i4_i4(output,input) !GCC$ ATTRIBUTES cold :: copy_xmm2i4_i4 !GCC$ ATTRIBUTES always_inline :: copy_xmm2i4_i4 !GCC$ ATTRIBUTES align(32) :: copy_xmm2i4_i4
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm2i4_i4(output,input)
-#if defined __INTEL_COMPILER
+
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm2i4_i4
        !DIR$  ATTRIBUTES VECTOR :: copy_xmm2i4_i4
 #endif
@@ -206,31 +219,32 @@ module mod_copypaos
            
              integer(kind=int4) :: i
              integer(kind=int4) :: j
-#if defined __INTEL_COMPILER        
-             !DIR$ ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(XMM2i4_t)  :: tmp
 
           ! Exec code ...
           do i = 0, size(input,dim=1)-1
-             tmp = input(i)
+             
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 1
 #if defined __INTEL_COMPILER
-                !DIR$ ASSUME_ALIGNED output:64
+                !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                  output(i*v2len+j) = tmp.v(j)
+                  output(i*v2len+j) = input(i).v(j)
               end do
            end do
     end subroutine copy_xmm2i4_i4
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 3*size(output,dim=1) == size(input,dim=1) 
+    ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r8_ymm3r8(output,input) !GCC$ ATTRIBUTES cold :: copy_r8_ymm3r8 !GCC$ ATTRIBUTES always_inline :: copy_r8_ymm3r8 !GCC$ ATTRIBUTES aligned(32) :: copy_r8_ymm3r8
+#elif defined __INTEL_COMPILER
     subroutine copy_r8_ymm3r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r8_ymm3r8
 !DIR$ ATTRIBUTES VECTOR :: copy_r8_ymm3r8
 #endif
@@ -247,6 +261,8 @@ module mod_copypaos
          do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER             
             !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+            !GCC$ VECTOR
 #endif
             do j = 0, 2
 #if defined __INTEL_COMPILER
@@ -260,9 +276,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 3*size(output,dim=1) == size(input,dim=1) 
+    ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_ymm3r8_r8(output,input) !GCC$ ATTRIBUTES cold :: copy_ymm3r8_r8 !GCC$ ATTRIBUTES always_inline :: copy_ymm3r8_r8 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm3r8_r8
+#elif defined __INTEL_COMPILER
     subroutine copy_ymm3r8_r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_ymm3r8_r8
 !DIR$ ATTRIBUTES VECTOR :: copy_ymm3r8_r8
 #endif
@@ -273,21 +292,20 @@ module mod_copypaos
         
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(YMM3r8_t)  :: tmp
+
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-             tmp = input(i)
+           
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 2
 #if defined __INTEL_COMPILER
-                !DIR$ ASSUME_ALIGNED output:64
+                !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif                
-                  output(i*v3len+j) = tmp.v(j)
+                  output(i*v3len+j) = input(i).v(j)
               end do
           end do
     end subroutine copy_ymm3r8_r8
@@ -296,9 +314,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 3*size(output,dim=1) == size(input,dim=1) 
+    ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_i4_xmm3i4(output,input) !GCC$ ATTRIBUTES cold :: copy_i4_xmm3i4 !GCC$ ATTRIBUTES always_inline :: copy_i4_xmm3i4 !GCC$ ATTRIBUTES aligned(32) :: copy_i4_xmm3i4
+#elif defined __INTEL_COMPILER
     subroutine copy_i4_xmm3i4(output,input)
-#if defined __INTEL_COMPILER
+!
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_i4_xmm3i4
       !DIR$ ATTRIBUTES  VECTOR :: copy_i4_xmm3i4
 #endif
@@ -315,6 +336,8 @@ module mod_copypaos
           do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER              
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 2
 #if defined __INTEL_COMPILER
@@ -328,9 +351,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 3*size(output,dim=1) == size(input,dim=1) 
+    ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm3i4_i4(output,input) !GCC$ ATTRIBUTES cold :: copy_xmm3i4_i4 !GCC$ ATTRIBUTES always_inline :: copy_xmm3i4_i4 !GCC$ ATTRIBUTES aligned(32) :: copy_xmm3i4_i4
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm3i4_i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm3i4_i4
 !DIR$ ATTRIBUTES VECTOR :: copy_xmm3i4_i4
 #endif
@@ -342,18 +368,20 @@ module mod_copypaos
              
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER          
-!DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-               type(XMM3i4_t)  :: tmp
-#endif
+
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-             tmp = input(i)
+            
 #if defined __INTEL_COMPILER
              !DIR$         VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
-              do j = 0, 2
-                  output(i*v3len+j) = tmp.v(j)
+             do j = 0, 2
+#if defined __INTEL_COMPILER
+                !DIR$ ASSUME_ALIGNED input:64,output:64
+#endif
+                  output(i*v3len+j) = input(i).v(j)
               end do
           end do
     end subroutine copy_xmm3i4_i4
@@ -362,9 +390,12 @@ module mod_copypaos
    
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 4*size(output,dim=1) == size(input,dim=1) 
+    ! 4*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r8_ymm4r8(output,input) !GCC$ ATTRIBUTES cold :: copy_r8_ymm4r8 !GCC$ ATTRIBUTES always_inline :: copy_r8_ymm4r8 !GCC$ ATTRIBUTES aligned(32) :: copy_r8_ymm4r8
+#elif defined __INTEL_COMPILER
     subroutine copy_r8_ymm4r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r8_ymm4r8
 !DIR$ ATTRIBUTES VECTOR :: copy_r8_ymm4r8
 #endif
@@ -381,6 +412,8 @@ module mod_copypaos
          do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
             !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+            !GCC$ VECTOR
 #endif
             do j = 0, 3
 #if defined __INTEL_COMPILER
@@ -394,9 +427,12 @@ module mod_copypaos
     
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
-    ! 4*size(output,dim=1) == size(input,dim=1) 
+    ! 4*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_ymm4r8_r8(output,input) !GCC$ ATTRIBUTES cold :: copy_ymm4r8_r8 !GCC$ ATTRIBUTES always_inline :: copy_ymm4r8 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm4r8_r8
+#elif defined __INTEL_COMPILER
     subroutine copy_ymm4r8_r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_ymm4r8_r8
 !DIR$ ATTRIBUTES VECTOR :: copy_ymm4r8_r8
 #endif
@@ -407,24 +443,19 @@ module mod_copypaos
        
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER        
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(YMM4r8_t)  :: tmp
-          ! Exec code ....
+
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 3
 #if defined __INTEL_COMPILER
-                !DIR$ ASSUME_ALIGNED output:64
+                !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                  output(i*v4len+j) = tmp.v(j)
+                  output(i*v4len+j) = input(i).v(j)
               end do
           end do
     end subroutine copy_ymm4r8_r8
@@ -432,8 +463,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 4*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_i4_xmm4i4(output,input) !GCC$ ATTRIBUTES cold :: copy_i4_xmm4i4 !GCC$ ATTRIBUTES always_inline :: copy_i4_xmm4i4 !GCC$ ATTRIBUTES aligned(32) :: copy_i4_xmm4i4
+#elif defined __INTEL_COMPILER
     subroutine copy_i4_xmm4i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_i4_xmm4i4
 !DIR$ ATTRIBUTES VECTOR :: copy_i4_xmm4i4
 #endif
@@ -449,6 +483,8 @@ module mod_copypaos
           do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER                 
              !DIR$  VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 3
 #if defined __INTEL_COMPILER
@@ -463,8 +499,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 4*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm4i4_i4(output,input) !GCC$ ATTRIBUTES cold :: copy_xmm4i4_i4 !GCC$ ATTRIBUTES always_inline :: copy_xmm4i4_i4 !GCC$ ATTRIBUTES aligned(32) :: copy_xmm4i4_i4
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm4i4_i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm4i4_i4
 !DIR$  ATTRIBUTES VECTOR :: copy_xmm4i4_i4
 #endif
@@ -475,25 +514,20 @@ module mod_copypaos
          
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER       
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(XMM4i4_t) :: tmp
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$        VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                      do j = 0,  3
 #if defined __INTEL_COMPILER
-                        !DIR$ ASSUME_ALIGNED output:64
+                        !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                         output(i*v4len+j) = tmp.v(j)
+                         output(i*v4len+j) = input(i).v(j)
                      end do
           end do
     end subroutine copy_xmm4i4_i4
@@ -502,8 +536,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_i4_ymm8i4(output,input) !GCC$ ATTRIBUTES cold :: copy_i4_ymm8i4 !GCC$ ATTRIBUTES always_inline :: copy_i4_ymm8i4 !GCC$ ATTRIBUTES aligned(32) :: copy_i4_ymm8i4
+#elif defined __INTEL_COMPILER
     subroutine copy_i4_ymm8i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_i4_ymm8i4
 !DIR$ ATTRIBUTES VECTOR :: copy_i4_ymm8i4
 #endif
@@ -519,6 +556,8 @@ module mod_copypaos
                do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
                   !DIR$  VECTOR ALWAYS
+#elif defined __GFORTRAN__
+                  !GCC$ VECTOR
 #endif
                   do j = 0, 7
 #if defined __INTEL_COMPILER
@@ -533,8 +572,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_ymm8i4_i4(output,input) !GCC$ ATTRIBUTES cold :: copy_ymm8i4_i4 !GCC$ ATTRIBUTES always_inline :: copy_ymm8i4_i4 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm8i4_i4
+#elif defined __INTEL_COMPILER
     subroutine copy_ymm8i4_i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_ymm8i4_i4
 !DIR$ ATTRIBUTES VECTOR :: copy_ymm8i4_i4
 #endif
@@ -545,25 +587,21 @@ module mod_copypaos
          
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(YMM8i4_t)   :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
              do j = 0, 7
 #if defined __INTEL_COMPILER
-                !DIR$ ASSUME_ALIGNED output:64
+                !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                  output(i*v8len+j) = tmp.v(j)
+                  output(i*v8len+j) = input(i).v(j)
               end do
           end do
     end subroutine copy_ymm8i4_i4
@@ -571,8 +609,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 16*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_i4_zmm16i4(output,input) !GCC$ ATTRIBUTES cold :: copy_i4_zmm16i4 !GCC$ ATTRIBUTES always_inline :: copy_i4_zmm16i4 !GCC$ ATTRIBUTES aligned(32) :: copy_i4_zmm16i4
+#elif defined __INTEL_COMPILER
     subroutine copy_i4_zmm16i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_i4_zmm16i4
 !DIR$ ATTRIBUTES VECTOR :: copy_i4_zmm16i4
 #endif
@@ -588,6 +629,8 @@ module mod_copypaos
            do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER                  
               !DIR$  VECTOR ALWAYS
+#elif defined __GFORTRAN__
+              !GCC$ VECTOR
 #endif
                 do j = 0, 15
 #if defined __INTEL_COMPILER
@@ -602,8 +645,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 16*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_zmm16i4_i4(output,input) !GCC$ ATTRIBUTES cold :: copy_zmm16i4_i4 !GCC$ ATTRIBUTES always_inline :: copy_zmm16i4_i4 !GCC$ ATTRIBUTES aligned(32) :: copy_zmm16i4_i4
+#elif defined __INTEL_COMPILER
     subroutine copy_zmm16i4_i4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: copy_zmm16i4_i4
 !DIR$  ATTRIBUTES VECTOR :: copy_zmm16i4_i4
 #endif
@@ -614,25 +660,21 @@ module mod_copypaos
          
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER       
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(ZMM16i4_t) :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                   do j = 0, 15
 #if defined __INTEL_COMPILER
-                     !DIR$ ASSUME_ALIGNED output:64
+                     !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                      output(i*v16len+j) = tmp.v(j)
+                      output(i*v16len+j) = input.v(j)
                   end do
           end do
     end subroutine copy_zmm16i4_i4
@@ -640,8 +682,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r8_zmm8r8(output,input) !GCC$ ATTRIBUTES cold :: copy_r8_zmm8r8 !GCC$ ATTRIBUTES always_inline :: copy_r8_zmm8r8 !GCC$ ATTRIBUTES aligned(32) :: copy_r8_zmm8r8
+#elif defined __INTEL_COMPILER
     subroutine copy_r8_zmm8r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r8_zmm8r8
 !DIR$ ATTRIBUTES VECTOR :: copy_r8_zmm8r8
 #endif
@@ -657,6 +702,8 @@ module mod_copypaos
                do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
                   !DIR$  VECTOR ALWAYS
+#elif defined __GFORTRAN__
+                  !GCC$ VECTOR
 #endif
                   do j = 0, 7
 #if defined __INTEL_COMPILER
@@ -671,8 +718,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_zmm8r8_r8(output,input) !GCC$ ATTRIBUTES cold :: copy_zmm8r8_r8 !GCC$ ATTRIBUTES always_inline :: copy_zmm8r8_r8 !GCC$ ATTRIBUTES aligned(32) :: copy_zmm8r8_r8
+#elif defined __INTEL_COMPILER
     subroutine copy_zmm8r8_r8(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$   ATTRIBUTES CODE_ALIGN : 32 :: copy_zmm8r8_r8
 !DIR$   ATTRIBUTES VECTOR :: copy_zmm8r8_r8
 #endif
@@ -683,25 +733,21 @@ module mod_copypaos
         
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(ZMM8r8_t)  :: tmp
+
 
           ! Exec code .....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                     do j = 0, 7
 #if defined __INTEL_COMPILER
-                       !DIR$ ASSUME_ALIGNED output:64
+                       !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                        output(i*v8len+j) = tmp.v(j)
+                        output(i*v8len+j) = input(i).v(j)
                     end do
           end do
     end subroutine copy_zmm8r8_r8
@@ -709,8 +755,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r4_xmm2r4(output,input) !GCC$ ATTRIBUTES cold :: copy_r4_xmm2r4 !GCC$ ATTRIBUTES always_inline :: copy_r4_xmm2r4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_xmm2r4
+#elif defined __GFORTRAN__
     subroutine copy_r4_xmm2r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_xmm2r4
 !DIR$ ATTRIBUTES VECTOR :: copy_r4_xmm2r4
 #endif
@@ -726,6 +775,8 @@ module mod_copypaos
                do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
                   !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+                  !GCC$ VECTOR
 #endif
                   do j = 0, 1
 #if defined __INTEL_COMPILER
@@ -740,8 +791,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 2*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm2r4_r4(output,input) !GCC$ ATTRIBUTES cold :: copy_xmm2r4_r4 !GCC$ ATTRIBUTES always_inline :: copy_xmm2r4_r4 !GCC$ ATTRIBUTES aligned(32) :: copy_xmm2r4_r4
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm2r4_r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm2r4_r4
 !DIR$ ATTRIBUTES VECTOR :: copy_xmm2r4_r4
 #endif
@@ -752,25 +806,21 @@ module mod_copypaos
         
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER        
-               !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(XMM2r4_t)  :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                     do j = 0, 1
 #if defined __INTEL_COMPILER
-                       !DIR$ ASSUME_ALIGNED output:64
+                       !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                        output(i*v2len+j) = tmp.v(j)
+                        output(i*v2len+j) = input(i).v(j)
                     end do
           end do
     end subroutine copy_xmm2r4_r4
@@ -779,8 +829,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r4_xmm3r4(output,input) !GCC$ ATTRIBUTES cold :: copy_r4_xmm3r4 !GCC$ ATTRIBUTES always_inline :: copy_r4_xmm3r4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_xmm3r4
+#elif defined __INTEL_COMPILER
     subroutine copy_r4_xmm3r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_xmm3r4
       !DIR$ ATTRIBUTES VECTOR :: copy_r4_xmm3r4
 #endif
@@ -797,6 +850,8 @@ module mod_copypaos
          do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER             
             !DIR$    VECTOR ALWAYS
+#elif defined __GFORTRAN__
+            !GCC$ VECTOR
 #endif
                do j = 0, 2
 #if defined __INTEL_COMPILER
@@ -811,8 +866,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 3*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_xmm3r4_r4(output,input) !GCC$ ATTRIBUTES cold :: copy_xmm3r4_r4 !GCC$ ATTRIBUTES always_inline :: copy_xmm3r4_r4 !GCC$ ATTRIBUTES aligned(32) :: copy_xmm3r4_r4
+#elif defined __GFORTRAN__
     subroutine copy_xmm3r4_r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm3r4_r4
       !DIR$ ATTRIBUTES VECTOR :: copy_xmm3r4_r4
 #endif
@@ -823,25 +881,21 @@ module mod_copypaos
          
                integer(kind=int4) :: i
                integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-               !DIR$ ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(XMM3r4_t)   :: tmp
+
 
           ! Exec code .....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif             
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                  do j = 0,  2
 #if defined __INTEL_COMPILER
-                       !DIR$ ASSUME_ALIGNED output:64
+                       !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif                
-                     output(i*v3len+j) = tmp.v(j)
+                     output(i*v3len+j) = input(i).v(j)
                  end do
           end do
     end subroutine copy_xmm3r4_r4
@@ -849,8 +903,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 4*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r4_xmm4r4(output,input) !GCC$ ATTRIBUTES cold :: copy_r4_xmm4r4 !GCC$ ATTRIBUTES always_inline :: copy_r4_xmm4r4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_xmm4r4
+#elif defined __INTEL_COMPILER
     subroutine copy_r4_xmm4r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_xmm4r4
       !DIR$ ATTRIBUTES VECTOR :: copy_r4_xmm4r4
 #endif
@@ -866,6 +923,8 @@ module mod_copypaos
          do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
             !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+            !GCC$ VECTOR
 #endif
               do j = 0, 3
 #if defined __INTEL_COMPILER
@@ -918,8 +977,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r4_ymm8r4(output,input)  !GCC$ ATTRIBUTES cold :: copy_r4_ymm8r4 !GCC$ ATTRIBUTES always_inline :: copy_r4_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm8r4
+#elif defined __GFORTRAN__
     subroutine copy_r4_ymm8r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_ymm8r4
       !DIR$ ATTRIBUTES VECTOR :: copy_r4_ymm8r4
 #endif
@@ -935,6 +997,8 @@ module mod_copypaos
             do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
                !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+               !GCC$ VECTOR
 #endif
                   do j = 0, 7
 #if defined __INTEL_COMPILER
@@ -949,8 +1013,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 8*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_ymm8r4_r4(output,input) !GCC$ ATTRIBUTES cold :: copy_ymm8r4_r4 !GCC$ ATTRIBUTES always_inline :: copy_ymm8r4_r4 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm8r4_r4
+#elif defined __INTEL_COMPILER
     subroutine copy_ymm8r4_r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: copy_ymm8r8_r4
       !DIR$  ATTRIBUTES VECTOR  :: copy_ymm8r4_r4
 #endif
@@ -961,25 +1028,21 @@ module mod_copypaos
           
                  integer(kind=int4) :: i
                  integer(kind=int4) :: j
-#if defined __INTEL_COMPILER          
-                 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(YMM8r4_t)    :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$         VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                     do j = 0,  7
 #if defined __INTEL_COMPILER
-                       !DIR$ ASSUME_ALIGNED output:64
+                       !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif                  
-                        output(i*v8len+j) = tmp.v(j)
+                        output(i*v8len+j) = input(i).v(j)
                     end do
           end do
     end subroutine copy_ymm8r4_r4
@@ -987,8 +1050,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 16*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_r4_zmm16r4(output,input) !GCC$ ATTRIBUTES cold :: copy_r4_zmm16r4 !GCC$ ATTRIBUTES always_inline :: copy_r4_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_zmm16r4
+#elif defined __INTEL_COMPILER
     subroutine copy_r4_zmm16r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_zmm16r4
 !DIR$ ATTRIBUTES VECTOR :: copy_r4_zmm16r4
 #endif
@@ -1004,6 +1070,8 @@ module mod_copypaos
           do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
              !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                 do j = 0, 15
 #if defined __INTEL_COMPILER
@@ -1017,8 +1085,11 @@ module mod_copypaos
     ! Fast copy without arrays size conformance checking
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 16*size(output,dim=1) == size(input,dim=1)
+#if defined __GFORTRAN__
+    subroutine copy_zmm16r4_r4(output,input) !GCC$ ATTRIBUTES cold :: copy_zmm16r4_r4 !GCC$ ATTRIBUTES always_inline :: copy_zmm16r4_r4 !GCC$ ATTRIBUTES aligned(32) :: copy_zmm16r4_r4
+#elif defined __INTEL_COMPILER
     subroutine copy_zmm16r4_r4(output,input)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: copy_zmm16r4_r4
       !DIR$ ATTRIBUTES VECTOR :: copy_zmm16r4_r4
 #endif
@@ -1029,25 +1100,20 @@ module mod_copypaos
          
                  integer(kind=int4) :: i
                  integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-                 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(ZMM16r4_t)  :: tmp
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                 do j = 0, 15
 #if defined __INTEL_COMPILER
-                !DIR$ ASSUME_ALIGNED output:64
+                !DIR$ ASSUME_ALIGNED output:64,input:64
 #endif
-                    output(i*v16len+j) = tmp.v(j)
+                    output(i*v16len+j) = input(i).v(j)
                 end do
           end do
     end subroutine copy_zmm16r4_r4
@@ -1056,8 +1122,11 @@ module mod_copypaos
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 2*size(output,dim=1) == size(input,dim=1)   -- real      part
     ! 2*size(output,dim=1) == size(input,dim=1)   -- imaginary part
+#if defined __GFORTRAN__
+    subroutine copy_r4_xmm2c4(output,input1,input2) !GCC$ ATTRIBUTES cold :: copy_r4_xmm2c4 !GCC$ ATTRIBUTES always_inline :: copy_r4_xmm2c4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_xmm2c4
+#elif defined __INTEL_COMPILER
     subroutine copy_r4_xmm2c4(output,input1,input2)
-#if defined __INTEL_COMPILER
+
       !DIR$  ATTRIBUTES VECTOR :: copy_r4_xmm2c4
       !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: copy_r4_xmm2c4
 #endif
@@ -1074,6 +1143,8 @@ module mod_copypaos
            do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
               !DIR$  VECTOR ALWAYS
+#elif defined __GFORTRAN__
+              !GCC$ VECTOR
 #endif
               do j = 0,  1
 #if defined __INTEL_COMPILER
@@ -1089,8 +1160,11 @@ module mod_copypaos
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 2*size(output,dim=1) == size(input,dim=1)   -- real      part
     ! 2*size(output,dim=1) == size(input,dim=1)   -- imaginary part
+#if defined __GFORTRAN__
+    subroutine copy_xmm2c4_r4(output1,output2,input) !GCC$ ATTRIBUTES cold :: copy_xmm2c4_r4 !GCC$ ATTRIBUTES always_inline :: copy_xmm2c4_r4 !GCC$ ATTRIBUTES aligned(32) :: copy_xmm2c4_r4
+#elif defined __INTEL_COMPILER
     subroutine copy_xmm2c4_r4(output1,output2,input)
-#if defined __INTEL_COMPILER
+
 !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: copy_xmm2c4_r4
       !DIR$  ATTRIBUTES VECTOR :: copy_xmm2c4_r4
 #endif
@@ -1102,26 +1176,22 @@ module mod_copypaos
           
                  integer(kind=int4) :: i
                  integer(kind=int4) :: j
-#if defined __INTEL_COMPILER         
-                 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(XMM2c4_t)    :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-               !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                 do j = 0,  1
 #if defined __INTEL_COMPILER
-                   !DIR$ ASSUME_ALIGNED output1:64,output2:64
+                   !DIR$ ASSUME_ALIGNED output1:64,output2:64,input:64
 #endif
-                        output1(i*v2len+j) = tmp.re(j)
-                        output2(i*v2len+j) = tmp.im(j)
+                        output1(i*v2len+j) = input(i).re(j)
+                        output2(i*v2len+j) = input(i).im(j)
                 end do
            end do
     end subroutine copy_xmm2c4_r4
@@ -1158,9 +1228,12 @@ module mod_copypaos
                end do
           end do
     end subroutine copy_r8_ymm4c8
-! Description:  same as above
+    ! Description:  same as above
+#if defined __GFORTRAN__
+    subroutine copy_r4_ymm8c4(output,input1,input2) !GCC$ ATTRIBUTES cold :: copy_r4_ymm8c4 !GCC$ ATTRIBUTES always_inline :: copy_r4_ymm8c4 !GCC$ ATTRIBUTES aligned(32) :: copy_r4_ymm8c4
+#elif defined __INTEL_COMPILER
     subroutine copy_r4_ymm8c4(output,input1,input2)
-#if defined __INTEL_COMPILER
+
 !DIR$ ATTRIBUTES VECTOR :: copy_r4_ymm8c4
       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: copy_r4_ymm8c4
 #endif
@@ -1174,6 +1247,8 @@ module mod_copypaos
       do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
          !DIR$ VECTOR ALWAYS
+#elif defined __GFORTRAN__
+         !GCC$ VECTOR
 #endif
          do j = 0, 7
 #if defined __INTEL_COMPILER
@@ -1189,8 +1264,11 @@ module mod_copypaos
     ! Probably it will enable auto-vectorization of this subroutine.
     ! 4*size(output,dim=1) == size(input,dim=1)   -- real      part
     ! 4*size(output,dim=1) == size(input,dim=1)   -- imaginary part
+#if defined __GFORTRAN__
+    subroutine copy_ymm4c8_r8(output1,output2,input) !GCC$ ATTRIBUTES cold :: copy_ymm4c8_r8 !GCC$ ATTRIBUTES always_inline :: copy_ymm4c8_r8 !GCC$ ATTRIBUTES aligned(32) :: copy_ymm4c8_r4
+#elif defined __INTEL_COMPILER
     subroutine copy_ymm4c8_r8(output1,output2,input)
-#if defined __INTEL_COMPILER
+
 !DIR$   ATTRIBUTES CODE_ALIGN : 32 :: copy_ymm4c8_r8
       !DIR$   ATTRIBUTES VECTOR :: copy_ymm4c8_r8
 #endif
@@ -1202,26 +1280,22 @@ module mod_copypaos
          
                  integer(kind=int4) :: i
                  integer(kind=int4) :: j
-#if defined __INTEL_COMPILER        
-                 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
-#endif
-          type(YMM4c8_t)  :: tmp
+
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
-#if defined __INTEL_COMPILER
-             !DIR$ ASSUME_ALIGNED input:64
-#endif
-             tmp = input(i)
+
 #if defined __INTEL_COMPILER
              !DIR$     VECTOR ALWAYS
+#elif defined __GFORTRAN__
+             !GCC$ VECTOR
 #endif
                     do j = 0,  3
 #if defined __INTEL_COMPILER
-                 !DIR$ ASSUME_ALIGNED output1:64,output2:64
+                 !DIR$ ASSUME_ALIGNED output1:64,output2:64,input:64
 #endif                
-                        output1(i*v4len+j) = tmp.re(j)
-                        output2(i*v4len+j) = tmp.im(j)
+                        output1(i*v4len+j) = input.re(j)
+                        output2(i*v4len+j) = input.im(j)
                     end do
            end do
      end subroutine copy_ymm4c8_r8
@@ -1338,6 +1412,7 @@ module mod_copypaos
     
     ! 2*size(output,dim=1) == size(input,dim=1)   -- real      part
     ! 2*size(output,dim=1) == size(input,dim=1)   -- imaginary part
+
     subroutine copy_r16_ymm2c16(output,input1,input2)
 
           use mod_vectypes,  only : YMM2c16_t
