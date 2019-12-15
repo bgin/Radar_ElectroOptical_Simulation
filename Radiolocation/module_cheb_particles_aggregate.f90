@@ -67,7 +67,7 @@ module mod_cheb_particles_aggregate
     character(*),   parameter, public :: MOD_CHEB_PARTICLES_AGGREGATE_CREATE_DATE = "04-08-2018 11:41 +00200 (SAT 04 AUG 2018 GMT+2) "
     
     ! Module build date (  should be set after successful compilation)
-    character(*),   parameter, public :: MOD_CHEB_PARTICLES_AGGREGATE_BUILD_DATE = " "
+    character(*),   parameter, public :: MOD_CHEB_PARTICLES_AGGREGATE_BUILD_DATE = __DATE__ " " __TIME__
     
     ! Module author info
     character(*),  parameter, public :: MOD_CHEB_PARTICLES_AGGREGATE_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -77,19 +77,20 @@ module mod_cheb_particles_aggregate
     
     ! Constants
     
-    real(kind=dp),    parameter, private :: Deg90Rad = 1.5708_sp
-    type(YMM8r4_t),   parameter, private :: vD90Rad    = YMM8r4_t(Deg90Rad)
-    type(YMM8r4_t),   parameter, private  :: vScaleToCm = YMM8r4_t(3000.0_sp)
+   ! real(kind=dp),    parameter, private :: Deg90Rad = 1.5708_sp
+   ! type(YMM8r4_t),   parameter, private :: vD90Rad    = YMM8r4_t(Deg90Rad)
+   ! type(YMM8r4_t),   parameter, private  :: vScaleToCm = YMM8r4_t(3000.0_sp)
     ! For loop-unrolling
-    real(kind=sp), dimension(0:7), parameter, private :: VINC0 = [1.0_sp,2.0_sp,3.0_sp, &
-                                                         4.0_sp,5.0_sp,6.0_sp,7.0_sp,8.0_sp]
-    real(kind=sp), dimension(0:7), parameter, private :: VINC2 = [9.0_sp,10.0_sp,11.0_sp,12.0_sp, &
-                                                         13.0_sp,14.0_sp,15.0_sp,16.0_sp]
-    real(kind=sp), dimension(0:7), parameter, private :: VINC3 = [17.0_sp,18.0_sp,19.0_sp,20.0_sp, &
-                                                          21.0_sp,22.0_sp,23.0_sp,24.0_sp]
-    real(kind=sp), dimension(0:7), parameter, private :: VINC4 = [25.0_sp,26.0_sp,27.0_sp,28.0_sp, &
-                                                          29.0_sp,30.0_sp,31.0_sp]
-    
+   ! real(kind=sp), dimension(0:7), parameter, private :: VINC0 = [1.0_sp,2.0_sp,3.0_sp, &
+   !                                                      4.0_sp,5.0_sp,6.0_sp,7.0_sp,8.0_sp]
+   ! real(kind=sp), dimension(0:7), parameter, private :: VINC2 = [9.0_sp,10.0_sp,11.0_sp,12.0_sp, &
+   !                                                      13.0_sp,14.0_sp,15.0_sp,16.0_sp]
+   ! real(kind=sp), dimension(0:7), parameter, private :: VINC3 = [17.0_sp,18.0_sp,19.0_sp,20.0_sp, &
+   !                                                       21.0_sp,22.0_sp,23.0_sp,24.0_sp]
+   ! real(kind=sp), dimension(0:7), parameter, private :: VINC4 = [25.0_sp,26.0_sp,27.0_sp,28.0_sp, &
+   !                                                       29.0_sp,30.0_sp,31.0_sp]
+
+   integer(kind=int4), parameter, public :: NANGMAX = 1808 ! to fit rounded number of cache lines
      ! Low spacial and temporal frequency derived data type
     type, public :: PartAggregateLTS_t
         
@@ -114,57 +115,154 @@ module mod_cheb_particles_aggregate
           character(len=64)              :: m_esh
            ! Chebyshev particles shape in aggregated assembly ( (r = r0[1+eTn(cos(theta))])
           ! [r,np], where r = parametric shape (cross-section), np =  n-th particle
+#if defined __INTEL_COMPILER
           type(YMM8r4_t), allocatable, dimension(:,:)   :: m_pcs
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_pcs
-           ! Chebyshev particles radii in aggregate ensemble
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_pcs
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)   :: m_pcs  !GCC$ ATTRIBUTES aligned(64) :: m_pcs
+#endif
+          ! Chebyshev particles radii in aggregate ensemble
+#if defined __INTEL_COMPILER
           real(kind=sp), allocatable, dimension(:)     :: m_pradii
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_pradii
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_pradii
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:)     :: m_pradii !GCC$ ATTRIBUTES aligned(64) :: m_pradii
+#endif
            ! Chebyshev particles aggregate shape approximated by 3D parametric equations.
           ! Components form location of the particle in the ensemble.
           ! [3,np], where first dimension represents coordinate components
           ! second dimension represent number of particles.
+#if defined __INTEL_COMPILER
           real(kind=sp), allocatable, dimension(:,:)    :: m_pes
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_pes
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_pes
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:,:)    :: m_pes !GCC$ ATTRIBUTES aligned(64) :: m_pes
+#endif
            ! Chebyshev particles ensemble( per each particle) parametric equation in x - dimension (non-dimensional)
           ! [paramx,np]
+#if defined __INTEL_COMPILER
           type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppx
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_ppx
-           ! Chebyshev particles ensemble (per each particle)  parametric equation in y  - dimension (non-dimensional)
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_ppx
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppx !GCC$ ATTRIBUTES aligned(64) :: m_ppx
+#endif
+          ! Chebyshev particles ensemble (per each particle)  parametric equation in y  - dimension (non-dimensional)
+#if defined __INTEL_COMPILER
           type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppy
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_ppy
-           ! Chebyshev particles ensemble (per each particle)  parametric equation in z  - dimension (non-dimensional)
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_ppy
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppy !GCC$ ATTRIBUTES aligned(64) :: m_ppy
+#endif
+          ! Chebyshev particles ensemble (per each particle)  parametric equation in z  - dimension (non-dimensional)
+#if defined __INTEL_COMPILER
           type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppz
-!DIR$    ATTRIBUTES ALIGN : 64 :: m_ppz
-         
+          !DIR$    ATTRIBUTES ALIGN : 64 :: m_ppz
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: m_ppz !GCC$ ATTRIBUTES aligned(64) :: m_ppz
+#endif
      end type  PartAggregateLTS_t     
          
      ! High temporal and spatial freuqency derived data type.     
      type, public :: PartAggregateHTS_t
            public
+           ! Yu-lin Xu part of the variables
+           real(kind=dp) :: m_cext
+           real(kind=dp) :: m_cabs
+           real(kind=dp) :: m_csca
+           real(kind=dp) :: m_assym
+           real(kind=dp) :: m_cextv
+           real(kind=dp) :: m_cabsv
+           real(kind=dp) :: m_cscav
+           real(kind=dp) :: m_cbakv
+           real(kind=dp) :: m_cprv
+           real(kind=dp) :: m_cexts
+           real(kind=dp) :: m_cabss
+           real(kind=dp) :: m_cscas
+           real(kind=dp) :: m_cbaks
+           real(kind=dp) :: m_cprs
+           real(kind=dp), dimension(NANGMAX) :: m_dang
+           real(kind=dp), dimension(NANGMAX) :: m_inat
+           real(kind=dp), dimension(NANGMAX) :: m_pol
+           real(kind=dp), dimension(NANGMAX) :: m_i11
+           real(kind=dp), dimension(NANGMAX) :: m_i21
+           real(kind=dp), dimension(NANGMAX) :: m_i12
+           real(kind=dp), dimension(NANGMAX) :: m_i22
+           real(kind=dp), dimension(4,4,NANGMAX) :: m_mue
+#if defined __INTEL_COMPILER
+!DIR$      ATTRIBUTES ALIGN : 64 :: m_cexti
+           real(kind=dp), allocatable, dimension(:)    :: m_cexti
+#elif defined __GFORTRAN__
+           real(kind=dp), allocatable, dimension(:)    :: m_cexti !GCC$ ATTRIBUTES aligned(64) :: m_cexti
+#endif
+#if defined __INTEL_COMPILER
+!DIR$      ATTRIBUTES ALIGN : 64 :: m_cabsi
+           real(kind=dp), allocatable, dimension(:)    :: m_cabsi
+#elif defined __GFORTRAN__
+           real(kind=dp), allocatable, dimension(:)    :: m_cabsi !GCC$ ATTRIBUTES aligned(64) :: m_cabsi
+#endif
+#if defined __INTEL_COMPILER
+!DIR$      ATTRIBUTES ALIGN : 64 :: m_cscai
+           real(kind=dp), allocatable, dimension(:)    :: m_cscai
+#elif defined __GFORTRAN__
+           real(kind=dp), allocatable, dimension(:)    :: m_cscai !GCC$ ATTRIBUTES aligned(64) :: m_cscai
+#endif
+#if defined __INTEL_COMPILER
+!DIR$      ATTRIBUTES ALIGN : 64 :: m_assymi
+           real(kind=dp), allocatable, dimension(:)    :: m_assymi
+#elif defined __GFORTRAN__
+           real(kind=dp), allocatable, dimension(:)    :: m_assymi !GCC$ ATTRIBUTES aligned(64) :: m_assymi
+#endif
+#if defined __INTEL_COMPILER
+!DIR$      ATTRIBUTES ALIGN : 64 :: m_cpri
+           real(kind=dp), allocatable, dimension(:)    :: m_cpri
+#elif defined __GFORTRAN__
+           real(kind=dp), allocatable, dimension(:)    :: m_cpri !GCC$ ATTRIBUTES aligned(64) :: m_cpri
+#endif
            ! Trajectory of Chebyshev particles ensemble, radial distance component (spherical coordinate system)
            ! [nt]
+#if defined __INTEL_COMPILER
            real(kind=sp), allocatable, dimension(:)    :: m_prdist
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_prdist
+           !DIR$     ATTRIBUTES ALIGN : 64 :: m_prdist
+#elif defined __GFORTRAN__
+           real(kind=sp), allocatable, dimension(:)    :: m_prdist !GCC$ ATTRIBUTES aligned(64) :: m_prdist
+#endif
            ! Trajectory of Chebyshev particles ensemble, theta angle component (spherical coordinate system)
            ! [nt]
+#if defined  __INTEL_COMPILER
            real(kind=sp), allocatable, dimension(:)    :: m_ptheta
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_ptheta
+           !DIR$     ATTRIBUTES ALIGN : 64 :: m_ptheta
+#elif defined __GFORTRAN__
+           real(kind=sp), allocatable, dimension(:)    :: m_ptheta !GCC$ ATTRIBUTES aligned(64) :: m_ptheta
+#endif
           ! Trajectory of Chebyshev particles ensemble, phi angle component (spherical coordinate system)
-          ! [nt]
+           ! [nt]
+#if defined __INTEL_COMPILER
           real(kind=sp), allocatable, dimension(:)     :: m_pphi
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_pphi
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_pphi
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:)     :: m_pphi !GCC$ ATTRIBUTES aligned(64) :: m_pphi
+#endif
           ! Chebyshev particles ensemble fall speed 
           ![nt]
+#if defined __INTEL_COMPILER
           real(kind=sp), allocatable, dimension(:)       :: m_pfv
-!DIR$     ATTRIBUTES ALIGN : 64 :: m_pvf
+          !DIR$     ATTRIBUTES ALIGN : 64 :: m_pvf
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:)       :: m_pfv !GCC$ ATTRIBUTES aligned(64) :: m_pfv
+#endif
      end type PartAggregateHTS_t
           
           
      contains      
-         
+
+#if defined __GFORTRAN__
+     subroutine InitPartAggregate(PartLTS,PartHTS,np,id,nt,htype,esh,nxpts,nypts,  &     
+          nzpts,msval,err,iounit,verbose,logging,filename,append)  !GCC$ ATTRIBUTES cold :: InitPartAggregate !GCC$ ATTRIBUTES aligned(32) :: InitPartAggregate
+#elif defined __INTEL_COMPILER
      subroutine InitPartAggregate(PartLTS,PartHTS,np,id,nt,htype,esh,nxpts,nypts,  &     
                                   nzpts,msval,err,iounit,verbose,logging,filename,append)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitPartAggregate
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitPartAggregate
+#endif
            use mod_print_error, only : handle_fatal_memory_error
            type(PartAggregateLTS_t),          intent(in)       :: PartLTS
            type(PartAggregateHTS_t),          intent(in)       :: PartHTS
@@ -223,37 +321,48 @@ module mod_cheb_particles_aggregate
            if(aerr /= 0) goto 9999
            aerr = 0
            emsg = " "
-           allocate(PartHTS.m_prdist(PartHTS.m_nt),               &
-                    PartHTS.m_ptheta(PartHTS.m_nt),               &
-                    PartHTS.m_pphi(PartHTS.m_nt),                 &
-                    PartHTS.m_pfv(PartHTS.m_nt),                  &
+           allocate(PartHTS.m_cexti(PartLTS.m_np),                &
+                    PartHTS.m_cabsi(PartLTS.m_np),                &
+                    PartHTS.m_cscai(PartLTS.m_np),                &
+                    PartHTS.m_assymi(PartLTS.m_np),               &
+                    PartHTS.m_cpri(PartLTS.m_np),                 &
+                    PartHTS.m_prdist(PartLTS.m_nt),               &
+                    PartHTS.m_ptheta(PartLTS.m_nt),               &
+                    PartHTS.m_pphi(PartLTS.m_nt),                 &
+                    PartHTS.m_pfv(PartLTS.m_nt),                  &
                     STAT=aerr,ERRMSG=emsg)
            if(aerr /= 0) goto 9999
            err = .false.
            return
 9999       call  handle_fatal_memory_error( iounit, logging,verbose,append,fname,                                                    &
-                             "logger: "// __FILE__ // "module: mod_cheb_particles_aggregate, subroutine: InitPartAggregate -- Memory Allocation Failure !!", &                                                                          "module: mod_cheb_particles, subroutine: InitChebParticles -- Memory Allocation Failure !!", emsg, 304)
+                             "logger: "// __FILE__ // "module: mod_cheb_particles_aggregate, subroutine: InitPartAggregate -- Memory Allocation Failure !!",                           &                                       "module: mod_cheb_particles, subroutine: InitChebParticles -- Memory Allocation Failure !!", emsg, 304)
      end subroutine InitPartAggregate                                                 
                              
     !===============================================================================
     ! Compute particles shape as a cross-section
     ! This code relies on compuation of radial distance as function of un-perturbed
     ! sphere radius, deformity coefficient and T(n) curve.
-    !===============================================================================
-     subroutine ComputeShape(PartLTS,msval,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+     !===============================================================================
+#if defined __GFORTRAN__
+     subroutine ComputeShape(pcs,radii,cn,cdef,msval,np) !GCC$ ATTRIBUTES hot :: ComputeShape !GCC$ ATTIRBUTES aligned(32) :: ComputeShape
+#elif defined __INTEL_COMPILER
+     subroutine ComputeShape(pcs,radii,cn,cdef,msval,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+#endif
            use mod_cheb_particles_common, only : ComputeShape_YMM8r4
-           type(PartAggregateLTS_t),          intent(inout) :: PartLTS
-           integer(kind=int4),                intent(in)    :: msval
-           integer(kind=int4),                intent(in)    :: np
-           real(kind=sp),   dimension(np),    intent(inout) :: cn
-           real(kind=sp),   dimension(np),    intent(inout) :: cdef
+           type(YMM8r4_t),  contiguous, dimension(:,:),  intent(inout) :: pcs
+           real(kind=sp),   contiguous, dimension(:),    intent(in)    :: radii
+           real(kind=sp),   contiguous, dimension(:),    intent(in)    :: cn
+           real(kind=sp),   contiguous, dimension(:),    intent(in)    :: cdef
+           integer(kind=int4),                           intent(in)    :: msval
+           integer(kind=int4),                           intent(in)    :: np
            ! EXec code ...
-           call ComputeShape_YMM8r4(PartLTS.m_pcs,           &
-                                    PartLTS.m_pradii,        &
+           call ComputeShape_YMM8r4(pcs,           &
+                                    pradii,        &
                                     cn,                      &
                                     cdef,                    &
-                                    msval)
+                                    msval,                   &
+                                    np)
      end subroutine ComputeShape
         
           
@@ -311,11 +420,17 @@ module mod_cheb_particles_aggregate
     !     1) Cylindrical
     !     2) Pure spherical
     !     3) Chebyshev particle like
-    !=================================================================71
-    subroutine ComputeEnsemblShape( pes,np,inz,incz,shape_name, &
+     !=================================================================71
+#if defined __GFORTRAN__
+    subroutine ComputeEnsembleShape( pes,np,inz,incz,shape_name, &
+                                       r,inphi,inth,incphi,incth,sphrad, &
+                                       chebn,cdeform,verbose,ierr)            !GCC$ ATTRIBUTES hot :: ComputeEnsembleShape !GCC$ ATTRIBUTES aligned(32) :: ComputeEnsembleShape
+#elif defined __INTEL_COMPILER
+    subroutine ComputeEnsembleShape( pes,np,inz,incz,shape_name, &
                                        r,inphi,inth,incphi,incth,sphrad, &
                                        chebn,cdeform,verbose,ierr)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleShape
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleShape
+#endif
           
           real(kind=sp),       dimension(np,3),     intent(inout)         :: pes
           integer(kind=int4),                       intent(in)            :: np
@@ -356,7 +471,20 @@ module mod_cheb_particles_aggregate
                     ! Begin computation
                    z = inz
                    theta = inth
+#if defined __INTEL_COMPILER
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ SIMD
+#elif defined __GFORTRAN__
+                   !GCC$ VECTOR
+#endif
                    do i = 1,  np
+#if defined __INTEL_COMPILER
+                      !DIR$ ASSUME_ALIGNED pes(1,1):64
+#endif
+#if defined __GFORTRAN__
+                      !GCC$ builtin (sin) attributes simd
+                      !GCC$ builtin (cos) attributes simd
+#endif
                         theta = theta + incth
                         z = z + incz
                         pes(i,1) = r * cos(theta)
@@ -378,8 +506,17 @@ module mod_cheb_particles_aggregate
                     ! Begin computation
                     theta = inth
                     phi   = inphi
- 
+#if defined __INTEL_COMPILER
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ SIMD
+#elif defined __GFORTRAN__
+                   !GCC$ VECTOR
+#endif 
                     do i = 1,  np
+#if defined __GFORTRAN__
+                      !GCC$ builtin (sin) attributes simd
+                      !GCC$ builtin (cos) attributes simd
+#endif                       
                         theta = theta + incth
                         phi   = phi   + incphi
                         u = r * cos(phi)
@@ -406,11 +543,20 @@ module mod_cheb_particles_aggregate
                     theta = inth
                     phi   = inphi
                      
- 
+ #if defined __INTEL_COMPILER
+                   !DIR$ VECTOR ALIGNED
+                   !DIR$ SIMD
+#elif defined __GFORTRAN__
+                   !GCC$ VECTOR
+#endif
                     do i = 1,   np
+#if defined __GFORTRAN__
+                      !GCC$ builtin (sin) attributes simd
+                      !GCC$ builtin (cos) attributes simd
+#endif                       
                         theta = theta + incth
                         phi   = phi   + incphi
-                        term1 = sphrad * (1.0_R64P + cdeform * cos(chebn * theta)
+                        term1 = sphrad * (1.0_sp + cdeform * cos(chebn * theta)
                         x = term1 * sin(theta) * cos(phi)
                         pes(i,1) = x
                         y = term1 * sin(theta) * sin(phi)
@@ -439,20 +585,26 @@ module mod_cheb_particles_aggregate
     !     Chebyshev Particles parametric equation in parameter 'x'
     !     x = r0[1+- eTn(cos(theta))]sin(theta) cos(phi)
     !
-    !=================================================================71
-    subroutine ComputeXparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeXparam
+      !=================================================================71
+#if defined __GFORTRAN__
+    subroutine ComputeXparam(ppx,radii,cn,cdef,nxpts,np)  !GCC$ ATTRIBUTES hot :: ComputeXparam !GCC$ ATTRIBUTES aligned(32) :: ComputeXparam
+#elif defined __INTEL_COMPILER
+    subroutine ComputeXparam(ppx,radii,cn,cdef,nxpts,np)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeXparam
+#endif
            use mod_cheb_particles_common, only : ComputeXparam_YMM8r4
-           type(PartAggregateLTS_t),          intent(inout) :: PartLTS
-           integer(kind=int4),                intent(in)    :: np
-           real(kind=sp),  dimension(np),     intent(inout) :: cn
-           real(kind=sp),  dimension(np),     intent(inout) :: cdef
+           type(YMM8r4_t), contiguous, dimension(:,:), intent(inout) :: ppx
+           real(kind=sp),  contiguous, dimension(:),   intent(in)    :: radii
+           real(kind=sp),  contiguous, dimension(:),   intent(inout) :: cn
+           real(kind=sp),  contiguous, dimension(:),   intent(inout) :: cdef
+           integer(kind=int4),                         intent(in)    :: nxpts
+           integer(kind=int4),                         intent(in)    :: np
            ! Exec code ....
-           call ComputeXparam_YMM8r4(PartLTS.m_ppx,  &
-                                     PartLTS.m_pradii, &
-                                     cn,               &
-                                     cdef,             &
-                                     PartLTS.m_nxpts,  &
+           call ComputeXparam_YMM8r4(ppx,   &
+                                     radii, &
+                                     cn,    &
+                                     cdef,  &
+                                     nxpts, &
                                      np)
     end subroutine ComputeXparam
  
@@ -461,19 +613,25 @@ module mod_cheb_particles_aggregate
     !     Chebyshev Particles parametric equation in parameter 'y'
     !     y = r0[1+- eTn(cos(theta))]sin(theta) sin(phi)
     !==========================================================================80
-    subroutine ComputeYparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeYparam
+#if defined __GFORTRAN__
+    subroutine ComputeYparam(ppy,radii,cn,cdef,nypts,np) !GCC$ ATTRIBUTES hot :: ComputeYparam !GCC$ ATTIRBUTES aligned(32) :: ComputeYparam
+#elif defined __INTEL_COMPILER
+    subroutine ComputeYparam(ppy,radii,cn,cdef,nypts,np)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeYparam
+#endif
            use mod_cheb_particles_common, only : ComputeYparam_YMM8r4
-           type(PartAggregateLTS_t),          intent(inout) :: PartLTS
-           integer(kind=int4),                intent(in)    :: np
-           real(kind=sp),  dimension(np),     intent(inout) :: cn
-           real(kind=sp),  dimension(np),     intent(inout) :: cdef
+           type(YMM8r4_t),  contiguous, dimension(:,:), intent(inout) :: ppy
+           real(kind=sp),   contiguous, dimension(:),   intent(in)    :: radii
+           real(kind=sp),   contiguous, dimension(np),  intent(inout) :: cn
+           real(kind=sp),   contiguous  dimension(np),  intent(inout) :: cdef
+           integer(kind=int4),                          intent(in)    :: nypts
+           integer(kind=int4),                          intent(in)    :: np
            ! Exec code ....
-           call ComputeYparam_YMM8r4(PartLTS.m_ppy,   &
-                                     PartLTS.m_pradii, &
-                                     cn,               &
-                                     cdef,             &
-                                     PartLTS.nypts,    &
+           call ComputeYparam_YMM8r4(ppy,   &
+                                     radii, &
+                                     cn,    &
+                                     cdef,  &
+                                     nypts, &
                                      np)
     end subroutine ComputeYparam
     
@@ -484,19 +642,25 @@ module mod_cheb_particles_aggregate
     !     Chebyshev Particles parametric equation in parameter 'z'
     !     z = r0[1+- eTn(cos(theta))]sin(theta)
     !==========================================================================80
-    subroutine ComputeZparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeZparam
+#if defined __GFORTRAN__
+    subroutine ComputeZparam(ppz,radii,cn,cdef,nzpts,np) !GCC$ ATTRIBUTES hot :: ComputeZparam !GCC$ ATTRIBUTES aligned(32) :: ComputeZparam
+#elif defined __INTEL_COMPILER
+    subroutine ComputeZparam(ppz,radii,cn,cdef,nzpts,np)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeZparam
+#endif
            use mod_cheb_particles_common, only : ComputeZparam_YMM8r4
-           type(PartAggregateLTS_t),          intent(inout) :: PartLTS
-           integer(kind=int4),                intent(in)    :: np
-           real(kind=sp),  dimension(np),     intent(inout) :: cn
-           real(kind=sp),  dimension(np),     intent(inout) :: cdef
+           type(YMM8r4_t),  contiguous, dimension(:,:), intent(inout) :: ppz
+           real(kind=sp),   contiguous, dimension(:),   intent(in)    :: radii
+           real(kind=sp),   contiguous, dimension(:),   intent(inout) :: cn
+           real(kind=sp),   contiguous, dimension(;),   intent(inout) :: cdef
+           integer(kind=int4),                          intent(in)    :: nzpts
+           integer(kind=int4),                          intent(in)    :: np
            ! Exec code ....
-           call ComputeYparam_YMM8r4(PartLTS.m_ppz,   &
-                                     PartLTS.m_pradii, &
-                                     cn,               &
-                                     cdef,             &
-                                     PartLTS.nzpts,    &
+           call ComputeYparam_YMM8r4(ppz,   &
+                                     radii, &
+                                     cn,    &
+                                     cdef,  &
+                                     nzpts,    &
                                      np)
     end subroutine ComputeZparam
 
@@ -510,11 +674,15 @@ module mod_cheb_particles_aggregate
     !           sphrad,chebn and cdeform (these argument are verified by compute
     !                                     cross_section subroutine)
     !==========================================================================80
+#if defined __GFORTRAN__
+    subroutine  ComputeEnsembleVol(tpv,np,sphrad,chebn,cdeform)  !GCC$ ATTRIBUTES hot :: ComputeEnsembleVol !GCC$ ATTRIBUTES aligned(32) :: ComputeEnsembleVol
+#elif defined __INTEL_COMPILER
     subroutine  ComputeEnsembleVol(tpv,np,sphrad,chebn,cdeform)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleVol
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleVol
+#endif
           use mod_constants,  only : pi2_const
           real(kind=sp),                     intent(out)   ::  tpv
-          integer(kind=int4),                  intent(in)    ::  np
+          integer(kind=int4),                intent(in)    ::  np
           real(kind=sp),     dimension(np),  intent(in)    ::  sphrad
           real(kind=sp),     dimension(np),  intent(in)    ::  chebn
           real(kind=sp),     dimension(np),  intent(in)    ::  cdeform
@@ -557,8 +725,12 @@ module mod_cheb_particles_aggregate
     !            sphrad,chebn and cdeform (these argument are verified by compute
     !                                     cross_section subroutine)
     !==========================================================================80
+#if defined __GFORTRAN__
+    subroutine ComputeEnsembleSurf(tps,np,sphrad,chebn,cdeform)  !GCC$ ATTRIBUTES hot :: ComputeEnsembleSurf !GCC$ ATTRIBUTES aligned(32) :: ComputeEnsembleSurf
+#elif defined __INTEL_COMPILER
     subroutine ComputeEnsembleSurf(tps,np,sphrad,chebn,cdeform)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleVol
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeEnsembleVol
+#endif
           use mod_constants, only : pi2_const
           real(kind=sp),                      intent(out)   :: tps
           integer(kind=int4),                   intent(in)    :: np
@@ -617,9 +789,14 @@ module mod_cheb_particles_aggregate
     !      
     !      Adding as an option turbulence correction coefficients.
     !============================================================================
+#if defined __GFORTRAN__
+    subroutine ComputeVfall((pfv,nt,aRe,bRe,vb,kvisc,nx,ny,nz,A,rho_b,rho_f,mD, &
+         Re,bRet,aRet                        )                    !GCC$ ATTRIBUTES hot :: ComputeVfall !GCC$ ATTRIBUTES aligned(32) :: ComputeVfall
+#elif  defined __INTEL_COMPILER 
     subroutine ComputeVfall(pfv,nt,aRe,bRe,vb,kvisc,nx,ny,nz,A,rho_b,rho_f,mD, &
                              Re,bRet,aRet                        )
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeVfall
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeVfall
+#endif
           real(kind=sp),       dimension(nt),       intent(out)    :: pfv
           integer(kind=int4),                         intent(in)     :: nt
           real(kind=sp),       dimension(nt),       intent(in)     :: aRe
@@ -649,14 +826,29 @@ module mod_cheb_particles_aggregate
           t2     = 0.0_sp
           term2 = (2.0_sp*vb*9.81_sp) / A
           if((abs(Re) - 999.0_sp) <= EPSILON(0.0_sp) ) then
-             ! Obtain ieee floating-point register state 
+            
          
-              do i = 1,  nt
+             do i = 1,  nt
+#if defined __INTEL_COMPILER
+                !DIR$ ASSUME_ALIGNED aRet:64
+                !DIR$ ASSUME_ALIGNED bRet:64
+                !DIR$ ASSUME_ALIGNED pfv:64
+#endif
                  t1 = aRet(i)
                  t2 = bRet(i)
                   do iz = 1,  nz
-                      do iy = 1,  ny
-                          do ix = 1,  nx
+                     do iy = 1,  ny
+#if defined __INTEL_COMPILER
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ SIMD
+#elif defined __GFORTRAN__
+                        !GCC$ VECTOR
+#endif
+                        do ix = 1,  nx
+#if defined __INTEL_COMPILER
+                           !DIR$ ASSUME_ALIGNED kvisc(1,1,1):64
+                           !DIR$ ASSUME_ALIGNED rho_f(1,1,1):64
+#endif
                               term1 = t1 * kvisc(ix,iy,iz)**(1.0_sp-2.0_sp*t2)
                              
                               if( rho_b > rho_f(ix,iy,iz) ) then
@@ -673,14 +865,29 @@ module mod_cheb_particles_aggregate
               end do
   
           else
-                   ! Obtain ieee floating-point register state 
+                  
               
-              do i = 1,  nt
+             do i = 1,  nt
+#if defined __INTEL_COMPILER
+                !DIR$ ASSUME_ALIGNED aRe:64
+                !DIR$ ASSUME_ALIGNED bRe:64
+                !DIR$ ASSUME_ALIGNED pfv:64
+#endif
                  t1 = aRe(i)
                  t2 = bRe(i)
                   do iz = 1,  nz
-                      do iy = 1,  ny
-                          do ix = 1,  nx
+                     do iy = 1,  ny
+#if defined __INTEL_COMPILER
+                        !DIR$ VECTOR ALIGNED
+                        !DIR$ SIMD
+#elif defined __GFORTRAN__
+                        !GCC$ VECTOR
+#endif
+                        do ix = 1,  nx
+#if defined __INTEL_COMPILER
+                           !DIR$ ASSUME_ALIGNED kvisc(1,1,1):64
+                           !DIR$ ASSUME_ALIGNED rho_f(1,1,1):64
+#endif                           
                               term1 = t1 * kvisc(ix,iy,iz)**(1.0_sp-2.0_sp*t2)
                               
                               if( rho_b > rho_f(ix,iy,iz) ) then
