@@ -1,5 +1,5 @@
 
-!#include "Config.fpp"
+#include "Config.fpp"
 
 module  mod_cheb_particles
 
@@ -67,7 +67,7 @@ module  mod_cheb_particles
     character(*),  parameter, public :: MOD_CHEB_PARTICLES_CREATE_DATE = "24-07-2018 11:17 +00200 (TUE 24 JUL 2018 GMT+2)"
     
     ! Module build date  (  should be set after successful compilation)
-    character(*),  parameter, public :: MOD_CHEB_PARTICLES_BUILD_DATE = " "
+    character(*),  parameter, public :: MOD_CHEB_PARTICLES_BUILD_DATE = __DATE__ " "  __TIME__
     
     ! Module author info
     character(*),  parameter, public :: MOD_CHEB_PARTICLES_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
@@ -111,31 +111,61 @@ module  mod_cheb_particles
           ! Particles types  (dust-like,grail,snow,hail)
           character(len=32)                :: particles_type
           ! Chebyshev particles shapes  i.e. (r = r0[1+eTn(cos(theta))]
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_shape          
           type(YMM8r4_t), allocatable, dimension(:,:)  :: particles_shape
-          ! Chebyshev particles radii  
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)  :: particles_shape !GCC$ ATTRIBUTES aligned(64) :: particles_shape
+#endif
+          ! Chebyshev particles radii
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_radii          
           real(kind=sp), allocatable, dimension(:)      :: particles_radii
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:)      :: particles_radii !GCC$ ATTRIBUTES aligned(64) :: particles_radii
+#endif
           ! Chebyshev particles  surface (units of mm^2), (total)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_surface          
           real(kind=sp), allocatable, dimension(:)          :: particles_surf
-           ! Chebyshev particles  parametric equation in x - dimension (non-dimensional)
+#elif defined __GFORTRAN__
+          real(kind=sp), allocatable, dimension(:)          :: particles_surf !GCC$ ATTRIBUTES aligned(64) :: particles_surf
+#endif
+          ! Chebyshev particles  parametric equation in x - dimension (non-dimensional)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_x          
           type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramx
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramx !GCC$ ATTRIBUTES aligned(64) :: particles_paramx
+#endif
           ! Chebyshev particles   parametric equation in y  - dimension (non-dimensional)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_y          
           type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramy
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramy !GCC$ ATTRIBUTES aligned(64) :: particles_paramy
+#endif
           ! Chebyshev particles  parametric equation in z - dimension (non-dimensional)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_param_z          
           type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramz
-           ! Particles per bin mass (kg) (time-invariant)
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_paramz !GCC$ ATTRIBUTES aligned(64) :: particles_paramz
+#endif
+          ! Particles per bin mass (kg) (time-invariant)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_mass          
           type(YMM8r4_t), allocatable, dimension(:)       :: particles_mass
-           ! Particles (coupled)  temperature (units of Celsius)
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:)       :: particles_mass  !GCC$ ATTRIBUTES aligned(64) :: particles_mass
+#endif
+          ! Particles (coupled)  temperature (units of Celsius)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: paricles_temp          
           type(YMM8r4_t), allocatable, dimension(:)       :: particles_temp
-      
-         
+#elif defined __GFORTRAN__      
+          type(YMM8r4_t), allocatable, dimension(:)       :: particles_temp !GCC$ ATTRIBUTES aligned(64) :: particles_temp
+#endif
      end type ChebParticlesLTS_t      
 
           
@@ -175,49 +205,69 @@ module  mod_cheb_particles
        type, public :: ChebParticlesHTS_t
           public
 
-             ! Trajectory of Chebyshev particles (aggregated) range in (spherical coordinate system) per bin ( units of meters (m))
+          ! Trajectory of Chebyshev particles (aggregated) range in (spherical coordinate system) per bin ( units of meters (m))
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_range          
           type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_range
-
-          
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_range !GCC$ ATTRIBUTES aligned(64) :: particles_range
+#endif
           ! Trajectory of Chebyshev particles (aggregated) per bin theta spherical coordinates component (units of radian (rad))
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_particles_theta
           type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_theta
-
-          
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_theta !GCC$ ATTRIBUTES aligned(64) :: particles_theta
+#endif
           ! Trajectory of Chebyshev particles (aggregated)  per bin phi spehrical coordinates compoment (units of radian (rad))
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: m_particles_phi          
           type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_phi
-
-              ! Chebyshev particles fall velocity (m/s^-1)
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_phi   !GCC$ ATTRIBUTES aligned(64) :: particles_phi
+#endif
+          ! Chebyshev particles fall velocity (m/s^-1)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_vfall          
-          type(YMM8r4_t), allocatable, dimension(:,:)          :: particles_vfall
-
-          
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_vfall
+#elif defined __GFORTRAN__ 
+          type(YMM8r4_t), allocatable, dimension(:,:)    :: particles_vfall !GCC$ ATTRIBUTES aligned(64) :: particles_vfall
+#endif
           ! Chebyshev particles (coupled) per bin fall velocity range component (spherical) (time evolution)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_vr          
           type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_vr
-
-          
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_vr  !GCC$ ATTRIBUTES aligned(64) :: particles_vr
+#endif
           ! Chebyshev particles (coupled) velocity theta component  (spherical)  (time evolution)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_vtheta          
           type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_vth
-
-          
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)      :: particles_vth  !GCC$ ATTRIBUTES aligned(64) :: particles_vth
+#endif
           ! Chebyshev particles (coupled) velocity phi component  (spherical)   (time evolution)
+#if defined __INTEL_COMPILER
 !DIR$     ATTRIBUTES ALIGN : 64 :: particles_vphi          
           type(YMM8r4_t), allocatable, dimension(:,:)     :: particles_vphi
-
-        
-          
+#elif defined __GFORTRAN__
+          type(YMM8r4_t), allocatable, dimension(:,:)     :: particles_vphi  !GCC$ ATTRIBUTES aligned(64) :: particles_vphi
+#endif          
        end type ChebParticlesHTS_t
     
    contains
 
+#if defined __GFORTRAN__
+     subroutine InitChebParticles(PartLTS,PartHTS,nxpts,nypts,nzpts,nt,nparticles, &
+                                  nshpts,part_type,errstate,iounit, &
+                                  verbose,logging, filename,append )  !GCC$ ATTRIBUTES cold :: InitChebParticles !GCC$ ATTRIBUTES aligned(32) :: InitChebParticles
+#elif defined __INTEL_COMPILER
      subroutine InitChebParticles(PartLTS,PartHTS,nxpts,nypts,nzpts,nt,nparticles, &
                                   nshpts,part_type,errstate,iounit, &
                                   verbose,logging, filename,append )
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitChebParticlesSystem
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: InitChebParticles
+#endif
            use mod_print_error, only : handle_fatal_memory_error
                                
            type(ChebParticlesLTS_t),    intent(inout) :: PartLTS
@@ -308,20 +358,25 @@ module  mod_cheb_particles
     !  OpenMP parallelization (to be done later).
     !  Only Chebyshev Particles of type T2 and T4 should be used.
     !===================================================================
-    
-     subroutine ComputeShape(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+#if defined __GFORTRAN__
+     subroutine ComputeShape(parts,partr,cn,cdef,nshpts,np) !GCC$ ATTRIBUTES hot :: ComputeShape !GCC$ ATTRIBUTES aligned(32) :: ComputeShape
+#elif defined __INTEL_COMPILER
+     subroutine ComputeShape(parts,partr,cn,cdef,nshpts,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeShape
+#endif
            use mod_cheb_particles_common, only : ComputeShape_YMM8r4
-           type(ChebParticlesLTS_t),      intent(inout)  :: PartLTS
-           integer(kind=int4),            intent(in)     :: np
-           real(kind=sp), dimension(np),  intent(inout)  :: cn
-           real(kind=sp), dimension(np),  intent(inout)  :: cdef
+           type(YMM8r4_t),  contiguous, dimension(:,:), intent(inout)  :: parts
+           real(kind=sp),   contiguous, dimension(:),   intent(inout)  :: partr
+           real(kind=sp),   contiguous, dimension(:),   intent(in)     :: cn
+           real(kind=sp),   contiguous, dimension(:),   intent(in)     :: cdef
+           integer(kind=int4),                          intent(in)     :: nshpts
+           integer(kind=int4),                          intent(in)     :: np
            ! EXec code ...
-           call ComputeShape_YMM8r4(PartLTS.particles_shape,    &
-                                    PartLTS.particles_radii,    &
-                                    cn,                         &
-                                    cdef,                       &
-                                    PartLTS.nshpts,             &
+           call ComputeShape_YMM8r4(parts,    &
+                                    partr,    &
+                                    cn,       &
+                                    cdef,     &
+                                    nshpts,   &
                                     np)
           
      end subroutine ComputeShape    
@@ -330,20 +385,25 @@ module  mod_cheb_particles
            
     
 
-
-     subroutine ComputeXparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeXparam
+#if defined __GFORTRAN__
+     subroutine ComputeXparam(paramx,radii,cn,cdef,nxpts,np) !GCC$ ATTRIBUTES hot :: ComputeXparam !GCC$ ATTRIBUTES aligned(32) :: ComputeXparam
+#elif defined __INTEL_COMPILER
+     subroutine ComputeXparam(paramx,radii,cn,cdef,nxpts,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ComputeXparam
+#endif
            use mod_cheb_particles_common, only : ComputeXparam_YMM8r4
-           type(ChebParticlesLST_t),     intent(inout) :: PartLST
-           integer(kind=int4),           intent(in)    :: np
-           real(kind=sp), dimension(np), intent(in)    :: cn
-           real(kind=sp), dimension(np), intent(in)    :: cdef
+           type(YMM8r4_t), contiguous, dimension(:,:), intent(inout) :: paramx
+           real(kind=sp),  contiguous, dimension(:),   intent(inout) :: radii
+           real(kind=sp),  contiguous, dimension(:),   intent(in)    :: cn
+           real(kind=sp),  contiguous, dimension(:),   intent(in)    :: cdef
+           integer(kind=int4),                         intent(in)    :: nxpts
+           integer(kind=int4),                         intent(in)    :: np
            ! EXec code ....
-           call ComputeXparam_YMM8r4(PartLTS.particles_paramx,   &
-                                     PartLTS.particles_radii,    &
-                                     cn,                         &
-                                     cdef,                       &
-                                     PartLTS.nxpts,              &
+           call ComputeXparam_YMM8r4(paramx,   &
+                                     radii,    &
+                                     cn,       &
+                                     cdef,     &
+                                     nxpts,    &
                                      np)
            
      end subroutine ComputeXparam   
@@ -355,21 +415,25 @@ module  mod_cheb_particles
         
            
                
-    
-       
-     subroutine ComputeYparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeYparam
+#if defined __GFORTRAN__    
+     subroutine ComputeYparam(paramy,radii,cn,cdef,nypts,np) !GCC$ ATTRIBUTES hot :: ComputeYparam  !GCC$ ATTRIBUTES aligned(32) :: ComputeYparam
+#elif defined __INTEL_COMPILER
+     subroutine ComputeYparam(paramy,radii,cn,cdef,nypts,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeYparam
+#endif
            use mod_cheb_particles_common, only : ComputeYparam_YMM8r4
-           type(ChebParticlesLST_t),     intent(inout) :: PartLST
-           integer(kind=int4),           intent(in)    :: np
-           real(kind=sp), dimension(np), intent(in)    :: cn
-           real(kind=sp), dimension(np), intent(in)    :: cdef
+           type(YMM8r4_t), contiguous, dimension(:,:), intent(inout) :: paramy
+           real(kind=sp),  contiguous, dimension(:),   intent(inout) :: radii
+           real(kind=sp),  contiguous, dimension(:),   intent(in)    :: cn
+           real(kind=sp),  contiguous, dimension(:),   intent(in)    :: cdef
+           integer(kind=int4),                         intent(in)    :: nypts
+           integer(kind=int4),                         intent(in)    :: np
            ! Exec code .....
-           call ComputeYparam_YMM8r4(PartLTS.particles_paramy,   &
-                                     PartLTS.particles_radii,    &
-                                     cn,                         &
-                                     cdef,                       &
-                                     PartLTS.nypts,              &
+           call ComputeYparam_YMM8r4(paramy,   &
+                                     radii,    &
+                                     cn,       &
+                                     cdef,     &
+                                     nypts,    &
                                      np)
         
      end subroutine ComputeYparam    
@@ -379,20 +443,27 @@ module  mod_cheb_particles
          
             
    
-
-     subroutine ComputeZparam(PartLTS,np,cn,cdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeZparam
-            use mod_cheb_particles_common
-            type(ChebParticlesLST_t),     intent(inout) :: PartLST
-            integer(kind=int4),           intent(in)    :: np
-            real(kind=sp), dimension(np), intent(in)    :: cn
-            real(kind=sp), dimension(np), intent(in)    :: cdef
+#if defined __GFORTRAN__
+     subroutine ComputeZparam(paramz,radii,cn,cdef,nzpts,np) !GCC$ ATTRIBUTES hot :: ComputeZparam !GCC$ ATTRIBUTES aligned(32) :: ComputeZparam
+#elif defined __INTEL_COMPILER
+     subroutine ComputeZparam(paramz,radii,cn,cdef,nzpts,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeZparam
+#endif
+            use mod_cheb_particles_common, only : ComputeZparam_YMM8r4
+          
+            type(YMM8r4_t),  contiguous, dimension(:,:), intent(inout) :: paramy
+            real(kind=sp),   contiguous, dimension(:),   intent(inout) :: radii
+            real(kind=sp),   contiguous, dimension(:),   intent(in)    :: cn
+            real(kind=sp),   contiguous, dimension(:),   intent(in)    :: cdef
+            integer(kind=int4),                          intent(in)    :: nzpts
+            integer(kind=int4),                          intent(in)    :: np
+            
             ! EXec code .....
-            call ComputeZparam_YMM8r4(PartLTS.particles_paramz,    &
-                                      PartLTS.particles_radii,     &
-                                      cn,                          &
-                                      cdef,                        &
-                                      PartLTS.nzpts,               &
+            call ComputeZparam_YMM8r4(paramz,    &
+                                      radii,     &
+                                      cn,        &
+                                      cdef,      &
+                                      nzpts,     &
                                       np)
      end subroutine ComputeZparam   
             
@@ -405,14 +476,20 @@ module  mod_cheb_particles
      !==========================================================================80
      !            Computes Chebyshev particles surface area
      !            Scalar version only.
-    !==========================================================================80
-     subroutine ComputeSurface_scalar(PartLST,np,ac,acdef)
-!DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeSurface_scalar
+     !==========================================================================80
+#if defined __GFORTRAN__
+     subroutine ComputeSurface_scalar(surf,radii,ac,acdef,np)   !GCC$ ATTRIBUTES hot :: ComputeSurface_scalar !GCC$ ATTRIBUTES aligned(64) :: ComputeSurface_scalar
+#elif defined __INTEL_COMPILER
+     subroutine ComputeSurface_scalar(surf,radii,ac,acdef,np)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ComputeSurface_scalar
+#endif
           use mod_constants, only : pi2r4_const
-          type(ChebParticlesLST_t),     intent(inout) :: PartLST
-          integer(kind=int4),           intent(in)    :: np
-          real(kind=sp), dimension(np), intent(in)    :: ac
-          real(kind=sp), dimension(n),  intent(in)    :: acdef
+          real(kind=sp),  contiguous, dimension(:),  intent(inout) :: surf
+          real(kind=sp),  contiguous, dimension(:),  intent(in)    :: radii
+          real(kind=sp),  contiguous, dimension(:),  intent(in)    :: ac
+          real(kind=sp),  contiguous, dimension(:),  intent(in)    :: acdef
+          integer(kind=int4),                        intent(in)    :: np
+          
           ! Locals
           integer(kind=int4) :: i,cd
           ! Keeping hot data aligned to L1D Cache line
@@ -439,9 +516,9 @@ module  mod_cheb_particles
           cla.tmp1   = 0.0_sp
           cla.tmp2   = 0.0_sp
           cla.tmp3   = 0.0_sp
-          PartLTS.particles_surf = 0.0_sp
-          do i=1, PartLST.np
-             cla.term1 = 4.0_sp*pi2r_const*PartLST.particles_radii(i)**2     
+          surf       = 0.0_sp
+          do i=1, np
+             cla.term1 = 4.0_sp*pi2r_const*radii(i)**2     
              cd = int(ac(i),kind=int4)
              tmp1 = ac(i)
              tmp2 = acdef(i)
@@ -456,13 +533,13 @@ module  mod_cheb_particles
                 cla.term5 = -6.0_sp*tmp2**5*tmp1**8
                 cla.term5b = 1.0_sp/tmp3*9.0_sp*tmp3*25.0*tmp3
                 cla.totev  = cla.term1*(cla.term2+cla.term3-cla.term4-cla.term5*cla.term5b)
-                PartLTS.particles_surf(i) = cla.totev
+                surf(i) = cla.totev
              else              
                 cla.term2 = 1.0_sp+tmp2**2*(tmp1**4+2.0_sp*tmp3)/(4.0_sp*tmp3)         
                 cla.term3 = 3.0_sp*tmp2**4*tmp1**4*0.015625_sp
                 cla.term4 = 1.0_sp+20.0_sp*tmp3/(16.0_sp*tmp3*4.0_sp*tmp3)
                 cla.totod = cla.term1*(cla.term2-cla.term3*cla.term4)
-                PartLTS.particles_surf(i) = cla.totod
+                surf(i) = cla.totod
              end if
           end do
      end subroutine ComputeSurface_scalar    
