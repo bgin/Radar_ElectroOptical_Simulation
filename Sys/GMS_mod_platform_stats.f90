@@ -246,7 +246,7 @@ module  mod_platform_stats
           integer(kind=int4), automatic :: i
           integer(kind=int4), automatic :: iounit
           ! Exec code...
-          open(newunit=iounit,FILE="proc/meminfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          open(newunit=iounit,FILE="/proc/meminfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
           if(ioerr > 0) return
           i = 0
           do
@@ -273,7 +273,7 @@ module  mod_platform_stats
           integer(kind=int4), automatic :: i
           integer(kind=int4), automatic :: iounit
           ! Exec code...
-          open(newunit=iounit,FILE="proc/cpuinfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          open(newunit=iounit,FILE="/proc/cpuinfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
           if(ioerr > 0) return
           i = 0
           do
@@ -284,6 +284,544 @@ module  mod_platform_stats
           nlines = i
           close(unit=iounit)
           !
-       end subroutine read_cpuinfo
+      end subroutine read_cpuinfo
+
+!!----------- Subroutines with run-time memory allocation ---------------!!
+
+#if defined __GFORTRAN__
+      subroutine read_cpuinfo_dalloc(datum,llen,nlines,ioerr,errmsg) !GCC$ ATTRIBUTES cold :: read_cpuinfo_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_cpuinfo_dalloc
+#elif defined __INTEL_COMPILER
+      subroutine read_cpuinfo_dalloc(datum,llen,nlines,ioerr,errmsg)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_cpuinfo_dalloc
+#endif
+          character(len=:), allocatable,  dimension(:),  intent(inout) :: datum
+          integer(kind=int4),                            intent(inout) :: llen
+          integer(kind=int4),                            intent(inout) :: nlines
+          integer(kind=int4),                            intent(inout) :: ioerr
+          character(len=128),                            intent(inout) :: errmsg
+          ! Locals
+          character(len=256),  automatic :: string
+          integer(kind=int4),  automatic :: i,n,m
+          integer(kind=int4),  automatic :: iounit
+          integer(kind=int4),  automatic :: aerr
+          ! EXec code .....
+          if(allocated(datum)) return
+          open(newunit=iounit,FILE="/proc/cpuinfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),stat=aerr)
+          if(aerr/=0) then
+            close(iounit)
+            return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          llen=n
+          nlines=m
+          close(iounit)
+      end subroutine read_cpuinfo_dalloc
+
+#if defined __GFORTRAN__
+      subroutine read_meminfo_dalloc(datum,strlen,nstrings,ioerr,errmsg) !GCC$ ATTRIBUTES cold :: read_meminfo_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_meminfo_dalloc
+#elif defined __INTEL_COMPILER
+      subroutine read_meminfo_dalloc(datum,strlen,nstrings,ioerr,errmsg)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_meminfo_dalloc
+          character(len=:), allocatable, dimension(:),  intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=256), automatic :: string
+          integer(kind=int4), automatic :: i,n,m
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr
+          ! EXec code ....
+          if(allocated(datum)) return
+          open(newunit=iounit,FILE="/proc/meminfo",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+         !
+          allocate(character(len=n)::datum(m),STAT=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+          close(iounit)
+      end subroutine read_meminfo_dalloc
+
+#if defined __GFORTRAN__        
+      subroutine read_vmstat_dalloc(datum,strlen,nstrings,ioerr,errmsg) !GCC$ ATTRIBUTES cold :: read_vmstat_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_vmstat_dalloc
+#elif defined __INTEL_COMPILER 
+      subroutine read_vmstat_dalloc(datum,strlen,nstrings,ioerr,errmsg)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_vmstat_dalloc
+#endif
+          character(len=:), allocatable, dimension(:),  intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=256), automatic :: string
+          integer(kind=int4), automatic :: i,n,m
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr
+          ! EXec code ....
+          if(allocated(datum)) return
+          open(newunit=iounit,FILE="/proc/vmstat",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),STAT=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+          close(iounit)
+      end subroutine read_vmstat_dalloc
+
+#if defined __GFORTRAN__
+      subroutine read_self_status_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)  !GCC$ ATTRIBUTES cold :: read_self_status_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_self_status_dalloc
+#elif defined __INTEL_COMPILER
+      subroutine read_self_status_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_self_status_dalloc
+#endif
+          character(len=:),  allocatable, dimension(:), intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: filesz
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=512), automatic :: string
+#if defined __GFORTRAN__
+          integer(kind=int4), dimension(13), automatic :: buf
+          integer(kind=int4), automatic :: gfstat
+#endif
+          integer(kind=int4), automatic :: i,m,n
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr,fsize
+          logical(kind=int4), automatic :: is_present
+          ! EXec code ....
+          if(allocated(datum)) return
+          fsize = 0
+#if defined __INTEL_COMPILER
+          inquire(FILE="/proc/self/status",EXIST=is_present,SIZE=fsize)
+          if(.not.is_present .or. fsize == 0) return
+#elif defined __GFORTRAN__
+          inquire(FILE="/proc/self/status",EXIST=is_present)
+          if(.not.is_present) return
+          gfstat=0
+          call stat("/proc/self/status",buf,gfstat)
+          if(gfstat==0) then
+             if(buf(8)==0) return
+          else
+             print*, "stat failed with a status code: ", gfstat
+             return
+          end if
+#endif
+          open(newunit=iounit,FILE="/proc/self/status",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),istat=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+#if defined __INTEL_COMPILER
+          filesz=fsize
+#elif defined __GFORTRAN__
+          filesz=buf(8)
+#endif
+          close(iounit)
+     end subroutine read_self_status_dalloc
+
+#if defined __GFORTRAN__
+     subroutine read_self_io_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg) !GCC$ ATTRIBUTES cold :: read_self_io_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_self_io_dalloc
+#elif defined __INTEL_COMPILER
+     subroutine read_self_io_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_self_io_dalloc
+#endif
+          character(len=:),  allocatable, dimension(:), intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: filesz
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=512), automatic :: string
+#if defined __GFORTRAN__
+          integer(kind=int4), dimension(13), automatic :: buf
+          integer(kind=int4), automatic :: gfstat
+#endif
+          integer(kind=int4), automatic :: i,m,n
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr,fsize
+          logical(kind=int4), automatic :: is_present
+          ! EXec code ....
+          if(allocated(datum)) return
+          fsize=0
+#if defined __INTEL_COMPILER
+          inquire(FILE="/proc/self/io",EXIST=is_present,SIZE=fsize)
+          if(.not.is_present .or. fsize == 0) return
+#elif defined __GFORTRAN__
+          inquire(FILE="/proc/self/io",EXIST=is_present)
+          if(.not.is_present) return
+          gfstat=0
+          call stat("/proc/self/io",buf,gfstat)
+          if(gfstat == 0) then
+             if(buf(8)==0) return
+          else
+             print*, "stat failed with a status code: ",gfstat
+             return
+          end if
+#endif
+          open(newunit=iounit,FILE="/proc/self/io",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),istat=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+#if defined __INTEL_COMPILER
+          filesz=fsize
+#elif defined __GFORTRAN__
+          filesz=buf(8)
+#endif
+          close(iounit)
+     end subroutine read_self_io_dalloc
+
+#if defined __GFORTRAN__
+     subroutine read_self_maps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)  !GCC$ ATTRIBUTES cold :: read_self_maps_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_self_maps_dalloc
+#elif defined __INTEL_COMPILER
+     subroutine read_self_maps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_self_maps_dalloc  
+#endif
+          character(len=:),  allocatable, dimension(:), intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: filesz
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=512), automatic :: string
+#if defined __GFORTRAN__
+          integer(kind=int4), dimension(13), automatic :: buf
+          integer(kind=int4), automatic :: gfstat
+#endif
+          integer(kind=int4), automatic :: i,m,n
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr,fsize
+          logical(kind=int4), automatic :: is_present
+          ! EXec code ....
+          if(allocated(datum)) return
+          fsize = 0
+#if defined __INTEL_COMPILER
+          inquire(FILE="/proc/self/maps",EXIST=is_present,SIZE=fsize)
+          if(.not.is_present .or. fsize == 0) return
+#elif defined __GFORTRAN__
+          inquire(FILE="/proc/self/maps",EXIST=is_present)
+          if(.not.is_present) return
+          gfstat=0
+          call stat("proc/self/maps",buf,gfstat)
+          if(gfstat==0) then
+             if(buf(8)==0) return
+          else
+             print*, "stat failed with a status code:", gfstat
+             return
+          end if
+#endif
+          open(newunit=iounit,FILE="/proc/self/maps",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),istat=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+#if defined __INTEL_COMPILER
+          filesz=fsize
+#elif defined __GFORTRAN__
+          filesz=buf(8)
+#endif
+          close(iounit)
+     end subroutine read_self_maps_dalloc
+
+#if defined __GFORTRAN__
+     subroutine read_self_numa_maps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)  !GCC$ ATTRIBUTES cold :: read_self_numa_maps_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_self_numa_maps
+#elif defined __INTEL_COMPILER
+     subroutine read_self_numa_maps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_self_numa_maps_dalloc
+#endif 
+          character(len=:),  allocatable, dimension(:), intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: filesz
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=512), automatic :: string
+#if defined __GFORTRAN__
+          integer(kind=int4), dimension(13), automatic :: buf
+          integer(kind=int4), automatic :: gfstat
+#endif
+          integer(kind=int4), automatic :: i,m,n
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr,fsize
+          logical(kind=int4), automatic :: is_present
+          ! EXec code ....
+          if(allocated(datum)) return
+          fsize = 0
+#if defined __INTEL_COMPILER
+          inquire(FILE="/proc/self/numa_maps",EXIST=is_present,SIZE=fsize)
+          if(.not.is_present .or. fsize == 0) return
+#elif defined __GFORTRAN__
+          inquire(FILE="/proc/self/numa_maps",EXIST=is_present)
+          if(.not.is_present) return
+          gfstat=0
+          call stat("proc/self/numa_maps",buf,gfstat)
+          if(gfstat==0) then
+             if(buf(8)==0) return
+          else
+             print*, "stat failed with a status code:", gfstat
+             return
+          end if
+#endif
+          open(newunit=iounit,FILE="/proc/self/numa_maps",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),istat=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+#if defined __INTEL_COMPILER
+          filesz=fsize
+#elif defined __GFORTRAN__
+          filesz=buf(8)
+#endif
+          close(iounit)
+     end subroutine read_self_numa_maps_dalloc
+
+#if defined __GFORTRAN__        
+     subroutine read_self_smaps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)  !GCC$ ATTRIBUTES cold :: read_self_smaps_dalloc !GCC$ ATTRIBUTES aligned(32) :: read_self_smaps_dalloc
+#elif defined __INTEL_COMPILER
+     subroutine read_self_smaps_dalloc(datum,strlen,nstrings,filesz,ioerr,errmsg)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: read_self_smaps_dalloc
+#endif 
+          character(len=:),  allocatable, dimension(:), intent(inout) :: datum
+          integer(kind=int4),                           intent(inout) :: strlen
+          integer(kind=int4),                           intent(inout) :: nstrings
+          integer(kind=int4),                           intent(inout) :: filesz
+          integer(kind=int4),                           intent(inout) :: ioerr
+          character(len=128),                           intent(inout) :: errmsg
+          ! Locals
+          character(len=512), automatic :: string
+#if defined __GFORTRAN__
+          integer(kind=int4), dimension(13), automatic :: buf
+          integer(kind=int4), automatic :: gfstat
+#endif
+          integer(kind=int4), automatic :: i,m,n
+          integer(kind=int4), automatic :: iounit
+          integer(kind=int4), automatic :: aerr,fsize
+          logical(kind=int4), automatic :: is_present
+          ! EXec code ....
+          if(allocated(datum)) return
+          fsize = 0
+#if defined __INTEL_COMPILER
+          inquire(FILE="/proc/self/smaps",EXIST=is_present,SIZE=fsize)
+          if(.not.is_present .or. fsize == 0) return
+#elif defined __GFORTRAN__
+          inquire(FILE="/proc/self/smaps",EXIST=is_present)
+          if(.not.is_present) return
+          gfstat=0
+          call stat("proc/self/smaps",buf,gfstat)
+          if(gfstat==0) then
+             if(buf(8)==0) return
+          else
+             print*, "stat failed with a status code:", gfstat
+             return
+          end if
+#endif
+          open(newunit=iounit,FILE="/proc/self/smaps",ACTION="READ",STATUS="OLD",IOMSG=errmsg,IOSTAT=ioerr)
+          if(ioerr > 0) return
+          n = 0
+          m = 0
+          do
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             n = max(n,len_trim(string))
+             if(ioerr/=0) exit
+             m = m+1
+          end do
+          !
+          allocate(character(len=n)::datum(m),istat=aerr)
+          if(aerr/=0) then
+             close(iounit)
+             return
+          end if
+          rewind(iounit)
+          do i=1,m
+             read(iounit,'(A)',IOSTAT=ioerr,IOMSG=errmsg) string
+             if(ioerr/=0) exit
+             datum(i) = string
+          end do
+          if(ioerr/=iostat_end) then
+             deallocate(datum)
+             close(iounit)
+             return
+          end if
+          strlen = n
+          nstrings = m
+#if defined __INTEL_COMPILER
+          filesz=fsize
+#elif defined __GFORTRAN__
+          filesz=buf(8)
+#endif
+          close(iounit) 
+     end subroutine read_self_smaps_dalloc
+
         
+     
 end module mod_platform_stats
