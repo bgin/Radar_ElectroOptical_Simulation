@@ -109,7 +109,7 @@ module mod_tree_scatterer
         ! Height of the trunk only
         real(kind=sp)      :: trunk_height
         ! Radius of trunk  (averaged)
-        real(kind=sp)      ;: trunk_radius
+        real(kind=sp)      :: trunk_radius
         ! Height of crown only
         real(kind=sp)      :: crown_height
         ! Total crown area (approximated) as sum of leaves area
@@ -181,7 +181,7 @@ module mod_tree_scatterer
         ! Leaves surface angle to inpinging Radar waveform (rad)
         ! PAOS type size of array nleaves/8
 #if defined __INTEL_COMPILER
-!DIR$ ATTRIBUTES ALIGN : 64 :: leaves_incident_angle (theta,phi angles)
+!DIR$ ATTRIBUTES ALIGN : 64 :: leaves_incident_angle
         type(YMM8r4_t),     allocatable, dimension(:,:)   :: leaves_incident_angle
 #elif defined __GFORTRAN__
         type(YMM8r4_t),     allocatable, dimension(:,:)   :: leaves_incident_angle !GCC$ ATTRIBUTES aligned(64) :: leaves_incident_angle
@@ -199,8 +199,8 @@ module mod_tree_scatterer
 #endif
         ! Leaves parametric equation (approximated as an ellipses)
         ! Parameter y, (b*sin(t))
-         ! PAOS type size of arrays is -- npoints/4 1st dim (evaluation of y) ,
-        ! nleaves/4 2nd dim (number of leaves)
+         ! PAOS type size of arrays is -- npoints/8 1st dim (evaluation of y) ,
+        ! nleaves/8 2nd dim (number of leaves)
 #if defined __INTEL_COMPILER
 !DIR$   ATTRIBUTES ALIGN : 64 :: leaves_yparam
         type(YMM4r8_t),      allocatable, dimension(:,:) :: leaves_yparam
@@ -227,8 +227,8 @@ module mod_tree_scatterer
 #endif
         ! Branches parametric equation (approximated as a cylindrical objects)
         ! Parameter x, (r*cos(t))
-        ! PAOS type size of arrays is -- npoints/4 1st dim (evaluation of x) ,
-        ! nbranches/4 2nd dim (number of leaves)
+        ! PAOS type size of arrays is -- npoints/8 1st dim (evaluation of x) ,
+        ! nbranches/8 2nd dim (number of leaves)
 #if defined __INTEL_COMPILER
 !DIR$   ATTRIBUTES ALIGN : 64 :: branches_xparam
         type(YMM4r8_t),      allocatable, dimension(:,:) :: branches_xparam
@@ -799,7 +799,7 @@ module mod_tree_scatterer
 #elif defined __GFORTRAN__
            !GCC$ VECTOR
 #endif
-           do i=1, tsLTS.trunk_param_npoints-3, 4
+           do i=1, npoints-3, 4
 #if defined __INTEL_COMPILER
               !DIR$ ASSUME_ALIGNED tr_xparam:64
               !DIR$ ASSUME_ALIGNED tr_yparam:64
@@ -1287,7 +1287,7 @@ module mod_tree_scatterer
            type(YMM8r4_t),  automatic :: vthinc3     !GCC$ ATTRIBUTES aligned(32) :: vthinc3
 #endif
 #if defined __INTEL_COMPILER
-           !DIR$ ATTRIBUTES ALIGN : 32 :: vhinc0.vhinc1,vhinc2,vhinc3
+           !DIR$ ATTRIBUTES ALIGN : 32 :: vhinc0,vhinc1,vhinc2,vhinc3
            type(YMM8r4_t),  automatic :: vhinc0,vhinc1,vhinc2,vhinc3
 #elif defined __GFORTRAN__
            type(YMM8r4_t),  automatic :: vhinc0      !GCC$ ATTRIBUTES aligned(32) :: vhinc0
@@ -1372,13 +1372,14 @@ module mod_tree_scatterer
               call RANDOM_NUMBER(vz_rand.v)
               vz.v      = vz.v+vz_rand.v
               tmp2.v    = vz.v/vNZPTS.v
-              vhinv0.v  = tmp2.v
-              vhinv0.v  = vhinv0.v*VINC.v
-              vhinv1.v  = tmp2.v
-              vhinv1.v  = vhinv1.v*VINC2.v
-              vhinv2.v  = tmp2.v
-              vhinv2.v  = vhinv2.v*VINC3.v
-              vhinv3.v  = vhinv3.v*VINC4.v
+              vhinc0.v  = tmp2.v
+              vhinc0.v  = vhinc0.v*VINC.v
+              vhinc1.v  = tmp2.v
+              vhinc1.v  = vhinc1.v*VINC2.v
+              vhinc2.v  = tmp2.v
+              vhinc2.v  = vhinc2.v*VINC3.v
+              vhinc3.v  = tmp2.v
+              vhinc3.v  = vhinc3.v*VINC4.v
               vtheta0  = ymm8r4_zero
               vhinit0  = ymm8r4_zero
               vtheta1  = ymm8r4_zero
@@ -1406,22 +1407,22 @@ module mod_tree_scatterer
                  vtheta0.v = vtheta0.v+vthinc0.v
                  br_xparam(i+0,j).v = vrad.v*cos(vtheta0.v)
                  br_yparam(i+0,j).v = vrad.v*sin(vtheta0.v)
-                 vhinit0.v = vhinit0.v+vhinv0.v
+                 vhinit0.v = vhinit0.v+vhinc0.v
                  br_zparam(i+0,j).v = vhinit0.v
                  vtheta1.v = vtheta1.v+vthinc1.v
                  br_xparam(i+1,j).v = vrad.v*cos(vtheta1.v)
                  br_yparam(i+1,j).v = vrad.v*sin(vtheta1.v)
-                 vhinit1.v = vhinit1.v+vhinv1.v
+                 vhinit1.v = vhinit1.v+vhinc1.v
                  br_zparam(i+1,j).v = vhinit1.v
                  vtheta2.v = vtheta2.v+vthinc2.v
                  br_xparam(i+2,j).v = vrad.v*cos(vtheta2.v)
                  br_yparam(i+2,j).v = vrad.v*sin(vtheta2.v)
-                 vhinit2.v = vhinit2.v+vhinv2.v
+                 vhinit2.v = vhinit2.v+vhinc2.v
                  br_zparam(i+2,j).v = vhinit2.v
                  vtheta3.v = vtheta3.v+vthinc3.v
                  br_xparam(i+3,j).v = vrad.v*cos(vtheta3.v)
                  br_yparam(i+3,j).v = vrad.v*sin(vtheta3.v)
-                 vhinit3.v = vhinit3.v+vhinv3.v
+                 vhinit3.v = vhinit3.v+vhinc3.v
                  br_zparam(i+3,j).v = vhinit3.v
               end do
            end do
