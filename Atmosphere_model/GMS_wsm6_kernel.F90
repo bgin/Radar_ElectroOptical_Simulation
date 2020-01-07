@@ -3182,37 +3182,72 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       !
 #if defined __GFORTRAN__
       INTEGER(kind=int4) ::  minkb, minkt
-      LOGICAL(kind=int4), DIMENSION(its:ite) :: intp_mask, tmask
-      INTEGER(kind=int4), DIMENSION(its:ite) :: kb, kt
-      REAL(kind=sp),      DIMENSION(its:ite) :: tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
-      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_t,za_gath_b
-      REAL(kind=sp),      DIMENSION(its:ite) :: qa_gath_b
-      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_t,dza_gath_b
-      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_t,qpi_gath_b
-      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_t,qmi_gath_b
+      LOGICAL(kind=int4), DIMENSION(its:ite) :: intp_mask  !GCC$ ATTRIBUTES aligned(64) :: intp_mask
+      LOGICAL(kind=int4), DIMENSION(its:ite) :: tmask      !GCC$ ATTRIBUTES aligned(64) :: tmask
+      INTEGER(kind=int4), DIMENSION(its:ite) :: kb         !GCC$ ATTRIBUTES aligned(64) :: kb
+      INTEGER(kind=int4), DIMENSION(its:ite) :: kt         !GCC$ ATTRIBUTES aligned(64) :: kt
+      REAL(kind=sp),      DIMENSION(its:ite) :: tl         !GCC$ ATTRIBUTES aligned(64) :: tl
+      REAL(kind=sp),      DIMENSION(its:ite) :: tl2        !GCC$ ATTRIBUTES aligned(64) :: tl2
+      REAL(kind=sp),      DIMENSION(its:ite) :: th         !GCC$ ATTRIBUTES aligned(64) :: th
+      REAL(kind=sp),      DIMENSION(its:ite) :: th2        !GCC$ ATTRIBUTES aligned(64) :: th2
+      REAL(kind=sp),      DIMENSION(its:ite) :: qqd        !GCC$ ATTRIBUTES aligned(64) :: qqd
+      REAL(kind=sp),      DIMENSION(its:ite) :: qqh        !GCC$ ATTRIBUTES aligned(64) :: qqh
+      REAL(kind=sp),      DIMENSION(its:ite) :: qql        !GCC$ ATTRIBUTES aligned(64) :: qql
+      REAL(kind=sp),      DIMENSION(its:ite) :: zsum       !GCC$ ATTRIBUTES aligned(64) :: zsum
+      REAL(kind=sp),      DIMENSION(its:ite) :: qsum       !GCC$ ATTRIBUTES aligned(64) :: qsum
+      REAL(kind=sp),      DIMENSION(its:ite) :: dql        !GCC$ ATTRIBUTES aligned(64) :: dql
+      REAL(kind=sp),      DIMENSION(its:ite) :: dqh        !GCC$ ATTRIBUTES aligned(64) :: dqh
+      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_t  !GCC$ ATTRIBUTES aligned(64) :: za_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_b  !GCC$ ATTRIBUTES aligned(64) :: za_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qa_gath_b  !GCC$ ATTRIBUTES aligned(64) :: qa_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_t !GCC$ ATTRIBUTES aligned(64) :: dza_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_b !GCC$ ATTRIBUTES aligned(64) :: dza_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_t !GCC$ ATTRIBUTES aligned(64) :: qpi_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_b !GCC$ ATTRIBUTES aligned(64) :: qpi_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_t !GCC$ ATTRIBUTES aligned(64) :: qmi_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_b !GCC$ ATTRIBUTES aligned(64) :: qmi_gath_b
 #elif defined __INTEL_COMPILER
       INTEGER(kind=int4) ::  minkb, minkt
       LOGICAL(kind=int4), DIMENSION(its:ite) :: intp_mask, tmask
+      !DIR$ ATTRIBUTES ALIGN : 64 :: intp_mask, tmask
       INTEGER(kind=int4), DIMENSION(its:ite) :: kb, kt
+      !DIR$ ATTRIBUTES ALIGN : 64 :: kb, kt
       REAL(kind=sp),      DIMENSION(its:ite) :: tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
+      !DIR$ ATTRIBUTES ALIGN : 64 :: tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
       REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_t,za_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 :: za_gath_t,za_gath_b
       REAL(kind=sp),      DIMENSION(its:ite) :: qa_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 :: qa_gath_b
       REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_t,dza_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 :: dza_gath_t,dza_gath_b
       REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_t,qpi_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 :: qpi_gath_t,qpi_gath_b
       REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_t,qmi_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 ::  qmi_gath_t,qmi_gath_b
 #endif
 !
-#ifdef ALIGN_OK
+
+
+#if defined __INTEL_COMPILER
 !DIR$ ASSUME_ALIGNED denl:64,denfacl:64,tkl:64,dzl:64,wwl:64,rql:64,precip:64,lmask:64
 !DIR$ ASSUME_ALIGNED intp_mask:64,tmask:64,kb:64,kt:64,tl:64,tl2:64,qqd:64,qqh:64
 !DIR$ ASSUME_ALIGNED qql:64,zsum:64,dql:64,dqh:64,za_gath_t:64,za_gath_b:64,qa_gath_b:64
 !DIR$ ASSUME_ALIGNED dza_gath_t:64,dza_gath_b:64,qpi_gath_t:64,qpi_gath_b:64
 !DIR$ ASSUME_ALIGNED qmi_gath_t:64,qmi_gath_b:64,wi:64,ww:64,za:64,zi:64,dza:64
 #endif
-      precip(:) = 0.0
+      precip(:) = 0.0_sp
 !
       do k=kts,kte
-      do i=its,ite
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
+         do i=its,ite
+
 ! -----------------------------------
       dz(i,k) = dzl(i,k)
       qq(i,k) = rql(i,k)
@@ -3227,6 +3262,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       allold(i) = 0.0
       enddo
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
         allold(i) = allold(i) + qq(i,k)
       enddo
@@ -3241,6 +3284,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
       if (lmask(i)) then
         zi(i,k+1) = zi(i,k)+dz(i,k)
@@ -3250,6 +3301,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! save departure wind
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
       if (lmask(i)) then
       wd(i,k) = ww(i,k)
@@ -3267,6 +3326,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if (lmask(i)) then
         wi(i,k) = (ww(i,k)*dz(i,k-1)+ww(i,k-1)*dz(i,k))/(dz(i,k-1)+dz(i,k))
@@ -3283,6 +3350,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts+2,kte-1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         wi(i,k) = fa1*(ww(i,k)+ww(i,k-1))-fa2*(ww(i,k+1)+ww(i,k-2))
@@ -3298,6 +3373,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! terminate of top of raingroup
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
       do i=its,ite
       if (lmask(i)) then
         if( ww(i,k).eq.0.0 ) wi(i,k)=ww(i,k-1)
@@ -3306,8 +3389,16 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
 !
 ! diffusivity of wi
-      con1 = 0.05
+      con1 = 0.05_sp
       do k=kte,kts,-1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         decfl = (wi(i,k+1)-wi(i,k))*dt/dz(i,k)
@@ -3319,6 +3410,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
 ! compute arrival point
       do k=kts,kte+1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         za(i,k) = zi(i,k) - wi(i,k)*dt
@@ -3327,12 +3426,28 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
 !
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         dza(i,k) = za(i,k+1)-za(i,k)
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif     
       do i=its,ite
       if (lmask(i)) then
       dza(i,kte+1) = zi(i,kte+1) - za(i,kte+1)
@@ -3341,6 +3456,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! computer deformation at arrival point
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         qa(i,k) = qq(i,k)*dz(i,k)/dza(i,k)
@@ -3348,6 +3471,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
       do i=its,ite
       if (lmask(i)) then
       qa(i,kte+1) = 0.0
@@ -3361,6 +3492,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         call slope_rain_ii(qr,den,denfac,tk,tmp,tmp1,tmp2,tmp3,wa,its,ite,kts,kte,lmask)
         if( n.ge.2 ) then
         do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
         do i=its,ite
         if (lmask(i)) then
           wa(i,k)=0.5*(wa(i,k)+was(i,k))
@@ -3369,6 +3508,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         enddo
         endif
         do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
         do i=its,ite
         if (lmask(i)) then
 !#ifdef DEBUG
@@ -3386,6 +3533,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! estimate values at arrival cell interface with monotone
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
       do i=its,ite
       if (lmask(i)) then
         dip=(qa(i,k+1)-qa(i,k))/(dza(i,k+1)+dza(i,k))
@@ -3404,6 +3559,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif     
       do i=its,ite
       if (lmask(i)) then
       qpi(i,kts)=qa(i,kts)
@@ -3465,7 +3628,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 # define DX1 i,kb(i)
 # define DX2 i,kt(i)
 #endif
-!DEC$ SIMD
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
              DO i = its,ite
                qa_gath_b(i) = qa(DX1)
                za_gath_b(i) = za(DX1)
@@ -3473,14 +3643,28 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                qpi_gath_b(i) = qpi(DX1)
                qmi_gath_b(i) = qmi(DX1)
              ENDDO
-!DEC$ SIMD
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
              DO i = its,ite
                za_gath_t(i) = za(DX2)
                dza_gath_t(i) = dza(DX2)
                qpi_gath_t(i) = qpi(DX2)
                qmi_gath_t(i) = qmi(DX2)
              ENDDO
-
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
              DO i = its,ite
              IF ( kt(i) .eq. kb(i) .AND. intp_mask(i) ) THEN
                tl(i)=(zi(i,k)-za_gath_b(i))/dza_gath_b(i)
@@ -3509,6 +3693,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                ENDIF
              ENDDO
 #endif
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif               
              DO i = its,ite
                if( kt(i)-kb(i).gt.1 .AND. intp_mask(i) ) then
                  do m=kb(i)+1,kt(i)-1
@@ -3516,7 +3708,15 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                      qsum(i) = qsum(i) + qa(i,m) * dza(i,m)
                  enddo
                endif
-             ENDDO
+            ENDDO
+ #if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif             
              DO i = its,ite
              IF ( kt(i) .gt. kb(i) .AND. intp_mask(i) ) THEN
                th(i)=(zi(i,k+1)-za_gath_t(i))/dza_gath_t(i)
@@ -3555,6 +3755,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! rain out
       intp_mask = lmask
       sum_precip: do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif           
              DO i = its,ite
              IF (za(i,k).lt.0.0.and.za(i,k+1).lt.0.0.AND.intp_mask(i)) THEN
                precip(i) = precip(i) + qa(i,k)*dza(i,k)
@@ -3567,9 +3775,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! replace the new values
       do k=kts,kte
-#ifdef ALIGN_OK
-!DIR$ VECTOR ALIGNED
-#endif
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif  
       do i=its,ite
       if (lmask(i)) then
       rql(i,k) = qn(i,k)
@@ -3580,8 +3793,15 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! ----------------------------------
 !
   END SUBROUTINE nislfv_rain_plm_ii
-!-------------------------------------------------------------------
-      SUBROUTINE nislfv_rain_plm6_ii(its,ite,kts,kte,denl,denfacl,tkl,dzl,wwl,rql,rql2, precip1, precip2,dt,id,iter)
+  !-------------------------------------------------------------------
+#if defined __GFORTRAN__
+  SUBROUTINE nislfv_rain_plm6_ii(its,ite,kts,kte,denl,denfacl,tkl,&
+       dzl,wwl,rql,rql2, precip1, precip2,dt,id,iter) !GCC$ ATTRIBUTES hot :: nislfv_rain_plm6_ii !GCC$ ATTRIBUTES aligned(32) :: nislfv_rain_plm6_ii
+#elif defined __INTEL_COMPILER
+   SUBROUTINE nislfv_rain_plm6_ii(its,ite,kts,kte,denl,denfacl,tkl,&
+        dzl,wwl,rql,rql2, precip1, precip2,dt,id,iter)
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: nislfv_rain_plm6_ii
+#endif
 !-------------------------------------------------------------------
 !
 ! for non-iteration semi-Lagrangain forward advection for cloud
@@ -3603,33 +3823,107 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! author: hann-ming henry juang <henry.juang@noaa.gov>
 !         implemented by song-you hong
 !
-      implicit none
-      integer  its,ite,kts,kte,id
-      real  dt
-      real  dzl(its:ite,kts:kte),wwl(its:ite,kts:kte),rql(its:ite,kts:kte),rql2(its:ite,kts:kte),precip(its:ite),precip1(its:ite),precip2(its:ite)
-      real  denl(its:ite,kts:kte),denfacl(its:ite,kts:kte),tkl(its:ite,kts:kte)
+     
+      integer(kind=int4) ::   its,ite,kts,kte,id
+      real(kind=sp)      ::   dt
+      real(kind=sp), dimension(its:ite,kts:kte) ::  dzl,wwl,rql,rql2
+      real(kind=sp), dimension(its:ite)         ::  precip,precip1,precip2
+      real(kind=sp), dimension(its:ite,kts:kte) ::  denl,denfacl,tkl
 !
-      integer  i,k,n,m,kk,iter,ist
-      real  dim,dip,con1,fa1,fa2
-      real  allold(its:ite), decfl
-      real  dz(its:ite,kts:kte), ww(its:ite,kts:kte), qq(its:ite,kts:kte), qq2(its:ite,kts:kte), wd(its:ite,kts:kte), wa(its:ite,kts:kte), wa2(its:ite,kts:kte), was(its:ite,kts:kte)
-      real  den(its:ite,kts:kte), denfac(its:ite,kts:kte), tk(its:ite,kts:kte)
-      real  wi(its:ite,kts:kte+1), zi(its:ite,kts:kte+1), za(its:ite,kts:kte+1)
-      real  qn(its:ite,kts:kte), qr(its:ite,kts:kte),qr2(its:ite,kts:kte),tmp(its:ite,kts:kte),tmp1(its:ite,kts:kte),tmp2(its:ite,kts:kte),tmp3(its:ite,kts:kte)
-      real  dza(its:ite,kts:kte+1), qa(its:ite,kts:kte+1), qa2(its:ite,kts:kte+1),qmi(its:ite,kts:kte+1), qpi(its:ite,kts:kte+1)
-      logical  lmask(its:ite)
+      integer(kind=int4) ::   i,k,n,m,kk,iter,ist
+      real(kind=sp)      ::   dim,dip,con1,fa1,fa2,defcl
+#if defined __GFORTRAN__
+      real(kind=sp), dimension(its:ite) ::   allold
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  dz      !GCC$ ATTRIBUTES aligned(64) :: dz
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  ww      !GCC$ ATTRIBUTES aligned(64) :: ww
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  qq      !GCC$ ATTRIBUTES aligned(64) :: qq
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  qq2     !GCC$ ATTRIBUTES aligned(64) :: qq2
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  wd      !GCC$ ATTRIBUTES aligned(64) :: wd
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  wa      !GCC$ ATTRIBUTES aligned(64) :: wa
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  wa2     !GCC$ ATTRIBUTES aligned(64) :: wa2
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  was     !GCC$ ATTRIBUTES aligned(64) :: was
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  den     !GCC$ ATTRIBUTES aligned(64) :: den
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  denfac  !GCC$ ATTRIBUTES aligned(64) :: denfac
+      real(kind=sp), dimension(its:ite,kts:kte)   ::  tk      !GCC$ ATTRIBUTES aligned(64) :: tk
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  wi      !GCC$ ATTRIBUTES aligned(64) :: wi
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  zi      !GCC$ ATTRIBUTES aligned(64) :: zi
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  za      !GCC$ ATTRIBUTES aligned(64) :: za
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qn      !GCC$ ATTRIBUTES aligned(64) :: qn
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qr      !GCC$ ATTRIBUTES aligned(64) :: qr
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qr2     !GCC$ ATTRIBUTES aligned(64) :: qr2
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  tmp     !GCC$ ATTRIBUTES aligned(64) :: tmp
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  tmp1    !GCC$ ATTRIBUTES aligned(64) :: tmp1
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  tmp2    !GCC$ ATTRIBUTES aligned(64) :: tmp2
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  tmp3    !GCC$ ATTRIBUTES aligned(64) :: tmp3
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  dza     !GCC$ ATTRIBUTES aligned(64) :: dza
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qa      !GCC$ ATTRIBUTES aligned(64) :: qa
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qa2     !GCC$ ATTRIBUTES aligned(64) :: qa2
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qmi     !GCC$ ATTRIBUTES aligned(64) :: qmi
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::  qpi     !GCC$ ATTRIBUTES aligned(64) :: qpi
+      logical(kind=int4), dimension(its:ite)      ::  lmask   !GCC$ ATTRIBUTES aligned(64) :: lmask
+#elif defined __INTEL_COMPILER
+      real(kind=sp), dimension(its:ite)           ::   allold
+      !DIR$ ATTRIBUTES ALIGN : 64 :: allold
+      real(kind=sp), dimension(its:ite,kts:kte)   ::   dz, ww, qq, qq2, wd, wa, wa2, was
+      !DIR$ ATTRIBUTES ALIGN : 64 :: dz, ww, qq, qq2, wd, wa, wa2, was
+      real(kind=sp), dimension(its:ite,kts:kte)   ::   den, denfac, tk
+      !DIR$ ATTRIBUTES ALIGN : 64 ::  den, denfac, tk
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::   wi zi, za
+      !DIR$ ATTRIBUTES ALIGN : 64 ::   wi zi, za
+      real(kind=sp), dimension(its:ite,kts:kte)   ::   qn,qr,qr2,tmp,tmp1,tmp2,tmp3
+      !DIR$ ATTRIBUTES ALIGN : 64 ::    qn,qr,qr2,tmp,tmp1,tmp2,tmp3
+      real(kind=sp), dimension(its:ite,kts:kte+1) ::   dza, qa,qa2,qmi,qpi
+      !DIR$ ATTRIBUTES ALIGN : 64 ::     dza, qa,qa2,qmi,qpi
+      logical(kind=int4), dimension(its:ite)      ::   lmask
+      !DIR$ ATTRIBUTES ALIGN : 64 ::     lmask
+#endif
 !
-      INTEGER minkb, minkt
-      LOGICAL, DIMENSION(its:ite) :: intp_mask, tmask
-      INTEGER, DIMENSION(its:ite) :: kb, kt
-      REAL,    DIMENSION(its:ite) :: tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
-      REAL,    DIMENSION(its:ite) :: za_gath_t,za_gath_b
-      REAL,    DIMENSION(its:ite) :: qa_gath_b
-      REAL,    DIMENSION(its:ite) :: dza_gath_t,dza_gath_b
-      REAL,    DIMENSION(its:ite) :: qpi_gath_t,qpi_gath_b
-      REAL,    DIMENSION(its:ite) :: qmi_gath_t,qmi_gath_b
+      INTEGER(kind=int4) ::  minkb, minkt
+#if defined __GFORTRAN__
+      LOGICAL(kind=int4), DIMENSION(its:ite) :: intp_mask     !GCC$ ATTRIBUTES aligned(64) :: intp_mask
+      LOGICAL(kind=int4), DIMENSION(its:ite) :: tmask         !GCC$ ATTRIBUTES aligned(64) :: tmask
+      INTEGER(kind=int4), DIMENSION(its:ite) :: kb            !GCC$ ATTRIBUTES aligned(64) :: kb
+      INTEGER(kind=int4), DIMENSION(its:ite) :: kt            !GCC$ ATTRIBUTES aligned(64) :: kt
+      REAL(kind=sp),      DIMENSION(its:ite) :: tl            !GCC$ ATTRIBUTES aligned(64) :: tl
+      REAL(kind=sp),      DIMENSION(its:ite) :: tl2           !GCC$ ATTRIBUTES aligned(64) :: tl2
+      REAL(kind=sp),      DIMENSION(its:ite) :: th            !GCC$ ATTRIBUTES aligned(64) :: th
+      REAL(kind=sp),      DIMENSION(its:ite) :: th2           !GCC$ ATTRIBUTES aligned(64) :: th2
+      REAL(kind=sp),      DIMENSION(its:ite) :: qqd           !GCC$ ATTRIBUTES aligned(64) :: qqd
+      REAL(kind=sp),      DIMENSION(its:ite) :: qqh           !GCC$ ATTRIBUTES aligned(64) :: qqh
+      REAL(kind=sp),      DIMENSION(its:ite) :: qql           !GCC$ ATTRIBUTES aligned(64) :: qql
+      REAL(kind=sp),      DIMENSION(its:ite) :: zsum          !GCC$ ATTRIBUTES aligned(64) :: zsum
+      REAL(kind=sp),      DIMENSION(its:ite) :: qsum          !GCC$ ATTRIBUTES aligned(64) :: qsum
+      REAL(kind=sp),      DIMENSION(its:ite) :: dql           !GCC$ ATTRIBUTES aligned(64) :: dql
+      REAL(kind=sp),      DIMENSION(its:ite) :: dqh           !GCC$ ATTRIBUTES aligned(64) :: dqh
+      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_t     !GCC$ ATTRIBUTES aligned(64) :: za_gath_t 
+      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_b     !GCC$ ATTRIBUTES aligned(64) :: za_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qa_gath_b     !GCC$ ATTRIBUTES aligned(64) :: qa_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_t    !GCC$ ATTRIBUTES aligned(64) :: dza_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_b    !GCC$ ATTRIBUTES aligned(64) :: dza_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_t    !GCC$ ATTRIBUTES aligned(64) :: qpi_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_b    !GCC$ ATTRIBUTES aligned(64) :: qpi_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_t    !GCC$ ATTRIBUTES aligned(64) :: qmi_gath_t
+      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_b    !GCC$ ATTRIBUTES aligned(64) :: qmi_gath_b
+#elif defined __INTEL_COMPILER
+      LOGICAL(kind=int4), DIMENSION(its:ite) :: intp_mask, tmask
+      !DIR$ ATTRIBUTES ALIGN : 64 :: intp_mask, tmask
+      INTEGER(kind=int4), DIMENSION(its:ite) :: kb, kt
+      !DIR$ ATTRIBUTES ALIGN : 64 :: kb, kt
+      REAL(kind=sp),      DIMENSION(its:ite) :: tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
+      !DIR$ ATTRIBUTES ALIGN : 64 ::  tl,tl2,th,th2,qqd,qqh,qql,zsum,qsum,dql,dqh
+      REAL(kind=sp),      DIMENSION(its:ite) :: za_gath_t,za_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 ::   za_gath_t,za_gath_b 
+      REAL(kind=sp),      DIMENSION(its:ite) :: qa_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 ::   qa_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: dza_gath_t,dza_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 ::   dza_gath_t,dza_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qpi_gath_t,qpi_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 ::   qpi_gath_t,qpi_gath_b
+      REAL(kind=sp),      DIMENSION(its:ite) :: qmi_gath_t,qmi_gath_b
+      !DIR$ ATTRIBUTES ALIGN : 64 :: qmi_gath_t,qmi_gath_b
+#endif
 !
-#ifdef ALIGN_OK
+#if defined __INTEL_COMPILER
 !DIR$ ASSUME_ALIGNED denl:64,denfacl:64,tkl:64,dzl:64,wwl:64,rql:64,precip:64,lmask:64
 !DIR$ ASSUME_ALIGNED intp_mask:64,tmask:64,kb:64,kt:64,tl:64,tl2:64,qqd:64,qqh:64
 !DIR$ ASSUME_ALIGNED qql:64,zsum:64,dql:64,dqh:64,za_gath_t:64,za_gath_b:64,qa_gath_b:64
@@ -3642,6 +3936,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       precip2(:) = 0.0
 !
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif 
       do i=its,ite
 ! -----------------------------------
       dz(i,k) = dzl(i,k)
@@ -3658,6 +3960,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       allold(i) = 0.0
       enddo
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
         allold(i) = allold(i) + qq(i,k)
       enddo
@@ -3672,6 +3982,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
       if(lmask(i)) then
         zi(i,k+1) = zi(i,k)+dz(i,k)
@@ -3681,6 +3999,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! save departure wind
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+    
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      
+#endif          
       do i=its,ite
       if(lmask(i)) then
       wd(i,k) = ww(i,k)
@@ -3689,6 +4015,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
       n=1
       do while (n.le.(iter+1))
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif          
       do i=its,ite
       if(lmask(i)) then
 ! plm is 2nd order, we can use 2nd order wi or 3rd order wi
@@ -3698,6 +4032,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if(lmask(i)) then
         wi(i,k) = (ww(i,k)*dz(i,k-1)+ww(i,k-1)*dz(i,k))/(dz(i,k-1)+dz(i,k))
@@ -3707,6 +4049,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! 3rd order interpolation to get wi
       fa1 = 9./16.
       fa2 = 1./16.
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif       
       do i=its,ite
       if(lmask(i)) then
       wi(i,kts) = ww(i,kts)
@@ -3714,12 +4064,28 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       do k=kts+2,kte-1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if(lmask(i)) then
         wi(i,k) = fa1*(ww(i,k)+ww(i,k-1))-fa2*(ww(i,k+1)+ww(i,k-2))
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif    
       do i=its,ite
       if(lmask(i)) then
       wi(i,kte) = 0.5*(ww(i,kte)+ww(i,kte-1))
@@ -3729,6 +4095,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! terminate of top of raingroup
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if(lmask(i)) then
         if( ww(i,k).eq.0.0 ) wi(i,k)=ww(i,k-1)
@@ -3739,6 +4113,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! diffusivity of wi
       con1 = 0.05
       do k=kte,kts,-1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if(lmask(i)) then
         decfl = (wi(i,k+1)-wi(i,k))*dt/dz(i,k)
@@ -3750,6 +4132,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
 ! compute arrival point
       do k=kts,kte+1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
       do i=its,ite
       if(lmask(i)) then
         za(i,k) = zi(i,k) - wi(i,k)*dt
@@ -3758,12 +4148,28 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       enddo
 !
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
         dza(i,k) = za(i,k+1)-za(i,k)
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
       dza(i,kte+1) = zi(i,kte+1) - za(i,kte+1)
@@ -3772,6 +4178,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! computer deformation at arrival point
       do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
         qa(i,k) = qq(i,k)*dz(i,k)/dza(i,k)
@@ -3781,6 +4195,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif   
       do i=its,ite
       if(lmask(i)) then
       qa(i,kte+1) = 0.0
@@ -3797,8 +4219,8 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         do k = kts,kte
         do i=its,ite
         if(lmask(i)) then
-          tmp(i,k) = max((qr(i,k)+qr2(i,k)), 1.E-15)
-          IF ( tmp(i,k) .gt. 1.e-15 ) THEN
+          tmp(i,k) = max((qr(i,k)+qr2(i,k)), 1.E-15_sp)
+          IF ( tmp(i,k) .gt. 1.e-15_sp ) THEN
             wa(i,k) = (wa(i,k)*qr(i,k) + wa2(i,k)*qr2(i,k))/tmp(i,k)
           ELSE
             wa(i,k) = 0.
@@ -3808,6 +4230,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         enddo
         if( n.ge.2 ) then
         do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif              
         do i=its,ite
         if(lmask(i)) then
           wa(i,k)=0.5*(wa(i,k)+was(i,k))
@@ -3816,6 +4246,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         enddo
         endif
         do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
         do i=its,ite
         if(lmask(i)) then
 !#ifdef DEBUG
@@ -3834,6 +4272,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       ist_loop : do ist = 1, 2
       if (ist.eq.2) then
       do k=kts,kte+1
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
        qa(i,k) = qa2(i,k)
@@ -3850,6 +4296,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !
 ! estimate values at arrival cell interface with monotone
       do k=kts+1,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
         dip=(qa(i,k+1)-qa(i,k))/(dza(i,k+1)+dza(i,k))
@@ -3868,6 +4322,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
       endif
       enddo
       enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif
       do i=its,ite
       if(lmask(i)) then
       qpi(i,kts)=qa(i,kts)
@@ -3926,7 +4388,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 # define DX1 i,kb(i)
 # define DX2 i,kt(i)
 #endif
-!DEC$ SIMD
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif
              DO i = its,ite
                qa_gath_b(i) = qa(DX1)
                za_gath_b(i) = za(DX1)
@@ -3934,14 +4403,28 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                qpi_gath_b(i) = qpi(DX1)
                qmi_gath_b(i) = qmi(DX1)
              ENDDO
-!DEC$ SIMD
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+    
+#endif
              DO i = its,ite
                za_gath_t(i) = za(DX2)
                dza_gath_t(i) = dza(DX2)
                qpi_gath_t(i) = qpi(DX2)
                qmi_gath_t(i) = qmi(DX2)
              ENDDO
-
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+    
+#endif
              DO i = its,ite
              IF ( kt(i) .eq. kb(i) .AND. intp_mask(i) ) THEN
                tl(i)=(zi(i,k)-za_gath_b(i))/dza_gath_b(i)
@@ -3962,6 +4445,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                qsum(i)  = dql(i)*dza_gath_b(i)
              ENDIF
              ENDDO
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif          
              DO i = its,ite
                if( kt(i)-kb(i).gt.1 .AND. intp_mask(i) ) then
                  do m=kb(i)+1,kt(i)-1
@@ -3969,7 +4460,15 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                      qsum(i) = qsum(i) + qa(i,m) * dza(i,m)
                  enddo
                endif
-             ENDDO
+            ENDDO
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif            
              DO i = its,ite
              IF ( kt(i) .gt. kb(i) .AND. intp_mask(i) ) THEN
                th(i)=(zi(i,k+1)-za_gath_t(i))/dza_gath_t(i)
@@ -3990,6 +4489,14 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! rain out
       intp_mask = lmask
       sum_precip: do k=kts,kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ IVDEP
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      !GCC$ IVDEP
+#endif         
              DO i = its,ite
              IF (za(i,k).lt.0.0.and.za(i,k+1).lt.0.0.AND.intp_mask(i)) THEN
                precip(i) = precip(i) + qa(i,k)*dza(i,k)
@@ -4003,8 +4510,13 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 ! replace the new values
       if(ist.eq.1) then
         do k=kts,kte
-#ifdef ALIGN_OK
-!DIR$ VECTOR ALIGNED
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+    
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+    
 #endif
         do i=its,ite
         if(lmask(i)) then
@@ -4012,8 +4524,13 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         endif
         enddo
         enddo
-#ifdef ALIGN_OK
-!DIR$ VECTOR ALIGNED
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+    
 #endif
         do i=its,ite
         if(lmask(i)) then
@@ -4022,8 +4539,13 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         enddo
       else
         do k=kts,kte
-#ifdef ALIGN_OK
-!DIR$ VECTOR ALIGNED
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+      
 #endif
         do i=its,ite
         if(lmask(i)) then
@@ -4031,8 +4553,13 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
         endif
         enddo
         enddo
-#ifdef ALIGN_OK
-!DIR$ VECTOR ALIGNED
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
 #endif
         do i=its,ite
         if(lmask(i)) then
@@ -4048,13 +4575,18 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 #endif
 !+---+-----------------------------------------------------------------+
   ! Read array from unitno and convert from "no-chunk" to "chunk"
-  SUBROUTINE readarray2(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(OUT) :: arr(:,:)
-    CHARACTER(LEN=*), INTENT(IN)  :: arrname
-    INTEGER,          INTENT(IN)  :: unitno
-    INTEGER,          INTENT(IN)  :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:)
-    INTEGER :: i,j,ij,jsize,CHUNK,ipn
+#if defined __GFORTRAN__
+  SUBROUTINE readarray2(arr,arrname,unitno,ips,ipe) !GCC$ ATTRIBUTES cold :: readarray2 !GCC$ ATTRIBUTES aligned(32) :: readarray2
+#elif defined __INTEL_COMPILER
+    SUBROUTINE readarray2(arr,arrname,unitno,ips,ipe)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: readarray2
+#endif
+    REAL(kind=sp), contiguous,   INTENT(OUT) :: arr(:,:)
+    CHARACTER(LEN=*),            INTENT(IN)  :: arrname
+    INTEGER(kind=int4),          INTENT(IN)  :: unitno
+    INTEGER(kind=int4),          INTENT(IN)  :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:)
+    INTEGER(kind=int4) :: i,j,ij,jsize,CHUNK,ipn
     CHUNK = size(arr,1)
     jsize = size(arr,2)
     ALLOCATE(tmparr(ips:ipe))
@@ -4074,13 +4606,18 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 
 !+---+-----------------------------------------------------------------+
   ! Read array from unitno and convert from "no-chunk" to "chunk"
-  SUBROUTINE readarray3(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(OUT) :: arr(:,:,:)
-    CHARACTER(LEN=*), INTENT(IN)  :: arrname
-    INTEGER,          INTENT(IN)  :: unitno
-    INTEGER,          INTENT(IN)  :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:,:)
-    INTEGER :: i,j,k,ij,ksize,jsize,CHUNK,ipn
+#if defined __GFORTRAN__
+  SUBROUTINE readarray3(arr,arrname,unitno,ips,ipe) !GCC$ ATTRIBUTES cold :: readarray3 !GCC$ ATTRIBUTES aligned(32) :: readarray3
+#elif defined __INTEL_COMPILER
+    SUBROUTINE readarray3(arr,arrname,unitno,ips,ipe)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: readarray3
+#endif
+    REAL(kind=sp),  contiguous   INTENT(OUT) :: arr(:,:,:)
+    CHARACTER(LEN=*),            INTENT(IN)  :: arrname
+    INTEGER(kind=int4),          INTENT(IN)  :: unitno
+    INTEGER(kind=int4),          INTENT(IN)  :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:,:)
+    INTEGER(kind=int4) :: i,j,k,ij,ksize,jsize,CHUNK,ipn
     CHUNK = size(arr,1)
     ksize = size(arr,2)
     jsize = size(arr,3)
@@ -4104,12 +4641,12 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !+---+-----------------------------------------------------------------+
   ! Read array from unitno and convert from "no-chunk" to "chunk"
   SUBROUTINE readarray4(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(OUT) :: arr(:,:,:,:)
-    CHARACTER(LEN=*), INTENT(IN)  :: arrname
-    INTEGER,          INTENT(IN)  :: unitno
-    INTEGER,          INTENT(IN)  :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:,:,:)
-    INTEGER :: i,j,k,ij,ksize,jsize,CHUNK,ipn,m,msize
+    REAL(kind=sp),  contiguous           INTENT(OUT) :: arr(:,:,:,:)
+    CHARACTER(LEN=*),                    INTENT(IN)  :: arrname
+    INTEGER(kind=int4),                  INTENT(IN)  :: unitno
+    INTEGER(kind=int4),                  INTENT(IN)  :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:,:,:)
+    INTEGER(kind=int4) :: i,j,k,ij,ksize,jsize,CHUNK,ipn,m,msize
     CHUNK = size(arr,1)
     ksize = size(arr,2)
     msize = size(arr,3)
@@ -4136,12 +4673,12 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !+---+-----------------------------------------------------------------+
   ! Convert array from "chunk" to "no-chunk" and write to unitno.  
   SUBROUTINE writearray2(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(IN) :: arr(:,:)
-    CHARACTER(LEN=*), INTENT(IN) :: arrname
-    INTEGER,          INTENT(IN) :: unitno
-    INTEGER,          INTENT(IN) :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:)
-    INTEGER :: i,j,ij,jsize,CHUNK,ipn
+    REAL(kind=sp),    contiguous,           INTENT(IN) :: arr(:,:)
+    CHARACTER(LEN=*),                       INTENT(IN) :: arrname
+    INTEGER(kind=int4),                     INTENT(IN) :: unitno
+    INTEGER(kind=int4) ,                    INTENT(IN) :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:)
+    INTEGER(kind=sp) :: i,j,ij,jsize,CHUNK,ipn
     CHUNK = size(arr,1)
     jsize = size(arr,2)
     ALLOCATE(tmparr(ips:ipe))
@@ -4164,12 +4701,12 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !+---+-----------------------------------------------------------------+
   ! Convert array from "chunk" to "no-chunk" and write to unitno.  
   SUBROUTINE writearray3(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(IN) :: arr(:,:,:)
-    CHARACTER(LEN=*), INTENT(IN) :: arrname
-    INTEGER,          INTENT(IN) :: unitno
-    INTEGER,          INTENT(IN) :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:,:)
-    INTEGER :: i,j,k,ij,ksize,jsize,CHUNK,ipn
+    REAL(kind=sp),    contiguous,         INTENT(IN) :: arr(:,:,:)
+    CHARACTER(LEN=*),                     INTENT(IN) :: arrname
+    INTEGER(kind=int4),                   INTENT(IN) :: unitno
+    INTEGER(kind=int4),                   INTENT(IN) :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:,:)
+    INTEGER(kind=int4) :: i,j,k,ij,ksize,jsize,CHUNK,ipn
     CHUNK = size(arr,1)
     ksize = size(arr,2)
     jsize = size(arr,3)
@@ -4195,11 +4732,11 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
 !+---+-----------------------------------------------------------------+
   ! Convert array from "chunk" to "no-chunk" and write to unitno.  
   SUBROUTINE writearray4(arr,arrname,unitno,ips,ipe)
-    REAL,             INTENT(IN) :: arr(:,:,:,:)
-    CHARACTER(LEN=*), INTENT(IN) :: arrname
-    INTEGER,          INTENT(IN) :: unitno
-    INTEGER,          INTENT(IN) :: ips,ipe
-    REAL, ALLOCATABLE :: tmparr(:,:,:)
+    REAL(kind=sp),          contiguous,   INTENT(IN) :: arr(:,:,:,:)
+    CHARACTER(LEN=*),                     INTENT(IN) :: arrname
+    INTEGER(kind=int4),                   INTENT(IN) :: unitno
+    INTEGER(kind=int4),                   INTENT(IN) :: ips,ipe
+    REAL(kind=sp), ALLOCATABLE :: tmparr(:,:,:)
     INTEGER :: i,j,k,ij,ksize,jsize,CHUNK,ipn,m,msize
     CHUNK = size(arr,1)
     ksize = size(arr,2)
@@ -4225,7 +4762,7 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
     print *,' min ',trim(arrname),' = ',minval(tmparr),' at ',minloc(tmparr)
     DEALLOCATE(tmparr)
   END SUBROUTINE writearray4
-
+#if defined __GFORTRAN__
   SUBROUTINE firstTouch(t, q                                      &   
                    ,qci, qrs, den, p, delz                        &
                    ,lat                                           &
@@ -4236,50 +4773,75 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
                    ,its,ite, jts,jte, kts,kte                     &
                    ,snow,snowncv                                  &
                    ,graupel,graupelncv                            &
-                                                                  )
+                   )  !GCC$ ATTRIBUTES cold :: firstTouch !GCC$ ATTRIBUTES aligned(32) :: firstTouch
+#elif defined __INTEL_COMPILER
+    SUBROUTINE firstTouch(t, q                                      &   
+                   ,qci, qrs, den, p, delz                        &
+                   ,lat                                           &
+                   ,rain,rainncv                                  &
+                   ,sr                                            &
+                   ,ids,ide, jds,jde, kds,kde                     &
+                   ,ims,ime, jms,jme, kms,kme                     &
+                   ,its,ite, jts,jte, kts,kte                     &
+                   ,snow,snowncv                                  &
+                   ,graupel,graupelncv                            &
+                   )
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: firstTouch
+#endif
 !-------------------------------------------------------------------
-  IMPLICIT NONE
+ 
 !-------------------------------------------------------------------
 !
 !  Mimic memory access patterns of wsm62D() while setting physics arrays 
 !  to zero.  
 !
-  INTEGER,      INTENT(IN   )    ::   ids,ide, jds,jde, kds,kde , &
+  INTEGER(kind=int4),      INTENT(IN   )    ::   ids,ide, jds,jde, kds,kde , &
                                       ims,ime, jms,jme, kms,kme , &
                                       its,ite, jts,jte, kts,kte,  &
                                       lat
-  REAL, DIMENSION( its:ite , kts:kte ),                           &
+  REAL(kind=sp), DIMENSION( its:ite , kts:kte ),                           &
         INTENT(INOUT) ::                                          &
                                                                t
-  REAL, DIMENSION( its:ite , kts:kte, 2 ),                        &
+  REAL(kind=sp), DIMENSION( its:ite , kts:kte, 2 ),                        &
         INTENT(INOUT) ::                                          &
                                                              qci
-  REAL, DIMENSION( its:ite , kts:kte, 3 ),                        &
+  REAL(kind=sp), DIMENSION( its:ite , kts:kte, 3 ),                        &
         INTENT(INOUT) ::                                          &
                                                              qrs
-  REAL, DIMENSION( ims:ime , kms:kme ),                           &
+  REAL(kind=sp), DIMENSION( ims:ime , kms:kme ),                           &
         INTENT(INOUT) ::                                          &
                                                                q
-  REAL, DIMENSION( ims:ime , kms:kme ),                           &
+  REAL(kind=sp), DIMENSION( ims:ime , kms:kme ),                           &
         INTENT(INOUT) ::                                          &
                                                              den, &
                                                                p, &
                                                             delz
-  REAL, DIMENSION( ims:ime ),                                     &
+  REAL(kind=sp), DIMENSION( ims:ime ),                                     &
         INTENT(INOUT) ::                                    rain, &
                                                          rainncv, &
                                                               sr
-  REAL, DIMENSION( ims:ime, jms:jme ), OPTIONAL,                  &
+  REAL(kind=sp), DIMENSION( ims:ime, jms:jme ), OPTIONAL,                  &
         INTENT(INOUT) ::                                    snow, &
                                                          snowncv
-  REAL, DIMENSION( ims:ime, jms:jme ), OPTIONAL,                  &
+  REAL(kind=sp), DIMENSION( ims:ime, jms:jme ), OPTIONAL,                  &
         INTENT(INOUT) ::                                 graupel, &
                                                       graupelncv
 ! LOCAL VAR
   INTEGER :: i, k
 !
-      do k = kts, kte
-        do i = its, ite
+  do k = kts, kte
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+    
+#endif     
+     do i = its, ite
+#if defined __INTEL_COMPILER
+        !DIR$ ASSUME_ALIGNED t:64,q:64,qci:64,qrs:64,den:64,p:64,delz:64
+#endif
           t(i,k) = 0.
           q(i,k) = 0.
           qci(i,k,1) = 0.
@@ -4291,29 +4853,76 @@ vt,its,ite,kts,kte,lmask) !GCC$ ATTRIBUTES hot :: slope_graup_ii !GCC$ ATTRIBUTE
           p(i,k) = 0.
           delz(i,k) = 0.
         enddo
-      enddo
-      do i = its, ite
+     enddo
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+    
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif     
+     do i = its, ite
+#if defined __INTEL_COMPILER
+        !DIR$ ASSUME_ALIGNED rain:64,rainncv:64,sr:64
+#endif
         rain(i) = 0.
         rainncv(i) = 0.
         sr(i) = 0.
       enddo
       if (PRESENT(snow)) then
-        do i = its, ite
+         do i = its, ite
+#if defined __INTEL_COMPILER
+            !DIR$ ASSUME_ALIGNED snow:64
+#endif            
           snow(i,lat) = 0.
         enddo
       endif
       if (PRESENT(snowncv)) then
-        do i = its, ite
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+   
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif         
+         do i = its, ite
+#if defined __INTEL_COMPILER
+            !DIR$ ASSUME_ALIGNED snowncv:64
+#endif
           snowncv(i,lat) = 0.
         enddo
       endif
       if (PRESENT(graupel)) then
-        do i = its, ite
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+     
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif         
+         do i = its, ite
+#if defined __INTEL_COMPILER
+            !DIR$ ASSUME_ALIGNED graupel:64
+#endif
           graupel(i,lat) = 0.
         enddo
       endif
       if (PRESENT(graupelncv)) then
-        do i = its, ite
+#if defined __INTEL_COMPILER
+      !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+    
+#elif defined __GFORTRAN__
+      !GCC$ VECTOR
+     
+#endif         
+         do i = its, ite
+#if defined __INTEL_COMPILER
+            !DIR$ ASSUME_ALIGNED graupelncv:64
+#endif
           graupelncv(i,lat) = 0.
         enddo
       endif
@@ -4492,114 +5101,114 @@ END MODULE module_mp_wsm6
   ! allocate arrays
 !  ALLOCATE(t(iits:iite,kts:kte,jjts:jjte))
 !  ALLOCATE(qci(iits:iite,kts:kte,2,jjts:jjte))
-  ALLOCATE(qrs(iits:iite,kts:kte,3,jjts:jjte))
-  ALLOCATE(q(iims:iime,kms:kme,jjms:jjme))
-  ALLOCATE(den(iims:iime,kms:kme,jjms:jjme))
-  ALLOCATE(p(iims:iime,kms:kme,jjms:jjme))
-  ALLOCATE(delz(iims:iime,kms:kme,jjms:jjme))
-  ALLOCATE(rain(iims:iime,jjms:jjme))
-  ALLOCATE(rainncv(iims:iime,jjms:jjme))
-  ALLOCATE(sr(iims:iime,jjms:jjme))
-  ALLOCATE(snow(iims:iime,jjms:jjme))
-  ALLOCATE(snowncv(iims:iime,jjms:jjme))
-  ALLOCATE(graupel(iims:iime,jjms:jjme))
-  ALLOCATE(graupelncv(iims:iime,jjms:jjme))
+!  ALLOCATE(qrs(iits:iite,kts:kte,3,jjts:jjte))
+!  ALLOCATE(q(iims:iime,kms:kme,jjms:jjme))
+!  ALLOCATE(den(iims:iime,kms:kme,jjms:jjme))
+!  ALLOCATE(p(iims:iime,kms:kme,jjms:jjme))
+!  ALLOCATE(delz(iims:iime,kms:kme,jjms:jjme))
+!  ALLOCATE(rain(iims:iime,jjms:jjme))
+!  ALLOCATE(rainncv(iims:iime,jjms:jjme))
+!  ALLOCATE(sr(iims:iime,jjms:jjme))
+!  ALLOCATE(snow(iims:iime,jjms:jjme))
+ ! ALLOCATE(snowncv(iims:iime,jjms:jjme))
+!  ALLOCATE(graupel(iims:iime,jjms:jjme))
+ ! ALLOCATE(graupelncv(iims:iime,jjms:jjme))
 
-!$OMP PARALLEL DO &
-!$OMP PRIVATE ( j ) &
-!$OMP SCHEDULE(runtime)
-  do j = jjts,jjte
-    CALL firstTouch(t(iits,kts,j), q(iims,kms,j)              &
-               ,qci(iits,kts,1,j), qrs(iits,kts,1,j)          &
-               ,den(iims,kms,j)                               &
-               ,p(iims,kms,j), delz(iims,kms,j)               &
-               ,j                                             &
-               ,rain(iims,j),rainncv(iims,j)                  &
-               ,sr(iims,j)                                    &
-               ,iids,iide, jjds,jjde, kds,kde                 &
-               ,iims,iime, jjms,jjme, kms,kme                 &
-               ,iits,iite, jjts,jjte, kts,kte                 &
-               ,snow,snowncv                                  &
-               ,graupel,graupelncv                            &
-                                                              )
-  enddo  ! j loop
-!$OMP END PARALLEL DO
+!!$OMP PARALLEL DO &
+!!$OMP PRIVATE ( j ) &
+!!$OMP SCHEDULE(runtime)
+!  do j = jjts,jjte
+!    CALL firstTouch(t(iits,kts,j), q(iims,kms,j)              &
+ !              ,qci(iits,kts,1,j), qrs(iits,kts,1,j)          &
+ !              ,den(iims,kms,j)                               &
+ !              ,p(iims,kms,j), delz(iims,kms,j)               &
+ !              ,j                                             &
+ !              ,rain(iims,j),rainncv(iims,j)                  &
+ !              ,sr(iims,j)                                    &
+ !              ,iids,iide, jjds,jjde, kds,kde                 &
+ !              ,iims,iime, jjms,jjme, kms,kme                 &
+ !              ,iits,iite, jjts,jjte, kts,kte                 &
+ !              ,snow,snowncv                                  &
+ !              ,graupel,graupelncv                            &
+                                                            !  )
+ ! enddo  ! j loop
+!!$OMP END PARALLEL DO
 
   ! read remaining input data
-  call readarray3(t,'t',unitno,its,ite)
-  call readarray4(qci,'qci',unitno,its,ite)
-  call readarray4(qrs,'qrs',unitno,its,ite)
-  call readarray3(q,'q',unitno,its,ite)
-  call readarray3(den,'den',unitno,its,ite)
-  call readarray3(p,'p',unitno,its,ite)
-  call readarray3(delz,'delz',unitno,its,ite)
-  read(unitno) delt
-  print *,' delt = ',delt
-  read(unitno) g
-  print *,' g = ',g
-  read(unitno) cpd
-  print *,' cpd = ',cpd
-  read(unitno) cpv
-  print *,' cpv = ',cpv
-  read(unitno) t0c
-  print *,' t0c = ',t0c
-  read(unitno) den0
-  print *,' den0 = ',den0
-  read(unitno) rd
-  print *,' rd = ',rd
-  read(unitno) rv
-  print *,' rv = ',rv
-  read(unitno) ep1
-  print *,' ep1 = ',ep1
-  read(unitno) ep2
-  print *,' ep2 = ',ep2
-  read(unitno) qmin
-  print *,' qmin = ',qmin
-  read(unitno) XLS
-  print *,' XLS = ',XLS
-  read(unitno) XLV0
-  print *,' XLV0 = ',XLV0
-  read(unitno) XLF0
-  print *,' XLF0 = ',XLF0
-  read(unitno) cliq
-  print *,' cliq = ',cliq
-  read(unitno) cice
-  print *,' cice = ',cice
-  read(unitno) psat
-  print *,' psat = ',psat
-  read(unitno) denr
-  print *,' denr = ',denr
-  call readarray2(rain,'rain',unitno,its,ite)
-  call readarray2(rainncv,'rainncv',unitno,its,ite)
-  call readarray2(sr,'sr',unitno,its,ite)
-  call readarray2(snow,'snow',unitno,its,ite)
-  call readarray2(snowncv,'snowncv',unitno,its,ite)
-  call readarray2(graupel,'graupel',unitno,its,ite)
-  call readarray2(graupelncv,'graupelncv',unitno,its,ite)
-  close(unitno)
+!  call readarray3(t,'t',unitno,its,ite)
+ ! call readarray4(qci,'qci',unitno,its,ite)
+ ! call readarray4(qrs,'qrs',unitno,its,ite)
+ ! call readarray3(q,'q',unitno,its,ite)
+ ! call readarray3(den,'den',unitno,its,ite)
+ ! call readarray3(p,'p',unitno,its,ite)
+ ! call readarray3(delz,'delz',unitno,its,ite)
+ ! read(unitno) delt
+ ! print *,' delt = ',delt
+ ! read(unitno) g
+ ! print *,' g = ',g
+ ! read(unitno) cpd
+ ! print *,' cpd = ',cpd
+ ! read(unitno) cpv
+ ! print *,' cpv = ',cpv
+ ! read(unitno) t0c
+!  print *,' t0c = ',t0c
+ ! read(unitno) den0
+ ! print *,' den0 = ',den0
+ ! read(unitno) rd
+ ! print *,' rd = ',rd
+ ! read(unitno) rv
+!  print *,' rv = ',rv
+!  read(unitno) ep1
+!  print *,' ep1 = ',ep1
+!  read(unitno) ep2
+!  print *,' ep2 = ',ep2
+!  read(unitno) qmin
+!  print *,' qmin = ',qmin
+!  read(unitno) XLS
+ ! print *,' XLS = ',XLS
+ ! read(unitno) XLV0
+ ! print *,' XLV0 = ',XLV0
+ ! read(unitno) XLF0
+ ! print *,' XLF0 = ',XLF0
+ ! read(unitno) cliq
+!  print *,' cliq = ',cliq
+ ! read(unitno) cice
+!  print *,' cice = ',cice
+!  read(unitno) psat
+!  print *,' psat = ',psat
+!  read(unitno) denr
+!  print *,' denr = ',denr
+!  call readarray2(rain,'rain',unitno,its,ite)
+!  call readarray2(rainncv,'rainncv',unitno,its,ite)
+!  call readarray2(sr,'sr',unitno,its,ite)
+!  call readarray2(snow,'snow',unitno,its,ite)
+!  call readarray2(snowncv,'snowncv',unitno,its,ite)
+!  call readarray2(graupel,'graupel',unitno,its,ite)
+!  call readarray2(graupelncv,'graupelncv',unitno,its,ite)
+!  close(unitno)
 
   ! minimize timer overhead inside OpenMP loop
-  ret = gptlinit_handle ('WSM62D', handle)
+ ! ret = gptlinit_handle ('WSM62D', handle)
   ! call WSM6
-  ret = gptlstart('WSM62D+OpenMP')
-!$OMP PARALLEL DO &
-!$OMP PRIVATE ( j,ret ) &
-!$OMP SCHEDULE(runtime)
-  do j = jjts,jjte
-    ret = gptlstart_handle ('WSM62D', handle)
-    CALL wsm62D(t(iits,kts,j), q(iims,kms,j)                  &
-               ,qci(iits,kts,1,j), qrs(iits,kts,1,j)          &
-               ,den(iims,kms,j)                               &
-               ,p(iims,kms,j), delz(iims,kms,j)               &
-               ,delt,g, cpd, cpv, rd, rv, t0c                 &
-               ,ep1, ep2, qmin                                &
-               ,XLS, XLV0, XLF0, den0, denr                   &
-               ,cliq,cice,psat                                &
-               ,j                                             &
-               ,rain(iims,j),rainncv(iims,j)                  &
-               ,sr(iims,j)                                    &
-               ,iids,iide, jjds,jjde, kds,kde                 &
-               ,iims,iime, jjms,jjme, kms,kme                 &
+ ! ret = gptlstart('WSM62D+OpenMP')
+!!$OMP PARALLEL DO &
+!!$OMP PRIVATE ( j,ret ) &
+!!$OMP SCHEDULE(runtime)
+!  do j = jjts,jjte
+!    ret = gptlstart_handle ('WSM62D', handle)
+!    CALL wsm62D(t(iits,kts,j), q(iims,kms,j)                  &
+          !     ,qci(iits,kts,1,j), qrs(iits,kts,1,j)          &
+          !     ,den(iims,kms,j)                               &
+          !     ,p(iims,kms,j), delz(iims,kms,j)               &
+          !     ,delt,g, cpd, cpv, rd, rv, t0c                 &
+          !     ,ep1, ep2, qmin                                &
+          !     ,XLS, XLV0, XLF0, den0, denr                   &
+          !     ,cliq,cice,psat                                &
+          !     ,j                                             &
+         !      ,rain(iims,j),rainncv(iims,j)                  &
+         !      ,sr(iims,j)                                    &
+         !      ,iids,iide, jjds,jjde, kds,kde                 &
+         !      ,iims,iime, jjms,jjme, kms,kme                 &
   !             ,iits,iite, jjts,jjte, kts,kte                 &
   !             ,snow,snowncv                                  &
   !             ,graupel,graupelncv                            &
