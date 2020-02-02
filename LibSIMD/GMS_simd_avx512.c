@@ -1866,4 +1866,288 @@
         _mm512_store_ps(&c[0], _mm512_div_round_ps(*(__m512*)&a[0],*(__m512*)&b[0],rounding));
       }
 
-     
+      void avx512_maskz_div_round_pd(double * __restrict c,
+                                     const unsigned char k,
+				     const double * __restrict a,
+				     const double * __restrict b,
+				     const int rounding) {
+
+        _mm512_store_pd(&c[0], _mm512_maskz_div_round_pd(k,*(__m512d*)&a[0],*(__m512d*)&b[0],rounding));
+      }
+
+      void avx512_maskz_div_round_ps(float * __restrict c,
+                                     const unsigned short k,
+				     const float * __restrict a,
+				     const float * __restrict b,
+				     const int rounding) {
+
+        _mm512_store_ps(&c[0], _mm512_maskz_div_round_ps(k,*(__m512*)&a[0],*(__m512*)&b[0],rounding));
+      }
+
+      void avx512_fmadd_pd(double  * __restrict c,
+                           const double * __restrict x,
+			   const double * __restrict y,
+			   const double * __restrict z) {
+
+        _mm512_store_pd(&c[0], _mm512_fmadd_pd(*(__m512d*)&x[0],*(__m512d*)&y[0],*(__m512d*)&z[0]));
+      }
+
+      void avx512_fmadd_ps(float * __restrict c,
+                           const float * __restrict x,
+			   const float * __restrict y,
+			   const float * __restrict z) {
+
+        _mm512_store_ps(&c[0], _mm512_fmadd_ps(*(__m512*)&x[0],*(__m512*)&y[0],*(__m512*)&z[0]));
+      }
+
+      void avx512_mask_fmadd_pd(double  * __restrict c,
+                                const double * __restrict x,
+				const unsigned char k,
+				const double * __restrict y,
+				const double * __restrict z) {
+
+         _mm512_store_pd(&c[0], _mm512_mask_fmadd_pd(*(__m512d*)&x[0],k,*(__m512d*)&y[0],*(__m512d*)&z[0]));
+      }
+
+      void avx512_mask_fmadd_ps(float  * __restrict c,
+                                const float * __restrict x
+                                const unsigned short k,
+				const float * __restrict y,
+				const float * __restrict z) {
+
+         _mm512_store_ps(&c[0], _mm512_mask_fmadd_ps(*(__m512*)&x[0],k,*(__m512*)&y[0],*(__m512*)&z[0]));
+      }
+
+      void avx512_mask3_fmadd_pd(double * __restrict c,
+                                 const double * __restrict x,
+				 const double * __restrict y,
+				 const double * __restrict z,
+				 const unsigned char k) {
+
+         _mm512_store_pd(&c[0], _mm512_mask3_fmadd_pd(*(__m512d*)&x[0],*(__m512d*)&y[0],*(__m512d*)&z,k));
+      }
+       
+      void avx512_mask3_fmadd_ps(float * __restrict c,
+                                 const float * __restrict x,
+				 const float * __restrict y,
+				 const float * __restrict z,
+				 const unsigned short k) {
+
+         _mm512_store_ps(&c[0], _mm512_mask3_fmadd_ps(*(__m512*)&x[0],*(__m512*)&y[0],*(__m512*)&z,k));
+      }
+
+      void avx512_maskz_fmadd_pd(double * __restrict c,
+                                 const unsigned char k,
+				 const double * __restrict x,
+				 const double * __restrict y,
+				 const double * __restrict z) {
+
+        _mm512_store_pd(&c[0], _mm512_maskz_fmadd_pd(k,*(__m512d*)&x[0],*(__m512d*)&y[0],*(__m512d*)&z[0]));
+      }
+
+      void avx512_maskz_fmadd_ps(float * __restrict c,
+                                 const unsigned short k,
+				 const float * __restrict x,
+				 const float * __restrict y,
+				 const float * __restrict z) {
+
+        _mm512_store_ps(&c[0], _mm512_maskz_fmadd_ps(k,*(__m512*)&x[0],
+	                                                  *(__m512*)&y[0],
+							          *(__m512*)&z[0]));
+      }
+
+      void avx512_fmadd_round_pd(double * __restrict c,
+                                 const double * __restrict x,
+				 const double * __restrict y,
+				 const double * __restrict z,
+				 const int rounding) {
+
+        _mm512_store_pd(&c[0], _mm512_fmadd_round_pd(*(__m512d*)&x[0],
+	                                                *(__m512d*)&y[0],
+							     *(__m512d*)&z[0],
+							          rounding));
+      }
+      
+      void avx512_fmadd_round_ps(float * __restrict c,
+                                 const float * __restrict x,
+				 const float * __restrict y,
+				 const float * __restrict z,
+				 const int rounding) {
+
+         _mm512_store_ps(&c[0], _mm512_fmadd_round_ps(*(__m512*)&x[0],
+	                                                *(__m512*)&y[0],
+							     *(__m512*)&z[0],
+							          rounding));
+      }
+
+      void avx512_mask_fmadd_round_pd(double  * __restrict c,
+                                      const double * __restrict x,
+				      const unsigned char k,
+				      const double * __restrict y,
+				      const double * __restrict z,
+				      const int rounding) {
+
+        _mm512_store_pd(&c[0], _mm512_mask_fmadd_round_pd(*(__m512d*)&x[0],
+	                                                      k, *(__m512d*)&y[0],
+							             *(__m512d*)&z[0],
+								             rounding));
+      }
+
+      void avx512_mask_fmadd_round_ps(float  * __restrict c,
+                                      const float * __restrict x,
+				      const unsigned short k,
+				      const float * __restrict y,
+				      const float * __restrict z,
+				      const int rounding) {
+
+          _mm512_store_ps(&c[0], _mm512_mask_fmadd_round_ps(*(__m512*)&x[0],
+	                                                      k, *(__m512*)&y[0],
+							             *(__m512*)&z[0],
+								             rounding));
+      }
+
+      void avx512_mask3_fmadd_round_pd(double * __restrict c,
+                                       const double * __restrict x,
+				       const double * __restrict y,
+				       const double * __restrict z,
+				       const unsigned short k,
+				       const int rounding) {
+
+         _mm512_store_pd(&c[0], _mm512_mask3_fmadd_round_pd(*(__m512d*)&x[0],
+	                                                        *(__m512d*)&y[0],
+								    *(__m512d*)&z[0],k,
+								                 rounding));
+      }
+
+      void avx512_mask3_fmadd_round_ps(float * __restrict c,
+                                       const float * __restrict x,
+				       const float * __restrict y,
+				       const float * __restrict z,
+				       const unsigned short k,
+				       const int rounding) {
+
+        _mm512_store_ps(&c[0], _mm512_mask3_fmadd_round_ps(*(__m512*)&x[0],
+	                                                        *(__m512*)&y[0],
+								    *(__m512*)&z[0],k,
+								                 rounding));
+      }
+
+      void avx512_maskz_fmadd_round_pd(double  * __restrict c,
+                                       const unsigned char k,
+				       const double * __restrict x,
+				       const double * __restrict y,
+				       const double * __restrict z,
+                                       const int rounding) {
+
+        _mm512_store_pd(&c[0], _mm512_maskz_fmadd_round_pd(k,
+	                                                     *(__m512d*)&x[0],
+							          *(__m512d*)&y[0],
+								       *(__m512d*)&z[0],
+								                 rounding));
+      }
+
+      void avx512_maskz_fmadd_round_ps(float * __restrict c,
+                                       const unsigned short k,
+				       const float * __restrict x,
+				       const float * __restrict y,
+				       const float * __restrict z,
+				       const int rounding) {
+
+         _mm512_store_ps(&c[0], _mm512_maskz_fmadd_round_ps(k,
+	                                                     *(__m512*)&x[0],
+							          *(__m512*)&y[0],
+								       *(__m512*)&z[0],
+								                 rounding));
+      }
+
+      void avx512_fmaddsub_pd(double  * __restrict c,
+                              const double * __restrict x,
+			      const double * __restrict y,
+			      const double * __restrict z) {
+
+        _mm512_store_pd(&c[0], _mm512_fmaddsub_pd(*(__m512d*)&x[0],
+	                                             *(__m512d*)&y[0],
+						          *(__m512d*)&z[0]));
+      }
+
+      void avx512_fmaddsub_ps(float  * __restrict c,
+                              const float * __restrict x,
+			      const float * __restrict y,
+			      const float * __restrict z) {
+
+        _mm512_store_ps(&c[0], _mm512_fmaddsub_ps(*(__m512*)&x[0],
+	                                             *(__m512*)&y[0],
+						          *(__m512*)&z[0]));
+      }
+
+      void avx512_mask_fmaddsub_pd(double  * __restrict c,
+                                const double * __restrict x,
+				const unsigned char k,
+				const double * __restrict y,
+				const double * __restrict z) {
+   
+         _mm512_store_pd(&c[0], _mm512_mask_fmaddsub_pd(*(__m512d*)&x[0],
+	                                                    k, *(__m512d*)&y[0],
+							             *(__m512d*)&z[0]));
+      }	                                                    
+      
+
+      void avx512_mask_fmaddsub_ps(float  * __restrict c,
+                                const float * __restrict x
+                                const unsigned short k,
+				const float * __restrict y,
+				const float * __restrict z) {
+
+          _mm512_store_ps(&c[0], _mm512_mask_fmaddsub_ps(*(__m512*)&x[0],
+	                                                    k, *(__m512*)&y[0],
+							             *(__m512*)&z[0]));
+      }
+
+      void avx512_mask3_fmaddsub_pd(double * __restrict c,
+                                 const double * __restrict x,
+				 const double * __restrict y,
+				 const double * __restrict z,
+				 const unsigned char k) {
+
+          _mm512_store_pd(&c[0], _mm512_mask3_fmaddsub_pd(*(__m512d*)&x[0],
+	                                                        *(__m512d*)&y[0],
+								       *(__m512d*)&z[0], k));
+      }
+
+      void avx512_mask3_fmaddsub_ps(float * __restrict c,
+                                 const float * __restrict x,
+				 const float * __restrict y,
+				 const float * __restrict z,
+				 const unsigned short k) {
+
+          _mm512_store_ps(&c[0], _mm512_mask3_fmaddsub_ps(*(__m512*)&x[0],
+	                                                        *(__m512*)&y[0],
+								       *(__m512*)&z[0], k));
+      }
+
+      void avx512_maskz_fmaddsub_pd(double * __restrict c,
+                                    const unsigned char k,
+				    const double * __restrict x,
+				    const double * __restrict y,
+				    const double * __restrict z) {
+
+        _mm512_store_pd(&c[0], _mm512_maskz_fmaddsub_pd(k,
+	                                                    *(__m512d*)&x[0],
+							         *(__m512d*)&y[0],
+								      *(__m512d*)&z[0]));
+      }
+
+      void avx512_maskz_fmaddsub_ps(float  * __restrict c,
+                                    const unsigned short k,
+				    const float * __restrict x,
+				    const float * __restrict y,
+				    const float * __restrict z) {
+
+        _mm512_store_ps(&c[0], _mm512_maskz_fmaddsub_ps(k,
+	                                                    *(__m512*)&x[0],
+							         *(__m512*)&y[0],
+								      *(__m512*)&z[0]));
+      }
+			      
+      
+      
