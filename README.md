@@ -32,3 +32,6 @@ List of references:
     Johnson J. H. Wang
     ISBN-10: 0471514438
     ISBN-13: 978-0471514435
+    
+  5) Principles of High-Resolution Radar (Artech House Radar Library), August W. Rihaczek ISBN-10: 089006900X
+     ISBN-13: 978-0890069004
