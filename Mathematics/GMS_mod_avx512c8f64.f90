@@ -40,32 +40,33 @@ module mod_avx512c8f64
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use module_kinds, only : int1,int4,dp
+     use mod_kinds, only : int1,int4,dp
      use mod_vectypes, only : ZMM8r8_t
      use,  intrinsic :: ISO_C_BINDING
      implicit none
+     public
      !=====================================================59
      !  File and module information:
      !  version,creation and build date, author,description
      !=====================================================59
 
      ! Major version
-     integer(kind=int4),  parameter, public :: MOD_AVX512C8F64_MAJOR = 1
+     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MAJOR = 1
      ! Minor version
-     integer(kind=int4),  parameter, public :: MOD_AVX512C8F64_MINOR = 0
+     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MINOR = 0
      ! Micro version
-     integer(kind=int4),  parameter, public :: MOD_AVX512C8F64_MICRO = 0
+     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MICRO = 0
      ! Full version
-     integer(kind=int4),  parameter, public :: MOD_AVX512C8F64_FULLVER =   &
+     integer(kind=int4),  parameter :: MOD_AVX512C8F64_FULLVER =   &
             1000*MOD_AVX512C8F64_MAJOR+100*MOD_AVX512C8F64_MINOR+10*MOD_AVX512C8F64
      ! Module creation date
-     character(*),        parameter, public :: MOD_AVX512C8F64_CREATE_DATE = "03-11-2019 15:54 +00200 (SUN 03 NOV 2019 GMT+2)"
+     character(*),        parameter :: MOD_AVX512C8F64_CREATE_DATE = "03-11-2019 15:54 +00200 (SUN 03 NOV 2019 GMT+2)"
      ! Module build date
-     character(*),        parameter, public :: MOD_AVX512C8F64_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: MOD_AVX512C8F64_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter, public :: MOD_AVX512C8F64_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: MOD_AVX512C8F64_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter, public :: MOD_AVX512C8F64_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
+     character(*),        parameter :: MOD_AVX512C8F64_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
 
      ! public operators
 
@@ -423,7 +424,7 @@ module mod_avx512c8f64
      end function s1_add_c8
 
 !DIR$ ATTRIBUTES INLINE :: c8_sub_c8
-     pure elemental function c8_add_c8(lhs,rhs) result(iq)
+     pure elemental function c8_sub_c8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_sub_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_sub_c8
        type(AVX512c8f64_t),    intent(in) :: lhs
@@ -432,7 +433,7 @@ module mod_avx512c8f64
        type(AVX512c8f64_t) :: iq
        iq.re = lhs.re-rhs.re
        iq.im = lhs.im-rhs.im
-     end function c8_add_c8
+     end function c8_sub_c8
 
 !DIR$ ATTRIBUTES INLINE :: c8_sub_c2
      pure elemental function c8_sub_c2(lhs,rhs) result(iq)
