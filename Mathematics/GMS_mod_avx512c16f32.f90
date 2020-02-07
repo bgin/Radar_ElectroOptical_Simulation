@@ -665,8 +665,8 @@ module  mod_avx512c16f32
 #elif defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES INLINE :: c16_mul_c16
       pure function c16_mul_c16(x,y) result(uq)
-        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_sub_c16
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_sub_c16
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c16
 #endif
         type(AVX512c16f32_t),   intent(in) :: x
         type(AVX512c16f32_t),   intent(in) :: y
@@ -690,8 +690,215 @@ module  mod_avx512c16f32
        iq.im  = zmm2.v-zmm3.v
      end function c16_mul_c16
     
-        
-      
-        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function c16_mul_c1(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_mul_c1 !GCC$ ATTRIBUTES vectorcall :: c16_mul_c1 !GCC$ ATTRIBUTES inline :: c16_mul_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: c16_mul_c1
+     pure function c16_mul_c1(x,y) result(iq)
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c1
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c1
+#endif
+       type(AVX512c16f32_t),     intent(in) :: x
+       complex(kind=sp),         intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
+        type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
+        type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
+        type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
+        type(ZMM16r4_t), automatic :: zmm3 !GCC$ ATTRIBUTES aligned(64) :: zmm3
+#endif
+       zmm0.v = x.re*real(y,kind=dp)
+       zmm1.v = x.im*aimag(y,kind=dp)
+       iq.re  = zmm0.v+zmm1.v
+       zmm2.v = x.im*real(y,kind=dp)
+       zmm3.v = x.re*aimag(y,kind=dp)
+       iq.im  = zmm2.v-zmm3.v
+     end function c16_mul_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function c16_mul_v16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_mul_v16 !GCC$ ATTRIBUTES vectorcall :: c16_mul_v16 !GCC$ ATTRIBUTES inline :: c16_mul_v16
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: c16_mul_v16
+     pure function c16_mul_v16(x,y) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_v16
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_mul_v16
+#endif
+       type(AVX512c16f32_t),     intent(in) :: x
+       type(ZMM16r4_t),          intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x.re*y.v
+        iq.im = x.im*y.v
+     end function c16_mul_v16
+       
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function c16_mul_s1(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_mul_s1 !GCC$ ATTRIBUTES vectorcall :: c16_mul_s1 !GCC$ ATTRIBUTES inline :: c16_mul_s1
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: c16_mul_s1
+     pure function c16_mul_s1(x,y) result(iq)
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_s1
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_mul_s1
+#endif
+       type(AVX512c16f32_t), intent(in) :: x
+       real(kind=sp),        intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x.re*y
+        iq.im = x.im*y
+      end function c16_mul_s1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_mul_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c1_mul_c16 !GCC$ ATTRIBUTES vectorcall :: c1_mul_c16 !GCC$ ATTRIBUTES inline :: c1_mul_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_mul_c16
+      pure function c1_mul_c16(x,y) result(iq)
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_mul_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_mul_c16
+#endif
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
+        type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
+        type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
+        type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
+        type(ZMM16r4_t), automatic :: zmm3 !GCC$ ATTRIBUTES aligned(64) :: zmm3
+#endif
+       zmm0.v = real(x,kind=sp)*y.re
+       zmm1.v = aimag(x,kind=sp)*y.im
+       iq.re  = zmm0.v+zmm1.v
+       zmm2.v = real(x,kind=sp)*y.im
+       zmm3.v = aimag(x,kind=sp)*y.re
+       iq.im  = zmm2.v-zmm3.v
+     end function c1_mul_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function v16_mul_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: v16_mul_c16 !GCC$ ATTRIBUTES vectorcall :: v16_mul_c16 !GCC$ ATTRIBUTES inline :: v16_mul_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: v16_mul_c16
+     pure function v16_mul_c16(x,y) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: v16_mul_c16
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v16_mul_c16
+#endif
+       type(ZMM16r4_t),       intent(in) :: x
+       type(AVX512c16f32_t),  intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x.v*y.re
+        iq.im = x.v*y.im
+      end function v16_mul_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function s1_mul_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: s1_mul_c16 !GCC$ ATTRIBUTES vectorcall :: s1_mul_c16 !GCC$ ATTRIBUTES inline :: s1_mul_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: s1_mul_c16
+        pure function s1_mul_c16(x,y) result(iq)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: s1_mul_c16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_mul_c16
+#endif
+          real(kind=sp),        intent(in) :: x
+          type(AVX512c16f32_t), intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x*y.re
+        iq.im = x*y.im
+      end function s1_mul_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER     
+      pure function c16_div_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_div_c16 !GCC$ ATTRIBUTES vectorcall :: c16_div_c16 !GCC$ ATTRIBUTES inline :: c16_div_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_div_c16
+      pure function c16_div_c16(x,y) result(iq)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c16
+#endif
+        type(AVX512c16f32_t),    intent(in) :: x
+        type(AVX512c16f32_t),    intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+        type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
+        type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
+        type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
+        type(ZMM16r4_t), automatic :: zmm3 !GCC$ ATTRIBUTES aligned(64) :: zmm3
+        type(ZMM16r4_t), automatic :: den  !GCC$ ATTRIBUTES aligned(64) :: den
+#endif
+#if (USE_SAFE_COMPLEX_DIVISION) == 1
+       iq = cdiv_smith(x,y)
+#else
+       zmm0.v = x.re*y.re
+       zmm1.v = x.im*y.im
+       zmm2.v = x.im*y.re
+       zmm3.v = x.re*y.im
+       den.v  = (y.re*y.re)+(y.im*y.im)
+       iq.re  = (zmm0.v+zmm1.v)/den.v
+       iq.im  = (zmm2.v-zmm3.v)/den.v
+#endif        
+     end function c16_div_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function c16_div_c1(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_div_c1 !GCC$ ATTRIBUTES vectorcall :: c16_div_c1 !GCC$ ATTRIBUTES inline c16_div_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: c16_div_c1
+     pure function c16_div_c1(x,y) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c1
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c1
+#endif
+       type(AVX512c16f32_t),    intent(in) :: x
+       complex(kind=sp),        intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+        type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
+        type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
+        type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
+        type(ZMM16r4_t), automatic :: zmm3 !GCC$ ATTRIBUTES aligned(64) :: zmm3
+        type(ZMM16r4_t), automatic :: den  !GCC$ ATTRIBUTES aligned(64) :: den
+#endif
+       zmm0.v = x.re*real(y,kind=sp)
+       zmm1.v = x.im*aimag(y,kind=sp)
+       zmm2.v = x.im*real(y,kind=sp)
+       zmm3.v = x.re*aimag(y,kind=sp)
+       den.v  = (real(y,kind=sp)*real(y,kind=sp))+ &
+            (aimag(y,kind=sp)*aimag(y,kind=sp))
+       iq.re = (zmm0.v+zmm1.v)/den.v
+       iq.im = (zmm2.v-zmm3.v)/den.v
+     end function c16_div_c1
+
+     
       
 end module mod_avx512c16f32
