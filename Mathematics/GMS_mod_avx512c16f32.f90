@@ -835,8 +835,8 @@ module  mod_avx512c16f32
 #elif defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES INLINE :: c16_div_c16
       pure function c16_div_c16(x,y) result(iq)
-         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c16
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c16
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_div_c16
 #endif
         type(AVX512c16f32_t),    intent(in) :: x
         type(AVX512c16f32_t),    intent(in) :: y
@@ -871,8 +871,8 @@ module  mod_avx512c16f32
 #elif defined __ICC || defined __INTEL_COMPILER
        !DIR$ ATTRIBUTES INLINE :: c16_div_c1
      pure function c16_div_c1(x,y) result(iq)
-        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c1
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c1
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_c1
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_div_c1
 #endif
        type(AVX512c16f32_t),    intent(in) :: x
        complex(kind=sp),        intent(in) :: y
@@ -899,6 +899,735 @@ module  mod_avx512c16f32
        iq.im = (zmm2.v-zmm3.v)/den.v
      end function c16_div_c1
 
-     
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function c16_div_v16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_div_v16 !GCC$ ATTRIBUTES vectorcall :: c16_div_v16 !GCC$ ATTRIBUTES inline :: c16_div_v16
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: c16_div_v16
+     pure function c16_div_v16(x,y) result(iq)
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_v16
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_div_v16
+#endif
+       type(AVX512c16f32_t),     intent(in) :: x
+       type(ZMM16r4_t),          intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x.re/y.v
+        iq.im = x.im/y.v
+      end function c16_div_v16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_div_s1(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c16_div_s1 !GCC$ ATTRIBUTES vectorcall :: c16_div_s1 !GCC$ ATTRIBUTES inline :: c16_div_s1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_div_s1
+      pure function c16_div_s1(x,y) result(iq)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_s1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_div_s1
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        real(kind=sp),             intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x.re/y
+        iq.im = x.im/y
+      end function c16_div_s1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_div_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: c1_div_c16 !GCC$ ATTRIBUTES vectorcall :: c1_div_c16 !GCC$ ATTRIBUTES inline :: c1_div_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_div_c16
+      pure function c1_div_c16(x,y) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_div_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_div_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
+        type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
+        type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
+        type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
+        type(ZMM16r4_t), automatic :: zmm3 !GCC$ ATTRIBUTES aligned(64) :: zmm3
+        type(ZMM16r4_t), automatic :: den  !GCC$ ATTRIBUTES aligned(64) :: den
+#endif
+        real(kind=sp), automatic :: r,i
+        r = real(x,kind=sp)
+        i = aimag(x,kind=sp)
+        zmm0.v = r*y.re
+        zmm1.v = i*y.im
+        zmm2.v = i*y.re
+        zmm3.v = r*y.im
+        den.v  = (y.re*y.re)+(y.im*y.im)
+        iq.re  = (zmm0.v+zmm1.v)/den.v
+        iq.im  = (zmm2.v-zmm3.v)/den.v
+      end function c1_div_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function v16_div_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: v16_div_c16 !GCC$ ATTRIBUTES vectorcall :: v16_div_c16 !GCC$ ATTRIBUTES inline :: v16_div_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      !DIR$ ATTRIBUTES INLINE :: v16_div_c16
+      pure function v16_div_c16(x,y) result(iq)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: v16_div_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v16_div_c16
+#endif
+        type(ZMM16r4_t),       intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x/y.re
+        iq.im = x/y.im
+      end function v16_div_c16
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function s1_div_c16(x,y) result(iq) !GCC$ ATTRIBUTES hot :: s1_div_c16 !GCC$ ATTRIBUTES vectorcall :: s1_div_c16 !GCC$ ATTRIBUTES inline :: s1_div_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: s1_div_c16
+        pure function s1_div_c16(x,y) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: s1_div_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_c16
+#endif
+          real(kind=sp),         intent(in) :: x
+          type(AVX512c16f32_t),  intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = x/y.re
+        iq.im = x/y.im
+      end function s1_div_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function conjugate(x) result(iq) !GCC$ ATTRIBUTES hot :: conjugate !GCC$ ATTRIBUTES vectorcall :: conjugate !DIR$ ATTRIBUTES inline :: conjugate
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: conjugate
+      pure function conjugate(x) result(iq)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: conjugate
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: conjugate
+#endif
+        use mod_vecconsts, only : v16_n0
+        type(AVX512c16f32_t),    intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = v16_n0-x.re
+        iq.im = x.im
+      end function conjugate
+        
+#if (USE_INTRINSIC_VECTOR_COMPARE) == 1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_eq_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_eq_c16 !GCC$ ATTRIBUTES vectorcall :: c16_eq_c16 !GCC$ ATTRIBUTES inline :: c16_eq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_eq_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::c16_eq_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,0)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,0)
+      end function c16_eq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_eq_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_eq_c1 !GCC$ ATTRIBUTES vectorcall :: c16_eq_c1 !GCC$ ATTRIBUTES inline :: c16_eq_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_eq_c1
+      pure function c16_eq_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,0)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,0)
+      end function c16_eq_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_eq_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_eq_c16 !GCC$ ATTRIBUTES vectorcall :: c1_eq_c16 !GCC$ ATTRIBUTES inline :: c1_eq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_eq_c16
+      pure function c1_eq_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_eq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_eq_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,0)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,0)
+      end function c1_eq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_neq_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_neq_c16 !GCC$ ATTRIBUTES vectorcall :: c16_neq_c16 !GCC$ ATTRIBUTES inline :: c16_neq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_neq_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,12)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,12)
+      end function c16_neq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_neq_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_neq_c1 !GCC$ ATTRIBUTES vectorcall :: c16_neq_c1 !GCC$ ATTRIBUTES inline :: c16_neq_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_neq_c1
+      pure function c16_neq_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,12)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,12)
+      end function c16_neq_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_neq_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_neq_c16 !GCC$ ATTRIBUTES vectorcall :: c1_neq_c16 !GCC$ ATTRIBUTES inline :: c1_neq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_neq_c16
+      pure function c1_neq_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_neq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_neq_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,12)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,12)
+      end function c1_neq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_gt_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_gt_c16 !GCC$ ATTRIBUTES vectorcall :: c16_gt_c16 !GCC$ ATTRIBUTES inline :: c16_gt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_gt_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,30)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,30)
+      end function c16_gt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_gt_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_gt_c1 !GCC$ ATTRIBUTES vectorcall :: c16_gt_c1 !GCC$ ATTRIBUTES inline :: c16_gt_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_gt_c1
+      pure function c16_gt_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,30)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,30)
+      end function c16_gt_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_gt_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_gt_c16 !GCC$ ATTRIBUTES vectorcall :: c1_gt_c16 !GCC$ ATTRIBUTES inline :: c1_gt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_gt_c16
+      pure function c1_gt_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_gt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_gt_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,30)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,30)
+      end function c1_gt_c16
+      
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_lt_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_lt_c16 !GCC$ ATTRIBUTES vectorcall :: c16_lt_c16 !GCC$ ATTRIBUTES inline :: c16_lt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_lt_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,17)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,17)
+      end function c16_lt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_lt_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_lt_c1 !GCC$ ATTRIBUTES vectorcall :: c16_lt_c1 !GCC$ ATTRIBUTES inline :: c16_lt_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_lt_c1
+      pure function c16_lt_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,17)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,17)
+      end function c16_lt_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_lt_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_lt_c16 !GCC$ ATTRIBUTES vectorcall :: c1_lt_c16 !GCC$ ATTRIBUTES inline :: c1_lt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_eq_c16
+      pure function c1_lt_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_lt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_lt_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,17)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,17)
+      end function c1_lt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_ge_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_ge_c16 !GCC$ ATTRIBUTES vectorcall :: c16_ge_c16 !GCC$ ATTRIBUTES inline :: c16_ge_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_ge_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,29)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,29)
+      end function c16_ge_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_ge_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_ge_c1 !GCC$ ATTRIBUTES vectorcall :: c16_ge_c1 !GCC$ ATTRIBUTES inline :: c16_ge_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_ge_c1
+      pure function c16_ge_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,29)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,29)
+      end function c16_ge_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_ge_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_ge_c16 !GCC$ ATTRIBUTES vectorcall :: c1_ge_c16 !GCC$ ATTRIBUTES inline :: c1_ge_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_ge_c16
+      pure function c1_ge_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_ge_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_ge_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,29)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,29)
+      end function c1_ge_c16
+      
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_le_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_le_c16 !GCC$ ATTRIBUTES vectorcall :: c16_le_c16 !GCC$ ATTRIBUTES inline :: c16_le_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+      pure function c16_le_c16(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c16
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        type(AVX512c16f32_t),      intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,18)
+        lim.zmm = x.im
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,18)
+      end function c16_le_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_le_c1(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c16_le_c1 !GCC$ ATTRIBUTES vectorcall :: c16_le_c1 !GCC$ ATTRIBUTES inline :: c16_le_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_le_c1
+      pure function c16_le_c1(x,y) result(mmask16)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c1
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        type(AVX512c16f32_t),     intent(in) :: x
+        complex(kind=sp),         intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = x.re
+        rre.zmm = real(y,kind=sp)
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,18)
+        lim.zmm = x.im
+        rim.zmm = aimag(y,kind=sp)
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,18)
+      end function c16_le_c1
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_le_c16(x,y) result(mmask16) !GCC$ ATTRIBUTES hot :: c1_le_c16 !GCC$ ATTRIBUTES vectorcall :: c1_le_c16 !GCC$ ATTRIBUTES inline :: c1_le_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: c1_le_c16
+      pure function c1_le_c16(x,y) result(mmask16)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_le_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_le_c16
+#endif
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+        complex(kind=sp),     intent(in) :: x
+        type(AVX512c16f32_t), intent(in) :: y
+        integer(c_short), dimension(0:1) :: mmask16
+#if defined __INTEL_COMPILER 
+        
+        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
+        type(v16f32), automatic :: lre,lim,rre,rim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        
+        type(v16f32), automatic :: lre !GCC$ ATTRIBUTES aligned(64) :: lre
+        type(v16f32), automatic :: lim !GCC$ ATTRIBUTES aligned(64) :: lim
+        type(v16f32), automatic :: rre !GCC$ ATTRIBUTES aligned(64) :: rre
+        type(v16f32), automatic :: rim !GCC$ ATTRIBUTES aligned(64) :: rim
+        
+#endif
+        mmask16 = 0
+        lre.zmm = real(x,kind=sp)
+        rre.zmm = y.re
+        mmask16(0) = v16f32_cmp_ps_mask(lre,rre,18)
+        lim.zmm = aimag(x,kind=sp)
+        rim.zmm = y.im
+        mmask16(1) = v16f32_cmp_ps_mask(lim,rim,18)
+      end function c1_le_c16
+      
+
+#else
+
+
+#endif
       
 end module mod_avx512c16f32
