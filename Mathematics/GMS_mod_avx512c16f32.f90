@@ -1627,6 +1627,493 @@ module  mod_avx512c16f32
 
 #else
 
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_eq_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_eq_c16 !GCC$ ATTRIBUTES vectorcall :: c16_eq_c16 !GCC$ ATTRIBUTES inline :: c16_eq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_eq_c16
+      pure function c16_eq_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re == y.re)
+        mim = .false.
+        mim = (x.im == y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_eq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_eq_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_eq_c1 !GCC$ ATTRIBUTES vectorcall :: c16_eq_c1 !GCC$ ATTRIBUTES inline :: c16_eq_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_eq_c1
+      pure function c16_eq_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = x.re == real(y,kind=sp)
+        bres(0) = all(mre)
+        mim = x.im == aimag(y,kind=sp)
+        bres(1) = all(mim)
+      end function c16_eq_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_eq_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_eq_c16 !GCC$ ATTRIBUTES vectorcall :: c1_eq_c16 !GCC$ ATTRIBUTES inline :: c1_eq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_eq_c16
+      pure function c1_eq_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_eq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_eq_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = real(x,kind=sp)  == y.re
+       bres(0) = all(mre)
+       mim = aimag(x,kind=sp) == y.im
+       bres(1) = all(mim)
+     end function c1_eq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_neq_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_neq_c16 !GCC$ ATTRIBUTES vectorcall :: c16_neq_c16 !GCC$ ATTRIBUTES inline :: c16_neq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_neq_c16
+      pure function c16_eq_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re /= y.re)
+        mim = .false.
+        mim = (x.im /= y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_neq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_neq_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_neq_c1 !GCC$ ATTRIBUTES vectorcall :: c16_neq_c1 !GCC$ ATTRIBUTES inline :: c16_neq_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_neq_c1
+      pure function c16_eq_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = (x.re /= real(y,kind=sp))
+        bres(0) = all(mre)
+        mim = (x.im /= aimag(y,kind=sp))
+        bres(1) = all(mim)
+      end function c16_neq_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_neq_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_neq_c16 !GCC$ ATTRIBUTES vectorcall :: c1_neq_c16 !GCC$ ATTRIBUTES inline :: c1_neq_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_neq_c16
+      pure function c1_eq_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_neq_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_neq_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = (real(x,kind=sp)  /= y.re)
+       bres(0) = all(mre)
+       mim = (aimag(x,kind=sp) /= y.im)
+       bres(1) = all(mim)
+     end function c1_neq_c16
+
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_gt_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_gt_c16 !GCC$ ATTRIBUTES vectorcall :: c16_gt_c16 !GCC$ ATTRIBUTES inline :: c16_gt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_gt_c16
+      pure function c16_gt_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re > y.re)
+        mim = .false.
+        mim = (x.im > y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_gt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_gt_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_gt_c1 !GCC$ ATTRIBUTES vectorcall :: c16_gt_c1 !GCC$ ATTRIBUTES inline :: c16_gt_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_gt_c1
+      pure function c16_gt_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = (x.re > real(y,kind=sp))
+        bres(0) = all(mre)
+        mim = (x.im > aimag(y,kind=sp))
+        bres(1) = all(mim)
+      end function c16_gt_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_gt_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_gt_c16 !GCC$ ATTRIBUTES vectorcall :: c1_gt_c16 !GCC$ ATTRIBUTES inline :: c1_gt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_gt_c16
+      pure function c1_gt_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_gt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_gt_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = (real(x,kind=sp) > y.re)
+       bres(0) = all(mre)
+       mim = (aimag(x,kind=sp) > y.im)
+       bres(1) = all(mim)
+     end function c1_gt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_lt_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_lt_c16 !GCC$ ATTRIBUTES vectorcall :: c16_lt_c16 !GCC$ ATTRIBUTES inline :: c16_lt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_lt_c16
+      pure function c16_lt_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re < y.re)
+        mim = .false.
+        mim = (x.im < y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_lt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_lt_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_lt_c1 !GCC$ ATTRIBUTES vectorcall :: c16_lt_c1 !GCC$ ATTRIBUTES inline :: c16_lt_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_lt_c1
+      pure function c16_lt_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = (x.re < real(y,kind=sp))
+        bres(0) = all(mre)
+        mim = (x.im < aimag(y,kind=sp))
+        bres(1) = all(mim)
+      end function c16_lt_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_lt_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_lt_c16 !GCC$ ATTRIBUTES vectorcall :: c1_lt_c16 !GCC$ ATTRIBUTES inline :: c1_lt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_lt_c16
+      pure function c1_lt_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_lt_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_lt_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = (real(x,kind=sp) < y.re)
+       bres(0) = all(mre)
+       mim = (aimag(x,kind=sp) < y.im)
+       bres(1) = all(mim)
+     end function c1_lt_c16
+
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_ge_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_ge_c16 !GCC$ ATTRIBUTES vectorcall :: c16_ge_c16 !GCC$ ATTRIBUTES inline :: c16_ge_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_ge_c16
+      pure function c16_ge_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re >= y.re)
+        mim = .false.
+        mim = (x.im >= y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_ge_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_ge_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_ge_c1 !GCC$ ATTRIBUTES vectorcall :: c16_ge_c1 !GCC$ ATTRIBUTES inline :: c16_ge_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_ge_c1
+      pure function c16_ge_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = (x.re >= real(y,kind=sp))
+        bres(0) = all(mre)
+        mim = (x.im >= aimag(y,kind=sp))
+        bres(1) = all(mim)
+      end function c16_ge_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_ge_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_ge_c16 !GCC$ ATTRIBUTES vectorcall :: c1_ge_c16 !GCC$ ATTRIBUTES inline :: c1_ge_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_ge_c16
+      pure function c1_eq_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_ge_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_ge_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = (real(x,kind=sp)  >= y.re)
+       bres(0) = all(mre)
+       mim = (aimag(x,kind=sp) >= y.im)
+       bres(1) = all(mim)
+     end function c1_eq_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_le_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_le_c16 !GCC$ ATTRIBUTES vectorcall :: c16_le_c16 !GCC$ ATTRIBUTES inline :: c16_le_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_le_c16
+      pure function c16_le_c16(x,y) result(bres)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre = .false.
+        mre = (x.re <= y.re)
+        mim = .false.
+        mim = (x.im <= y.im)
+        bres = .false.
+        bres(0) = all(mre)
+        bres(1) = all(mim)
+      end function c16_le_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c16_le_c1(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c16_le_c1 !GCC$ ATTRIBUTES vectorcall :: c16_le_c1 !GCC$ ATTRIBUTES inline :: c16_le_c1
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c16_le_c1
+      pure function c16_le_c1(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c1
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c1  
+#endif
+        type(AVX512c16f32_t),      intent(in) :: x
+        complex(kind=sp),          intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+        logical(kind=int1), dimension(0:1) :: bres
+        mre  = .false.
+        mim  = .false.
+        bres = .false.
+        mre = (x.re <= real(y,kind=sp))
+        bres(0) = all(mre)
+        mim = (x.im <= aimag(y,kind=sp))
+        bres(1) = all(mim)
+      end function c16_le_c1
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function c1_le_c16(x,y) result(bres) !GCC$ ATTRIBUTES hot :: c1_le_c16 !GCC$ ATTRIBUTES vectorcall :: c1_le_c16 !GCC$ ATTRIBUTES inline :: c1_le_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: c1_le_c16
+      pure function c1_le_c16(x,y) result(bres)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c1_le_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_le_c16
+#endif
+        complex(kind=sp),      intent(in) :: x
+        type(AVX512c16f32_t),  intent(in) :: y
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+#endif
+       mre  = .false.
+       mim  = .false.
+       bres = .false.
+       mre = (real(x,kind=sp)  <= y.re)
+       bres(0) = all(mre)
+       mim = (aimag(x,kind=sp) <= y.im)
+       bres(1) = all(mim)
+     end function c1_le_c16
+
+
+
+
+        
+      
 
 #endif
       
