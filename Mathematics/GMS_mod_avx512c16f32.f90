@@ -2116,5 +2116,279 @@ module  mod_avx512c16f32
       
 
 #endif
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function polar(rho,theta) result(iq) !GCC$ ATTRIBUTES hot :: polar !GCC$ ATTRIBUTES vectorcall :: polar !GCC$ ATTRIBUTES inline :: polar
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: polar
+       pure function polar(rho,theta)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: polar
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: polar
+#endif
+         type(ZMM16r4_t),     intent(in) :: rho
+         type(ZMM16r4_t),     intent(in) :: theta
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t) :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = rho*cos(theta.v)
+        iq.im = rho*sin(theta.v)
+      end function polar
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function carg_c16(x) result(arg) !GCC$ ATTRIBUTES hot :: carg_c16 !GCC$ ATTRIBUTES vectorcall :: carg_c16 !GCC$ inline :: carg_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: carg_c16
+      pure function carg_c16(x)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: carg_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: carg_c16
+#endif
+        type(AVX512c16f32_t),  intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: arg
+        type(ZMM16r4_t) :: arg
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(ZMM16r4_t)  :: arg !GCC$ ATTRIBUTES aligned(64) :: arg
+#endif
+        arg.v = atan2(x.re,x.im)
+      end function carg_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function carg_2xv16(re,im) result(arg) !GCC$ ATTRIBUTES hot :: carg_2xv16 !GCC$ ATTRIBUTES vectorcall :: carg_2xv16 !GCC$ ATTRIBUTES inline :: carg_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: carg_2xv16
+        pure function carg_2xv16(re,im) result(arg)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: carg_2xv16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: carg_2xv16
+#endif
+          type(ZMM16r4_t),     intent(in) :: re
+          type(ZMM16r4_t),     intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: arg
+        type(ZMM16r4_t) :: arg
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(ZMM16r4_t)  :: arg !GCC$ ATTRIBUTES aligned(64) :: arg
+#endif
+        arg.v = atan2(re,im)
+      end function carg_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csin_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: csin_c16 !GCC$ ATTRIBUTES vectorcall :: csin_c16 !GCC$ ATTRIBUTES inline :: csin_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csin_c16
+        pure function csin_c16(x) result(iq)
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csin_c16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_c16
+#endif
+          type(AVX512c16f32_t),    intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = sin(x.re)*cosh(x.im)
+        iq.im = cos(x.re)*sinh(x.im)
+      end function csin_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csin_2xv16(re,im)  result(iq) !GCC$ ATTRIBUTES hot :: csin_2xv16 !GCC$ ATTRIBUTES vectorcall :: csin_2xv16 !GCC$ ATTRIBUTES inline :: csin_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csin_2xv16
+      pure function csin_2xv16(re,im) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csin_2xv16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_2xv16
+#endif
+        type(ZMM16r4_t),    intent(in) :: re
+        type(ZMM16r4_t),    intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = sin(re.v)*cosh(im.v)
+        iq.im = cos(re.v)*sinh(im.v)
+      end function csin_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csinh_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: csin_c16 !GCC$ ATTRIBUTES vectorcall :: csin_c16 !GCC$ ATTRIBUTES inline :: csin_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csinh_c16
+      pure function csinh_c16(x) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csinh_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_c16
+#endif
+        type(AVX512c16f32_t),    intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = sinh(x.re)*cos(x.im)
+        iq.im = cosh(x.re)*sin(x.im)
+      end function csinh_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csinh_2xv16(re,im) result(iq) !GCC$ ATTRIBUTES hot :: csinh_2xv16 !GCC$ ATTRIBUTES vectorcall :: csinh_2xv16 !GCC$ ATTRIBUTES inline :: csinh_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csinh_2xv16
+      pure function csinh_2xv16(re,im) result(iq)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csinh_2xv16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_2xv16
+#endif
+        type(ZMM16r4_t),     intent(in) :: re
+        type(ZMM16r4_t),     intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = sinh(re.v)*cos(im.v)
+        iq.im = cosh(re.v)*sin(im.v)
+      end function csinh_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ccos_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: ccos_c16 !GCC$ ATTRIBUTES vectorcall :: ccos_c16 !GCC$ ATTRIBUTES inline :: ccos_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: ccos_c16
+      pure function ccos_c16(x) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccos_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_c16
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = cos(x.re)*cosh(x.im)
+        iq.im = sin(x.re)*sinh(x.im)
+      end function ccos_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ccos_2xv16(re,im) result(iq) !GCC$ ATTRIBUTES hot :: ccos_2xv16 !GCC$ ATTRIBUTES vectorcall :: ccos_2xv16 !GCC$ ATTRIBUTES inline :: ccos_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: ccos_2xv16
+      pure function ccos_2xv16(re,im) result(iq)
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccos_2xv16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_2xv16
+#endif
+        type(ZMM16r4_t),    intent(in) :: re
+        type(ZMM16r4_t),    intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = cos(re)*cosh(im)
+        iq.im = sin(re)*sinh(im)
+      end function ccos_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ccosh_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: ccosh_c16 !GCC$ ATTRIBUTES vectorcall :: ccosh_c16 !GCC$ ATTRIBUTES inline :: ccosh_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: ccosh_c16
+      pure function ccosh_c16(x) result(iq)
+         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccosh_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_c16
+#endif
+        type(AVX512c16f32_t),     intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = cosh(x.re)*cos(x.im)
+        iq.im = sinh(x.re)*sin(x.im)
+      end function ccosh_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ccosh_2xv16(re,im) result(iq) !GCC$ ATTRIBUTES hot :: ccosh_2xv16 !GCC$ ATTRIBUTES vectorcall :: ccosh_2xv16 !GCC$ ATTRIBUTES inline :: ccosh_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: ccosh_2xv16
+      pure function ccos_2xv16(re,im) result(iq)
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccosh_2xv16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_2xv16
+#endif
+        type(ZMM16r4_t),    intent(in) :: re
+        type(ZMM16r4_t),    intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = cosh(re.v)*cos(im.v)
+        iq.im = sinh(re.v)*sin(im.v)
+      end function ccos_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function cexp_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: cexp_c16 !GCC$ ATTRIBUTES vectorcall :: cexp_c16 !GCC$ ATTRIBUTES inline :: cexp_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: cexp_c16
+      pure function cexp_c16(x) result(iq)
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cexp_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_c16
+#endif
+          type(AVX512c16f32_t),   intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq.re = exp(x.re)*cos(x.im)
+        iq.im = exp(x.re)*cos(x.im)
+      end function cexp_c16
+        
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ctan_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: ctan_c16 !GCC$ ATTRIBUTES vectorcall :: ctan_c16 !GCC$ ATTRIBUTES inline :: ctan_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: ctan_c16
+      pure function ctan_c16(x) result(iq)
+              !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ctan_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_c16
+#endif
+        type(AVX512c16f32_t),    intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq = csin_c16(x)/ccos_c16(x)
+      end function ctan_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function ctan_2xv16(re,im) result(iq) !GCC$ ATTRIBUTES hot :: ctan_2xv16 !GCC$ ATTRIBUTES vectorcall :: ctan_2xv16 !GCC$ ATTRIBUTES inline :: ctan_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE ::  ctan_2xv16
+      pure function ctan_2xv16(re,im) result(iq)
+                !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ctan_2xv16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_2xv16
+#endif
+        type(ZMM16r4_t),     intent(in) :: re
+        type(ZMM16r4_t),     intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+#endif
+        iq = csin_2xv16(re,im)/ccos_2xv16(re,im)
+      end function ctan_2xv16
+        
+        
+        
+        
+        
       
 end module mod_avx512c16f32
