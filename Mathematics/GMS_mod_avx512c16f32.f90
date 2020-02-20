@@ -2544,7 +2544,149 @@ module  mod_avx512c16f32
        t0 = cabs_c16(x)
        iq.re = log(t0.v)
        iq.im = carg_c16(x)
-      end function clog_c16
+     end function clog_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     pure function clog_2xv16(re,im) result(iq)  !GCC$ ATTRIBUTES hot :: clog_2xv16 !GCC$ ATTRIBUTES vectorcall :: clog_2xv16 !GCC$ ATTRIBUTES inline :: clog_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: clog_2xv16
+       pure function clog_2xv16(re,im) result(iq)
+          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: clog_2xv16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_2xv16
+#endif
+         type(ZMM16r4_t),  intent(in)  :: re
+         type(ZMM16r4_t),  intent(in)  :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: t0
+        type(ZMM16r4_t), automatic :: t0
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
+       
+#endif
+        t0 = cabs_2xv16(re,im)
+        iq.re = log(t0.v)
+        iq.im = carg_2xv16(re,im)
+      end function clog_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csqrt_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: csqrt_c16 !GCC$ ATTRIBUTES vectorcall :: csqrt_c16 !GCC$ ATTRIBUTES inline :: csqrt_c16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csqrt_c16
+        pure function csqrt_c16(x) result(iq)
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csqrt_c16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_c16
+#endif
+          use mod_vecconsts, only : v16_1over2
+          type(AVX512c16f32_t),     intent(in) :: x
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
+        type(ZMM16r4_t), automatic :: t0,t1,t2
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
+        type(ZMM16r4_t), automatic :: t1 !GCC$ ATTRIBUTES aligned(64) :: t1
+        type(ZMM16r4_t), automatic :: t2 !GCC$ ATTRIBUTES aligned(64) :: t2
+       
+#endif
+        t0 = cabs_c16(x)
+        t1.v = v16_1over2.v*(t0.v+c16.re)
+        iq.re = sqrt(t1.v)
+        t2.v = v16_1over2*(t0.v-c16.re)
+        iq.im = sqrt(t2.v)
+      end function csqrt_c16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function csqrt_2xv16(re,im) result(iq) !GCC$ ATTRIBUTES hot :: csqrt_2xv16 !GCC$ ATTRIBUTES vectorcall :: csqrt_2xv16 !GCC$ ATTRIBUTES inline :: csqrt_2xv16
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: csqrt_2xv16
+        pure function csqrt_2xv16(re,im) result(iq)
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csqrt_2xv16
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_2xv16
+#endif
+          use mod_vecconsts, only : v16_1over2
+          type(ZMM16r4_t),  intent(in) :: re
+          type(ZMM16r4_t),  intent(in) :: im
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
+        type(ZMM16r4_t), automatic :: t0,t1,t2
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
+        type(ZMM16r4_t), automatic :: t1 !GCC$ ATTRIBUTES aligned(64) :: t1
+        type(ZMM16r4_t), automatic :: t2 !GCC$ ATTRIBUTES aligned(64) :: t2
+       
+#endif
+        t0 = cabs_2xv16(re,im)
+        t1.v = v16_1over2*(t0.v+re.v)
+        iq.re = sqrt(t1.v)
+        t2.v = v8_1over2*(t0.v-re.v)
+      end function csqrt_2xv16
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      pure function cdiv_smith(x,y) result(iq) !GCC$ ATTRIBUTES hot :: cdiv_smith !GCC$ ATTRIBUTES vectorcall :: cdiv_smith !GCC$ ATTRIBUTES inline :: cdiv_smith
+#elif defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: cdiv_smith
+        pure function cdiv_smith(x,y) result(iq)
+             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cdiv_smith
+          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cdiv_smith
+#endif
+#if  (USE_INTRINSIC_VECTOR_COMPARE) == 1
+        use, intrinsic :: ISO_C_BINDING
+        use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
+#endif
+        type(AVX512c16f32_t),   intent(in) :: x
+        type(AVX512c16f32_t),   intent(in) :: y
+#if defined __INTEL_COMPILER 
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(AVX512c16f32_t)  :: iq
+        !DIR$ ATTRIBUTES ALIGN : 64 :: ratio,denom
+        type(ZMM16r4_t), automatic :: ratio,denom
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16r4_t), automatic :: ratio !GCC$ ATTRIBUTES aligned(64) :: ratio
+        type(ZMM16r4_t), automatic :: denom !GCC$ ATTRIBUTES aligned(64) :: denom
+       
+       
+#endif
+        logical(kind=int4), dimension(0:15) :: bres
+#if   (USE_INTRINSIC_VECTOR_COMPARE) == 1
+        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim
+        type(v16f32) :: tre,tim
+        integer(c_short), automatic :: mask_gte
+        integer(c_short), parameter :: all_ones = Z'FFFF'
+#endif
+#if   (USE_INTRINSIC_VECTOR_COMPARE) == 1
+        tre.zmm = abs(y.re)
+        tim.zmm = abs(y.im)
+        mask_gte = v16f32_cmp_ps_mask(tre,tim,29);
+#else
+        bres = abs(y.re) >= abs(y.im)
+#endif
+        re_part = v16_n0
+        im_part = v16_n0
+#if   (USE_INTRINSIC_VECTOR_COMPARE) == 1
+        if(mask_gte == all_ones) then
+#elif
+        if(all(bres)) then
+#endif
+           ratio.v   = y.im/y.re
+           denom.v   = y.re+(ratio.v*y.im)
+           iq.re     = (x.re+x.im*ratio.v)/denom.v
+           iq.im     = (x.im-x.re*ratio.v)/denom.v
+        else
+           ratio.v   = y.re/y.im
+           denom.v   = y.im+ratio.v*y.re
+           iq.re     = (x.re*ratio.v+x.im)/denom.v
+           iq.im     = (x.im*ratio.v-x.re)/denom.v
+        end if       
+      end function cdiv_smith
         
       
 end module mod_avx512c16f32
