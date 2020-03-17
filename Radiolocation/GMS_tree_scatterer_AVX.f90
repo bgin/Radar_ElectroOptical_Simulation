@@ -428,11 +428,81 @@ module mod_tree_scatterer_AVX
         ! Branches cosine of vibration angle in x-axis per PRF/s
         ! 1st dimension PRF/s, 2nd dimension cosine  of vibrational angle (rad)
 #if defined  __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: branches_cos_yangle
         type(YMM8r4_t), allocatable, dimension(:,:)  :: branches_cos_yangle
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
         type(YMM8r4_t), allocatable, dimension(:,:)  :: branches_cos_yangle  !GCC$ ATTRIBUTES aligned(64) :: branches_cos_yangle
 #endif
      end type TSHotAVX_t
+     ! Leaves phase derived type
+     type, public :: LPHot_t
+        public
+        ! Leaves theta angle of incidence (rad)
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: theta_inc
+        real(kind=sp), allocatable, dimension(:) :: theta_inc
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: theta_inc !GCC$ ATTRIBUTES aligned(64) :: theta_inc
+#endif
+        ! Leaves phi angle of incidence
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: phi_inc
+        real(kind=sp), allocatable, dimension(:) :: phi_inc
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: phi_inc !GCC$ ATTRIBUTES aligned(64) :: phi_inc
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: theta_scat
+        real(kind=sp), allocatable, dimension(:) :: theta_scat
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: theta_scat !GCC$ ATTRIBUTES aligned(64) :: theta_scat
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: phi_scat
+        real(kind=sp), allocatable, dimension(:) :: phi_scat
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: phi_scat !GCC$ ATTRIBUTES aligned(64) :: phi_scat
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: theta_dir
+        real(kind=sp), allocatable, dimension(:) :: theta_dir
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: theta_dir !GCC$ ATTRIBUTES aligned(64) :: theta_dir
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: phi_dir
+        real(kind=sp), allocatable, dimension(:) :: phi_dir
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:) :: phi_dir !GCC$ ATTRIBUTES aligned(64) :: phi_dir
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        ! Allocate this array as (4,4,4,number of leaves)
+        !DIR$ ATTRIBUTES ALIGN : 64 :: leaves_phmat
+        real(kind=sp), allocatable, dimension(:,:,:,:) :: leaves_phmat
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        real(kind=sp), allocatable, dimension(:,:,:,:) :: leaves_phmat !GCC$ ATTRIBUTES aligned(64) :: leaves_phmat
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        ! Allocate this array as (2,2,2,number of leaves)
+        !DIR$ ATTRIBUTES ALIGN : 64 :: scatmat_avg
+        complex(kind=sp), allocatable, dimension(:,:,:,:) :: scatmat_avg
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        complex(kind=sp), allocatable, dimension(:,:,:,:) :: scatmat_avg !GCC$ ATTRIBUTES aligned(64) :: scatmat_avg
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        ! Allocate this as (2,2, number of leaves)
+        !DIR$ ATTRIBUTES ALIGN : 64 :: leaves_pos
+        complex(kind=sp), allocatable, dimension(:,:,:) :: leaves_pos
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        complex(kind=sp), allocatable, dimension(:,:,:) :: leaves_pos !GCC$ ATTRIBUTES aligned(64) :: leaves_pos
+#endif
+#if defined __ICC || defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES ALIGN : 64 :: leaves_neg
+        complex(kind=sp), allocatable, dimension(:,:,:) :: leaves_neg
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+        complex(kind=sp), allocatable, dimension(:,:,:) :: leaves_neg !GCC$ ATTRIBUTES aligned(64) :: leaves_neg
+#endif
+     end type LPHot_t
 
    contains
 
