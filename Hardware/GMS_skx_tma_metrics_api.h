@@ -23,6 +23,7 @@
 
 
 #include <stdint.h>
+#include <stdbool.h>
 
  static const uint32_t Issue_Width = 4U;
  static const uint32_t Avg_Assist_Cost = 100U;
