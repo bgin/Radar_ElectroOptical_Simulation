@@ -91,15 +91,113 @@ module mod_hsw_tma_bindings
        
     end interface
 
+    interface
+
+       function hsw_execute_cycles( uops_executed_core_c1, &
+                                    is_ht_enabled) &
+                                    bind(c,name="hsw_execute_cycles")
+            integer(c_size_t)   :: uops_execute_core_c1
+            integer(c_bool)     :: is_ht_enabled
+            integer(c_size_t)   :: hsw_execute_cycles
+       end function hsw_execute_cycles
+       
+    end interface
+
+    interface
+
+       function hsw_sq_full_cycles( offcore_requests_buffer_sq_full, &
+                                    is_ht_enabled) &
+                                    bind(c,name="hsw_sq_full_cycles")
+            integer(c_size_t)  :: offcore_requests_buffer_sq_full
+            integer(c_bool)    :: is_ht_enabled
+            integer(c_size_t)  :: hsw_sq_full_cycles
+     end function hsw_sq_full_cycles
+       
+    end interface
+
+    interface
+
+       function hsw_itlb_miss_cycles( itlb_misses_stlb_hit, &
+                                      itlb_misses_walk_duration) &
+                                      bind(c,name="hsw_itlb_miss_cycles")
+             integer(c_size_t) :: itlb_misses_stlb_hit
+             integer(c_size_t) :: itlb_misses_walk_duration
+             integer(c_size_t) :: hsw_itlb_miss_cycles
+       end function hsw_itlb_miss_cycles
+       
+    end interface
 
 
+    interface
+
+       function hsw_frontend_rs_empty_cycles( rs_event_empty_cycles, &
+                                              frontend_latency) &
+                                              bind(c,name="hsw_frontend_rs_empty_cycles")
+                integer(c_size_t)   :: rs_event_empty_cycles
+                real(c_float)       :: frontend_latency
+                integer(c_size_t)   :: hsw_frontend_rs_empty_cycles
+       end function hsw_frontend_rs_empty_cycles
+       
+    end interface
 
 
+    interface
 
+       function hsw_cycles_0_ports_utilized( uops_executed_core_i1_c1, &
+                                             stalls_total,             &
+                                             rs_event_empty_cycles,    &
+                                             frontend_latency,         &
+                                             is_ht_enabled  ) &
+                                             bind(c,name="hsw_cycles_0_ports_utilized")
+              integer(c_size_t)   :: uops_executed_core_i1_c1
+              integer(c_size_t)   :: stalls_total
+              integer(c_size_t)   :: rs_event_empty_cycles
+              real(c_float)       :: frontend_latency
+              integer(c_bool)     :: is_ht_enabled
+              integer(c_size_t)   :: hsw_cycles_0_ports_utilized
+            end function hsw_cycles_0_ports_utilized
+            
+    end interface
+   
+    interface
 
+       function hsw_cycles_1_ports_utilized( uops_executed_core_c1, &
+                                             uops_executed_core_c2, &
+                                             is_ht_enabled  )       &
+                                             bind(c,name="hsw_cycles_1_ports_utilized")
+              integer(c_size_t) :: uops_executed_core_c1
+              integer(c_size_t) :: uops_executed_core_c2
+              integer(c_bool)   :: is_ht_enabled
+              integer(c_size_t) :: hsw_cycles_1_ports_utlized
+       end function hsw_cycles_1_ports_utilized
 
+    end interface
 
+    interface
 
+       function hsw_cycles_2_ports_utilized( uops_executed_core_c2, &
+                                             uops_executed_core_c3, &
+                                             is_ht_enabled  )       &
+                                             bind(c,name="hsw_cycles_2_ports_utilized")
+              integer(c_size_t) :: uops_executed_core_c2
+              integer(c_size_t) :: uops_executed_core_c3
+              integer(c_bool)   :: is_ht_enabled
+              integer(c_size_t) :: hsw_cycles_2_ports_utlized
+       end function hsw_cycles_2_ports_utilized
+
+    end interface
+
+    interface
+
+       function hsw_cycles_3_ports_utilized( uops_executed_core_c3, &
+                                              is_ht_enabled  )       &
+                                             bind(c,name="hsw_cycles_3_ports_utilized")
+              integer(c_size_t) :: uops_executed_core_c3
+              integer(c_bool)   :: is_ht_enabled
+              integer(c_size_t) :: hsw_cycles_3_ports_utlized
+       end function hsw_cycles_3_ports_utilized
+
+    end interface
 
 
 end module mod_hsw_tma_bindings
