@@ -199,5 +199,65 @@ module mod_hsw_tma_bindings
 
     end interface
 
+    interface
+
+       function hsw_frontend_latency_cycles( cpu_clk_unhalted_thread, &
+                                             idq_uops_not_delivered_cycles_0_uops_deliv_core) &
+                                             bind(c,name="hsw_frontend_latency_cycles")
+               integer(c_size_t)  :: cpu_clk_unhalted_thread
+               integer(c_size_t)  :: idq_uops_not_delivered_cycles_0_uops_deliv_core
+               integer(c_size_t)  :: hsw_frontend_latency_cycles
+       end function hsw_frontend_latency_cycles
+       
+    end interface
+
+    interface
+
+       function hsw_stalls_mem_any( cpu_clk_unhalted_thread, &
+                                    cycles_activity_stalls_lm_pending) &
+                                    bind(c,name="hsw_stalls_mem_any")
+                integer(c_size_t)  :: cpu_clk_unhalted_thread
+                integer(c_size_t)  :: cycles_activity_stalls_lm_pending
+                integer(c_size_t)  :: hsw_stalls_mem_any
+       end function hsw_stalls_mem_any
+       
+    end interface
+
+    interface
+
+       function hsw_stalls_total( cpu_clk_unhalted_thread, &
+                                  cycles_activity_cycles_no_execute) &
+                                  bind(c,name="hsw_stalls_total")
+                integer(c_size_t)  :: cpu_clk_unhalted_thread
+                integer(c_size_t)  :: cycles_activity_cycles_no_execute
+                integer(c_size_t)  :: hsw_stalls_total
+       end function hsw_stalls_total
+
+    end interface
+
+    interface
+
+       function hsw_oro_drd_any_cycles( cpu_clk_unhalted_thread, &
+                                        offcore_requests_oustanding_cycles_with_data_rd) &
+                                        bind(c,name="hsw_oro_drd_any_cycles")
+                integer(c_size_t) :: cpu_clk_unhalted_thread
+                integer(c_size_t) :: offcore_requests_oustanding_cycles_with_data_rd
+                integer(c_size_t) :: hsw_oro_drd_any_cycles
+       end function hsw_oro_drd_any_cycles
+  
+    end interface
+
+    interface
+
+       function hsw_oro_drd_bw_cycles( cpu_clk_unhalted_thread, &
+                                       offcore_requests_outstanding_all_data_rd_c6) &
+                                       bind(c,name="hsw_oro_drd_bw_cycles")
+                integer(c_size_t) ::  cpu_clk_unhalted_thread
+                integer(c_size_t) ::  offcore_requests_outstanding_all_data_rd_c6
+                integer(c_size_t) :: hsw_oro_drd_bw_cycles
+       end function hsw_oro_drd_bw_cycles
+
+    end interface
+
 
 end module mod_hsw_tma_bindings
