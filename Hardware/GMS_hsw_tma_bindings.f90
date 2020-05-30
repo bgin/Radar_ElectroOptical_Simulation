@@ -259,5 +259,417 @@ module mod_hsw_tma_bindings
 
     end interface
 
+    interface
 
-end module mod_hsw_tma_bindings
+       function hsw_oro_demand_rfo_c1( cpu_clk_unhalted_thread, &
+                                       offcore_requests_outstanding_cycles_with_demand_rfo) &
+                                       bind(c,name="hsw_oro_demand_rfo_c1")
+                integer(c_size_t)  :: cpu_clk_unhalted_thread
+                integer(c_size_t)  :: offcore_requests_outstanding_cycles_with_demand_rfo
+                integer(c_size_t)  :: hsw_oro_demand_rfo_c1
+       end function hsw_oro_demand_rfo_c1
+
+    end interface
+
+    interface
+
+       function hsw_store_l2_hit_cycles( l2_rqsts_rfo_hit, &
+                                         mem_uops_retired_lock_loads, &
+                                         mem_uops_retired_all_stores) &
+                                         bind(c,name="hsw_store_l2_hit_cycles")
+               integer(c_size_t) :: l2_rqsts_rfo_hit
+               integer(c_size_t) :: mem_uops_retired_lock_loads
+               integer(c_size_t) :: mem_uops_retired_all_stores
+               real(c_float)     :: hsw_store_l2_hit_cycles
+       end function hsw_store_l2_hit_cycles
+       
+    end interface
+
+    interface
+
+       function hsw_load_l1_miss( mem_load_uops_retired_l2_hit, &
+                                  mem_load_uops_retired_l3_hit, &
+                                  mem_load_uops_l3_hit_retired_xsnp_hit, &
+                                  mem_load_uops_l3_hit_retired_xsnp_hitm, &
+                                  mem_load_uops_l3_hit_retired_xsnp_miss) &
+                                  bind(c,name="hsw_load_l1_miss")
+               integer(c_size_t) :: mem_load_uops_retired_l2_hit
+               integer(c_size_t) :: mem_load_uops_retired_l3_hit
+               integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hit
+               integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hitm
+               integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_miss
+               integer(c_size_t) :: hsw_load_l1_miss
+       end function hsw_load_l1_miss
+       
+    end interface
+
+    interface
+
+       function hsw_load_l1_miss_net( mem_load_uops_retired_l3_miss, &
+                                      mem_load_uops_retired_l2_hit,  &
+                                      mem_load_uops_retired_l3_hit,  &
+                                      mem_load_uops_l3_hit_retired_xsnp_hit, &
+                                      mem_load_uops_l3_hit_retired_xsnp_hitm, &
+                                      mem_load_uops_l3_hit_retired_xsnp_miss) &
+                                      bind(c,name="hsw_load_l1_miss_net")
+                integer(c_size_t) :: mem_load_uops_retired_l3_miss
+                integer(c_size_t) :: mem_load_uops_retired_l2_hit
+                integer(c_size_t) :: mem_load_uops_retired_l3_hit
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hit
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hitm
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_miss
+                integer(c_size_t) :: hsw_load_l1_miss_net
+       end function hsw_load_l1_miss_net
+       
+    end interface
+
+    interface
+
+
+       function hsw_load_l3_hit( mem_load_uops_retired_l3_hit,  &
+                                 mem_load_uops_retired_hit_lfb, &
+                                 mem_load_uops_retired_l2_hit,  &
+                                 mem_load_uops_l3_hit_retired_xsnp_hit, &
+                                 mem_load_uops_l3_hit_retired_xsnp_hitm, &
+                                 mem_load_uops_l3_hit_retired_xsnp_miss) &
+                                 bind(c,name="hsw_load_l3_hit")
+                integer(c_size_t) :: mem_load_uops_retired_l3_hit
+                integer(c_size_t) :: mem_load_uops_retired_hit_lfb
+                integer(c_size_t) :: mem_load_uops_retired_l2_hit
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hit
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_hitm
+                integer(c_size_t) :: mem_load_uops_l3_hit_retired_xsnp_miss
+                real(c_float)     :: hsw_load_l3_hit
+       end function hsw_load_l3_hit
+
+    end interface
+
+    interface
+
+       function hsw_load_xsnp_hit( mem_load_uops_l3_hit_retired_xsnp_hit, &
+                                   mem_load_uops_retired_hit_lfb,         &
+			           mem_load_uops_retired_l2_hit,          &
+			           mem_load_uops_retired_l3_hit,          &
+			           mem_load_uops_l3_hit_retired_xsnp_hitm,&
+			           mem_load_uops_l3_hit_retired_xsnp_miss) &
+                                   bind(c,name="hsw_load_xsnp_hit")
+                  integer(c_size_t) ::  mem_load_uops_l3_hit_retired_xsnp_hit
+                  integer(c_size_t) ::  mem_load_uops_retired_hit_lfb        
+		  integer(c_size_t) ::	mem_load_uops_retired_l2_hit          
+		  integer(c_size_t) ::	mem_load_uops_retired_l3_hit          
+		  integer(c_size_t) ::	mem_load_uops_l3_hit_retired_xsnp_hitm
+                  integer(c_size_t) ::	mem_load_uops_l3_hit_retired_xsnp_miss
+                  real(c_float)     ::  hsw_load_xsnp_hit
+       end function hsw_load_xsnp_hit
+
+    end interface
+
+    interface
+
+         function hsw_load_xsnp_hitm( mem_load_uops_retired_hit_lfb, &
+			              mem_load_uops_retired_l2_hit,  &
+	                              mem_load_uops_retired_l3_hit,  &
+			              mem_load_uops_l3_hit_retired_xsnp_hit, &
+			              mem_load_uops_l3_hit_retired_xsnp_hitm,&
+                                      mem_load_uops_l3_hit_hit_retired_xsnp_miss) &
+                                      bind(c,name="hsw_load_xsnp_hitm")
+                 integer(c_size_t)  :: mem_load_uops_retired_hit_lfb,
+		 integer(c_size_t)  :: mem_load_uops_retired_l2_hit,
+	         integer(c_size_t)  :: mem_load_uops_retired_l3_hit,
+		 integer(c_size_t)  :: mem_load_uops_l3_hit_retired_xsnp_hit,
+		 integer(c_size_t)  :: mem_load_uops_l3_hit_retired_xsnp_hitm,
+                 integer(c_size_t)  :: mem_load_uops_l3_hit_hit_retired_xsnp_miss
+                 real(c_float)      :: hsw_load_xsnp_hitm 
+          end function hsw_load_xsnp_hitm
+                 
+
+       end interface
+
+
+      interface
+
+          function hsw_load_xsnp_miss( mem_load_uops_retired_hit_lfb, &
+			              mem_load_uops_retired_l2_hit,  &
+	                              mem_load_uops_retired_l3_hit,  &
+			              mem_load_uops_l3_hit_retired_xsnp_hit, &
+			              mem_load_uops_l3_hit_retired_xsnp_hitm,&
+                                      mem_load_uops_l3_hit_hit_retired_xsnp_miss) &
+                                      bind(c,name="hsw_load_xsnp_miss")
+                 integer(c_size_t)  :: mem_load_uops_retired_hit_lfb,
+		 integer(c_size_t)  :: mem_load_uops_retired_l2_hit,
+	         integer(c_size_t)  :: mem_load_uops_retired_l3_hit,
+		 integer(c_size_t)  :: mem_load_uops_l3_hit_retired_xsnp_hit,
+		 integer(c_size_t)  :: mem_load_uops_l3_hit_retired_xsnp_hitm,
+                 integer(c_size_t)  :: mem_load_uops_l3_hit_hit_retired_xsnp_miss
+                 real(c_float)      :: hsw_load_xsnp_miss
+           end function hsw_load_xsnp_miss
+          
+       end interface
+
+        
+      interface
+
+         function hsw_few_uops_executed_threshold( uops_executed_core_c2, &
+                                                   uops_executed_core_c3) &
+                                                   bind(c,name="hsw_few_uops_executed_threshold")
+                 integer(c_size_t)  :: uops_executed_core_c2
+                 integer(c_size_t)  :: uops_executed_core_c3
+                 integer(c_size_t)  :: hsw_few_uops_executed_threshold
+         end function hsw_few_uops_executed_threshold
+
+      end interface
+
+      interface
+
+         function hsw_backend_bound_cycles( stalls_total,  &
+                                            uops_executed_core_c1, &
+                                            few_uops_executed_threshold, &
+                                            frontend_rs_empty_cycles, &
+                                            resource_stalls_sb, &
+                                            is_ht_enabled) &
+                                            bind(c,name="hsw_backend_bound_cycles")
+               integer(c_size_t)  :: stalls_total
+               integer(c_size_t)  :: uops_executed_core_c1
+               integer(c_size_t)  :: few_uops_executed_threshold
+               integer(c_size_t)  :: frontend_rs_empty_cycles
+               integer(c_size_t)  :: resource_stalls_sb
+               integer(c_bool)    :: is_ht_enabled
+               real(c_float)      :: hsw_backend_bound_cycles
+         end function hsw_backend_bound_cycles
+ 
+      end interface
+
+      interface
+
+         function hsw_memory_bound_fraction( stalls_mem_any, &
+                                             resource_stalls_sb, &
+                                             backend_bound_cycles) &
+                                             bind(c,name="hsw_memory_bound_cycles")
+              integer(c_size_t)  :: stalls_mem_any
+              integer(c_size_t)  :: resource_stalls_sb
+              real(c_float)      :: backend_bound_cycles
+              real(c_float)      :: hsw_memory_bound_fraction
+              
+         end function hsw_memory_bound_cycles
+
+      end interface
+
+     interface
+
+        function hsw_memory_bound_fraction( stalls_mem_any,  &
+                                            resource_stalls_any, &
+                                            backend_bound_cycles) &
+                                            bind(c,name="hsw_memory_bound_fraction")
+             integer(c_size_t) :: stalls_mem_any
+             integer(c_size_t) :: resource_stalls_any
+             real(c_float)     :: backend_bound_cycles
+             real(c_float)     :: hsw_memory_bound_fraction
+        end function hsw_memory_bound_fraction
+         
+     end interface
+
+     interface
+
+         function hsw_mem_l3_hit_fraction( mem_load_uops_retired_l3_hit, &
+                                               mem_load_uops_retired_l3_miss) &
+                                           bind(c,name="hsw_mem_l3_hit_fraction")
+              integer(c_size_t)  :: mem_load_uops_retired_l3_hit
+              integer(c_size_t)  :: mem_load_uops_retired_l3_miss
+              real(c_float)      :: hsw_mem_l3_hit_fraction
+         end function hsw_mem_l3_hit_fraction
+     
+     end interface
+
+     interface
+
+        function hsw_mem_lock_st_fraction( mem_uops_retired_lock_loads, &
+                                           mem_uops_retired_all_stores) &
+                                           bind(c,name="hsw_mem_lock_st_fraction")
+              integer(c_size_t)  :: mem_uops_retired_lock_loads
+              integer(c_size_t)  :: mem_uops_retired_all_stores
+              real(c_float)      :: hsw_mem_lock_st_fraction
+        end function hsw_mem_lock_st_fraction
+   
+     end interface
+
+     interface
+
+        function hsw_mispred_clears_fraction( br_mispred_all_branches, &
+                                              machines_clears_count)  &
+                                              bind(c,name="hsw_mispred_clears_fraction")
+                 integer(c_size_t)  :: br_mispred_all_branches
+                 integer(c_size_t)  :: machines_clears_count
+                 real(c_float)      :: hsw_mispred_clears_fraction
+        end function hsw_mispred_clears_fraction
+  
+     end interface
+
+     interface
+
+        function hsw_retire_fraction( uops_retired_retire_slots, &
+                                      uops_issued_any) &
+                                      bind(c,name="hsw_retire_fraction")
+                 integer(c_size_t)  :: uops_retired_retire_slots
+                 integer(c_size_t)  :: uops_issued_any
+                 real(c_float)      :: hsw_retire_fraction
+        end function hsw_retire_fraction
+   
+     end interface
+
+     interface
+
+        function hsw_ipc( inst_retired_any, &
+                          clks) &
+                          bind(c,name="hsw_ipc")
+             integer(c_size_t) :: inst_retired_any
+             integer(c_size_t) :: clks
+             real(c_float)     :: hsw_ipc
+        end function hsw_ipc
+        
+     end interface
+
+
+     interface
+
+        function hsw_upi( uops_retired_retire_slots, &
+                          uops_retired_any) &
+                          bind(c,name="hsw_upi")
+              integer(c_size_t) :: uops_retired_retire_slots
+              integer(c_size_t) :: uops_retired_any
+              real(c_float)     :: hsw_upi
+        end function hsw_upi
+        
+     end interface
+
+     interface
+
+        function hsw_iptb( instr_retired_any,  &
+                           br_instr_retired_near_taken) &
+                           bind(c,name="hsw_iptb")
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) :: br_instr_retired_near_taken
+              real(c_float)     :: hsw_iptb
+        end function hsw_iptb
+        
+     end interface
+
+     interface
+
+        function hsw_cpi( instr_retired_any, &
+                          clks) &
+                          bind(c,name="hsw_cpi")
+                integer(c_size_t) :: instr_retired_any
+                integer(c_size_t) :: clks
+                real(c_float)     :: hsw_cpi
+        end function hsw_cpi
+   
+     end interface
+
+     interface
+
+        function hsw_issue_slots( core_clks) &
+                     bind(c,name="hsw_issue_slots")
+            integer(c_size_t) :: core_clks
+            integer(c_size_t) :: hsw_issue_slots
+        end function hsw_issue_slots
+    
+     end interface
+
+     interface
+
+        function hsw_ipload(instr_retired_any, &
+                           mem_uops_retired_all_loads) &
+                           bind(c,name="hsw_ipload")
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) ::  mem_uops_retired_all_loads
+              real(c_float)     :: hsw_ipload
+        end function hsw_ipload
+        
+     end interface
+
+     interface
+
+        function hsw_ipstore( instr_retired_any, &
+                              mem_uops_retired_all_stores) &
+                              bind(c,name="hsw_ipstore")
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) ::  mem_uops_retired_all_stores
+              real(c_float)     :: hsw_ipstore
+        end function hsw_ipstore
+
+     end interface
+
+     interface
+
+        function hsw_ipbranch(instr_retired_any, &
+                              br_instr_retired_all_branches) &
+                              bind(c,name="hsw_ipbranch")
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) :: br_instr_retired_all_branches
+              real(c_float)     :: hsw_ipbranch
+        end function hsw_ipbranch
+        
+     end interface
+
+     interface
+
+        function hsw_ipcall( instr_retired_any,  &
+                             br_instr_retired_near_call) &
+                             bind(c,name="hsw_ipcall")
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) :: br_instr_retired_near_call
+              real(c_float)     :: hsw_ipcall
+        end function hsw_ipcall
+        
+     end interface
+
+     interface
+
+          function hsw_biptb( br_inst_retired_all_branches, &
+                             br_inst_retired_near_taken) &
+                             bind(c,name="hsw_biptb")
+                integer(c_size_t) :: br_inst_retired_all_branches
+                integer(c_size_t) :: br_instr_retired_near_taken
+                real(c_float)     :: hsw_biptb
+          end function hsw_biptb
+
+     end interface
+
+       
+     interface
+
+        function hsw_dsb_coverage( idq_dsb_uops, &
+                                   fetched_uops) &
+                                   bind(c,name="hsw_dsb_coverage")
+               integer(c_size_t) :: idq_dsb_uops
+               integer(c_size_t) :: fetched_uops
+               real(c_float)     :: hsw_dsb_coverage
+        end function hsw_dsb_coverage
+        
+     end interface
+
+     interface
+
+        function hsw_ipbaclear(instr_retired_any, &
+                               baclears_any) &
+                               bind(c,name="hsw_ipbaclear")
+               integer(c_size_t) :: instr_retired_any
+               integer(c_size_t) :: baclears_any
+               real(c_float)     :: hsw_ipbaclear
+        end function hsw_ipbaclear
+        
+     end interface
+
+     interface
+
+        function hsw_ipc_core(instr_retired_any, &
+                              core_clks) &
+                              bind(c,name="hsw_ipc_core")
+                  integer(c_size_t) :: instr_retired_any
+                  integer(c_size_t) :: core_clks
+                  real(c_float)     :: hsw_ipc_core
+        end function hsw_ipc_core
+
+     end interface
+
+ end module mod_hsw_tma_bindings
