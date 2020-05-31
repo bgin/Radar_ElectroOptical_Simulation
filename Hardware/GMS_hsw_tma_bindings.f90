@@ -672,4 +672,275 @@ module mod_hsw_tma_bindings
 
      end interface
 
+     interface
+
+        function hsw_ilp( uops_executed_core, &
+                          execute_cycles, &
+                          is_ht_enabled) &
+                          bind(c,name="hsw_ilp")
+              integer(c_size_t) :: uops_executed
+              integer(c_size_t) :: execute_cycles
+              integer(c_size_t) :: is_hit_enabled
+              real(c_float)     :: hsw_ilp
+        end function hsw_ilp
+             
+        
+     end interface
+
+
+     interface
+
+        function hsw_ip_mispredict( instr_retired_any, &
+                                    br_misp_retired_all_branches) &
+                                    bind(c,name="hsw_ip_mispredict")
+              integer(c_size_t) :: intr_retired_any
+              integer(c_size_t) :: br_misp_retired_all_branches
+              real(c_float)     :: hsw_ip_mispredict
+        end function hsw_ip_mispedict
+        
+     end interface
+
+     interface
+
+         function hsw_core_clks(   cpu_clk_unhalted_thread, &
+                                   cpu_clk_unhalted_one_thread_active, &
+			           cpu_clk_unhalted_ref_xclk, &
+			           cpu_clk_unhalted_thread_any, &
+                                   ebs_mode) &
+                                   bind(c,name="hsw_core_clks")
+               integer(c_size_t) :: cpu_clk_unhalted_thread
+               integer(c_size_t) :: cpu_clk_unhalted_one_thread_active
+               integer(c_size_t) :: cpu_clk_unhalted_ref_xclk
+               integer(c_size_t) :: cpu_clk_unhalted_thread_any
+               integer(c_bool)   :: ebs_mode
+               integer(c_size_t) :: hsw_core_clks
+         end function hsw_core_clks
+  
+      end interface
+
+    interface
+
+       function hsw_load_miss_real_latency( l1d_pend_miss_pending, &
+                                            mem_load_uops_retired_l1_miss, &
+                                            mem_load_uops_retired_hit_lfb) &
+                                            bind(c,name="hsw_load_miss_real_latency")
+                integer(c_size_t) :: l1d_pend_miss_pending
+                integer(c_size_t) :: mem_load_uops_retired_l1_miss
+                integer(c_size_t) :: mem_load_uops_retired_hit_lfb
+                real(c_float)     :: hsw_load_miss_real_latency
+       end function hsw_load_miss_real_latency
+       
+    end interface
+
+    interface
+
+       function hsw_mem_level_parallelism( l1d_pend_miss_pending, &
+                                          l1d_pend_miss_pending_cycles) &
+                                          bind(c,name="hsw_mem_level_parallelism")
+                 integer(c_size_t) :: l1d_pend_miss_pending
+                 integer(c_size_t) ::  l1d_pend_miss_pending_cycles
+                 real(c_float)     :: hsw_mem_level_parallelism
+       end function hsw_mem_level_paralellism
+
+    end interface
+
+    interface
+
+        function hsw_page_walk_util(   itlb_misses_walk_duration,   &
+                                       dtlb_load_misses_walk_duration, &
+			               dtlb_store_misses_walk_duration, &
+			               core_clks) &
+                                       bind(c,name="hsw_page_walk_util")
+               integer(c_size_t) :: itlb_misses_walk_duration
+               integer(c_size_t) :: dtlb_load_misses_walk_duration
+               integer(c_size_t) :: dtlb_store_misses_walk_duration
+               integer(c_size_t) :: core_clks
+               real(c_float)     :: hsw_page_walk_util
+        end function hsw_page_walk_util
+        
+     end interface
+
+     interface
+
+        function hsw_l1d_cache_fill_bw( l1d_replacement, &
+                                        time_interval) &
+                                        bind(c,name="hsw_l1d_cache_fill_bw")
+                 integer(c_size_t) :: l1d_replacement
+                 integer(c_size_t) :: time_interval
+                 real(c_float)     :: hsw_l1d_cache_fill_bw
+        end function hsw_l1d_cache_fill_bw
+        
+     end interface
+
+     interface
+
+        function hsw_l2_cache_fill_bw( l2_lines_in_all, &
+                                       time_interval) &
+                                       bind(c,name="hsw_l2_cache_fill_bw")
+                 integer(c_size_t) :: l2_lines_in_all
+                 integer(c_size_t) :: time_interval
+                 real(c_float)     :: hsw_l2_cache_fill_bw
+        end function hsw_l2_cache_fill_bw
+        
+     end interface
+
+     interface
+
+        function hsw_l3_cache_fill_bw( longest_lat_cache_miss, &
+                                     time_interval) &
+                                     bind(c,name="hsw_l3_cache_fill_bw")
+                integer(c_size_t) :: longest_lat_cache_miss
+                integer(c_size_t) :: time_interval
+                real(c_float)     :: hsw_l3_cache_fill_bw
+        end function hsw_l3_cache_fill_bw
+        
+     end interface
+
+     interface
+
+        function hsw_l1mpki( mem_load_uops_retired_l1_miss, &
+                            instr_retired_any) &
+                            bind(c,name="hsw_l1mpki")
+              integer(c_size_t) :: mem_load_uops_retired_l1_miss
+              integer(c_size_t) :: instr_retired_any
+              real(c_float)     :: hsw_l1mpki
+        end function hsw_l1mpki
+        
+     end interface
+
+     interface
+
+        function hsw_l2mpki( mem_load_uops_retired_l2_miss, &
+                            instr_retired_any) &
+                            bind(c,name="hsw_l2mpki")
+              integer(c_size_t) :: mem_load_uops_retired_l2_miss
+              integer(c_size_t) :: instr_retired_any
+              real(c_float)     :: hsw_l2mpki
+        end function hsw_l2mpki
+        
+     end interface
+
+
+     interface
+
+        function hsw_l2hpki( mem_load_uops_retired_l2_miss, &
+                            instr_retired_any) &
+                            bind(c,name="hsw_l2hpki")
+              integer(c_size_t) :: mem_load_uops_retired_l2_miss
+              integer(c_size_t) :: instr_retired_any
+              real(c_float)     :: hsw_l2hpki
+        end function hsw_l2hpki
+        
+     end interface
+
+
+     interface
+
+        function hsw_l3mpki( mem_load_uops_retired_l3_miss, &
+                            instr_retired_any) &
+                            bind(c,name="hsw_l3mpki")
+              integer(c_size_t) :: mem_load_uops_retired_l3_miss
+              integer(c_size_t) :: instr_retired_any
+              real(c_float)     :: hsw_l3mpki
+        end function hsw_l3mpki
+        
+     end interface
+
+     interface
+
+        function hsw_ipfarbr( instr_retired_any,  &
+                              br_inst_retired_far_branch) &
+                              bind(c,name="hsw_ipfarbr") 
+              integer(c_size_t) :: instr_retired_any
+              integer(c_size_t) :: br_inst_retired_far_branch
+              real(c_float)     :: hsw_ipfarbr
+        end function hsw_ipfarbr
+        
+     end interface
+
+     interface
+
+        function hsw_assist( other_assists_any_wb_assists, &
+                             slots) &
+                             bind(c,name="hsw_assist")
+               integer(c_size_t) :: other_assists_any_wb_assists
+               integer(c_size_t) :: slots
+               real(c_float)     :: hsw_assist
+        end function hsw_assist
+          
+     end interface
+
+     interface
+
+
+        function hsw_kernel_utlization( cpu_clk_unhalted_thread_sup, &
+                                        cpu_clk_unhalted_ref_tsc ) &
+                                        bind(c,name="hsw_kernel_utilization")
+                 integer(c_float) :: cpu_clk_unhalted_thread_sup
+                 integer(c_float) :: cpu_clk_unhalted_ref_tsc
+                 real(c_float)    :: hsw_kernel_utilization
+        end function hsw_kernel_utilization
+        
+     end interface
+
+     interface
+
+        function hsw_dram_bw_use( unc_arb_trk_requests_all, &
+                                  unc_arb_coh_trk_requests_all) &
+                                  bind(c,name="hsw_dram_bw_use")
+                integer(c_size_t) :: unc_arb_trk_requests_all
+                integer(c_size_t) ::  unc_arb_coh_trk_requests_all
+                real(c_float)     :: hsw_dram_bw_use
+        end function hsw_dram_bw_use
+         
+     end interface
+
+     interface
+
+        function hsw_mem_requests_latency(unc_arb_trk_occupancy_all, &
+                                          unc_arb_trk_requests_all) &
+                                          bind(c,name="hsw_mem_requests_latency")
+              integer(c_size_t) :: unc_arb_trk_occupancy_all
+              integer(c_size_t) :: unc_arb_trk_requests_all
+              real(c_float)     :: hsw_mem_requests_latency
+        end function hsw_mem_requests_latency
+        
+     end interface
+
+     interface
+
+        function hsw_mem_parallel_requests( unc_arb_trk_occupancy_all, &
+                                           unc_arb_trk_occupancy_cycles_with_any_request) &
+                                           bind(c,name="hsw_mem_parallel_requests")
+              integer(c_size_t) :: unc_arb_trk_occupancy_all
+              integer(c_size_t) ::  unc_arb_trk_occupancy_cycles_with_any_request
+              real(c_float)     :: hsw_mem_parallel_requests
+        end function hsw_mem_parallel_requests
+        
+     end interface
+
+     interface
+
+        function hsw_ht_utilization(  cpu_clk_thread_unhalted_one_thread_active, &
+                                      cpu_clk_thread_unhalted_ref_xclk_any) &
+                                      bind(c,name="hsw_ht_utilization")
+               integer(c_size_t) :: cpu_clk_thread_unhalted_one_thread_active
+               integer(c_size_t) :: cpu_clk_thread_unhalted_ref_xclk_any
+               real(c_float)     :: hsw_ht_utilization
+        end function hsw_ht_utilization
+        
+     end interface
+
+     interface
+
+        function hsw_frontend_bound( idq_uops_not_delivered_core, &
+                                     slots) &
+                                     bind(c,name="hsw_frontend_bound")
+               integer(c_size_t) :: idq_uops_not_delivered_core
+               integer(c_size_t) :: slots
+               real(c_float)     :: hsw_frontend_bound
+        end function hsw_frontend_bound
+        
+     end interface
+
  end module mod_hsw_tma_bindings
