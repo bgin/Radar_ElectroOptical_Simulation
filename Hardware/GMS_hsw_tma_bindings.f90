@@ -943,4 +943,82 @@ module mod_hsw_tma_bindings
         
      end interface
 
+     interface
+
+        function hsw_frontend_latency( frontend_latency_cycles, &
+                                       cycles) &
+                                       bind(c,name="hsw_frontend_latency")
+                integer(c_size_t) :: frontend_latency_cycles
+                integer(c_size_t) :: cycles
+                real(c_float)     :: hsw_frontend_latency
+        end function hsw_frontend_latency     
+        
+     end interface
+
+     interface
+
+        function hsw_icache_misses(icache_ifdata_stall, &
+                                   clks) &
+                                   bind(c,name="hsw_icache_misses")
+                integer(c_size_t) :: icache_ifdata_stall
+                integer(c_size_t) :: clks
+                real(c_float)     :: hsw_icache_misses
+        end function hsw_icache_misses
+        
+     end interface
+
+     interface
+
+        function hsw_dsb_switches( dsb2mite_switches_penalty_cycles, &
+                                   clks) &
+                                   bind(c,name="hsw_dsb_switches")
+                integer(c_size_t) :: dsb2mite_switches_penalty_cycles
+                integer(c_size_t) :: clks
+                real(c_float)     :: gsw_dsb_switches
+        end function hsw_dsb_switches
+        
+     end interface
+
+     interface
+
+
+        function hsw_lcp( ild_stall_lcp, &
+                          clks) &
+                          bind(c,name="ild_stall_lcp")
+               integer(c_size_t) :: ild_stall_lcp
+               integer(c_size_t) :: clks
+               real(c_float)     :: hsw_lcp
+        end function hsw_lcp
+        
+     end interface
+
+
+     interface
+
+        function hsw_ms_switches( idq_ms_switches,  &
+                                  clks) &
+                                  bind(c,name="hsw_ms_switches")
+               integer(c_size_t) :: idq_ms_switches
+               integer(c_size_t) :: clks
+               real(c_float)     :: hsw_ms_switches
+        end function hsw_ms_switches
+        
+     end interface
+
+     interface
+
+        function hsw_branch_resteers(  br_misp_retired_all_branches, &
+                                       machine_clears_count,   &
+			               baclears_any,     &
+			               clks) &
+                                       bind(c,name="hsw_branch_resteers")
+                integer(c_size_t) :: br_misp_retired_all_branches
+                integer(c_size_t) :: machine_clears_count
+                integer(c_size_t) :: baclears_any
+                integer(c_size_t) :: clks
+                real(c_float)     :: hsw_branch_resteers
+        end function hsw_branch_resteers
+        
+     end interface
+
  end module mod_hsw_tma_bindings
