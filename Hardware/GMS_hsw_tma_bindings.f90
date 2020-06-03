@@ -1021,4 +1021,134 @@ module mod_hsw_tma_bindings
         
      end interface
 
+     interface
+
+          function hsw_mite(  idq_all_mite_cycles_any_uops, &
+                              idq_all_mite_cycles_4_uops,   &
+                              core_clks) &
+                              bind(c,name="hsw_mite")
+                integer(c_size_t) :: idq_all_mite_cycles_any_uops
+                integer(c_size_t) ::   idq_all_mite_cycles_4_uops
+                integer(c_size_t) :: core_clks
+                real(c_float)     :: hsw_mite
+          end function hsw_mite
+  
+       end interface
+
+     interface
+
+         function hsw_dsb( idq_all_dsb_cycles_any_uops, &
+                           idq_all_dsb_cycles_4_uops,   &
+                           core_clks) &
+                           bind(c,name="hsw_dsb")
+              integer(c_size_t) :: idq_all_dsb_cycles_any_uops
+              integer(c_size_t) :: idq_all_dsb_cycles_4_uops
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_dsb
+         end function hsw_dsb
+        
+      end interface
+
+      interface
+
+         function hsw_l1_bound(  stalls_mem_any, &
+                                 cycles_activity_stalls_l1d_pending, &
+			         clks) &
+                                 bind(c,name="hsw_l1_bound")
+               integer(c_size_t) :: stalls_mem_any
+               integer(c_size_t) :: cycles_activity_stalls_l1d_pending
+               integer(c_size_t) :: clks
+               real(c_float)     :: hsw_l1_bound
+         end function hsw_l1_bound
+
+      end interface
+
+      interface
+
+          function hsw_dtlb_load(  dtlb_load_misses_stlb_hit, &
+                                   dtlb_load_misses_walk_duration, &
+			           clks) &
+                                   bind(c,name="hsw_dtlb_load")
+            integer(c_size_t) :: dtlb_load_misses_stlb_hit
+            integer(c_size_t) :: dtlb_load_misses_walk_duration
+            integer(c_size_t) :: clks
+            real(c_float)     :: hsw_dtlb_load
+          end function hsw_dtlb_load
+
+       end interface
+
+       interface
+
+          function hsw_store_fwd_blk( ld_blocks_store_forward, &
+                                      clks) &
+                                      bind(c,name="hsw_store_fwd_blk")
+            integer(c_size_t) :: ld_blocks_store_forward
+            integer(c_size_t) :: clks
+            real(c_float)     :: hsw_store_fwd_blk
+          end function hsw_store_fwd_blk
+          
+       end interface
+
+       interface
+
+           function hsw_split_loads(  load_miss_real_latency, &
+                                      ld_blocks_no_sr, &
+			              clks) &
+                                      bind(c,name="hsw_split_loads")
+                  integer(c_size_t) :: load_misses_real_latency
+                  integer(c_size_t) :: ld_blocks_no_sr
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: hsw_split_loads
+           end function hsw_split_loads
+           
+        end interface
+
+        interface
+
+           function hsw_single_mul_clks( uops_issued_single_mul, &
+                                         clks) &
+                                         bind(c,name="hsw_single_mul_clks")
+                    integer(c_size_t) :: uops_issued_single_mul
+                    integer(c_size_t) :: clks
+                    real(c_float)     :: hsw_single_mul_clks
+            end function hsw_single_mul_clks
+         end interface
+
+           interface
+
+           function hsw_single_mul_core_clks( uops_issued_single_mul, &
+                                         core_clks) &
+                                         bind(c,name="hsw_single_mul_core_clks")
+                    integer(c_size_t) :: uops_issued_single_mul
+                    integer(c_size_t) :: core_clks
+                    real(c_float)     :: hsw_single_mul_core_clks
+            end function hsw_single_mul_core_clks
+         end interface
+
+           interface
+
+           function hsw_single_mul_uops_any( uops_issued_single_mul, &
+                                            inst_issued_any) &
+                                         bind(c,name="hsw_single_mul_uops_any")
+                    integer(c_size_t) :: uops_issued_single_uops_any
+                    integer(c_size_t) :: inst_issued_any
+                    real(c_float)     :: hsw_single_mul_uops_any
+            end function hsw_single_mul_uops_any
+         end interface
+
+           interface
+
+           function hsw_single_mul_uops_retired_any( uops_issued_single_mul, &
+                                                     uops_retired_any) &
+                                         bind(c,name="hsw_single_mul_uops_retired_any")
+                    integer(c_size_t) :: uops_issued_single_mul
+                    integer(c_size_t) :: uops_retired_any
+                    real(c_float)     :: hsw_single_mul_uops_retired_any
+            end function hsw_single_mul_uops_retired_any
+         end interface
+
+         
+
+         
+
  end module mod_hsw_tma_bindings
