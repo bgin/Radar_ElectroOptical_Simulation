@@ -1147,8 +1147,85 @@ module mod_hsw_tma_bindings
             end function hsw_single_mul_uops_retired_any
          end interface
 
-         
 
+         interface
+
+              function hsw_simd_move_elim_not_elim(  move_elimination_simd_eliminated,  &
+                                                     move_elimination_simd_not_eliminated) &
+                                                     bind(c,name="hsw_simd_move_elim_not_elim")
+                      integer(c_size_t)  :: move_elimimination_simd_eliminated
+                      integer(c_size_t)  :: move_elimimination_simd_not_eliminated
+                      real(c_float)      :: hsw_simd_move_elim_not_elim
+              end function hsw_simd_move_elim_not_elim
+
+         end interface
+
+           
+         interface
+
+              function hsw_int_move_elim_not_elim(  move_elimination_int_eliminated,  &
+                                                     move_elimination_int_not_eliminated) &
+                                                     bind(c,name="hsw_int_move_elim_not_elim")
+                      integer(c_size_t)  :: move_elimimination_int_eliminated
+                      integer(c_size_t)  :: move_elimimination_int_not_eliminated
+                      real(c_float)      :: hsw_int_move_elim_not_elim
+              end function hsw_int_move_elim_not_elim
+
+         end interface
+
+
+         interface
+
+            function hsw_uops_issued_any_mite_uops( idq_mite_uops, &
+                                                   uops_issued_any) &
+                                                   bind(c,name="hsw_uops_issued_any_mite_uops")
+                    integer(c_size_t) :: idq_mite_uops
+                    integer(c_size_t) :: uops_issued_any
+                    real(c_float)     :: hsw_uops_issued_any_mite_uops
+            end function hsw_uops_issued_any_mite_uops
+              
+         end interface
+
+         interface
+
+            function hsw_single_mul_avx_inst_all( uops_issued_any, &
+                                                  avx_inst_all) &
+                                                  bind(c,name="hsw_single_mul_avx_inst_all")
+                       integer(c_size_t) :: uops_issued_any
+                       integer(c_size_t) :: avx_inst_all
+                       real(c_float)     :: hsw_single_mul_avx_inst_all
+            end function hsw_single_mul_avx_inst_all
+            
+        end interface
+
+
+        interface
+
+           function hsw_frontend_latency( frontend_latency_cycles, &
+                                          slots) &
+                                          bind(c,name="hsw_frontend_latency")
+                   integer(c_size_t) :: frontend_latency_cycles
+                   integer(c_size_t) :: slots
+                   real(c_float)     :: hsw_frontend_latency
+           end function hsw_frontend_latency
+            
+        end interface
+
+        interface
+
+            function hsw_branch_resteers(  br_misp_retired_all_branches, &
+                                           machine_clears_count,&
+			                   baclears_any,&
+				           clks) &
+                                           bind(c,name="nsw_branch_resteers")
+                      integer(c_size_t) :: br_misp_retired_all_branches
+                      integer(c_size_t) :: machine_clears_count
+                      integer(c_size_t) :: baclears_any
+                      integer(c_size_t) :: clks
+                      real(c_float)     :: hsw_branch_resteers
+             end function hsw_branch_resteers
+           
+        end interface
          
 
  end module mod_hsw_tma_bindings
