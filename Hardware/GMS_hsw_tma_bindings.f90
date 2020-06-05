@@ -1225,7 +1225,218 @@ module mod_hsw_tma_bindings
                       real(c_float)     :: hsw_branch_resteers
              end function hsw_branch_resteers
            
+       end interface
+
+
+       interface
+
+          function hsw_frontend_bw( frontend_bound, &
+                                    frontend_latency) &
+                                    bind(c,name="hsw_frontend_bw")
+                    real(c_float) :: frontend_bound
+                    real(c_float) :: frontend_latency
+                    real(c_float) :: hsw_frontend_bw
+          end function hsw_frontend_bw
+          
+       end interface
+
+
+       interface
+
+            function hsw_mite(  idq_all_mite_cycles_any_uops, &
+                                idq_all_mite_cycles_4_uops, &
+		                clks) &
+                                bind(c,name="hsw_mite")
+                   integer(c_size_t) :: idq_all_mite_cycles_any_uops
+                   integer(c_size_t) :: idq_all_mite_cycles_4_uops
+                   integer(c_size_t) :: clks
+                   real(c_float)     :: hsw_mite
+            end function hsw_mite
+          
         end interface
+
          
+        interface
+
+           function hsw_store_fwd_blocked( ld_blocks_store_forward, &
+                                           clks) &
+                                           bind(c,name="hsw_store_fwd_blocked")
+                  integer(c_size_t) :: ld_blocks_store_forward
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: hsw_store_fwd_blocked
+           end function hsw_store_fwd_blocked
+
+        end interface
+
+
+        interface
+
+            function hsw_lock_latency(   mem_lock_st_fraction, &
+                                         oro_demand_rfo_c1,&
+			                 clks) &
+                                         bind(c,name="hsw_lock_latency")
+                  real(c_float) :: mem_lock_st_fraction
+                  integer(c_size_t) :: oro_demand_rfo_c1
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: hsw_lock_latency
+            end function hsw_lock_latency
+            
+       end interface
+
+       interface
+
+            function hsw_split_loads(   load_miss_real_latency, &
+                                        load_blocks_no_sr,&
+                                        clks) &
+                                        bind(c,name="hsw_split_loads")
+                 real(c_float) :: load_miss_real_latency
+                 integer(c_size_t) :: load_blocks_no_sr
+                 integer(c_size_t) :: clks
+                 real(c_float)     :: hsw_split_loads
+            end function hsw_split_loads
+          
+       end interface
+
+
+      interface
+
+           function hsw_4k_aliasing(  ld_block_partial_address_alias, &
+                                      clks) &
+                                      bind(c,name="hsw_4k_aliasing")
+                 integer(c_size_t) :: ld_block_partial_address_alias
+                 integer(c_size_t) :: clks
+                 real(c_float)     :: hsw_4k_aliasing
+           end function hsw_4k_aliasing
+         
+      end interface
+
+      interface
+
+          function hsw_fb_full(  load_miss_real_latency, &
+                                 l1d_pend_miss_request_fb_full_c1, &
+			         clks) &
+                                 bind(c,name="hsw_fb_full")
+                  real(c_float) :: load_miss_real_latency
+                  integer(c_size_t) :: l1d_pend_miss_request_fb_full_c1
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: hsw_fb_full
+          end function hsw_fb_full
+
+      end interface
+
+      interface
+
+             function hsw_l2_bound( cycle_activity_stalls_l1d_pending, &
+                                    cycle_activity_stalls_l2_pending,&
+			            clks) &
+                                    bind(c,name="hsw_l2_bound")
+                  integer(c_size_t) :: cycle_activity_stalls_l1d_pending
+                  integer(c_size_t) :: cycle_activity_stalls_l2_pending
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: hsw_l2_bound
+             end function hsw_l2_bound
+             
+      end interface
+
+      interface
+
+          function hsw_l3_bound(  mem_l3_hit_fraction,&
+                                  cycle_activity_stalls_l2_pending,&
+                                  clks) &
+                                  bind(c,name="hsw_l3_bound")
+                 real(c_float) :: mem_l3_hit_fraction
+                 integer(c_size_t) :: cycle_activity_stalls_l2_pending
+                 integer(c_size_t) :: clks
+                 real(c_float)     :: hsw_l3_bound
+          end function hsw_l3_bound
+          
+     end interface
+
+     interface
+
+         function hsw_port0_exec(  uops_dispatched_port_port0,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port0_exec")
+              integer(c_size_t) :: uops_dispatched_port_port0
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port0_exec
+         end function hsw_port0_exec
+         
+     end interface
+
+
+     interface
+
+         function hsw_port1_exec(  uops_dispatched_port_port1,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port1_exec")
+              integer(c_size_t) :: uops_dispatched_port_port1
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port1_exec
+         end function hsw_port1_exec
+         
+     end interface
+
+     interface
+
+         function hsw_port5_exec(  uops_dispatched_port_port5,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port5_exec")
+              integer(c_size_t) :: uops_dispatched_port_port5
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port5_exec
+         end function hsw_port5_exec
+         
+     end interface
+
+    interface
+
+         function hsw_port6_exec(  uops_dispatched_port_port6,&
+                                 core_clks) &
+                                  bind(c,name="hsw_port6_exec")
+              integer(c_size_t) :: uops_dispatched_port_port6
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port6_exec
+         end function hsw_port6_exec
+         
+     end interface
+
+
+     interface
+
+         function hsw_port3_exec(  uops_dispatched_port_port3,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port3_exec")
+              integer(c_size_t) :: uops_dispatched_port_port3
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port3_exec
+         end function hsw_port3_exec
+         
+     end interface
+
+      
+     interface
+
+         function hsw_port4_exec(  uops_dispatched_port_port4,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port4_exec")
+              integer(c_size_t) :: uops_dispatched_port_port4
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port4_exec
+         end function hsw_port4_exec
+         
+     end interface
+
+     interface
+
+         function hsw_port7_exec(  uops_dispatched_port_port7,&
+                                  core_clks) &
+                                  bind(c,name="hsw_port7_exec")
+              integer(c_size_t) :: uops_dispatched_port_port7
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_port7_exec
+         end function hsw_port7_exec
+         
+     end interface 
 
  end module mod_hsw_tma_bindings
