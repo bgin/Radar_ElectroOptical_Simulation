@@ -1437,6 +1437,275 @@ module mod_hsw_tma_bindings
               real(c_float)     :: hsw_port7_exec
          end function hsw_port7_exec
          
-     end interface 
+    end interface
+
+    interface
+       
+       function hsw_contested_accesses( load_xsnp_hitm, &
+                                         load_xsnp_miss, &
+                                         clks) &
+                                         bind(c,name="hsw_contested_accesses")
+              real(c_float) :: load_xsnp_hitm
+              real(c_float) :: load_xsnp_miss
+              integer(c_size_t) :: clks
+              real(c_float)  :: hsw_contested_accesses
+       end function hsw_contested_accesses
+         
+    end interface
+
+    interface
+
+       function hsw_data_sharing( load_xsnp_hit, &
+                                  clks) &
+                                  bind(c,name="hsw_data_sharing")
+            real(c_float) :: load_xsnp_hit
+            integer(c_size_t) :: clks
+            real(c_float)  :: hsw_data_sharing
+       end function hsw_data_sharing
+
+    end interface
+
+    interface
+
+       function hsw_dram_bound( mem_l3_hit_fraction, &
+                                cycle_activity_stalls_l2_pending, &
+                                clks) &
+                                bind(c,name="hsw_dram_bound")
+             real(c_float) :: mem_l3_hit_fraction
+             integer(c_size_t) :: cycle_activity_stalls_l2_pending
+             integer(c_size_t) :: clks
+             real(c_float) :: hsw_dram_bound
+       end function hsw_dram_bound
+
+    end interface
+
+    interface
+
+       function hsw_mem_bw( oro_drd_bw_cycles, &
+                           clks) &
+                           bind(c,name="hsw_mem_bw")
+              integer(c_size_t) :: oro_drd_bw_cycles
+              integer(c_size_t) :: clks
+              real(c_float) :: hsw_mem_bw
+       end function hsw_mem_bw
+
+    end interface
+
+    interface
+
+       function hsw_mem_latency( oro_drd_any_cycles, &
+                                 clks, &
+                                 mem_bw) &
+                                 bind(c,name="hsw_mem_latency")
+            integer(c_size_t) :: oro_drd_any_cycles
+            integer(c_size_t) :: clks
+            real(c_float)     :: mem_bw
+            real(c_float)     :: hsw_mem_latency
+       end function  hsw_mem_latency
+                                 
+    
+    end interface
+
+    interface
+
+       function hsw_store_bound( resource_stalls_fb, &
+                                 clks) &
+                                 bind(c,name="hsw_store_bound")
+              integer(c_size_t) :: resource_stalls_fb
+              integer(c_size_t) :: clks
+              real(c_float)     :: hsw_store_bound
+       end function hsw_store_bound
+      
+    end interface
+
+    interface
+
+        function hsw_dtlb_bound(  dtlb_load_misses_stlb_hit, &
+                                  dtlb_load_misses_walk_duration, &
+                                  clks) &
+                                  bind(c,name="hsw_dtlb_bound")
+             integer(c_size_t) :: dtlb_load_misses_stlb_hit
+             integer(c_size_t) ::  dtlb_load_misses_walk_duration
+             integer(c_size_t) :: clks
+             real(c_float)     :: hsw_dtlb_bound
+        end function hsw_dtlb_bound
+       
+     end interface
+
+     interface
+
+        function hsw_l3_hit_latency( load_l3_hit, &
+                                     clks) &
+                                     bind(c,name="hsw_l3_hit_latency")
+              real(c_float) :: load_l3_hit
+              integer(c_size_t) :: clks
+              real(c_float) :: hsw_l3_hit_latency
+        end function hsw_l3_hit_latency
+
+     end interface
+
+     interface
+
+        function hsw_false_sharing( offcore_response_demand_rfo_l3_hit_hitm_other_core, &
+                                    clks) &
+                                    bind(c,name="hsw_false_sharing")
+              integer(c_size_t) :: offcore_response_demand_rfo_l3_hit_hitm_other_core
+              integer(c_size_t) :: clks
+              real(c_float) :: hsw_false_sharing
+        end function hsw_false_sharing
+        
+     end interface
+
+
+     interface
+
+        function hsw_split_stores(  mem_uops_retired_split_stores, &
+                                    clks) &
+                                    bind(c,name="hsw_split_stores")
+                integer(c_size_t) :: mem_uops_retired_split_stores
+                integer(c_size_t) :: clks
+                real(c_float) :: hsw_split_stores
+        end function hsw_split_stores
+
+     end interface
+
+     interface
+
+        function hsw_dtlb_store(  dtlb_store_misses_stlb_hit, &
+                                  dtlb_store_misses_walk_duration, &
+                                  clks) &
+                                  bind(c,name="hsw_dtlb_store")
+               integer(c_size_t) :: dtlb_store_misses_stlb_hit
+               integer(c_size_t) :: dtlb_store_misses_walk_duration
+               integer(c_size_t) :: clks
+               real(c_float) :: hsw_dtlb_store
+        end function hsw_dtlb_store
+
+     end interface
+
+     interface
+
+        function hsw_core_bound( backend_bound, &
+                                 mem_bound) &
+                                 bind(c,name="hsw_core_bound")
+                real(c_float) :: backend_bound
+                real(c_float) :: mem_bound
+                real(c_float) :: hsw_core_bound
+        end function hsw_core_bound
+        
+     end interface
+
+     interface
+
+
+        function hsw_divider( arith_divider_uops, &
+                             core_clks) &
+                             bind(c,name="hsw_divider")
+              integer(c_size_t) :: arithm_divider_uops
+              integer(c_size_t) :: core_clks
+              real(c_float)     :: hsw_divider
+        end function hsw_divier
+        
+     end interface
+
+     interface
+
+         function hsw_ports_utilization(  backend_bound_cycles, &
+                                          stalls_mem_any,&
+				          resource_stalls_sb, &
+				          clks) &
+                                          bind(c,name="hsw_ports_utilization")
+                  real(c_float) :: backend_bound_cycles
+                  integer(c_size_t) :: stalls_mem_any
+                  integer(c_size_t) :: resource_stalls_sb
+                  integer(c_size_t) ::  clks
+                  real(c_float) :: hsw_ports_utilization
+          end function hsw_ports_utilization
+        
+      end interface
+
+       
+      interface
+
+         function hsw_ports_utilized_0( cycles_0_ports_utilized, &
+                                        core_clks) &
+                                        bind(c,name="hsw_ports_utilized_0")
+                 integer(c_size_t) :: cycles_0_ports_utilized
+                 integer(c_size_t) :: core_clks
+                 real(c_float) :: hsw_ports_utilized_0
+         end function hsw_ports_utilized_0
+
+      end interface
+
+
+      interface
+
+         function hsw_ports_utilized_1( cycles_1_ports_utilized, &
+                                        core_clks) &
+                                        bind(c,name="hsw_ports_utilized_1")
+                 integer(c_size_t) :: cycles_1_ports_utilized
+                 integer(c_size_t) :: core_clks
+                 real(c_float) :: hsw_ports_utilized_1
+         end function hsw_ports_utilized_1
+
+      end interface
+
+      interface
+
+         function hsw_ports_utilized_2( cycles_2_ports_utilized, &
+                                        core_clks) &
+                                        bind(c,name="hsw_ports_utilized_2")
+                 integer(c_size_t) :: cycles_2_ports_utilized
+                 integer(c_size_t) :: core_clks
+                 real(c_float) :: hsw_ports_utilized_2
+         end function hsw_ports_utilized_2
+
+      end interface
+
+      interface
+
+         function hsw_ports_utilized_3m( cycles_3m_ports_utilized, &
+                                        core_clks) &
+                                        bind(c,name="hsw_ports_utilized_3m")
+                 integer(c_size_t) :: cycles_3m_ports_utilized
+                 integer(c_size_t) :: core_clks
+                 real(c_float) :: hsw_ports_utilized_3m
+         end function hsw_ports_utilized_3m
+
+      end interface
+
+      interface
+
+            function hsw_alu_utilization( uops_dispatched_port_port0,&
+                                          uops_dispatched_port_port1,&
+			                  uops_dispatched_port_port5,&
+			                  uops_dispatched_port_port6,&
+			                  core_clks) &
+                                          bind(c,name="hsw_alu_utilization")
+                   integer(c_size_t) :: uops_dispatched_port_port0
+                   integer(c_size_t) :: uops_dispatched_port_port1
+                   integer(c_size_t) :: uops_dispatched_port_port5
+                   integer(c_size_t) :: uops_dispatched_port_port6
+                   real(c_float) :: hsw_alu_utilization
+            end function hsw_alu_utilization
+        
+       end interface
+
+       interface
+
+           function hsw_load_ops_utlization(  uops_dispatched_port_port2,&
+                                              uops_dispatched_port_port3,&
+				              uops_dispatched_port_port7,&
+				              uops_dispatched_port_port4,&
+				              core_clks) &
+                                              bind(c,name="hsw_load_ops_utilization")
+                     integer(c_size_t) :: uops_dispatched_port_2
+                     integer(c_size_t) :: uops_dispatched_port_3
+                     integer(c_size_t) :: uops_dispatched_port_7
+                     integer(c_size_t) :: uops_dispatched_port_4
+                     real(c_float) :: hsw_load_uops_utilization
+            end function hsw_load_ops_utilization
+
+       end interface
 
  end module mod_hsw_tma_bindings
