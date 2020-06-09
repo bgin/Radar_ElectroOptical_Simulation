@@ -475,4 +475,108 @@ module mod_skx_tma_bindings
           
       end interface
 
+      interface
+
+         function skx_mem_lock_st_fraction(  mem_inst_retired_lock_loads, &
+                                             mem_inst_retired_all_stores) &
+                                             bind(c,name="skx_mem_lock_st_fraction")
+                 integer(c_size_t) ::  mem_inst_retired_lock_loads
+                 integer(c_size_t) ::  mem_inst_retired_all_stores
+                 real(c_float)     :: skx_mem_lock_st_fraction
+         end function skx_mem_lock_st_fraction
+         
+         
+      end interface
+
+      interface
+
+          function skx_mispredict_clears( br_misp_retired_all_branches, &
+                                          machine_clears_count) &
+                                          bind(c,name="skx_mispredict_clears")
+                  integer(c_size_t) :: br_misp_retired_all_branches
+                  integer(c_size_t) :: machine_clears_count
+                  real(c_float)     :: skx_mispredict_clears
+          end function skx_mispredict_clears
+          
+         
+     end interface
+
+     interface
+
+          function skx_retired_uops_fraction(uops_retired_retired_slots, &
+                                             uops_issued_any) &
+                                             bind(c,name="skx_retired_uops_fraction")
+                   integer(c_size_t) :: uops_retired_retired_slots
+                   integer(c_size_t) :: uops_issued_any
+                   real(c_float)     :: skx_retired_uops_fraction
+          end function skx_retired_uops_fraction
+          
+
+     end interface
+
+       
+     interface
+
+         function skx_xsnp_hitm_fraction(  offcore_response_demand_data_rd_l3_hit_hitm_other,&
+                                           offcore_response_demand_data_rd_l3_hit_snoop_hit_with_fwd) &
+                                           bind(c,name="skx_xsnp_hitm_fraction")
+                  integer(c_size_t) :: offcore_response_demand_data_rd_l3_hit_hitm_other
+                  integer(c_size_t) ::  offcore_response_demand_data_rd_l3_hit_snoop_hit_with_fwd
+                  real(c_float)     :: skx_xsnp_hitm_fraction
+         end function skx_xsnp_hitm_fraction
+        
+     end interface
+
+     interface
+
+            function skx_all_rfo_l3_hit_snoop_hitm(  offcore_response_demand_rfo_l3_hit_hitm_other_core, &
+                                                     offcore_response_pf_l2_rfo_l3_hit_hitm_other_core) &
+                                                     bind(c,name="skx_all_rfo_l3_hit_snoop_hitm")
+                   integer(c_size_t) ::  offcore_response_demand_rfo_l3_hit_hitm_other_core
+                   integer(c_size_t) ::   offcore_response_pf_l2_rfo_l3_hit_hitm_other_core
+                   real(c_float)     ::  skx_all_rfo_l3_hit_snoop_hitm
+            end function skx_all_rfo_l3_hit_snoop_hitm
+            
+
+      end interface
+
+      interface
+
+         function skx_retired_uops_cycle( uops_retired_retired_slots, &
+                                          clks) &
+                                          bind(c,name="skx_retired_uops_cycle")
+                  integer(c_size_t) :: uops_retired_retired_slots
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: skx_retired_uops_cycle
+         end function skx_retired_uops_cycle
+         
+
+      end interface
+
+
+      interface
+
+          function skx_uops_per_inst(  uops_retired_retired_slots, &
+                                       inst_retired_any) &
+                                       bind(c,name="skx_uops_per_inst")
+                   integer(c_size_t) :: uops_retired_retired_slots
+                   integer(c_size_t) :: inst_retired_any
+                   real(c_float)     :: skx_uops_per_inst
+          end function skx_uops_per_inst
+          
+       end interface
+
+       interface
+
+          function skx_instr_per_clock( inst_retired_any, &
+                                        clks) &
+                                        bind(c,name="skx_instr_per_clock")
+                  integer(c_size_t) :: inst_retired_any
+                  integer(c_size_t) :: clks
+                  real(c_float)     :: skx_instr_per_clock
+          end function skx_instr_per_clock
+          
+
+       end interface
+
 end module mos_skx_tma_bindings
