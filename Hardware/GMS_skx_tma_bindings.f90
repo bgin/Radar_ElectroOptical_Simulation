@@ -1070,4 +1070,139 @@ module mod_skx_tma_bindings
 
          end interface
 
+         interface
+
+            function skx_instr_per_mispredict( instr_retired_any, &
+                                               br_misp_retired_all_branches) &
+                                               bind(c,name="skx_instr_per_mispredict")
+                   integer(c_size_t) :: instr_retired_any
+                   integer(c_size_t) ::  br_misp_retired_all_branches
+                   real(c_float)     ::  skx_instr_per_mispredict
+            end function skx_instr_per_mispredict
+            
+
+         end interface
+
+         interface
+
+             function skx_load_miss_real_latency( l1d_pend_miss_pending,&
+                                                  l1d_pend_miss_pending_cycles) &
+                                                  bind(c,name="skx_load_miss_real_latency")
+                     integer(c_size_t) :: l1d_pend_miss_pending
+                     integer(c_size_t) ::  l1d_pend_miss_pending_cycles
+                     real(c_float)     ::  skx_load_miss_real_latency
+             end function skx_load_miss_real_latency
+             
+
+          end interface
+
+          interface
+
+               function skx_mem_level_parallelism( l1d_pend_miss_pending, &
+                                                   l1d_pend_miss_pending_cycles) &
+                                                   bind(c,name="skx_mem_level_parallelism")
+                     integer(c_size_t) :: l1d_pend_miss_pending
+                     integer(c_size_t) ::  l1d_pend_miss_pending_cycles
+                     real(c_float)     ::  skx_mem_level_parallelism
+               end function skx_mem_level_parallelism
+               
+
+          end interface
+
+          interface
+
+               function skx_page_walker_util( itlb_misses_walk_pending, &
+                                              dtlb_load_misses_walk_pending,&
+			                      dtlb_store_misses_walk_pending,&
+			                      ept_walk_pending,&
+			                      core_clks) &
+                                              bind(c,name="skx_page_walker_util")
+                         integer(c_size_t) :: itlb_misses_walk_pending
+                         integer(c_size_t) :: dtlb_load_misses_walk_pending
+                         integer(c_size_t) :: dtlb_store_misses_walk_pending
+                         integer(c_size_t) :: ept_walk_pending
+                         integer(c_size_t) :: core_clks
+                         real(c_float)     :: skx_page_walker_util
+               end function skx_page_walker_util
+               
+
+          end interface
+
+          interface
+
+               function skx_l1d_bw_cache_fill( l1d_replacement, &
+                                               time_interval) &
+                                               bind(c,name="skx_l1d_bw_cache_fill")
+                         integer(c_size_t) :: l1d_replacement
+                         integer(c_size_t) :: time_interval
+                         real(c_float)     :: skx_l1d_bw_cache_fill
+               end function skx_l1d_bw_cache_fill
+               
+
+          end interface
+
+            
+          interface
+
+             function skx_l2_bw_cache_fill( l2_lines_in_all, &
+                                            time_interval) &
+                                            bind(c,name="skx_l2_bw_cache_fill")
+                         integer(c_size_t) :: l2_lines_in_all
+                         integer(c_size_t) :: time_interval
+                         real(c_float)     :: skx_l2_bw_cache_fill
+             end function skx_l2_bw_cache_fill
+               
+             
+          end interface
+
+          interface
+
+              function skx_l3_bw_cache_fill( longest_lat_cache_miss, &
+                                             time_interval) &
+                                             bind(c,name="skx_l3_bw_cache_fill")
+                       integer(c_size_t) :: longest_lat_cache_miss
+                       integer(c_size_t) :: time_interval
+                       real(c_float)     :: skx_l3_bw_cache_fill
+              end function skx_l3_bw_cache_fill
+             
+          end interface
+
+         
+          interface
+
+               function skx_l3_bw_cache_access( offcore_requests_all_requests, &
+                                                time_interva) &
+                                                bind(c,name="skx_l3_bw_cache_access")
+                        integer(c_size_t) :: offcore_requests_all_requests
+                        integer(c_size_t) :: time_interval
+                        real(c_float)     :: skx_l3_bw_cache_access
+               end function skx_l3_bw_cache_access
+               
+             
+          end interface
+
+          interface
+
+             function skx_l1_miss_1000instr(  mem_load_retired_l1_miss,&
+                                              instr_retired_any) &
+                                              bind(c,name="skx_l1_miss_1000instr")
+                         integer(c_size_t)  :: mem_load_retired_l1_miss
+                         integer(c_size_t)  :: instr_retired_any
+                         real(c_float)      :: skx_l1_miss_1000instr
+             end function skx_l1_miss_1000instr
+               
+          end interface
+
+          interface
+
+             function skx_l2_miss_1000instr(  mem_load_retired_l2_miss,&
+                                              instr_retired_any) &
+                                              bind(c,name="skx_l2_miss_1000instr")
+                         integer(c_size_t)  :: mem_load_retired_l2_miss
+                         integer(c_size_t)  :: instr_retired_any
+                         real(c_float)      :: skx_l2_miss_1000instr
+             end function skx_l2_miss_1000instr
+               
+          end interface
+
 end module mos_skx_tma_bindings
