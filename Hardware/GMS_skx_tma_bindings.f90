@@ -1205,4 +1205,413 @@ module mod_skx_tma_bindings
                
           end interface
 
+          interface
+
+             function skx_l2_all_miss_1000instr(l2_rqsts_miss, &
+                                                instr_retired_any) &
+                                                bind(c,name="skx_l2_all_miss_1000instr")
+                       integer(c_size_t) :: l2_rqsts_miss
+                       integer(c_size_t) :: instr_retired_any
+                       real(c_float)     :: skx_l2_all_miss_1000instr
+             end function skx_l2_all_miss_1000instr
+             
+
+          end interface
+
+          interface
+
+             function skx_l2_miss_loads_1000instr( l2_rqsts_demand_data_rd_miss,&
+                                                   instr_retired_any) &
+                                                   bind(c,name="skx_l2_miss_loads_1000instr")
+                   integer(c_size_t) :: l2_rqsts_demand_data_rd_miss
+                   integer(c_size_t) :: instr_retired_any
+                   real(c_float)     :: skx_l2_miss_loads_1000instr
+             end function skx_l2_miss_loads_1000instr
+             
+  
+          end interface
+
+          interface
+
+             function skx_l2_all_hits_1000instr( l2_rqsts_references,&
+                                                 l2_rqsts_miss,&
+				                 instr_retired_any) &
+                                                 bind(c,name="skx_l2_all_hits_1000instr")
+                      integer(c_size_t) :: l2_rqsts_references
+                      integer(c_size_t) :: l2_rqsts_miss
+                      integer(c_size_t) :: instr_retired_any
+                      real(c_float)     :: skx_l2_all_hits_1000instr
+             end function skx_l2_all_hits_1000instr
+             
+             
+          end interface
+
+          interface
+
+             function skx_l3_miss_1000instr( mem_load_retired_l3_miss, &
+                                             instr_retired_any) &
+                                             bind(c,name="skx_l3_miss_1000instr")
+                    integer(c_size_t) :: mem_load_retired_l3_miss
+                    integer(c_size_t) :: instr_retired_any
+                    real(c_float)     :: skx_l3_miss_1000instr
+             end function skx_l3_miss_1000instr
+             
+
+          end interface
+
+          interface
+
+              function skx_l2_silent_eviction_rate( l2_lines_out_silent,&
+                                                    instr_retired_any) &
+                                                    bind(c,name="skx_l2_silent_eviction_rate")
+                         integer(c_size_t) :: l2_lines_out_silent
+                         integer(c_size_t) :: instr_retired_any
+                         real(c_float)     :: skx_l2_silent_eviction_rate
+              end function skx_l2_silent_eviction_rate
+              
+           end interface
+
+           interface
+
+              function skx_l2_nonsilent_eviction_rate( l2_lines_out_non_silent,&
+                                                    instr_retired_any) &
+                                                    bind(c,name="skx_l2_nonsilent_eviction_rate")
+                         integer(c_size_t) :: l2_lines_out_non_silent
+                         integer(c_size_t) :: instr_retired_any
+                         real(c_float)     :: skx_l2_nonsilent_eviction_rate
+              end function skx_l2_nonsilent_eviction_rate
+              
+           end interface
+
+           interface
+
+              function skx_gflops_rate( flop_count, &
+                                        time_interval) &
+                                        bind(c,name="skx_gflops_rate")
+                      integer(c_size_t) :: flop_count
+                      integer(c_size_t) :: time_interval
+                      real(c_float)     :: skx_gflops_rate
+              end function skx_gflops_rate
+              
+
+           end interface
+
+           interface
+
+              function skx_clocks_to_ref_tsc( clks, &
+                                              cpu_clk_unhalted_ref_tsc) &
+                                              bind(c,name="skx_clocks_to_ref_tsc")
+                      integer(c_size_t) :: clks
+                      integer(c_size_t) :: cpu_clk_unhalted_ref_tsc
+                      real(c_float)     :: skx_clocks_to_ref_tsc
+              end function skx_clocks_to_ref_tsc
+              
+
+           end interface
+
+           interface
+
+              function skx_baseline_license0(  core_power_lvl0_turbo_license,&
+                                               core_clks,&
+				               is_ht_enabled) &
+                                               bind(c,name="skx_baseline_license0")
+                         integer(c_size_t) :: core_power_lvl0_turbo_license
+                         integer(c_size_t) :: core_clks
+                         integer(c_bool)   :: is_ht_enabled
+                         real(c_float)     :: skx_baseline_license0
+              end function skx_baseline_license0
+              
+
+           end interface
+
+           interface
+
+              function skx_baseline_license1(  core_power_lvl1_turbo_license,&
+                                               core_clks,&
+				               is_ht_enabled) &
+                                               bind(c,name="skx_baseline_license1")
+                         integer(c_size_t) :: core_power_lvl1_turbo_license
+                         integer(c_size_t) :: core_clks
+                         integer(c_bool)   :: is_ht_enabled
+                         real(c_float)     :: skx_baseline_license1
+              end function skx_baseline_license1
+              
+
+           end interface
+
+          interface
+
+              function skx_baseline_license2(  core_power_lvl2_turbo_license,&
+                                               core_clks,&
+				               is_ht_enabled) &
+                                               bind(c,name="skx_baseline_license2")
+                         integer(c_size_t) :: core_power_lvl2_turbo_license
+                         integer(c_size_t) :: core_clks
+                         integer(c_bool)   :: is_ht_enabled
+                         real(c_float)     :: skx_baseline_license2
+              end function skx_baseline_license2
+              
+
+           end interface
+
+           interface
+
+              function skx_ht_utilization( cpu_clk_thread_unhalted_one_thread_active,&
+                                           cpu_clk_thread_unhalted_ref_xclk_any,&
+			                   is_ht_enabled) &
+                                           bind(c,name="skx_ht_utilization")
+                        integer(c_size_t) :: cpu_clk_thread_unhalted_one_thread_active
+                        integer(c_size_t) ::  cpu_clk_thread_unhalted_ref_xclk_any
+                        integer(c_bool)   :: is_ht_enabled
+                        real(c_float)     :: skx_ht_utilization
+              end function skx_ht_utilization
+              
+
+           end interface
+
+           interface
+
+              function skx_kernel_time_fraction(  cpu_clk_unhalted_ref_tsc_sup, &
+                                                  cpu_clk_unhalted_ref_tsc) &
+                                                  bind(c,name="skx_kernel_time_fraction")
+                       integer(c_size_t) :: cpu_clk_unhalted_ref_tsc_sup
+                       integer(c_size_t) ::  cpu_clk_unhalted_ref_tsc
+                       real(c_float)     :: skx_kernel_time_fraction
+              end function skx_kernel_time_fraction
+              
+
+           end interface
+
+           interface
+
+                  function skx_dram_bw_used( unc_m_cas_count_rd,&
+                                             unc_m_cas_count_wr,&
+			                     time_interval)&
+                                             bind(c,name="skx_dram_bw_used")
+                           integer(c_size_t) :: unc_m_cas_count_rd
+                           integer(c_size_t) :: unc_m_cas_count_wr
+                           integer(c_size_t) :: time_interval
+                           real(c_float)     :: skx_dram_bw_used
+                  end function skx_dram_bw_used
+                  
+
+            end interface
+
+               
+            interface
+
+                 function skx_mem_read_latency(  unc_cha_tor_occupancy_ia_miss_rd,&
+                                                 unc_char_tor_inserts_ia_miss_drd,&
+				                 unc_cha_clockticks_one_unit,&
+				                 time_interval) &
+                                                 bind(c,name="skx_mem_read_latency")
+                          integer(c_size_t) ::   unc_cha_tor_occupancy_ia_miss_rd
+                          integer(c_size_t) ::   unc_char_tor_inserts_ia_miss_drd
+                          integer(c_size_t) ::   unc_cha_clockticks_one_unit
+                          integer(c_size_t) ::   time_interval
+                          real(c_float)     ::   skx_mem_read_latency
+                 end function skx_mem_read_latency
+                 
+               
+            end interface
+
+              
+            interface
+
+                function skx_mem_parallel_reads(  unc_cha_tor_occupancy_ia_miss_drd,&
+                                                  unc_cha_tor_occupancy_ia_miss_drd_c1) &
+                                                  bind(c,name="skx_mem_parallel_reads")
+                           integer(c_size_t) :: unc_cha_tor_occupancy_ia_miss_drd
+                           integer(c_size_t) ::  unc_cha_tor_occupancy_ia_miss_drd_c1
+                           real(c_float)     :: skx_mem_parallel_reads    
+                end function skx_mem_parallel_reads
+                  
+
+             end interface
+
+             interface
+
+                 function skx_mem_dram_read_latency( unc_m_rpq_occupancy,&
+                                                     unc_m_rpq_inserts,&
+				                     unc_m_clockticks_one_unit) &
+                                                     bind(c,name="skx_mem_dram_read_latency")
+                             integer(c_size_t) :: unc_m_rpq_occupancy
+                             integer(c_size_t) :: unc_m_rpq_inserts
+                             integer(c_size_t) :: unc_m_clockticks_one_unit
+                             real(c_float)     :: skx_mem_dram_read_latency
+                 end function skx_mem_dram_read_latency
+                 
+
+              end interface
+
+              interface
+
+                  function skx_instr_per_farbr( instr_retired_any, &
+                                                br_instr_retired_far_branch) &
+                                                bind(c,name="skx_instr_per_farbr")
+                            integer(c_size_t) :: instr_retired_any
+                            integer(c_size_t) :: br_instr_retired_far_branch
+                            real(c_float)     :: skx_instr_per_farbr
+                  end function skx_instr_per_farbr
+                  
+
+               end interface
+
+               interface
+
+                      function skx_frontend_bound( idq_uops_not_delivered_core, &
+                                                  slots) &
+                                                  bind(c,name="skx_frontend_bound")
+                                 integer(c_size_t) :: idq_uops_not_delivered_core
+                                 integer(c_size_t) :: slots
+                                 real(c_float)     :: skx_frontend_bound
+                      end function skx_frontend_bound
+                      
+                        
+ 
+               end interface
+
+                   
+               interface
+
+                     function skx_frontend_latency(  idq_uops_not_delivered_cycles_0_uops_deliv_core,&
+                                                     frontend_retired_latency_ge_1,&
+				                     frontend_retired_latency_ge_2,&
+				                     retire_fraction,&
+                                                     slots) &
+                                                     bind(c,name="skx_frontend_latency")
+                              integer(c_size_t) :: idq_uops_not_delivered_cycles_0_uops_deliv_core
+                              integer(c_size_t) ::  frontend_retired_latency_ge_1
+                              integer(c_size_t) ::  frontend_retired_latency_ge_2
+                              real(c_float)     ::  retire_fraction
+                              integer(c_size_t) :: slots
+                              real(c_float)     :: skx_frontend_latency
+                     end function skx_frontend_latency
+                     
+
+              end interface
+
+              interface
+
+                   function skx_itlb_misses(  ICACHE_64B_IFTAG_STALL,&
+                                             clks) &
+                                             bind(c,name="skx_itlb_misses")
+                              integer(c_size_t) :: ICACHE_64B_IFTAG_STALL
+                              integer(c_size_t) :: clks
+                              real(c_float)     :: skx_itlb_misses
+                   end function skx_itlb_misses
+                   
+
+              end interface
+
+              interface
+
+                       function skx_icache_misses(ICACHE_16B_IFDATA_STALL,&
+                                                  ICACHE_16B_IFDATA_STALL_c1_e1,&
+                                                  clks) &
+                                                  bind(c,name="skx_icache_misses")
+                                integer(c_size_t) :: ICACHE_16B_IFDATA_STALL
+                                integer(c_size_t) :: ICACHE_16B_IFDATA_STALL_c1_e1
+                                integer(c_size_t) :: clks
+                                real(c_float)     :: skx_icache_misses
+                       end function skx_icache_misses
+                       
+              end interface
+
+              interface
+
+                  function skx_branch_resteers(INT_MISC_CLEAR_RESTEER_CYCLES,&
+                                               BACLEARS_ANY,&
+                                               clks) &
+                                               bind(c,name="skx_branch_resteers")
+                              integer(c_size_t) ::  INT_MISC_CLEAR_RESTEER_CYCLES
+                              integer(c_size_t)  :: BACLEARS_ANY
+                              integer(c_size_t) :: clks
+                              real(c_float)     :: skx_branch_resteers
+                  end function skx_branch_resteers
+                  
+
+               end interface
+
+               interface
+
+                    function skx_mispredict_resteers( mispred_clears,&
+                                                      INT_MISC_CLEAR_RESTEER_CYCLES,&
+				                      clks) &
+                                                      bind(c,name="skx_mispredict_resteers")
+                              real(c_float) :: mispred_clears
+                              integer(c_size_t) ::   INT_MISC_CLEAR_RESTEER_CYCLES
+                              integer(c_size_t) :: clks
+                              real(c_float)   :: skx_mispredict_resteers
+                    end function 
+
+               end interface
+
+               interface
+
+                     function skx_clears_resteers( mispred_fraction,&
+                                                   INT_MISC_CLEAR_RESTEER_CYCLES,&
+			                           clks) &
+                                                   bind(c,name="skx_clears_resteers")
+                               real(c_float) :: mispred_fraction
+                               integer(c_size_t) ::  INT_MISC_CLEAR_RESTEER_CYCLES
+                               integer(c_size_t) :: clks
+                               real(c_float) :: skx_clears_resteers
+                      end function
+
+               end interface
+
+
+               interface
+
+                    function skx_unknown_branches( branch_resteers,&
+                                                   INT_MISC_CLEAR_RESTEER_CYCLES,&
+			                           clks) &
+                                                   bind(c,name="skx_unknown_branches")
+                               real(c_float) :: branch_resteers
+                               integer(c_size_t) ::  INT_MISC_CLEAR_RESTEER_CYCLES
+                               integer(c_size_t) :: clks
+                               real(c_float)     :: skx_unknown_branches
+                    end function
+
+                 end interface
+
+
+                 interface
+
+                        function skx_dsb_switches(  DSB2MITE_SWITCHES_PENALTY_CYCLES,&
+                                                  clks) &
+                                                  bind(c,name="skx_dsb_switches")
+                               integer(c_size_t) ::  DSB2MITE_SWITCHES_PENALTY_CYCLES
+                               integer(c_size_t) :: clks
+                               real(c_float)     :: skx_dsb_switches
+                        end function     
+
+                 end interface
+
+                     
+                 interface
+
+                    function skx_lcp( ILD_STALL_LCP, &
+                                    clks) &
+                                    bind(c,name="skx_lcp")
+                      integer(c_size_t) :: ILD_STALL_LCP
+                      integer(c_size_t) :: clks
+                      real(c_float)     :: skx_lcp
+                    end function
+
+                 end interface
+
+               interface
+
+                  function skx_ms_switches( IDQ_MS_SWITCHES, &
+                                           clks) &
+                                           bind(c,name="skx_ms_switches")
+                        integer(c_size_t) :: IDQ_MS_SWITCHES
+                        integer(c_size_t) :: clks
+                        real(c_float)     :: skx_ms_switches
+                  end function
+
+               end interface     
+
 end module mos_skx_tma_bindings
