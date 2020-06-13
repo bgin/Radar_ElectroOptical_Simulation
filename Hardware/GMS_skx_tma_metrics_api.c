@@ -193,8 +193,8 @@
     }
 
    
-    float skx_core_bound_cycles( const exe_activity_exe_bound_0_ports,
-                                 const exe_activity_1_ports_util,
+    float skx_core_bound_cycles( const uint64_t exe_activity_exe_bound_0_ports,
+                                 const uint64_t exe_activity_1_ports_util,
 				 const float uops_executed_threshold) {
             return ((float)exe_activity_exe_bound_0_ports+
 	                   exe_activity_1_ports_util+
@@ -735,7 +735,7 @@
      }
 
     
-     float skx_clears_resteers( const mispred_fraction,
+     float skx_clears_resteers( const float mispred_fraction,
                                 const uint64_t INT_MISC_CLEAR_RESTEER_CYCLES,
 				const uint64_t clks) {
                   return ((float)(1.0f-mispred_fraction)*
