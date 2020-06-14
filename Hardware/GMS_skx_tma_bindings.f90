@@ -1612,6 +1612,270 @@ module mod_skx_tma_bindings
                         real(c_float)     :: skx_ms_switches
                   end function
 
-               end interface     
+               end interface
+
+               interface
+
+                  function skx_frontend_bw( frontend_bound, &
+                                            frontend_latency) &
+                                            bind(c,name="skx_frontend_bw")
+                           real(c_float) :: frontend_bound
+                           real(c_float) :: frontend_latency
+                           real(c_float) :: frontend_bw
+                  end function skx_frontend_bw
+                  
+
+               end interface
+
+
+               interface
+
+                     function skx_mite(  IDQ_ALL_MITE_CYCLES_ANY_UOPS,&
+                                         IDQ_ALL_MITE_CYCLES_4_UOPS,&
+                                         core_clks) &
+                                         bind(c,name="skx_mite")
+                           integer(c_size_t) :: IDQ_ALL_MITE_CYCLES_ANY_UOPS
+                           integer(c_size_t) ::  IDQ_ALL_MITE_CYCLES_4_UOPS
+                           integer(c_size_t) :: core_clks
+                           real(c_float)     :: skx_mite
+                     end function skx_mite
+                     
+
+               end interface
+
+              interface
+
+                     function skx_dsb( IDQ_ALL_DSB_CYCLES_ANY_UOPS,&
+                                       IDQ_ALL_DSB_CYCLES_4_UOPS,&
+		                       core_clks) &
+                                       bind(c,name="skx_dsb")
+                            integer(c_size_t) :: IDQ_ALL_DSB_CYCLES_ANY_UOPS
+                            integer(c_size_t) ::  IDQ_ALL_DSB_CYCLES_4_UOPS
+                            integer(c_size_t) :: core_clks
+                            real(c_float)     :: skx_dsb
+                     end function skx_dsb
+                     
+
+              end interface
+
+
+              interface
+
+                  function skx_bad_speculation(UOPS_ISSUED_ANY,&
+                                               retired_slots,&
+			                       recovery_cycles,&
+			                       slots) &
+                                               bind(c,name="skx_bad_speculation")
+                              integer(c_size_t) :: UOPS_ISSUED_ANY
+                              integer(c_size_t) :: retired_slots
+                              real(c_float)     :: recovery_cycles
+                              integer(c_size_t) :: slots
+                              real(c_float)     :: skx_bad_speculation
+                  end function skx_bad_speculation
+                  
+               end interface
+
+               interface
+                  function skx_branch_mispredict(mispred_clears, &
+                                                 bad_speculation) &
+                                                 bind(c,name="skx_branch_mispredict")
+                             real(c_float) :: mispred_clears
+                             real(c_float) :: bad_speculation
+                             real(c_float) :: skx_branch_mispredict
+                  end function skx_branch_mispredict
+                  
+
+               end interface
+
+               interface
+
+                  function skx_machine_clears( bad_speculation, &
+                                               branch_mispredict) &
+                                               bind(c,name="skx_machine_clears")
+                           real(c_float) :: bad_speculation
+                           real(c_float) :: branch_mispredict
+                           real(c_float) :: skx_machine_clears
+                  end function skx_machine_clears
+                  
+
+               end interface
+
+               interface
+
+                  function skx_backend_bound( frontend_bound, &
+                                              bad_speculation,&
+                                              retiring) &
+                                              bind(c,name="skx_backend_bound")
+                           real(c_float) :: frontend_bound
+                           real(c_float) :: bad_speculation
+                           real(c_float) :: retiring
+                           real(c_float) :: skx_backend_bound
+                  end function
+
+               end interface
+
+               interface
+
+                  function skx_memory_bound( memory_bound_frac, &
+                                             backend_bound) &
+                                             bind(c,name="skx_memory_bound")
+                           real(c_float) :: memory_bound_frac
+                           real(c_float) :: backend_bound
+                           real(c_float) :: skx_memory_bound
+                  end function skx_memory_bound
+                  
+
+               end interface
+
+               interface
+
+                     function skx_l1_bound( CYCLE_ACTIVITY_STALLS_MEM_ANY,&
+                                            CYCLE_ACTIVITY_STALLS_L1D_MISS,&
+                                            clks) &
+                                            bind(c,name="skx_l1_bound")
+                               integer(c_size_t) :: CYCLE_ACTIVITY_STALLS_MEM_ANY
+                               integer(c_size_t) :: CYCLE_ACTIVITY_STALLS_L1D_MISS
+                               integer(c_size_t) :: clks
+                               real(c_float)     :: skx_l1_bound
+                     end function skx_l1_bound
+                     
+               end interface
+
+               interface
+
+                     function skx_dtlb_load(  DTLB_LOAD_MISSES_STLB_HIT,&
+                                              DTLB_LOAD_MISSES_WALK_ACTIVE,&
+			                      clks) &
+                                              bind(c,name="skx_dtlb_load")
+                                integer(c_size_t) :: DTLB_LOAD_MISSES_STLB_HIT
+                                integer(c_size_t) :: DTLB_LOAD_MISSES_WALK_ACTIVE
+                                integer(c_size_t) :: clks
+                                real(c_float)     :: skx_dtlb_load
+                     end function skx_dtlb_load
+                     
+
+               end interface
+
+               interface
+
+                  function skx_load_stlb_hit( dtlb_load, &
+                                             load_stlb_miss) &
+                                             bind(c,name="skx_load_stlb_hit")
+                             real(c_float) :: dtlb_load
+                             real(c_float) :: load_stlb_miss
+                             real(c_float) :: skx_load_stlb_hit
+                  end function skx_load_stlb_hit
+                  
+
+               end interface
+
+               interface
+
+                    function skx_load_stlb_miss( DTLB_LOAD_MISSES_WALK_ACTIVE, &
+                                                 clks) &
+                                                 bind(c,name="skx_load_stlb_miss")
+                      integer(c_size_t) :: DTLB_LOAD_MISSES_WALK_ACTIVE
+                      integer(c_size_t) :: clks
+                      real(c_float)     :: skx_load_stlb_miss
+                    end function
+
+               end interface
+
+               interface
+
+                  function skx_sores_fwd_blocked(LD_BLOCKS_STORE_FORWARD, &
+                                                clks) &
+                                                bind(c,name="skx_sores_fwd_blocked")
+                             integer(c_size_t) :: LD_BLOCKS_STORE_FORWARD
+                             integer(c_size_t) :: clks
+                             real(c_float)     :: skx_sores_fwd_blocked
+                  end function
+
+               end interface
+
+               interface
+
+                  function skx_lock_latency(  mem_lock_st_fraction,&
+                                              oro_demand_rfo_c1,&
+                                              clks) &
+                                              bind(c,name="skx_lock_latency")
+                           real(c_float) :: mem_lock_st_fraction
+                           real(c_float) :: oro_demand_rfo_c1
+                           integer(c_size_t) :: clks
+                           real(c_float)     :: skx_lock_latency
+                  end function
+               end interface
+
+               interface
+                  function skx_split_loads( load_miss_real_lat, &
+                                            LD_BLOCKS_NO_SR, &
+                                            clks) &
+                                            bind(c,name="skx_split_loads")
+                            real(c_float) :: load_miss_real_lat
+                            integer(c_size_t) :: LD_BLOCKS_NO_SR
+                            integer(c_size_t) :: clks
+                            real(c_float)     :: skx_split_loads
+                  end function skx_split_loads
+                  
+
+               end interface
+
+               interface
+
+                     function skx_4k_aliasing(LD_BLOCKS_PARTIAL_ADDRESS_ALIAS,&
+                                              clks) &
+                                              bind(c,name="skx_4k_aliasing")
+                             integer(c_size_t) :: LD_BLOCKS_PARTIAL_ADDRESS_ALIAS
+                             integer(c_size_t) :: clks
+                             real(c_float)     :: skx_4k_aliasing
+                     end function
+
+              end interface
+
+              interface
+
+                  function skx_sb_full(load_miss_real_lat,&
+                                       L1D_PEND_MISS_FB_FULL_c1,&
+			               clks) &
+                                       bind(c,name="skx_sb_full")
+                    real(c_float) :: load_miss_real_lat
+                    integer(c_size_t) :: L1D_PEND_MISS_FB_FULL_c1
+                    integer(c_size_t) :: clks
+                    real(c_float)  :: skx_sb_full
+                  end function skx_sb_full
+
+               end interface
+
+               interface
+
+                       function skx_l2_bound( load_l2_hit,&
+                                              L1D_PEND_MISS_FB_FULL_c1,&
+			                      l2_bound_ratio) &
+                                              bind(c,name="skx_l2_bound")
+                         real(c_float) :: load_l2_hit
+                         integer(c_size_t) :: L1D_PEND_MISS_FB_FULL_c1
+                         real(c_float) :: l2_bound_ratio
+                         real(c_float) :: skx_l2_bound
+                       end function skx_l2_bound
+                       
+
+               end interface
+
+
+               interface
+
+                     function skx_l3_bound(  CYCLE_ACTIVITY_STALLS_L2_MISS,&
+                                             CYCLE_ACTIVITY_STALLS_L3_MISS,&
+			                     clks) &
+                                             bind(c,name="skx_l3_bound")
+                             integer(c_size_t) :: CYCLE_ACTIVITY_STALLS_L2_MISS
+                             integer(c_size_t) :: CYCLE_ACTIVITY_STALLS_L3_MISS
+                             integer(c_size_t) :: clks
+                             real(c_float) :: skx_l3_bound
+                     end function skx_l3_bound
+                     
+
+               end interface
+                    
 
 end module mos_skx_tma_bindings

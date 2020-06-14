@@ -784,7 +784,7 @@
 
      
      float skx_dsb( const uint64_t IDQ_ALL_DSB_CYCLES_ANY_UOPS,
-                    const  UINT64_T IDQ_ALL_DSB_CYCLES_4_UOPS,
+                    const  uint64_t  IDQ_ALL_DSB_CYCLES_4_UOPS,
 		    const uint64_t core_clks) {
            return ((float)(IDQ_ALL_DSB_CYCLES_ANY_UOPS-
 	                   IDQ_ALL_DSB_CYCLES_4_UOPS)/core_clks);
@@ -869,7 +869,7 @@
 
      
       float skx_split_loads( const float load_miss_real_lat,
-                             const float uint64_t LD_BLOCKS_NO_SR,
+                             const uint64_t LD_BLOCKS_NO_SR,
 			     const uint64_t clks) {
               return ((float)(load_miss_real_lat+LD_BLOCKS_NO_SR)/clks);
       }
