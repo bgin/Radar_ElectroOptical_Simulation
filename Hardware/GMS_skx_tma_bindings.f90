@@ -1875,6 +1875,155 @@ module mod_skx_tma_bindings
                      end function skx_l3_bound
                      
 
+              end interface
+
+              interface
+
+                 function skx_contested_accesses( load_xsnp_hitm, &
+                                                  load_xsnp_miss,&
+                                                  clks) &
+                                                  bind(c,name="skx_contested_accesses")
+                          real(c_float) :: load_xsnp_hitm
+                          real(c_float) :: load_xsnp_miss
+                          integer(c_size_t) :: clks
+                          real(c_float)  :: skx_contested_accesses
+                 end function skx_contested_accesses
+                 
+
+              end interface
+
+              interface
+
+                 function skx_data_sharing( load_xsnp_hit,&
+                                            clks) &
+                                            bind(c,name="skx_data_sharing")
+                         real(c_float) :: load_xsnp_hit
+                         integer(c_size_t) :: clks
+                         real(c_float) :: skx_data_sharing
+                 end function skx_data_sharing
+                 
+
+              end interface
+
+              interface
+
+                 function skx_l3_hit_latency( load_l3_hit, &
+                                              clks) &
+                                              bind(c,name="skx_l3_hit_latency")
+                            real(c_float) :: load_l3_hit
+                            integer(c_size_t) :: clks
+                            real(c_float)  :: skx_l3_hit_latency
+                 end function skx_l3_hit_latency
+                 
+
+              end interface
+
+              interface
+
+                 function skx_sq_full( sq_full_cycles, &
+                                      clks) &
+                                      bind(c,name="skx_sq_full")
+                          real(c_float) :: sq_full_cycles
+                          integer(c_size_t) :: clks
+                          real(c_float) :: skx_sq_full
+                 end function skx_sq_full
+                 
+
+              end interface
+
+              interface
+
+                  function skx_mem_bw(  oro_drd_bw_cycles,&
+                                        clks) &
+                                        bind(c,name="skx_mem_bw")
+                         integer(c_size_t) :: oro_drd_bw_cycles
+                         integer(c_size_t) :: clks
+                         real(c_float) :: skx_mem_bw
+                  end function
+               end interface
+
+               interface
+
+                  function skx_local_dram( load_lcl_mem, &
+                                            clks) &
+                                            bind(c,name="skx_local_dram")
+                       real(c_float) :: load_lcl_mem
+                       integer(c_size_t) :: clks
+                       real(c_float) :: skx_local_dram
+                  end function skx_local_dram
+                  
+
+               end interface
+
+               interface
+
+                  function skx_remote_dram( load_rmt_mem, &
+                                           clks) &
+                                           bind(c,name="skx_remote_dram")
+                             real(c_float) :: load_rmt_mem
+                             integer(c_size_t) :: clks
+                             real(c_float) :: skx_remote_dram
+                  end function skx_remote_dram
+                  
+               end interface
+
+               interface
+                    function skx_remote_cache(load_rmt_hitm,&
+                                              load_rmt_fwd,&
+			                      clks) &
+                                              bind(c,name="skx_remote_cache")
+                            real(c_float) :: load_rmt_hitm
+                            real(c_float) :: load_rmt_fwd
+                            integer(c_size_t) :: clks
+                            real(c_float) :: skx_remote_cache
+                    end function skx_remote_cache
+                    
+
+                 end interface
+
+                 interface
+
+                      function skx_store_bound(EXE_ACTIVITY_BOUND_ON_STORES,&
+                                               clks) &
+                                               bind(c,name="skx_store_bound")
+                                 integer(c_size_t) :: EXE_ACTIVITY_BOUND_ON_STORES,
+                                 integer(c_size_t) :: clks
+                                 real(c_float) :: skx_store_bound
+                      end function skx_store_bound
+                      
+
+                 end interface
+
+                   
+                 interface
+
+                       function skx_store_latency( store_l2_hit_cycles,&
+                                                   mem_lock_st_fraction,&
+			                           oro_demand_rfo_c1,&
+                                                   clks) &
+                                                   bind(c,name="skx_store_latency")
+                               real(c_float) :: store_l2_hit_cycles
+                               real(c_float) :: mem_lock_st_fraction
+                               integer(c_size_t) :: oro_demand_rfo_c1
+                               integer(c_size_t) :: clks
+                               real(C_float) :: skx_store_latency
+                       end function skx_store_latency
+                       
+
+               end interface
+
+
+               interface
+
+                     function skx_split_stores_clks( MEM_INST_RETIRED_SPLIT_STORES,&
+                                                    clks) &
+                                                    bind(c,name="skx_split_stores_clks")
+                       integer(c_size_t) :: MEM_INST_RETIRED_SPLIT_STORES
+                       integer(c_size_t) :: clks
+                       real(c_float) :: skx_split_stores_clks
+                     end function skx_split_stores_clks
+                     
+
                end interface
                     
 
