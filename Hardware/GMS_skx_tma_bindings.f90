@@ -2025,6 +2025,125 @@ module mod_skx_tma_bindings
                      
 
                end interface
+
+
+               interface
+
+                   function skx_dtlb_store_clks( DTLB_STORE_MISSES_STLB_HIT,&
+                                                 DTLB_STORE_MISSES_WALK_ACTIVE,&
+				                 core_clks) &
+                                                 bind(c,name="skx_dtlb_store_clks")
+                           integer(c_size_t) :: DTLB_STORE_MISSES_STLB_HIT
+                           integer(c_size_t) ::  DTLB_STORE_MISSES_WALK_ACTIVE
+                           integer(c_size_t) :: clks
+                           real(c_float) :: skx_dtlb_store_clks
+                   end function skx_dtlb_store_clks
+                   
+
+               end interface
+
+               
+               interface
+
+                  function skx_stlb_hit_clks( dtlb_store_clks, &
+                                               store_stlb_miss) &
+                                               bind(c,name="skx_stlb_hit_clks")
+                           real(c_float) :: dtlb_store_clks
+                           real(c_float) :: store_stlb_miss
+                           real(c_float) :: skx_stlb_hit_clks
+                  end function
+
+               end interface
+
+               interface
+
+                    function skx_store_stlb_miss_clks( DTLB_STORE_MISSES_WALK_ACTIVE,&
+                                                       core_clks) &
+                                                       bind(c,name="skx_store_stlb_miss_clks")
+                              integer(c_size_t) :: DTLB_STORE_MISSES_WALK_ACTIVE
+                              integer(c_size_t) :: core_clks
+                              real(c_float)     :: skx_store_stlb_miss_clks
+                    end function skx_store_stlb_miss_clks
+                    
+
+                end interface
+
+               interface
+
+                  function skx_core_bound_slots( backend_bound, &
+                                                 mem_bound) &
+                                                 bind(c,name="skx_core_bound_slots")
+                    real(c_float) :: backend_bound
+                    real(c_float) :: mem_bound
+                    real(c_float) :: skx_core_bound_slots
+                    
+                  end function skx_core_bound_slots
+                  
+               end interface
+
+               interface
+
+                  function skx_divider_clks( ARITH_DIVIDER_ACTIVE, &
+                                            clks) &
+                                            bind(c,name="skx_divider_clks")
+                          integer(c_size_t) :: ARITH_DIVIDER_ACTIVE
+                          integer(c_size_t) :: clks
+                          real(c_float)     :: skx_divider_clks
+                  end function
+
+
+               end interface
+
+               interface
+
+                   function skx_alu_util(  UOPS_DISPATCHED_PORT_PORT_0,&
+                                           UOPS_DISPATCHED_PORT_PORT_1,&
+			                   UOPS_DISPATCHED_PORT_PORT_5,&
+			                   UOPS_DISPATCHED_PORT_PORT_6,&
+			                   core_clks) &
+                                           bind(c,name="skx_alu_util")
+                      integer(c_size_t) :: UOPS_DISPATCH_PORT_PORT_0
+                      integer(c_size_t) :: UOPS_DISPATCH_PORT_PORT_1
+                      integer(c_size_t) :: UOPS_DISPATCH_PORT_PORT_5
+                      integer(c_size_t) :: UOPS_DISPATCH_PORT_PORT_6
+                      integer(c_size_t) :: core_clks
+                      real(c_float) :: skx_alu_util
+                   end function skx_alu_util
+                   
+
+                end interface
+
+                interface
+
+                   function skx_x87_uops( UOPS_EXECUTED_X87, &
+                                          UOPS_EXECUTED_THREAD) &
+                                          bind(c,name="skx_x87_uops")
+                     integer(c_size_t) :: UOPS_EXECUTED_X87
+                     integer(c_size_t) :: UOPS_EXECUTED_THREAD
+                     real(c_float) :: skx_x87_uops
+                   end function
+                end interface
+
+              interface
+
+                    function skx_load_ops_util_clks( UOPS_DISPATCHED_PORT_PORT_2,&
+                                                     UOPS_DISPATCHED_PORT_PORT_3,&
+				                     UOPS_DISPATCHED_PORT_PORT_7,&
+				                     UOPS_DISPATCHED_PORT_PORT_4,&
+				                     core_clks) &
+                                                     bind(c,name="skx_load_ops_util_clks")
+                          integer(c_size_t) :: UOPS_DISPATCHED_PORT_PORT_2
+                          integer(c_size_t) :: UOPS_DISPATCHED_PORT_PORT_3
+                          integer(c_size_t) :: UOPS_DISPATCHED_PORT_PORT_7
+                          integer(c_size_t) :: UOPS_DISPATCHED_PORT_PORT_4
+                          integer(c_size_t) :: core_clks
+                          real(c_float) :: skx_load_ops_util_clks
+                    end function skx_load_ops_util_clks
+                    
+
+              end interface     
+                 
+                  
                     
 
 end module mos_skx_tma_bindings
