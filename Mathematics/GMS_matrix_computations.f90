@@ -380,6 +380,9 @@ module mod_matrix_computations
           end if
      end subroutine cgeco
 
+
+        
+
 !    This code is distributed under the GNU LGPL license.
 !
 !  Modified:
@@ -635,9 +638,132 @@ module mod_matrix_computations
      end function scasum
 
         
+     !  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    29 April 2007
+!
+!  Author:
+!
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Jack Dongarra, Jim Bunch, Cleve Moler, Pete Stewart,
+!    LINPACK User's Guide,
+!    SIAM, 1979,
+!    ISBN13: 978-0-898711-72-1,
+!    LC: QA214.L56.
+!
+!  Parameters:
+!
+!    Input/output, complex ( kind = 4 ) A(LDA,N); on input, the factor information
+!    from CGECO or CGEFA.  On output, the inverse matrix, if it
+!    was requested,
+!
+!    Input, integer ( kind = 4 ) LDA, the leading dimension of A.
+!
+!    Input, integer ( kind = 4 ) N, the order of the matrix.
+!
+!    Input, integer ( kind = 4 ) IPVT(N), the pivot vector from CGECO or CGEFA.
+!
+!    Output, complex ( kind = 4 ) DET(2), the determinant of the original matrix,
+!    if requested.  Otherwise not referenced.
+!    Determinant = DET(1) * 10.0**DET(2) with
+!    1.0 <= cabs1 ( DET(1) ) < 10.0 or DET(1) == 0.0.
+!    Also, DET(2) is strictly real.
+!
+!    Workspace, complex WORK(N).
+!
+!    Input, integer ( kind = 4 ) JOB.
+!    11, both determinant and inverse.
+!    01, inverse only.
+!    10, determinant only.
+!
 
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine cgedi(a,lda,n,ipvt,det,work,job) !GCC$ ATTRIBUTES hot :: cgedi !GCC$ ATTRIBUTES aligned(16) :: cgedi
+#elif defined __INTEL_COMPILER
+     subroutine cgedi(a,lda,n,ipvt,det,work,job)
+         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: cgedi
+#endif
+        complex(kind=sp),  dimension(lda,n), intent(inout) :: a
+        integer(kind=int4),                  intent(in)    :: lda
+        integer(kind=int4),                  intent(in)    :: n
+        integer(kind=int4), dimension(n),    intent(in)    :: ipvt
+        complex(kind=sp),   dimension(2),    intent(out)   :: det
+        complex(kind=sp),   dimension(n),    intent(inout) :: work
+        integer(kind=int4),                  intent(in)    :: job
+        ! Locals
+        complex(kind=sp) :: t,t1
+        integer(kind=int4) :: i,j,k,l
+!
+!  Compute the determinant.
+!
+        if (job/10 /= 0) then
+           det(1) = cmplx(1.0E+00_sp,0.0E+00_sp)
+           det(2) = cmplx(0.0E+00_sp,0.0E+00_sp)
+           do i = 1, n
+              if(ipvt(i) /= i) then
+                 det(1) = -det(1)
+              end if
+              det(1) = det(1) * a(i,i)
+              if(cabs1(det(1)) == 0.0E+00_sp) then
+                  exit
+              end if
+              do while(cabs1(det(1)) < 1.0E+0_sp0)
+                  det(1) = det(1) * cmplx(10.0E+00_sp, 0.0E+00_sp)
+                  det(2) = det(2) - cmplx(1.0E+00_sp, 0.0E+00_sp)
+              end do
+              do while(10.0E+00_sp <= cabs1(det(1)) )
+                  det(1) = det(1) / cmplx(10.0E+00_sp,0.0E+00_sp )
+                  det(2) = det(2) + cmplx(1.0E+00_sp,0.0E+00_sp )
+              end do
+            end do
+         end if
 
-
+!
+!  Compute inverse(U).
+         !
+         
+         if(mod(job, 10) /= 0 ) then
+             do k = 1, n
+                a(k,k) = cmplx(1.0E+00_sp,0.0E+00_sp) / a(k,k)
+                t = -a(k,k)
+                t1 = a(1:k-1,k) * t
+                a(1:k-1,k) = t1
+                do j = k+1, n
+                   t = a(k,j)
+                   a(k,j) = cmplx(0.0E+00_sp,0.0E+00_sp)
+                   t1 = a(1:k,j) + t * a(1:k,k)
+                   a(1:k,j) = t1
+                end do
+             end do
+!
+!  Form inverse(U) * inverse(L).
+       
+!
+            do k = n-1, 1, -1
+               work(k+1:n) = a(k+1:n,k)
+               a(k+1:n,k) = cmplx(0.0E+00_sp,0.0E+00_sp)
+               do j = k+1, n
+                  t = work(j)
+                  t1 = a(1:n,k) + t * a(1:n,j)
+                  a(1:n,k) =t1
+               end do
+               l = ipvt(k)
+               if(l /= k) then
+                  work(1:n) = a(1:n,k)
+                  a(1:n,k)  = a(1:n,l)
+                  a(1:n,l)  = work(1:n)
+               end if
+            end do
+         end if
+     end subroutine cgedi
+       
 
 
 
