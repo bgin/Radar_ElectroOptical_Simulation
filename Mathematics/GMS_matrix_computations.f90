@@ -764,8 +764,178 @@ module mod_matrix_computations
          end if
      end subroutine cgedi
        
+    
+     ! Eigenvalue solution for
+     ! mean field propagation of complex 2x2 matrix
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine eigen_mat2x2_cr4(m,l,q,qinv,rad_freq,&
+                                 rad_wavelength,rad_k0 ) !GCC$ ATTRIBUTES hot :: eigen_mat2x2_cr4 !GCC$ ATTRIBUTES aligned(16) :: eigen_mat2x2_cr4
+#elif defined __INTEL_COMPILER
+       subroutine eigen_mat2x2_cr4(m,l,q,qinv,rad_freq,&
+                                   rad_wavelength,rad_k0)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: eigen_mat2x2_cr4
+          complex(kind=sp),  dimension(2,2),   intent(in)    :: m
+          complex(kind=sp),  dimension(4),     intent(inout) :: l
+          complex(kind=sp),  dimension(4,4),   intent(inout) :: q
+          complex(kind=sp),  dimension(4,4),   intent(inout) :: qinv
+          real(kind=sp),                       intent(in)    :: rad_freq
+          real(kind=sp),                       intent(in)    :: rad_wavelength
+          real(kind=sp),                       intent(in)    :: rad_k0
+          ! Locals
+          complex(kind=sp), dimension(2), automatic  :: kv1,kv2
+          complex(kind=sp), automatic  :: k1,k2
+          complex(kind=sp), automatic  :: r,b1,b2,cdiff,csum,cwork1,cwork2
+          complex(kind=sp), auttomatic :: j
+          real(kind=sp),    automatic  :: tol,work1,work2,c1,c2
+          complex(kind=sp), automatic  :: tm11,tm12,tm21,tm22
+          ! Exec  code ....
+          j = cmplx(0.0_sp,1.0_sp)
+          tm11 = m(1,1)
+          tol = 0.001_sp
+          tm12 = m(1,2)
+          tm21 = m(2,1)
+          tm22 = m(2,2)
+          if(cabs(tm12)==0.0_sp) then
+             c1 = 0.0_sp
+          else if(cabs(tm11)/=0.0_sp) then
+             c1 = cabs(tm12/tm11)
+          else
+             c1 = tol + 1.0_sp
+          end if
 
+          if(cabs(tm21)==0.0_sp) then
+             c2 = 0.0_sp
+          else if(cabs(tm22)/=0.0_sp) then
+             c2 = cabs(tm21/tm22)
+          else
+             c2 = tol + 1.0_sp
+          end if
 
+          if((c1<tol).and.(c2<tol)) then
+             ! no cross polarization
+             k1 = k0-j*tm11
+             k2 = k0-j*tm22
+             kv1(1) = cmplx(1.0_sp,0.0_sp)
+             kv1(2) = cmplx(0.0_sp,0.0_sp)
+             kv2(1) = cmplx(0.0_sp,0.0_sp)
+             kv2(2) = cmplx(1.0_sp,0.0_sp)
+
+             work1 = -real(tm11+tm22)
+             work2 = aimag(tm11-tm22)
+             l(1)  = -2.0_sp*real(tm11)
+             l(2)  = cmplx(work1,-work2)
+             l(3)  = cmplx(work1,work2)
+             l(4)  = -2.0_sp*real(tm22)
+
+             q(1,1) = cmplx(1.0_sp,0.0_sp)
+             qinv(1,1) = cmplx(1.0_sp,0.0_sp)
+             q(1,2) = cmplx(0.0_sp,0.0_sp)
+             qinv(1,2) = cmplx(0.0_sp,0.0_sp)
+             q(1,3) = cmplx(0.0_sp,0.0_sp)
+             qinv(1,3) = cmplx(0.0_sp,0.0_sp)
+             q(1,4) = cmplx(0.0_sp,0.0_sp)
+             qinv(1,4) = cmplx(0.0_sp,0.0_sp)
+             q(2,1) = cmplx(0.0_sp,0.0_sp)
+             qinv(2,1) = cmplx(0.0_sp,0.0_sp)
+             q(2,2) = cmplx(0.0_sp,0.0_sp)
+             qinv(2,2) = cmplx(0.0_sp,0.0_sp)
+             q(2,3) = cmplx(1.0_sp,0.0_sp)
+             qinv(2,3) = cmplx(0.0_sp,0.0_sp)
+             q(2,4) = cmplx(0.0_sp,-1.0_sp)
+             qinv(2,4) = cmplx(1.0_sp,0.0_sp)
+             q(3,1) = cmplx(0.0_sp,0.0_sp)
+             qinv(3,1) = cmplx(0.0_sp,0.0_sp)
+             q(3,2) = cmplx(0.0_sp,0.0_sp)
+             qinv(3,2) = cmplx(0.5_sp,0.0_sp)
+             q(3,3) = cmplx(1.0_sp,0.0_sp)
+             qinv(3,3) = cmplx(0.5_sp,0.5_sp)
+             q(3,4) = cmplx(0.0_sp,1.0_sp)
+             qinv(3,4) = cmplx(0.0_sp,0.0_sp)
+             q(4,1) = cmplx(0.0_sp,0.0_sp)
+             qinv(4,1) = cmplx(0.0_sp,0.0_sp)
+             q(4,2) = cmplx(1.0_sp,0.0_sp)
+             qinv(4,2) = cmplx(0.0_sp,0.5_sp)
+             q(4,3) = cmplx(0.0_sp,0.0_sp)
+             qinv(4,3) = cmplx(0.0_sp,-0.5_sp)
+             q(4,4) = cmplx(0.0_sp,0.0_sp)
+             qinv(4,4) = cmplx(0.0_sp,0.0_sp)
+          else
+             cdiff = tm11-tm22
+             csum  = tm11+tm22
+             r = sqrt(cdiff*cdiff+4.0_sp*tm21+tm22)
+             b1 = 2.0_sp*tm21/(cdiff+r)
+             work1 = cabs(b1)
+             cwork1 = conjg(b1)
+             kv1(1) = cmplx(1.0_sp,0.0_sp)
+             kv1(2) = b1
+             k1 = rad_k0 - j*(tm11+tm22+r)*0.5_sp
+             b2 = 2.0_sp*tm12/(-cdiff-r)
+             work2 = cabs(b2)
+             cwork2 = conjg(b2)
+             kv2(1) = b2
+             kv2(2) = cmplx(1.0_sp,0.0_sp)
+             k2 = rad_k0 - j*(tm11+tm22-r)*0.5_sp
+             l(1) = 2.0_sp*aimag(k1)
+             l(2) = j*(conjg(k2)-k1)
+             l(3) = j*(conjg(k1)-k2)
+             l(4) = 2.0_sp*aimag(k2)
+             q(1,1) = cmplx(1.0_sp,0.0_sp)
+             q(1,2) = work1*work2
+             q(1,3) = 2.0_sp*real(b1)
+             q(1,4) = -2.0_sp*aimag(b1)
+             q(2,1) = cwork2
+             q(2,2) = b1
+             q(2,3) = 1.0_sp+b1*cwork2
+             q(2,4) = -j*(1.0_sp-b1*cwork2)
+             q(3,1) = b2
+             q(3,2) = cwork1
+             q(3,3) = 1.0_sp+b2*cwork1
+             q(3,4) = j*(1.0_sp-b2*cwork1)
+             q(4,1) = work2*work2
+             q(4,2) = cmplx(1.0_sp,0.0_sp)
+             q(4,3) = 2.0_sp*real(b2)
+             q(4,4) = 2.0_sp*aimag(b2)
+             call invmat4x4_cr4(q,qinv)
+          end if
+          
+     end subroutine eigen_mat2x2_cr4
+     
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine extinct4x4_cr2(m,k) !GCC$ ATTRIBUTES hot :: extinct4x4_cr2 !GCC$ ATTRIBUTES inline :: extinct4x4_cr2 !GCC$ ATTRIBUTES aligned(64) :: extinct4x4_cr2
+#else defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: extinct4x4_cr2
+       subroutine extinct4x4_cr2(m,k)
+         !DIR4 ATTRIBUTES CODE_ALIGN : 64 :: extinct4x4_cr2
+#endif
+         complex(kind=sp), dimension(2,2), intent(in)    :: m
+         real(kind=sp),    dimension(4,4), intent(inout) :: k
+         ! Locals
+         complex(kind=sp), automatic :: tm11,tm12,tm21,tm22
+         ! Exec code ....
+         tm11 = m(1,1)
+         tm12 = m(1,2)
+         tm21 = m(2,1)
+         tm22 = m(2,2)
+         k(1,1) = -2.0_sp*real(tm11)
+         k(1,2) = 0.0_sp
+         k(1,3) = -2.0_sp*real(tm21)
+         k(1,4) = 2.0_sp*aimag(tm21)
+         k(2,1) = 0.0_sp
+         k(2,2) = -2.0_sp*real(tm22)
+         k(2,3) = -2.0_sp*real(tm12)
+         k(2,4) = -2.0_sp*aimag(tm12)
+         k(3,1) = -real(tm12)
+         k(3,2) = -real(tm21)
+         k(3,3) = -(real(tm11)+real(tm22))
+         k(3,4) = -(aimag(tm11)-aimag(tm22))
+         k(4,1) = -2.0_sp*real(tm12)
+         k(4,2) = -2.0_sp*real(tm21)
+         k(4,3) = (aimag(tm11)-aimag(tm22))
+         k(4,4) = -(real(tm11)+real(tm22))
+         
+    end subroutine extinct4x4_cr2
+       
+ 
 
 
 
