@@ -72,20 +72,20 @@ module  mod_leaf_phase_matrices
                   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: compute_leaf_phase_matrices
 #endif
 
-           real(kind=sp),     dimension(4,4,4),  intent(out)  :: l4x4phm
-           complex(kind=sp),  dimension(2,2,2),  intent(in)  :: sm2x2avg
-           complex(kind=sp),  dimension(2,2),    intent(out)  :: l2x2mp ! complex 2x2 m matrix positive dir
-           complex(kind=sp),  dimension(2,2),    intent(out)  :: l2x2mn ! complex 2x2 m matrix negative dir
-           complex(kind=sp),  dimension(4),      intent(in)  :: eig1x4lp
-           complex(kind=sp),  dimension(4),      intent(in)  :: eig1x4ln
-           complex(kind=sp),  dimension(4,4),    intent(in)  :: eig4x4mp
-           complex(kind=sp),  dimension(4,4),    intent(in)  :: eig4x4mn
-           complex(kind=sp),  dimension(4,4),    intent(in)  :: eig4x4mpi
-           complex(kind=sp),  dimension(4,4),    intent(in)  :: eig4x4mni
-           real(kind=sp),     dimension(4,4),    intent(in)  :: expa4x4mp
-           real(kind=sp),     dimension(4,4),    intent(in)  :: expa4x4mn
-           real(kind=sp),     dimension(4,4),    intent(out) :: stokes4x4m
-           complex(kind=sp),  dimension(2,2),    intent(out) :: scat2x2m
+           real(kind=sp),     dimension(4,4,4),  intent(inout)  :: l4x4phm
+           complex(kind=sp),  dimension(2,2,2),  intent(inout)  :: sm2x2avg
+           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mp ! complex 2x2 m matrix positive dir
+           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mn ! complex 2x2 m matrix negative dir
+           complex(kind=sp),  dimension(4),      intent(inout)  :: eig1x4lp
+           complex(kind=sp),  dimension(4),      intent(inout)  :: eig1x4ln
+           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mp
+           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mn
+           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mpi
+           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mni
+           real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mp
+           real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mn
+           real(kind=sp),     dimension(4,4),    intent(outout) :: stokes4x4m
+           complex(kind=sp),  dimension(2,2),    intent(outout) :: scat2x2m
            real(kind=sp),                        intent(in)  :: thinc
            real(kind=sp),                        intent(in)  :: phinc
            real(kind=sp),                        intent(in)  :: thsc
@@ -143,16 +143,66 @@ module  mod_leaf_phase_matrices
            real(kind=sp),    automatic :: pr_start2,pr_stop2,dp_rad2
            real(kind=sp),    automatic :: pr_start3,pr_stop3,dp_rad3
            real(kind=sp),    automatic :: dp1t1,dp2t2,dp3t3
+           real(kind=sp),    automatic :: t0
            integer(kind=int4), automatic :: nth1,nth2,nth3
            integer(kind=int4), automatic :: nph1,nph2,nph3
            integer(kind=int4), automatic :: ii,j,l,k,jj
            logical(kind=int4), automatic :: po
+           ! EXec code ...
+           t0 = ldiam/100.0_sp
+           if((rad_wv/t0)<1.5_sp) then
+              po = .true.
+           else
+              po = .false.
+           end if
+           !! Phase and extiction matrices for leaves
            
      end subroutine compute_leaf_phase_matrices
      
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine set_leaf_quadrature_params(nth1,tr_start1,tr_stop1,dt_rad1, &
+                                           nth2,tr_start2,tr_stop2,dt_rad2, &
+                                           nth3,tr_start3,tr_stop3,dt_rad3, &
+                                           nph1,pr_start1,pr_stop1,dp_rad1, &
+                                           nph2,pr_start2,pr_stop2,dp_rad2, &
+                                           nph3,pr_start3,pr_stop3,dp_rad3) !GCC$ ATTRIBUTES hot :: set_leaf_quadrature_params !GCC$ ATTRIBUTES aligned(16) :: set_leaf_quadrature_params
+#elif defined __INTEL_COMPILER
+      subroutine set_leaf_quadrature_params(nth1,tr_start1,tr_stop1,dt_rad1, &
+                                           nth2,tr_start2,tr_stop2,dt_rad2, &
+                                           nth3,tr_start3,tr_stop3,dt_rad3, &
+                                           nph1,pr_start1,pr_stop1,dp_rad1, &
+                                           nph2,pr_start2,pr_stop2,dp_rad2, &
+                                           nph3,pr_start3,pr_stop3,dp_rad3)
+                    !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: set_leaf_quadrature_params
+#endif
 
-
-
+              integer(kind=int4),     intent(inout) :: nth1
+              real(kind=sp),          intent(inout) :: tr_start1,tr_stop1,dt_rad1
+              integer(kind=int4),     intent(inout) :: nth2
+              real(kind=sp),          intent(inout) :: tr_start2,tr_stop2,dt_rad2
+              integer(kind=int4),     intent(inout) :: nth3
+              real(kind=sp),          intent(inout) :: tr_start3,tr_stop3,dt_rad3
+              integer(kind=int4),     intent(inout) :: nph1
+              real(kind=sp),          intent(inout) :: pr_start1,pr_stop1,dp_rad1
+              integer(kind=int4),     intent(inout) :: nph2
+              real(kind=sp),          intent(inout) :: pr_start2,pr_stop2,dp_rad2
+              integer(kind=int4),     intent(inout) :: nph3
+              real(kind=sp),          intent(inout) :: pr_start3,pr_stop3,dp_rad3
+              ! LOcals
+              real(kind=sp), automatic :: td_start1,td_stop1,dt_deg1, &
+                                          td_start2,td_stop2,dt_deg2, &
+                                          td_start3,td_stop3,dt_deg3 &
+                                          pd_start1,pd_stop1,dp_deg1, &
+                                          pd_start2,pd_stop2,dp_deg2, &
+                                          pd_start3,pd_stop3,dp_deg3
+              real(kind=sp), parameter :: t0 = 0.017453292519943_sp
+              ! EXec code ...
+              td_start1 = 2.5_sp
+              td_stop1 = 177.5_sp
+              dt_deg1  = 5.0_sp
+              nth1     = 35
+      end subroutine set_leaf_quadrature_params
+      
 
 
 
