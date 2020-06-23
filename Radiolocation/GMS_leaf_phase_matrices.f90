@@ -53,7 +53,7 @@ module  mod_leaf_phase_matrices
                                             eig4x4mn,eig4x4mpi,eig4x4mni,   &
                                             expa4x4mp,expa4x4mn,stokes4x4m, &
                                             scat2x2m,thinc,phinc,thsc,phsc, &
-                                            thdr,phdr,z,delta,norm,lvar,    &
+                                            thdr,phdr,z,delta,lvar,    &
                                             crown_height,trunk_height,dens, &
                                             ldiam,lthick,lmg,lrho,ldens,theta,&
                                             ctheta,stheta,leaves_epsr, &
@@ -64,7 +64,7 @@ module  mod_leaf_phase_matrices
                                             eig4x4mn,eig4x4mpi,eig4x4mni,   &
                                             expa4x4mp,expa4x4mn,stokes4x4m, &
                                             scat2x2m,thinc,phinc,thsc,phsc, &
-                                            thdr,phdr,z,delta,norm,lvar,lvarv, &
+                                            thdr,phdr,z,delta,lvar,lvarv, &
                                             crown_height,trunk_height,dens,  &
                                             ldiam,lthick,lmg,lrho,ldens,theta,&
                                             ctheta,stheta,leaves_epsr, &
@@ -94,7 +94,6 @@ module  mod_leaf_phase_matrices
            real(kind=sp),                        intent(in)  :: phdr
            real(kind=sp),                        intent(in)  :: z
            real(kind=sp),                        intent(in)  :: delta
-           real(kind=sp),                        intent(in)  :: norm
            real(kind=sp),                        intent(in)  :: lvar  ! leaf variation of orientation function 
            real(kind=sp),                        intent(in)  :: lvarv ! leaf variation variable
            real(kind=sp),                        intent(in)  :: crown_height
@@ -143,7 +142,7 @@ module  mod_leaf_phase_matrices
            real(kind=sp),    automatic :: pr_start2,pr_stop2,dp_rad2
            real(kind=sp),    automatic :: pr_start3,pr_stop3,dp_rad3
            real(kind=sp),    automatic :: dp1t1,dp2t2,dp3t3
-           real(kind=sp),    automatic :: t0
+           real(kind=sp),    automatic :: t0,norm
            integer(kind=int4), automatic :: nth1,nth2,nth3
            integer(kind=int4), automatic :: nph1,nph2,nph3
            integer(kind=int4), automatic :: ii,j,l,k,jj
@@ -156,24 +155,33 @@ module  mod_leaf_phase_matrices
               po = .false.
            end if
            !! Phase and extiction matrices for leaves
-           
-     end subroutine compute_leaf_phase_matrices
-     
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-     subroutine set_leaf_quadrature_params(nth1,tr_start1,tr_stop1,dt_rad1, &
-                                           nth2,tr_start2,tr_stop2,dt_rad2, &
-                                           nth3,tr_start3,tr_stop3,dt_rad3, &
-                                           nph1,pr_start1,pr_stop1,dp_rad1, &
-                                           nph2,pr_start2,pr_stop2,dp_rad2, &
-                                           nph3,pr_start3,pr_stop3,dp_rad3) !GCC$ ATTRIBUTES hot :: set_leaf_quadrature_params !GCC$ ATTRIBUTES aligned(16) :: set_leaf_quadrature_params
-#elif defined __INTEL_COMPILER
-      subroutine set_leaf_quadrature_params(nth1,tr_start1,tr_stop1,dt_rad1, &
+           norm = 6.283185307179586_sp
+           call set_leaf_quadrature_bounds(nth1,tr_start1,tr_stop1,dt_rad1, &
                                            nth2,tr_start2,tr_stop2,dt_rad2, &
                                            nth3,tr_start3,tr_stop3,dt_rad3, &
                                            nph1,pr_start1,pr_stop1,dp_rad1, &
                                            nph2,pr_start2,pr_stop2,dp_rad2, &
                                            nph3,pr_start3,pr_stop3,dp_rad3)
-                    !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: set_leaf_quadrature_params
+           dp1t1 = dp_rad1*dt_rad1
+           dp2t2 = dp_rad2*dt_rad2
+           dp3t3 = dp_rad3*dt_rad3
+     end subroutine compute_leaf_phase_matrices
+     
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine set_leaf_quadrature_bounds(nth1,tr_start1,tr_stop1,dt_rad1, &
+                                           nth2,tr_start2,tr_stop2,dt_rad2, &
+                                           nth3,tr_start3,tr_stop3,dt_rad3, &
+                                           nph1,pr_start1,pr_stop1,dp_rad1, &
+                                           nph2,pr_start2,pr_stop2,dp_rad2, &
+                                           nph3,pr_start3,pr_stop3,dp_rad3) !GCC$ ATTRIBUTES hot :: set_leaf_quadrature_bounds !GCC$ ATTRIBUTES aligned(16) :: set_leaf_quadrature_bounds
+#elif defined __INTEL_COMPILER
+      subroutine set_leaf_quadrature_bounds(nth1,tr_start1,tr_stop1,dt_rad1, &
+                                           nth2,tr_start2,tr_stop2,dt_rad2, &
+                                           nth3,tr_start3,tr_stop3,dt_rad3, &
+                                           nph1,pr_start1,pr_stop1,dp_rad1, &
+                                           nph2,pr_start2,pr_stop2,dp_rad2, &
+                                           nph3,pr_start3,pr_stop3,dp_rad3)
+                    !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: set_leaf_quadrature_bounds
 #endif
 
               integer(kind=int4),     intent(inout) :: nth1
@@ -200,8 +208,46 @@ module  mod_leaf_phase_matrices
               td_start1 = 2.5_sp
               td_stop1 = 177.5_sp
               dt_deg1  = 5.0_sp
-              nth1     = 35
-      end subroutine set_leaf_quadrature_params
+              nth1  = 35
+              tr_start1 = t0*td_start1
+              tr_stop1  = t0*td_stop1
+              dt_rad1   = t0*dt_deg1
+              pd_start1 = 2.5_sp
+              pd_stop1 = 177.5_sp
+              dp_deg1 = 5.0_sp
+              nph1 = 36
+              pr_start1 = t0*pd_start1
+              pr_stop1  = t0*pd_stop1
+              dp_rad1   = t0*dp_deg1
+              td_start2 = 0.0_sp
+              td_stop2 = 0.0_sp
+              dt_deg2 = 0.0_sp
+              nth2 = 0
+              tr_start2 = 0.0_sp
+              tr_stop2  = 0.0_sp
+              dt_rad2   = 0.0_sp
+              pd_start2 = 0.0_sp
+              pd_stop2 = 0.0_sp
+              dp_deg2 = 0.0_sp
+              nph2 = 0
+              pr_start2 = 0.0_sp
+              pr_stop2 = 0.0_sp
+              dp_rad2 = 0.0_sp
+              td_start3 = 0.0_sp
+              td_stop3 = 0.0_sp
+              dt_deg3 = 0.0_sp
+              nth3 = 0
+              tr_start3 = 0.0_sp
+              tr_stop3  = 0.0_sp
+              dt_rad3 = 0.0_sp
+              pd_start3 = 0.0_sp
+              pd_stop3 = 0.0_sp
+              pd_deg3 = 0.0_sp
+              nph3 = 0
+              pr_start3 = 0.0_sp
+              pr_stop3 = 0.0_sp
+              dp_rad3 = 0.0_sp
+      end subroutine set_leaf_quadrature_bounds
       
 
 
