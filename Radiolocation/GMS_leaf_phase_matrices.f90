@@ -85,8 +85,8 @@ module  mod_leaf_phase_matrices
            complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mni
            real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mp
            real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mn
-           real(kind=sp),     dimension(4,4),    intent(outout) :: stokes4x4m
-           complex(kind=sp),  dimension(2,2),    intent(outout) :: scat2x2m
+           real(kind=sp),     dimension(4,4),    intent(out)    :: stokes4x4m !result
+           complex(kind=sp),  dimension(2,2),    intent(out)    :: scat2x2m   !result
            real(kind=sp),                        intent(in)  :: z
            real(kind=sp),                        intent(in)  :: delta
            real(kind=sp),                        intent(in)  :: lvar  ! leaf variation of orientation function 
@@ -102,7 +102,7 @@ module  mod_leaf_phase_matrices
            real(kind=sp),                        intent(in)  :: theta ! radar scanning angle
            real(kind=sp),                        intent(in)  :: ctheta ! cosine of radar scanning angle
            real(kind=sp),                        intent(in)  :: stheta ! sine of radr scaning angle
-           complex(kind=sp), dimension(12),      intent(in)  :: leaves_epsr  ! leaves disalectric constant
+           complex(kind=sp), dimension(12),      intent(in)  :: leaves_epsr  ! leaves dialectric constant
            complex(kind=sp), dimension(12),      intent(in)  :: leaves_epsrc ! leaves dialectric contant
            real(kind=sp),                        intent(in)  :: rad_freq
            real(kind=sp),                        intent(in)  :: rad_wv
@@ -178,7 +178,14 @@ module  mod_leaf_phase_matrices
                     phinc = 3.141592653589793_sp
                     phsc  = 0.0_sp
                     if(po) then
-                       
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call 
+                                                    
      end subroutine compute_leaf_phase_matrices
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
@@ -470,8 +477,150 @@ module  mod_leaf_phase_matrices
            sin_betapr = (cos_ths*sin_thi- &
                 cos_thj*sin_ths*cos_phsj)/cos_phpr
            p = 1.0_sp/sqrt(1.0_sp-cos_beta_phi*cos_beta_phi)
-       end subroutine leaf_phys_optics_approx
-       
+           res = j/(rad_k0*tau*(eps-1.0_sp))
+           gamh = 1.0_sp/(1.0_sp+2.0_sp*res/cosphi1)
+           game = 1.0_sp/(1.0_sp+2.0_sp*res*cosphi1)
+           u = 0.5_sp*rad_k0*a*(sin_phi-sin_phpr)
+           sinu = sin(u)
+           v = 0.5_sp*rad_k0*b*(sin_beta*cos_phi-sin_betapr*cos_phpr)
+           sinv = sin(v)
+           if(abs(sinu)<=tol) then
+              sinu_u = 1.0_sp
+           else
+              sinu_u = sinu/u
+           end if
+           cosb_p = cos_beta*cos_phi
+           gamhe_c1 = (gamh-game)*cosb_p
+           gamhe_c2 = gamh-cosb_p*cosb_p*game
+           !
+           if(abs(sinv)<=tol) then
+              sinv_v = 1.0_sp
+           else
+              sinv_v = sinv/v
+           end if
+           const = -j*rad_k0*a*b*sinv_v*sinu_u*p*p/6.283185307179586_sp
+           sintj_ti = sin_thj*sin_thi
+           sints_tj = sin_ths*sin_thj
+           costj_sinpjs = cos_thj*sin_phjs
+           s5 = sin_phij*costj_sinpjs
+           costs_sinpsj = cos_ths*sin_phsj
+           s3 = sin_phij*costs_sinpsj
+           sinpij_cospsj = sin_phij*cos_phsj
+           cpij_cti_ctj  = cos_phij*cos_thi*cos_thj
+           s1 = sintj_ti+cpij_cti_ctj
+           cpsj_cts_ctj  = cos_phsj*cos_ths*cos_thj
+           s2 = sints_tj+cpsj_cts_ctj
+           w1 = s1*s2+cos_thi*s3
+           s4 = sin_phij*s2
+           w2 = cos_phij*s2+cos_thj*s3
+           scat_mat(1,1) = const*(w1*gamhe_c1+w2*gamhe_c2)
+           w1 = -cos_thj*s4+cos_phij*costs_sinpsj
+           w2 = -cos_thi*s4+s1*costs_sinpsj
+           scat_mat(1,2) = const*(w1*gamhe_c1+w2*gamhe_c2)
+           w1 = s1-costj_sinpjs+cos_thi*sinpij_cospsj
+           w2 = cos_phij*costj_sinpjs+cos_thj*sinpij_cospsj
+           scat_mat(2,1) = const*(w1*gamhe_c1+w2*gamhe_c2)
+           w1 = -cos_phij*s5+cos_phij*cos_phsj
+           w2 = -cos_thi*s5+s1*cos_phsj
+           scat_mat(2,2) = const*(w1+gamhe_c1+w2*gamhe_c2)
+     end subroutine leaf_phys_optics_approx
 
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                         rad_freq,rad_k0,rad_wv,leaf_mg,  &
+                                         leaf_rho,leaf_dens,leaf_diam,    &
+                                         leaf_tau,epsr,epsrc,scat_mat) !GCC$ ATTRIBUTES hot :: leaf_rayleigh_scattering !GCC$ ATTRIBUTES aligned(16) :: leaf_rayleigh_scattering
+#elif defined __INTEL_COMPILER
+     subroutine leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                         rad_freq,rad_k0,rad_wv,leaf_mg,  &
+                                         leaf_rho,leaf_dens,leaf_diam,    &
+                                         leaf_tau,epsr,epsrc,scat_mat)
+               !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: leaf_rayleigh_scattering
+#endif 
+           real(kind=sp),                     intent(in) :: thinc
+           real(kind=sp),                     intent(in) :: phinc
+           real(kind=sp),                     intent(in) :: thsc
+           real(kind=sp),                     intent(in) :: phsc
+           real(kind=sp),                     intent(in) :: thdr
+           real(kind=sp),                     intent(in) :: phdr
+           real(kind=sp),                     intent(in) :: rad_freq
+           real(kind=sp),                     intent(in) :: rad_k0
+           real(kind=sp),                     intent(in) :: rad_wv
+           real(kind=sp),                     intent(in) :: leaf_mg
+           real(kind=sp),                     intent(in) :: leaf_rho
+           real(kind=sp),                     intent(in) :: leaf_dens
+           real(kind=sp),                     intent(in) :: leaf_diam
+           real(kind=sp),                     intent(in) :: leaf_tau
+           complex(kind=sp),  dimension(12),  intent(in) :: epsr
+           complex(kind=sp),  dimension(12),  intent(in) :: epsrc
+           complex(kind=sp),  dimension(2,2), intent(inout) :: scat_mat
+           ! LOcals
+#if defined __INTEL_COMPILER
+           real(kind=sp), dimension(4), automatic :: xhat,yhat,zhat
+           !DIR$ ATTRIBUTES ALIGN : 16 :: xhat,yhat,zhat
+           real(kind=sp), dimension(4), automatic :: xhatl,yhatl,zhatl
+           !DIR$ ATTRIBUTES ALIGN : 16 :: xhatl,yhatl,zhatl
+           real(kind=sp), dimension(4), automatic :: khati,khats
+           !DIR$ ATTRIBUTES ALIGN : 16 :: khati,khats
+           real(kind=sp), dimension(4), automatic :: hhati,vhati,hhats,vhats
+           !DIR$ ATTRIBUTES ALIGN : 16 :: hhati,vhati,hhats,vhats
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+           real(kind=sp), dimension(4), automatic :: xhat,yhat,zhat     !GCC$ ATTRIBUTES aligned(16) :: xhat,yhat,zhat
+           real(kind=sp), dimension(4), automatic :: xhatl,yhatl,zhatl  !GCC$ ATTRIBUTES aligned(16) :: xhatl,yhatl,zhatl
+           real(kind=sp), dimension(4), automatic :: khati,khats        !GCC$ ATTRIBUTES aligned(16) :: khati,khats
+           real(kind=sp), dimension(4), automatic :: hhati,vhati,hhats,vhats !GCC$ ATTRIBUTES aligned(16) :: hhati,vhati,hhats,vhats
+#endif
+           complex(kind=sp), automatic ::   eps,cdum
+           complex(kind=sp), automatic ::   Vd, cduma, cdumb, cdumc
+           real(kind=sp),    automatic ::   dum,dum2,sumcheck,t_lf, d_lf
+           real(kind=sp),    automatic ::  vhsdxhl,vhsdyhl,vhsdzhl,hhsdxhl,hhsdyhl,hhsdzhl
+           real(kind=sp),    automatic ::  vhidxhl,vhidyhl,vhidzhl,hhidxhl,hhidyhl,hhidzhl
+           real(kind=sp),    automatic ::  Ae,Be,Ce,Ac,Ab,Aa,Vo
+           real(kind=sp),    automatic ::  t0,t1,t2,t3
+           ! Exec code ....
+          
+         
+           xhat(1) = 1.0_sp
+           xhat(2) = 0.0_sp
+           xhat(3) = 0.0_sp
+           xhat(4) = 0.0_sp
+           t0 = sin(thinc)
+           t1 = cos(phinc)
+           khati(1) = t0*t1
+           yhat(1) = 0.0_sp
+           yhat(2) = 1.0_sp
+           yhat(3) = 0.0_sp
+           yhat(4) = 0.0_sp
+           khati(2) = t0*t1
+           zhat(1) = 0.0_sp
+           zhat(2) = 0.0_sp
+           zhat(3) = 1.0_sp
+           zhat(4) = 0.0_sp
+           khati(3) = t1
+           khati(4) = 1.0_sp
+           t2 = sin(thsc)
+           t3 = cos(phsc)
+     end subroutine leaf_rayleigh_scattering
+     
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine vec1x3_smooth(in,out) !GCC$ ATTRIBUTES hot :: vec1x3_smooth !GCC$ ATTRIBUTES aligned(64) :: vec1x3_smooth !GCC$ ATTRIBUTES inline :: vec1x3_smooth
+#elif defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: vec1x3_smooth
+     subroutine vec1x3_smooth(in,out)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: vec1x3_smooth 
+#endif
+         real(kind=sp), dimension(4),  intent(inout)    :: in
+         real(kind=sp), dimension(4),  intent(inout) :: out
+         !Locals
+         real(kind=sp), automatic :: mag
+         ! Exec code ....
+         mag = sqrt(in(1)*in(1)+in(2)*in(2)+in(3)*in(3))
+         if(mag/=0.0_sp) then
+            in = in/mag
+            
+     end subroutine vec1x3_smooth
+     
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine check_tol(in,out)
 
 end module mod_leaf_phase_matrices
