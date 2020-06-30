@@ -573,10 +573,10 @@ module  mod_leaf_phase_matrices
            complex(kind=sp), automatic ::   eps,cdum
            complex(kind=sp), automatic ::   Vd, cduma, cdumb, cdumc
            real(kind=sp),    automatic ::   dum,dum2,sumcheck,t_lf, d_lf
-           real(kind=sp),    automatic ::  vhsdxhl,vhsdyhl,vhsdzhl,hhsdxhl,hhsdyhl,hhsdzhl
-           real(kind=sp),    automatic ::  vhidxhl,vhidyhl,vhidzhl,hhidxhl,hhidyhl,hhidzhl
-           real(kind=sp),    automatic ::  Ae,Be,Ce,Ac,Ab,Aa,Vo
-           real(kind=sp),    automatic ::  t0,t1,t2,t3
+           real(kind=sp),    automatic ::   vhsdxhl,vhsdyhl,vhsdzhl,hhsdxhl,hhsdyhl,hhsdzhl
+           real(kind=sp),    automatic ::   vhidxhl,vhidyhl,vhidzhl,hhidxhl,hhidyhl,hhidzhl
+           real(kind=sp),    automatic ::   Ae,Be,Ce,Ac,Ab,Aa,Vo
+           real(kind=sp),    automatic ::   t0,t1,t2,t3,t4,t5,t6,t7,t8,t9
            ! Exec code ....
           
          
@@ -588,18 +588,66 @@ module  mod_leaf_phase_matrices
            t1 = cos(phinc)
            khati(1) = t0*t1
            yhat(1) = 0.0_sp
+           t6 = cos(thdr)
            yhat(2) = 1.0_sp
+           t7 = cos(phdr)
            yhat(3) = 0.0_sp
            yhat(4) = 0.0_sp
+           t8 = sin(thdr)
            khati(2) = t0*t1
            zhat(1) = 0.0_sp
            zhat(2) = 0.0_sp
+           t9 = sin(phdr)
            zhat(3) = 1.0_sp
            zhat(4) = 0.0_sp
            khati(3) = t1
            khati(4) = 1.0_sp
            t2 = sin(thsc)
            t3 = cos(phsc)
+           call vec1x3_smooth(khati,khati)
+           t4 = sin(phsc)
+           t5 = sin(phinc)
+           khats(1) = t2*t3
+           khats(2) = t2*t4
+           khats(3) = cos(thsc)
+           khats(4) = 1.0_sp
+           call vec1x3_smooth(khats,khats)
+           hhati(1) = -t5
+           hhati(2) = t1
+           hhati(3) = 0.0_sp
+           hhati(4) = 1.0_sp
+           call vec1x3_smooth(hhati,hhati)
+           hhats(1) = -t4
+           call cross_prod(hhati,khati,vhati)
+           hhats(2) = t3
+           call vec1x3_smooth(vhati,vhati)
+           hhats(3) = 0.0_sp
+           hhats(4) = 1.0_sp
+           call vec1x3_smooth(hhats,hhats)
+           call cross_prod(hhats,khats,vhats)
+           call vec1x3_smooth(vhats,vhats)
+           xhatl(1) = t6*t7
+           xhatl(2) = t6*t8
+           xhatl(3) = -t8
+           xhatl(4) = 1.0_sp
+           call vec1x3_smooth(xhatl,xhatl)
+           yhatl(1) = -t8
+           yhatl(2) = t7
+           yhatl(3) = 0.0_sp
+           yhatl(4) = 1.0_sp
+           call vec1x3_smooth(yhatl,yhatl)
+           zhatl(1) = t8*t7
+           zhatl(2) = t8*t9
+           zhatl(3) = t6
+           zhatl(4) = 1.0_sp
+           call vec1x3_smooth(zhatl,zhatl)
+           t_lf = leaf_tau
+           d_lf = leaf_diam
+           eps  = epsrc(4)
+           call dot_prod(vhats,xhatl,vhsdxhl)
+           call dot_prod(vhats,yhatl,vhsdyhl)
+           call dot_prod(vhats,zhatl,vhsdzhl)
+           DUM = 
      end subroutine leaf_rayleigh_scattering
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
@@ -607,7 +655,8 @@ module  mod_leaf_phase_matrices
 #elif defined __INTEL_COMPILER
        !DIR$ ATTRIBUTES INLINE :: vec1x3_smooth
      subroutine vec1x3_smooth(in,out)
-       !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: vec1x3_smooth 
+       !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: vec1x3_smooth
+       !DIR$ ATTRIBUTES VECTOR :: vec1x3_smooth
 #endif
          real(kind=sp), dimension(4),  intent(inout)    :: in
          real(kind=sp), dimension(4),  intent(inout) :: out
@@ -617,10 +666,67 @@ module  mod_leaf_phase_matrices
          mag = sqrt(in(1)*in(1)+in(2)*in(2)+in(3)*in(3))
          if(mag/=0.0_sp) then
             in = in/mag
-            
+            call check_mag_tol(in,out)
+            mag = sqrt(in(1)*in(1)+in(2)*in(2)+in(3)*in(3))
+            out = in/mag
+         else
+            out = in
+         end if
      end subroutine vec1x3_smooth
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-     subroutine check_tol(in,out)
+     subroutine check_mag_tol(in,out) !GCC$ ATTRIBUTES hot :: check_mag_tol !GCC$ ATTRIBUTES aligned(64) :: check_mag_tol !GCC$ ATTRIBUTES inline :: check_mag_tol
+#elif defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: check_mag_tol
+     subroutine check_mag_tol(in,out)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: check_mag_tol
+       !DIR$ ATTRIBUTES VECTOR :: check_mag_tol
+#endif
+          real(kind=sp), dimension(4), intent(in) :: in
+          real(kind=sp), dimension(4), intent(inout) :: out
+          ! Locals
+          real(kind=sp), parameter :: tol = 0.00001_sp
+          logical(kind=int4), automatic :: bres
+          ! Exec code
+          bres = .false.
+          bres = in<tol
+          if(bres) then
+             out = 0.0_sp
+          else
+             out = in
+          end if
+     end subroutine check_mag_tol
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine cross_prod(a,b,c) !GCC$ ATTRIBUTES hot :: cross_prod !GCC$ ATTRIBUTES aligned(64) :: cross_prod !GCC$ ATTRIBUTES inline :: cross_prod
+#elif defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: cross_prod
+       subroutine cross_prod(a,b,c)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: cross_prod
+#endif
+         real(kind=sp), dimension(4), intent(in) :: a
+         real(kind=sp), dimension(4), intent(in) :: b
+         real(kind=sp), dimension(4), intent(inout) :: c
+         ! Exec code ....
+         c(1) = a(2)*b(3)-a(3)*b(2)
+         c(2) = a(3)*b(1)-a(1)*b(3)
+         c(3) = a(1)*b(2)-a(2)*b(1)
+     end subroutine cross_prod
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine dot_prod(a,b,c) !GCC$ ATTRIBUTES hot :: dot_prod !GCC$ ATTRIBUTES aligned(64) :: dot_prod !GCC$ ATTRIBUTES inline :: dot_prod
+#elif defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: dot_prod
+     subroutine dot_prod(a,b,c)
+         !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: dot_prod
+#endif
+         real(kind=sp), dimension(4), intent(in) :: a
+         real(kind=sp), dimension(4), intent(in) :: b
+         real(kind=sp),               intent(inout) :: c
+         ! Exec code ....
+         c = a(1)*b(1)+a(2)*b(2)+a(3)*b(3)
+     end subroutine dot_prod
+       
+     
 
 end module mod_leaf_phase_matrices
