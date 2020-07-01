@@ -184,7 +184,12 @@ module  mod_leaf_phase_matrices
                                                     ldiam,lthick,epsr,epsrc, &
                                                     scat2x2m)
                     else
-                       call 
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+                    
                                                     
      end subroutine compute_leaf_phase_matrices
      
@@ -647,7 +652,41 @@ module  mod_leaf_phase_matrices
            call dot_prod(vhats,xhatl,vhsdxhl)
            call dot_prod(vhats,yhatl,vhsdyhl)
            call dot_prod(vhats,zhatl,vhsdzhl)
-           DUM = 
+           dum = 1.5_sp**0.33333333333333_sp
+           Ce  = (t_lf/200.0_sp)*dum
+           Ae  = (d_lf/200.0_sp)*dum
+           Be  = Ae
+           call dot_prod(hhats,xhatl,hhsdxhl)
+           call dot_prod(hhats,yhatl,hhsdyhl)
+           call dot_prod(hhats,zhatl,hhsdzhl)
+           dum = Ae*Ae-Ce*Ce
+           dum2 = (sqrt(dum))/Ce
+           Ac =  (2.0_sp/(dum**1.5_sp))*(dum2-atan(dum2))
+           Ab =  (2.0/(Ae*Be*Ce)-Ac)*0.5_sp
+           Aa = Ab
+           call dot_prod(vhati,xhatl,vhidxhl)
+           call dot_prod(vhati,yhatl,vhidyhl)
+           call dot_prod(vhati,zhatl,vhidzhl)
+           Vo = 12.566370614359173_sp*Ae*Be*Ce*0.3333333333333_sp
+           Vd = (Ae*Be*Ce*0.5_sp)*(eps-1.0_sp)
+           call dot_prod(hhati,xhatl,hhidxhl)
+           call dot_prod(hhati,yhatl,hhidyhl)
+           call dot_prod(hhati,zhatl,hhidzhl)
+           cdum = (rad_k0*rad_k0/12.566370614359173_sp)*Vo*(eps-1.0_sp)
+           cduma = 1.0_sp+ Vd*Aa
+           cdumb = cduma
+           cdumc = 1.0_sp+ Vd*Ac
+           scat_mat(1,1) = cdum*(vhsdxhl*vhidxhl/cduma + &
+                           vhsdyhl*vhidyhl/cdumb + vhsdzhl*vhidzhl/cdumc)
+
+           scat_mat(1,2) = cdum*(hhsdxhl*vhidxhl/cduma + &
+                         hhsdyhl*vhidyhl/cdumb + hhsdzhl*vhidzhl/cdumc)
+
+           scat_mat(2,1) = cdum*(vhsdxhl*hhidxhl/cduma + &
+                           vhsdyhl*hhidyhl/cdumb + vhsdzhl*hhidzhl/cdumc)
+
+           scat_mat(2,2) = cdum*(hhsdxhl*hhidxhl/cduma + &
+                           hhsdyhl*hhidyhl/cdumb + hhsdzhl*hhidzhl/cdumc)
      end subroutine leaf_rayleigh_scattering
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
@@ -726,6 +765,30 @@ module  mod_leaf_phase_matrices
          ! Exec code ....
          c = a(1)*b(1)+a(2)*b(2)+a(3)*b(3)
      end subroutine dot_prod
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine stokes_matrix(scat_mat,stokes_mat) !GCC$ ATTRIBUTES hot :: stokes_matrix !GCC$ ATTRIBUTES aligned(64) :: stokes_matrix !GCC$ ATTRIBUTES inline :: stokes_matrix
+#elif defined __INTEL_COMPILER
+       !DIR$ ATTRIBUTES INLINE :: stokes_matrix
+     subroutine stokes_matrix(scat_mat,stokes_mat)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: stokes_matrix
+#endif
+         complex(kind=sp),  dimension(2,2), intent(in) :: scat_mat
+         real(kind=sp),     dimension(4,4), intent(inout) :: stokes_mat
+         ! lOCALS
+         complex(kind=sp), automatic :: CW1121C,CW1122C,CW1112C,CW2122C,&
+                                         CW1221C,CW1222C,CW1,CW2
+         real(kind=sp),    automatic :: w1,w2,w3,w4
+         ! EXec code ....
+         w1 = cabs(scat_mat(1,1))
+         stokes_mat(1,1) = w1*w1
+         w2 = cabs(scat_mat(1,2))
+         stokes_mat(1,2) = w2*w2
+         w3 = cabs(scat_mat(2,1))
+         stokes_mat(2,1) = w3*w3
+         w4 = cabs(scat_mat(2,2))
+         stokes_mat(4,4) = w4*w4
+     end subroutine stokes_matrix
        
      
 
