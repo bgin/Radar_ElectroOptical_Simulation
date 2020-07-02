@@ -167,6 +167,7 @@ module  mod_leaf_phase_matrices
            dp2t2 = dp_rad2*dt_rad2
            dp3t3 = dp_rad3*dt_rad3
            orient_distr = 0.0_sp
+           l4x4phm_t1 = 0.0_sp
            if((nth1/=0).and.(nph1/=0)) then
               do jj=1, nth1
                  thdr = tr_start1+dt_rad1*real(jj-1,kind=sp)
@@ -189,8 +190,76 @@ module  mod_leaf_phase_matrices
                                                     lrho,ldens,ldiam,    &
                                                     lthick,epsr,epsrc,scat2x2m)
                     end if
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+                    l4x4phm_t1(1,1,1) = &
+                         l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,2,1) = &
+                         l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,3,1) = &
+                         l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,4,1) = &
+                         l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(2,1,1) = &
+                         l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,2,1) = &
+                         l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,3,1) = &
+                         l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,4,1) = &
+                         l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(3,1,1) = &
+                         l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,2,1) = &
+                         l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,3,1) = &
+                         l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,4,1) = &
+                         l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(4,1,1) = &
+                         l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,2,1) = &
+                         l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,3,1) = &
+                         l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,4,1) = &
+                         l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+                    l4x4phm_t1(1,1,1) = &
+                         l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,2,1) = &
+                         l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,3,1) = &
+                         l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,4,1) = &
+                         l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(2,1,1) = &
+                         l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,2,1) = &
+                         l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,3,1) = &
+                         l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,4,1) = &
+                         l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(3,1,1) = &
+                         l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,2,1) = &
+                         l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,3,1) = &
+                         l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,4,1) = &
+                         l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(4,1,1) = &
+                         l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,2,1) = &
+                         l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,3,1) = &
+                         l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,4,1) = &
+                         l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
+                    ! case 2
                     
-                                                    
      end subroutine compute_leaf_phase_matrices
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
@@ -787,7 +856,33 @@ module  mod_leaf_phase_matrices
          w3 = cabs(scat_mat(2,1))
          stokes_mat(2,1) = w3*w3
          w4 = cabs(scat_mat(2,2))
-         stokes_mat(4,4) = w4*w4
+         stokes_mat(2,2) = w4*w4
+         CW1121C = scat_mat(1,1)*conjg(scat_mat(2,1))
+         CW1222C = scat_mat(1,2)*conjg(scat_mat(2,2))
+         CW1112C = scat_mat(1,1)*conjg(scat_mat(1,2))
+         CW2122C = scat_mat(2,1)*conjg(scat_mat(2,2))
+
+         CW1122C = scat_mat(1,1)*conjg(scat_mat(2,2))
+         CW1221C = scat_mat(1,2)*conjg(scat_mat(2,1))
+
+         CW1 =  CW1122C + CW1221C
+         CW2 =  CW1122C - CW1221C
+
+         stokes_mat(1,3) = 2.0_sp*REAL(CW1121C)
+         stokes_mat(1,4) = 2.0_sp*AIMAG(CW1121C)
+
+         stokes_mat(2,3) = 2.0_sp*REAL(CW1222C)
+         stokes_mat(2,4) = 2.0_sp*AIMAG(CW1222C)
+
+         stokes_mat(3,1) = REAL(CW1112C)
+         stokes_mat(3,2) = REAL(CW2122C)
+         stokes_mat(3,3) = REAL(CW1)
+         stokes_mat(3,4) = AIMAG(CW1)
+
+         stokes_mat(4,1) = -AIMAG(CW1112C)
+         stokes_mat(4,2) = -AIMAG(CW2122C)
+         stokes_mat(4,3) = -AIMAG(CW2)
+         stokes_mat(4,4) = REAL(CW2)
      end subroutine stokes_matrix
        
      
