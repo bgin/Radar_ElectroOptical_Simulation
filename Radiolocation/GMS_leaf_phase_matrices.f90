@@ -45,7 +45,9 @@ module  mod_leaf_phase_matrices
      character(*),         parameter :: MOD_LEAF_PHASE_MATRICES_ID = &
           "$Id: GMS_leaf_phase_matrices.f90 1000 +00200 2020-06-20 16:09 beniekg@gmail.com $"
 
-
+#ifndef LEAF_PHASE_MATRIX_AUTOVECTORIZE
+#define LEAF_PHASE_MATRIX_AUTOVECTORIZE 0
+#endif
      
 
    contains
@@ -144,6 +146,10 @@ module  mod_leaf_phase_matrices
            real(kind=sp),    automatic :: phsc
            real(kind=sp),    automatic :: thdr
            real(kind=sp),    automatic :: phdr
+           real(kind=sp),    automatic :: t1,t2,t3,t4,    &
+                                          t5,t6,t7,t8,    &
+                                          t9,t10,t11,t12, &
+                                          t13,t14,t15,t16
            integer(kind=int4), automatic :: nth1,nth2,nth3
            integer(kind=int4), automatic :: nph1,nph2,nph3
            integer(kind=int4), automatic :: ii,j,l,k,jj
@@ -168,14 +174,266 @@ module  mod_leaf_phase_matrices
            dp3t3 = dp_rad3*dt_rad3
            orient_distr = 0.0_sp
            l4x4phm_t1 = 0.0_sp
+           sm2x2avg_t1 = cmplx(0.0_sp,0.0_sp)
            if((nth1/=0).and.(nph1/=0)) then
+              t1=0.0_sp
+              t2=0.0_sp
+              t3=0.0_sp
+              t4=0.0_sp
+              t5=0.0_sp
+              t6=0.0_sp
+              t7=0.0_sp
+              t8=0.0_sp
+              t9=0.0_sp
+              t10=0.0_sp
+              t11=0.0_sp
+              t12=0.0_sp
+              t13=0.0_sp
+              t14=0.0_sp
+              t15=0.0_sp
+              t16=0.0_sp
               do jj=1, nth1
                  thdr = tr_start1+dt_rad1*real(jj-1,kind=sp)
                  orient_distr = compute_leaf_odf(thdr)
-                 do ii=1, nph1
-                    phdr = pr_start1+dp_rad1*real(ii-1,kind=sp)
+                 if(orient_distr>0.0_sp) then
+                    do ii=1, nph1
+                       phdr = pr_start1+dp_rad1*real(ii-1,kind=sp)
+                       thinc = theta
+                       thsc  = 3.141592653589793_sp-theta
+                       phinc = 3.141592653589793_sp
+                       phsc  = 0.0_sp
+                       if(po) then
+                           call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                       else
+                           call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                       end if
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,1)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,1) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,1) = t1    
+                    t2    =  l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,1) = t2    
+                    t3    = l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,1) = t3    
+                    t4    = l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,1) = t4    
+                    t5     = l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,1) = t5    
+                    t6     = l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,1) = t6    
+                    t7     = l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,1) = t7    
+                    t8     = l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,1) = t8     
+                    t9     = l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,1) = t9     
+                    t10    =  l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,1) = t10    
+                    t11    =  l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,1) = t11   
+                    t12    = l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,1) = t12    
+                    t13    =  l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,1) = t13    
+                    t14    =  l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,1) = t14    
+                    t15    =  l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,1) = t15    
+                    t16     = l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,1) = t16
+#endif
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,1)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,1) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,1) = t1    
+                    t2    =  l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,1) = t2    
+                    t3    = l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,1) = t3    
+                    t4    = l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,1) = t4    
+                    t5     = l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,1) = t5    
+                    t6     = l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,1) = t6    
+                    t7     = l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,1) = t7    
+                    t8     = l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,1) = t8     
+                    t9     = l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,1) = t9     
+                    t10    =  l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,1) = t10    
+                    t11    =  l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,1) = t11   
+                    t12    = l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,1) = t12    
+                    t13    =  l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,1) = t13    
+                    t14    =  l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,1) = t14    
+                    t15    =  l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,1) = t15    
+                    t16     = l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,1) = t16
+#endif
+                    ! case 2
+                    thinc =  3.141592653589793_sp-theta
+                    thsc  =  3.141592653589793_sp-theta
+                    phinc =  0.0_sp
+                    phsc  =  3.141592653589793_sp
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,2)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,2) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,2)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,2) = t1    
+                    t2    =  l4x4phm_t1(1,2,2)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,2) = t2    
+                    t3    = l4x4phm_t1(1,3,2)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,2) = t3    
+                    t4    = l4x4phm_t1(1,4,2)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,2) = t4    
+                    t5     = l4x4phm_t1(2,1,2)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,2) = t5    
+                    t6     = l4x4phm_t1(2,2,2)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,2) = t6    
+                    t7     = l4x4phm_t1(2,3,2)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,2) = t7    
+                    t8     = l4x4phm_t1(2,4,2)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,2) = t8     
+                    t9     = l4x4phm_t1(3,1,2)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,2) = t9     
+                    t10    =  l4x4phm_t1(3,2,2)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,2) = t10    
+                    t11    =  l4x4phm_t1(3,3,2)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,2) = t11   
+                    t12    = l4x4phm_t1(3,4,2)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,2) = t12    
+                    t13    =  l4x4phm_t1(4,1,2)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,2) = t13    
+                    t14    =  l4x4phm_t1(4,2,2)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,2) = t14    
+                    t15    =  l4x4phm_t1(4,3,2)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,2) = t15    
+                    t16     = l4x4phm_t1(4,4,2)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,2) = t16
+#endif
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,2)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,2) = t1
+                       end do
+                    end do
+#else                    
+                    t1    = l4x4phm_t1(1,1,2)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,2) = t1    
+                    t2    =  l4x4phm_t1(1,2,2)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,2) = t2    
+                    t3    = l4x4phm_t1(1,3,2)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,2) = t3    
+                    t4    = l4x4phm_t1(1,4,2)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,2) = t4    
+                    t5     = l4x4phm_t1(2,1,2)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,2) = t5    
+                    t6     = l4x4phm_t1(2,2,2)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,2) = t6    
+                    t7     = l4x4phm_t1(2,3,2)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,2) = t7    
+                    t8     = l4x4phm_t1(2,4,2)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,2) = t8     
+                    t9     = l4x4phm_t1(3,1,2)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,2) = t9     
+                    t10    =  l4x4phm_t1(3,2,2)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,2) = t10    
+                    t11    =  l4x4phm_t1(3,3,2)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,2) = t11   
+                    t12    = l4x4phm_t1(3,4,2)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,2) = t12    
+                    t13    =  l4x4phm_t1(4,1,2)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,2) = t13    
+                    t14    =  l4x4phm_t1(4,2,2)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,2) = t14    
+                    t15    =  l4x4phm_t1(4,3,2)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,2) = t15    
+                    t16     = l4x4phm_t1(4,4,2)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,2) = t16
+#endif
+                    ! case 3
                     thinc = theta
-                    thsc  = 3.141592653589793_sp-theta
+                    thsc  = theta
                     phinc = 3.141592653589793_sp
                     phsc  = 0.0_sp
                     if(po) then
@@ -191,75 +449,361 @@ module  mod_leaf_phase_matrices
                                                     lthick,epsr,epsrc,scat2x2m)
                     end if
                     call stokes_matrix(scat2x2m,stokes4x4m)
-                    l4x4phm_t1(1,1,1) = &
-                         l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
-                    l4x4phm_t1(1,2,1) = &
-                         l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
-                    l4x4phm_t1(1,3,1) = &
-                         l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
-                    l4x4phm_t1(1,4,1) = &
-                         l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
-                    l4x4phm_t1(2,1,1) = &
-                         l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
-                    l4x4phm_t1(2,2,1) = &
-                         l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
-                    l4x4phm_t1(2,3,1) = &
-                         l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
-                    l4x4phm_t1(2,4,1) = &
-                         l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
-                    l4x4phm_t1(3,1,1) = &
-                         l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
-                    l4x4phm_t1(3,2,1) = &
-                         l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
-                    l4x4phm_t1(3,3,1) = &
-                         l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
-                    l4x4phm_t1(3,4,1) = &
-                         l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
-                    l4x4phm_t1(4,1,1) = &
-                         l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
-                    l4x4phm_t1(4,2,1) = &
-                         l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
-                    l4x4phm_t1(4,3,1) = &
-                         l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
-                    l4x4phm_t1(4,4,1) = &
-                         l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,3)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,3) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,3)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,3) = t1    
+                    t2    =  l4x4phm_t1(1,2,3)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,3) = t2    
+                    t3    = l4x4phm_t1(1,3,3)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,3) = t3    
+                    t4    = l4x4phm_t1(1,4,3)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,3) = t4    
+                    t5     = l4x4phm_t1(2,1,3)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,3) = t5    
+                    t6     = l4x4phm_t1(2,2,3)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,3) = t6    
+                    t7     = l4x4phm_t1(2,3,3)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,3) = t7    
+                    t8     = l4x4phm_t1(2,4,3)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,3) = t8     
+                    t9     = l4x4phm_t1(3,1,3)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,3) = t9     
+                    t10    =  l4x4phm_t1(3,2,3)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,3) = t10    
+                    t11    =  l4x4phm_t1(3,3,3)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,3) = t11   
+                    t12    = l4x4phm_t1(3,4,3)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,3) = t12    
+                    t13    =  l4x4phm_t1(4,1,3)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,3) = t13    
+                    t14    =  l4x4phm_t1(4,2,3)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,3) = t14    
+                    t15    =  l4x4phm_t1(4,3,3)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,3) = t15    
+                    t16     = l4x4phm_t1(4,4,3)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,3) = t16
+#endif
                     scat2x2m(1,2) = -scat2x2m(1,2)
                     scat2x2m(2,1) = -scat2x2m(2,1)
                     call stokes_matrix(scat2x2m,stokes4x4m)
-                    l4x4phm_t1(1,1,1) = &
-                         l4x4phm_t1(1,1,1)+orient_distr*stokes4x4m(1,1)
-                    l4x4phm_t1(1,2,1) = &
-                         l4x4phm_t1(1,2,1)+orient_distr*stokes4x4m(1,2)
-                    l4x4phm_t1(1,3,1) = &
-                         l4x4phm_t1(1,3,1)+orient_distr*stokes4x4m(1,3)
-                    l4x4phm_t1(1,4,1) = &
-                         l4x4phm_t1(1,4,1)+orient_distr*stokes4x4m(1,4)
-                    l4x4phm_t1(2,1,1) = &
-                         l4x4phm_t1(2,1,1)+orient_distr*stokes4x4m(2,1)
-                    l4x4phm_t1(2,2,1) = &
-                         l4x4phm_t1(2,2,1)+orient_distr*stokes4x4m(2,2)
-                    l4x4phm_t1(2,3,1) = &
-                         l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
-                    l4x4phm_t1(2,4,1) = &
-                         l4x4phm_t1(2,4,1)+orient_distr*stokes4x4m(2,4)
-                    l4x4phm_t1(3,1,1) = &
-                         l4x4phm_t1(3,1,1)+orient_distr*stokes4x4m(3,1)
-                    l4x4phm_t1(3,2,1) = &
-                         l4x4phm_t1(3,2,1)+orient_distr*stokes4x4m(3,2)
-                    l4x4phm_t1(3,3,1) = &
-                         l4x4phm_t1(3,3,1)+orient_distr*stokes4x4m(3,3)
-                    l4x4phm_t1(3,4,1) = &
-                         l4x4phm_t1(3,4,1)+orient_distr*stokes4x4m(3,4)
-                    l4x4phm_t1(4,1,1) = &
-                         l4x4phm_t1(4,1,1)+orient_distr*stokes4x4m(4,1)
-                    l4x4phm_t1(4,2,1) = &
-                         l4x4phm_t1(4,2,1)+orient_distr*stokes4x4m(4,2)
-                    l4x4phm_t1(4,3,1) = &
-                         l4x4phm_t1(4,3,1)+orient_distr*stokes4x4m(4,3)
-                    l4x4phm_t1(4,4,1) = &
-                         l4x4phm_t1(4,4,1)+orient_distr*stokes4x4m(4,4)
-                    ! case 2
-                    
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,3)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,3) = t1
+                       end do
+                    end do
+#else                    
+                    t1    = l4x4phm_t1(1,1,3)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,3) = t1    
+                    t2    =  l4x4phm_t1(1,2,3)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,3) = t2    
+                    t3    = l4x4phm_t1(1,3,3)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,3) = t3    
+                    t4    = l4x4phm_t1(1,4,3)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,3) = t4    
+                    t5     = l4x4phm_t1(2,1,3)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,3) = t5    
+                    t6     = l4x4phm_t1(2,2,3)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,3) = t6    
+                    t7     = l4x4phm_t1(2,3,3)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,3) = t7    
+                    t8     = l4x4phm_t1(2,4,3)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,3) = t8     
+                    t9     = l4x4phm_t1(3,1,3)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,3) = t9     
+                    t10    =  l4x4phm_t1(3,2,3)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,3) = t10    
+                    t11    =  l4x4phm_t1(3,3,3)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,3) = t11   
+                    t12    = l4x4phm_t1(3,4,3)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,3) = t12    
+                    t13    =  l4x4phm_t1(4,1,3)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,3) = t13    
+                    t14    =  l4x4phm_t1(4,2,3)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,3) = t14    
+                    t15    =  l4x4phm_t1(4,3,3)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,3) = t15    
+                    t16     = l4x4phm_t1(4,4,3)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,3) = t16
+#endif
+                    ! case 4
+                    thinc = 3.141592653589793_sp-theta
+                    thsc  = theta
+                    phinc = 0.0_sp
+                    phsc  = 3.141592653589793_sp
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,4)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,4) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,4)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,4) = t1    
+                    t2    =  l4x4phm_t1(1,2,4)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,4) = t2    
+                    t3    = l4x4phm_t1(1,3,4)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,4) = t3    
+                    t4    = l4x4phm_t1(1,4,4)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,4) = t4    
+                    t5     = l4x4phm_t1(2,1,4)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,4) = t5    
+                    t6     = l4x4phm_t1(2,2,4)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,4) = t6    
+                    t7     = l4x4phm_t1(2,3,4)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,4) = t7    
+                    t8     = l4x4phm_t1(2,4,4)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,4) = t8     
+                    t9     = l4x4phm_t1(3,1,4)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,4) = t9     
+                    t10    =  l4x4phm_t1(3,2,4)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,4) = t10    
+                    t11    =  l4x4phm_t1(3,3,4)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,4) = t11   
+                    t12    = l4x4phm_t1(3,4,4)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,4) = t12    
+                    t13    =  l4x4phm_t1(4,1,4)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,4) = t13    
+                    t14    =  l4x4phm_t1(4,2,4)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,4) = t14    
+                    t15    =  l4x4phm_t1(4,3,4)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,4) = t15    
+                    t16     = l4x4phm_t1(4,4,4)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,4) = t16
+#endif
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+                    call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t1(l,k,4)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t1(l,k,4) = t1
+                       end do
+                    end do
+#else
+                    t1    = l4x4phm_t1(1,1,4)+orient_distr*stokes4x4m(1,1)
+                    l4x4phm_t1(1,1,4) = t1    
+                    t2    =  l4x4phm_t1(1,2,4)+orient_distr*stokes4x4m(1,2)
+                    l4x4phm_t1(1,2,4) = t2    
+                    t3    = l4x4phm_t1(1,3,4)+orient_distr*stokes4x4m(1,3)
+                    l4x4phm_t1(1,3,4) = t3    
+                    t4    = l4x4phm_t1(1,4,4)+orient_distr*stokes4x4m(1,4)
+                    l4x4phm_t1(1,4,4) = t4    
+                    t5     = l4x4phm_t1(2,1,4)+orient_distr*stokes4x4m(2,1)
+                    l4x4phm_t1(2,1,4) = t5    
+                    t6     = l4x4phm_t1(2,2,4)+orient_distr*stokes4x4m(2,2)
+                    l4x4phm_t1(2,2,4) = t6    
+                    t7     = l4x4phm_t1(2,3,4)+orient_distr*stokes4x4m(2,3)
+                    l4x4phm_t1(2,3,4) = t7    
+                    t8     = l4x4phm_t1(2,4,4)+orient_distr*stokes4x4m(2,4)
+                    l4x4phm_t1(2,4,4) = t8     
+                    t9     = l4x4phm_t1(3,1,4)+orient_distr*stokes4x4m(3,1)
+                    l4x4phm_t1(3,1,4) = t9     
+                    t10    =  l4x4phm_t1(3,2,4)+orient_distr*stokes4x4m(3,2)
+                    l4x4phm_t1(3,2,4) = t10    
+                    t11    =  l4x4phm_t1(3,3,4)+orient_distr*stokes4x4m(3,3)
+                    l4x4phm_t1(3,3,4) = t11   
+                    t12    = l4x4phm_t1(3,4,4)+orient_distr*stokes4x4m(3,4)
+                    l4x4phm_t1(3,4,4) = t12    
+                    t13    =  l4x4phm_t1(4,1,4)+orient_distr*stokes4x4m(4,1)
+                    l4x4phm_t1(4,1,4) = t13    
+                    t14    =  l4x4phm_t1(4,2,4)+orient_distr*stokes4x4m(4,2)
+                    l4x4phm_t1(4,2,4) = t14    
+                    t15    =  l4x4phm_t1(4,3,4)+orient_distr*stokes4x4m(4,3)
+                    l4x4phm_t1(4,3,4) = t15    
+                    t16     = l4x4phm_t1(4,4,4)+orient_distr*stokes4x4m(4,4)
+                    l4x4phm_t1(4,4,4) = t16
+#endif
+                    ! Extinction matrix: case 1
+                    thinc = theta
+                    thsc  = thinc
+                    phinc = 3.141592653589793_sp
+                    phsc  = phinc
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 2
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 2
+                          t1 = sm2x2avg_t1(l,k,1)+orient_distr*scat2x2m(l,k)
+                          sm2x2avg_t1(l,k,1) = t1
+                       end do
+                    end do
+#else
+                    t1 = sm2x2avg_t1(1,1,1)+orient_distr*scat2x2m(1,1)
+                    sm2x2avg_t1(1,1,1) = t1
+                    t2 = sm2x2avg_t1(1,2,1)+orient_distr*scat2x2m(1,2)
+                    sm2x2avg_t1(1,2,1) = t2
+                    t3 = sm2x2avg_t1(2,1,1)+orient_distr*scat2x2m(2,1)
+                    sm2x2avg_t1(2,1,1) = t3
+                    t4 = sm2x2avg_t1(2,2,1)+orient_distr*scat2x2m(2,2)
+                    sm2x2avg_t1(2,2,1) = t4
+#endif
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 2
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 2
+                          t1 = sm2x2avg_t1(l,k,1)+orient_distr*scat2x2m(l,k)
+                          sm2x2avg_t1(l,k,1) = t1
+                       end do
+                    end do
+#else
+                    t1 = sm2x2avg_t1(1,1,1)+orient_distr*scat2x2m(1,1)
+                    sm2x2avg_t1(1,1,1) = t1
+                    t2 = sm2x2avg_t1(1,2,1)+orient_distr*scat2x2m(1,2)
+                    sm2x2avg_t1(1,2,1) = t2
+                    t3 = sm2x2avg_t1(2,1,1)+orient_distr*scat2x2m(2,1)
+                    sm2x2avg_t1(2,1,1) = t3
+                    t4 = sm2x2avg_t1(2,2,1)+orient_distr*scat2x2m(2,2)
+                    sm2x2avg_t1(2,2,1) = t4
+#endif
+                    ! Extinction matrix: case 2
+                    thinc =   3.141592653589793_sp-theta
+                    thsc  =   3.141592653589793_sp-theta
+                    phinc =   0.0_sp
+                    phsc  =   phinc
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 2
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 2
+                          t1 = sm2x2avg_t1(l,k,2)+orient_distr*scat2x2m(l,k)
+                          sm2x2avg_t1(l,k,2) = t1
+                       end do
+                    end do
+#else
+                    t1 = sm2x2avg_t1(1,1,2)+orient_distr*scat2x2m(1,1)
+                    sm2x2avg_t1(1,1,2) = t1
+                    t2 = sm2x2avg_t1(1,2,2)+orient_distr*scat2x2m(1,2)
+                    sm2x2avg_t1(1,2,2) = t2
+                    t3 = sm2x2avg_t1(2,1,2)+orient_distr*scat2x2m(2,1)
+                    sm2x2avg_t1(2,1,2) = t3
+                    t4 = sm2x2avg_t1(2,2,2)+orient_distr*scat2x2m(2,2)
+                    sm2x2avg_t1(2,2,2) = t4
+#endif
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 2
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 2
+                          t1 = sm2x2avg_t1(l,k,2)+orient_distr*scat2x2m(l,k)
+                          sm2x2avg_t1(l,k,2) = t1
+                       end do
+                    end do
+#else
+                    t1 = sm2x2avg_t1(1,1,2)+orient_distr*scat2x2m(1,1)
+                    sm2x2avg_t1(1,1,2) = t1
+                    t2 = sm2x2avg_t1(1,2,2)+orient_distr*scat2x2m(1,2)
+                    sm2x2avg_t1(1,2,2) = t2
+                    t3 = sm2x2avg_t1(2,1,2)+orient_distr*scat2x2m(2,1)
+                    sm2x2avg_t1(2,1,2) = t3
+                    t4 = sm2x2avg_t1(2,2,2)+orient_distr*scat2x2m(2,2)
+                    sm2x2avg_t1(2,2,2) = t4
+#endif
+                 end do
+              end if
+           end do
+        end if
+        
      end subroutine compute_leaf_phase_matrices
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
