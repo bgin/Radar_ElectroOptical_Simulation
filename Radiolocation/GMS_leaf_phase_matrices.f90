@@ -761,6 +761,102 @@ module  mod_leaf_phase_matrices
                   include 'l4x4phm_t2_1_1_4.inc'
 #endif                  
      end subroutine compute_leaf_phase_matrices
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine leaf_dielectric(epsr,leaf_mg,leaf_rho,leaf_dens,  &
+                                leaf_diam,leaf_tau,dry_dens,      &
+                           soil_tmp,water_tmp,veg_tmp,theta,rad_freq) !GCC$ ATTRIBUTES hot :: leaf_dielectric !GCC$ ATTRIBUTES aligned(16)  :: leaf_dielectric !GCC$ ATTRIBUTES inline :: leaf_dielectric
+#elif defined __INTEL_COMPILER
+                        !DIR$ ATTRIBUTES INLINE :: leaf_dielectric
+      subroutine leaf_dielectric(epsr,leaf_mg,leaf_rho,leaf_dens,  &
+                                leaf_diam,leaf_tau,dry_dens,      &
+                                soil_tmp,water_tmp,veg_tmp,theta,rad_freq)
+                        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: leaf_dielectric
+#endif
+                 complex(kind=sp),       intent(out) :: epsr
+                 real(kind=sp),          intent(in)  :: leaf_mg,leaf_rho,leaf_dens, &
+                                                        leaf_diam,leaf_tau
+                 logical(kind=int4),     intent(in)  :: dry_dens
+                 real(kind=sp),          intent(in)  :: soil_tmp,water_tmp,veg_tmp, &
+                                                        theta,rad_freq
+                 ! Exec code ....
+                 if(dry_dens) then
+                    call veg_dielectric_2(epsr,leaf_mg,leaf_rho,veg_tmp,theta,rad_freq)
+                 else
+                    call veg_dielectric_1(epsr,leaf_mg,veg_tmp,theta,rad_freq)
+                 end if
+      end subroutine leaf_dielectric
+      
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+      subroutine veg_dielectric_2(epsr,mg,veg_rho, &
+           tempC,theta,rad_freq) !GCC$ ATTRIBUTES hot :: veg_dielectric_2 !GCC$ ATTRIBUTES aligned(64) :: veg_dielectric_2 !GCC$ ATTRIBUTES inline :: veg_dielectric_2
+#elif defined __INTEL_COMPILER
+        !DIR$ ATTRIBUTES INLINE :: veg_dielectric_2
+      subroutine veg_dielectric_2(epsr,mg,veg_rho, &
+           tempC,theta,rad_freq)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: veg_dielectric_2
+#endif
+           complex(kind=sp),   intent(out) :: epsr
+           real(kind=sp),      intent(in)  :: mg,veg_rho,tempC,theta,rad_freq
+           ! Locals
+           complex(kind=sp), automatic :: e,f,g,w
+           real(kind=sp),    automatic :: mv,a,b,c,d
+           real(kind=sp),    automatic :: top,fn,en,ein
+           real(kind=sp),    automatic :: t0
+           ! Exec code ....
+           mv = mg*veg_rho/(1.0_sp*(1.0_sp-veg_rho))
+           t0 = mv*mv
+           a  = 1.7_sp+3.20_sp*mv+6.5_sp*t0
+           b  = mv*(0.82_sp*mv+0.166_sp)
+           c  = 31.4_sp*t0/(59.5_sp*t0+1.0_sp)
+           !
+           top = 1.1109e-10_sp+tempC*(-3.824e-12_sp+tempC* &
+                (6.938e-14_sp-tempC*5.096e-16_sp))
+           fn  = 1.0_sp/(top*1.09_sp)
+           en  = 88.045_sp+tempC*(-0.4147_sp+tempC*(6.295e-4_sp +  &
+                tempC*1.075e-5_sp))
+           ein = 4.9_sp
+           e = cmplx(1.0_sp,(rad_freq/fn))
+           d = 22.74_sp
+           f = cmplx(0.0_sp,(d/rad_freq))
+           w = 0.707106781186548_sp*cmplx(1.0_sp,1.0_sp)*sqrt(rad_freq/0.18_sp)
+           g = 1.0_sp*w
+           epsr = a+b*(4.9_sp+(en-ein)/e-f)+c*(2.9_sp+55.0_sp/g)
+     end subroutine veg_dielectric_2
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+     subroutine veg_dielectric_1(epsr,mg,tempC,theta,rad_freq) !GCC$ ATTRIBUTES hot :: veg_dielectric_1 !GCC$ ATTRIBUTES aligned(64) :: veg_dielectric_1 !GCC$ ATTRIBUTES inline :: veg_dielectric_1
+#elif defined __INTEL_COMPILER
+         !DIR$ ATTRIBUTES INLINE :: veg_dielectric_1
+     subroutine veg_dielectric_1(epsr,mg,tempC,theta,rad_freq)
+          !DIR$ ATTRIBUTES CODE_ALIGN : 64 :: veg_dielectric_1 
+#endif 
+           complex(kind=sp),   intent(out) :: epsr
+           real(kind=sp),      intent(in)  :: mg,tempC,theta,rad_freq
+           ! Locals
+           complex(kind=sp),  automatic :: e,f,g,w
+           real(kind=sp),     automatic :: top,ef,en,ein,t0
+           real(kind=sp),     automatic :: a,b,c,d
+           ! Exec code ....
+           t0 = mg*mg
+           a  = 1.7_sp-0.74_sp*mg+6.16_sp*t0
+           b  = mg*(0.55_sp*mg-0.076_sp)
+           c = 4.64_sp*t0/(7.36_sp*t0+1.0_sp)
+           d = 22.74_sp
+           top = 1.1109e-10_sp+tempC*(-3.824e-12_sp+tempC* &
+                (6.938e-14_sp-tempC*5.096e-16_sp))
+           fn  = 1.0_sp/(top*1.09_sp)
+           en  = 88.045_sp+tempC*(-0.4147_sp+tempC*(6.295e-4_sp +  &
+                tempC*1.075e-5_sp))
+           ein = 4.9_sp
+           e = cmplx(1.0_sp,(rad_freq/fn))
+           f = cmplx(0.0_sp,(d/rad_freq))
+           w = 0.707106781186548_sp*cmplx(1.0_sp,1.0_sp)*sqrt(rad_freq/0.18_sp)
+           g = 1.0_sp*w
+           epsr = a+b*(4.9_sp+(en-ein)/e-f)+c*(2.9_sp+55.0_sp/g)
+     end subroutine veg_dielectric_1
+     
+      
      
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
      subroutine set_leaf_quadrature_bounds(nth1,tr_start1,tr_stop1,dt_rad1, &
