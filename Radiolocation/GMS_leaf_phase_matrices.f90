@@ -434,56 +434,10 @@ module  mod_leaf_phase_matrices
                                                     lrho,ldens,ldiam,    &
                                                     lthick,epsr,epsrc,scat2x2m)
                     end if
-#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
-
-                    do k=1, 2
-#if defined __INTEL_COMPILER
-                       !DIR$ VECTOR ALWAYS
-                       !DIR$ CODE_ALIGN : 64
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-                       !GCC$ VECTOR
-#endif
-                       do l=1, 2
-                          t1 = sm2x2avg_t1(l,k,1)+orient_distr*scat2x2m(l,k)
-                          sm2x2avg_t1(l,k,1) = t1
-                       end do
-                    end do
-#else
-                    t1 = sm2x2avg_t1(1,1,1)+orient_distr*scat2x2m(1,1)
-                    sm2x2avg_t1(1,1,1) = t1
-                    t2 = sm2x2avg_t1(1,2,1)+orient_distr*scat2x2m(1,2)
-                    sm2x2avg_t1(1,2,1) = t2
-                    t3 = sm2x2avg_t1(2,1,1)+orient_distr*scat2x2m(2,1)
-                    sm2x2avg_t1(2,1,1) = t3
-                    t4 = sm2x2avg_t1(2,2,1)+orient_distr*scat2x2m(2,2)
-                    sm2x2avg_t1(2,2,1) = t4
-#endif
+#include 'sm2x2avg_t1_1_1_1.inc'
                     scat2x2m(1,2) = -scat2x2m(1,2)
                     scat2x2m(2,1) = -scat2x2m(2,1)
-#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
-
-                    do k=1, 2
-#if defined __INTEL_COMPILER
-                       !DIR$ VECTOR ALWAYS
-                       !DIR$ CODE_ALIGN : 64
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-                       !GCC$ VECTOR
-#endif
-                       do l=1, 2
-                          t1 = sm2x2avg_t1(l,k,1)+orient_distr*scat2x2m(l,k)
-                          sm2x2avg_t1(l,k,1) = t1
-                       end do
-                    end do
-#else
-                    t1 = sm2x2avg_t1(1,1,1)+orient_distr*scat2x2m(1,1)
-                    sm2x2avg_t1(1,1,1) = t1
-                    t2 = sm2x2avg_t1(1,2,1)+orient_distr*scat2x2m(1,2)
-                    sm2x2avg_t1(1,2,1) = t2
-                    t3 = sm2x2avg_t1(2,1,1)+orient_distr*scat2x2m(2,1)
-                    sm2x2avg_t1(2,1,1) = t3
-                    t4 = sm2x2avg_t1(2,2,1)+orient_distr*scat2x2m(2,2)
-                    sm2x2avg_t1(2,2,1) = t4
-#endif
+#include 'sm2x2avg_t1_1_1_1.inc'
                     ! Extinction matrix: case 2
                     thinc =   3.141592653589793_sp-theta
                     thsc  =   3.141592653589793_sp-theta
@@ -501,62 +455,17 @@ module  mod_leaf_phase_matrices
                                                     lrho,ldens,ldiam,    &
                                                     lthick,epsr,epsrc,scat2x2m)
                     end if
-#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
-
-                    do k=1, 2
-#if defined __INTEL_COMPILER
-                       !DIR$ VECTOR ALWAYS
-                       !DIR$ CODE_ALIGN : 64
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-                       !GCC$ VECTOR
-#endif
-                       do l=1, 2
-                          t1 = sm2x2avg_t1(l,k,2)+orient_distr*scat2x2m(l,k)
-                          sm2x2avg_t1(l,k,2) = t1
-                       end do
-                    end do
-#else
-                    t1 = sm2x2avg_t1(1,1,2)+orient_distr*scat2x2m(1,1)
-                    sm2x2avg_t1(1,1,2) = t1
-                    t2 = sm2x2avg_t1(1,2,2)+orient_distr*scat2x2m(1,2)
-                    sm2x2avg_t1(1,2,2) = t2
-                    t3 = sm2x2avg_t1(2,1,2)+orient_distr*scat2x2m(2,1)
-                    sm2x2avg_t1(2,1,2) = t3
-                    t4 = sm2x2avg_t1(2,2,2)+orient_distr*scat2x2m(2,2)
-                    sm2x2avg_t1(2,2,2) = t4
-#endif
+#include 'sm2x2avg_t1_1_1_2.inc'
                     scat2x2m(1,2) = -scat2x2m(1,2)
                     scat2x2m(2,1) = -scat2x2m(2,1)
-#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
-
-                    do k=1, 2
-#if defined __INTEL_COMPILER
-                       !DIR$ VECTOR ALWAYS
-                       !DIR$ CODE_ALIGN : 64
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-                       !GCC$ VECTOR
-#endif
-                       do l=1, 2
-                          t1 = sm2x2avg_t1(l,k,2)+orient_distr*scat2x2m(l,k)
-                          sm2x2avg_t1(l,k,2) = t1
-                       end do
-                    end do
-#else
-                    t1 = sm2x2avg_t1(1,1,2)+orient_distr*scat2x2m(1,1)
-                    sm2x2avg_t1(1,1,2) = t1
-                    t2 = sm2x2avg_t1(1,2,2)+orient_distr*scat2x2m(1,2)
-                    sm2x2avg_t1(1,2,2) = t2
-                    t3 = sm2x2avg_t1(2,1,2)+orient_distr*scat2x2m(2,1)
-                    sm2x2avg_t1(2,1,2) = t3
-                    t4 = sm2x2avg_t1(2,2,2)+orient_distr*scat2x2m(2,2)
-                    sm2x2avg_t1(2,2,2) = t4
-#endif
+#include 'sm2x2avg_t1_1_1_2.inc'
                  end do
               end if
            end do
         end if
         
         l4x4phm_t2 = 0.0_sp
+        sm2x2avg_t2 = cmplx(0.0_sp,0.0_sp)
         if((nth2/=0).and.(nph2/=0)) then
            t1=0.0_sp
            t2=0.0_sp
@@ -639,6 +548,19 @@ module  mod_leaf_phase_matrices
                   thsc  = 3.141592653589793_sp-theta
                   phinc = 0.0_sp
                   phsc  = 3.141592653589793_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                  else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                  end if
+                  call stokes_matrix(scat2x2m,stokes4x4m)  
 #if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
 
                     do k=1, 4
@@ -681,6 +603,19 @@ module  mod_leaf_phase_matrices
                   thsc  = theta
                   phinc =  3.141592653589793_sp
                   phsc  = 0.0_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                  else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                  end if
+                  call stokes_matrix(scat2x2m,stokes4x4m)  
 #if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
 
                    do k=1, 4
@@ -723,6 +658,19 @@ module  mod_leaf_phase_matrices
                   thsc  = theta
                   phinc = 0.0_sp
                   phsc  =  3.141592653589793_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                  else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                  end if
+                  call stokes_matrix(scat2x2m,stokes4x4m)  
 #if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
 
                    do k=1, 4
@@ -759,7 +707,54 @@ module  mod_leaf_phase_matrices
                     end do
 #else
                   include 'l4x4phm_t2_1_1_4.inc'
-#endif                  
+#endif
+                  ! Extinction matrix: case 1
+                  thinc = theta
+                  thsc  = thinc
+                  phinc = 3.141592653589793_sp
+                  phsc  = phinc
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                  else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                  end if
+#include 'sm2x2avg_t2_1_1_1.inc'
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#include 'sm2x2avg_t2_1_1_1.inc'
+                    ! Extinction matrix: case 2
+                    thinc = 3.141592653589793_sp-theta
+                    thsc  = 3.141592653589793_sp-theta
+                    phinc = 0.0_sp
+                    phsc  = phinc
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                    else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                    end if
+#include 'sm2x2avg_t2_1_1_2.inc'
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#include 'sm2x2avg_t2_1_1_2.inc'
+                 end do
+              end if
+           end do
+        end if
+        
      end subroutine compute_leaf_phase_matrices
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
