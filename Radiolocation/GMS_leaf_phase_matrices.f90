@@ -754,7 +754,252 @@ module  mod_leaf_phase_matrices
               end if
            end do
         end if
-        
+        l4x4phm_t3 = 0.0_sp
+        sm2x2avg_t3 = cmplx(0.0_sp,0.0_sp)
+        if((nth3/=0).and.(nph3/=0)) then
+           t1=0.0_sp
+           t2=0.0_sp
+           t3=0.0_sp
+           t4=0.0_sp
+           t5=0.0_sp
+           t6=0.0_sp
+           t7=0.0_sp
+           t8=0.0_sp
+           t9=0.0_sp
+           t10=0.0_sp
+           t11=0.0_sp
+           t12=0.0_sp
+           t13=0.0_sp
+           t14=0.0_sp
+           t15=0.0_sp
+           t16=0.0_sp
+           do jj=1, nth3
+               thdr = tr_start3+dt_rad3*real(jj-1,kind=sp)
+               orient_distr = compute_leaf_odf(thdr)
+               if(orient_distr>0.0_sp) then
+                  do ii=1, nph3
+                     phdr = pr_start3+dp_rad3*real(ii-1,kind=sp)
+                     thinc = theta
+                     thsc  = 3.141592653589793_sp-theta
+                     phinc = 3.141592653589793_sp
+                     phsc  = 0.0_sp
+                     if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                     else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                     end if
+                     call stokes_matrix(scat2x2m,stokes4x4m)
+                     ! phase matrix: case 1
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,1)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,1) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_1.inc'
+#endif
+                   scat2x2m(1,2) = -scat2x2m(1,2)
+                   scat2x2m(2,1) = -scat2x2m(2,1)
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,1)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,1) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_1.inc'
+#endif
+                  ! phase matrix: case 2
+                  thinc = 3.141592653589793_sp-theta
+                  thsc  = 3.141592653589793_sp-theta
+                  phinc = 0.0_sp
+                  thsc  = 3.141592653589793_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                   else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                   end if
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,2)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,2) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_2.inc'
+#endif
+                   scat2x2m(1,2) = -scat2x2m(1,2)
+                   scat2x2m(2,1) = -scat2x2m(2,1)
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,2)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,2) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_2.inc'
+#endif
+                  ! phase matrix: case 3
+                  thinc = theta
+                  thsc  = theta
+                  phinc = 3.141592653589793_sp
+                  phsc  = 0.0_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                   else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                   end if
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,3)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,3) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_3.inc'
+#endif
+                   scat2x2m(1,2) = -scat2x2m(1,2)
+                   scat2x2m(2,1) = -scat2x2m(2,1)
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,3)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,3) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_3.inc'
+#endif
+                  ! phase matrix: case 4
+                  thinc = 3.141592653589793_sp-theta
+                  thsc  = theta
+                  phinc = 0.0_sp
+                  phsc  = 3.141592653589793_sp
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                   else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                   end if
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,4)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,4) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_4.inc'
+#endif
+                   scat2x2m(1,2) = -scat2x2m(1,2)
+                   scat2x2m(2,1) = -scat2x2m(2,1)
+                   call stokes_matrix(scat2x2m,stokes4x4m)
+#if (LEAF_PHASE_MATRIX_AUTOVECTORIZE) == 1
+
+                    do k=1, 4
+#if defined __INTEL_COMPILER
+                       !DIR$ VECTOR ALWAYS
+                       !DIR$ CODE_ALIGN : 64
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+                       !GCC$ VECTOR
+#endif
+                       do l=1, 4
+                          t1 = l4x4phm_t3(l,k,4)+orient_distr*stokes4x4m(l,k)
+                          l4x4phm_t3(l,k,4) = t1
+                       end do
+                    end do
+#else
+                  include 'l4x4phm_t3_1_1_4.inc'
+#endif
+                  ! Extinction matrix: case 1
      end subroutine compute_leaf_phase_matrices
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
