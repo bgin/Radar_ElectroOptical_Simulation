@@ -10,7 +10,7 @@
                     l4x4phm_t2(2,1,1) = t5    
                     t6     = l4x4phm_t2(2,2,1)+orient_distr*stokes4x4m(2,2)
                     l4x4phm_t2(2,2,1) = t6    
-                    t7     = l4x4phm_t1(2,3,1)+orient_distr*stokes4x4m(2,3)
+                    t7     = l4x4phm_t2(2,3,1)+orient_distr*stokes4x4m(2,3)
                     l4x4phm_t2(2,3,1) = t7    
                     t8     = l4x4phm_t2(2,4,1)+orient_distr*stokes4x4m(2,4)
                     l4x4phm_t2(2,4,1) = t8     
