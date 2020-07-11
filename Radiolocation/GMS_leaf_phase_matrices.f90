@@ -54,20 +54,16 @@ module  mod_leaf_phase_matrices
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
      subroutine compute_leaf_phase_matrices(l4x4phm,sm2x2avg,l2x2mp,l2x2mn, &
-                                            eig1x4lp,eig1x4ln,eig4x4mp,     &
-                                            eig4x4mn,eig4x4mpi,eig4x4mni,   &
-                                            expa4x4mp,expa4x4mn,stokes4x4m, &
-                                            scat2x2m, ,z,delta,lvar,    &
+                                            stokes4x4m, &
+                                            scat2x2m,lvar,    &
                                             crown_height,trunk_height,dens, &
                                             ldiam,lthick,lmg,lrho,ldens,theta,&
                                             ctheta,stheta,leaves_epsr, &
                                             leaves_epsrc,rad_freq,rad_wv,rad_k0) !GCC$ ATTRIBUTES hot :: compute_leaf_phase_matrices !GCC$ ATTRIBUTES aligned(32) :: compute_leaf_phase_matrices
 #elif defined __INTEL_COMPILER
      subroutine compute_leaf_phase_matrices(l4x4phm,sm2x2avg,l2x2mp,l2x2mn, &
-                                            eig1x4lp,eig1x4ln,eig4x4mp,     &
-                                            eig4x4mn,eig4x4mpi,eig4x4mni,   &
-                                            expa4x4mp,expa4x4mn,stokes4x4m, &
-                                            scat2x2m,z,delta,lvar,lvarv, &
+                                            stokes4x4m, &
+                                            scat2x2m,lvar,lvarv, &
                                             crown_height,trunk_height,dens,  &
                                             ldiam,lthick,lmg,lrho,ldens,theta,&
                                             ctheta,stheta,leaves_epsr, &
@@ -75,22 +71,14 @@ module  mod_leaf_phase_matrices
                   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: compute_leaf_phase_matrices
 #endif
 
-           real(kind=sp),     dimension(4,4,4),  intent(inout)  :: l4x4phm
+           real(kind=sp),     dimension(4,4,4),  intent(inout)  :: l4x4phm !result
            complex(kind=sp),  dimension(2,2,2),  intent(inout)  :: sm2x2avg
-           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mp ! complex 2x2 m matrix positive dir
-           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mn ! complex 2x2 m matrix negative dir
-           complex(kind=sp),  dimension(4),      intent(inout)  :: eig1x4lp
-           complex(kind=sp),  dimension(4),      intent(inout)  :: eig1x4ln
-           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mp
-           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mn
-           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mpi
-           complex(kind=sp),  dimension(4,4),    intent(inout)  :: eig4x4mni
-           real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mp
-           real(kind=sp),     dimension(4,4),    intent(inout)  :: expa4x4mn
+           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mp ! result complex 2x2 m matrix positive dir
+           complex(kind=sp),  dimension(2,2),    intent(inout)  :: l2x2mn ! result complex 2x2 m matrix negative dir
            real(kind=sp),     dimension(4,4),    intent(out)    :: stokes4x4m !result
            complex(kind=sp),  dimension(2,2),    intent(out)    :: scat2x2m   !result
-           real(kind=sp),                        intent(in)  :: z
-           real(kind=sp),                        intent(in)  :: delta
+         
+          
            real(kind=sp),                        intent(in)  :: lvar  ! leaf variation of orientation function 
            real(kind=sp),                        intent(in)  :: lvarv ! leaf variation variable
            real(kind=sp),                        intent(in)  :: crown_height
@@ -131,7 +119,7 @@ module  mod_leaf_phase_matrices
            complex(kind=sp), dimension(2,2,2) :: sm2x2avg_t2 !GCC$ ATTRIBUTES aligned(64) :: sm2x2avg_t2
            complex(kind=sp), dimension(2,2,2) :: sm2x2avg_t3 !GCC$ ATTRIBUTES aligned(64) :: sm2x2avg_t3
 #endif
-           complex(kind=sp), automatic :: j,cwork,orient_distr
+           complex(kind=sp), automatic :: j,cwork,work,orient_distr
            real(kind=sp),    automatic :: tr_start1,tr_stop1,dt_rad1
            real(kind=sp),    automatic :: tr_start2,tr_stop2,dt_rad2
            real(kind=sp),    automatic :: tr_start3,tr_stop3,dt_rad3
@@ -1000,6 +988,89 @@ module  mod_leaf_phase_matrices
                   include 'l4x4phm_t3_1_1_4.inc'
 #endif
                   ! Extinction matrix: case 1
+                  thinc = theta
+                  thsc  = thinc
+                  phinc = 3.141592653589793_sp
+                  phsc  = phinc
+                  if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                  else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                  end if
+#include 'sm2x2avg_t3_1_1_1.inc'
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#include 'sm2x2avg_t3_1_1_1.inc'
+                    ! Extinction matrix: case 2
+                    thinc =  3.141592653589793_sp-theta
+                    thsc  =  3.141592653589793_sp-theta
+                    phinc = 0.0_sp
+                    phsc  = phinc
+                    if(po) then
+                       call leaf_phys_optics_approx(thinc,phinc,thsc,phsc, &
+                                                    thdr,phdr,rad_freq,rad_k0, &
+                                                    rad_wv,lmg,lrho,ldens,   &
+                                                    ldiam,lthick,epsr,epsrc, &
+                                                    scat2x2m)
+                   else
+                       call leaf_rayleigh_scattering(thinc,phinc,thsc,phsc,thdr,phdr, &
+                                                    rad_freq,rad_k0,rad_wv,lmg,  &
+                                                    lrho,ldens,ldiam,    &
+                                                    lthick,epsr,epsrc,scat2x2m)
+                   end if
+#include 'sm2x2avg_t3_1_1_2.inc'
+                    scat2x2m(1,2) = -scat2x2m(1,2)
+                    scat2x2m(2,1) = -scat2x2m(2,1)
+#include 'sm2x2avg_t3_1_1_2.inc'
+                 end do
+              end if
+           end do
+        end if
+        ! Phase and M matrices
+        work = 1.0_sp/norm
+        do i=1,4
+#if defined __INTEL_COMPILER
+           !DIR$ UNROLL_AND_JAM (4)
+#endif
+           do k=1,4
+#if defined __INTEL_COMPILER
+              !DIR$ SIMD
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+              !GCC$ VECTOR
+              !GCC$ UNROLL 4
+#endif
+              do l=1,4
+                 l4x4phm(l,k,i) = cwork*(dp1t1*l4x4phm_t1(l,k,i)+ &
+                                         dp2t2*l4x4phm_t2(l,k,i)+ &
+                                         dp3t3*l4x4phm_t3(l,k,i))
+              end do
+           end do
+        end do
+        cwork = j*6.283185307179586_sp/(norm*rad_k0)
+        ! Loop fusion
+        do k=1,2
+#if defined __INTEL_COMPILER
+           !DIR$ SIMD
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+           !GCC$ VECTOR
+#endif
+           do l=1,2
+              l2x2mp(l,k) = cwork*(dp1t1*sm2x2avg_t1(l,k,1)+ &
+                                   dp2t2*sm2x2avg_t2(l,k,1)+ &
+                                   dp3t3*sm2x2avg_t3(l,k,1))
+              l2x2mn(l,k) = cwork*(dp1t1*sm2x2avg_t1(l,k,2)+ &
+                                   dp2t2*sm2x2avg_t2(l,k,2)+ &
+                                   dp3t3*sm2x2avg_t3(l,k,2))
+           end do
+        end do
+        
      end subroutine compute_leaf_phase_matrices
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
@@ -1010,14 +1081,14 @@ module  mod_leaf_phase_matrices
                         !DIR$ ATTRIBUTES INLINE :: leaf_dielectric
       subroutine leaf_dielectric(epsr,leaf_mg,leaf_rho,leaf_dens,  &
                                 leaf_diam,leaf_tau,dry_dens,      &
-                                soil_tmp,water_tmp,veg_tmp,theta,rad_freq)
+                                water_tmp,veg_tmp,theta,rad_freq)
                         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: leaf_dielectric
 #endif
                  complex(kind=sp),       intent(out) :: epsr
                  real(kind=sp),          intent(in)  :: leaf_mg,leaf_rho,leaf_dens, &
                                                         leaf_diam,leaf_tau
                  logical(kind=int4),     intent(in)  :: dry_dens
-                 real(kind=sp),          intent(in)  :: soil_tmp,water_tmp,veg_tmp, &
+                 real(kind=sp),          intent(in)  :: water_tmp,veg_tmp, &
                                                         theta,rad_freq
                  ! Exec code ....
                  if(dry_dens) then
@@ -1075,7 +1146,7 @@ module  mod_leaf_phase_matrices
            real(kind=sp),      intent(in)  :: mg,tempC,theta,rad_freq
            ! Locals
            complex(kind=sp),  automatic :: e,f,g,w
-           real(kind=sp),     automatic :: top,ef,en,ein,t0
+           real(kind=sp),     automatic :: top,fn,en,ein,t0
            real(kind=sp),     automatic :: a,b,c,d
            ! Exec code ....
            t0 = mg*mg
@@ -1104,7 +1175,7 @@ module  mod_leaf_phase_matrices
                                            nth3,tr_start3,tr_stop3,dt_rad3, &
                                            nph1,pr_start1,pr_stop1,dp_rad1, &
                                            nph2,pr_start2,pr_stop2,dp_rad2, &
-                                           nph3,pr_start3,pr_stop3,dp_rad3) !GCC$ ATTRIBUTES hot :: set_leaf_quadrature_bounds !GCC$ ATTRIBUTES aligned(16) :: set_leaf_quadrature_bounds
+                                           nph3,pr_start3,pr_stop3,dp_rad3) !GCC$ ATTRIBUTES cold :: set_leaf_quadrature_bounds !GCC$ ATTRIBUTES aligned(16) :: set_leaf_quadrature_bounds
 #elif defined __INTEL_COMPILER
       subroutine set_leaf_quadrature_bounds(nth1,tr_start1,tr_stop1,dt_rad1, &
                                            nth2,tr_start2,tr_stop2,dt_rad2, &
