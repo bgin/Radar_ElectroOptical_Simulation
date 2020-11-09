@@ -214,7 +214,11 @@ cluster, cluster_center, cluster_energy ) !GCC$ ATTRIBUTES hot :: cluster_energy
 #elif defined __INTEL_COMPILER
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cluster_energy_compute
       !DIR$ ATTRIBUTES INLINE :: cluster_energy_compute
+#if defined __AVX512F__
+      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "target_arch=AVX512" :: cluster_energy_compute
+#else
       !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "target_arch=AVX" :: cluster_energy_compute
+#endif
 #endif
 !*****************************************************************************80
 !
