@@ -164,7 +164,12 @@ module GSM_mod_rkf45
   return
 end subroutine r4_fehl
 
-subroutine r4_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+subroutine r4_rkf45(f,neqn,y,yp,t,tout,relerr,abserr,flag)  !GCC$ ATTRIBUTES hot :: r4_rkf45 !GCC$ ATTRIBUTES aligned(32) :: r4_rkf45
+#elif defined __INTEL_COMPILER
+  subroutine r4_rkf45(f,neqn,y,yp,t,tout,relerr,abserr,flag)
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: r4_rkf45
+#endif
 
 !*****************************************************************************80
 !
@@ -327,51 +332,51 @@ subroutine r4_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !    progress, while any other value indicates a problem that should be 
 !    addressed.
 !
-  implicit none
+  
 
-  integer ( kind = 4 ) neqn
-
-  real ( kind = 4 ) abserr
-  real ( kind = 4 ), save :: abserr_save = -1.0E+00
-  real ( kind = 4 ) ae
-  real ( kind = 4 ) dt
-  real ( kind = 4 ) ee
-  real ( kind = 4 ) eeoet
-  real ( kind = 4 ) eps
-  real ( kind = 4 ) esttol
-  real ( kind = 4 ) et
+  integer ( kind = sp ),       intent(in) ::  neqn
+  
+  real ( kind = sp ) abserr
+  real ( kind = sp ), save :: abserr_save = -1.0E+00
+  real ( kind = sp ) ae
+  real ( kind = sp ) dt
+  real ( kind = sp ) ee
+  real ( kind = sp ) eeoet
+  real ( kind = sp ) eps
+  real ( kind = sp ) esttol
+  real ( kind = sp ) et
   external f
-  real ( kind = 4 ) f1(neqn)
-  real ( kind = 4 ) f2(neqn)
-  real ( kind = 4 ) f3(neqn)
-  real ( kind = 4 ) f4(neqn)
-  real ( kind = 4 ) f5(neqn)
-  real ( kind = 4 ), save :: h = -1.0E+00
-  logical hfaild
-  real ( kind = 4 ) hmin
-  integer ( kind = 4 ) flag
-  integer ( kind = 4 ), save :: flag_save = -1000
-  integer ( kind = 4 ), save :: init = -1000
-  integer ( kind = 4 ) k
-  integer ( kind = 4 ), save :: kflag = -1000
-  integer ( kind = 4 ), save :: kop = -1
-  integer ( kind = 4 ), parameter :: maxnfe = 3000
-  integer ( kind = 4 ) mflag
-  integer ( kind = 4 ), save :: nfe = -1
-  logical output
-  real ( kind = 4 ) relerr
-  real ( kind = 4 ) relerr_min
-  real ( kind = 4 ), save :: relerr_save = -1.0E+00
-  real ( kind = 4 ), parameter :: remin = 1.0E-12
-  real ( kind = 4 ) s
-  real ( kind = 4 ) scale
-  real ( kind = 4 ) t
-  real ( kind = 4 ) tol
-  real ( kind = 4 ) toln
-  real ( kind = 4 ) tout
-  real ( kind = 4 ) y(neqn)
-  real ( kind = 4 ) yp(neqn)
-  real ( kind = 4 ) ypk
+  real ( kind = sp ),  dimension(neqn) ::  f1
+  real ( kind = sp ),  dimension(neqn) ::  f2
+  real ( kind = sp),   dimension(neqn) ::  f3
+  real ( kind = sp ),  dimension(neqn) ::  f4
+  real ( kind = sp ),  dimension(neqn) ::  f5
+  real ( kind = sp ),  save :: h = -1.0E+00
+  logical :: hfaild
+  real ( kind = sp ) hmin
+  integer ( kind = i4 ), intent(in) :: flag
+  integer ( kind = i4 ), save :: flag_save = -1000
+  integer ( kind = i4 ), save :: init = -1000
+  integer ( kind = i4 ) :: k
+  integer ( kind = i4 ), save :: kflag = -1000
+  integer ( kind = i4 ), save :: kop = -1
+  integer ( kind = i4 ), parameter :: maxnfe = 3000
+  integer ( kind = i4 ) :: mflag
+  integer ( kind = i4 ), save :: nfe = -1
+  logical :: output
+  real ( kind = sp ) relerr
+  real ( kind = sp ) relerr_min
+  real ( kind = sp ), save :: relerr_save = -1.0E+00
+  real ( kind = sp), parameter :: remin = 1.0E-12
+  real ( kind = sp ) :: s
+  real ( kind = sp ) :: scale
+  real ( kind = sp ), intent(inout) ::  t
+  real ( kind = sp )  :: tol
+  real ( kind = sp )  :: toln
+  real ( kind = sp ), intent(inout) ::  tout
+  real ( kind = sp ), dimension(neqn), intent(inout) ::  y
+  real ( kind = sp ), dimension(neqn), intent(inout) ::  yp
+  real ( kind = sp ) :: ypk
 !
 !  Check the input parameters.
 !
@@ -718,10 +723,10 @@ subroutine r4_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
       hfaild = .true.
       output = .false.
 
-      if ( esttol < 59049.0E+00 ) then
-        s = 0.9E+00 / esttol**0.2E+00
+      if ( esttol < 59049.0E+00_dp ) then
+        s = 0.9E+00_dp / esttol**0.2E+00_dp
       else
-        s = 0.1E+00
+        s = 0.1E+00_dp
       end if
 
       h = s * h
@@ -745,10 +750,10 @@ subroutine r4_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !  Choose the next stepsize.  The increase is limited to a factor of 5.
 !  If the step failed, the next stepsize is not allowed to increase.
 !
-    if ( 0.0001889568E+00 < esttol ) then
-      s = 0.9E+00 / esttol**0.2E+00
+    if ( 0.0001889568E+00_dp < esttol ) then
+      s = 0.9E+00_dp / esttol**0.2E+00_dp
     else
-      s = 5.0E+00
+      s = 5.0E+00_dp
     end if
 
     if ( hfaild ) then
@@ -778,9 +783,15 @@ subroutine r4_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
   flag = -2
 
   return
-end
-subroutine r8_fehl ( f, neqn, y, t, h, yp, f1, f2, f3, f4, f5, s )
+end subroutine r4_rkf45
 
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+subroutine r8_fehl(f,neqn,y,t,h,yp,f1,f2,f3,f4,f5,s) !GCC$ ATTRIBUTES hot :: r8_fehl !GCC$ ATTRIBUTES aligned(32) :: r8_fehl !GCC$ ATTRIBUTES inline :: r8_fehl
+#elif defined __INTEL_COMPILER
+  subroutine r8_fehl(f,neqn,y,t,h,yp,f1,f2,f3,f4,f5,s)
+    !DIR$ ATTRIBUTES INLINE :: r8_fehl
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: r8_fehl
+#endif
 !*****************************************************************************80
 !
 !! R8_FEHL takes one Fehlberg fourth-fifth order step (double precision).
@@ -854,80 +865,86 @@ subroutine r8_fehl ( f, neqn, y, t, h, yp, f1, f2, f3, f4, f5, s )
 !
 !    Output, real ( kind = 8 ) S(NEQN), the estimate of the solution at T+H.
 !
-  implicit none
+ 
 
-  integer ( kind = 4 ) neqn
+  integer ( kind = i4 ) :: neqn
 
-  real ( kind = 8 ) ch
+  real ( kind = dp ) :: ch
   external f
-  real ( kind = 8 ) f1(neqn)
-  real ( kind = 8 ) f2(neqn)
-  real ( kind = 8 ) f3(neqn)
-  real ( kind = 8 ) f4(neqn)
-  real ( kind = 8 ) f5(neqn)
-  real ( kind = 8 ) h
-  real ( kind = 8 ) s(neqn)
-  real ( kind = 8 ) t
-  real ( kind = 8 ) y(neqn)
-  real ( kind = 8 ) yp(neqn)
+  real ( kind = dp ), dimension(neqn) ::  f1
+  real ( kind = dp ), dimension(neqn) ::  f2
+  real ( kind = dp ), dimension(neqn) ::  f3
+  real ( kind = dp ), dimension(neqn) ::  f4
+  real ( kind = dp ), dimension(neqn) ::  f5
+  real ( kind = dp ) ::  h
+  real ( kind = dp ), dimension(neqn) ::  s
+  real ( kind = dp ) :: t
+  real ( kind = dp ), dimension(neqn) ::  y
+  real ( kind = dp ), dimension(neqn) ::  yp
 
-  ch = h / 4.0D+00
+  ch = h / 4.0_dp
 
   f5(1:neqn) = y(1:neqn) + ch * yp(1:neqn)
 
   call f ( t + ch, f5, f1 )
 
-  ch = 3.0D+00 * h / 32.0D+00
+  ch = 3.0_dp * h / 32.0_dp
 
-  f5(1:neqn) = y(1:neqn) + ch * ( yp(1:neqn) + 3.0D+00 * f1(1:neqn) )
+  f5(1:neqn) = y(1:neqn) + ch * ( yp(1:neqn) + 3.0_dp * f1(1:neqn) )
 
-  call f ( t + 3.0D+00 * h / 8.0D+00, f5, f2 )
+  call f ( t + 3.0_dp * h / 8.0D+00, f5, f2 )
 
-  ch = h / 2197.0D+00
+  ch = h / 2197.0_dp
 
   f5(1:neqn) = y(1:neqn) + ch * &
-  ( 1932.0D+00 * yp(1:neqn) &
-  + ( 7296.0D+00 * f2(1:neqn) - 7200.0D+00 * f1(1:neqn) ) &
+  ( 1932.0_dp * yp(1:neqn) &
+  + ( 7296.0_dp * f2(1:neqn) - 7200.0_dp * f1(1:neqn) ) &
   )
 
-  call f ( t + 12.0D+00 * h / 13.0D+00, f5, f3 )
+  call f ( t + 12.0_dp * h / 13.0_dp, f5, f3 )
 
-  ch = h / 4104.0D+00
+  ch = h / 4104.0_dp
 
   f5(1:neqn) = y(1:neqn) + ch * &
   ( &
-    ( 8341.0D+00 * yp(1:neqn) - 845.0D+00 * f3(1:neqn) ) &
-  + ( 29440.0D+00 * f2(1:neqn) - 32832.0D+00 * f1(1:neqn) ) &
+    ( 8341.0_dp * yp(1:neqn) - 845.0_dp * f3(1:neqn) ) &
+  + ( 29440.0_dp * f2(1:neqn) - 32832.0_dp * f1(1:neqn) ) &
   )
 
   call f ( t + h, f5, f4 )
 
-  ch = h / 20520.0D+00
+  ch = h / 20520.0_dp
 
   f1(1:neqn) = y(1:neqn) + ch * &
   ( &
-    ( -6080.0D+00 * yp(1:neqn) &
-    + ( 9295.0D+00 * f3(1:neqn) - 5643.0D+00 * f4(1:neqn) ) &
+    ( -6080.0_dp * yp(1:neqn) &
+    + ( 9295.0_dp * f3(1:neqn) - 5643.0_dp * f4(1:neqn) ) &
     ) &
-  + ( 41040.0D+00 * f1(1:neqn) - 28352.0D+00 * f2(1:neqn) ) &
+  + ( 41040.0_dp * f1(1:neqn) - 28352.0_dp * f2(1:neqn) ) &
   )
 
-  call f ( t + h / 2.0D+00, f1, f5 )
+  call f ( t + h / 2.0_dp, f1, f5 )
 !
 !  Ready to compute the approximate solution at T+H.
 !
-  ch = h / 7618050.0D+00
+  ch = h / 7618050.0_dp
 
   s(1:neqn) = y(1:neqn) + ch * &
   ( &
-    ( 902880.0D+00 * yp(1:neqn) &
-    + ( 3855735.0D+00 * f3(1:neqn) - 1371249.0D+00 * f4(1:neqn) ) ) &
-  + ( 3953664.0D+00 * f2(1:neqn) + 277020.0D+00 * f5(1:neqn) ) &
+    ( 902880.0_dp * yp(1:neqn) &
+    + ( 3855735.0_dp * f3(1:neqn) - 1371249.0_dp * f4(1:neqn) ) ) &
+  + ( 3953664.0_dp * f2(1:neqn) + 277020.0_dp * f5(1:neqn) ) &
   )
 
   return
-end
-subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
+end subroutine r8_fehl
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+subroutine r8_rkf45(f,neqn,y,yp,t,tout,relerr,abserr,flag)  !GCC$ ATTRIBUTES hot :: r4_rkf4 !GCC$ ATTRIBUTES aligned(32) :: r4_rkf45
+#elif defined __INTEL_COMPILER
+  subroutine r8_rkf45(f,neqn,y,yp,t,tout,relerr,abserr,flag)
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: r8_rkf45
+#endif
 
 !*****************************************************************************80
 !
@@ -1090,51 +1107,51 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !    progress, while any other value indicates a problem that should 
 !    be addressed.
 !
-  implicit none
+  
 
-  integer ( kind = 4 ) neqn
+  integer ( kind = i4 ) :: neqn
 
-  real ( kind = 8 ) abserr
-  real ( kind = 8 ), save :: abserr_save = -1.0D+00
-  real ( kind = 8 ) ae
-  real ( kind = 8 ) dt
-  real ( kind = 8 ) ee
-  real ( kind = 8 ) eeoet
-  real ( kind = 8 ) eps
-  real ( kind = 8 ) esttol
-  real ( kind = 8 ) et
+  real ( kind = dp ) :: abserr
+  real ( kind = dp ), save :: abserr_save = -1.0_dp
+  real ( kind = dp ) :: ae
+  real ( kind = dp ) :: dt
+  real ( kind = dp ) :: ee
+  real ( kind = dp ) :: eeoet
+  real ( kind = dp ) :: eps
+  real ( kind = dp ) :: esttol
+  real ( kind = dp ) :: et
   external f
-  real ( kind = 8 ) f1(neqn)
-  real ( kind = 8 ) f2(neqn)
-  real ( kind = 8 ) f3(neqn)
-  real ( kind = 8 ) f4(neqn)
-  real ( kind = 8 ) f5(neqn)
-  real ( kind = 8 ), save :: h = -1.0D+00
-  logical hfaild
-  real ( kind = 8 ) hmin
-  integer ( kind = 4 ) flag
-  integer ( kind = 4 ), save :: flag_save = -1000
-  integer ( kind = 4 ), save :: init = -1000
-  integer ( kind = 4 ) k
-  integer ( kind = 4 ), save :: kflag = -1000
-  integer ( kind = 4 ), save :: kop = -1
-  integer ( kind = 4 ), parameter :: maxnfe = 3000
-  integer ( kind = 4 ) mflag
-  integer ( kind = 4 ), save :: nfe = -1
-  logical output
-  real ( kind = 8 ) relerr
-  real ( kind = 8 ) relerr_min
-  real ( kind = 8 ), save :: relerr_save = -1.0D+00
-  real ( kind = 8 ), parameter :: remin = 1.0E-12
-  real ( kind = 8 ) s
-  real ( kind = 8 ) scale
-  real ( kind = 8 ) t
-  real ( kind = 8 ) tol
-  real ( kind = 8 ) toln
-  real ( kind = 8 ) tout
-  real ( kind = 8 ) y(neqn)
-  real ( kind = 8 ) yp(neqn)
-  real ( kind = 8 ) ypk
+  real ( kind = dp ), dimension(neqn) ::  f1
+  real ( kind = dp ), dimension(neqn) ::  f2
+  real ( kind = dp ), dimension(neqn) ::  f3
+  real ( kind = dp ), dimension(neqn) ::  f4
+  real ( kind = dp ), dimension(neqn) ::  f5
+  real ( kind = dp ), save :: h = -1.0_dp
+  logical :: hfaild
+  real ( kind = dp ) :: hmin
+  integer ( kind = i4 ) :: flag
+  integer ( kind = i4 ), save :: flag_save = -1000
+  integer ( kind = i4 ), save :: init = -1000
+  integer ( kind = i4 ) :: k
+  integer ( kind = i4 ), save :: kflag = -1000
+  integer ( kind = i4 ), save :: kop = -1
+  integer ( kind = i4 ), parameter :: maxnfe = 3000
+  integer ( kind = i4 ) :: mflag
+  integer ( kind = i4 ), save :: nfe = -1
+  logical :: output
+  real ( kind = dp ) relerr
+  real ( kind = dp ) relerr_min
+  real ( kind = dp ), save :: relerr_save = -1.0_dp
+  real ( kind = dp ), parameter :: remin = 1.0E-12_dp
+  real ( kind = dp ) :: s
+  real ( kind = dp ) :: scale
+  real ( kind = dp ) :: t
+  real ( kind = dp ) :: tol
+  real ( kind = dp ) :: toln
+  real ( kind = dp ) :: tout
+  real ( kind = dp ), dimension(neqn) ::  y
+  real ( kind = dp ), dimension(neqn) ::  yp
+  real ( kind = dp ) :: ypk
 !
 !  Check the input parameters.
 !
@@ -1145,12 +1162,12 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
     return
   end if
 
-  if ( relerr < 0.0D+00 ) then
+  if ( relerr < 0.0_dp ) then
     flag = 8
     return
   end if
 
-  if ( abserr < 0.0D+00 ) then
+  if ( abserr < 0.0_dp ) then
     flag = 8
     return
   end if
@@ -1186,7 +1203,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 
         nfe = 0
 
-      else if ( kflag == 5 .and. abserr == 0.0D+00 ) then
+      else if ( kflag == 5 .and. abserr == 0.0_dp ) then
 
         write ( *, '(a)' ) ' '
         write ( *, '(a)' ) 'R8_RKF45 - Fatal error!'
@@ -1227,7 +1244,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
           mflag = abs ( flag )
         end if
 
-      else if ( flag == 5 .and. 0.0D+00 < abserr ) then
+      else if ( flag == 5 .and. 0.0_dp < abserr ) then
 
         flag = flag_save
         if ( kflag == 3 ) then
@@ -1268,7 +1285,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !  to avoid limiting precision difficulties arising from impossible
 !  accuracy requests.
 !
-  relerr_min = 2.0D+00 * epsilon ( relerr_min ) + remin
+  relerr_min = 2.0_dp * epsilon ( relerr_min ) + remin
 !
 !  Is the relative error tolerance too small?
 !
@@ -1307,24 +1324,24 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 
     init = 1
     h = abs ( dt )
-    toln = 0.0D+00
+    toln = 0.0_dp
 
     do k = 1, neqn
       tol = relerr * abs ( y(k) ) + abserr
-      if ( 0.0D+00 < tol ) then
+      if ( 0.0_dp < tol ) then
         toln = tol
         ypk = abs ( yp(k) )
         if ( tol < ypk * h**5 ) then
-          h = ( tol / ypk )**0.2D+00
+          h = ( tol / ypk )**0.2_dp
         end if
       end if
     end do
 
-    if ( toln <= 0.0D+00 ) then
-      h = 0.0D+00
+    if ( toln <= 0.0_dp ) then
+      h = 0.0_dp
     end if
 
-    h = max ( h, 26.0D+00 * eps * max ( abs ( t ), abs ( dt ) ) )
+    h = max ( h, 26.0_dp * eps * max ( abs ( t ), abs ( dt ) ) )
     flag_save = sign ( 2, flag )
 
   end if
@@ -1335,7 +1352,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !
 !  Test to see if too may output points are being requested.
 !
-  if ( 2.0D+00 * abs ( dt ) <= abs ( h ) ) then
+  if ( 2.0_dp * abs ( dt ) <= abs ( h ) ) then
     kop = kop + 1
   end if
 !
@@ -1351,7 +1368,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !
 !  If we are too close to the output point, then simply extrapolate and return.
 !
-  if ( abs ( dt ) <= 26.0D+00 * eps * abs ( t ) ) then
+  if ( abs ( dt ) <= 26.0_dp * eps * abs ( t ) ) then
     t = tout
     y(1:neqn) = y(1:neqn) + dt * yp(1:neqn)
     call f ( t, y, yp )
@@ -1367,7 +1384,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !  To avoid premature underflow in the error tolerance function,
 !  scale the error tolerances.
 !
-  scale = 2.0D+00 / relerr
+  scale = 2.0_dp / relerr
   ae = scale * abserr
 !
 !  Step by step integration.
@@ -1378,7 +1395,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !
 !  Set the smallest allowable stepsize.
 !
-    hmin = 26.0D+00 * eps * abs ( t )
+    hmin = 26.0_dp * eps * abs ( t )
 !
 !  Adjust the stepsize if necessary to hit the output point.
 !
@@ -1387,7 +1404,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !
     dt = tout - t
 
-    if ( 2.0D+00 * abs ( h ) <= abs ( dt ) ) then
+    if ( 2.0_dp * abs ( h ) <= abs ( dt ) ) then
 
     else
 !
@@ -1397,7 +1414,7 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
         output = .true.
         h = dt
       else
-        h = 0.5D+00 * dt
+        h = 0.5_dp * dt
       end if
 
     end if
@@ -1449,31 +1466,31 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !  measured with respect to the average of the magnitudes of the
 !  solution at the beginning and end of the step.
 !
-      eeoet = 0.0D+00
+      eeoet = 0.0_dp
 
       do k = 1, neqn
 
         et = abs ( y(k) ) + abs ( f1(k) ) + ae
 
-        if ( et <= 0.0D+00 ) then
+        if ( et <= 0.0_dp ) then
           flag = 5
           return
         end if
 
         ee = abs &
-        ( ( -2090.0D+00 * yp(k) &
-          + ( 21970.0D+00 * f3(k) - 15048.0D+00 * f4(k) ) &
+        ( ( -2090.0_dp * yp(k) &
+          + ( 21970.0_dp * f3(k) - 15048.0_dp * f4(k) ) &
           ) &
-        + ( 22528.0D+00 * f2(k) - 27360.0D+00 * f5(k) ) &
+        + ( 22528.0_dp * f2(k) - 27360.0_dp * f5(k) ) &
         )
 
         eeoet = max ( eeoet, ee / et )
 
       end do
 
-      esttol = abs ( h ) * eeoet * scale / 752400.0D+00
+      esttol = abs ( h ) * eeoet * scale / 752400.0_dp
 
-      if ( esttol <= 1.0D+00 ) then
+      if ( esttol <= 1.0_dp ) then
         exit
       end if
 !
@@ -1483,10 +1500,10 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
       hfaild = .true.
       output = .false.
 
-      if ( esttol < 59049.0D+00 ) then
-        s = 0.9D+00 / esttol**0.2D+00
+      if ( esttol < 59049.0_dp ) then
+        s = 0.9_dp / esttol**0.2_dp
       else
-        s = 0.1D+00
+        s = 0.1_dp
       end if
 
       h = s * h
@@ -1510,14 +1527,14 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
 !  Choose the next stepsize.  The increase is limited to a factor of 5.
 !  If the step failed, the next stepsize is not allowed to increase.
 !
-    if ( 0.0001889568D+00 < esttol ) then
-      s = 0.9D+00 / esttol**0.2D+00
+    if ( 0.0001889568_dp < esttol ) then
+      s = 0.9_dp / esttol**0.2_dp
     else
-      s = 5.0D+00
+      s = 5.0_dp
     end if
 
     if ( hfaild ) then
-      s = min ( s, 1.0D+00 )
+      s = min ( s, 1.0_dp )
     end if
 
     h = sign ( max ( s * abs ( h ), hmin ), h )
@@ -1543,8 +1560,9 @@ subroutine r8_rkf45 ( f, neqn, y, yp, t, tout, relerr, abserr, flag )
   flag = -2
 
   return
-end
-subroutine timestamp ( )
+end subroutine r8_rkf45
+
+!subroutine timestamp ( )
 
 !*****************************************************************************80
 !
@@ -1570,58 +1588,58 @@ subroutine timestamp ( )
 !
 !    None
 !
-  implicit none
+!  implicit none
 
-  character ( len = 8 ) ampm
-  integer ( kind = 4 ) d
-  integer ( kind = 4 ) h
-  integer ( kind = 4 ) m
-  integer ( kind = 4 ) mm
-  character ( len = 9 ), parameter, dimension(12) :: month = (/ &
-    'January  ', 'February ', 'March    ', 'April    ', &
-    'May      ', 'June     ', 'July     ', 'August   ', &
-    'September', 'October  ', 'November ', 'December ' /)
-  integer ( kind = 4 ) n
-  integer ( kind = 4 ) s
-  integer ( kind = 4 ) values(8)
-  integer ( kind = 4 ) y
+!  character ( len = 8 ) ampm
+!  integer ( kind = 4 ) d
+!  integer ( kind = 4 ) h
+!  integer ( kind = 4 ) m
+!  integer ( kind = 4 ) mm
+!  character ( len = 9 ), parameter, dimension(12) :: month = (/ &
+!    'January  ', 'February ', 'March    ', 'April    ', &
+!    'May      ', 'June     ', 'July     ', 'August   ', &
+!    'September', 'October  ', 'November ', 'December ' /)
+!  integer ( kind = 4 ) n
+!  integer ( kind = 4 ) s
+!  integer ( kind = 4 ) values(8)
+!  integer ( kind = 4 ) y
 
-  call date_and_time ( values = values )
+!  call date_and_time ( values = values )
 
-  y = values(1)
-  m = values(2)
-  d = values(3)
-  h = values(5)
-  n = values(6)
-  s = values(7)
-  mm = values(8)
+!  y = values(1)
+ ! m = values(2)
+ ! d = values(3)
+ ! h = values(5)
+ ! n = values(6)
+ ! s = values(7)
+!  mm = values(8)
 
-  if ( h < 12 ) then
-    ampm = 'AM'
-  else if ( h == 12 ) then
-    if ( n == 0 .and. s == 0 ) then
-      ampm = 'Noon'
-    else
-      ampm = 'PM'
-    end if
-  else
-    h = h - 12
-    if ( h < 12 ) then
-      ampm = 'PM'
-    else if ( h == 12 ) then
-      if ( n == 0 .and. s == 0 ) then
-        ampm = 'Midnight'
-      else
-        ampm = 'AM'
-      end if
-    end if
-  end if
-
-  write ( *, '(i2,1x,a,1x,i4,2x,i2,a1,i2.2,a1,i2.2,a1,i3.3,1x,a)' ) &
-    d, trim ( month(m) ), y, h, ':', n, ':', s, '.', mm, trim ( ampm )
-
-  return
-end subroutine timestamp
+!  if ( h < 12 ) then
+!    ampm = 'AM'
+!  else if ( h == 12 ) then
+!    if ( n == 0 .and. s == 0 ) then
+!      ampm = 'Noon'
+!    else
+!      ampm = 'PM'
+!    end if
+!  else
+!!    h = h - 12
+!    if ( h < 12 ) then
+!      ampm = 'PM'
+ !   else if ( h == 12 ) then
+!      if ( n == 0 .and. s == 0 ) then
+!        ampm = 'Midnight'
+!      else
+!        ampm = 'AM'
+!      end if
+!    end if
+!  end if
+!
+!  write ( *, '(i2,1x,a,1x,i4,2x,i2,a1,i2.2,a1,i2.2,a1,i3.3,1x,a)' ) &
+!    d, trim ( month(m) ), y, h, ':', n, ':', s, '.', mm, trim ( ampm )
+!
+!  return
+!end subroutine timestamp
 
 
 end module GSM_mod_rkf45
