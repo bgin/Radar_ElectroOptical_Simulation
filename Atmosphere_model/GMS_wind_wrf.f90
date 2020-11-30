@@ -50,7 +50,7 @@ module mod_wind_wrf
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
    
-    use mod_kinds, only : int4,dp
+    use mod_kinds, only : i4,dp
     use netcdf
     implicit none
     !=====================================================59
@@ -59,16 +59,16 @@ module mod_wind_wrf
     !=====================================================59
     
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_WIND_WRF_MAJOR = 1
+    integer(kind=i4), parameter, public :: MOD_WIND_WRF_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_WIND_WRF_MINOR = 1
+    integer(kind=i4), parameter, public :: MOD_WIND_WRF_MINOR = 1
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_WIND_WRF_MICRO = 0
+    integer(kind=i4), parameter, public :: MOD_WIND_WRF_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_WIND_WRF_FULLVER = 1000*MOD_WIND_WRF_MAJOR+  &
+    integer(kind=i4), parameter, public :: MOD_WIND_WRF_FULLVER = 1000*MOD_WIND_WRF_MAJOR+  &
                                                                100*MOD_WIND_WRF_MINOR+   &
                                                                10*MOD_WIND_WRF_MICRO
     
@@ -91,13 +91,13 @@ module mod_wind_wrf
         
           public
           
-          integer(kind=int4) :: nt   ! time evolution
+          integer(kind=i4) :: nt   ! time evolution
           
-          integer(kind=int4) :: nx,nxp1  ! dimension x, staggered nxp1
+          integer(kind=i4) :: nx,nxp1  ! dimension x, staggered nxp1
           
-          integer(kind=int4) :: ny,nyp1  ! dimension y, staggered nyp1
+          integer(kind=i4) :: ny,nyp1  ! dimension y, staggered nyp1
           
-          integer(kind=int4) :: nz,nzp1  ! dimension z, staggered nzp1
+          integer(kind=i4) :: nz,nzp1  ! dimension z, staggered nzp1
 #if defined __INTEL_COMPILER          
           real(kind=dp), allocatable, dimension(:,:,:,:) :: U   ! U-component
 !DIR$     ATTRIBUTES ALIGN : 64 :: U
@@ -132,15 +132,15 @@ module mod_wind_wrf
                                       print_fatal_error
           type(Wind3D_t),   intent(inout) :: wind3d
           character(len=*), intent(in)    :: fwrfout
-          integer(kind=int4),    intent(out)   :: statd,stata
-          logical(kind=int4),    intent(in)    :: logging,verbose,append
+          integer(kind=i4),    intent(out)   :: statd,stata
+          logical(kind=i4),    intent(in)    :: logging,verbose,append
           character(len=*), intent(in)    :: fname
           ! Locals
           character(len=nf90_max_name) :: name
           character(len=256) :: emsg,nf90err
-          integer(kind=int4) ::  nDimsd,nVarsd,length,iDim,ncidd,  &  ! dimension variables
+          integer(kind=i4) ::  nDimsd,nVarsd,length,iDim,ncidd,  &  ! dimension variables
                             nDimsv,nVarsv,ncidv,iVarv,aerr
-          integer(kind=int4), allocatable, dimension(:)                :: dim_lengths
+          integer(kind=i4), allocatable, dimension(:)                :: dim_lengths
           character(len=nf90_max_name), allocatable, dimension(:) :: dim_names
           ! Exec code .....
           wind3D%nt   = 0
