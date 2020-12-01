@@ -465,8 +465,13 @@ RETURN
 END SUBROUTINE karma
 
 
-
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v) !GCC$ ATTRIBUTES HOT :: kalfor !GCC$ ATTRIBUTES INLINE :: kalfor !GCC$ ATTRIBUTES ALIGNED(32) :: kalfor
+#elif defined __INTEL_COMPILER || defined __ICC
 SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: kalfor
+    !DIR$ ATTRIBUTES INLINE :: kalfor
+#endif
 
 ! N.B. Argument WORK has been removed.
 
@@ -474,18 +479,34 @@ SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v)
 
 !  INVOKING THIS SUBROUTINE OBTAINS PREDICTIONS OF A AND P, M STEPS AHEAD.
 
-INTEGER, INTENT(IN)      :: m
-INTEGER, INTENT(IN)      :: ip
-INTEGER, INTENT(IN)      :: ir
-INTEGER, INTENT(IN OUT)  :: np
-REAL, INTENT(IN)         :: phi(:)
-REAL, INTENT(IN OUT)     :: a(:)
-REAL, INTENT(IN OUT)     :: p(:)
-REAL, INTENT(IN)         :: v(:)
-
-REAL     :: dt, a1, phii, phij, phijdt, work(ir)
-INTEGER  :: i, ind, ind1, ir1, j, l
-
+INTEGER(i4), INTENT(IN)      :: m
+INTEGER(i4), INTENT(IN)      :: ip
+INTEGER(i4), INTENT(IN)      :: ir
+INTEGER(i4), INTENT(IN OUT)  :: np
+REAL(sp), INTENT(IN)         :: phi(:)
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$  ASSUME_ALIGNED phi:64
+#endif
+REAL(sp), INTENT(IN OUT)     :: a(:)
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$  ASSUME_ALIGNED a:64
+#endif
+REAL(sp), INTENT(IN OUT)     :: p(:)
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$  ASSUME_ALIGNED p:64
+#endif
+REAL(sp), INTENT(IN)         :: v(:)
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$  ASSUME_ALIGNED v:64
+#endif
+REAL(sp)     :: dt, a1, phii, phij, phijdt, t0
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+REAL(sp), dimension(ir) :: work !GCC$ ATTRIBUTES ALIGNED(64) ::  work
+#elif defined __INTEL_COMPILER || defined __ICC
+!DIR$ ATTRIBUTES ALIGN : 64 :: work
+#endif
+INTEGER(sp)  :: i, ind, ind1, ir1, j, l
+t0 = 0.0_sp
 ir1 = ir - 1
 DO  l = 1, m
   
@@ -493,15 +514,35 @@ DO  l = 1, m
   
   a1 = a(1)
   IF (ir /= 1) THEN
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$      VECTOR ALIGNED
+!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+!$OMP SIMD ALIGNED(a:64)
+#endif 
     DO  i = 1, ir1
-      a(i) = a(i+1)
+         t0 = a(i+1)
+         a(i) = t0
     END DO
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+!$OMP END SIMD
+#endif         
   END IF
   a(ir) = zero
+
   IF (ip /= 0) THEN
+#if defined __INTEL_COMPILER || defined __ICC
+!DIR$      VECTOR ALIGNED
+!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
+#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
+!$OMP SIMD ALIGNED(a:64,phi:64)
+#endif 
     DO  j = 1, ip
       a(j) = a(j) + phi(j) * a1
-    END DO
+   END DO
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+!$OMP END SIMD
+#endif   
   END IF
   
 !        PREDICT P.
