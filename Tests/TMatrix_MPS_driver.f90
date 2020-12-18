@@ -98,15 +98,7 @@ program TMatrix_MPS_Test
      start  = 0.0_dp
      end    = 0.0_dp
      duration = 0.0_dp
-     pmc_loop744 = 1
-     pmc_loop965 = 1
-     pmc_loop1097 = 1
-     pmc_loop1179 = 1
-     pmc_loop1778 = 1
-     pmc_loop1828 = 1
-     pmc_loop2039 = 1
-     pmc_loop2092 = 1
-     pmc_loop2323 = 1
+    
     ! hw_thread = 7
     ! call kmp_create_affinity_mask(mask)
     ! success = (kmp_set_affinity_mask_proc(7,mask) == 0)
@@ -117,9 +109,7 @@ program TMatrix_MPS_Test
      
      ! Crude time measurement
      start = dclock()
-     call tmatrix_mps_driver(pmc_loop744,pmc_loop965,pmc_loop1097,pmc_loop1179, &
-                             pmc_loop1778,pmc_loop1828,pmc_loop2039,pmc_loop2092,pmc_loop2323, &
-                             Mie,small,MXINT,NADD,idscmt,sang,w,irat,  &
+     call tmatrix_mps_driver(Mie,small,MXINT,NADD,idscmt,sang,w,irat,  &
                              nL,idshp,shp,r0,cext,cabs,csca,assym,cextv,cabsv, &
                              cscav,cbakv,cprv,cexts,cabss,cscas,cbaks,cprs,    &
                              dang,inat,pol,i11,i21,i12,i22,cexti,cabsi,cscai,  &
