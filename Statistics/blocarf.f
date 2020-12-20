@@ -1,7 +1,7 @@
       SUBROUTINE BLOCARF( ZS,N,LAG,NS0,KMAX,ZMEAN,SUM,AIC,C,B,A,SD,NP,
      *                    NE,SXX )
 C
-     
+      INCLUDE 'timsac_f.h'
 C
 cc      PROGRAM  BLOCAR                                                   
 C.......................................................................
