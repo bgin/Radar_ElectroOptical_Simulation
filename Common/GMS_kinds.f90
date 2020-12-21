@@ -45,21 +45,21 @@ module mod_kinds
     
     ! Integral intrinsic primitives
     
-    integer(4), parameter, public :: int1 = INT8
+    integer(4), parameter, public :: i1 = INT8
     
-    integer(4), parameter, public :: int2 = INT16
+    integer(4), parameter, public :: i2 = INT16
     
-    integer(4), parameter, public :: int4 = INT32
+    integer(4), parameter, public :: i4 = INT32
     
-    integer(4), parameter, public :: int8 = INT64
+    integer(4), parameter, public :: i8 = INT64
     
     ! Floating-point intrinsic primitives
     
-    integer(4), parameter, public :: sp32 = selected_real_kind(6,37)
+    integer(4), parameter, public :: sp = selected_real_kind(6,37)
     
-    integer(4), parameter, public :: dp64 = selected_real_kind(15,307)
+    integer(4), parameter, public :: dp = selected_real_kind(15,307)
     
-    integer(4), parameter, public :: ep128 = selected_real_kind(33,4931)
+    integer(4), parameter, public :: ep = selected_real_kind(33,4931)
     
     
 
