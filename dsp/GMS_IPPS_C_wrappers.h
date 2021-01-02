@@ -1031,11 +1031,587 @@ gms_ippsDivC_64fc(const Ipp64fc *, Ipp64fc, Ipp64fc *, int32_t) __attribute__((h
 
           
 
-				
-                                    
-                                      
-				    
-				  
+IppStatus
+gms_ippsDivC_32f_I(Ipp32f, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
 
+IppStatus
+gms_ippsDivC_64f_I(Ipp64f, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+					      
+IppStatus
+gms_ippsDivC_32fc_I(Ipp32fc, Ipp32fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDivC_64fc_I(Ipp64fc, Ipp64fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDivCRev_32f(const Ipp32f*, Ipp32f, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDivCRev_32f_I( Ipp32f, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_32f(const Ipp32f*, const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_64f(const Ipp64f*, const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_32fc(const Ipp32fc*, const Ipp32fc*, Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_64fc(const Ipp64fc*, const Ipp64fc*, Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_32f_I(const Ipp32f*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_64f_I(const Ipp64f*, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_32fc_I(const Ipp32fc*, Ipp32fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsDiv_64fc_I(const Ipp64fc*, Ipp64fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsAbs_32f(const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsAbs_64f(const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsAbs_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
+                                     __attribute__((nonnull (1))
+                                     __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsAbs_64f_I(Ipp64f*, int32_t)  __attribute__((hot))
+                                     __attribute__((nonnull (1))
+                                     __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqr_32f(const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqr_64f(const Ipp64f*, Ipp364*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqr_32fc(const Ipp32fc*, Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqr_64cf(const Ipp64fc*, Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus					      
+gms_ippsSqr_32f_I(Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus					      
+gms_ippsSqr_64f_I(Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus					      
+gms_ippsSqr_32fc_I(Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus					      
+gms_ippsSqr_64fc_I(Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus			
+gms_ippsSqrt_32f(const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus			
+gms_ippsSqrt_64f(const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus			
+gms_ippsSqrt_32fc(const Ipp32fc*, Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus			
+gms_ippsSqrt_64fc(const Ipp64fc*, Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqrt_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqrt_64f_I(Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqrt_32fc_I(Ipp32fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSqrt_64fc_I(Ipp64fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsCubrt_32f(const Ipp32f*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsExp_32f(const Ipp32f*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsExp_64f(const Ipp64f*, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsExp_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsExp_64f_I(Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLn_32f(const Ipp32f*, Ipp32f*, int32_t)__attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLn_64f(const Ipp64f*, Ipp64f*, int32_t)__attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLn_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLn_64f_I(Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSumLn_32f(const Ipp32f*, int32_t, Ipp32f*) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSumLn_64f(const Ipp64f*, int32_t, Ipp64f*) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSumLn_32f64f(const Ipp32f*, int32_t, Ipp64f*) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsArctan_32f(const Ipp32f*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsArctan_64f(const Ipp64f*, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsArctan_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsArctan_64f_I(Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_32f(const Ipp32f*, Ipp32f*, int32_t,
+                      Ipp32f, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_64f(const Ipp64f*, Ipp64f*, int32_t,
+                      Ipp64f, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_32fc(const Ipp32fc*, Ipp32fc*, int32_t,
+                      Ipp32fc, Ipp32fc)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_64fc(const Ipp64fc*, Ipp64fc*, int32_t,
+                      Ipp64fc, Ipp64fc)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_32f_I(Ipp32f*, int32_t, Ipp32f, Ipp32f) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_64f_I(Ipp64f*, int32_t, Ipp64f, Ipp64f) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_32fc_I(Ipp32fc*, int32_t, Ipp32fc, Ipp32fc) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsNormalize_64fc_I(Ipp64fc*, int32_t, Ipp64fc, Ipp64fc) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSortAscend_32f_I(Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSortAscend_64f_I(Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSortDescend_32f_I(Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsSortDescend_64f_I(Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConvert32f64f(const Ipp32f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConvert64f32f(const Ipp64f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConj_32fc(const Ipp32fc*, Ipp32fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConj_64fc(const Ipp64fc*, Ipp64fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConj_32fc_I(Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConj_64fc_I(Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConjFlip_32fc(const Ipp32fc * ,Ipp32fc* , int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsConjFlip_64fc(const Ipp64fc * ,Ipp64fc* , int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsMagnitude_32f(const Ipp32f*, const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsMagnitude_64f(const Ipp64f*, const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsMagnitude_32fc(const Ipp32fc*, Ipp32fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsMagnitude_64fc(const Ipp64fc*, Ipp64fc*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsPhase_64fc(const Ipp64fc*, Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsPhase_32fc(const Ipp32fc*, Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippPhase_32f(const Ipp32f*, const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippPhase_64f(const Ipp64f*, const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsPowerSpectrum_32fc(const Ipp32fc*, Ipp32fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+
+IppStatus
+gms_ippsPowerSpectrum_64fc(const Ipp64fc*, Ipp64fc*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsPowerSpectrum_32f(const Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsPowerSpectrum_64f(const Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsReal_32fc(const Ipp32fc*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+					      
+IppStatus
+gms_ippsReal_64fc(const Ipp64fc*, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsImag_32fc(const Ipp32fc*, Ipp32f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+					      
+IppStatus
+gms_ippsImag_64fc(const Ipp64fc*, Ipp64f*, int32_t)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsRealToCplx_32f(const Ipp32f*, const Ipp32f*, Ipp32fc*, int32_t)__attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsRealToCplx_64f(const Ipp64f*, const Ipp64f*, Ipp64fc*, int32_t)__attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsCplxToReal_32f(const Ipp32fc*, Ipp32f*, Ipp32f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsCplxToReal_64f(const Ipp64fc*, Ipp64f*, Ipp64f*, int32_t) __attribute__((hot))
+                                              __attribute__((nonnull (1,2,3))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_32f(const Ipp32f*, Ipp32f*, int32_t, Ipp32f,
+                      IppCompOp)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_64f(const Ipp64f*, Ipp64f*, int32_t, Ipp64f,
+                      IppCompOp)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_32fc(const Ipp32fc*, Ipp32fc*, int32_t, Ipp32f,
+                      IppCompOp)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_64fc(const Ipp64fc*, Ipp64fc*, int32_t, Ipp64f,
+                      IppCompOp)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_32f(const Ipp32f*, Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_64f(const Ipp64f*, Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_32fc(const Ipp32fc*, Ipp32fc*, int32_t, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_64fc(const Ipp64fc*, Ipp64fc*, int32_t, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_32f(const Ipp32f*, Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_64f(const Ipp64f*, Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_32fc(const Ipp32fc*, Ipp32fc*, int32_t, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_64fc(const Ipp64fc*, Ipp64fc*, int32_t, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_32f_I(Ipp32f*, int32_t Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_64f_I(Ipp64f*, int32_t Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_32fc_I(Ipp32fc*, int32_t Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_GT_64fc_I(Ipp64fc*, int32_t Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_32f_I(Ipp32f*, int32_t Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_64f_I(Ipp64f*, int32_t Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_32fc_I(Ipp32fc*, int32_t Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsThreshold_LT_64fc_I(Ipp64fc*, int32_t Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLTAbs_32f(const Ipp32f*, Ipp32f*, int32_t len, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLTAbs_64f(const Ipp64f*, Ipp64f*, int32_t len, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsGTAbs_32f(const Ipp32f*, Ipp32f*, int32_t len, Ipp32f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+
+IppStatus
+gms_ippsLTAbs_64f(const Ipp64f*, Ipp64f*, int32_t len, Ipp64f)  __attribute__((hot))
+                                              __attribute__((nonnull (1,2))
+                                              __attribute__((assume_aligned(64)));
+					      
 
 #endif /*__GMS_IPPS_C_WRAPPERS_H__*/
