@@ -1,7 +1,0 @@
-20181215:191507.715                                                                                                                                C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
-  513[TEST #8: test_conjugate -- START]
-    ========== TEST #9 -- PASSED!! ==========
-Conjugated     0.145800000000000    -0.548700000000000    -0.985400000000000    -1.021000000000000
-Non-conjugated     0.145800000000000     0.548700000000000     0.985400000000000     1.021000000000000
-20181215:191507.715                                                                                                                                C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
-  537[TEST #8: test_conjugate -- END
