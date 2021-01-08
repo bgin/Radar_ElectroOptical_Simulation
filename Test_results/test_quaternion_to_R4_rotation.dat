@@ -1,9 +1,0 @@
-20181215:164140.501C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            :  737
-[TEST #7: test_quaternion_to_R4_rotation -- START]
-=========== TEST #7 -- PASSED!! ===========
-1st row    30.295457704869804    -0.333598045290156     4.589804835437347     5.050122153839978
-2nd row    -0.695284078064963   -26.842561711979645   -10.279154281008994    11.740039840479854
-3rd row     3.116054813890932    13.255979827639203   -29.002632566138690     6.788467026211004
-4rd row    -6.040539073588326     8.254736779053070    10.236540538664167    27.478728748047505
-20181215:164140.517C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            :  777
-[TEST #7: test_quaternion_to_R4_rotation -- END
