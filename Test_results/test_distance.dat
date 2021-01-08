@@ -1,8 +1,0 @@
-20181216:140409.241C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
- line:  679[TEST #12: test_distance -- START]  
- ========== TEST #12 -- PASSED!! ==========
-Quaternion1     1.985600000000000     1.014800000000000     1.009850000000000     1.284500000000000
-Quaternion2     0.985600000000000     0.014800000000000     0.009850000000000     0.284500000000000
- Distance:     2.000000000000000
-20181216:140409.241C:\Users\Bernard\documents\visual studio 2013\Projects\GuidedMissileSim\DebugGuidedMissileSimLib\Test_quaternion.f90            
- line:  704[TEST #12: test_distance -- END]  
