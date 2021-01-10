@@ -39,7 +39,7 @@ module mod_vecconsts
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     use mod_kinds,     only :  int4,dp
     use mod_vectypes,  only :  YMM4r8_t, ZMM8r8_t
-    use mod_constants, only :  v1_over_pi, pi_const
+    use mod_constants, only :  v1_over_pi, pi_const,pir4_const,twopir4_const
     implicit none
     
     !=====================================================59
@@ -87,6 +87,8 @@ module mod_vecconsts
     
     type(YMM4r8_t), parameter, public  :: v4_1em100     = YMM4r8_t(1.0E-100_dp)
     
+    type(YMM4r8_t), parameter, public  :: v4_eps1e15    = YMM4r8_t(1.0E-15_dp)
+    
     type(YMM4r8_t), parameter, public  :: v4_1over1_5   = YMM4r8_t(0.66666666666666666666666666666667E+00_dp)
     
     type(YMM4r8_t), parameter, public  :: v4_1over2     = YMM4r8_t(0.5_dp)
@@ -122,8 +124,26 @@ module mod_vecconsts
     type(YMM4r8_t), parameter, public  :: v4_ln2        = YMM4r8_t( 0.69314718055994530941723212145818E+00_dp)
     
     type(YMM4r8_t), parameter, public  :: v4_ln4        = YMM4r8_t( 1.3862943611198906188344642429164E+00_dp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n0       = YMM8r4_t(0.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_half     = YMM8r4_t(0.5_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n1       = YMM8r4_t(1.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n2       = YMM8r4_t(2.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_neg4     = YMM8r4_t(-4.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n9       = YMM8r4_t(9.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_1over3   = YMM8r4_t(0.3333333333333333333333_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_pi       = YMM8r4_t(pir4_const)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_2pi      = YMM8r4_t(twopir4_const)
     
-    type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
+    !type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
     
     type(ZMM8r8_t), parameter, public  :: v8_invpi      = ZMM8r8_t(v1_over_pi)
     
@@ -136,6 +156,8 @@ module mod_vecconsts
     type(ZMM8r8_t), parameter, public  :: v8_hugep      = ZMM8r8_t(1.0E+300_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8_hugen      = ZMM8r8_t(-1.0E+300_dp)
+    
+    type(ZMM8r8_t), parameter, public  :: v8_eps1e15    = ZMM8r8_t(1.0E-15_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8_airyc1     = ZMM8r8_t( 0.355028053887817_dp)
     
@@ -175,8 +197,15 @@ module mod_vecconsts
     
     type(ZMM8r8_t), parameter, public  :: v8_ln4        = ZMM8r8_t( 1.3862943611198906188344642429164E+00_dp)
     
-    type(ZMM8r8_t), parameter, public  :: v8_pinf       = ZMM8r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
-    
-    
+   ! type(ZMM8r8_t), parameter, public  :: v8_pinf       = ZMM8r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
 
+    type(ZMM16r4_t), parameter, public  :: v16r4_n0     = ZMM16r4_t(0.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_half   = ZMM16r4_t(0.5_sp)
+    
+    type(ZMM16r4_t), parameter, public  :: v16r4_neg4   = ZMM16r4_t(-4.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_1over3 = ZMM16r4_t(0.333333333333333333333_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_n9     = ZMM16r4_t(9.0_sp)
 end module mod_vecconsts
