@@ -1,7 +1,7 @@
 
 module mod_machine_prec
 
-  use mod_kinds, only : int4, sp, dp
+  use mod_kinds, only : i4, sp, dp
   implicit none
 
   
@@ -56,7 +56,7 @@ function d1mach(i)
   
 
   real ( kind = dp ) d1mach
-  integer ( kind = int4 ) i
+  integer ( kind = i4 ) i
 
   if ( i < 1 ) then
     write ( *, '(a)' ) ' '
@@ -173,8 +173,8 @@ function i1mach ( i )
 !
   
 
-  integer ( kind = int4) i
-  integer ( kind = int4) i1mach
+  integer ( kind = i4) i
+  integer ( kind = i4) i1mach
 
   if ( i < 1 ) then
     write ( *, '(a)' ) ' '
@@ -276,7 +276,7 @@ function r1mach ( i )
 !
   
 
-  integer ( kind = int4) i
+  integer ( kind = i4) i
   real ( kind = sp) r1mach
 
   if ( i < 1 ) then
