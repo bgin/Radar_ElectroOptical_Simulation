@@ -14,7 +14,7 @@ module mod_timedelta
 !
 !=======================================================================
 
-    use mod_kinds, only : int32_t, sp, dp
+    use mod_kinds, only : i4, sp, dp
     implicit none
 
     private
@@ -28,11 +28,11 @@ type :: timedelta
 
   private
 
-  integer(kind=int32_t) :: days         = 0 !! number of days
-  integer(kind=int32_t) :: hours        = 0 !! number of hours
-  integer(kind=int32_t) :: minutes      = 0 !! number of minutes
-  integer(kind=int32_t) :: seconds      = 0 !! number of seconds
-  integer(kind=int32_t) :: milliseconds = 0 !! number of milliseconds
+  integer(kind=i4) :: days         = 0 !! number of days
+  integer(kind=i4) :: hours        = 0 !! number of hours
+  integer(kind=i4) :: minutes      = 0 !! number of minutes
+  integer(kind=i4) :: seconds      = 0 !! number of seconds
+  integer(kind=i4) :: milliseconds = 0 !! number of milliseconds
 
   contains
 
@@ -83,11 +83,11 @@ pure elemental type(timedelta) function timedelta_constructor(days,&
 
   !! Constructor function for the `timedelta` class.
 
-  integer(kind=int32_t),intent(in),optional :: days         !! number of days
-  integer(kind=int32_t),intent(in),optional :: hours        !! number of hours
-  integer(kind=int32_t),intent(in),optional :: minutes      !! number of minutes
-  integer(kind=int32_t),intent(in),optional :: seconds      !! number of seconds
-  integer(kind=int32_t),intent(in),optional :: milliseconds !! number of milliseconds
+  integer(kind=i4),intent(in),optional :: days         !! number of days
+  integer(kind=i4),intent(in),optional :: hours        !! number of hours
+  integer(kind=i4),intent(in),optional :: minutes      !! number of minutes
+  integer(kind=i4),intent(in),optional :: seconds      !! number of seconds
+  integer(kind=i4),intent(in),optional :: milliseconds !! number of milliseconds
 
   if(present(days))then
     timedelta_constructor % days = days
@@ -173,11 +173,11 @@ pure elemental real(kind=dp) function total_seconds(self)
 
   class(timedelta),intent(in) :: self !! `timedelta` instance
 
-  total_seconds = self % days*86400._real64&
-                + self % hours*3600._real64&
-                + self % minutes*60._real64&
+  total_seconds = self % days*86400._dp&
+                + self % hours*3600._dp&
+                + self % minutes*60._dp&
                 + self % seconds           &
-                + self % milliseconds*1e-3_real64
+                + self % milliseconds*1e-3_dp
 
 end function total_seconds
 
