@@ -37,17 +37,17 @@ module mod_linux_api_wrappers
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds,    only : int4
+     use mod_kinds,    only : i4
      use IFCORE,       only : TRACEBACKQQ
      use IFPORT,       only : SYSTEMQQ,GETLASTERRORQQ
     !=====================================================59
     !  File and module information:
     !  version,creation and build date, author,description
     !=====================================================59
-     integer(kind=int4), parameter, public :: MOD_LINUX_API_WRAPPERS_MAJOR = 1
-     integer(kind=int4), parameter, public :: MOD_LINUX_API_WRAPPERS_MINOR = 0
-     integer(kind=int4), parameter, public :: MOD_LINUX_API_WRAPPERS_MICRO = 0
-     integer(kind=int4), parameter, public :: MOD_LINUX_API_WRAPPERS_FULLVER = 1000*MOD_LINUX_API_WRAPPERS_MAJOR + &
+     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MAJOR = 1
+     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MINOR = 0
+     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MICRO = 0
+     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_FULLVER = 1000*MOD_LINUX_API_WRAPPERS_MAJOR + &
                                                                                100*MOD_LINUX_API_WRAPPERS_MINOR  + &
                                                                                10*MOD_LINUX_API_WRAPPERS_MICRO
      character(*),       parameter, public :: MOD_LINUX_API_WRAPPERS_CREATE_DATE = "21-09-2019 13:21 +00200 (SAT 21 SEP 2019 GMT+2)"
@@ -59,9 +59,9 @@ module mod_linux_api_wrappers
 
        subroutine Execute_chcpu(res,ret_val,verbose,command)
 !DIR$  ATTRIBUTES CODE_ALIGN : 32 :: Execute_chcpu
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ....
            res = SYSTEMQQ(command)
@@ -72,10 +72,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_chcpu
 
        subroutine Execute_lscpu(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_lscpu
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ....
            res = SYSTEMQQ(command)
@@ -86,10 +86,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_lscpu
 
        subroutine Execute_cpudynd(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpudynd
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -100,10 +100,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpudynd
 
        subroutine Execute_cpufreq(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpufreq
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -114,10 +114,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpufreq
 
        subroutine Execute_cpuspeed(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpuspeed
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -128,10 +128,10 @@ module mod_linux_api_wrappers
         end subroutine Execute_cpuspeed
 
         subroutine Execute_cpufreq_info(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpufreq_info
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -142,10 +142,10 @@ module mod_linux_api_wrappers
         end subroutine Execute_cpufreq_info
 
         subroutine Execute_cpufreq_set(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpufreq_set
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -156,10 +156,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpufreq_set
 
        subroutine Execute_cpuid(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpuid
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -170,10 +170,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpuid
 
        subroutine Execute_cpupower(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpupower
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -184,10 +184,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpupower
 
        subroutine Execute_cpupower_frequency_info(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpupower_frequency_info
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -198,10 +198,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpupower_frequency_info
 
        subroutine Execute_cpupower_info(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_cpupower_info
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -212,10 +212,10 @@ module mod_linux_api_wrappers
        end subroutine Execute_cpupower_info
 
        subroutine Execute_lshw(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_lshw
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -226,10 +226,10 @@ module mod_linux_api_wrappers
         end subroutine Execute_lshw
 
         subroutine Execute_pidstat(res,ret_val,verbose,command)
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: Execute_pidstat
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
@@ -240,10 +240,10 @@ module mod_linux_api_wrappers
         end subroutine Execute_pidstat
 
         subroutine Execute_pmap(res,ret_val,verbose,command)
-!DIR$  ATTRIBUTES CODE_ALIGN : 32 :: Execute_pmap
-           logical(kind=int4),    intent(inout) :: res
-           integer(kind=int4),    intent(inout) :: ret_val
-           logical(kind=int4),    intent(in)    :: verbose
+
+           logical(kind=i4),    intent(inout) :: res
+           integer(kind=i4),    intent(inout) :: ret_val
+           logical(kind=i4),    intent(in)    :: verbose
            character(len=128),    intent(in)    :: command
            ! Exec code ...
            res = SYSTEMQQ(command)
