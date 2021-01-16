@@ -19,7 +19,7 @@ module mod_vecconsts
  !          Version:
  !
  !                      Major: 1
- !                      Minor: 0
+ !                      Minor: 1
  !                      Micro: 0
  !
  !          Author:  
@@ -142,6 +142,12 @@ module mod_vecconsts
     type(YMM8r4_t), parameter, public  :: v8r4_pi       = YMM8r4_t(pir4_const)
 
     type(YMM8r4_t), parameter, public  :: v8r4_2pi      = YMM8r4_t(twopir4_const)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_neg1     = YMM8r4_t(-1.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_tiny     = YMM8r4_t(TINY(1.0_sp))
+
+    type(YMM8r4_t), parameter, public  :: v8r4_huge     = YMM8r4_t(HUGE(1.0_sp))
     
     !type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
     
@@ -205,6 +211,8 @@ module mod_vecconsts
     
     type(ZMM16r4_t), parameter, public  :: v16r4_neg4      = ZMM16r4_t(-4.0_sp)
 
+    type(ZMM16r4_t), parameter, public  :: v16r4_neg1      = ZMM16r4_t(-1.0_sp)
+
     type(ZMM16r4_t), parameter, public  :: v16r4_1over3    = ZMM16r4_t(0.333333333333333333333_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_n9        = ZMM16r4_t(9.0_sp)
@@ -222,4 +230,8 @@ module mod_vecconsts
     type(ZMM16r4_t), parameter, public  :: v16r4_ln2        = ZMM16r4_t( 0.69314718055994530941723212145818E+00_sp)
     
     type(ZMM16r4_t), parameter, public  :: v16r4_ln4        = ZMM16r4_t( 1.3862943611198906188344642429164E+00_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_tiny       = ZMM16r4_t(TINY(1.0_sp))
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_huge       = ZMM16r4_t(HUGE(1.0_sp))
 end module mod_vecconsts
