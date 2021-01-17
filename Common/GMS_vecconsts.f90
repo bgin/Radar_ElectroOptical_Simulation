@@ -127,15 +127,25 @@ module mod_vecconsts
 
     type(YMM8r4_t), parameter, public  :: v8r4_n0       = YMM8r4_t(0.0_sp)
 
+    type(YMM8r4_t), parameter, public  :: v8r4_quart    = YMM8r4_t(0.25_sp)
+
     type(YMM8r4_t), parameter, public  :: v8r4_half     = YMM8r4_t(0.5_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_n1       = YMM8r4_t(1.0_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_n2       = YMM8r4_t(2.0_sp)
 
+    type(YMM8r4_t), parameter, public  :: v8r4_n3       = YMM8r4_t(3.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n4       = YMM8r4_t(4.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n5       = YMM8r4_t(5.0_sp)
+
     type(YMM8r4_t), parameter, public  :: v8r4_neg4     = YMM8r4_t(-4.0_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_n9       = YMM8r4_t(9.0_sp)
+
+    type(YMM8r4_t), parameter, public  :: v8r4_n16      = YMM8r4_t(16.0_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_1over3   = YMM8r4_t(0.3333333333333333333333_sp)
 
@@ -207,8 +217,16 @@ module mod_vecconsts
 
     type(ZMM16r4_t), parameter, public  :: v16r4_n0        = ZMM16r4_t(0.0_sp)
 
+    type(ZMM16r4_t), parameter, public  :: v16r4_quart     = ZMM16r4_t(0.25_sp)
+
     type(ZMM16r4_t), parameter, public  :: v16r4_half      = ZMM16r4_t(0.5_sp)
-    
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_n3        = ZMM16r4_t(3.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_n4        = ZMM16r4_t(4.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_n5        = ZMM16r4_t(5.0_sp)
+
     type(ZMM16r4_t), parameter, public  :: v16r4_neg4      = ZMM16r4_t(-4.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_neg1      = ZMM16r4_t(-1.0_sp)
@@ -216,6 +234,8 @@ module mod_vecconsts
     type(ZMM16r4_t), parameter, public  :: v16r4_1over3    = ZMM16r4_t(0.333333333333333333333_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_n9        = ZMM16r4_t(9.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16r4_n16       = ZMM16r4_t(16.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_sqrtpi     = ZMM16r4_t(1.7724538509055160272981674833411E+00_sp)
     
