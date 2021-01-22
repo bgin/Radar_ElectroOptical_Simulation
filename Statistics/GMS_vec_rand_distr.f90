@@ -1243,6 +1243,66 @@ function rand_inv_gauss_ymm8r4(h,b,first) result(v)
   end do
   v.v = x.v
 end function rand_inv_gauss_ymm8r4
+
+
+#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+function rand_inv_gauss_zmm16r4(h,b,first) result(v) !GCC$ ATTRIBUTES hot :: rand_inv_gauss_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: rand_inv_gauss_zmm16r4 !GCC$ ATTRIBUTES inline :: rand_inv_gauss_zmm16r4
+#elif defined __ICC || defined __INTEL_COMPILER
+function rand_inv_gauss_zmm16r4(h,b,first) result(v)
+  !DIR$ ATTRIBUTES INLINE :: rand_inv_gauss_zmm16r4
+  !DIR$ ATTRIBUTES ALIGN : 32 :: rand_inv_gauss_zmm16r4
+  !DIR$ ATTRIBUTES VECTOR :: rand_inv_gauss_zmm16r4
+#endif
+  type(ZMM16r4_t),    intent(in) :: h,b
+  logical(kind=i4),  intent(in) :: first
+  type(ZMM16r4_t) :: v
+  ! Locals
+  type(ZMM16r4_t), automatic :: ym,xm,r,w,r1,r2,x
+  type(ZMM16r4_t), save :: a,c,d,e
+  ! Locals
+  ym.v = v16r4_n0.v
+  xm.v = v16r4_n0.v
+  r.v  = v16r4_n0.v
+  w.v  = v16r4_n0.v
+  r1.v = v16r4_n0.v
+  r2.v = v16r4_n0.v
+  x.v  = v16r4_n0.v
+  if(first) then
+     if(all(h.v>v16r4_quart.v*b.v*sqrt(v16r4_huge.v))) then
+        v.v = v16r4_huge.v
+        return
+     end if
+     e.v = b.v*b.v
+     d.v = h.v+v16r4_n1.v
+     ym.v = (-d.v+sqrt(d.v*d.v+e.v))/b.v
+     if(all(ym.v<v16r4_tiny.v)) then
+        v.v = v16r4_tiny.v
+        return
+     end if
+     d.v = h.v-v16r4_n0.v
+     xm.v = (d.v+sqrt(d.v*d.v+e.v))/b.v
+     d.v = v16r4_half.v*d.v
+     e.v = -v16r4_half.v*b.v
+     r.v = xm.v+v16r4_n1.v/xm.v
+     w.v = xm.v*ym.v
+     a.v = w.v**(-v16r4_half.v*h.v)*sqrt(xm.v/ym.v)*exp(-e.v*(r.v-ym.v-v16r4_n1.v/ym.v))
+     if(all(a.v<v16r4_tiny.v)) then
+        v.v = v16r4_tiny.v
+        return
+     end if
+     c.v = -d.v*log(xm.v)-e.v*r.v
+  end if
+
+  do
+     call random_number(r1.v)
+     if(all(r1<=v16r4_n0.v)) cycle
+     call random_number(r2.v)
+     x.v = a.v*r2.v/r1.v
+     if(all(x.v<=v16r4_n0.v)) cycle
+     if(all(log(r1.v)<d.v*log(x.v)+e.v*(x.v+v16r4_n1.v/x.v)+c.v)) exit
+  end do
+  v.v = x.v
+end function rand_inv_gauss_zmm16r4
   
 
 END MODULE mod_vec_rand_distr
