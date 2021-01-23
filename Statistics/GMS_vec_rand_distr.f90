@@ -12,12 +12,7 @@ MODULE mod_vec_rand_distr
 !     t                               random_t
 !     Multivariate normal             random_mvnorm
 !     Generalized inverse Gaussian    random_inv_gauss
-!     Poisson                         random_Poisson
-!     Binomial                        random_binomial1   *
-!                                     random_binomial2   *
-!     Negative binomial               random_neg_binomial
-!     von Mises                       random_von_Mises
-!     Cauchy                          random_Cauchy
+!     
 !
 !  Generate a random ordering of the integers 1 .. N
 !                                     random_order
@@ -75,28 +70,17 @@ MODULE mod_vec_rand_distr
 !      approximate if applied to sample values.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-! Version 1.13, 2 October 2000
-! Changes from version 1.01
-! 1. The random_order, random_Poisson & random_binomial routines have been
-!    replaced with more efficient routines.
-! 2. A routine, seed_random_number, has been added to seed the uniform random
-!    number generator.   This requires input of the required number of seeds
-!    for the particular compiler from a specified I/O unit such as a keyboard.
-! 3. Made compatible with Lahey's ELF90.
-! 4. Marsaglia & Tsang algorithm used for random_gamma when shape parameter > 1.
-! 5. INTENT for array f corrected in random_mvnorm.
+
 
 !     Author: Alan Miller
-!     e-mail: amiller @ bigpond.net.au
+  !     e-mail: amiller @ bigpond.net.au
+  ! Explicitly vectorized by Bernard Gingold on 22-01-2020, contact: beniekg@gmail.com
+!   Some functions were not explicitly vectorized and they were removed.
 
   use mod_kinds, only : i4, sp, dp
   use mod_vectypes
   use mod_vecconsts
 IMPLICIT NONE
-!REAL, PRIVATE      :: zero = 0.0, half = 0.5, one = 1.0, two = 2.0,   &
-!                      vsmall = TINY(1.0), vlarge = HUGE(1.0)
-!PRIVATE            :: integral
-!INTEGER, PARAMETER :: dp = SELECTED_REAL_KIND(12, 60)
 
 
 CONTAINS
@@ -1303,6 +1287,7 @@ function rand_inv_gauss_zmm16r4(h,b,first) result(v)
   end do
   v.v = x.v
 end function rand_inv_gauss_zmm16r4
-  
 
+
+  
 END MODULE mod_vec_rand_distr
