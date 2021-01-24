@@ -468,15 +468,12 @@ gms_ippsAdd_32fc_I(const Ipp32fc *, Ipp32fc *, int32_t)__attribute__((hot))
                                                 __attribute__((nonnull (1,2))
                                                 __attribute__((assume_aligned(64)));
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAdd_64fc_I(const Ipp64fc * pSrc, Ipp64fc * pSrcDst, int32_t len) {
 
-          return (ippsAdd_64fc_I(pSrc,pSrcDst,len));
-}
+
+IppStatus gms_ippsAdd_64fc_I(const Ipp64fc * pSrc,
+                             Ipp64fc * pSrcDst, int32_t len) __attribute__((hot))
+                                                             __attribute__((nonnull (1,2))
+                                                             __attribute__((assume_aligned(64)));
 
 /*
         AddProductC
@@ -485,267 +482,170 @@ accumulator vector
 */
 
 	      
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProdC_32f(const Ipp32f * pSrc, const Ipp32f val, Ipp32f * pSrcDst, int32_t len) {
-
-          return (ippsAddProdC_32f(pSrc,val,pSrcDst,len));
-}
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProdC_64f(const Ipp64f * pSrc, const Ipp64f val, Ipp64f * pSrcDst, int32_t len) {
 
-          return (ippsAddProdC_64f(pSrc,val,pSrcDst,len));
-}
+IppStatus gms_ippsAddProdC_32f(const Ipp32f * pSrc, const Ipp32f val,
+                               Ipp32f * pSrcDst, int32_t len) __attribute__((nonnull (1,2))
+                                                              __attribute__((assume_aligned(64)))
+                                                              __attribute__((hot));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProduct_32f(const Ipp32f * pSrc1, const Ipp32f * pSrc2, Ipp32f * pSrcDst, int32_t len) {
-
-          return (ippsAddProduct_32f(pSrc1,pSrc2,pSrcDst,len));
-}
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProduct_64f(const Ipp64f * pSrc1, const Ipp64f * pSrc2, Ipp64f * pSrcDst, int32_t len) {
 
-          return (ippsAddProduct_64f(pSrc1,pSrc2,pSrcDst,len));
-}
+IppStatus gms_ippsAddProdC_64f(const Ipp64f * pSrc,
+                               const Ipp64f val, Ipp64f * pSrcDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProduct_32fc(const Ipp32fc * pSrc1, const Ipp32fc * pSrc2, Ipp32fc * pSrcDst, int32_t len) {
 
-          return (ippsAddProduct_32fc(pSrc1,pSrc2,pSrcDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsAddProduct_64fc(const Ipp64fc * pSrc1, const Ipp64fc * pSrc2, Ipp64fc * pSrcDst, int32_t len) {
 
-          return (ippsAddProduct_64fc(pSrc1,pSrc2,pSrcDst,len));
-}
 
+IppStatus gms_ippsAddProduct_32f(const Ipp32f * pSrc1, const Ipp32f * pSrc2,
+                                 Ipp32f * pSrcDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+
+IppStatus gms_ippsAddProduct_64f(const Ipp64f * pSrc1, const Ipp64f * pSrc2,
+                                 Ipp64f * pSrcDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+IppStatus gms_ippsAddProduct_32fc(const Ipp32fc * pSrc1, const Ipp32fc * pSrc2,
+                                  Ipp32fc * pSrcDst, int32_t len)__attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+IppStatus gms_ippsAddProduct_64fc(const Ipp64fc * pSrc1, const Ipp64fc * pSrc2,
+                                  Ipp64fc * pSrcDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
 /*
      MulC
 Multiplies each element of a vector by a constant
 value.
 */
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_32f(const Ipp32f * pSrc, Ipp32f val, Ipp32f * pDst, int32_t len) {
 
-          return (ippsMulC_32f(pSrc,val,pDst,len));
-}
+IppStatus gms_ippsMulC_32f(const Ipp32f * pSrc, Ipp32f val,
+                           Ipp32f * pDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_64f(const Ipp64f * pSrc, Ipp64f val, Ipp64f * pDst, int32_t len) {
+IppStatus gms_ippsMulC_64f(const Ipp64f * pSrc, Ipp64f val,
+                           Ipp64f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
-          return (ippsMulC_64f(pSrc,val,pDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_32fc(const Ipp32fc * pSrc, Ipp32fc val, Ipp32fc * pDst, int32_t len) {
+IppStatus gms_ippsMulC_32fc(const Ipp32fc * pSrc, Ipp32fc val,
+                            Ipp32fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
-          return (ippsMulC_32fc(pSrc,val,pDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_64fc(const Ipp64fc * pSrc, Ipp64fc val, Ipp64fc * pDst, int32_t len) {
-
-          return (ippsMulC_64fc(pSrc,val,pDst,len));
-}
-
+IppStatus gms_ippsMulC_64fc(const Ipp64fc * pSrc, Ipp64fc val,
+                            Ipp64fc * pDst, int32_t len) __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 /*
       In-place operations without scaling.
 */
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_32f_I(Ipp32f val, Ipp32f * pSrcDst, int32_t len) {
- 
-          return (ippsMulC_32f_I(val,pSrcDst,len));
-}
+
+IppStatus gms_ippsMulC_32f_I(Ipp32f val, Ipp32f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_64f_I(Ipp64f val, Ipp64f * pSrcDst, int32_t len) {
- 
-          return (ippsMulC_64f_I(val,pSrcDst,len));
-}
+
+IppStatus gms_ippsMulC_64f_I(Ipp64f val, Ipp64f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_32fc_I(Ipp32fc val, Ipp32fc * pSrcDst, int32_t len) {
- 
-          return (ippsMulC_32fc_I(val,pSrcDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMulC_64fc_I(Ipp64fc val, Ipp64fc * pSrcDst, int32_t len) {
- 
-          return (ippsMulC_64fc_I(val,pSrcDst,len));
-}
+IppStatus gms_ippsMulC_32fc_I(Ipp32fc val, Ipp32fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
+
+
+IppStatus gms_ippsMulC_64fc_I(Ipp64fc val, Ipp64fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
 /*
        Mul
 Multiplies the elements of two vectors.
 */
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_32f(const Ipp32f * pSrc1, const Ipp32f * pSrc2, Ipp32f * pDst, int32_t len) {
 
-          return (ippsMul_32f(pSrc1,pSrc2,pDst,len));
-}
-
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_64f(const Ipp64f * pSrc1, const Ipp64f * pSrc2, Ipp64f * pDst, int32_t len) {
-
-          return (ippsMul_64f(pSrc1,pSrc2,pDst,len));
-}
-
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_32fc(const Ipp32fc * pSrc1, const Ipp32fc * pSrc2, Ipp32fc * pDst, int32_t len) {
-
-          return (ippsMul_32fc(pSrc1,pSrc2,pDst,len));
-}
+IppStatus gms_ippsMul_32f(const Ipp32f * pSrc1, const Ipp32f * pSrc2,
+                          Ipp32f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_64fc(const Ipp64fc * pSrc1, const Ipp64fc * pSrc2, Ipp64fc * pDst, int32_t len) {
+IppStatus gms_ippsMul_64f(const Ipp64f * pSrc1, const Ipp64f * pSrc2,
+                          Ipp64f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
 
-          return (ippsMul_64fc(pSrc1,pSrc2,pDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2,3))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_32f32fc(const Ipp32f * pSrc1, const Ipp32fc * pSrc2, Ipp32fc * pDst, int32_t len) {
+IppStatus gms_ippsMul_32fc(const Ipp32fc * pSrc1,
+                           const Ipp32fc * pSrc2, Ipp32fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
 
-          return (ippsMul_32f32fc(pSrc1,pSrc2,pDst,len));
-}
 
+
+IppStatus gms_ippsMul_64fc(const Ipp64fc * pSrc1,
+                           const Ipp64fc * pSrc2, Ipp64fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+IppStatus gms_ippsMul_32f32fc(const Ipp32f * pSrc1,
+                              const Ipp32fc * pSrc2, Ipp32fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2,3))
+                                                                                __attribute__((assume_aligned(64)));
 
 
 /*
     In-place operations on floating point and integer data without scaling
 */
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_32f_I(const Ipp32f * pSrc, Ipp32f * pSrcDst, int32_t len) {
+
+IppStatus gms_ippsMul_32f_I(const Ipp32f * pSrc, Ipp32f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+
+IppStatus gms_ippsMul_64f_I(const Ipp64f * pSrc, Ipp64f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
  
-          return (ippsMul_32f_I(pSrc,pSrcDst,len));
-}
+
+IppStatus gms_ippsMul_32fc_I(const Ipp32fc * pSrc, Ipp32fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_64f_I(const Ipp64f * pSrc, Ipp64f * pSrcDst, int32_t len) {
- 
-          return (ippsMul_64f_I(pSrc,pSrcDst,len));
-}
-
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_32fc_I(const Ipp32fc * pSrc, Ipp32fc * pSrcDst, int32_t len) {
- 
-          return (ippsMul_32fc_I(pSrc,pSrcDst,len));
-}
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsMul_64fc_I(const Ipp64fc * pSrc, Ipp64fc * pSrcDst, int32_t len) {
- 
-          return (ippsMul_64fc_I(pSrc,pSrcDst,len));
-}
+IppStatus gms_ippsMul_64fc_I(const Ipp64fc * pSrc, Ipp64fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
 /*
@@ -759,15 +659,11 @@ vector.
 */
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_32f(const Ipp32f * pSrc, Ipp32f val, Ipp32f * pDst, int32_t len) {
-  
-          return (ippsSubC_32f(pSrc,val,pDst,len));
-}
+
+IppStatus gms_ippsSubC_32f(const Ipp32f * pSrc, Ipp32f val,
+                           Ipp32f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
 __ATTR_ALWAYS_INLINE__
@@ -780,85 +676,50 @@ IppStatus gms_ippsSubC_64f(const Ipp64f * pSrc, Ipp64f val, Ipp64f * pDst, int32
           return (ippsSubC_64f(pSrc,val,pDst,len));
 }
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_32fc(const Ipp32fc * pSrc, Ipp32fc val, Ipp32fc * pDst, int32_t len) {
-  
-          return (ippsSubC_32fc(pSrc,val,pDst,len));
-}
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_64fc(const Ipp64fc * pSrc, Ipp64fc val, Ipp64fc * pDst, int32_t len) {
-  
-          return (ippsSubC_64fc(pSrc,val,pDst,len));
-}
+IppStatus gms_ippsSubC_32fc(const Ipp32fc * pSrc, Ipp32fc val, Ipp32fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
+
+
+IppStatus gms_ippsSubC_64fc(const Ipp64fc * pSrc, Ipp64fc val, Ipp64fc * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 /*
      In-place operations on floating point data.
 */
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_32f_I(Ipp32f val, Ipp32f * pSrcDst, int32_t len) {
 
-          return (ippsSubC_32f(val,pSrcDst,len));
-}
+IppStatus gms_ippsSubC_32f_I(Ipp32f val, Ipp32f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_64f_I(Ipp64f val, Ipp64f * pSrcDst, int32_t len) {
 
-          return (ippsSubC_64f(val,pSrcDst,len));
-}
+IppStatus gms_ippsSubC_64f_I(Ipp64f val, Ipp64f * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_32fc_I(Ipp32fc val, Ipp32fc * pSrcDst, int32_t len) {
 
-          return (ippsSubC_32fc(val,pSrcDst,len));
-}
+IppStatus gms_ippsSubC_32fc_I(Ipp32fc val, Ipp32fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_64fc_I(Ipp64fc val, Ipp64fc * pSrcDst, int32_t len) {
 
-          return (ippsSubC_64fc(val,pSrcDst,len));
-}
-
+IppStatus gms_ippsSubC_64fc_I(Ipp64fc val, Ipp64fc * pSrcDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1))
+                                                                                __attribute__((assume_aligned(64)));
 /*
    SubCRev
 Subtracts each element of a vector from a constant
 value.
 */
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubCRev_32f(const Ipp32f * pSrc, Ipp32f val, Ipp32f * pDst, int32_t len) {
 
-          return (ippsSubCRev_32f(pSrc,val,pDst,len));
-}
+IppStatus gms_ippsSubCRev_32f(const Ipp32f * pSrc, Ipp32f val,
+                              Ipp32f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
 
