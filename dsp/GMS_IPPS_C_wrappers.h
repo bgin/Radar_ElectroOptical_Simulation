@@ -666,15 +666,11 @@ IppStatus gms_ippsSubC_32f(const Ipp32f * pSrc, Ipp32f val,
                                                                                 __attribute__((assume_aligned(64)));
 
 
-__ATTR_ALWAYS_INLINE__
-__ATTR_HOT__
-__attribute__((nonnull (1,2))
-__attribute__((assume_aligned(64)))
-static inline
-IppStatus gms_ippsSubC_64f(const Ipp64f * pSrc, Ipp64f val, Ipp64f * pDst, int32_t len) {
-  
-          return (ippsSubC_64f(pSrc,val,pDst,len));
-}
+
+IppStatus gms_ippsSubC_64f(const Ipp64f * pSrc, Ipp64f val,
+			   Ipp64f * pDst, int32_t len)  __attribute__((hot))
+                                                                                __attribute__((nonnull (1,2))
+                                                                                __attribute__((assume_aligned(64)));
 
 
 IppStatus gms_ippsSubC_32fc(const Ipp32fc * pSrc, Ipp32fc val, Ipp32fc * pDst, int32_t len)  __attribute__((hot))
