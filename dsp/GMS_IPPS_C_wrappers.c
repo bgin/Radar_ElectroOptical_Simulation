@@ -1121,4 +1121,295 @@ IppStatus gms_ippsDivC_64fc(const Ipp64fc * pSrc, Ipp64fc val, Ipp64fc * pDst, i
 }
 
 
+IppStatus
+gms_ippsDivC_32f_I(Ipp32f val, Ipp32f* pSrcDst, int32_t len) {
 
+          return (ippsDivC_32f_I(val,pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsDivC_64f_I(Ipp64f val, Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsDivC_64f_I(val,pSrcDst,len));
+}
+
+IppStatus
+gms_ippsDivC_32fc_I(Ipp32fc val, Ipp32fc* pSrcDst, int32_t len) {
+
+          return (ippsDivC_32fc_I(val,pSrcDst,len));
+}
+
+IppStatus
+gms_ippsDivC_64fc_I(Ipp64fc val, Ipp64fc* pSrcDst, int32_t len) {
+
+          return (ippsDivC_64fc_I(val,pSrcDst,len));
+}
+
+IppStatus
+gms_ippsDivCRev_32f(const Ipp32f* pSrc, Ipp32f val, Ipp32f* pDst, int32_t len) {
+
+          return (ippsDivCRev_32f(pSrc,val,pDst,len));
+}
+
+
+IppStatus
+gms_ippsDivCRev_32f_I(const Ipp32f* pSrcDst, Ipp32f val,int32_t len) {
+
+          return (ippsDivCRev_32f_I(pSrcDst,val,len));
+}
+
+IppStatus
+gms_ippsDiv_32f(const Ipp32f* pSrc1, const Ipp32f* pSrc2, Ipp32f* pDst, int32_t len) {
+
+          return (ippsDiv_32f(pSrc1,pSrc2,pDst,len));
+}
+
+
+IppStatus
+gms_ippsDiv_64f(const Ipp64f* pSrc1, const Ipp64f* pSrc2, Ipp64f* pDst, int32_t len) {
+
+          return (ippsDiv_64f(pSrc1,pSrc2,pDst,len));
+}
+
+IppStatus
+gms_ippsDiv_32fc(const Ipp32fc* pSrc1, const Ipp32fc* pSrc2, Ipp32fc* pDst, int32_t len) {
+
+          return (ippsDiv_32fc(pSrc1,pSrc2,pDst,len));
+}
+
+IppStatus
+gms_ippsDiv_64fc(const Ipp64fc* pSrc1, const Ipp64fc* pSrc2, Ipp64fc* pDst, int32_t len) {
+
+          return (ippsDiv_64fc(pSrc1,pSrc2,pDst,len));
+}
+
+
+IppStatus
+gms_ippsDiv_32f_I(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsDiv_32f_I(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsDiv_64f_I(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsDiv_64f_I(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsDiv_32fc_I(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+          return (ippsDiv_32fc_I(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsDiv_64fc_I(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+          return (ippsDiv_64fc_I(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsAbs_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsAbs_32f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsAbs_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsAbs_64f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsAbs_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsAbs_32f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsAbs_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsAbs_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsSqr_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsSqr_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsSqr_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsSqr_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsSqr_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+          return (ippsSqr_32fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsSqr_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+          return (ippsSqr_64fc(pSrc,pDst,len));
+}
+
+IppStatus					      
+gms_ippsSqr_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsSqr_32f_I(pSrcDst,len));
+}
+
+
+IppStatus					      
+gms_ippsSqr_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsSqr_64f_I(pSrcDst,len));
+}
+
+IppStatus					      
+gms_ippsSqr_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+          return (ippsSqr_32fc_I(pSrcDst,len));
+}
+
+IppStatus					      
+gms_ippsSqr_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+          return (ippsSqr_64fc_I(pSrcDst,len));
+}
+
+IppStatus			
+gms_ippsSqrt_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsSqrt_32f(pSrc,pDst,len));
+}
+
+
+IppStatus			
+gms_ippsSqrt_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsSqrt_64f(pSrc,pDst,len));
+}
+
+IppStatus			
+gms_ippsSqrt_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+          return (ippsSqrt_32fc(pSrc,pDst,len));
+}
+
+IppStatus			
+gms_ippsSqrt_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+          return (ippsSqrt_64fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsSqrt_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsSqrt_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsSqrt_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsSqrt_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsSqrt_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+          return (ippsSqrt_32fc_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsSqrt_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+          return (ippsSqrt_64fc_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsCubrt_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsCubrt_32f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsExp_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsExp_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsExp_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsExp_64f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsExp_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsExp_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsExp_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsExp_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsLn_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsLn_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsLn_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsLn_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsLn_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsLn_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsLn_64f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsLn_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsSumLn_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pDst) {
+
+          return (ippsSumLn_32f(pSrc,len,pDst));
+}
+
+
+IppStatus
+gms_ippsSumLn_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pDst) {
+
+          return (ippsSumLn_64f(pSrc,len,pDst));
+}
+
+IppStatus
+gms_ippsSumLn_32f64f(const Ipp32f* pSrc, int32_t len, Ipp64f* pDst) {
+
+          return (ippsSumLn_32f64f(pSrc,len,pDst));
+}
