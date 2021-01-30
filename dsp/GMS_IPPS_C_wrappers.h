@@ -1411,62 +1411,62 @@ gms_ippsThreshold_GT_64fc(const Ipp64fc*, Ipp64fc*, int32_t, Ipp64f)  __attribut
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_GT_32f_I(Ipp32f*, int32_t Ipp32f)  __attribute__((hot))
+gms_ippsThreshold_GT_32f_I(Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_GT_64f_I(Ipp64f*, int32_t Ipp64f)  __attribute__((hot))
+gms_ippsThreshold_GT_64f_I(Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_GT_32fc_I(Ipp32fc*, int32_t Ipp32f)  __attribute__((hot))
+gms_ippsThreshold_GT_32fc_I(Ipp32fc*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_GT_64fc_I(Ipp64fc*, int32_t Ipp64f)  __attribute__((hot))
+gms_ippsThreshold_GT_64fc_I(Ipp64fc*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_LT_32f_I(Ipp32f*, int32_t Ipp32f)  __attribute__((hot))
+gms_ippsThreshold_LT_32f_I(Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_LT_64f_I(Ipp64f*, int32_t Ipp64f)  __attribute__((hot))
+gms_ippsThreshold_LT_64f_I(Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_LT_32fc_I(Ipp32fc*, int32_t Ipp32f)  __attribute__((hot))
+gms_ippsThreshold_LT_32fc_I(Ipp32fc*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsThreshold_LT_64fc_I(Ipp64fc*, int32_t Ipp64f)  __attribute__((hot))
+gms_ippsThreshold_LT_64fc_I(Ipp64fc*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsLTAbs_32f(const Ipp32f*, Ipp32f*, int32_t len, Ipp32f)  __attribute__((hot))
+gms_ippsLTAbs_32f(const Ipp32f*, Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1,2))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsLTAbs_64f(const Ipp64f*, Ipp64f*, int32_t len, Ipp64f)  __attribute__((hot))
+gms_ippsLTAbs_64f(const Ipp64f*, Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1,2))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsGTAbs_32f(const Ipp32f*, Ipp32f*, int32_t len, Ipp32f)  __attribute__((hot))
+gms_ippsGTAbs_32f(const Ipp32f*, Ipp32f*, int32_t, Ipp32f)  __attribute__((hot))
                                               __attribute__((nonnull (1,2))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsGTAbs_64f(const Ipp64f*, Ipp64f*, int32_t len, Ipp64f)  __attribute__((hot))
+gms_ippsGTAbs_64f(const Ipp64f*, Ipp64f*, int32_t, Ipp64f)  __attribute__((hot))
                                               __attribute__((nonnull (1,2))
                                               __attribute__((assume_aligned(64)));
 
