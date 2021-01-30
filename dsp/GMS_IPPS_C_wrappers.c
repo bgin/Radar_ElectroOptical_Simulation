@@ -1413,3 +1413,622 @@ gms_ippsSumLn_32f64f(const Ipp32f* pSrc, int32_t len, Ipp64f* pDst) {
 
           return (ippsSumLn_32f64f(pSrc,len,pDst));
 }
+
+IppStatus
+gms_ippsArctan_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsArctan_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsArctan_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsArctan_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsArctan_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+           return (ippsArctan_32f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsArctan_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+           return (ippsArctan_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsNormalize_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len,
+                      Ipp32f vSub, Ipp32f vDiv) {
+           return (ippsNormalize_32f(pSrc,pDst,len,vSub,vDiv));
+
+}
+
+IppStatus
+gms_ippsNormalize_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len,
+                      Ipp64f vSub, Ipp64f vDiv) {
+           return (ippsNormalize_64f(pSrc,pDst,len,vSub,vDiv));
+
+}
+
+IppStatus
+gms_ippsNormalize_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len,
+                      Ipp32fc vSub, Ipp32fc vDiv) {
+           return (ippsNormalize_32fc(pSrc,pDst,len,vSub,vDiv));
+
+}
+
+IppStatus
+gms_ippsNormalize_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len,
+                      Ipp64fc vSub, Ipp64fc vDiv) {
+           return (ippsNormalize_64fc(pSrc,pDst,len,vSub,vDiv));
+
+}
+
+IppStatus
+gms_ippsNormalize_32f_I(Ipp32f* pSrcDst, int32_t len,
+                        Ipp32f vSub, Ipp32f vDiv) {
+
+           return (ippsNormalize_32f_I(pSrcDst,len,vSub,vDiv));
+}
+
+IppStatus
+gms_ippsNormalize_64f_I(Ipp64f* pSrcDst, int32_t len,
+                        Ipp64f vSub, Ipp64f vDiv) {
+
+           return (ippsNormalize_64f_I(pSrcDst,len,vSub,vDiv));
+}
+
+IppStatus
+gms_ippsNormalize_32fc_I(Ipp32fc* pSrcDst, int32_t len,
+                        Ipp32fc vSub, Ipp32fc vDiv) {
+
+           return (ippsNormalize_32fc_I(pSrcDst,len,vSub,vDiv));
+}
+
+IppStatus
+gms_ippsNormalize_64fc_I(Ipp64fc* pSrcDst, int32_t len,
+                        Ipp64fc vSub, Ipp64fc vDiv) {
+
+           return (ippsNormalize_64fc_I(pSrcDst,len,vSub,vDiv));
+}
+
+
+IppStatus
+gms_ippsSortAscend_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsSortAscend_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsSortAscend_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsSortAscend_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsSortDescend_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+          return (ippsSortDescend_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsSortDescend_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+          return (ippsSortDescend_64f_I(pSrcDst,len));
+}
+
+IppStatus
+gms_ippsConvert32f64f(const Ipp32f* pSrc, Ipp64f* pDst, int32_t len) {
+
+          return (ippsConvert32f64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsConvert64f32f(const Ipp64f* pSrc, Ipp32f* pDst, int32_t len) {
+
+          return (ippsConvert64f32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsConj_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+          return (ippsConj_32fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsConj_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+          return (ippsConj_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsConj_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+          return (ippsConj_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsConj_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+          return (ippsConj_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsConjFlip_32fc(const Ipp32fc* pSrc ,Ipp32fc* pDst , int32_t len) {
+
+         return (ippsConjFlip_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsConjFlip_64fc(const Ipp64fc* pSrc ,Ipp64fc* pDst , int32_t len) {
+
+         return (ippsConjFlip_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsMagnitude_32f(const Ipp32f* pSrcRe, const Ipp32f* pSrcIm, Ipp32f* pDst, int32_t len) {
+
+         return (ippsMagnitude_32f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippsMagnitude_64f(const Ipp64f* pSrcRe, const Ipp64f* pSrcIm, Ipp64f* pDst, int32_t len) {
+
+         return (ippsMagnitude_64f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippsMagnitude_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+         return (ippsMagnitude_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsMagnitude_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+         return (ippsMagnitude_64fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsPhase_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+         return (ippsPhase_64fc(pSrc,pDst,len)); 
+}
+
+
+IppStatus
+gms_ippsPhase_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+         return (ippsPhase_32fc(pSrc,pDst,len)); 
+}
+
+IppStatus
+gms_ippPhase_32f(const Ipp32f* pSrcRe, const Ipp32f* pSrcIm, Ipp32f* pDst, int32_t len) {
+
+         return (ippsPhase_32f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippPhase_64f(const Ipp64f* pSrcRe, const Ipp64f* pSrcIm, Ipp64f* pDst, int32_t len) {
+
+         return (ippsPhase_64f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippsPowerSpectrum_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+         return (ippsPowerSpectrum_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsPowerSpectrum_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+         return (ippsPowerSpectrum_64fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsPowerSpectrum_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+         return (ippsPowerSpectrum_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsPowerSpectrum_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+         return (ippsPowerSpectrum_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsReal_32fc(const Ipp32fc* pSrc, Ipp32f* pDstRe, int32_t len) {
+
+         return (ippsReal_32fc(pSrc,pDstRe,len));
+}
+
+
+IppStatus
+gms_ippsReal_64fc(const Ipp64fc* pSrc, Ipp64f* pDstRe, int32_t len) {
+
+         return (ippsReal_64fc(pSrc,pDstRe,len));
+}
+
+
+IppStatus
+gms_ippsImag_32fc(const Ipp32fc* pSrc, Ipp32f* pDstIm, int32_t len) {
+
+         return (ippsImag_32fc(pSrc,pDstIm,len));
+}
+
+
+IppStatus
+gms_ippsImag_64fc(const Ipp64fc* pSrc, Ipp64f* pDstIm, int32_t len) {
+
+         return (ippsImag_64fc(pSrc,pDstIm,len));
+}
+
+
+
+IppStatus
+gms_ippsRealToCplx_32f(const Ipp32f* pSrcRe, const Ipp32f* pSrcIm,
+                       Ipp32fc* pDst, int32_t len) {
+
+         return (ippsRealToCplx_32f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippsRealToCplx_64f(const Ipp64f* pSrcRe, const Ipp64f* pSrcIm,
+                       Ipp64fc* pDst, int32_t len) {
+
+         return (ippsRealToCplx_64f(pSrcRe,pSrcIm,pDst,len));
+}
+
+
+IppStatus
+gms_ippsCplxToReal_32f(const Ipp32fc pSrc*, Ipp32f* pDstRe,
+                       Ipp32f* pDstIm, int32_t len) {
+
+          return (ippsCplxToReal_32f(pSrc,pDstRe,pDstIm,len));
+}
+
+
+IppStatus
+gms_ippsCplxToReal_64f(const Ipp64fc pSrc*, Ipp64f* pDstRe,
+                       Ipp64f* pDstIm, int32_t len) {
+
+          return (ippsCplxToReal_64f(pSrc,pDstRe,pDstIm,len));
+}
+
+
+IppStatus
+gms_ippsThreshold_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len, Ipp32f level,
+                      IppCompOp opRel) {
+
+          return (ippsThreshold_32f(pSrc,pDst,len,level,opRel));
+}
+
+
+IppStatus
+gms_ippsThreshold_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len, Ipp64f level,
+                      IppCompOp opRel) {
+
+          return (ippsThreshold_64f(pSrc,pDst,len,level,opRel));
+}
+
+
+IppStatus
+gms_ippsThreshold_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len, Ipp32f level,
+                      IppCompOp opRel) {
+
+          return (ippsThreshold_32fc(pSrc,pDst,len,level,opRel));
+}
+
+
+IppStatus
+gms_ippsThreshold_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len, Ipp64f level,
+                      IppCompOp opRel) {
+
+          return (ippsThreshold_64fc(pSrc,pDst,len,level,opRel));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                         int32_t len, Ipp32f level) {
+
+          return (ippsThreshold_LT_32f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                         int32_t len, Ipp64f level) {
+
+          return (ippsThreshold_LT_64f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst,
+                         int32_t len, Ipp32f level) {
+
+          return (ippsThreshold_LT_32fc(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst,
+                         int32_t len, Ipp64f level) {
+
+          return (ippsThreshold_LT_64fc(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                         int32_t len, Ipp32f level) {
+
+          return (ippsThreshold_GT_32f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                         int32_t len, Ipp64f level) {
+
+          return (ippsThreshold_GT_64f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst,
+                         int32_t len, Ipp32f level) {
+
+          return (ippsThreshold_GT_32fc(pSrc,pDst,len,level));
+}
+
+IppStatus
+gms_ippsThreshold_GT_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst,
+                         int32_t len, Ipp64f level) {
+
+          return (ippsThreshold_GT_64fc(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_32f_I(Ipp32f* pSrcDst, int32_t len,  Ipp32f level) {
+
+           return (ippsThreshold_GT_32f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_64f_I(Ipp64f* pSrcDst, int32_t len,  Ipp64f level) {
+
+           return (ippsThreshold_GT_64f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_GT_32fc_I(Ipp32fc* pSrcDst, int32_t len,  Ipp32f level) {
+
+           return (ippsThreshold_GT_32fc_I(pSrcDst,len,level));
+}
+
+IppStatus
+gms_ippsThreshold_GT_64fc_I(Ipp64fc* pSrcDst, int32_t len,  Ipp64f level) {
+
+           return (ippsThreshold_GT_64fc_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_32f_I(Ipp32f* pSrcDst, int32_t len,  Ipp32f level) {
+
+           return (ippsThreshold_LT_32f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_64f_I(Ipp64f* pSrcDst, int32_t len,  Ipp64f level) {
+
+           return (ippsThreshold_LT_64f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LT_32fc_I(Ipp32fc* pSrcDst, int32_t len,  Ipp32f level) {
+
+           return (ippsThreshold_LT_32fc_I(pSrcDst,len,level));
+}
+
+IppStatus
+gms_ippsThreshold_LT_64fc_I(Ipp64fc* pSrcDst, int32_t len,  Ipp64f level) {
+
+           return (ippsThreshold_LT_64fc_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsLTAbs_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                  int32_t len,  Ipp32f level) {
+
+           return (ippsLTAbs_32f(pSrc,pDst,len,level));
+}
+
+IppStatus
+gms_ippsLTAbs_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                  int32_t len,  Ipp64f level) {
+
+           return (ippsLTAbs_64f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsGTAbs_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                  int32_t len,  Ipp32f level) {
+
+           return (ippsGTAbs_32f(pSrc,pDst,len,level));
+}
+
+IppStatus
+gms_ippsGTAbs_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                  int32_t len,  Ipp64f level) {
+
+           return (ippsGTAbs_64f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsGTAbs_32f_I(Ipp32f* pSrcDst, int32_t len, Ipp32f level) {
+
+           return (ippsGTAbs_32f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsGTAbs_64f_I(Ipp64f* pSrcDst, int32_t len, Ipp64f level) {
+
+           return (ippsGTAbs_64f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsLTAbs_32f_I(Ipp32f* pSrcDst, int32_t len, Ipp32f level) {
+
+           return (ippsLTAbs_32f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsLTAbs_64f_I(Ipp64f* pSrcDst, int32_t len, Ipp64f level) {
+
+           return (ippsLTAbs_64f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTAbsVal_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len,
+                                Ipp32f level, Ipp32f val) {
+
+           return( ippsThreshold_LTAbsVal_32f(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTAbsVal_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len,
+                                Ipp64f level, Ipp64f val) {
+
+           return( ippsThreshold_LTAbsVal_64f(pSrc,pDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_LTAbsVal_32f_I(Ipp32f* pSrcDst, int32_t len,
+                                 Ipp32f level, Ipp32f val) {
+
+           return (ippsThreshold_LTAbsVal_32f_I(pSrcDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTAbsVal_64f_I(Ipp64f* pSrcDst, int32_t len,
+                                 Ipp64f level, Ipp64f val) {
+
+           return (ippsThreshold_LTAbsVal_64f_I(pSrcDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_LTVal_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len,
+                            Ipp32f level, Ipp32f val) {
+
+           return (ippsThreshold_LTVal_32f(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTVal_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len,
+                            Ipp64f level, Ipp64f val) {
+
+           return (ippsThreshold_LTVal_64f(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTVal_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len,
+                            Ipp32f level, Ipp32f val) {
+
+           return (ippsThreshold_LTVal_32fc(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTVal_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len,
+                            Ipp64f level, Ipp64f val) {
+
+           return (ippsThreshold_LTVal_64fc(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_GTVal_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len,
+                            Ipp32f level, Ipp32f val) {
+
+           return (ippsThreshold_GTVal_32fc(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_GTVal_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len,
+                            Ipp64f level, Ipp64f val) {
+
+           return (ippsThreshold_GTVal_64fc(pSrc,pDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTVal_32f_I(Ipp32f* pSrcDst, int32_t len,
+                              Ipp32f level, Ipp32f val) {
+
+	   return (ippsThreshold_LTVal_32f_I(pSrcDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTVal_64f_I(Ipp64f* pSrcDst, int32_t len,
+                              Ipp64f level, Ipp64f val) {
+
+	   return (ippsThreshold_LTVal_64f_I(pSrcDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_LTVal_32fc_I(Ipp32fc* pSrcDst, int32_t len,
+                              Ipp32f level, Ipp32f val) {
+
+	   return (ippsThreshold_LTVal_32fc_I(pSrcDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_LTVal_64fc_I(Ipp64fc* pSrcDst, int32_t len,
+                              Ipp64f level, Ipp64f val) {
+
+	   return (ippsThreshold_LTVal_64fc_I(pSrcDst,len,level,val));
+}
+
+
