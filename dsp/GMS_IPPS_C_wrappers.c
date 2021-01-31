@@ -2032,3 +2032,836 @@ gms_ippsThreshold_LTVal_64fc_I(Ipp64fc* pSrcDst, int32_t len,
 }
 
 
+IppStatus
+gms_ippsThreshold_GTVal_32f_I(Ipp32f* pSrcDst, int32_t len,
+                              Ipp32f level, Ipp32f val) {
+
+	   return (ippsThreshold_GTVal_32f_I(pSrcDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_GTVal_64f_I(Ipp64f* pSrcDst, int32_t len,
+                              Ipp64f level, Ipp64f val) {
+
+	   return (ippsThreshold_GTVal_64f_I(pSrcDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_GTVal_32fc_I(Ipp32fc* pSrcDst, int32_t len,
+                              Ipp32f level, Ipp32f val) {
+
+	   return (ippsThreshold_GTVal_32fc_I(pSrcDst,len,level,val));
+}
+
+IppStatus
+gms_ippsThreshold_GTVal_64fc_I(Ipp64fc* pSrcDst, int32_t len,
+                              Ipp64f level, Ipp64f val) {
+
+	   return (ippsThreshold_GTVal_64fc_I(pSrcDst,len,level,val));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+			    int32_t len, Ipp32f level) {
+
+           return (ippsThreshold_LTInv_32f(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+			    int32_t len, Ipp64f level) {
+
+           return (ippsThreshold_LTInv_64f(pSrc,pDst,len,level));
+}
+
+IppStatus
+gms_ippsThreshold_LTInv_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst,
+			    int32_t len, Ipp32f level) {
+
+           return (ippsThreshold_LTInv_32fc(pSrc,pDst,len,level));
+}
+
+IppStatus
+gms_ippsThreshold_LTInv_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst,
+			    int32_t len, Ipp64f level) {
+
+           return (ippsThreshold_LTInv_64fc(pSrc,pDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_32f_I(Ipp32f* pSrcDst, int32_t len, Ipp32f level) {
+
+           return (ippsThreshold_LTInv_32f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_64f_I(Ipp64f* pSrcDst, int32_t len, Ipp64f level) {
+
+           return (ippsThreshold_LTInv_64f_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_32fc_I(Ipp32fc* pSrcDst, int32_t len, Ipp32f level) {
+
+           return (ippsThreshold_LTInv_32fc_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsThreshold_LTInv_64fc_I(Ipp64fc* pSrcDst, int32_t len, Ipp64f level) {
+
+           return (ippsThreshold_LTInv_64fc_I(pSrcDst,len,level));
+}
+
+
+IppStatus
+gms_ippsCartToPolar_32f(const Ipp32f* pSrcRe, const Ipp32f* pSrcIm, Ipp32f pDstMgn*,
+                        Ipp32f* pDstPhase, int32_t len) {
+
+            return (ippsCartToPolar_32f(pSrcRe,pSrcIm,pDstMgn,pDstPhase,len));
+}
+
+
+IppStatus
+gms_ippsCartToPolar_64f(const Ipp64f* pSrcRe, const Ipp64f* pSrcIm, Ipp64f pDstMgn*,
+                        Ipp64f* pDstPhase, int32_t len) {
+
+            return (ippsCartToPolar_64f(pSrcRe,pSrcIm,pDstMgn,pDstPhase,len));
+}
+
+
+IppStatus
+gms_ippsCartToPolar_32fc(const Ipp32fc* pSrc, Ipp32f* pDstMgn,
+                         Ipp32f* pDstPhase, int32_t len) {
+
+            return (ippsCartToPolar_32fc(pSrc,pDstMgn,pDstPhase,len));
+}
+
+
+IppStatus
+gms_ippsCartToPolar_64fc(const Ipp64fc* pSrc, Ipp64f* pDstMgn,
+                         Ipp64f* pDstPhase, int32_t len) {
+
+            return (ippsCartToPolar_64fc(pSrc,pDstMgn,pDstPhase,len));
+}
+
+IppStatus
+gms_ippsPolarToCart_32f(const Ipp32f* pSrcMgn, const Ipp32f* pSrcPhase, Ipp32f* pDstRe,
+                        Ipp32f* pDstIm, int32_t len) {
+
+            return (ippsPolarToCart_32f(pSrcMgn,pSrcPhase,pDstRe,pDstIm,len));
+}
+
+
+IppStatus
+gms_ippsPolarToCart_64f(const Ipp64f* pSrcMgn, const Ipp64f* pSrcPhase, Ipp64f* pDstRe,
+                        Ipp64f* pDstIm, int32_t len) {
+
+            return (ippsPolarToCart_64f(pSrcMgn,pSrcPhase,pDstRe,pDstIm,len));
+}
+
+
+IppStatus
+gms_ippsPolarToCart_32fc(const Ipp32f* pSrcMgn, const Ipp32f* pSrcPhase,
+                         Ipp32fc* pDst, int32_t len) {
+
+            return (ippsPolarToCart_32fc(pSrcMgn,pSrcPhase,pDst,len));
+}
+
+
+IppStatus
+gms_ippsPolarToCart_64fc(const Ipp64f* pSrcMgn, const Ipp64f* pSrcPhase,
+                         Ipp64fc* pDst, int32_t len) {
+
+            return (ippsPolarToCart_64fc(pSrcMgn,pSrcPhase,pDst,len));
+}
+
+IppStatus
+gms_ippsMaxOrder_32f(const Ipp32f* pSrc, int32_t len, int32_t* pOrder) {
+
+            return (ippsMaxOrder_32f(pSrc,len,pOrder));
+}
+
+
+IppStatus
+gms_ippsMaxOrder_64f(const Ipp64f* pSrc, int32_t len, int32_t* pOrder) {
+
+            return (ippsMaxOrder_64f(pSrc,len,pOrder));
+}
+
+
+IppStatus
+gms_ippsFlip_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+             return (ippsFlip_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsFlip_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+             return (ippsFlip_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsFlip_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+             return (ippsFlip_32fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsFlip_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+             return (ippsFlip_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsFlip_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+             return (ippsFlip_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsFlip_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+             return (ippsFlip_64f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsFlip_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+             return (ippsFlip_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsFlip_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+             return (ippsFlip_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+             return (ippsWinBartlett_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+             return (ippsWinBartlett_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsWinBartlett_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+             return (ippsWinBartlett_32fc(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsWinBartlett_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+             return (ippsWinBartlett_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+             return (ippsWinBartlett_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+             return (ippsWinBartlett_64f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+             return (ippsWinBartlett_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBartlett_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+             return (ippsWinBartlett_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                        int32_t len, Ipp32f alpha) {
+
+             return (ippsWinBlackman_32f(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                        int32_t len, Ipp64f alpha) {
+
+             return (ippsWinBlackman_64f(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst,
+                        int32_t len, Ipp32f alpha) {
+
+             return (ippsWinBlackman_32fc(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst,
+                        int32_t len, Ipp64f alpha) {
+
+             return (ippsWinBlackman_64fc(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+             return (ippsWinBlackmanStd_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+             return (ippsWinBlackmanStd_64f(pSrc,pDst,len));
+}
+
+IppStatus
+gms_ippsWinBlackmanStd_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+             return (ippsWinBlackmanStd_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+             return (ippsWinBlackmanStd_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+             return (ippsWinBlackmanOpt_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+             return (ippsWinBlackmanOpt_64f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+             return (ippsWinBlackmanOpt_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+             return (ippsWinBlackmanOpt_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_32f_I(Ipp32f* pSrcDst, int32_t len, Ipp32f alpha) {
+
+              return (ippsWinBlackman_32f_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_64f_I(Ipp64f* pSrcDst, int32_t len, Ipp64f alpha) {
+
+              return (ippsWinBlackman_64f_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_32fc_I(Ipp32fc* pSrcDst, int32_t len, Ipp32f alpha) {
+
+              return (ippsWinBlackman_32fc_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackman_64fc_I(Ipp64fc* pSrcDst, int32_t len, Ipp64f alpha) {
+
+              return (ippsWinBlackman_64fc_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanOpt_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanOpt_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanOpt_64f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanOpt_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanOpt_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanStd_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanStd_64f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanStd_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinBlackmanStd_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+              return (ippsWinBlackmanStd_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHammimg_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+              return (ippsWinHamming_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHammimg_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+              return (ippsWinHamming_64f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHammimg_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+              return (ippsWinHamming_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHammimg_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+              return (ippsWinHamming_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHamming_32f_I(Ipp32f* pSrcDst, int32_t len) {
+
+              return (ippsWinHamming_32f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHamming_64f_I(Ipp64f* pSrcDst, int32_t len) {
+
+              return (ippsWinHamming_64f_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHamming_32fc_I(Ipp32fc* pSrcDst, int32_t len) {
+
+              return (ippsWinHamming_32fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHamming_64fc_I(Ipp64fc* pSrcDst, int32_t len) {
+
+              return (ippsWinHamming_64fc_I(pSrcDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHann_32f(const Ipp32f* pSrc, Ipp32f* pDst, int32_t len) {
+
+               return (ippsWinHann_32f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHann_64f(const Ipp64f* pSrc, Ipp64f* pDst, int32_t len) {
+
+               return (ippsWinHann_64f(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHann_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst, int32_t len) {
+
+               return (ippsWinHann_32fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinHann_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst, int32_t len) {
+
+               return (ippsWinHann_64fc(pSrc,pDst,len));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_32f(const Ipp32f* pSrc, Ipp32f* pDst,
+                      int32_t len, Ipp32f alpha) {
+
+                return (ippsWinKaiser_32f(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_64f(const Ipp64f* pSrc, Ipp64f* pDst,
+                      int32_t len, Ipp64f alpha) {
+
+                return (ippsWinKaiser_64f(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_32fc(const Ipp32fc* pSrc, Ipp32fc* pDst,
+                      int32_t len, Ipp32f alpha) {
+
+                return (ippsWinKaiser_32fc(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_64fc(const Ipp64fc* pSrc, Ipp64fc* pDst,
+                      int32_t len, Ipp64f alpha) {
+
+                return (ippsWinKaiser_64fc(pSrc,pDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_32f_I(Ipp32f* pSrcDst, int32_t len, Ipp32f alpha) {
+
+                 return (ippsWinKaiser_32f_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_64f_I(Ipp64f* pSrcDst, int32_t len, Ipp64f alpha) {
+
+                 return (ippsWinKaiser_64f_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_32fc_I(Ipp32fc* pSrcDst, int32_t len, Ipp32f alpha) {
+
+                 return (ippsWinKaiser_32fc_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsWinKaiser_64fc_I(Ipp64fc* pSrcDst, int32_t len, Ipp64f alpha) {
+
+                 return (ippsWinKaiser_64fc_I(pSrcDst,len,alpha));
+}
+
+
+IppStatus
+gms_ippsSum_32f(const Ipp32f* pSrc, int32_t len,
+                Ipp32f* pSum, IppHintAlgorithm hint) {
+
+                 return (ippsSum_32f(pSrc,len,pSum,hint));
+}
+
+
+IppStatus
+gms_ippsSum_64f(const Ipp64f* pSrc, int32_t len,
+                Ipp64f* pSum, IppHintAlgorithm hint) {
+
+                 return (ippsSum_64f(pSrc,len,pSum,hint));
+}
+
+
+IppStatus
+gms_ippsSum_32fc(const Ipp32fc* pSrc, int32_t len,
+                Ipp32fc* pSum, IppHintAlgorithm hint) {
+
+                 return (ippsSum_32fc(pSrc,len,pSum,hint));
+}
+
+
+IppStatus
+gms_ippsSum_64fc(const Ipp64fc* pSrc, int32_t len,
+                Ipp64fc* pSum, IppHintAlgorithm hint) {
+
+                 return (ippsSum_64fc(pSrc,len,pSum,hint));
+}
+
+
+IppStatus
+gms_ippsMax_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMax) {
+
+                return (ippsMax_32f(pSrc,len,pMax));
+}
+
+
+IppStatus
+gms_ippsMax_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMax) {
+
+                return (ippsMax_64f(pSrc,len,pMax));
+}
+
+
+IppStatus
+gms_ippsMaxIndx_32f(const Ipp32f* pSrc, int32_t len,
+                    Ipp32f* pMax, int32_t* pIndx) {
+
+                return (ippsMaxIndx_32f(pSrc,len,pMax,pIndx));
+}
+
+
+IppStatus
+gms_ippsMaxIndx_64f(const Ipp64f* pSrc, int32_t len,
+                    Ipp64f* pMax, int32_t* pIndx) {
+
+                return (ippsMaxIndx_64f(pSrc,len,pMax,pIndx));
+}
+
+
+IppStatus
+gms_ippsMaxAbs_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMaxAbs) {
+
+                 return (ippsMaxAbs_32f(pSrc,len,pMaxAbs));
+}
+
+
+IppStatus
+gms_ippsMaxAbs_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMaxAbs) {
+
+                 return (ippsMaxAbs_64f(pSrc,len,pMaxAbs));
+}
+
+
+IppStatus
+gms_ippsMaxAbsIndx_32f(const Ipp32f* pSrc, int32_t len,
+                       Ipp32f* pMaxAbs, int32_t* pIndx) {
+
+                 return (ippsMaxAbsIndx_32f(pSrc,len,pMaxAbs,pIndx));
+}
+
+
+IppStatus
+gms_ippsMaxAbsIndx_64f(const Ipp64f* pSrc, int32_t len,
+                       Ipp64f* pMaxAbs, int32_t* pIndx) {
+
+                 return (ippsMaxAbsIndx_64f(pSrc,len,pMaxAbs,pIndx));
+}
+
+
+IppStatus
+gms_ippsMin_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMin) {
+
+                  return (ippsMin_32f(pSrc,len,pMin));
+}
+
+
+IppStatus
+gms_ippsMin_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMin) {
+
+                  return (ippsMin_64f(pSrc,len,pMin));
+}
+
+
+IppStatus
+gms_ippsMinIndx_32f(const Ipp32f* pSrc, int32_t len,
+                    Ipp32f* pMin, int32_t* pIndx) {
+
+                  return (ippsMinIndx_32f(pSrc,len,pMin,pIndx));
+}
+
+
+IppStatus
+gms_ippsMinIndx_64f(const Ipp64f* pSrc, int32_t len,
+                    Ipp64f* pMin, int32_t* pIndx) {
+
+                  return (ippsMinIndx_64f(pSrc,len,pMin,pIndx));
+}
+
+
+IppStatus
+gms_ippsMinAbs_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMinAbs) {
+
+                   return (ippsMinAbs_32f(pSrc,len,pMinAbs));
+}
+
+
+IppStatus
+gms_ippsMinAbs_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMinAbs) {
+
+                   return (ippsMinAbs_64f(pSrc,len,pMinAbs));
+}
+
+
+IppStatus
+gms_ippsMinAbsIndx_32f(const Ipp32f* pSrc , int32_t len,
+                       Ipp32f* pMinAbs, int32_t* pIndx) {
+
+                    return (ippsMinAbsIndx_32f(pSrc,len,pMinAbs,pIndx));
+}
+
+
+IppStatus
+gms_ippsMinAbsIndx_64f(const Ipp64f* pSrc , int32_t len,
+                       Ipp64f* pMinAbs, int32_t* pIndx) {
+
+                    return (ippsMinAbsIndx_64f(pSrc,len,pMinAbs,pIndx));
+}
+
+
+IppStatus
+gms_ippsMinMax_32f(const Ipp32f* pSrc, int32_t len,
+                   Ipp32f* pMin, Ipp32f* pMax) {
+
+                    return (ippsMinMax_32f(pSrc,len,pMin,pMax));
+}
+
+
+IppStatus
+gms_ippsMinMax_64f(const Ipp64f* pSrc, int32_t len,
+                   Ipp64f* pMin, Ipp64f* pMax) {
+
+                    return (ippsMinMax_64f(pSrc,len,pMin,pMax));
+}
+
+
+IppStatus
+gms_ippsMinMaxIndx_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMin, int32_t* pMinIndx,
+                       Ipp32f* pMax, int32_t* pMaxIndx) {
+
+                    return (ippsMinMaxIndx_32f(pSrc,len,pMin,pMinIndx,pMax,pMaxIndx));
+}
+
+
+IppStatus
+gms_ippsMinMaxIndx_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMin, int32_t* pMinIndx,
+                       Ipp64f* pMax, int32_t* pMaxIndx) {
+
+                    return (ippsMinMaxIndx_64f(pSrc,len,pMin,pMinIndx,pMax,pMaxIndx));
+}
+
+
+IppStatus
+gms_ippsMean_32f(const Ipp32f* pSrc, int32_t len,
+                 Ipp32f* pMean, IppHintAlgorithm hint) {
+
+                    return (ippsMean_32f(pSrc,len,pMean,hint));
+}
+
+
+IppStatus
+gms_ippsMean_64f(const Ipp64f* pSrc, int32_t len,
+                 Ipp64f* pMean, IppHintAlgorithm hint) {
+
+                    return (ippsMean_64f(pSrc,len,pMean,hint));
+}
+
+
+IppStatus
+gms_ippsMean_32fc(const Ipp32fc* pSrc, int32_t len,
+                 Ipp32fc* pMean, IppHintAlgorithm hint) {
+
+                    return (ippsMean_32fc(pSrc,len,pMean,hint));
+}
+
+
+IppStatus
+gms_ippsMean_64fc(const Ipp64fc* pSrc, int32_t len,
+                 Ipp64fc* pMean, IppHintAlgorithm hint) {
+
+                    return (ippsMean_64fc(pSrc,len,pMean,hint));
+}
+
+
+IppStatus
+gms_ippsStdDev_32f(const Ipp32f* pSrc, int32_t len,
+                   Ipp32f* pStdDev, IppHintAlgorithm hint) {
+
+                    return (ippsStdDev_32f(pSrc,len,pStdDev,hint));
+}
+
+
+IppStatus
+gms_ippsStdDev_64f(const Ipp64f* pSrc, int32_t len,
+                   Ipp64f* pStdDev, IppHintAlgorithm hint) {
+
+                    return (ippsStdDev_64f(pSrc,len,pStdDev,hint));
+}
+
+
+IppStatus
+gms_ippsMeanStdDev_32f(const Ipp32f* pSrc, int32_t len, Ipp32f* pMean, Ipp32f* pStdDev,
+                       IppHintAlgorithm hint) {
+
+                    return (ippsMeanStdDev_32f(pSrc,len,pMean,StdDev,hint));
+}
+
+
+IppStatus
+gms_ippsMeanStdDev_64f(const Ipp64f* pSrc, int32_t len, Ipp64f* pMean, Ipp64f* pStdDev,
+                       IppHintAlgorithm hint) {
+
+                    return (ippsMeanStdDev_64f(pSrc,len,pMean,StdDev,hint));
+}
