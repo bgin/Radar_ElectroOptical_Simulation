@@ -1859,7 +1859,7 @@ gms_ippsWinBlackmanOpt_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsWinBlackmanOpt_32cf_I(Ipp32fc*, int32_t)  __attribute__((hot))
+gms_ippsWinBlackmanOpt_32fc_I(Ipp32fc*, int32_t)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
@@ -1879,7 +1879,7 @@ gms_ippsWinBlackmanStd_32f_I(Ipp32f*, int32_t)  __attribute__((hot))
                                               __attribute__((assume_aligned(64)));
 
 IppStatus
-gms_ippsWinBlackmanStd_32cf_I(Ipp32fc*, int32_t)  __attribute__((hot))
+gms_ippsWinBlackmanStd_32fc_I(Ipp32fc*, int32_t)  __attribute__((hot))
                                               __attribute__((nonnull (1))
                                               __attribute__((assume_aligned(64)));
 
@@ -2138,11 +2138,6 @@ gms_ippsMean_64fc(const Ipp64fc*, int32_t, Ipp64fc*, IppHintAlgorithm) __attribu
 
 IppStatus
 gms_ippsStdDev_32f(const Ipp32f*, int32_t, Ipp32f*, IppHintAlgorithm)  __attribute__((hot))
-                                              __attribute__((nonnull (1,2))
-                                              __attribute__((assume_aligned(64)));
-
-IppStatus
-gms_ippsStdDev_32f(const Ipp32f*, int32_t, Ipp32f*)  __attribute__((hot))
                                               __attribute__((nonnull (1,2))
                                               __attribute__((assume_aligned(64)));
 
