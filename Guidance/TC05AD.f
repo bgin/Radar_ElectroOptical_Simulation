@@ -2,9 +2,9 @@
      $                   LDPCO2, QCOEFF, LDQCO1, LDQCO2, RCOND, CFREQR,
      $                   LDCFRE, IWORK, DWORK, ZWORK, INFO )
 C
-C     SLICOT RELEASE 5.6.
+C     SLICOT RELEASE 5.7.
 C
-C     Copyright (c) 2002-2017 NICONET e.V.
+C     Copyright (c) 2002-2020 NICONET e.V.
 C
 C     PURPOSE
 C
