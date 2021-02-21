@@ -1031,7 +1031,7 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         F44 = DELTA*C( I+3,J+3 )
 
                         DO 130 L = LL, LL+LSEC-1
-                           call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
+                           !call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
                            F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
                            F21 = F21 + T1( L-LL+1, I-II+2 )*B( L, J )
                            F12 = F12 + T1( L-LL+1, I-II+1 )*B( L, J+1 )
