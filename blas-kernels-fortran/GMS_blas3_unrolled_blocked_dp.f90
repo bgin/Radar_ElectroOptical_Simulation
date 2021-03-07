@@ -420,22 +420,26 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                         F44 = DELTA*C( I+3,J+3 )
 
                         DO 130 L = LL, LL+LSEC-1
-                           F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
-                           F21 = F21 + T1( L-LL+1, I-II+2 )*B( L, J )
-                           F12 = F12 + T1( L-LL+1, I-II+1 )*B( L, J+1 )
-                           F22 = F22 + T1( L-LL+1, I-II+2 )*B( L, J+1 )
-                           F13 = F13 + T1( L-LL+1, I-II+1 )*B( L, J+2 )
-                           F23 = F23 + T1( L-LL+1, I-II+2 )*B( L, J+2 )
-                           F14 = F14 + T1( L-LL+1, I-II+1 )*B( L, J+3 )
-                           F24 = F24 + T1( L-LL+1, I-II+2 )*B( L, J+3 )
-                           F31 = F31 + T1( L-LL+1, I-II+3 )*B( L, J )
-                           F41 = F41 + T1( L-LL+1, I-II+4 )*B( L, J )
-                           F32 = F32 + T1( L-LL+1, I-II+3 )*B( L, J+1 )
-                           F42 = F42 + T1( L-LL+1, I-II+4 )*B( L, J+1 )
-                           F33 = F33 + T1( L-LL+1, I-II+3 )*B( L, J+2 )
-                           F43 = F43 + T1( L-LL+1, I-II+4 )*B( L, J+2 )
-                           F34 = F34 + T1( L-LL+1, I-II+3 )*B( L, J+3 )
-                           F44 = F44 + T1( L-LL+1, I-II+4 )*B( L, J+3 )
+                           TMP0 = B(L,J)
+                           TMP1 = B(L,J+1)
+                           TMP2 = B(L,J+2)
+                           TMP3 = B(L,J+3)
+                           F11 = F11 + T1( L-LL+1, I-II+1 )*TMP0
+                           F21 = F21 + T1( L-LL+1, I-II+2 )*TMP0
+                           F12 = F12 + T1( L-LL+1, I-II+1 )*TMP1
+                           F22 = F22 + T1( L-LL+1, I-II+2 )*TMP1
+                           F13 = F13 + T1( L-LL+1, I-II+1 )*TMP2
+                           F23 = F23 + T1( L-LL+1, I-II+2 )*TMP2
+                           F14 = F14 + T1( L-LL+1, I-II+1 )*TMP3
+                           F24 = F24 + T1( L-LL+1, I-II+2 )*TMP3
+                           F31 = F31 + T1( L-LL+1, I-II+3 )*TMP0
+                           F41 = F41 + T1( L-LL+1, I-II+4 )*TMP0
+                           F32 = F32 + T1( L-LL+1, I-II+3 )*TMP1
+                           F42 = F42 + T1( L-LL+1, I-II+4 )*TMP1
+                           F33 = F33 + T1( L-LL+1, I-II+3 )*TMP2
+                           F43 = F43 + T1( L-LL+1, I-II+4 )*TMP2
+                           F34 = F34 + T1( L-LL+1, I-II+3 )*TMP3
+                           F44 = F44 + T1( L-LL+1, I-II+4 )*TMP3
   130                   CONTINUE
                         C( I,J ) = F11
                         C( I+1, J ) = F21
@@ -760,7 +764,9 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
       DOUBLE PRECISION   ALPHA, BETA
 !*     .. Array Arguments ..
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
-      
+      !DIR$ ASSUME_ALIGNED A:64
+      !DIR$ ASSUME_ALIGNED B:64
+      !DIR$ ASSUME_ALIGNED C:64
 #if 0
 *     ..
 *
@@ -1104,22 +1110,26 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 
                         DO 130 L = LL, LL+LSEC-1
                            call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
-                           F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
-                           F21 = F21 + T1( L-LL+1, I-II+2 )*B( L, J )
-                           F12 = F12 + T1( L-LL+1, I-II+1 )*B( L, J+1 )
-                           F22 = F22 + T1( L-LL+1, I-II+2 )*B( L, J+1 )
-                           F13 = F13 + T1( L-LL+1, I-II+1 )*B( L, J+2 )
-                           F23 = F23 + T1( L-LL+1, I-II+2 )*B( L, J+2 )
-                           F14 = F14 + T1( L-LL+1, I-II+1 )*B( L, J+3 )
-                           F24 = F24 + T1( L-LL+1, I-II+2 )*B( L, J+3 )
-                           F31 = F31 + T1( L-LL+1, I-II+3 )*B( L, J )
-                           F41 = F41 + T1( L-LL+1, I-II+4 )*B( L, J )
-                           F32 = F32 + T1( L-LL+1, I-II+3 )*B( L, J+1 )
-                           F42 = F42 + T1( L-LL+1, I-II+4 )*B( L, J+1 )
-                           F33 = F33 + T1( L-LL+1, I-II+3 )*B( L, J+2 )
-                           F43 = F43 + T1( L-LL+1, I-II+4 )*B( L, J+2 )
-                           F34 = F34 + T1( L-LL+1, I-II+3 )*B( L, J+3 )
-                           F44 = F44 + T1( L-LL+1, I-II+4 )*B( L, J+3 )
+                           TMP0 = B(L,J)
+                           TMP1 = B(L,J+1)
+                           TMP2 = B(L,J+2)
+                           TMP3 = B(L,J+3)
+                           F11 = F11 + T1( L-LL+1, I-II+1 )*TMP0
+                           F21 = F21 + T1( L-LL+1, I-II+2 )*TMP0
+                           F12 = F12 + T1( L-LL+1, I-II+1 )*TMP1
+                           F22 = F22 + T1( L-LL+1, I-II+2 )*TMP1
+                           F13 = F13 + T1( L-LL+1, I-II+1 )*TMP2
+                           F23 = F23 + T1( L-LL+1, I-II+2 )*TMP2
+                           F14 = F14 + T1( L-LL+1, I-II+1 )*TMP3
+                           F24 = F24 + T1( L-LL+1, I-II+2 )*TMP3
+                           F31 = F31 + T1( L-LL+1, I-II+3 )*TMP0
+                           F41 = F41 + T1( L-LL+1, I-II+4 )*TMP0
+                           F32 = F32 + T1( L-LL+1, I-II+3 )*TMP1
+                           F42 = F42 + T1( L-LL+1, I-II+4 )*TMP1
+                           F33 = F33 + T1( L-LL+1, I-II+3 )*TMP2
+                           F43 = F43 + T1( L-LL+1, I-II+4 )*TMP2
+                           F34 = F34 + T1( L-LL+1, I-II+3 )*TMP3
+                           F44 = F44 + T1( L-LL+1, I-II+4 )*TMP3
   130                   CONTINUE
                         C( I,J ) = F11
                         C( I+1, J ) = F21
@@ -1443,7 +1453,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
       DOUBLE PRECISION   ALPHA, BETA
 !*     .. Array Arguments ..
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
-      
+      !DIR$ ASSUME_ALIGNED A:64
+      !DIR$ ASSUME_ALIGNED B:64
+      !DIR$ ASSUME_ALIGNED C:64
 #if 0
 *     ..
 *
@@ -1787,22 +1799,26 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 
                         DO 130 L = LL, LL+LSEC-1
                            call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
-                           F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
-                           F21 = F21 + T1( L-LL+1, I-II+2 )*B( L, J )
-                           F12 = F12 + T1( L-LL+1, I-II+1 )*B( L, J+1 )
-                           F22 = F22 + T1( L-LL+1, I-II+2 )*B( L, J+1 )
-                           F13 = F13 + T1( L-LL+1, I-II+1 )*B( L, J+2 )
-                           F23 = F23 + T1( L-LL+1, I-II+2 )*B( L, J+2 )
-                           F14 = F14 + T1( L-LL+1, I-II+1 )*B( L, J+3 )
-                           F24 = F24 + T1( L-LL+1, I-II+2 )*B( L, J+3 )
-                           F31 = F31 + T1( L-LL+1, I-II+3 )*B( L, J )
-                           F41 = F41 + T1( L-LL+1, I-II+4 )*B( L, J )
-                           F32 = F32 + T1( L-LL+1, I-II+3 )*B( L, J+1 )
-                           F42 = F42 + T1( L-LL+1, I-II+4 )*B( L, J+1 )
-                           F33 = F33 + T1( L-LL+1, I-II+3 )*B( L, J+2 )
-                           F43 = F43 + T1( L-LL+1, I-II+4 )*B( L, J+2 )
-                           F34 = F34 + T1( L-LL+1, I-II+3 )*B( L, J+3 )
-                           F44 = F44 + T1( L-LL+1, I-II+4 )*B( L, J+3 )
+                           TMP0 = B(L,J)
+                           TMP1 = B(L,J+1)
+                           TMP2 = B(L,J+2)
+                           TMP3 = B(L,J+3)
+                           F11 = F11 + T1( L-LL+1, I-II+1 )*TMP0
+                           F21 = F21 + T1( L-LL+1, I-II+2 )*TMP0
+                           F12 = F12 + T1( L-LL+1, I-II+1 )*TMP1
+                           F22 = F22 + T1( L-LL+1, I-II+2 )*TMP1
+                           F13 = F13 + T1( L-LL+1, I-II+1 )*TMP2
+                           F23 = F23 + T1( L-LL+1, I-II+2 )*TMP2
+                           F14 = F14 + T1( L-LL+1, I-II+1 )*TMP3
+                           F24 = F24 + T1( L-LL+1, I-II+2 )*TMP3
+                           F31 = F31 + T1( L-LL+1, I-II+3 )*TMP0
+                           F41 = F41 + T1( L-LL+1, I-II+4 )*TMP0
+                           F32 = F32 + T1( L-LL+1, I-II+3 )*TMP1
+                           F42 = F42 + T1( L-LL+1, I-II+4 )*TMP1
+                           F33 = F33 + T1( L-LL+1, I-II+3 )*TMP2
+                           F43 = F43 + T1( L-LL+1, I-II+4 )*TMP2
+                           F34 = F34 + T1( L-LL+1, I-II+3 )*TMP3
+                           F44 = F44 + T1( L-LL+1, I-II+4 )*TMP3
   130                   CONTINUE
                         C( I,J ) = F11
                         C( I+1, J ) = F21
@@ -2127,7 +2143,6 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
       INTEGER            M, N, LDA, LDB, LDC
       INTEGER            RCB,MB,NB,NBT,KB
       DOUBLE PRECISION   ALPHA, BETA
-
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
 #if 0
 *     ..
@@ -2282,6 +2297,7 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
 !*     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
       PARAMETER        ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      DOUBLE PRECISION TMP0,TMP1,TMP2,TMP3
 !*     .. User specified parameters for DSYMM ..
 !      INTEGER            RCB
 !      PARAMETER        ( RCB = 96 )
@@ -2324,7 +2340,11 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
 !*
       IF( ( M.EQ.0 ).OR.( N.EQ.0 ).OR. &
           ( ( ALPHA.EQ.ZERO ).AND.( BETA.EQ.ONE ) ) ) RETURN
-    
+
+      T0 = 0.0D+0
+      T1 = 0.0D+0
+      T2 = 0.0D+0
+      T3 = 0.0D+0
 !*
 !*     And when alpha.eq.zero.
 !*
@@ -2380,23 +2400,30 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
                DO 80, J = II+ISEC-2, II-1, -2
                   UISEC = J-II-MOD( J-II, 2 )
                   DO 70, I = II, II+UISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP3
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP4
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
    70             CONTINUE
                   IF( MOD( J-II, 2 ).EQ.1 )THEN
-                     T1( J-II, J-II+1 ) = ALPHA*A( J-1, J )
+                     TMP0 = A(J-1,J)
+                     TMP1 = A(J-1,J+1)
+                     TMP2 = A(J,J+1)
+                     T1( J-II, J-II+1 ) = ALPHA*TMP0
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
-                     T1( J-II, J-II+2 ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
-                     T1( J-II+1, J-II ) = ALPHA*A( J-1, J )
-                     T1( J-II+2, J-II ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J, J+1 )
+                     T1( J-II, J-II+2 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+1, J-II ) = ALPHA*TMP0
+                     T1( J-II+2, J-II ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP2
                   ELSE IF( J.GE.II )THEN
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                      T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
@@ -2449,27 +2476,37 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
                   UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
                   T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                   IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
-                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+1,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+2, J-II+2 ) = ALPHA*TMP1
                   ELSE IF( J.LE.II+ISEC-3 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
-                     T1( J-II+3, J-II+1 ) = ALPHA*A( J+2, J )
-                     T1( J-II+1, J-II+3 ) = ALPHA*A( J+2, J )
-                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
-                     T1( J-II+3, J-II+2 ) = ALPHA*A( J+2, J+1 )
-                     T1( J-II+2, J-II+3 ) = ALPHA*A( J+2, J+1 )
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     TMP2 = A(J+1,J+1)
+                     TMP3 = A(J+2,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+3, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+2, J-II+3 ) = ALPHA*TMP3
                   END IF
                   DO 100 I = II+ISEC-UISEC, II+ISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   100             CONTINUE
   110          CONTINUE
 !*
@@ -2517,16 +2554,20 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
                DO 140, J = II+ISEC-2, II-1, -2
                   UISEC = J-II-MOD( J-II, 2 )
                   DO 130, I = II, II+UISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   130             CONTINUE
-                  IF( MOD( J-II, 2 ).EQ.1 )THEN
+                     IF( MOD( J-II, 2 ).EQ.1 )THEN
                      T1( J-II, J-II+1 ) = ALPHA*A( J-1, J )
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                      T1( J-II, J-II+2 ) = ALPHA*A( J-1, J+1 )
@@ -2586,27 +2627,34 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYMM !GCC$ ATTRIBU
                   UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
                   T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                   IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
+                     TMP0 = A(J+1,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
                   ELSE IF( J.LE.II+ISEC-3 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
-                     T1( J-II+3, J-II+1 ) = ALPHA*A( J+2, J )
-                     T1( J-II+1, J-II+3 ) = ALPHA*A( J+2, J )
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
                      T1( J-II+3, J-II+2 ) = ALPHA*A( J+2, J+1 )
                      T1( J-II+2, J-II+3 ) = ALPHA*A( J+2, J+1 )
                   END IF
                   DO 160 I = II+ISEC-UISEC, II+ISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   160             CONTINUE
   170          CONTINUE
 !*
@@ -2645,8 +2693,8 @@ END SUBROUTINE
 
 SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
      BETA,C,LDC,RCB,MB,NB,NBT,KB)
-     !DIR$ ATTRIBUTES VECTOR:PROCESSOR(haswell) :: DGEMM_Haswell_AVX2
-     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEMM_Haswell_AVX2
+     !DIR$ ATTRIBUTES VECTOR:PROCESSOR(haswell) :: DSYMM_Haswell_AVX2
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSYMM_Haswell_AVX2
     
       implicit none
       CHARACTER*1        SIDE, UPLO
@@ -2655,6 +2703,9 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
       DOUBLE PRECISION   ALPHA, BETA
 
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      !DIR$ ASSUME_ALIGNED A:64
+      !DIR$ ASSUME_ALIGNED B:64
+      !DIR$ ASSUME_ALIGNED C:64
 #if 0
 *     ..
 *
@@ -2808,11 +2859,13 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
       PARAMETER        ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      DOUBLE PRECISION TMP0,TMP1,TMP2,TMP3
 !*     .. User specified parameters for DSYMM ..
 !      INTEGER            RCB
 !      PARAMETER        ( RCB = 96 )
 !*     .. Local Arrays ..
       DOUBLE PRECISION   T1( RCB, RCB )
+      !DIR$ ATTRIBUTES ALIGN : 64 :: T1
 !*     ..
 !*     .. Executable Statements ..
 !*
@@ -2906,23 +2959,30 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
                DO 80, J = II+ISEC-2, II-1, -2
                   UISEC = J-II-MOD( J-II, 2 )
                   DO 70, I = II, II+UISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
    70             CONTINUE
-                  IF( MOD( J-II, 2 ).EQ.1 )THEN
-                     T1( J-II, J-II+1 ) = ALPHA*A( J-1, J )
+                     IF( MOD( J-II, 2 ).EQ.1 )THEN
+                        TMP0 = A(J-1,J)
+                        TMP1 = A(J-1,J+1)
+                        TMP2 = A(J,J+1)
+                     T1( J-II, J-II+1 ) = ALPHA*TMP0
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
-                     T1( J-II, J-II+2 ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
-                     T1( J-II+1, J-II ) = ALPHA*A( J-1, J )
+                     T1( J-II, J-II+2 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+1, J-II ) = ALPHA*TMP0
                      T1( J-II+2, J-II ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J, J+1 )
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP2
                   ELSE IF( J.GE.II )THEN
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                      T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
@@ -2934,8 +2994,10 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*              C := T1'*B + beta*C, general matrix multiplication
 !*              involving the symmetric diagonal block of A stored
 !*              as a full matrix block in T1.
-!*
-               CALL DGEMM ( 'T', 'N', ISEC, N, ISEC, ONE, &
+                  !*
+                  
+               
+               CALL DGEMM_Haswell_AVX2( 'T', 'N', ISEC, N, ISEC, ONE, &
                                      T1( 1, 1 ), RCB, B( II, 1 ), LDB, &
                                                 BETA, C( II, 1 ), LDC,MB,NB,NBT,KB )
                IF( II.GT.1 )THEN
@@ -2943,7 +3005,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*A'*B + C, general matrix multiplication
 !*                 involving the transpose of a rectangular block of A.
 !*
-                  CALL DGEMM ( 'T', 'N', ISEC, N, II-1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2 ( 'T', 'N', ISEC, N, II-1, ALPHA, &
                                        A( 1, II ), LDA, B( 1, 1 ), LDB, &
                                                  ONE, C( II, 1 ), LDC,MB,NB,NBT,KB )
                END IF
@@ -2952,7 +3014,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*A*B + C, general matrix multiplication
 !*                 involving a rectangular block of A.
 !*
-                  CALL DGEMM ( 'N', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2 ( 'N', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
                            A( II, II+ISEC ), LDA, B( II+ISEC, 1 ), LDB, &
                                                  ONE, C( II, 1 ), LDC MB,NB,NBT,KB )
                END IF
@@ -2975,27 +3037,35 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
                   UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
                   T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                   IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
+                     TMP0 = A(J+1,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
                   ELSE IF( J.LE.II+ISEC-3 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
-                     T1( J-II+3, J-II+1 ) = ALPHA*A( J+2, J )
-                     T1( J-II+1, J-II+3 ) = ALPHA*A( J+2, J )
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     TMP2 = A(J+2,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
-                     T1( J-II+3, J-II+2 ) = ALPHA*A( J+2, J+1 )
-                     T1( J-II+2, J-II+3 ) = ALPHA*A( J+2, J+1 )
+                     T1( J-II+3, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+2, J-II+3 ) = ALPHA*TMP2
                   END IF
                   DO 100 I = II+ISEC-UISEC, II+ISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   100             CONTINUE
   110          CONTINUE
 !*
@@ -3003,7 +3073,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*              involving the symmetric diagonal block of A stored
 !*              as a full matrix block in T1.
 !*
-               CALL DGEMM ( 'T', 'N', ISEC, N, ISEC, ONE, &
+               CALL DGEMM_Haswell_AVX2 ( 'T', 'N', ISEC, N, ISEC, ONE, &
                                       T1( 1, 1 ), RCB, B( II, 1 ), LDB, &
                                                 BETA, C( II, 1 ), LDC, MB,NB,NBT,KB )
                IF( II.GT.1 )THEN
@@ -3011,7 +3081,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*A'*B + C, general matrix multiplication
 !*                 involving the transpose of a rectangular block of A.
 !*
-                  CALL DGEMM ( 'N', 'N', ISEC, N, II-1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2 ( 'N', 'N', ISEC, N, II-1, ALPHA, &
                                        A( II, 1 ), LDA, B( 1, 1 ), LDB, &
                                                  ONE, C( II, 1 ), LDC, MB,NB,NBT,KB )
                END IF
@@ -3020,7 +3090,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*A*B + C, general matrix multiplication
 !*                 involving a rectangular block of A.
 !*
-                  CALL DGEMM ( 'T', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2 ( 'T', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
                            A( II+ISEC, II ), LDA, B( II+ISEC, 1 ), LDB, &
                                                  ONE, C( II, 1 ), LDC, MB,NB,NBT,KB )
                END IF
@@ -3043,23 +3113,30 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
                DO 140, J = II+ISEC-2, II-1, -2
                   UISEC = J-II-MOD( J-II, 2 )
                   DO 130, I = II, II+UISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   130             CONTINUE
                   IF( MOD( J-II, 2 ).EQ.1 )THEN
-                     T1( J-II, J-II+1 ) = ALPHA*A( J-1, J )
+                     TMP0 = A(J-1,J)
+                     TMP1 = A(J-1,J+1)
+                     TMP2 = A(J,J+1)
+                     T1( J-II, J-II+1 ) = ALPHA*TMP0
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
-                     T1( J-II, J-II+2 ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
-                     T1( J-II+1, J-II ) = ALPHA*A( J-1, J )
-                     T1( J-II+2, J-II ) = ALPHA*A( J-1, J+1 )
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J, J+1 )
+                     T1( J-II, J-II+2 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+1, J-II ) = ALPHA*TMP0
+                     T1( J-II+2, J-II ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP2
                   ELSE IF( J.GE.II )THEN
                      T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                      T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
@@ -3072,7 +3149,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*              involving the symmetric diagonal block of A stored
 !*              as a full matrix block in T1.
 !*
-               CALL DGEMM ( 'N', 'N', M, ISEC, ISEC, ONE, &
+               CALL DGEMM_Haswell_AVX2( 'N', 'N', M, ISEC, ISEC, ONE, &
                                       B( 1, II ), LDB, T1( 1, 1 ), RCB, &
                                                 BETA, C( 1, II ), LDC,MB,NB,NBT,KB )
               IF( II.GT.1 )THEN
@@ -3080,7 +3157,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*B*A + C, general matrix multiply
 !*                 involving a rectangular block of A.
 !*
-                  CALL DGEMM ( 'N', 'N', M, ISEC, II-1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2( 'N', 'N', M, ISEC, II-1, ALPHA, &
                                        B( 1, 1 ), LDB, A( 1, II ), LDA, &
                                                  ONE, C( 1, II ), LDC, MB,NB,NBT,KB )
                END IF
@@ -3089,7 +3166,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*B*A' + C, general matrix multiply involving
 !*                 the transpose of a rectangular block of A.
 !*
-                  CALL DGEMM ( 'N', 'T', M, ISEC, N-II-ISEC+1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2( 'N', 'T', M, ISEC, N-II-ISEC+1, ALPHA, &
                            B( 1, II+ISEC ), LDB, A( II, II+ISEC ), LDA, &
                                                  ONE, C( 1, II ), LDC,MB,NB,NBT,KB )
                END IF
@@ -3112,27 +3189,35 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
                   UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
                   T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
                   IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
+                     TMP0 = A(J+1,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
                   ELSE IF( J.LE.II+ISEC-3 )THEN
-                     T1( J-II+2, J-II+1 ) = ALPHA*A( J+1, J )
-                     T1( J-II+1, J-II+2 ) = ALPHA*A( J+1, J )
-                     T1( J-II+3, J-II+1 ) = ALPHA*A( J+2, J )
-                     T1( J-II+1, J-II+3 ) = ALPHA*A( J+2, J )
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     TMP2 = A(J+2,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
                      T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
-                     T1( J-II+3, J-II+2 ) = ALPHA*A( J+2, J+1 )
-                     T1( J-II+2, J-II+3 ) = ALPHA*A( J+2, J+1 )
+                     T1( J-II+3, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+2, J-II+3 ) = ALPHA*TMP2
                   END IF
                   DO 160 I = II+ISEC-UISEC, II+ISEC-1, 2
-                     T1( I-II+1, J-II+1 ) = ALPHA*A( I, J )
-                     T1( I-II+2, J-II+1 ) = ALPHA*A( I+1, J )
-                     T1( I-II+1, J-II+2 ) = ALPHA*A( I, J+1 )
-                     T1( I-II+2, J-II+2 ) = ALPHA*A( I+1, J+1 )
-                     T1( J-II+1, I-II+1 ) = ALPHA*A( I, J )
-                     T1( J-II+1, I-II+2 ) = ALPHA*A( I+1, J )
-                     T1( J-II+2, I-II+1 ) = ALPHA*A( I, J+1 )
-                     T1( J-II+2, I-II+2 ) = ALPHA*A( I+1, J+1 )
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
   160             CONTINUE
   170          CONTINUE
 !*
@@ -3140,7 +3225,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*              involving the symmetric diagonal block of A stored
 !*              as a full matrix block in T1.
 !*
-               CALL DGEMM ( 'N', 'N', M, ISEC, ISEC, ONE, &
+               CALL DGEMM_Haswell_AVX2( 'N', 'N', M, ISEC, ISEC, ONE, &
                                       B( 1, II ), LDB, T1( 1, 1 ), RCB, &
                                                 BETA, C( 1, II ), LDC,MB,NB,NBT,KB )
                IF( II.GT.1 )THEN
@@ -3148,7 +3233,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*B*A' + C, general matrix multiply involving
 !!*                 the transpose of a rectangular block of A.
 
-                  CALL DGEMM ( 'N', 'T', M, ISEC, II-1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2( 'N', 'T', M, ISEC, II-1, ALPHA, &
                                        B( 1, 1 ), LDB, A( II, 1 ), LDA, &
                                                  ONE, C( 1, II ), LDC,MB,NB,NBT,KB )
                END IF
@@ -3157,7 +3242,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
 !*                 C := alpha*B*A + C, general matrix multiply
 !*                 involving a rectangular block of A.
 !*
-                  CALL DGEMM ( 'N', 'N', M, ISEC, N-II-ISEC+1, ALPHA, &
+                  CALL DGEMM_Haswell_AVX2( 'N', 'N', M, ISEC, N-II-ISEC+1, ALPHA, &
                            B( 1, II+ISEC ), LDB, A( II+ISEC, II ), LDA, &
                                                  ONE, C( 1, II ), LDC, MB,NB,NBT,KB )
                END IF
@@ -3165,6 +3250,1099 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
          END IF
       END IF
 
-END SUBROUTINE
+    END SUBROUTINE
+
+
+    SUBROUTINE DSYMM_SKX_AVX512(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
+     BETA,C,LDC,RCB,MB,NB,NBT,KB)
+     !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DSYMM_SKX_AVX512
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSYMM_SKX_AVX512
+    
+      implicit none
+      CHARACTER*1        SIDE, UPLO
+      INTEGER            M, N, LDA, LDB, LDC
+      INTEGER            RCB,MB,NB,NBT,KB
+      DOUBLE PRECISION   ALPHA, BETA
+
+      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      !DIR$ ASSUME_ALIGNED A:64
+      !DIR$ ASSUME_ALIGNED B:64
+      !DIR$ ASSUME_ALIGNED C:64
+#if 0
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  DSYMM  performs one of the matrix-matrix operations
+*
+*     C := alpha*A*B + beta*C,
+*
+*  or
+*
+*     C := alpha*B*A + beta*C,
+*
+*  where alpha and beta are scalars,  A is a symmetric matrix and  B and
+*  C are  m by n matrices.
+*
+*  Parameters
+*  ==========
+*
+*  SIDE   - CHARACTER*1.
+*           On entry,  SIDE  specifies whether  the  symmetric matrix  A
+*           appears on the  left or right  in the  operation as follows:
+*
+*              SIDE = 'L' or 'l'   C := alpha*A*B + beta*C,
+*
+*              SIDE = 'R' or 'r'   C := alpha*B*A + beta*C,
+*
+*           Unchanged on exit.
+*
+*  UPLO   - CHARACTER*1.
+*           On  entry,   UPLO  specifies  whether  the  upper  or  lower
+*           triangular  part  of  the  symmetric  matrix   A  is  to  be
+*           referenced as follows:
+*
+*              UPLO = 'U' or 'u'   Only the upper triangular part of the
+*                                  symmetric matrix is to be referenced.
+*
+*              UPLO = 'L' or 'l'   Only the lower triangular part of the
+*                                  symmetric matrix is to be referenced.
+*
+*           Unchanged on exit.
+*
+*  M      - INTEGER.
+*           On entry,  M  specifies the number of rows of the matrix  C.
+*           M  must be at least zero.
+*           Unchanged on exit.
+*
+*  N      - INTEGER.
+*           On entry, N specifies the number of columns of the matrix C.
+*           N  must be at least zero.
+*           Unchanged on exit.
+*
+*  ALPHA  - DOUBLE PRECISION.
+*           On entry, ALPHA specifies the scalar alpha.
+*           Unchanged on exit.
+*
+*  A      - DOUBLE PRECISION array of DIMENSION ( LDA, ka ), where ka is
+*           m  when  SIDE = 'L' or 'l'  and is  n otherwise.
+*           Before entry  with  SIDE = 'L' or 'l',  the  m by m  part of
+*           the array  A  must contain the  symmetric matrix,  such that
+*           when  UPLO = 'U' or 'u', the leading m by m upper triangular
+*           part of the array  A  must contain the upper triangular part
+*           of the  symmetric matrix and the  strictly  lower triangular
+*           part of  A  is not referenced,  and when  UPLO = 'L' or 'l',
+*           the leading  m by m  lower triangular part  of the  array  A
+*           must  contain  the  lower triangular part  of the  symmetric
+*           matrix and the  strictly upper triangular part of  A  is not
+*           referenced.
+*           Before entry  with  SIDE = 'R' or 'r',  the  n by n  part of
+*           the array  A  must contain the  symmetric matrix,  such that
+*           when  UPLO = 'U' or 'u', the leading n by n upper triangular
+*           part of the array  A  must contain the upper triangular part
+*           of the  symmetric matrix and the  strictly  lower triangular
+*           part of  A  is not referenced,  and when  UPLO = 'L' or 'l',
+*           the leading  n by n  lower triangular part  of the  array  A
+*           must  contain  the  lower triangular part  of the  symmetric
+*           matrix and the  strictly upper triangular part of  A  is not
+*           referenced.
+*           Unchanged on exit.
+*
+*  LDA    - INTEGER.
+*           On entry, LDA specifies the first dimension of A as declared
+*           in the calling (sub) program.  When  SIDE = 'L' or 'l'  then
+*           LDA must be at least  max( 1, m ), otherwise  LDA must be at
+*           least  max( 1, n ).
+*           Unchanged on exit.
+*
+*  B      - DOUBLE PRECISION array of DIMENSION ( LDB, n ).
+*           Before entry, the leading  m by n part of the array  B  must
+*           contain the matrix B.
+*           Unchanged on exit.
+*
+*  LDB    - INTEGER.
+*           On entry, LDB specifies the first dimension of B as declared
+*           in  the  calling  (sub)  program.   LDB  must  be  at  least
+*           max( 1, m ).
+*           Unchanged on exit.
+*
+*  BETA   - DOUBLE PRECISION.
+*           On entry,  BETA  specifies the scalar  beta.  When  BETA  is
+*           supplied as zero then C need not be set on input.
+*           Unchanged on exit.
+*
+*  C      - DOUBLE PRECISION array of DIMENSION ( LDC, n ).
+*           Before entry, the leading  m by n  part of the array  C must
+*           contain the matrix  C,  except when  beta  is zero, in which
+*           case C need not be set on entry.
+*           On exit, the array  C  is overwritten by the  m by n updated
+*           matrix.
+*
+*  LDC    - INTEGER.
+*           On entry, LDC specifies the first dimension of C as declared
+*           in  the  calling  (sub)  program.   LDC  must  be  at  least
+*           max( 1, m ).
+*           Unchanged on exit.
+*
+*
+*  Level 3 Blas routine.
+*
+*  -- Written on 8-February-1989.
+*     Jack Dongarra, Argonne National Laboratory.
+*     Iain Duff, AERE Harwell.
+*     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+*     Sven Hammarling, Numerical Algorithms Group Ltd.
+*
+*  -- Rewritten in December-1993.
+*     GEMM-Based Level 3 BLAS.
+*     Per Ling, Institute of Information Processing,
+*     University of Umea, Sweden.
+*
+*  -- Rewritten in Mars-1995.
+*     Superscalar GEMM-Based Level 3 BLAS (Version 0.1).
+*     Per Ling, Department of Computing Science,
+*     University of Umea, Sweden.
+*
+*
+*     .. Local Scalars ..
+#endif
+      INTEGER            INFO, NROWA
+      LOGICAL            LSIDE, UPPER
+      INTEGER            I, J, II, IX, ISEC, UISEC
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN, MOD
+!*     .. External Functions ..
+!      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     .. External Subroutines ..
+!      EXTERNAL           XERBLA
+!      EXTERNAL           DGEMM
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER        ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      DOUBLE PRECISION TMP0,TMP1,TMP2,TMP3
+!*     .. User specified parameters for DSYMM ..
+!      INTEGER            RCB
+!      PARAMETER        ( RCB = 96 )
+!*     .. Local Arrays ..
+      DOUBLE PRECISION   T1( RCB, RCB )
+      !DIR$ ATTRIBUTES ALIGN : 64 :: T1
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input parameters.
+!*
+      LSIDE = LSAME( SIDE, 'L' )
+      UPPER = LSAME( UPLO, 'U' )
+      IF( LSIDE )THEN
+         NROWA = M
+      ELSE
+         NROWA = N
+      END IF
+      INFO = 0
+      IF( ( .NOT.LSIDE ).AND.( .NOT.LSAME( SIDE, 'R' ) ) )THEN
+         INFO = 1
+      ELSE IF( ( .NOT.UPPER ).AND.( .NOT.LSAME( UPLO, 'L' ) ) )THEN
+         INFO = 2
+      ELSE IF( M.LT.0 )THEN
+         INFO = 3
+      ELSE IF( N.LT.0 )THEN
+         INFO = 4
+      ELSE IF( LDA.LT.MAX( 1, NROWA ) )THEN
+         INFO = 7
+      ELSE IF( LDB.LT.MAX( 1, M ) )THEN
+         INFO = 9
+      ELSE IF( LDC.LT.MAX( 1, M ) )THEN
+         INFO = 12
+      END IF
+      IF( INFO.NE.0 )THEN
+         !CALL XERBLA( 'DSYMM ', INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF( ( M.EQ.0 ).OR.( N.EQ.0 ).OR. &
+          ( ( ALPHA.EQ.ZERO ).AND.( BETA.EQ.ONE ) ) ) RETURN
+    
+!*
+!*     And when alpha.eq.zero.
+!*
+      IF( ALPHA.EQ.ZERO )THEN
+         IF( BETA.EQ.ZERO )THEN
+            UISEC = M-MOD( M, 4 )
+            DO 30, J = 1, N
+!DIR$ SIMD VECTORLENGTHFOR(8)
+               DO 10, I = 1, UISEC, 4
+                  C( I, J ) = ZERO
+                  C( I+1, J ) = ZERO
+                  C( I+2, J ) = ZERO
+                  C( I+3, J ) = ZERO
+   10          CONTINUE
+               DO 20, I = UISEC+1, M
+                  C( I, J ) = ZERO
+   20          CONTINUE
+   30       CONTINUE
+         ELSE
+            UISEC = M-MOD( M, 4 )
+            DO 60, J = 1, N
+!DIR$ SIMD VECTORLENGTHFOR(8)
+               DO 40, I = 1, UISEC, 4
+                  C( I, J ) = BETA*C( I, J )
+                  C( I+1, J ) = BETA*C( I+1, J )
+                  C( I+2, J ) = BETA*C( I+2, J )
+                  C( I+3, J ) = BETA*C( I+3, J )
+   40          CONTINUE
+               DO 50, I = UISEC+1, M
+                  C( I, J ) = BETA*C( I, J )
+   50          CONTINUE
+   60       CONTINUE
+         END IF
+         RETURN
+      END IF
+!*
+!*     Start the operations.
+!*
+      IF( LSIDE )THEN
+         IF( UPPER )THEN
+!*
+!*           Form  C := alpha*A*B + beta*C. Left, Upper.
+1*
+            DO 90, II = 1, M, RCB
+               ISEC = MIN( RCB, M-II+1 )
+!*
+!*              T1 := A, the upper triangular part of a square diagonal
+!*              block of A is copied to upper pangular part of T1 and
+!*              the transpose of the strictly upper triangular part of
+!*              the block of A is copied to the strictly lower
+!1*              triangular part of T1.
+!*
+               DO 80, J = II+ISEC-2, II-1, -2
+                  UISEC = J-II-MOD( J-II, 2 )
+                  DO 70, I = II, II+UISEC-1, 2
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
+   70             CONTINUE
+                     IF( MOD( J-II, 2 ).EQ.1 )THEN
+                        TMP0 = A(J-1,J)
+                        TMP1 = A(J-1,J+1)
+                        TMP2 = A(J,J+1)
+                     T1( J-II, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                     T1( J-II, J-II+2 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+1, J-II ) = ALPHA*TMP0
+                     T1( J-II+2, J-II ) = ALPHA*A( J-1, J+1 )
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP2
+                  ELSE IF( J.GE.II )THEN
+                     T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                     T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
+                     T1( J-II+2, J-II+1 ) = ALPHA*A( J, J+1 )
+                  END IF
+                  T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+   80          CONTINUE
+!*
+!*              C := T1'*B + beta*C, general matrix multiplication
+!*              involving the symmetric diagonal block of A stored
+!*              as a full matrix block in T1.
+                  !*
+                  
+               
+               CALL DGEMM_SKX_AVX512( 'T', 'N', ISEC, N, ISEC, ONE, &
+                                     T1( 1, 1 ), RCB, B( II, 1 ), LDB, &
+                                                BETA, C( II, 1 ), LDC,MB,NB,NBT,KB )
+               IF( II.GT.1 )THEN
+!*
+!*                 C := alpha*A'*B + C, general matrix multiplication
+!*                 involving the transpose of a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512 ( 'T', 'N', ISEC, N, II-1, ALPHA, &
+                                       A( 1, II ), LDA, B( 1, 1 ), LDB, &
+                                                 ONE, C( II, 1 ), LDC,MB,NB,NBT,KB )
+               END IF
+               IF( II+ISEC.LE.M )THEN
+!*
+!*                 C := alpha*A*B + C, general matrix multiplication
+!*                 involving a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512 ( 'N', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
+                           A( II, II+ISEC ), LDA, B( II+ISEC, 1 ), LDB, &
+                                                 ONE, C( II, 1 ), LDC MB,NB,NBT,KB )
+               END IF
+   90       CONTINUE
+         ELSE
+!*
+!*           Form  C := alpha*A*B + beta*C. Left, Lower.
+!*
+            DO 120, IX = M, 1, -RCB
+               II = MAX( 1, IX-RCB+1 )
+               ISEC = IX-II+1
+!*
+!*              T1 := A, the lower triangular part of a square diagonal
+!*              block of A is copied to lower pangular part of T1 and
+!*              the transpose of the strictly lower triangular part of
+!*              the block of A is copied to the strictly upper
+!*              triangular part of T1.
+!*
+               DO 110, J = II, II+ISEC-1, 2
+                  UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
+                  T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                  IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
+                     TMP0 = A(J+1,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+                  ELSE IF( J.LE.II+ISEC-3 )THEN
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     TMP2 = A(J+2,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+                     T1( J-II+3, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+2, J-II+3 ) = ALPHA*TMP2
+                  END IF
+                  DO 100 I = II+ISEC-UISEC, II+ISEC-1, 2
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
+  100             CONTINUE
+  110          CONTINUE
+!*
+!*              C := T1'*B + beta*C, general matrix multiplication
+!*              involving the symmetric diagonal block of A stored
+!*              as a full matrix block in T1.
+!*
+               CALL DGEMM_SKX_AVX512 ( 'T', 'N', ISEC, N, ISEC, ONE, &
+                                      T1( 1, 1 ), RCB, B( II, 1 ), LDB, &
+                                                BETA, C( II, 1 ), LDC, MB,NB,NBT,KB )
+               IF( II.GT.1 )THEN
+!*
+!*                 C := alpha*A'*B + C, general matrix multiplication
+!*                 involving the transpose of a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512 ( 'N', 'N', ISEC, N, II-1, ALPHA, &
+                                       A( II, 1 ), LDA, B( 1, 1 ), LDB, &
+                                                 ONE, C( II, 1 ), LDC, MB,NB,NBT,KB )
+               END IF
+               IF( II+ISEC.LE.M )THEN
+!*
+!*                 C := alpha*A*B + C, general matrix multiplication
+!*                 involving a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512 ( 'T', 'N', ISEC, N, M-II-ISEC+1, ALPHA, &
+                           A( II+ISEC, II ), LDA, B( II+ISEC, 1 ), LDB, &
+                                                 ONE, C( II, 1 ), LDC, MB,NB,NBT,KB )
+               END IF
+  120       CONTINUE
+         END IF
+      ELSE
+         IF( UPPER )THEN
+!*
+!*           Form  C := alpha*B*A + beta*C. Right, Upper.
+!*
+            DO 150, II = 1, N, RCB
+               ISEC = MIN( RCB, N-II+1 )
+!*
+!*              T1 := A, the upper triangular part of a square diagonal
+!*              block of A is copied to upper pangular part of T1 and
+!*              the transpose of the strictly upper triangular part of
+!*              the block of A is copied to the strictly lower
+!*              triangular part of T1.
+!*
+               DO 140, J = II+ISEC-2, II-1, -2
+                  UISEC = J-II-MOD( J-II, 2 )
+                  DO 130, I = II, II+UISEC-1, 2
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
+  130             CONTINUE
+                  IF( MOD( J-II, 2 ).EQ.1 )THEN
+                     TMP0 = A(J-1,J)
+                     TMP1 = A(J-1,J+1)
+                     TMP2 = A(J,J+1)
+                     T1( J-II, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                     T1( J-II, J-II+2 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+1, J-II ) = ALPHA*TMP0
+                     T1( J-II+2, J-II ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP2
+                  ELSE IF( J.GE.II )THEN
+                     T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                     T1( J-II+1, J-II+2 ) = ALPHA*A( J, J+1 )
+                     T1( J-II+2, J-II+1 ) = ALPHA*A( J, J+1 )
+                  END IF
+                  T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+  140          CONTINUE
+!*
+!*              C := T1'*B + beta*C, general matrix multiplication
+!*              involving the symmetric diagonal block of A stored
+!*              as a full matrix block in T1.
+!*
+               CALL DGEMM_SKX_AVX512( 'N', 'N', M, ISEC, ISEC, ONE, &
+                                      B( 1, II ), LDB, T1( 1, 1 ), RCB, &
+                                                BETA, C( 1, II ), LDC,MB,NB,NBT,KB )
+              IF( II.GT.1 )THEN
+!*
+!*                 C := alpha*B*A + C, general matrix multiply
+!*                 involving a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512( 'N', 'N', M, ISEC, II-1, ALPHA, &
+                                       B( 1, 1 ), LDB, A( 1, II ), LDA, &
+                                                 ONE, C( 1, II ), LDC, MB,NB,NBT,KB )
+               END IF
+               IF( II+ISEC.LE.N )THEN
+!*
+!*                 C := alpha*B*A' + C, general matrix multiply involving
+!*                 the transpose of a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512( 'N', 'T', M, ISEC, N-II-ISEC+1, ALPHA, &
+                           B( 1, II+ISEC ), LDB, A( II, II+ISEC ), LDA, &
+                                                 ONE, C( 1, II ), LDC,MB,NB,NBT,KB )
+               END IF
+  150       CONTINUE
+         ELSE
+!*
+!*           Form  C := alpha*B*A + beta*C. Right, Lower.
+!*
+            DO 180, IX = N, 1, -RCB
+               II = MAX( 1, IX-RCB+1 )
+               ISEC = IX-II+1
+!*
+!*              T1 := A, the lower triangular part of a square diagonal
+!*              block of A is copied to lower pangular part of T1 and
+!*              the transpose of the strictly lower triangular part of
+!*              the block of A is copied to the strictly upper
+!*              triangular part of T1.
+!*
+               DO 170, J = II, II+ISEC-1, 2
+                  UISEC = II+ISEC-J-2-MOD( II+ISEC-J-2, 2 )
+                  T1( J-II+1, J-II+1 ) = ALPHA*A( J, J )
+                  IF( MOD( II+ISEC-J-2, 2 ).EQ.0 )THEN
+                     TMP0 = A(J+1,J)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+                  ELSE IF( J.LE.II+ISEC-3 )THEN
+                     TMP0 = A(J+1,J)
+                     TMP1 = A(J+2,J)
+                     TMP2 = A(J+2,J+1)
+                     T1( J-II+2, J-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, J-II+2 ) = ALPHA*TMP0
+                     T1( J-II+3, J-II+1 ) = ALPHA*TMP1
+                     T1( J-II+1, J-II+3 ) = ALPHA*TMP1
+                     T1( J-II+2, J-II+2 ) = ALPHA*A( J+1, J+1 )
+                     T1( J-II+3, J-II+2 ) = ALPHA*TMP2
+                     T1( J-II+2, J-II+3 ) = ALPHA*TMP2
+                  END IF
+                  DO 160 I = II+ISEC-UISEC, II+ISEC-1, 2
+                     TMP0 = A(I,J)
+                     TMP1 = A(I+1,J)
+                     TMP2 = A(I,J+1)
+                     TMP3 = A(I+1,J+1)
+                     T1( I-II+1, J-II+1 ) = ALPHA*TMP0
+                     T1( I-II+2, J-II+1 ) = ALPHA*TMP1
+                     T1( I-II+1, J-II+2 ) = ALPHA*TMP2
+                     T1( I-II+2, J-II+2 ) = ALPHA*TMP3
+                     T1( J-II+1, I-II+1 ) = ALPHA*TMP0
+                     T1( J-II+1, I-II+2 ) = ALPHA*TMP1
+                     T1( J-II+2, I-II+1 ) = ALPHA*TMP2
+                     T1( J-II+2, I-II+2 ) = ALPHA*TMP3
+  160             CONTINUE
+  170          CONTINUE
+!*
+!*              C := T1'*B + beta*C, general matrix multiplication
+!*              involving the symmetric diagonal block of A stored
+!*              as a full matrix block in T1.
+!*
+               CALL DGEMM_SKX_AVX512( 'N', 'N', M, ISEC, ISEC, ONE, &
+                                      B( 1, II ), LDB, T1( 1, 1 ), RCB, &
+                                                BETA, C( 1, II ), LDC,MB,NB,NBT,KB )
+               IF( II.GT.1 )THEN
+!*
+!*                 C := alpha*B*A' + C, general matrix multiply involving
+!!*                 the transpose of a rectangular block of A.
+
+                  CALL DGEMM_SKX_AVX512( 'N', 'T', M, ISEC, II-1, ALPHA, &
+                                       B( 1, 1 ), LDB, A( II, 1 ), LDA, &
+                                                 ONE, C( 1, II ), LDC,MB,NB,NBT,KB )
+               END IF
+               IF( II+ISEC.LE.N )THEN
+!*
+!*                 C := alpha*B*A + C, general matrix multiply
+!*                 involving a rectangular block of A.
+!*
+                  CALL DGEMM_SKX_AVX512( 'N', 'N', M, ISEC, N-II-ISEC+1, ALPHA, &
+                           B( 1, II+ISEC ), LDB, A( II+ISEC, II ), LDA, &
+                                                 ONE, C( 1, II ), LDC, MB,NB,NBT,KB )
+               END IF
+  180       CONTINUE
+         END IF
+      END IF
+
+    END SUBROUTINE
+
 
 #endif
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DSYR2K( UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,
+BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYR2K !GCC$ ATTRIBUTES hot :: DSYR2K !GCC$ ATTRIBUTES no_stack_protector :: DSYR2K !GCC$ ATTRIBUTES no_profile_instrument_function :: DSYR2K
+      use omp_lib
+      implicit none
+      CHARACTER*1        UPLO, TRANS
+      INTEGER            N, K, LDA, LDB, LDC, RCB
+      INTEGER            MB,NB,NBT,KB
+      DOUBLE PRECISION   ALPHA, BETA
+
+      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+#if 0
+*     ..
+*
+*  Purpose
+*  =======
+*
+*  DSYR2K  performs one of the symmetric rank 2k operations
+*
+*     C := alpha*A*B' + alpha*B*A' + beta*C,
+*
+*  or
+*
+*     C := alpha*A'*B + alpha*B'*A + beta*C,
+*
+*  where  alpha and beta  are scalars, C is an  n by n  symmetric matrix
+*  and  A and B  are  n by k  matrices  in the  first  case  and  k by n
+*  matrices in the second case.
+*
+*  Parameters
+*  ==========
+*
+*  UPLO   - CHARACTER*1.
+*           On  entry,   UPLO  specifies  whether  the  upper  or  lower
+*           triangular  part  of the  array  C  is to be  referenced  as
+*           follows:
+*
+*              UPLO = 'U' or 'u'   Only the  upper triangular part of  C
+*                                  is to be referenced.
+*
+*              UPLO = 'L' or 'l'   Only the  lower triangular part of  C
+*                                  is to be referenced.
+*
+*           Unchanged on exit.
+*
+*  TRANS  - CHARACTER*1.
+*           On entry,  TRANS  specifies the operation to be performed as
+*           follows:
+*
+*              TRANS = 'N' or 'n'   C := alpha*A*B' + alpha*B*A' +
+*                                        beta*C.
+*
+*              TRANS = 'T' or 't'   C := alpha*A'*B + alpha*B'*A +
+*                                        beta*C.
+*
+*              TRANS = 'C' or 'c'   C := alpha*A'*B + alpha*B'*A +
+*                                        beta*C.
+*
+*           Unchanged on exit.
+*
+*  N      - INTEGER.
+*           On entry,  N specifies the order of the matrix C.  N must be
+*           at least zero.
+*           Unchanged on exit.
+*
+*  K      - INTEGER.
+*           On entry with  TRANS = 'N' or 'n',  K  specifies  the number
+*           of  columns  of the  matrices  A and B,  and on  entry  with
+*           TRANS = 'T' or 't' or 'C' or 'c',  K  specifies  the  number
+*           of rows of the matrices  A and B.  K must be at least  zero.
+*           Unchanged on exit.
+*
+*  ALPHA  - DOUBLE PRECISION.
+*           On entry, ALPHA specifies the scalar alpha.
+*           Unchanged on exit.
+*
+*  A      - DOUBLE PRECISION array of DIMENSION ( LDA, ka ), where ka is
+*           k  when  TRANS = 'N' or 'n',  and is  n  otherwise.
+*           Before entry with  TRANS = 'N' or 'n',  the  leading  n by k
+*           part of the array  A  must contain the matrix  A,  otherwise
+*           the leading  k by n  part of the array  A  must contain  the
+*           matrix A.
+*           Unchanged on exit.
+*
+*  LDA    - INTEGER.
+*           On entry, LDA specifies the first dimension of A as declared
+*           in  the  calling  (sub)  program.   When  TRANS = 'N' or 'n'
+*           then  LDA must be at least  max( 1, n ), otherwise  LDA must
+*           be at least  max( 1, k ).
+*           Unchanged on exit.
+*
+*  B      - DOUBLE PRECISION array of DIMENSION ( LDB, kb ), where kb is
+*           k  when  TRANS = 'N' or 'n',  and is  n  otherwise.
+*           Before entry with  TRANS = 'N' or 'n',  the  leading  n by k
+*           part of the array  B  must contain the matrix  B,  otherwise
+*           the leading  k by n  part of the array  B  must contain  the
+*           matrix B.
+*           Unchanged on exit.
+*
+*  LDB    - INTEGER.
+*           On entry, LDB specifies the first dimension of B as declared
+*           in  the  calling  (sub)  program.   When  TRANS = 'N' or 'n'
+*           then  LDB must be at least  max( 1, n ), otherwise  LDB must
+*           be at least  max( 1, k ).
+*           Unchanged on exit.
+*
+*  BETA   - DOUBLE PRECISION.
+*           On entry, BETA specifies the scalar beta.
+*           Unchanged on exit.
+*
+*  C      - DOUBLE PRECISION array of DIMENSION ( LDC, n ).
+*           Before entry  with  UPLO = 'U' or 'u',  the leading  n by n
+*           upper triangular part of the array C must contain the upper
+*           triangular part  of the  symmetric matrix  and the strictly
+*           lower triangular part of C is not referenced.  On exit, the
+*           upper triangular part of the array  C is overwritten by the
+*           upper triangular part of the updated matrix.
+*           Before entry  with  UPLO = 'L' or 'l',  the leading  n by n
+*           lower triangular part of the array C must contain the lower
+*           triangular part  of the  symmetric matrix  and the strictly
+*           upper triangular part of C is not referenced.  On exit, the
+*           lower triangular part of the array  C is overwritten by the
+*           lower triangular part of the updated matrix.
+*
+*  LDC    - INTEGER.
+*           On entry, LDC specifies the first dimension of C as declared
+*           in  the  calling  (sub)  program.   LDC  must  be  at  least
+*           max( 1, n ).
+*           Unchanged on exit.
+*
+*
+*  Level 3 Blas routine.
+*
+*  -- Written on 8-February-1989.
+*     Jack Dongarra, Argonne National Laboratory.
+*     Iain Duff, AERE Harwell.
+*     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+*     Sven Hammarling, Numerical Algorithms Group Ltd.
+*
+*  -- Rewritten in December-1993
+*     GEMM-Based Level 3 BLAS.
+*     Per Ling, Institute of Information Processing,
+*     University of Umea, Sweden.
+*
+*  -- Rewritten in Mars-1995.
+*     Superscalar GEMM-Based Level 3 BLAS (Version 0.1).
+*     Per Ling, Institute of Information Processing,
+*     University of Umea, Sweden.
+*
+*  -- Modified in October-1997.
+*     Superscalar GEMM-Based Level 3 BLAS (Version 0.1).
+*     Per Ling, Institute of Information Processing,
+*     University of Umea, Sweden.
+*
+*
+*     .. Local Scalars ..
+#endif
+      INTEGER            INFO, NROWA
+      INTEGER            I, II, ISEC, J
+      INTEGER            UISEC, RISEC
+      LOGICAL            UPPER, NOTR
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN, MOD
+!*     .. External Functions ..
+!      LOGICAL            LSAME
+!      EXTERNAL           LSAME
+!*     .. External Subroutines ..
+!      EXTERNAL           XERBLA
+!      EXTERNAL           DGEMM
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER        ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+      DOUBLE PRECISION TMP0,TMP1,TMP2,TMP3
+!*     .. User specified parameters for DSYR2K ..
+!      INTEGER            RCB
+!      PARAMETER        ( RCB = 96 )
+!*     .. Local Arrays ..
+      DOUBLE PRECISION   T1( RCB, RCB )
+
+      UPPER = LSAME( UPLO, 'U' )
+      NOTR = LSAME( TRANS, 'N' )
+      IF( NOTR )THEN
+         NROWA = N
+      ELSE
+         NROWA = K
+      END IF
+      INFO = 0
+      IF( ( .NOT.UPPER ).AND.( .NOT.LSAME( UPLO, 'L' ) ) )THEN
+         INFO = 1
+      ELSE IF( ( .NOT.NOTR ).AND.( .NOT.LSAME( TRANS, 'T' ) ).AND. &
+                                     ( .NOT.LSAME( TRANS, 'C' ) ) )THEN
+         INFO = 2
+      ELSE IF( N.LT.0 )THEN
+         INFO = 3
+      ELSE IF( K.LT.0 )THEN
+         INFO = 4
+      ELSE IF( LDA.LT.MAX( 1, NROWA ) )THEN
+         INFO = 7
+      ELSE IF( LDB.LT.MAX( 1, NROWA ) )THEN
+         INFO = 9
+      ELSE IF( LDC.LT.MAX( 1, N ) )THEN
+         INFO = 12
+      END IF
+      IF( INFO.NE.0 )THEN
+          RETURN
+      END IF
+
+      IF( ( N.EQ.0 ).OR.
+         ( ( ( ALPHA.EQ.ZERO ).OR.( K.EQ.0 ) ).AND.( BETA.EQ.ONE ) ) ) RETURN
+     
+!*
+!*     And when alpha.eq.zero or k.eq.0.
+!*
+      IF( ALPHA.EQ.ZERO.OR.K.EQ.0 )THEN
+         IF( UPPER )THEN
+            IF( BETA.EQ.ZERO )THEN
+               DO 30, J = 1, N
+                  UISEC = J-MOD( J, 4 )
+!$OMP SIMD
+                  DO 10, I = 1, UISEC, 4
+                     C( I, J ) = ZERO
+                     C( I+1, J ) = ZERO
+                     C( I+2, J ) = ZERO
+                     C( I+3, J ) = ZERO
+   10             CONTINUE
+                  DO 20, I = UISEC+1, J
+                     C( I, J ) = ZERO
+   20             CONTINUE
+   30          CONTINUE
+            ELSE
+               DO 60, J = 1, N
+                  UISEC = J-MOD( J, 4 )
+!$OMP SIMD
+                  DO 40, I = 1, UISEC, 4
+                     C( I, J ) = BETA*C( I, J )
+                     C( I+1, J ) = BETA*C( I+1, J )
+                     C( I+2, J ) = BETA*C( I+2, J )
+                     C( I+3, J ) = BETA*C( I+3, J )
+40                   CONTINUE
+!$OMP SIMD
+                  DO 50, I = UISEC+1, J
+                     C( I, J ) = BETA*C( I, J )
+   50             CONTINUE
+   60          CONTINUE
+            END IF
+         ELSE
+            IF( BETA.EQ.ZERO )THEN
+               DO 100, J = 1, N
+                  RISEC = MOD( N-J, 4 )+1
+!$OMP SIMD
+                  DO 80, I = J, J+RISEC-1
+                     C( I, J ) = ZERO
+80                   CONTINUE
+!$OMP SIMD
+                  DO 90, I = J+RISEC, N, 4
+                     C( I, J ) = ZERO
+                     C( I+1, J ) = ZERO
+                     C( I+2, J ) = ZERO
+                     C( I+3, J ) = ZERO
+   90             CONTINUE
+  100          CONTINUE
+            ELSE
+               DO 130, J = 1, N
+                  RISEC = MOD( N-J, 4 )+1
+!$OMP SIMD
+                  DO 110, I = J, J+RISEC-1
+                     C( I, J ) = BETA*C( I, J )
+110                  CONTINUE
+!$OMP SIMD
+                  DO 120, I = J+RISEC, N, 4
+                     C( I, J ) = BETA*C( I, J )
+                     C( I+1, J ) = BETA*C( I+1, J )
+                     C( I+2, J ) = BETA*C( I+2, J )
+                     C( I+3, J ) = BETA*C( I+3, J )
+  120             CONTINUE
+  130          CONTINUE
+            END IF
+         END IF
+         RETURN
+      END IF
+!*
+!*     Start the operations.
+      !*
+      TMP0 = 0.0D+0
+      TMP1 = 0.0D+0
+      TMP2 = 0.0D+0
+      TMP3 = 0.0D+0
+      IF( UPPER )THEN
+         IF( NOTR )THEN
+!*
+!*           Form  C := alpha*A*B' + alpha*B*A' + beta*C. Upper, Notr.
+!*
+            DO 160, II = 1, N, RCB
+               ISEC = MIN( RCB, N-II+1 )
+!*
+!*              T1 := alpha*A*B', general matrix multiplication of
+!*              rectangular blocks of A and B. An upper triangular
+!*              diagonal block of alpha*A*B' + alpha*B*A' can be
+!*              constructed from T1. T1 is square.
+!*
+               CALL DGEMM ( 'N', 'T', ISEC, ISEC, K, ALPHA, A( II, 1 ), &
+                        LDA, B( II, 1 ), LDB, ZERO, T1( 1, 1 ),RCB, MB,NB,NBT,KB )
+!*
+!*              C := T1 + T1' + beta*C, the upper triangular part of C
+!*              is updated with beta, the upper triangular part of T1,
+!*              and the transpose of the lower triangular part
+!*              of T1.
+               !
+               
+               DO 150, J = II+ISEC-2, II-1, -2
+                  UISEC = J-II+1-MOD( J-II+1, 2 )
+                  DO 140, I = II, II+UISEC-1, 2
+                     C( I, J ) = BETA*C( I, J ) +
+     $                       T1( I-II+1, J-II+1 ) + T1( J-II+1, I-II+1 )
+                     C( I+1, J ) = BETA*C( I+1, J ) +
+     $                       T1( I-II+2, J-II+1 ) + T1( J-II+1, I-II+2 )
+                     C( I, J+1 ) = BETA*C( I, J+1 ) +
+     $                       T1( I-II+1, J-II+2 ) + T1( J-II+2, I-II+1 )
+                     C( I+1, J+1 ) = BETA*C( I+1, J+1 ) +
+     $                       T1( I-II+2, J-II+2 ) + T1( J-II+2, I-II+2 )
+  140             CONTINUE
+                  IF( MOD( J-II+1, 2 ).EQ.1 )THEN
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                     C( J, J+1 ) = BETA*C( J, J+1 ) +
+     $                       T1( J-II+1, J-II+2 ) + T1( J-II+2, J-II+1 )
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  ELSE
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  END IF
+  150          CONTINUE
+*
+*              C := alpha*A*B' + beta*C  and  C := alpha*B*A' + C,
+*              general matrix multiplication of rectangular blocks of C
+*              consisting of ISEC columns stretching from 1 to II-1.
+*
+               IF( II.GT.1 )THEN
+                  CALL DGEMM ( 'N', 'T', II-1, ISEC, K, ALPHA,
+     $                            A( 1, 1 ), LDA, B( II, 1 ), LDB, BETA,
+     $                                                 C( 1, II ), LDC )
+                  CALL DGEMM ( 'N', 'T', II-1, ISEC, K, ALPHA,
+     $                             B( 1, 1 ), LDB, A( II, 1 ), LDA, ONE,
+     $                                                 C( 1, II ), LDC )
+               END IF
+  160       CONTINUE
+         ELSE
+*
+*           Form  C := alpha*A'*B + alpha*B'*A + beta*C. Upper, Trans.
+*
+            DO 190, II = 1, N, RCB
+               ISEC = MIN( RCB, N-II+1 )
+*
+*              T1 := alpha*A'*B, general matrix multiplication of
+*              rectangular blocks of A and B. An upper triangular
+*              diagonal block of alpha*A*B' + alpha*B*A' can be
+*              constructed from T1. T1 is square.
+*
+               CALL DGEMM ( 'T', 'N', ISEC, ISEC, K, ALPHA, A( 1, II ),
+     $                     LDA, B( 1, II ), LDB, ZERO, T1( 1, 1 ), RCB )
+*
+*              C := T1 + T1' + beta*C, the upper triangular part of C
+*              is updated with beta, the upper triangular part of T1,
+*              and the transpose of the lower triangular part
+*              of T1.
+*
+               DO 180, J = II+ISEC-2, II-1, -2
+                  UISEC = J-II+1-MOD( J-II+1, 2 )
+                  DO 170, I = II, II+UISEC-1, 2
+                     C( I, J ) = BETA*C( I, J ) +
+     $                       T1( I-II+1, J-II+1 ) + T1( J-II+1, I-II+1 )
+                     C( I+1, J ) = BETA*C( I+1, J ) +
+     $                       T1( I-II+2, J-II+1 ) + T1( J-II+1, I-II+2 )
+                     C( I, J+1 ) = BETA*C( I, J+1 ) +
+     $                       T1( I-II+1, J-II+2 ) + T1( J-II+2, I-II+1 )
+                     C( I+1, J+1 ) = BETA*C( I+1, J+1 ) +
+     $                       T1( I-II+2, J-II+2 ) + T1( J-II+2, I-II+2 )
+  170             CONTINUE
+                  IF( MOD( J-II+1, 2 ).EQ.1 )THEN
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                     C( J, J+1 ) = BETA*C( J, J+1 ) +
+     $                       T1( J-II+1, J-II+2 ) + T1( J-II+2, J-II+1 )
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  ELSE
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  END IF
+  180          CONTINUE
+*
+*              C := alpha*A'*B + beta*C  and  C := alpha*B'*A + C,
+*              general matrix multiplication of rectangular blocks of C
+*              consisting of ISEC columns stretching from 1 to II-1.
+*
+               IF( II.GT.1 )THEN
+                  CALL DGEMM ( 'T', 'N', II-1, ISEC, K, ALPHA,
+     $                            A( 1, 1 ), LDA, B( 1, II ), LDB, BETA,
+     $                                                 C( 1, II ), LDC )
+                  CALL DGEMM ( 'T', 'N', II-1, ISEC, K, ALPHA,
+     $                             B( 1, 1 ), LDB, A( 1, II ), LDA, ONE,
+     $                                                 C( 1, II ), LDC )
+               END IF
+  190       CONTINUE
+         END If
+      ELSE
+         IF( NOTR )THEN
+*
+*           Form  C := alpha*A*B' + alpha*B*A' + beta*C. Upper, Notr.
+*
+            DO 220, II = 1, N, RCB
+               ISEC = MIN( RCB, N-II+1 )
+*
+*              T1 := alpha*A*B', general matrix multiplication of
+*              rectangular blocks of A and B. An upper triangular
+*              diagonal block of alpha*A*B' + alpha*B*A' can be
+*              constructed from T1. T1 is square.
+*
+               CALL DGEMM ( 'N', 'T', ISEC, ISEC, K, ALPHA, A( II, 1 ),
+     $                     LDA, B( II, 1 ), LDB, ZERO, T1( 1, 1 ), RCB )
+*
+*              C := T1 + T1' + beta*C, the lower triangular part of C
+*              is updated with beta, the lower triangular part of T1,
+*              and the transpose of the lower triangular part
+*              of T1.
+*
+               DO 210, J = II, II+ISEC-1, 2
+                  UISEC = II+ISEC-1-J-MOD( II+ISEC-1-J, 2 )
+                  IF( MOD( ISEC-UISEC, 2 ).EQ.0 )THEN
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                     C( J+1, J ) = BETA*C( J+1, J ) +
+     $                       T1( J-II+2, J-II+1 ) + T1( J-II+1, J-II+2 )
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  ELSE
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                  END IF
+                  DO 200, I = II+ISEC-UISEC, II+ISEC-1, 2
+                     C( I, J ) = BETA*C( I, J ) +
+     $                       T1( I-II+1, J-II+1 ) + T1( J-II+1, I-II+1 )
+                     C( I+1, J ) = BETA*C( I+1, J ) +
+     $                       T1( I-II+2, J-II+1 ) + T1( J-II+1, I-II+2 )
+                     C( I, J+1 ) = BETA*C( I, J+1 ) +
+     $                       T1( I-II+1, J-II+2 ) + T1( J-II+2, I-II+1 )
+                     C( I+1, J+1 ) = BETA*C( I+1, J+1 ) +
+     $                       T1( I-II+2, J-II+2 ) + T1( J-II+2, I-II+2 )
+  200             CONTINUE
+  210          CONTINUE
+*
+*              C := alpha*A*B' + beta*C  and  C := alpha*B*A' + C,
+*              general matrix multiplication of rectangular blocks of C
+*              consisting of ISEC columns stretching from 1 to II-1.
+*
+               IF( II+ISEC-1.LT.N )THEN
+                  CALL DGEMM ( 'N', 'T', N-II-ISEC+1, ISEC, K, ALPHA,
+     $                      A( II+ISEC, 1 ), LDA, B( II, 1 ), LDB, BETA,
+     $                                           C( II+ISEC, II ), LDC )
+                  CALL DGEMM ( 'N', 'T', N-II-ISEC+1, ISEC, K, ALPHA,
+     $                       B( II+ISEC, 1 ), LDB, A( II, 1 ), LDA, ONE,
+     $                                           C( II+ISEC, II ), LDC )
+               END IF
+  220       CONTINUE
+         ELSE
+*
+*           Form  C := alpha*A'*B + alpha*B'*A + beta*C. Upper, Trans.
+*
+            DO 250, II = 1, N, RCB
+               ISEC = MIN( RCB, N-II+1 )
+*
+*              T1 := alpha*A'*B, general matrix multiplication of
+*              rectangular blocks of A and B. An lower triangular
+*              diagonal block of alpha*A*B' + alpha*B*A' can be
+*              constructed from T1. T1 is square.
+*
+               CALL DGEMM ( 'T', 'N', ISEC, ISEC, K, ALPHA, A( 1, II ),
+     $                     LDA, B( 1, II ), LDB, ZERO, T1( 1, 1 ), RCB )
+*
+*              C := T1 + T1' + beta*C, the lower triangular part of C
+*              is updated with beta, the lower triangular part of T1,
+*              and the transpose of the lower triangular part
+*              of T1.
+*
+               DO 240, J = II, II+ISEC-1, 2
+                  UISEC = II+ISEC-1-J-MOD( II+ISEC-1-J, 2 )
+                  IF( MOD( ISEC-UISEC, 2 ).EQ.0 )THEN
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                     C( J+1, J ) = BETA*C( J+1, J ) +
+     $                       T1( J-II+2, J-II+1 ) + T1( J-II+1, J-II+2 )
+                     C( J+1, J+1 ) = BETA*C( J+1, J+1 ) +
+     $                       T1( J-II+2, J-II+2 ) + T1( J-II+2, J-II+2 )
+                  ELSE
+                     C( J, J ) = BETA*C( J, J ) +
+     $                       T1( J-II+1, J-II+1 ) + T1( J-II+1, J-II+1 )
+                  END IF
+                  DO 230, I = II+ISEC-UISEC, II+ISEC-1, 2
+                     C( I, J ) = BETA*C( I, J ) +
+     $                       T1( I-II+1, J-II+1 ) + T1( J-II+1, I-II+1 )
+                     C( I+1, J ) = BETA*C( I+1, J ) +
+     $                       T1( I-II+2, J-II+1 ) + T1( J-II+1, I-II+2 )
+                     C( I, J+1 ) = BETA*C( I, J+1 ) +
+     $                       T1( I-II+1, J-II+2 ) + T1( J-II+2, I-II+1 )
+                     C( I+1, J+1 ) = BETA*C( I+1, J+1 ) +
+     $                       T1( I-II+2, J-II+2 ) + T1( J-II+2, I-II+2 )
+  230             CONTINUE
+  240          CONTINUE
+*
+*              C := alpha*A'*B + beta*C  and  C := alpha*B'*A + C,
+*              general matrix multiplication of rectangular blocks of C
+*              consisting of ISEC columns stretching from 1 to II-1.
+*
+               IF( II+ISEC-1.LT.N )THEN
+                  CALL DGEMM ( 'T', 'N', N-II-ISEC+1, ISEC, K, ALPHA,
+     $                      A( 1, II+ISEC ), LDA, B( 1, II ), LDB, BETA,
+     $                                           C( II+ISEC, II ), LDC )
+                  CALL DGEMM ( 'T', 'N', N-II-ISEC+1, ISEC, K, ALPHA,
+     $                       B( 1, II+ISEC ), LDB, A( 1, II ), LDA, ONE,
+     $                                           C( II+ISEC, II ), LDC )
+               END IF
+  250       CONTINUE
+         END IF
+      END IF
+
+   
+      END SUBROUTINE
+
