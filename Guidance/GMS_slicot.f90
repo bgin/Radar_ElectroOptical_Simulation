@@ -212,9 +212,9 @@ C     .. Array Arguments ..
       LEQUIL = LSAME( EQUIL, 'S' )
       LQUERY = ( LZWORK.EQ.-1 )
       WRKOPT = NP*NM
-C
-C     Test the input scalar arguments.
-C
+!C
+!C     Test the input scalar arguments.
+!C
       IF( .NOT.LEQUIL .AND. .NOT.LSAME( EQUIL, 'N' ) ) THEN
          INFO = -1
       ELSE IF( N.LT.0 ) THEN
