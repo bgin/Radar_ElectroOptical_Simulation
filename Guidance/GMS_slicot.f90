@@ -12139,37 +12139,37 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-      IF( .NOT.DISCR .AND. .NOT.LSAME( DICO, 'C' ) ) THEN
-         INFO = -1
-      ELSE IF( ( LNFACT .AND. .NOT.LSAME( FACT, 'N' ) ) .OR. &
-              ( DISCR  .AND. LFACTU ) ) THEN
-         INFO = -2
-      ELSE IF( .NOT.LUPLOU .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
-         INFO = -3
-      ELSE IF( .NOT.WITHL  .AND. .NOT.LSAME( JOBL, 'Z' ) ) THEN
-         INFO = -4
-      ELSE IF( N.LT.0 ) THEN
-         INFO = -5
-      ELSE IF( M.LT.0 ) THEN
-         INFO = -6
-      ELSE IF( LFACTD .AND. ( P.LT.0 .OR. ( .NOT.DISCR .AND. P.LT.M ) ) &
-             ) THEN
-         INFO = -7
-      ELSE IF( LDA.LT.1 .OR. ( DISCR .AND. LDA.LT.N ) ) THEN
-         INFO = -9
-      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
-         INFO = -11 
-      ELSE IF( LDR.LT.MAX( 1, M ) .OR. ( LFACTD .AND.  &
-               LDR.LT.MAX( 1, P ) ) ) THEN
-         INFO = -13
-      ELSE IF( LDL.LT.1 .OR. ( WITHL .AND. LDL.LT.N ) ) THEN
-         INFO = -16
-      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
-         INFO = -18
-      ELSE IF( LFACTU ) THEN
-         IF( RNORM.LT.ZERO ) &
-           INFO = -19
-      END IF
+  !    IF( .NOT.DISCR .AND. .NOT.LSAME( DICO, 'C' ) ) THEN
+  !       INFO = -1
+  !    ELSE IF( ( LNFACT .AND. .NOT.LSAME( FACT, 'N' ) ) .OR. &
+  !            ( DISCR  .AND. LFACTU ) ) THEN
+   !      INFO = -2
+   !   ELSE IF( .NOT.LUPLOU .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+  !       INFO = -3
+   !   ELSE IF( .NOT.WITHL  .AND. .NOT.LSAME( JOBL, 'Z' ) ) THEN
+  !       INFO = -4
+  !    ELSE IF( N.LT.0 ) THEN
+  !       INFO = -5
+ !     ELSE IF( M.LT.0 ) THEN
+  !       INFO = -6
+ !     ELSE IF( LFACTD .AND. ( P.LT.0 .OR. ( .NOT.DISCR .AND. P.LT.M ) ) &
+  !           ) THEN
+  !!       INFO = -7
+  !    ELSE IF( LDA.LT.1 .OR. ( DISCR .AND. LDA.LT.N ) ) THEN
+  !       INFO = -9
+  !    ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+  !       INFO = -11 
+  !    ELSE IF( LDR.LT.MAX( 1, M ) .OR. ( LFACTD .AND.  &
+  !             LDR.LT.MAX( 1, P ) ) ) THEN
+  !       INFO = -13
+ !     ELSE IF( LDL.LT.1 .OR. ( WITHL .AND. LDL.LT.N ) ) THEN
+ !        INFO = -16
+ !     ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+ !        INFO = -18
+ !     ELSE IF( LFACTU ) THEN
+ !        IF( RNORM.LT.ZERO ) &
+ !          INFO = -19
+ !     END IF
       IF ( INFO.EQ.0 ) THEN
          IF( LDF.LT.MAX( 1, M ) ) THEN
             INFO = -21
@@ -13175,32 +13175,32 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-      IF(      .NOT.LJOBG  .AND. .NOT.LSAME( JOBG, 'N' ) ) THEN
-         INFO = -1
-      ELSE IF( .NOT.LJOBL  .AND. .NOT.LSAME( JOBL, 'Z' ) ) THEN
-         INFO = -2
-      ELSE IF(     LNFACT  .AND. .NOT.LSAME( FACT, 'N' ) ) THEN
-         INFO = -3
-      ELSE IF( .NOT.LUPLOU .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
-         INFO = -4
-      ELSE IF( N.LT.0 ) THEN
-         INFO = -5
-      ELSE IF( M.LT.0 ) THEN
-         INFO = -6
-      ELSE IF( LDA.LT.1 .OR. ( LJOBL .AND. LDA.LT.N ) ) THEN
-         INFO = -8
-      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
-         INFO = -10
-      ELSE IF( LDQ.LT.1 .OR. ( LJOBL .AND. LDQ.LT.N ) ) THEN
-         INFO = -12
-      ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
-         INFO = -14
-      ELSE IF( LDL.LT.1 .OR. ( LJOBL .AND. LDL.LT.N ) ) THEN
-         INFO = -16
-      ELSE IF( LDG.LT.1 .OR. ( LJOBG .AND. LDG.LT.N ) ) THEN
-         INFO = -20
-      ELSE
-         IF( LFACTC ) THEN
+ !     IF(      .NOT.LJOBG  .AND. .NOT.LSAME( JOBG, 'N' ) ) THEN
+ !        INFO = -1
+ !     ELSE IF( .NOT.LJOBL  .AND. .NOT.LSAME( JOBL, 'Z' ) ) THEN
+  !       INFO = -2
+  !    ELSE IF(     LNFACT  .AND. .NOT.LSAME( FACT, 'N' ) ) THEN
+  !       INFO = -3
+  !    ELSE IF( .NOT.LUPLOU .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+  !       INFO = -4
+   !   ELSE IF( N.LT.0 ) THEN
+  !       INFO = -5
+   !   ELSE IF( M.LT.0 ) THEN
+   !      INFO = -6
+   !   ELSE IF( LDA.LT.1 .OR. ( LJOBL .AND. LDA.LT.N ) ) THEN
+    !     INFO = -8
+   !   ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+    !     INFO = -10
+   !   ELSE IF( LDQ.LT.1 .OR. ( LJOBL .AND. LDQ.LT.N ) ) THEN
+   !      INFO = -12
+   !   ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
+   !      INFO = -14
+   !   ELSE IF( LDL.LT.1 .OR. ( LJOBL .AND. LDL.LT.N ) ) THEN
+   !      INFO = -16
+   !   ELSE IF( LDG.LT.1 .OR. ( LJOBG .AND. LDG.LT.N ) ) THEN
+   !      INFO = -20
+   !   ELSE
+      IF( LFACTC ) THEN
             WRKMIN = 1
          ELSE IF( LFACTU ) THEN
             IF( LJOBG .OR. LJOBL ) THEN
@@ -13653,36 +13653,35 @@ C
       LUPLO  = LSAME( UPLO,  'U' )
       LTRANS = LSAME( TRANS, 'T' ) .OR. LSAME( TRANS, 'C' )
 !C
-      IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
-         INFO = -1
-      ELSE IF( ( .NOT.LUPLO  ).AND.( .NOT.LSAME( UPLO,  'L' ) ) )THEN
-         INFO = -2
-      ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
-         INFO = -3
-      ELSE IF( M.LT.0 ) THEN
-         INFO = -4
-      ELSE IF( N.LT.0 ) THEN
-         INFO = -5
-      ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
-         INFO = -9
-      ELSE IF( LDA.LT.1 .OR. &
-         ( ( (      LSIDE .AND. .NOT.LTRANS ) .OR. &
-            ( .NOT.LSIDE .AND.      LTRANS ) ) .AND. LDA.LT.M ) .OR. &
-        ( ( (      LSIDE .AND.      LTRANS ) .OR. &
-            ( .NOT.LSIDE .AND. .NOT.LTRANS ) ) .AND. LDA.LT.N ) ) THEN
-         INFO = -11
-      ELSE IF( LDB.LT.1 .OR.  &
-            (      LSIDE .AND. LDB.LT.N ) .OR.  &
-            ( .NOT.LSIDE .AND. LDB.LT.M ) ) THEN
-         INFO = -13
-      END IF
+   !   IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
+    !     INFO = -1
+    !  ELSE IF( ( .NOT.LUPLO  ).AND.( .NOT.LSAME( UPLO,  'L' ) ) )THEN
+    !     INFO = -2
+    !  ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
+    !     INFO = -3
+    !!  ELSE IF( M.LT.0 ) THEN
+   !      INFO = -4
+    !  ELSE IF( N.LT.0 ) THEN
+    !     INFO = -5
+    !  ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
+   !      INFO = -9
+   !   ELSE IF( LDA.LT.1 .OR. &
+   !      ( ( (      LSIDE .AND. .NOT.LTRANS ) .OR. &
+   !!    ( ( (      LSIDE .AND.      LTRANS ) .OR. &
+   !         ( .NOT.LSIDE .AND. .NOT.LTRANS ) ) .AND. LDA.LT.N ) ) THEN
+   !      INFO = -11
+   !   ELSE IF( LDB.LT.1 .OR.  &
+   !         (      LSIDE .AND. LDB.LT.N ) .OR.  &
+   !         ( .NOT.LSIDE .AND. LDB.LT.M ) ) THEN
+   !!      INFO = -13
+   !   END IF
 !C
-      IF (INFO.NE.0 .OR. M.EQ.0) THEN
+   !   IF (INFO.NE.0 .OR. M.EQ.0) THEN
 !C
 !C        Error return.
 !C
-          RETURN
-      END IF
+      !    RETURN
+    !  END IF
 !C
 !C     Quick return if possible.
 !C
@@ -14106,36 +14105,36 @@ C
       LUPLO  = LSAME( UPLO,  'U' )
       LTRANS = LSAME( TRANS, 'T' ) .OR. LSAME( TRANS, 'C' )
 
-      IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
-         INFO = -1
-      ELSE IF( ( .NOT.LUPLO  ).AND.( .NOT.LSAME( UPLO,  'L' ) ) )THEN
-         INFO = -2
-      ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
-         INFO = -3
-      ELSE IF( M.LT.0 ) THEN
-         INFO = -4
-      ELSE IF( N.LT.0 ) THEN
-         INFO = -5
-      ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
-         INFO = -9
-      ELSE IF( LDA.LT.1 .OR.  &
-        ( ( (      LSIDE .AND. .NOT.LTRANS ) .OR. &
-            ( .NOT.LSIDE .AND.      LTRANS ) ) .AND. LDA.LT.M ) .OR. &
-        ( ( (      LSIDE .AND.      LTRANS ) .OR. &
-            ( .NOT.LSIDE .AND. .NOT.LTRANS ) ) .AND. LDA.LT.N ) ) THEN
-         INFO = -11
-      ELSE IF( LDB.LT.1 .OR.  &
-            (      LSIDE .AND. LDB.LT.N ) .OR.  &
-            ( .NOT.LSIDE .AND. LDB.LT.M ) ) THEN
-         INFO = -13
-      END IF
+     ! IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
+     !    INFO = -1
+     ! ELSE IF( ( .NOT.LUPLO  ).AND.( .NOT.LSAME( UPLO,  'L' ) ) )THEN
+     !    INFO = -2
+     ! ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
+     !    INFO = -3
+     ! ELSE IF( M.LT.0 ) THEN
+     !    INFO = -4
+     ! ELSE IF( N.LT.0 ) THEN
+      !   INFO = -5
+     ! ELSE IF( LDR.LT.MAX( 1, M ) ) THEN
+     !    INFO = -9
+     ! ELSE IF( LDA.LT.1 .OR.  &
+     !!   ( ( (      LSIDE .AND. .NOT.LTRANS ) .OR. &
+     !       ( .NOT.LSIDE .AND.      LTRANS ) ) .AND. LDA.LT.M ) .OR. &
+      !  ( ( (      LSIDE .AND.      LTRANS ) .OR. &
+     !!       ( .NOT.LSIDE .AND. .NOT.LTRANS ) ) .AND. LDA.LT.N ) ) THEN
+      !   INFO = -11
+      !ELSE IF( LDB.LT.1 .OR.  &
+     !       (      LSIDE .AND. LDB.LT.N ) .OR.  &
+     !       ( .NOT.LSIDE .AND. LDB.LT.M ) ) THEN
+     !    INFO = -13
+    !  END IF
 
-      IF (INFO.NE.0 .OR. M.EQ.0) THEN
+    !  IF (INFO.NE.0 .OR. M.EQ.0) THEN
 !C
 !C        Error return.
 !C
-          RETURN
-      END IF
+     !     RETURN
+    !  END IF
 !C
 !C     Quick return if possible.
 !C
