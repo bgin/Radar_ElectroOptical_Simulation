@@ -1,63 +1,6 @@
 
 #if 0
-*> \brief \b ZLANGE returns the value of the 1-norm, Frobenius norm, infinity-norm, or the largest absolute value of any element of a general rectangular matrix.
-*
-*  =========== DOCUMENTATION ===========
-*
-* Online html documentation available at
-*            http://www.netlib.org/lapack/explore-html/
-*
-*> \htmlonly
-*> Download ZLANGE + dependencies
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlange.f">
-*> [TGZ]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlange.f">
-*> [ZIP]</a>
-*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlange.f">
-*> [TXT]</a>
-*> \endhtmlonly
-*
-*  Definition:
-*  ===========
-*
-*       DOUBLE PRECISION FUNCTION ZLANGE( NORM, M, N, A, LDA, WORK )
-*
-*       .. Scalar Arguments ..
-*       CHARACTER          NORM
-*       INTEGER            LDA, M, N
-*       ..
-*       .. Array Arguments ..
-*       DOUBLE PRECISION   WORK( * )
-*       COMPLEX*16         A( LDA, * )
-*       ..
-*
-*
-*> \par Purpose:
-*  =============
-*>
-*> \verbatim
-*>
-*> ZLANGE  returns the value of the one norm,  or the Frobenius norm, or
-*> the  infinity norm,  or the  element of  largest absolute value  of a
-*> complex matrix A.
-*> \endverbatim
-*>
-*> \return ZLANGE
-*> \verbatim
-*>
-*>    ZLANGE = ( max(abs(A(i,j))), NORM = 'M' or 'm'
-*>             (
-*>             ( norm1(A),         NORM = '1', 'O' or 'o'
-*>             (
-*>             ( normI(A),         NORM = 'I' or 'i'
-*>             (
-*>             ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
-*>
-*> where  norm1  denotes the  one norm of a matrix (maximum column sum),
-*> normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
-*> normF  denotes the  Frobenius norm of a matrix (square root of sum of
-*> squares).  Note that  max(abs(A(i,j)))  is not a consistent matrix norm.
-*> \endverbatim
+
 *
 *  Arguments:
 *  ==========
@@ -452,3 +395,625 @@ SUBROUTINE DCOMBSSQ( V1, V2 ) !GCC$ ATTRIBUTES INLINE :: DCOMBSSQ !GCC$ ATTRIBUT
       END IF
     
 END SUBROUTINE 
+
+
+#if 0
+*> ZLACPY copies all or part of a two-dimensional matrix A to another
+*> matrix B.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies the part of the matrix A to be copied to B.
+*>          = 'U':      Upper triangular part
+*>          = 'L':      Lower triangular part
+*>          Otherwise:  All of the matrix A
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix A.  M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is COMPLEX*16 array, dimension (LDA,N)
+*>          The m by n matrix A.  If UPLO = 'U', only the upper trapezium
+*>          is accessed; if UPLO = 'L', only the lower trapezium is
+*>          accessed.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] B
+*> \verbatim
+*>          B is COMPLEX*16 array, dimension (LDB,N)
+*>          On exit, B = A in the locations specified by UPLO.
+*> \endverbatim
+*>
+*> \param[in] LDB
+*> \verbatim
+*>          LDB is INTEGER
+*>          The leading dimension of the array B.  LDB >= max(1,M).
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date December 2016
+*
+*> \ingroup complex16OTHERauxiliary
+*
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLACPY(UPLO, M, N, A, LDA, B, LDB) !GCC$ ATTRIBUTES hot :: ZLACPY !GCC$ ATTRIBUTES aligned(32) :: ZLACPY !GCC$ ATTRIBUTES no_stack_protector :: ZLACPY
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZLACPY(UPLO,M,N,A,LDA,B,LDB)
+    !DIR$ ATTRIBUTES INLINE :: ZLACPY
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLACPY
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZLACPY
+#endif
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+    !*     .. Scalar Arguments ..
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      use omp_lib
+#endif
+      implicit none
+      CHARACTER          UPLO
+      INTEGER            LDA, LDB, M, N
+!*     ..
+      !*     .. Array Arguments ..
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))      
+      !COMPLEX*16         A( LDA, * ), B( LDB, * )
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: B
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+      COMPLEX*16         A( LDA, * ), B( LDB, * )
+      !DIR$ ASSUME_ALIGNED A:64
+      !DIR$ ASSUME_ALIGNED B:64
+#endif
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER            I, J
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( LSAME( UPLO, 'U' ) ) THEN
+         DO 20 J = 1, N
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+            !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+            !DIR$ VECTOR ALIGNED
+            !DIR$ SIMD LINEAR(I:1)
+#endif
+            DO 10 I = 1, MIN( J, M )
+               B( I, J ) = A( I, J )
+   10       CONTINUE
+   20    CONTINUE
+!*
+      ELSE IF( LSAME( UPLO, 'L' ) ) THEN
+         DO 40 J = 1, N
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+            !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+            !DIR$ VECTOR ALIGNED
+            !DIR$ SIMD LINEAR(I:1)
+#endif            
+            DO 30 I = J, M
+               B( I, J ) = A( I, J )
+   30       CONTINUE
+   40    CONTINUE
+!*
+      ELSE
+         DO 60 J = 1, N
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+            !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+            !DIR$ VECTOR ALIGNED
+            !DIR$ SIMD LINEAR(I:1)
+#endif            
+            DO 50 I = 1, M
+               B( I, J ) = A( I, J )
+   50       CONTINUE
+   60    CONTINUE
+      END IF
+
+END SUBROUTINE
+
+#if 0
+*  Arguments:
+*  ==========
+*
+*> \param[in] FORWRD
+*> \verbatim
+*>          FORWRD is LOGICAL
+*>          = .TRUE., forward permutation
+*>          = .FALSE., backward permutation
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix X. M >= 0.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix X. N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] X
+*> \verbatim
+*>          X is COMPLEX*16 array, dimension (LDX,N)
+*>          On entry, the M by N matrix X.
+*>          On exit, X contains the permuted matrix X.
+*> \endverbatim
+*>
+*> \param[in] LDX
+*> \verbatim
+*>          LDX is INTEGER
+*>          The leading dimension of the array X, LDX >= MAX(1,M).
+*> \endverbatim
+*>
+*> \param[in,out] K
+*> \verbatim
+*>          K is INTEGER array, dimension (N)
+*>          On entry, K contains the permutation vector. K is used as
+*>          internal workspace, but reset to its original value on
+*>          output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date December 2016
+*
+*> \ingroup complex16OTHERauxiliary
+*
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLAPMT(FORWRD, M, N, X, LDX, K) !GCC$ ATTRIBUTES hot :: ZLAPMT !GCC$ ATTRIBUTES aligned(32) :: ZLAPMT !GCC$ ATTRIBUTES no_stack_protector :: ZLAPMT
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZLAPMT(FORWRD, M, N, X, LDX, K)
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLAPMT
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: ZLAPMT
+#endif
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+    !*
+      implicit none
+!*     .. Scalar Arguments ..
+      LOGICAL            FORWRD
+      INTEGER            LDX, M, N
+!*     ..
+!*     .. Array Arguments ..
+      INTEGER            K( * )
+      COMPLEX*16         X( LDX, * )
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER            I, II, IN, J
+      COMPLEX*16         TEMP
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( N.LE.1 ) &
+         RETURN
+!*
+      DO 10 I = 1, N
+         K( I ) = -K( I )
+   10 CONTINUE
+!*
+      IF( FORWRD ) THEN
+!*
+!*        Forward permutation
+!*
+         DO 50 I = 1, N
+!*
+            IF( K( I ).GT.0 ) &
+               GO TO 40
+!*
+            J = I
+            K( J ) = -K( J )
+            IN = K( J )
+!*
+   20       CONTINUE
+            IF( K( IN ).GT.0 ) &
+               GO TO 40
+!*
+            DO 30 II = 1, M
+               TEMP = X( II, J )
+               X( II, J ) = X( II, IN )
+               X( II, IN ) = TEMP
+   30       CONTINUE
+!*
+            K( IN ) = -K( IN )
+            J = IN
+            IN = K( IN )
+            GO TO 20
+!*
+   40       CONTINUE
+!*
+   50    CONTINUE
+!*
+      ELSE
+!*
+!*        Backward permutation
+!*
+         DO 90 I = 1, N
+!*
+            IF( K( I ).GT.0 ) &
+               GO TO 80
+!*
+            K( I ) = -K( I )
+            J = K( I )
+   60       CONTINUE
+            IF( J.EQ.I ) &
+               GO TO 80
+!*
+            DO 70 II = 1, M
+               TEMP = X( II, I )
+               X( II, I ) = X( II, J )
+               X( II, J ) = TEMP
+   70       CONTINUE
+!*
+            K( J ) = -K( J )
+            J = K( J )
+            GO TO 60
+!*
+   80       CONTINUE
+!*
+   90    CONTINUE
+!*
+      END IF
+
+END SUBROUTINE
+
+#if 0
+*  Arguments:
+*  ==========
+*
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the elementary reflector.
+*> \endverbatim
+*>
+*> \param[in,out] ALPHA
+*> \verbatim
+*>          ALPHA is COMPLEX*16
+*>          On entry, the value alpha.
+*>          On exit, it is overwritten with the value beta.
+*> \endverbatim
+*>
+*> \param[in,out] X
+*> \verbatim
+*>          X is COMPLEX*16 array, dimension
+*>                         (1+(N-2)*abs(INCX))
+*>          On entry, the vector x.
+*>          On exit, it is overwritten with the vector v.
+*> \endverbatim
+*>
+*> \param[in] INCX
+*> \verbatim
+*>          INCX is INTEGER
+*>          The increment between elements of X. INCX > 0.
+*> \endverbatim
+*>
+*> \param[out] TAU
+*> \verbatim
+*>          TAU is COMPLEX*16
+*>          The value tau.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date November 2017
+*
+*> \ingroup complex16OTHERauxiliary
+*
+*  =====================================================================
+#endif
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLARFG( N, ALPHA, X, INCX, TAU ) !GCC$ ATTRIBUTES hot :: ZLARFG !GCC$ ATTRIBUTES aligned(32) :: ZLARFG !GCC$ ATTRIBUTES no_stack_protector :: ZLARFG
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZLARFG( N, ALPHA, X, INCX, TAU )
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLARFG
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: ZLARFG
+#endif
+!*
+!*  -- LAPACK auxiliary routine (version 3.8.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+        !*
+        implicit none
+!*     .. Scalar Arguments ..
+      INTEGER            INCX, N
+      COMPLEX*16         ALPHA, TAU
+!*     ..
+!*     .. Array Arguments ..
+      COMPLEX*16         X( * )
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            J, KNT
+      DOUBLE PRECISION   ALPHI, ALPHR, BETA, RSAFMN, SAFMIN, XNORM
+!*     ..
+!*     .. External Functions ..
+      DOUBLE PRECISION   DLAMCH, DLAPY3, DZNRM2
+      COMPLEX*16         ZLADIV
+      EXTERNAL           DLAMCH, DLAPY3, DZNRM2, ZLADIV
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, DBLE, DCMPLX, DIMAG, SIGN
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           ZDSCAL, ZSCAL
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( N.LE.0 ) THEN
+         TAU = ZERO
+         RETURN
+      END IF
+!*
+      XNORM = DZNRM2( N-1, X, INCX )
+      ALPHR = DBLE( ALPHA )
+      ALPHI = DIMAG( ALPHA )
+!*
+      IF( XNORM.EQ.ZERO .AND. ALPHI.EQ.ZERO ) THEN
+!*
+!*        H  =  I
+!*
+         TAU = ZERO
+      ELSE
+!*
+!*        general case
+!*
+         BETA = -SIGN( DLAPY3( ALPHR, ALPHI, XNORM ), ALPHR )
+         SAFMIN = DLAMCH( 'S' ) / DLAMCH( 'E' )
+         RSAFMN = ONE / SAFMIN
+!*
+         KNT = 0
+         IF( ABS( BETA ).LT.SAFMIN ) THEN
+!*
+!*           XNORM, BETA may be inaccurate; scale X and recompute them
+!*
+   10       CONTINUE
+            KNT = KNT + 1
+            CALL ZDSCAL( N-1, RSAFMN, X, INCX )
+            BETA = BETA*RSAFMN
+            ALPHI = ALPHI*RSAFMN
+            ALPHR = ALPHR*RSAFMN
+            IF( (ABS( BETA ).LT.SAFMIN) .AND. (KNT .LT. 20) ) &
+                GO TO 10
+!*
+!*           New BETA is at most 1, at least SAFMIN
+!*
+            XNORM = DZNRM2( N-1, X, INCX )
+            ALPHA = DCMPLX( ALPHR, ALPHI )
+            BETA = -SIGN( DLAPY3( ALPHR, ALPHI, XNORM ), ALPHR )
+         END IF
+         TAU = DCMPLX( ( BETA-ALPHR ) / BETA, -ALPHI / BETA )
+         ALPHA = ZLADIV( DCMPLX( ONE ), ALPHA-BETA )
+         CALL ZSCAL( N-1, ALPHA, X, INCX )
+!*
+!*        If ALPHA is subnormal, it may lose relative accuracy
+!*
+         DO 20 J = 1, KNT
+            BETA = BETA*SAFMIN
+ 20      CONTINUE
+         ALPHA = BETA
+      END IF
+
+END SUBROUTINE 
+
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZSCAL(N,ZA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZSCAL !GCC$ ATTRIBUTES aligned(32) :: ZSCAL
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZSCAL(N,ZA,ZX,INCX)
+    !DIR$ ATTRIBUTES FORCEINLINE :: ZSCAL
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZSCAL
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZSCAL
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+    use omp_lib
+#endif
+     implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      COMPLEX*16 ZA
+      INTEGER INCX,N
+!*     ..
+      !*     .. Array Arguments ..
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      !COMPLEX*16 ZX(*)
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+      COMPLEX(16) ZX(*)
+      !DIR$ ASSUME_ALIGNED ZX:64
+#endif
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,NINCX
+!*     ..
+      !IF (N.LE.0 .OR. INCX.LE.0) RETURN
+      IF (INCX.EQ.1) THEN
+!*
+!*        code for increment equal to 1
+         !*
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+         !$OMP SIMD ALIGNED(ZX:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ VECTOR ALIGNED
+         !DIR$ SIMD
+#endif
+         DO I = 1,N
+            ZX(I) = ZA*ZX(I)
+         END DO
+      ELSE
+!*
+!*        code for increment not equal to 1
+!*
+         NINCX = N*INCX
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+         !$OMP SIMD ALIGNED(ZX:64)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ VECTOR ALIGNED
+         !DIR$ SIMD
+#endif         
+         DO I = 1,NINCX,INCX
+            ZX(I) = ZA*ZX(I)
+         END DO
+      END IF
+    
+END SUBROUTINE
+
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZDSCAL(N,DA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZDSCAL !GCC$ ATTRIBUTES aligned(32) :: ZDSCAL
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZDSCAL(N,DA,ZX,INCX)
+  !DIR$ ATTRIBUTES FORCEINLINE :: ZDSCAL
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZDSCAL
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZDSCAL
+#endif
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+    !*     .. Scalar Arguments ..
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      use omp_lib
+#endif
+      implicit none    
+      DOUBLE PRECISION DA
+      INTEGER INCX,N
+!*     ..
+      !*     .. Array Arguments ..
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))      
+      !COMPLEX*16 ZX(*)
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+      COMPLEX(16)  ZX(*)
+      !DIR$ ASSUME_ALIGNED ZX:64
+#endif
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,NINCX
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DCMPLX
+!*     ..
+!      IF (N.LE.0 .OR. INCX.LE.0) RETURN
+      IF (INCX.EQ.1) THEN
+!*
+!*        code for increment equal to 1
+         !*
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+         !$OMP SIMD ALIGNED(ZX:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ VECTOR ALIGNED
+         !DIR$ SIMD
+#endif
+         DO I = 1,N
+            ZX(I) = DCMPLX(DA,0.0d0)*ZX(I)
+         END DO
+      ELSE
+!*
+!*        code for increment not equal to 1
+!*
+         NINCX = N*INCX
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+         !$OMP SIMD ALIGNED(ZX:64)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ VECTOR ALIGNED
+         !DIR$ SIMD
+#endif
+         DO I = 1,NINCX,INCX
+            ZX(I) = DCMPLX(DA,0.0d0)*ZX(I)
+         END DO
+      END IF
+    
+END SUBROUTINE
