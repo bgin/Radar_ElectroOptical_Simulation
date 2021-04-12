@@ -1,4 +1,9 @@
 
+
+#if !defined(__GMS_LAPACK_USE_OMP__)
+#defined __GMS_LAPACK_USE_OMP__ 1
+#endif
+  
 #if 0
 
 *
@@ -73,26 +78,26 @@ DOUBLE PRECISION FUNCTION ZLANGE(NORM, M, N, A, LDA, WORK) !GCC$ ATTRIBUTES HOT 
 !*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 !*     December 2016
     !*
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
     use omp_lib
-#endif
+
       IMPLICIT NONE
 !*     .. Scalar Arguments ..
       CHARACTER          NORM
       INTEGER            LDA, M, N
 !*     ..
       !*     .. Array Arguments ..
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      
       !DOUBLE PRECISION   WORK( * )
       !COMPLEX*16         A( LDA, * )
       DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
       COMPLEX(16),      DIMENSION(:,:), ALLOCATABLE :: A
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-      DOUBLE PRECISION  WORK(*)
-      COMPLEX*16         A( LDA, * )
-      !DIR$ ASSUME_ALIGNED WORK:64
-      !DIR$ ASSUME_ALIGNED A:64
-#endif
+!#elif defined(__ICC) || defined(__INTEL_COMPILER)
+!      DOUBLE PRECISION  WORK(*)
+!      COMPLEX*16         A( LDA, * )
+!      !DIR$ ASSUME_ALIGNED WORK:64
+!      !DIR$ ASSUME_ALIGNED A:64
+!#endif
 !*     ..
 !*
 !* =====================================================================
@@ -138,14 +143,12 @@ DOUBLE PRECISION FUNCTION ZLANGE(NORM, M, N, A, LDA, WORK) !GCC$ ATTRIBUTES HOT 
 !*        Find norm1(A).
 !*
          VALUE = ZERO
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,SUM)
+#endif
          DO 40 J = 1, N
             SUM = ZERO
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-            !$OMP SIMD REDUCTION(+:SUM) ALIGNED(A:64)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD REDUCTION(+:SUM)
-#endif
+            !$OMP SIMD REDUCTION(+:SUM) ALIGNED(A:64) LINEAR(I:1)
             DO 30 I = 1, M
                SUM = SUM + ABS( A( I, J ) )
    30       CONTINUE
@@ -155,22 +158,16 @@ DOUBLE PRECISION FUNCTION ZLANGE(NORM, M, N, A, LDA, WORK) !GCC$ ATTRIBUTES HOT 
 !*
 !*        Find normI(A).
          !*
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-            !$OMP SIMD ALIGNED(WORK:64) LINEAR(I:1)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD LINEAR(I:1)
-#endif
+
+         !$OMP SIMD ALIGNED(WORK:64) LINEAR(I:1)
          DO 50 I = 1, M
             WORK( I ) = ZERO
-   50    CONTINUE
+50       CONTINUE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif            
          DO 70 J = 1, N
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
             !$OMP SIMD REDUCTION(+:WORK) ALIGNED(WORK:64,A:64)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD REDUCTION(+:WORK) LINEAR(I:1)
-#endif        
             DO 60 I = 1, M
                WORK( I ) = WORK( I ) + ABS( A( I, J ) )
    60       CONTINUE
@@ -482,23 +479,23 @@ SUBROUTINE ZLACPY(UPLO, M, N, A, LDA, B, LDB) !GCC$ ATTRIBUTES hot :: ZLACPY !GC
 !*     December 2016
 !*
     !*     .. Scalar Arguments ..
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
       use omp_lib
-#endif
+
       implicit none
       CHARACTER          UPLO
       INTEGER            LDA, LDB, M, N
 !*     ..
       !*     .. Array Arguments ..
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))      
+  
       !COMPLEX*16         A( LDA, * ), B( LDB, * )
       COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
       COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: B
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-      COMPLEX*16         A( LDA, * ), B( LDB, * )
-      !DIR$ ASSUME_ALIGNED A:64
-      !DIR$ ASSUME_ALIGNED B:64
-#endif
+!#elif defined(__ICC) || defined(__INTEL_COMPILER)
+!      COMPLEX*16         A( LDA, * ), B( LDB, * )
+!      !DIR$ ASSUME_ALIGNED A:64
+!      !DIR$ ASSUME_ALIGNED B:64
+!#endif
 !*     ..
 !*
 !*  =====================================================================
@@ -516,40 +513,34 @@ SUBROUTINE ZLACPY(UPLO, M, N, A, LDA, B, LDB) !GCC$ ATTRIBUTES hot :: ZLACPY !GC
 !*     .. Executable Statements ..
 !*
       IF( LSAME( UPLO, 'U' ) ) THEN
-         DO 20 J = 1, N
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-            !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD LINEAR(I:1)
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
 #endif
+         DO 20 J = 1, N
+            !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
             DO 10 I = 1, MIN( J, M )
                B( I, J ) = A( I, J )
    10       CONTINUE
    20    CONTINUE
 !*
-      ELSE IF( LSAME( UPLO, 'L' ) ) THEN
+        ELSE IF( LSAME( UPLO, 'L' ) ) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif               
          DO 40 J = 1, N
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
             !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD LINEAR(I:1)
-#endif            
             DO 30 I = J, M
                B( I, J ) = A( I, J )
    30       CONTINUE
    40    CONTINUE
 !*
-      ELSE
+        ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                 
          DO 60 J = 1, N
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
             !$OMP SIMD ALIGNED(B:64,A:64) LINEAR(I:1)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-            !DIR$ VECTOR ALIGNED
-            !DIR$ SIMD LINEAR(I:1)
-#endif            
-            DO 50 I = 1, M
+           DO 50 I = 1, M
                B( I, J ) = A( I, J )
    50       CONTINUE
    60    CONTINUE
@@ -883,9 +874,9 @@ SUBROUTINE ZSCAL(N,ZA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZSCAL !GCC$ ATTRIBUTES
     !DIR$ OPTIMIZE : 3
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZSCAL
 #endif
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
     use omp_lib
-#endif
+
      implicit none
 !*
 !*  -- Reference BLAS level1 routine (version 3.8.0) --
@@ -898,13 +889,13 @@ SUBROUTINE ZSCAL(N,ZA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZSCAL !GCC$ ATTRIBUTES
       INTEGER INCX,N
 !*     ..
       !*     .. Array Arguments ..
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
       !COMPLEX*16 ZX(*)
       COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-      COMPLEX(16) ZX(*)
-      !DIR$ ASSUME_ALIGNED ZX:64
-#endif
+!#elif defined(__ICC) || defined(__INTEL_COMPILER)
+!      COMPLEX(16) ZX(*)
+!      !DIR$ ASSUME_ALIGNED ZX:64
+!#endif
 !*     ..
 !*
 !*  =====================================================================
@@ -931,12 +922,8 @@ SUBROUTINE ZSCAL(N,ZA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZSCAL !GCC$ ATTRIBUTES
 !*        code for increment not equal to 1
 !*
          NINCX = N*INCX
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
          !$OMP SIMD ALIGNED(ZX:64)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-         !DIR$ VECTOR ALIGNED
-         !DIR$ SIMD
-#endif         
          DO I = 1,NINCX,INCX
             ZX(I) = ZA*ZX(I)
          END DO
@@ -969,13 +956,10 @@ SUBROUTINE ZDSCAL(N,DA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZDSCAL !GCC$ ATTRIBUT
       INTEGER INCX,N
 !*     ..
       !*     .. Array Arguments ..
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))      
+    
       !COMPLEX*16 ZX(*)
       COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-      COMPLEX(16)  ZX(*)
-      !DIR$ ASSUME_ALIGNED ZX:64
-#endif
+
 !*     ..
 !*
 !*  =====================================================================
@@ -991,12 +975,8 @@ SUBROUTINE ZDSCAL(N,DA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZDSCAL !GCC$ ATTRIBUT
 !*
 !*        code for increment equal to 1
          !*
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
          !$OMP SIMD ALIGNED(ZX:64) LINEAR(I:1)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-         !DIR$ VECTOR ALIGNED
-         !DIR$ SIMD
-#endif
          DO I = 1,N
             ZX(I) = DCMPLX(DA,0.0d0)*ZX(I)
          END DO
@@ -1005,15 +985,756 @@ SUBROUTINE ZDSCAL(N,DA,ZX,INCX) !GCC$ ATTRIBUTES INLINE :: ZDSCAL !GCC$ ATTRIBUT
 !*        code for increment not equal to 1
 !*
          NINCX = N*INCX
-#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
          !$OMP SIMD ALIGNED(ZX:64)
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-         !DIR$ VECTOR ALIGNED
-         !DIR$ SIMD
-#endif
          DO I = 1,NINCX,INCX
             ZX(I) = DCMPLX(DA,0.0d0)*ZX(I)
          END DO
       END IF
     
+END SUBROUTINE
+
+    
+! Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16OTHERauxiliary
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLASET(UPLO, M, N, ALPHA, BETA, A, LDA) !GCC$ ATTRIBUTES hot :: ZLASET !GCC$ ATTRIBUTES aligned(32) :: ZLASET !GCC$ ATTRIBUTES no_stack_protector :: ZLASET
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZLASET(UPLO, M, N, ALPHA, BETA, A, LDA)
+  !DIR$ ATTRIBUTES FORCEINLINE :: ZLASET
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLASET
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZLASET
+#endif
+
+    use omp_lib
+
+       implicit none
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          UPLO
+      INTEGER            LDA, M, N
+      COMPLEX*16         ALPHA, BETA
+!*     ..
+      !*     .. Array Arguments ..
+
+      !COMPLEX*16         A( LDA, * )
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+!#elif defined(__ICC) || defined(__INTEL_COMPILER)
+!      COMPLEX(16), DIMENSION(LDA,*) :: A
+!      !DIR$ ASSUME_ALIGNED A:64
+!#endif
+!*     ..
+!!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER            I, J
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( LSAME( UPLO, 'U' ) ) THEN
+!*
+!*        Set the diagonal to BETA and the strictly upper triangular
+!*        part of the array to ALPHA.
+         !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif
+         DO 20 J = 2, N
+            !$OMP SIMD ALIGNED(A:64) LINEAR(I:1)
+            DO 10 I = 1, MIN( J-1, M )
+               A( I, J ) = ALPHA
+   10       CONTINUE
+   20    CONTINUE
+         DO 30 I = 1, MIN( N, M )
+            A( I, I ) = BETA
+   30    CONTINUE
+!*
+      ELSE IF( LSAME( UPLO, 'L' ) ) THEN
+!*
+!*        Set the diagonal to BETA and the strictly lower triangular
+!*        part of the array to ALPHA.
+         !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif
+         DO 50 J = 1, MIN( M, N )
+            !$OMP SIMD ALIGNED(A:64) LINEAR(I:1)
+            DO 40 I = J + 1, M
+               A( I, J ) = ALPHA
+   40       CONTINUE
+   50    CONTINUE
+         DO 60 I = 1, MIN( N, M )
+            A( I, I ) = BETA
+   60    CONTINUE
+!*
+      ELSE
+!*
+!*        Set the array to BETA on the diagonal and ALPHA on the
+!*        offdiagonal.
+         !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif
+         DO 80 J = 1, N
+            !$OMP SIMD ALIGNED(A:64) LINEAR(I:1)
+            DO 70 I = 1, M
+               A( I, J ) = ALPHA
+   70       CONTINUE
+   80    CONTINUE
+         DO 90 I = 1, MIN( M, N )
+            A( I, I ) = BETA
+   90    CONTINUE
+      END IF
+
+END SUBROUTINE
+
+#if 0
+*  Arguments:
+*  ==========
+*
+*> \param[in] SIDE
+*> \verbatim
+*>          SIDE is CHARACTER*1
+*>          = 'L': form P * C
+*>          = 'R': form C * P
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix C.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix C.
+*> \endverbatim
+*>
+*> \param[in] V
+*> \verbatim
+*>          V is COMPLEX*16 array, dimension
+*>                  (1 + (M-1)*abs(INCV)) if SIDE = 'L'
+*>                  (1 + (N-1)*abs(INCV)) if SIDE = 'R'
+*>          The vector v in the representation of P. V is not used
+*>          if TAU = 0.
+*> \endverbatim
+*>
+*> \param[in] INCV
+*> \verbatim
+*>          INCV is INTEGER
+*>          The increment between elements of v. INCV <> 0
+*> \endverbatim
+*>
+*> \param[in] TAU
+*> \verbatim
+*>          TAU is COMPLEX*16
+*>          The value tau in the representation of P.
+*> \endverbatim
+*>
+*> \param[in,out] C1
+*> \verbatim
+*>          C1 is COMPLEX*16 array, dimension
+*>                         (LDC,N) if SIDE = 'L'
+*>                         (M,1)   if SIDE = 'R'
+*>          On entry, the n-vector C1 if SIDE = 'L', or the m-vector C1
+*>          if SIDE = 'R'.
+*>
+*>          On exit, the first row of P*C if SIDE = 'L', or the first
+*>          column of C*P if SIDE = 'R'.
+*> \endverbatim
+*>
+*> \param[in,out] C2
+*> \verbatim
+*>          C2 is COMPLEX*16 array, dimension
+*>                         (LDC, N)   if SIDE = 'L'
+*>                         (LDC, N-1) if SIDE = 'R'
+*>          On entry, the (m - 1) x n matrix C2 if SIDE = 'L', or the
+*>          m x (n - 1) matrix C2 if SIDE = 'R'.
+*>
+*>          On exit, rows 2:m of P*C if SIDE = 'L', or columns 2:m of C*P
+*>          if SIDE = 'R'.
+*> \endverbatim
+*>
+*> \param[in] LDC
+*> \verbatim
+*>          LDC is INTEGER
+*>          The leading dimension of the arrays C1 and C2.
+*>          LDC >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX*16 array, dimension
+*>                      (N) if SIDE = 'L'
+*>                      (M) if SIDE = 'R'
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date December 2016
+*
+*> \ingroup complex16OTHERcomputational
+*
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLATZM(SIDE, M, N, V, INCV, TAU, C1, C2, LDC, WORK) !GCC$ ATTRIBUTES hot :: ZLATZM !GCC$ ATTRIBUTES aligned(32) :: ZLATZM !GCC$ ATTRIBUTES no_stack_protector :: ZLATZM
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZLATZM(SIDE, M, N, V, INCV, TAU, C1, C2, LDC, WORK)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLATZM
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: ZLATZM
+#endif
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+  !*     .. Scalar Arguments ..
+      implicit none
+      CHARACTER          SIDE
+      INTEGER            INCV, LDC, M, N
+      COMPLEX*16         TAU
+!*     ..
+!*     .. Array Arguments ..
+      COMPLEX*16         C1( LDC, * ), C2( LDC, * ), V( * ), WORK( * )
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16         ONE, ZERO
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ), &
+                         ZERO = ( 0.0D+0, 0.0D+0 ) )
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           ZAXPY, ZCOPY, ZGEMV, ZGERC, ZGERU, ZLACGV
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( ( MIN( M, N ).EQ.0 ) .OR. ( TAU.EQ.ZERO ) ) &
+          RETURN
+!*
+      IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*        w :=  ( C1 + v**H * C2 )**H
+!*
+         CALL ZCOPY( N, C1, LDC, WORK, 1 )
+         CALL ZLACGV( N, WORK, 1 )
+         CALL ZGEMV( 'Conjugate transpose', M-1, N, ONE, C2, LDC, V, &
+                    INCV, ONE, WORK, 1 )
+!*
+!*        [ C1 ] := [ C1 ] - tau* [ 1 ] * w**H
+!*        [ C2 ]    [ C2 ]        [ v ]
+!*
+         CALL ZLACGV( N, WORK, 1 )
+         CALL ZAXPY( N, -TAU, WORK, 1, C1, LDC )
+         CALL ZGERU( M-1, N, -TAU, V, INCV, WORK, 1, C2, LDC )
+!*
+      ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*        w := C1 + C2 * v
+!*
+         CALL ZCOPY( M, C1, 1, WORK, 1 )
+         CALL ZGEMV( 'No transpose', M, N-1, ONE, C2, LDC, V, INCV, ONE, &
+                     WORK, 1 )
+!*
+!*        [ C1, C2 ] := [ C1, C2 ] - tau* w * [ 1 , v**H]
+!*
+         CALL ZAXPY( M, -TAU, WORK, 1, C1, 1 )
+         CALL ZGERC( M, N-1, -TAU, WORK, 1, V, INCV, C2, LDC )
+      END IF
+!*
+END SUBROUTINE
+
+#if 0
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date November 2017
+*
+*> \ingroup complex16_blas_level1
+*
+*> \par Further Details:
+*  =====================
+*>
+*> \verbatim
+*>
+*>     jack dongarra, linpack, 4/11/78.
+*>     modified 12/3/93, array(1) declarations changed to array(*)
+*> \endverbatim
+*>
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZCOPY(N,ZX,INCX,ZY,INCY) !GCC$ ATTRIBUTES inline :: ZCOPY !GCC$ ATTRIBUTES aligned(32) :: ZCOPY
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZCOPY(N,ZX,INCX,ZY,INCY)
+    !DIR$ ATTRIBUTES FORCEINLINE :: ZCOPY
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZCOPY
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZCOPY
+
+#endif
+        use omp_lib
+       implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      INTEGER INCX,INCY,N
+!*     ..
+!*     .. Array Arguments ..
+      ! COMPLEX*16 ZX(*),ZY(*)
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZY
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,IX,IY
+!*     ..
+      IF (N.LE.0) RETURN
+      IF (INCX.EQ.1 .AND. INCY.EQ.1) THEN
+!*
+!*        code for both increments equal to 1
+         !*
+         !$OMP SIMD ALIGNED(ZY:64,ZX) LINEAR(I:1)
+         DO I = 1,N
+          ZY(I) = ZX(I)
+         END DO
+      ELSE
+!*
+!*        code for unequal increments or equal increments
+!*          not equal to 1
+!*
+         IX = 1
+         IY = 1
+         IF (INCX.LT.0) IX = (-N+1)*INCX + 1
+         IF (INCY.LT.0) IY = (-N+1)*INCY + 1
+         !$OMP SIMD ALIGNED(ZY:64,ZY) 
+         DO I = 1,N
+            ZY(IY) = ZX(IX)
+            IX = IX + INCX
+            IY = IY + INCY
+         END DO
+      END IF     
+END SUBROUTINE
+
+#if 0
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date November 2017
+*
+*> \ingroup complex16_blas_level1
+*
+*> \par Further Details:
+*  =====================
+*>
+*> \verbatim
+*>
+*>     jack dongarra, 3/11/78.
+*>     modified 12/3/93, array(1) declarations changed to array(*)
+*> \endverbatim
+*>
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZAXPY(N,ZA,ZX,INCX,ZY,INCY) !GCC$ ATTRIBUTES INLINE :: ZAXPY !GCC$ ATTRIBUTES aligned(32) :: ZAXPY
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZAXPY(N,ZA,ZX,INCX,ZY,INCY)
+ !DIR$ ATTRIBUTES FORCEINLINE :: ZCOPY
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZCOPY
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZCOPY
+#endif
+       use omp_lib
+       implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      COMPLEX*16 ZA
+      INTEGER INCX,INCY,N
+!*     ..
+!*     .. Array Arguments ..
+      !      COMPLEX*16 ZX(*),ZY(*)
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZX
+      COMPLEX(16), DIMENSION(:), ALLOCATABLE :: ZY
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,IX,IY
+!*     ..
+!*     .. External Functions ..
+      !DOUBLE PRECISION DCABS1
+      !EXTERNAL DCABS1
+!*     ..
+      
+      IF (DCABS1(ZA).EQ.0.0d0) RETURN
+      IF (INCX.EQ.1 .AND. INCY.EQ.1) THEN
+!*
+!*        code for both increments equal to 1
+         !*
+         !$OMP SIMD ALIGNED(ZY:64,ZX) LINEAR(I:1)
+         DO I = 1,N
+            ZY(I) = ZY(I) + ZA*ZX(I)
+         END DO
+      ELSE
+!*
+!*        code for unequal increments or equal increments
+!*          not equal to 1
+!*
+         IX = 1
+         IY = 1
+         IF (INCX.LT.0) IX = (-N+1)*INCX + 1
+         IF (INCY.LT.0) IY = (-N+1)*INCY + 1
+         !$OMP SIMD ALIGNED(ZY:64,ZX)
+         DO I = 1,N
+            ZY(IY) = ZY(IY) + ZA*ZX(IX)
+            IX = IX + INCX
+            IY = IY + INCY
+         END DO
+      END IF
+END SUBROUTINE
+   
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*  =====================================================================
+      DOUBLE PRECISION FUNCTION DCABS1(Z)
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      COMPLEX*16 Z
+!*     ..
+!*     ..
+!*  =====================================================================
+!*
+!*     .. Intrinsic Functions ..
+      INTRINSIC ABS,DBLE,DIMAG
+      DCABS1 = ABS(DBLE(Z)) + ABS(DIMAG(Z))
+END FUNCTION     
+
+#if 0
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee
+*> \author Univ. of California Berkeley
+*> \author Univ. of Colorado Denver
+*> \author NAG Ltd.
+*
+*> \date December 2016
+*
+*> \ingroup complex16_blas_level2
+*
+*> \par Further Details:
+*  =====================
+*>
+*> \verbatim
+*>
+*>  Level 2 Blas routine.
+*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+*>
+*>  -- Written on 22-October-1986.
+*>     Jack Dongarra, Argonne National Lab.
+*>     Jeremy Du Croz, Nag Central Office.
+*>     Sven Hammarling, Nag Central Office.
+*>     Richard Hanson, Sandia National Labs.
+*> \endverbatim
+*>
+*  =====================================================================
+#endif
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: ZGEMV !GCC$ ATTRIBUTES aligned(32) :: ZGEMV !GCC$ ATTRIBUTES no_stack_protector :: ZGEMV
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZGEMV
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZGEMV
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      COMPLEX*16 ALPHA,BETA
+      INTEGER INCX,INCY,LDA,M,N
+      CHARACTER TRANS
+!*     ..
+!*     .. Array Arguments ..
+      ! COMPLEX*16 A(LDA,*),X(*),Y(*)
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: X
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16 ONE
+      PARAMETER (ONE= (1.0D+0,0.0D+0))
+      COMPLEX*16 ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+!*     ..
+!*     .. Local Scalars ..
+      COMPLEX*16 TEMP
+      INTEGER I,INFO,IX,IY,J,JX,JY,KX,KY,LENX,LENY
+      LOGICAL NOCONJ
+!*     ..
+!*     .. External Functions ..
+      LOGICAL LSAME
+      EXTERNAL LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DCONJG,MAX
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+!      INFO = 0
+!      IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
+!     +    .NOT.LSAME(TRANS,'C')) THEN
+!          INFO = 1
+!      ELSE IF (M.LT.0) THEN
+!          INFO = 2
+!      ELSE IF (N.LT.0) THEN
+!          INFO = 3
+!      ELSE IF (LDA.LT.MAX(1,M)) THEN
+!          INFO = 6
+!      ELSE IF (INCX.EQ.0) THEN
+!          INFO = 8
+!      ELSE IF (INCY.EQ.0) THEN
+!          INFO = 11
+!      END IF
+!      IF (INFO.NE.0) THEN
+!!          CALL XERBLA('ZGEMV ',INFO)
+!          RETURN
+!      END IF
+!*
+!*     Quick return if possible.
+!*
+!      IF ((M.EQ.0) .OR. (N.EQ.0) .OR.
+!     +    ((ALPHA.EQ.ZERO).AND. (BETA.EQ.ONE))) RETURN
+!*
+      NOCONJ = LSAME(TRANS,'T')
+!*
+!*     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+!*     up the start points in  X  and  Y.
+!*
+      IF (LSAME(TRANS,'N')) THEN
+          LENX = N
+          LENY = M
+      ELSE
+          LENX = M
+          LENY = N
+      END IF
+      IF (INCX.GT.0) THEN
+          KX = 1
+      ELSE
+          KX = 1 - (LENX-1)*INCX
+      END IF
+      IF (INCY.GT.0) THEN
+          KY = 1
+      ELSE
+          KY = 1 - (LENY-1)*INCY
+      END IF
+!*
+!*     Start the operations. In this version the elements of A are
+!*     accessed sequentially with one pass through A.
+!*
+!*     First form  y := beta*y.
+!*
+      IF (BETA.NE.ONE) THEN
+          IF (INCY.EQ.1) THEN
+             IF (BETA.EQ.ZERO) THEN
+                 !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+                  DO 10 I = 1,LENY
+                      Y(I) = ZERO
+   10             CONTINUE
+             ELSE
+                  !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)    
+                  DO 20 I = 1,LENY
+                      Y(I) = BETA*Y(I)
+   20             CONTINUE
+              END IF
+          ELSE
+              IY = KY
+              IF (BETA.EQ.ZERO) THEN
+                  !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+                  DO 30 I = 1,LENY
+                      Y(IY) = ZERO
+                      IY = IY + INCY
+   30             CONTINUE
+              ELSE
+                  !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)    
+                  DO 40 I = 1,LENY
+                      Y(IY) = BETA*Y(IY)
+                      IY = IY + INCY
+   40             CONTINUE
+              END IF
+          END IF
+      END IF
+      IF (ALPHA.EQ.ZERO) RETURN
+      IF (LSAME(TRANS,'N')) THEN
+!*
+!*        Form  y := alpha*A*x + y.
+!*
+          JX = KX
+          IF (INCY.EQ.1) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,JX)
+#endif
+              DO 60 J = 1,N
+                 TEMP = ALPHA*X(JX)
+                  !$OMP SIMD ALIGNED(Y:64,A) LINEAR(I:1)
+                  DO 50 I = 1,M
+                      Y(I) = Y(I) + TEMP*A(I,J)
+   50             CONTINUE
+                  JX = JX + INCX
+   60         CONTINUE
+          ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,IY,JX)
+#endif                  
+              DO 80 J = 1,N
+                  TEMP = ALPHA*X(JX)
+                  IY = KY
+                  !$OMP SIMD ALIGNED(Y:64,A) LINEAR(I:1) UNROLL PARTIAL(10)
+                  DO 70 I = 1,M
+                      Y(IY) = Y(IY) + TEMP*A(I,J)
+                      IY = IY + INCY
+   70             CONTINUE
+                  JX = JX + INCX
+   80         CONTINUE
+          END IF
+      ELSE
+!*
+!*        Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
+!*
+          JY = KY
+          IF (INCX.EQ.1) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,JY)
+#endif                 
+              DO 110 J = 1,N
+                  TEMP = ZERO
+                  IF (NOCONJ) THEN
+                      !$OMP SIMD ALIGNED(Y:64,A) REDUCTION(+:TEMP) UNROLL PARTIAL(10)
+                      DO 90 I = 1,M
+                          TEMP = TEMP + A(I,J)*X(I)
+   90                 CONTINUE
+                  ELSE
+                      !$OMP SIMD ALIGNED(Y:64,A) LINEAR(I:1) REDUCTION(+:TEMP)  UNROLL PARTIAL(10)    
+                      DO 100 I = 1,M
+                          TEMP = TEMP + DCONJG(A(I,J))*X(I)
+  100                 CONTINUE
+                  END IF
+                  Y(JY) = Y(JY) + ALPHA*TEMP
+                  JY = JY + INCY
+  110         CONTINUE
+           ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,JY,IX,JY)
+#endif                     
+              DO 140 J = 1,N
+                  TEMP = ZERO
+                  IX = KX
+                  IF (NOCONJ) THEN
+                       !$OMP SIMD ALIGNED(Y:64,A) REDUCTION(+:TEMP) UNROLL PARTIAL(10)
+                      DO 120 I = 1,M
+                          TEMP = TEMP + A(I,J)*X(IX)
+                          IX = IX + INCX
+  120                 CONTINUE
+                  ELSE
+                      !$OMP SIMD ALIGNED(Y:64,A) REDUCTION(+:TEMP) UNROLL PARTIAL(10)    
+                      DO 130 I = 1,M
+                          TEMP = TEMP + DCONJG(A(I,J))*X(IX)
+                          IX = IX + INCX
+  130                 CONTINUE
+                  END IF
+                  Y(JY) = Y(JY) + ALPHA*TEMP
+                  JY = JY + INCY
+  140         CONTINUE
+          END IF
+      END IF
+
 END SUBROUTINE
