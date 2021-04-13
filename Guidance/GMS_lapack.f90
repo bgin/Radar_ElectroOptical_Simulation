@@ -1626,7 +1626,12 @@ SUBROUTINE ZGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
       IF (BETA.NE.ONE) THEN
           IF (INCY.EQ.1) THEN
              IF (BETA.EQ.ZERO) THEN
-                 !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+                !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+                !DIR$ VECTOR ALIGNED
+                !DIR$ VECTOR NONTEMPORAL
+#endif
                   DO 10 I = 1,LENY
                       Y(I) = ZERO
    10             CONTINUE
@@ -1639,7 +1644,12 @@ SUBROUTINE ZGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
           ELSE
               IY = KY
               IF (BETA.EQ.ZERO) THEN
-                  !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+                !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+                !DIR$ VECTOR ALIGNED
+                !DIR$ VECTOR NONTEMPORAL
+#endif                  
                   DO 30 I = 1,LENY
                       Y(IY) = ZERO
                       IY = IY + INCY
@@ -1738,3 +1748,1665 @@ SUBROUTINE ZGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
       END IF
 
 END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+!*>     Richard Hanson, Sandia National Labs.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZGERC(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES hot :: ZGERC !GCC$ ATTRIBUTES aligned(32) :: ZGERC !GCC$ ATTRIBUTES no_stack_protector :: ZGERC
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZGERC(M,N,ALPHA,X,INCX,Y,INCY,A,LDA)
+    !DIR$ ATTRIBUTES FORCEINLINE :: ZGERC
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZGERC
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZGERC
+#endif
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+    !*     .. Scalar Arguments ..
+      use omp_lib
+      implicit none
+      COMPLEX*16 ALPHA
+      INTEGER INCX,INCY,LDA,M,N
+!*     ..
+!*     .. Array Arguments ..
+      ! COMPLEX*16 A(LDA,*),X(*),Y(*)
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: X
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16 ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+!*     ..
+!*     .. Local Scalars ..
+      COMPLEX*16 TEMP
+      INTEGER I,INFO,IX,J,JY,KX
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DCONJG,MAX
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+!      INFO = 0
+!!      IF (M.LT.0) THEN
+!          INFO = 1
+!      ELSE IF (N.LT.0) THEN
+!          INFO = 2
+!      ELSE IF (INCX.EQ.0) THEN
+!          INFO = 5
+!      ELSE IF (INCY.EQ.0) THEN
+!          INFO = 7
+!      ELSE IF (LDA.LT.MAX(1,M)) THEN
+!          INFO = 9
+!      END IF
+!      IF (INFO.NE.0) THEN
+!          CALL XERBLA('ZGERC ',INFO)
+!          RETURN
+!      END IF
+!*
+!*     Quick return if possible. 
+!*
+!      IF ((M.EQ.0) .OR. (N.EQ.0) .OR. (ALPHA.EQ.ZERO)) RETURN
+!*
+!*     Start the operations. In this version the elements of A are
+!*     accessed sequentially with one pass through A.
+!*
+      IF (INCY.GT.0) THEN
+          JY = 1
+      ELSE
+          JY = 1 - (N-1)*INCY
+      END IF
+      IF (INCX.EQ.1) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO DEFAULT(SHARED) SCHEDULE(STATIC) PRIVATE(J,TEMP,JY)
+#endif
+          DO 20 J = 1,N
+              IF (Y(JY).NE.ZERO) THEN
+                 TEMP = ALPHA*DCONJG(Y(JY))
+                  !$OMP SIMD ALIGNED(A:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                  DO 10 I = 1,M
+                      A(I,J) = A(I,J) + X(I)*TEMP
+   10             CONTINUE
+              END IF
+              JY = JY + INCY
+   20     CONTINUE
+      ELSE
+          IF (INCX.GT.0) THEN
+              KX = 1
+          ELSE
+              KX = 1 - (M-1)*INCX
+          END IF
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO DEFAULT(SHARED) SCHEDULE(STATIC) PRIVATE(J,TEMP,JY,IX)
+#endif           
+          DO 40 J = 1,N
+              IF (Y(JY).NE.ZERO) THEN
+                  TEMP = ALPHA*DCONJG(Y(JY))
+                  IX = KX
+                  !$OMP SIMD ALIGNED(A:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                  DO 30 I = 1,M
+                      A(I,J) = A(I,J) + X(IX)*TEMP
+                      IX = IX + INCX
+   30             CONTINUE
+              END IF
+              JY = JY + INCY
+   40     CONTINUE
+      END IF
+
+END SUBROUTINE
+
+    
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+!*>     Richard Hanson, Sandia National Labs.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZGERU(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES hot :: ZGERU !GCC$ ATTRIBUTES aligned(32) :: ZGERU !GCC$ ATTRIBUTES no_stack_protector
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZGERU(M,N,ALPHA,X,INCX,Y,INCY,A,LDA)
+ !DIR$ ATTRIBUTES FORCEINLINE :: ZGERU
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZGERU
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZGERU
+#endif
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+  !*     .. Scalar Arguments ..
+      use omp_lib
+      implicit none
+      COMPLEX*16 ALPHA
+      INTEGER INCX,INCY,LDA,M,N
+!*     ..
+!*     .. Array Arguments ..
+      ! COMPLEX*16 A(LDA,*),X(*),Y(*)
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: X
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16 ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+!*     ..
+!*     .. Local Scalars ..
+      COMPLEX*16 TEMP
+      INTEGER I,INFO,IX,J,JY,KX
+!*     ..
+!*     .. External Subroutines ..
+      EXTERNAL XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC MAX
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+!      INFO = 0
+!      IF (M.LT.0) THEN
+!          INFO = 1
+!      ELSE IF (N.LT.0) THEN
+!          INFO = 2
+!      ELSE IF (INCX.EQ.0) THEN
+!          INFO = 5
+!      ELSE IF (INCY.EQ.0) THEN
+!          INFO = 7
+!      ELSE IF (LDA.LT.MAX(1,M)) THEN
+!          INFO = 9
+!      END IF
+!      IF (INFO.NE.0) THEN
+!!          CALL XERBLA('ZGERU ',INFO)
+!          RETURN
+!      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF ((M.EQ.0) .OR. (N.EQ.0) .OR. (ALPHA.EQ.ZERO)) RETURN
+!*
+!*     Start the operations. In this version the elements of A are
+!*     accessed sequentially with one pass through A. 
+!*
+      IF (INCY.GT.0) THEN
+          JY = 1
+      ELSE
+          JY = 1 - (N-1)*INCY
+      END IF
+      IF (INCX.EQ.1) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,JY)
+#endif
+          DO 20 J = 1,N
+              IF (Y(JY).NE.ZERO) THEN
+                 TEMP = ALPHA*Y(JY)
+                  !$OMP SIMD ALIGNED(A:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                  DO 10 I = 1,M
+                      A(I,J) = A(I,J) + X(I)*TEMP
+   10             CONTINUE
+              END IF
+              JY = JY + INCY
+   20     CONTINUE
+      ELSE
+          IF (INCX.GT.0) THEN
+              KX = 1
+          ELSE
+              KX = 1 - (M-1)*INCX
+          END IF
+#if (__GMS_LAPACK_USE_OMP__) == 1
+         !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP,JY,IX)
+#endif           
+          DO 40 J = 1,N
+              IF (Y(JY).NE.ZERO) THEN
+                  TEMP = ALPHA*Y(JY)
+                  IX = KX
+                   !$OMP SIMD ALIGNED(A:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                  DO 30 I = 1,M
+                      A(I,J) = A(I,J) + X(IX)*TEMP
+                      IX = IX + INCX
+   30             CONTINUE
+              END IF
+              JY = JY + INCY
+   40     CONTINUE
+      END IF
+
+END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16OTHERauxiliary
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLACGV(N, X, INCX) !GCC$ ATTRIBUTES inline :: ZLACGV !GCC$ ATTRIBUTES aligned(32) :: ZLACGV
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+  SUBROUTINE ZLACGV(N,X,INCX)
+ !DIR$ ATTRIBUTES FORCEINLINE :: ZLACGV
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLACGV
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: ZLACGV
+#endif
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INCX, N
+!*     ..
+!*     .. Array Arguments ..
+      COMPLEX*16         X( * )
+!*     ..
+!*
+!* =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER            I, IOFF
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          DCONJG
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF( INCX.EQ.1 ) THEN
+         DO 10 I = 1, N
+            X( I ) = DCONJG( X( I ) )
+   10    CONTINUE
+      ELSE
+         IOFF = 1
+         IF( INCX.LT.0 ) &
+            IOFF = 1 - ( N-1 )*INCX
+         DO 20 I = 1, N
+            X( IOFF ) = DCONJG( X( IOFF ) )
+            IOFF = IOFF + INCX
+   20    CONTINUE
+      END IF
+ 
+END SUBROUTINE
+
+    
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16OTHERcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZUNMQR(SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+     WORK, LWORK, INFO) !GCC$ ATTRIBUTES hot :: ZUNMQR !GCC$ ATTRIBUTES aligned(32) :: ZUNMQR !GCC$ ATTRIBUTES no_stack_protector :: ZUNMQR
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+ SUBROUTINE ZUNMQR(SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+      WORK, LWORK, INFO)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZUNMQR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: ZUNMQR
+#endif
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !COMPLEX*16         A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: C
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: TAU
+      COMPLEX(16), DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      INTEGER            NBMAX, LDT, TSIZE
+      PARAMETER          ( NBMAX = 64, LDT = NBMAX+1, &
+                           TSIZE = LDT*NBMAX )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LEFT, LQUERY, NOTRAN
+      INTEGER            I, I1, I2, I3, IB, IC, IINFO, IWT, JC, LDWORK, &
+                         LWKOPT, MI, NB, NBMIN, NI, NQ, NW
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            ILAENV
+      EXTERNAL           LSAME, ILAENV
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           ZLARFB, ZLARFT, ZUNM2R
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      LQUERY = ( LWORK.EQ.-1 )
+!*
+!*     NQ is the order of Q and NW is the minimum dimension of WORK
+!*
+      IF( LEFT ) THEN
+         NQ = M
+         NW = N
+      ELSE
+         NQ = N
+         NW = M
+      END IF
+!      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+!         INFO = -1
+!      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
+!         INFO = -2
+!      ELSE IF( M.LT.0 ) THEN
+!         INFO = -3
+!      ELSE IF( N.LT.0 ) THEN
+!         INFO = -4
+!      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+!         INFO = -5
+!      ELSE IF( LDA.LT.MAX( 1, NQ ) ) THEN
+!         INFO = -7
+!      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+!         INFO = -10
+!      ELSE IF( LWORK.LT.MAX( 1, NW ) .AND. .NOT.LQUERY ) THEN
+!         INFO = -12
+!      END IF
+!*
+!      IF( INFO.EQ.0 ) THEN
+!*
+!*        Compute the workspace requirements
+!*
+         NB = MIN( NBMAX, ILAENV( 1, 'ZUNMQR', SIDE // TRANS, M, N, K, &
+              -1 ) )
+         LWKOPT = MAX( 1, NW )*NB + TSIZE
+         WORK( 1 ) = LWKOPT
+!      END IF
+!*
+!      IF( INFO.NE.0 ) THEN
+!         CALL XERBLA( 'ZUNMQR', -INFO )
+!!         RETURN
+      IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         RETURN
+      END IF
+
+      NBMIN = 2
+      LDWORK = NW
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+         IF( LWORK.LT.NW*NB+TSIZE ) THEN
+            NB = (LWORK-TSIZE) / LDWORK
+            NBMIN = MAX( 2, ILAENV( 2, 'ZUNMQR', SIDE // TRANS, M, N, K, &
+                    -1 ) )
+         END IF
+      END IF
+!*
+      IF( NB.LT.NBMIN .OR. NB.GE.K ) THEN
+!*
+!*        Use unblocked code
+!*
+         CALL ZUNM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK, &
+                      IINFO )
+      ELSE
+!*
+!*        Use blocked code
+!*
+         IWT = 1 + NW*NB
+         IF( ( LEFT .AND. .NOT.NOTRAN ) .OR.   &
+             ( .NOT.LEFT .AND. NOTRAN ) ) THEN
+            I1 = 1
+            I2 = K
+            I3 = NB
+         ELSE
+            I1 = ( ( K-1 ) / NB )*NB + 1
+            I2 = 1
+            I3 = -NB
+         END IF
+
+         IF( LEFT ) THEN
+            NI = N
+            JC = 1
+         ELSE
+            MI = M
+            IC = 1
+         END IF
+
+         DO 10 I = I1, I2, I3
+            IB = MIN( NB, K-I+1 )
+!*
+!*           Form the triangular factor of the block reflector
+!*           H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+            CALL ZLARFT( 'Forward', 'Columnwise', NQ-I+1, IB, A( I, I ), &
+                         LDA, TAU( I ), WORK( IWT ), LDT )
+            IF( LEFT ) THEN
+!*
+!*              H or H**H is applied to C(i:m,1:n)
+!*
+               MI = M - I + 1
+               IC = I
+            ELSE
+!*
+!*              H or H**H is applied to C(1:m,i:n)
+!*
+               NI = N - I + 1
+               JC = I
+            END IF
+!*
+!*           Apply H or H**H
+!*
+            CALL ZLARFB( SIDE, TRANS, 'Forward', 'Columnwise', MI, NI, &
+                         IB, A( I, I ), LDA, WORK( IWT ), LDT,         &
+                         C( IC, JC ), LDC, WORK, LDWORK )
+   10    CONTINUE
+      END IF
+      WORK( 1 ) = LWKOPT
+END SUBROUTINE
+    
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date June 2013
+!*
+!*> \ingroup complex16OTHERauxiliary
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  The shape of the matrix V and the storage of the vectors which define
+!*>  the H(i) is best illustrated by the following example with n = 5 and
+!*>  k = 3. The elements equal to 1 are not stored; the corresponding
+!*>  array elements are modified but restored on exit. The rest of the
+!*>  array is not used.
+!*>
+!*>  DIRECT = 'F' and STOREV = 'C':         DIRECT = 'F' and STOREV = 'R':
+!*>
+!*>               V = (  1       )                 V = (  1 v1 v1 v1 v1 )
+!*>                   ( v1  1    )                     (     1 v2 v2 v2 )
+!*>                   ( v1 v2  1 )                     (        1 v3 v3 )
+!*>                   ( v1 v2 v3 )
+!*>                   ( v1 v2 v3 )
+!*>
+!*>  DIRECT = 'B' and STOREV = 'C':         DIRECT = 'B' and STOREV = 'R':
+!*>
+!*>               V = ( v1 v2 v3 )                 V = ( v1 v1  1       )
+!*>                   ( v1 v2 v3 )                     ( v2 v2 v2  1    )
+!*>                   (  1 v2 v3 )                     ( v3 v3 v3 v3  1 )
+!*>                   (     1 v3 )
+!*>                   (        1 )
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZLARFB(SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
+  T, LDT, C, LDC, WORK, LDWORK) !GCC$ ATTRIBUTES hot :: ZLARFB !GCC$ ATTRIBUTES aligned(32) :: ZLARFB !GCC$ ATTRIBUTES no_stack_protector :: ZLARFB
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+ SUBROUTINE ZLARFB(SIDE, TRANS, DIRECT, STOREV, M, N, K, V, LDV,
+   T, LDT, C, LDC, WORK, LDWORK)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZLARFB
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZLARFB
+#endif
+       use omp_lib
+       implicit none
+!      *
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     June 2013
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          DIRECT, SIDE, STOREV, TRANS
+      INTEGER            K, LDC, LDT, LDV, LDWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !COMPLEX*16         C( LDC, * ), T( LDT, * ), V( LDV, * ), &
+      !     WORK( LDWORK, * )
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: C
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: T
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: V
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: WORK
+      
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16         ONE
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
+!*     ..
+!*     .. Local Scalars ..
+      CHARACTER          TRANST
+      INTEGER            I, J
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           ZCOPY, ZGEMM, ZLACGV, ZTRMM
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          DCONJG
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Quick return if possible
+!*
+!      IF( M.LE.0 .OR. N.LE.0 )
+!     $   RETURN
+!*
+      IF( LSAME( TRANS, 'N' ) ) THEN
+         TRANST = 'C'
+      ELSE
+         TRANST = 'N'
+      END IF
+!*
+      IF( LSAME( STOREV, 'C' ) ) THEN
+!*
+         IF( LSAME( DIRECT, 'F' ) ) THEN
+!*
+!*           Let  V =  ( V1 )    (first K rows)
+!*                     ( V2 )
+!*           where  V1  is unit lower triangular.
+!*
+            IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*              Form  H * C  or  H**H * C  where  C = ( C1 )
+!*                                                    ( C2 )
+!*
+!*              W := C**H * V  =  (C1**H * V1 + C2**H * V2)  (stored in WORK)
+!*
+!*              W := C1**H
+!*
+               DO 10 J = 1, K
+                  CALL ZCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL ZLACGV( N, WORK( 1, J ), 1 )
+   10          CONTINUE
+!*
+!*              W := W * V1
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'No transpose', 'Unit', N, &
+                           K, ONE, V, LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+!*
+!*                 W := W + C2**H * V2
+!*
+                  CALL ZGEMM( 'Conjugate transpose', 'No transpose', N, &
+                             K, M-K, ONE, C( K+1, 1 ), LDC,            &
+                             V( K+1, 1 ), LDV, ONE, WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T**H  or  W * T
+!*
+               CALL ZTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N, K, &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - V * W**H
+!*
+               IF( M.GT.K ) THEN
+!*
+!*                 C2 := C2 - V2 * W**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose',  &
+                             M-K, N, K, -ONE, V( K+1, 1 ), LDV, WORK, &
+                             LDWORK, ONE, C( K+1, 1 ), LDC )
+               END IF
+!*
+!*              W := W * V1**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'Conjugate transpose',  &
+                           'Unit', N, K, ONE, V, LDV, WORK, LDWORK )
+!*
+!*              C1 := C1 - W**H
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif
+               DO 30 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1)
+                  DO 20 I = 1, N
+                     C( J, I ) = C( J, I ) - DCONJG( WORK( I, J ) )
+   20             CONTINUE
+   30          CONTINUE
+!*
+            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*              Form  C * H  or  C * H**H  where  C = ( C1  C2 )
+!*
+!*              W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK)
+!*
+!*              W := C1
+!*
+               DO 40 J = 1, K
+                  CALL ZCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
+   40          CONTINUE
+!*
+!*              W := W * V1
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'No transpose', 'Unit', M, &
+                          K, ONE, V, LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+!*
+!*                 W := W + C2 * V2
+!*
+                  CALL ZGEMM( 'No transpose', 'No transpose', M, K, N-K, &
+                             ONE, C( 1, K+1 ), LDC, V( K+1, 1 ), LDV,    &
+                             ONE, WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T  or  W * T**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', TRANS, 'Non-unit', M, K, &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - W * V**H
+!*
+               IF( N.GT.K ) THEN
+!*
+!*                 C2 := C2 - W * V2**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose', M,  &
+                             N-K, K, -ONE, WORK, LDWORK, V( K+1, 1 ),    &
+                              LDV, ONE, C( 1, K+1 ), LDC )
+               END IF
+!*
+!*              W := W * V1**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'Conjugate transpose',   &
+                           'Unit', M, K, ONE, V, LDV, WORK, LDWORK )
+!*
+!*              C1 := C1 - W
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif               
+               DO 60 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
+                  DO 50 I = 1, M
+                     C( I, J ) = C( I, J ) - WORK( I, J )
+   50             CONTINUE
+   60          CONTINUE
+            END IF
+
+         ELSE
+!*
+!*           Let  V =  ( V1 )
+!*                     ( V2 )    (last K rows)
+!*           where  V2  is unit upper triangular.
+!*
+            IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*              Form  H * C  or  H**H * C  where  C = ( C1 )
+!*                                                    ( C2 )
+!*
+!*              W := C**H * V  =  (C1**H * V1 + C2**H * V2)  (stored in WORK)
+!*
+!*              W := C2**H
+!*
+               DO 70 J = 1, K
+                  CALL ZCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL ZLACGV( N, WORK( 1, J ), 1 )
+   70          CONTINUE
+!*
+!*              W := W * V2
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'No transpose', 'Unit', N, &
+                           K, ONE, V( M-K+1, 1 ), LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+!*
+!*                 W := W + C1**H * V1
+!*
+                  CALL ZGEMM( 'Conjugate transpose', 'No transpose', N,  &
+                            K, M-K, ONE, C, LDC, V, LDV, ONE, WORK,      &
+                             LDWORK )
+               END IF
+!*
+!*              W := W * T**H  or  W * T
+!*
+               CALL ZTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K,  &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - V * W**H
+!*
+               IF( M.GT.K ) THEN
+!*
+!*                 C1 := C1 - V1 * W**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose',  &
+                             M-K, N, K, -ONE, V, LDV, WORK, LDWORK,   &
+                             ONE, C, LDC )
+               END IF
+!*
+!*              W := W * V2**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'Conjugate transpose',     & 
+                          'Unit', N, K, ONE, V( M-K+1, 1 ), LDV, WORK,  &
+                          LDWORK )
+!*
+!*              C2 := C2 - W**H
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                   
+               DO 90 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1)
+                  DO 80 I = 1, N
+                     C( M-K+J, I ) = C( M-K+J, I ) -   &
+                                     DCONJG( WORK( I, J ) )
+   80             CONTINUE
+   90          CONTINUE
+
+            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*              Form  C * H  or  C * H**H  where  C = ( C1  C2 )
+!*
+!*              W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK)
+!*
+!*              W := C2
+!*
+               DO 100 J = 1, K
+                  CALL ZCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
+  100          CONTINUE
+!*
+!*              W := W * V2
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'No transpose', 'Unit', M,  &
+                           K, ONE, V( N-K+1, 1 ), LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+!*
+!*                 W := W + C1 * V1
+!*
+                  CALL ZGEMM( 'No transpose', 'No transpose', M, K, N-K,  &
+                              ONE, C, LDC, V, LDV, ONE, WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T  or  W * T**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', TRANS, 'Non-unit', M, K, &
+                          ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - W * V**H
+!*
+               IF( N.GT.K ) THEN
+!*
+!*                 C1 := C1 - W * V1**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose', M, &
+                             N-K, K, -ONE, WORK, LDWORK, V, LDV, ONE,   &
+                             C, LDC )
+               END IF
+!*
+!*              W := W * V2**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'Conjugate transpose',   &
+                          'Unit', M, K, ONE, V( N-K+1, 1 ), LDV, WORK, &
+                           LDWORK )
+!*
+!*              C2 := C2 - W
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                   
+               DO 120 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
+                  DO 110 I = 1, M
+                     C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
+  110             CONTINUE
+  120          CONTINUE
+            END IF
+         END IF
+
+      ELSE IF( LSAME( STOREV, 'R' ) ) THEN
+
+         IF( LSAME( DIRECT, 'F' ) ) THEN
+!*
+!*           Let  V =  ( V1  V2 )    (V1: first K columns)
+!*           where  V1  is unit upper triangular.
+!*
+            IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*              Form  H * C  or  H**H * C  where  C = ( C1 )
+!*                                                    ( C2 )
+!*
+!*              W := C**H * V**H  =  (C1**H * V1**H + C2**H * V2**H) (stored in WORK)
+!*
+!*              W := C1**H
+!*
+               DO 130 J = 1, K
+                  CALL ZCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL ZLACGV( N, WORK( 1, J ), 1 )
+  130          CONTINUE
+!*
+!*              W := W * V1**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'Conjugate transpose',  &
+                           'Unit', N, K, ONE, V, LDV, WORK, LDWORK )
+               IF( M.GT.K ) THEN
+!*
+!*                 W := W + C2**H * V2**H
+!*
+                  CALL ZGEMM( 'Conjugate transpose',  &
+                             'Conjugate transpose', N, K, M-K, ONE, & 
+                              C( K+1, 1 ), LDC, V( 1, K+1 ), LDV, ONE, & 
+                              WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T**H  or  W * T
+!*
+               CALL ZTRMM( 'Right', 'Upper', TRANST, 'Non-unit', N, K,  &
+                          ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - V**H * W**H
+!*
+               IF( M.GT.K ) THEN
+!*
+!*                 C2 := C2 - V2**H * W**H
+!*
+                  CALL ZGEMM( 'Conjugate transpose',  &
+                             'Conjugate transpose', M-K, N, K, -ONE, &
+                             V( 1, K+1 ), LDV, WORK, LDWORK, ONE, &
+                             C( K+1, 1 ), LDC )
+               END IF
+!*
+!*              W := W * V1
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'No transpose', 'Unit', N, &
+                           K, ONE, V, LDV, WORK, LDWORK )
+!*
+!*              C1 := C1 - W**H
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                  
+               DO 150 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1)
+                  DO 140 I = 1, N
+                     C( J, I ) = C( J, I ) - DCONJG( WORK( I, J ) )
+  140             CONTINUE
+  150          CONTINUE
+!*
+            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*              Form  C * H  or  C * H**H  where  C = ( C1  C2 )
+!*
+!*              W := C * V**H  =  (C1*V1**H + C2*V2**H)  (stored in WORK)
+!*
+!*              W := C1
+!*
+               DO 160 J = 1, K
+                  CALL ZCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
+  160          CONTINUE
+!*
+!*              W := W * V1**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'Conjugate transpose',  & 
+                           'Unit', M, K, ONE, V, LDV, WORK, LDWORK )
+               IF( N.GT.K ) THEN
+!*
+!*                 W := W + C2 * V2**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose', M, &
+                             K, N-K, ONE, C( 1, K+1 ), LDC,             &
+                             V( 1, K+1 ), LDV, ONE, WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T  or  W * T**H
+!*
+               CALL ZTRMM( 'Right', 'Upper', TRANS, 'Non-unit', M, K, &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - W * V
+!*
+               IF( N.GT.K ) THEN
+!*
+!*                 C2 := C2 - W * V2
+!*
+                  CALL ZGEMM( 'No transpose', 'No transpose', M, N-K, K, &
+                             -ONE, WORK, LDWORK, V( 1, K+1 ), LDV, ONE,  &
+                              C( 1, K+1 ), LDC )
+               END IF
+!*
+!*              W := W * V1
+!*
+               CALL ZTRMM( 'Right', 'Upper', 'No transpose', 'Unit', M, &
+                            K, ONE, V, LDV, WORK, LDWORK )
+!*
+!*              C1 := C1 - W
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                  
+               DO 180 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
+                  DO 170 I = 1, M
+                     C( I, J ) = C( I, J ) - WORK( I, J )
+  170             CONTINUE
+  180          CONTINUE
+
+            END IF
+
+         ELSE
+!*
+!*           Let  V =  ( V1  V2 )    (V2: last K columns)
+!*           where  V2  is unit lower triangular.
+!*
+            IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*              Form  H * C  or  H**H * C  where  C = ( C1 )
+!*                                                    ( C2 )
+!*
+!*              W := C**H * V**H  =  (C1**H * V1**H + C2**H * V2**H) (stored in WORK)
+!*
+!*              W := C2**H
+!*
+               DO 190 J = 1, K
+                  CALL ZCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
+                  CALL ZLACGV( N, WORK( 1, J ), 1 )
+  190          CONTINUE
+!*
+!*              W := W * V2**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'Conjugate transpose',     &
+                          'Unit', N, K, ONE, V( 1, M-K+1 ), LDV, WORK,  &
+                          LDWORK )
+               IF( M.GT.K ) THEN
+!*
+!*                 W := W + C1**H * V1**H
+!*
+                  CALL ZGEMM( 'Conjugate transpose',  &
+                             'Conjugate transpose', N, K, M-K, ONE, C, &
+                              LDC, V, LDV, ONE, WORK, LDWORK )
+               END IF
+!*
+!*              W := W * T**H  or  W * T
+!*
+               CALL ZTRMM( 'Right', 'Lower', TRANST, 'Non-unit', N, K,  &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - V**H * W**H
+!*
+               IF( M.GT.K ) THEN
+!*
+!*                 C1 := C1 - V1**H * W**H
+!*
+                  CALL ZGEMM( 'Conjugate transpose',   &
+                             'Conjugate transpose', M-K, N, K, -ONE, V, &
+                              LDV, WORK, LDWORK, ONE, C, LDC )
+               END IF
+!*
+!*              W := W * V2
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'No transpose', 'Unit', N,  &
+                           K, ONE, V( 1, M-K+1 ), LDV, WORK, LDWORK )
+!*
+!*              C2 := C2 - W**H
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                
+               DO 210 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1)
+                  DO 200 I = 1, N
+                     C( M-K+J, I ) = C( M-K+J, I ) -   &
+                                    DCONJG( WORK( I, J ) )
+  200             CONTINUE
+  210          CONTINUE
+!*
+            ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*              Form  C * H  or  C * H**H  where  C = ( C1  C2 )
+!*
+!*              W := C * V**H  =  (C1*V1**H + C2*V2**H)  (stored in WORK)
+!*
+!*              W := C2
+!*
+               DO 220 J = 1, K
+                  CALL ZCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
+  220          CONTINUE
+!*
+!*              W := W * V2**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'Conjugate transpose',  &
+                         'Unit', M, K, ONE, V( 1, N-K+1 ), LDV, WORK, &
+                           LDWORK )
+               IF( N.GT.K ) THEN
+!*
+!*                 W := W + C1 * V1**H
+!*
+                  CALL ZGEMM( 'No transpose', 'Conjugate transpose', M,  &
+                             K, N-K, ONE, C, LDC, V, LDV, ONE, WORK,  &
+                             LDWORK )
+               END IF
+!*
+!*              W := W * T  or  W * T**H
+!*
+               CALL ZTRMM( 'Right', 'Lower', TRANS, 'Non-unit', M, K,  &
+                           ONE, T, LDT, WORK, LDWORK )
+!*
+!*              C := C - W * V
+!*
+               IF( N.GT.K ) THEN
+!*
+!*                 C1 := C1 - W * V1
+!*
+                  CALL ZGEMM( 'No transpose', 'No transpose', M, N-K, K,  &
+                             -ONE, WORK, LDWORK, V, LDV, ONE, C, LDC )
+               END IF
+!*
+!*              W := W * V2
+!*
+               CALL ZTRMM( 'Right', 'Lower', 'No transpose', 'Unit', M,  &
+                          K, ONE, V( 1, N-K+1 ), LDV, WORK, LDWORK )
+!*
+!*              C1 := C1 - W
+               !*
+#if (__GMS_LAPACK_USE_OMP__) == 1
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J)
+#endif                 
+               DO 240 J = 1, K
+                  !$OMP SIMD ALIGNED(C:64,WORK)
+                  DO 230 I = 1, M
+                     C( I, N-K+J ) = C( I, N-K+J ) - WORK( I, J )
+  230             CONTINUE
+  240          CONTINUE
+
+            END IF
+
+         END IF
+      END IF
+
+END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16_blas_level3
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 3 Blas routine.
+!*>
+!*>  -- Written on 8-February-1989.
+!*>     Jack Dongarra, Argonne National Laboratory.
+!*>     Iain Duff, AERE Harwell.
+!*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
+!*>     Sven Hammarling, Numerical Algorithms Group Ltd.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZTRMM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB) !GCC$ ATTRIBUTES hot :: ZTRMM !GCC$ ATTRIBUTES aligned(32) :: ZTRMM !GCC$ ATTRIBUTES no_stack_protector :: ZTRMM
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+SUBROUTINE ZTRMM(SIDE,UPLO,TRANSA,DIAG,M,N,ALPHA,A,LDA,B,LDB)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ZTRMM
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ZTRMM
+#endif
+       use omp_lib
+       implicit none
+!*
+!*  -- Reference BLAS level3 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      COMPLEX*16 ALPHA
+      INTEGER LDA,LDB,M,N
+      CHARACTER DIAG,SIDE,TRANSA,UPLO
+!*     ..
+!*     .. Array Arguments ..
+      !COMPLEX*16 A(LDA,*),B(LDB,*)
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: A
+      COMPLEX(16), DIMENSION(:,:), ALLOCATABLE :: B
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. External Functions ..
+      LOGICAL LSAME
+      EXTERNAL LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DCONJG,MAX
+!*     ..
+!*     .. Local Scalars ..
+      COMPLEX*16 TEMP
+      INTEGER I,INFO,J,K,NROWA
+      LOGICAL LSIDE,NOCONJ,NOUNIT,UPPER
+!*     ..
+!*     .. Parameters ..
+      COMPLEX*16 ONE
+      PARAMETER (ONE= (1.0D+0,0.0D+0))
+      COMPLEX*16 ZERO
+      PARAMETER (ZERO= (0.0D+0,0.0D+0))
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+      LSIDE = LSAME(SIDE,'L')
+      IF (LSIDE) THEN
+          NROWA = M
+      ELSE
+          NROWA = N
+      END IF
+      NOCONJ = LSAME(TRANSA,'T')
+      NOUNIT = LSAME(DIAG,'N')
+      UPPER = LSAME(UPLO,'U')
+!*
+!      INFO = 0
+!      IF ((.NOT.LSIDE) .AND. (.NOT.LSAME(SIDE,'R'))) THEN
+!          INFO = 1
+!      ELSE IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
+!          INFO = 2
+!      ELSE IF ((.NOT.LSAME(TRANSA,'N')) .AND.
+!     +         (.NOT.LSAME(TRANSA,'T')) .AND.
+!     +         (.NOT.LSAME(TRANSA,'C'))) THEN
+!          INFO = 3
+!      ELSE IF ((.NOT.LSAME(DIAG,'U')) .AND. (.NOT.LSAME(DIAG,'N'))) THEN
+!          INFO = 4
+!      ELSE IF (M.LT.0) THEN
+!          INFO = 5
+ !     ELSE IF (N.LT.0) THEN
+!          INFO = 6
+!      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+!          INFO = 9
+!      ELSE IF (LDB.LT.MAX(1,M)) THEN
+!          INFO = 11
+!      END IF
+!      IF (INFO.NE.0) THEN
+!          CALL XERBLA('ZTRMM ',INFO)
+!          RETURN
+!      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF (M.EQ.0 .OR. N.EQ.0) RETURN
+!*
+!!*     And when  alpha.eq.zero.
+!*
+      IF (ALPHA.EQ.ZERO) THEN
+         DO 20 J = 1,N
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+            !$OMP SIMD ALIGNED(B:64) UNROLL PARTIAL(8) LINEAR(I:1)
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+            !DIR$ VECTOR ALIGNED
+            !DIR$ VECTOR NONTEMPORAL
+#endif
+              DO 10 I = 1,M
+                  B(I,J) = ZERO
+   10         CONTINUE
+   20     CONTINUE
+          RETURN
+      END IF
+!*
+!*     Start the operations.
+!*
+      IF (LSIDE) THEN
+          IF (LSAME(TRANSA,'N')) THEN
+!*
+!*           Form  B := alpha*A*B.
+!*
+             IF (UPPER) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO COLLAPSE(2) SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,K,I,TEMP)
+#endif
+                  DO 50 J = 1,N
+                      DO 40 K = 1,M
+                          IF (B(K,J).NE.ZERO) THEN
+                             TEMP = ALPHA*B(K,J)
+                             !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) UNROLL PARTIAL(10)
+                             DO 30 I = 1,K - 1
+                                  B(I,J) = B(I,J) + TEMP*A(I,K)
+   30                         CONTINUE
+                              IF (NOUNIT) TEMP = TEMP*A(K,K)
+                              B(K,J) = TEMP
+                          END IF
+   40                 CONTINUE
+   50             CONTINUE
+              ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO COLLAPSE(2) SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,K,I,TEMP)
+#endif                          
+                  DO 80 J = 1,N
+                      DO 70 K = M,1,-1
+                          IF (B(K,J).NE.ZERO) THEN
+                              TEMP = ALPHA*B(K,J)
+                              B(K,J) = TEMP
+                              IF (NOUNIT) B(K,J) = B(K,J)*A(K,K)
+                              !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) UNROLL PARTIAL(10)
+                              DO 60 I = K + 1,M
+                                  B(I,J) = B(I,J) + TEMP*A(I,K)
+   60                         CONTINUE
+                          END IF
+   70                 CONTINUE
+   80             CONTINUE
+              END IF
+          ELSE
+!*
+!*           Form  B := alpha*A**T*B   or   B := alpha*A**H*B.
+!*
+             IF (UPPER) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO COLLAPSE(2) SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,K,I,TEMP)
+#endif                    
+                  DO 120 J = 1,N
+                      DO 110 I = M,1,-1
+                          TEMP = B(I,J)
+                          IF (NOCONJ) THEN
+                             IF (NOUNIT) TEMP = TEMP*A(I,I)
+                                !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) REDUCTION(+:TEMP)
+                              DO 90 K = 1,I - 1
+                                  TEMP = TEMP + A(K,I)*B(K,J)
+   90                         CONTINUE
+                          ELSE
+                             IF (NOUNIT) TEMP = TEMP*DCONJG(A(I,I))
+                              !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) REDUCTION(+:TEMP)
+                              DO 100 K = 1,I - 1
+                                  TEMP = TEMP + DCONJG(A(K,I))*B(K,J)
+  100                         CONTINUE
+                          END IF
+                          B(I,J) = ALPHA*TEMP
+  110                 CONTINUE
+  120             CONTINUE
+             ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO COLLAPSE(2) SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,K,I,TEMP)
+#endif                            
+                  DO 160 J = 1,N
+                      DO 150 I = 1,M
+                          TEMP = B(I,J)
+                          IF (NOCONJ) THEN
+                             IF (NOUNIT) TEMP = TEMP*A(I,I)
+                              !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) REDUCTION(+:TEMP)
+                              DO 130 K = I + 1,M
+                                  TEMP = TEMP + A(K,I)*B(K,J)
+  130                         CONTINUE
+                          ELSE
+                             IF (NOUNIT) TEMP = TEMP*DCONJG(A(I,I))
+                               !$OMP SIMD ALIGNED(B:64,A) LINEAR(I:1) REDUCTION(+:TEMP)
+                              DO 140 K = I + 1,M
+                                  TEMP = TEMP + DCONJG(A(K,I))*B(K,J)
+  140                         CONTINUE
+                          END IF
+                          B(I,J) = ALPHA*TEMP
+  150                 CONTINUE
+  160             CONTINUE
+              END IF
+          END IF
+      ELSE
+          IF (LSAME(TRANSA,'N')) THEN
+!*
+!*           Form  B := alpha*B*A.
+!*
+             IF (UPPER) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO  SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP)
+#endif                      
+                  DO 200 J = N,1,-1
+                      TEMP = ALPHA
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                      !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                      DO 170 I = 1,M
+                          B(I,J) = TEMP*B(I,J)
+  170                 CONTINUE
+                      DO 190 K = 1,J - 1
+                          IF (A(K,J).NE.ZERO) THEN
+                             TEMP = ALPHA*A(K,J)
+                              !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                              DO 180 I = 1,M
+                                  B(I,J) = B(I,J) + TEMP*B(I,K)
+  180                         CONTINUE
+                          END IF
+  190                 CONTINUE
+  200             CONTINUE
+               ELSE
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(J,TEMP)
+#endif                            
+                  DO 240 J = 1,N
+                      TEMP = ALPHA
+                      IF (NOUNIT) TEMP = TEMP*A(J,J)
+                       !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                      DO 210 I = 1,M
+                          B(I,J) = TEMP*B(I,J)
+  210                 CONTINUE
+                      DO 230 K = J + 1,N
+                          IF (A(K,J).NE.ZERO) THEN
+                             TEMP = ALPHA*A(K,J)
+                               !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                              DO 220 I = 1,M
+                                  B(I,J) = B(I,J) + TEMP*B(I,K)
+  220                         CONTINUE
+                          END IF
+  230                 CONTINUE
+  240             CONTINUE
+              END IF
+          ELSE
+!*
+!*           Form  B := alpha*B*A**T   or   B := alpha*B*A**H.
+!*
+             IF (UPPER) THEN
+#if (__GMS_LAPACK_USE_OMP__) == 1
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(K,TEMP)
+#endif
+                  DO 280 K = 1,N
+                      DO 260 J = 1,K - 1
+                          IF (A(J,K).NE.ZERO) THEN
+                              IF (NOCONJ) THEN
+                                  TEMP = ALPHA*A(J,K)
+                              ELSE
+                                  TEMP = ALPHA*DCONJG(A(J,K))
+                              END IF
+                              !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) 
+                              DO 250 I = 1,M
+                                  B(I,J) = B(I,J) + TEMP*B(I,K)
+  250                         CONTINUE
+                          END IF
+  260                 CONTINUE
+                      TEMP = ALPHA
+                      IF (NOUNIT) THEN
+                          IF (NOCONJ) THEN
+                              TEMP = TEMP*A(K,K)
+                          ELSE
+                              TEMP = TEMP*DCONJG(A(K,K))
+                          END IF
+                      END IF
+                      IF (TEMP.NE.ONE) THEN
+                           !$OMP SIMD ALIGNED(B:64) LINEAR(I:1) 
+                          DO 270 I = 1,M
+                              B(I,K) = TEMP*B(I,K)
+  270                     CONTINUE
+                      END IF
+  280             CONTINUE
+              ELSE
+                  DO 320 K = N,1,-1
+                      DO 300 J = K + 1,N
+                          IF (A(J,K).NE.ZERO) THEN
+                              IF (NOCONJ) THEN
+                                  TEMP = ALPHA*A(J,K)
+                              ELSE
+                                  TEMP = ALPHA*DCONJG(A(J,K))
+                              END IF
+                              DO 290 I = 1,M
+                                  B(I,J) = B(I,J) + TEMP*B(I,K)
+  290                         CONTINUE
+                          END IF
+  300                 CONTINUE
+                      TEMP = ALPHA
+                      IF (NOUNIT) THEN
+                          IF (NOCONJ) THEN
+                              TEMP = TEMP*A(K,K)
+                          ELSE
+                              TEMP = TEMP*DCONJG(A(K,K))
+                          END IF
+                      END IF
+                      IF (TEMP.NE.ONE) THEN
+                          DO 310 I = 1,M
+                              B(I,K) = TEMP*B(I,K)
+  310                     CONTINUE
+                      END IF
+  320             CONTINUE
+              END IF
+          END IF
+      END IF
+
+END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup complex16OTHERcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE ZUNM2R(SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+       WORK, INFO) 
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, M, N
+!*     ..
+!*     .. Array Arguments ..
+      COMPLEX*16         A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+!!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      COMPLEX*16         ONE
+      PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ) )
+*     ..
+*     .. Local Scalars ..
+      LOGICAL            LEFT, NOTRAN
+      INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
+      COMPLEX*16         AII, TAUI
+*     ..
+*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+*     ..
+*     .. External Subroutines ..
+      EXTERNAL           ZLARF
+*     ..
+*     .. Intrinsic Functions ..
+      INTRINSIC          DCONJG, MAX
+*     ..
+*     .. Executable Statements ..
+*
+*     Test the input arguments
+*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+*
+*     NQ is the order of Q
+*
+      IF( LEFT ) THEN
+         NQ = M
+      ELSE
+         NQ = N
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'C' ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, NQ ) ) THEN
+         INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'ZUNM2R', -INFO )
+         RETURN
+      END IF
+*
+*     Quick return if possible
+*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 )
+     $   RETURN
+*
+      IF( ( LEFT .AND. .NOT.NOTRAN .OR. .NOT.LEFT .AND. NOTRAN ) ) THEN
+         I1 = 1
+         I2 = K
+         I3 = 1
+      ELSE
+         I1 = K
+         I2 = 1
+         I3 = -1
+      END IF
+*
+      IF( LEFT ) THEN
+         NI = N
+         JC = 1
+      ELSE
+         MI = M
+         IC = 1
+      END IF
+*
+      DO 10 I = I1, I2, I3
+         IF( LEFT ) THEN
+*
+*           H(i) or H(i)**H is applied to C(i:m,1:n)
+*
+            MI = M - I + 1
+            IC = I
+         ELSE
+*
+*           H(i) or H(i)**H is applied to C(1:m,i:n)
+*
+            NI = N - I + 1
+            JC = I
+         END IF
+*
+*        Apply H(i) or H(i)**H
+*
+         IF( NOTRAN ) THEN
+            TAUI = TAU( I )
+         ELSE
+            TAUI = DCONJG( TAU( I ) )
+         END IF
+         AII = A( I, I )
+         A( I, I ) = ONE
+         CALL ZLARF( SIDE, MI, NI, A( I, I ), 1, TAUI, C( IC, JC ), LDC,
+     $               WORK )
+         A( I, I ) = AII
+   10 CONTINUE
+      RETURN
+*
+*     End of ZUNM2R
+*
+      END
