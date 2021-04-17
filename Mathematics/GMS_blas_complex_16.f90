@@ -68,7 +68,7 @@ subroutine zaxpy(n,za,zx,incx,zy,incy) !GCC$ ATTRIBUTES inline :: zaxpy !GCC$ AT
        !DIR$ OPTIMIZE : 3
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zaxpy
 #endif
-      use module_kinds, only : i4,dp
+      use module_kinds, only : i4
       use mod_avx512c8f64
       use omp_lib
       use mod_vecconsts, only : v8_n0
@@ -138,7 +138,7 @@ subroutine zaxpy(n,za,zx,incx,zy,incy) !GCC$ ATTRIBUTES inline :: zaxpy !GCC$ AT
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: gms_zcopy
 #endif
-        use module_kinds, only : i4,dp
+        use module_kinds, only : i4
       use mod_avx512c8f64
       use omp_lib
       implicit none
@@ -206,7 +206,7 @@ subroutine zaxpy(n,za,zx,incx,zy,incy) !GCC$ ATTRIBUTES inline :: zaxpy !GCC$ AT
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zdotc
 #endif
-         use module_kinds, only : i4,dp
+         use module_kinds, only : i4
       use mod_avx512c8f64
       use omp_lib
       implicit none
@@ -282,7 +282,7 @@ subroutine zaxpy(n,za,zx,incx,zy,incy) !GCC$ ATTRIBUTES inline :: zaxpy !GCC$ AT
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zdotu
 #endif
-      use module_kinds, only : i4,dp
+      use module_kinds, only : i4
       use mod_avx512c8f64
       use omp_lib
       implicit none
@@ -350,7 +350,7 @@ subroutine zaxpy(n,za,zx,incx,zy,incy) !GCC$ ATTRIBUTES inline :: zaxpy !GCC$ AT
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zdrot
 #endif
       use mod_vectypes, only : ZMM8r8_t
-        use module_kinds, only : i4,dp
+        use module_kinds, only : i4
       use mod_avx512c8f64
       use omp_lib
       implicit none
@@ -641,7 +641,7 @@ subroutine zgbmv(trans,m,n,kl,ku,alpha,a,lda,x,incx,beta,y,incy)
               end do
               !$OMP END PARALLEL DO
            else
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,iy,k,jx,ky) IF(n>=200)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,iy,k,jx,ky) 
               do j=1,n
                  temp=alpha*x(jx)
                  iy=ky
@@ -659,7 +659,7 @@ subroutine zgbmv(trans,m,n,kl,ku,alpha,a,lda,x,incx,beta,y,incy)
            !  Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
            jy=ky
            if(incx==1) then
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,jy) IF(n>=200)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,jy) 
               do j=1,n
                  temp=ZERO
                  k=kup1-j
@@ -677,7 +677,7 @@ subroutine zgbmv(trans,m,n,kl,ku,alpha,a,lda,x,incx,beta,y,incy)
               end do
               !$OMP END PARALLEL DO
            else
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,k,jy,kx) IF(n>=200)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,k,jy,kx) 
               do j=1,n
                  temp=ZERO
                  ix=kx
@@ -738,7 +738,7 @@ subroutine zgemm(transa,transb,m,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
   !DIR$ OPTIMIZE : 3
    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zgemm
 #endif
-          use module_kinds, only : i4
+          use module_kinds, only : i4,i1
           use mod_avx512c8f64
           use omp_lib
           implicit none
@@ -835,7 +835,7 @@ subroutine zgemm(transa,transb,m,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
         beq0 = all(beta==ZERO)
         if(aeq0) then
            if(beq0) then
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=100)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
               do j=1,n
                  !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                  do i=1,m
@@ -844,7 +844,7 @@ subroutine zgemm(transa,transb,m,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
               end do
               !$OMP END PARALLEL DO
            else
-               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=100)
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
               do j=1,n
                   !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                  do i=1,m
@@ -1084,7 +1084,7 @@ subroutine zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
   !DIR$ OPTIMIZE : 3
   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zgemv
 #endif
-          use module_kinds, only : i4
+          use module_kinds, only : i4,i1
           use mod_avx512c8f64
           use omp_lib
           implicit none
@@ -1215,7 +1215,7 @@ subroutine zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
               ! Form  y := alpha*A*x + y.
               jx = kx
               if(incy==1) then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,jx) IF(n>=25)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,jx) 
                  do j=1,n
                     temp = alpha*x(jx)
                     !$OMP SIMD ALIGNED(y:64,a) LINEAR(i:1) UNROLL PARTIAL(10)
@@ -1226,7 +1226,7 @@ subroutine zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
                  end do
                  !$OMP END PARALLEL DO
               else
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,iy,jx) IF(n>=25)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,iy,jx) 
                  do j=1,n
                     temp = alpha*x(jx)
                     iy = ky
@@ -1243,7 +1243,7 @@ subroutine zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
               !  Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
               jy = ky
               if(incx==1) then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) IF(n>=100)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy)
                  do j=1,n
                     temp = zero
                     if(noconj) then
@@ -1262,7 +1262,7 @@ subroutine zgemv(trans,m,n,alpha,a,lda,x,incx,beta,y,incy)
                  end do
                  !$OMP END PARALLEL DO
               else
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jy) IF(n>=25)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jy) 
                  do j=1,n
                     temp = zero
                     ix = ky
@@ -1383,7 +1383,7 @@ subroutine zgerc(m,n,alpha,x,incx,y,incy,a,lda)
            jy = 1-(n-1)*incy
         end if
         if(incx==1) then
-           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) IF(n>=20)
+           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) 
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*conjugate(y(jy))
@@ -1401,7 +1401,7 @@ subroutine zgerc(m,n,alpha,x,incx,y,incy,a,lda)
            else
               kx = 1-(m-1)*incx
            end if
-           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) IF(n>=20)
+           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy)
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*conjugate(y(jy))
@@ -1512,7 +1512,7 @@ subroutine zgeru(m,n,alpha,x,incx,y,incy,a,lda)
            jy = 1-(n-1)*incy
         end if
         if(incx==1) then
-           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) IF(n>=20)
+           !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,jy) 
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*y(jy)
@@ -1530,7 +1530,7 @@ subroutine zgeru(m,n,alpha,x,incx,y,incy,a,lda)
            else
               kx = 1-(m-1)*incx
            end if
-            !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jy) IF(n>=20)
+            !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jy)
            do j=1,n
               if(all(y(jy)/=ZERO)) then
                  temp = alpha*y(jy)
@@ -1681,7 +1681,7 @@ subroutine zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
              !  Form  y  when upper triangle of A is stored.
              kplus1 = k+1
              if((incx==1) .and. (incy==1)) then
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,l) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,l) 
                 do j=1,n
                    temp1 = alpha*x(j)
                    temp2 = ZERO
@@ -1697,7 +1697,7 @@ subroutine zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
              else
                 jx = kx
                 jy = ky
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,kx,ky,l) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,kx,ky,l) 
                 do j=1,n
                    temp1 = alpha*x(jx)
                    temp2 = ZERO
@@ -1724,7 +1724,7 @@ subroutine zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
           else
              !  Form  y  when lower triangle of A is stored.
              if((incx==1) .and. (incy==1)) then
-                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,l) IF(n>=10)
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,l) 
                 do j=1,n
                    temp1 = alpha*x(j)
                    temp2 = ZERO
@@ -1741,7 +1741,7 @@ subroutine zhbmv(uplo,n,k,alpha,a,lda,x,incx,beta,y,incy)
              else
                 jx = kx
                 jy = ky
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,l) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,l) 
                 do j=1,n
                    temp1 = alpha*x(jx)
                    temp2 = ZERO
@@ -1885,7 +1885,7 @@ subroutine zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
           beq0 = all(beta==ZERO)
           if(aeq0) then
              if(beq0) then
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                 do j=1,n
                    !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                    do i=1,m
@@ -1894,7 +1894,7 @@ subroutine zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
                 end do
                 !$OMP END PARALLEL DO
              else
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                 do j=1,n
                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                    do i=1,m
@@ -1909,7 +1909,7 @@ subroutine zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
           if(lsame(side,'L')) then
              !  Form  C := alpha*A*B + beta*C.
              if(upper) then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) 
                 do j=1,n
                    do i=1,m
                       temp1 = alpha*b(i,j)
@@ -1929,7 +1929,7 @@ subroutine zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
                 end do
                 !$OMP END PARALLEL DO
              else
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) 
                 do j=1,n
                    do i=m,1,-1
                       temp1 = alpha*b(i,j)
@@ -1951,7 +1951,7 @@ subroutine zhemm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
              end if
           else
              !   Form  C := alpha*B*A + beta*C.
-             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1) IF(n>=10)
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1)
              do j=1,n
                 temp1 = alpha*a(j,j).re
                 if(beq0) then
@@ -2147,7 +2147,7 @@ subroutine zhemv(uplo,n,alpha,a,lda,x,incx,beta,y,incy)
            if(lsame(uplo,'U')) then
               !Form  y  when A is stored in upper triangle.
               if((incx==1) .and. (incy==1)) then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) 
                  do j=1,n
                     temp1 = alpha*x(j)
                     temp2 = ZERO
@@ -2162,7 +2162,7 @@ subroutine zhemv(uplo,n,alpha,a,lda,x,incx,beta,y,incy)
               else
                  jx = kx
                  jy = ky
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) IF(n>=10)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) 
                  do j=1,n
                     temp1 = alpha*x(jx)
                     temp2 = ZERO
@@ -2184,7 +2184,7 @@ subroutine zhemv(uplo,n,alpha,a,lda,x,incx,beta,y,incy)
            else
               !  Form  y  when A is stored in lower triangle.
               if((incx==1) .and. (incy==1)) then
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2)
                  do j=1,n
                     temp1 = alpha*x(j)
                     temp2 = ZERO
@@ -2200,7 +2200,7 @@ subroutine zhemv(uplo,n,alpha,a,lda,x,incx,beta,y,incy)
               else
                  jx = kx
                  jy = ky
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) IF(n>=10)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) 
                  do j=1,n
                     temp1 = alpha*x(jx)
                     temp2 = ZERO
@@ -2318,7 +2318,7 @@ subroutine zher(uplo,n,alpha,x,incx,a,lda)
         if(lsame(uplo,'U')) then
            !   Form  A  when A is stored in upper triangle.
            if(incx==1) then
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
               do j=1,n
                  if(all(x(j)/=ZERO)) then
                     temp = alpha*conjugate(x(j))
@@ -2334,7 +2334,7 @@ subroutine zher(uplo,n,alpha,x,incx,a,lda)
               !$OMP END PARALLEL DO
            else
               jx = kx
-              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix) IF(n>=10)
+              !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix) 
               do j=1,n
                  if(all(x(jx)/=ZERO)) then
                     temp = alpha*conjugate(x(jx))
@@ -2352,7 +2352,7 @@ subroutine zher(uplo,n,alpha,x,incx,a,lda)
               !$OMP END PARALLEL DO
            else
               jx = kx
-               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx) IF(n>=10)
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx) 
               do j=1,n
                  if(all(x(jx)/=ZERO)) then
                     temp = alpha*conjugate(x(jx))
@@ -2373,7 +2373,7 @@ subroutine zher(uplo,n,alpha,x,incx,a,lda)
         else
            !  Form  A  when A is stored in lower triangle.
            if(incx==1) then
-               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp) IF(n>=10)
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp) 
               do j=1,n
                  if(all(x(j)/=ZERO)) then
                     temp = alpha*conjugate(x(j))
@@ -2389,7 +2389,7 @@ subroutine zher(uplo,n,alpha,x,incx,a,lda)
               !$OMP END PARALLEL DO
            else
               jx = kx
-               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx) IF(n>=10)
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx) 
               do j=1,n
                  if(all(x(jx)/=ZERO)) then
                     temp = alpha*conjugate(x(jx))
@@ -2584,7 +2584,7 @@ subroutine zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
          if(lsame(uplo,'U')) then
             !  Form  A  when A is stored in the upper triangle.
             if((incx==1) .and. (incy==1)) then
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2)
                do j=1,n
                   if((all(x(j)/=ZERO)) .or. (all(y(j)/=ZERO))) then
                      temp1 = alpha*conjugate(y(j))
@@ -2600,7 +2600,7 @@ subroutine zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
                end do
                !$OMP END PARALLEL DO
             else
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) 
                do j=1,n
                   if((all(x(jx)/=ZERO)) .or. (all(y(jy)/=ZERO))) then
                      temp1 = alpha*conjugate(y(jy))
@@ -2625,7 +2625,7 @@ subroutine zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
          else
             !  Form  A  when A is stored in the lower triangle.
             if((incx==1) .and. (incy==1)) then
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2) 
                do j=1,n
                   if((all(x(j)/=ZERO)) .or. (all(y(j)/=ZERO))) then
                      temp1 = alpha*conjugate(y(j))
@@ -2642,8 +2642,8 @@ subroutine zher2(uplo,n,alpha,x,incx,y,incy,a,lda)
                end do
                !$OMP END PARALLEL DO
             else
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) IF(n>=10)
-               do j=1,n
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy) 
+               do j=1,
                   if((all(x(jx)/=ZERO)) .or. (all(y(jx)/=ZERO))) then
                      temp1 = alpha*conjugate(y(jy))
                      temp2 = conjugate(alpha*x(jx))
@@ -2795,7 +2795,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
           if(aeq0) then
              if(upper) then
                 if(beq0)  then
-                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                    do j=1,n
                       !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                       do i=1,j
@@ -2804,7 +2804,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
                    end do
                    !$OMP END PARALLEL DO
                 else
-                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                    do j=1,n
                        !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                       do i=1,j-1
@@ -2816,7 +2816,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
                 end if
              else
                 if(beq0) then
-                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                    do j=1,n
                        !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                       do i=j,n
@@ -2825,7 +2825,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
                    end do
                    !$OMP END PARALLEL DO
                 else
-                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                    do j=1,n
                       c(j,j) = beta.v*c(j,j).re
                        !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
@@ -2844,7 +2844,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
              !   Form  C := alpha*A*B**H + conjg( alpha )*B*A**H +
              !*                   C.
              if(upper) then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                 do j=1,n
                    if(beq0) then
                         !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
@@ -2876,7 +2876,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
                 end do
                 !$OMP END PARALLEL DO
              else
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                 do j=1,n
                    if(beq0) then
                          !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
@@ -2912,7 +2912,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
              !   Form  C := alpha*A**H*B + conjg( alpha )*B**H*A +
              if(upper) then
                 temp3 = default_init()
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                 do j=1,n
                    do i=1,j
                       temp1 = ZERO
@@ -2944,7 +2944,7 @@ subroutine zher2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
                 end do
                 !$OMP END PARALLEL DO
              else
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                 do j=1,n
                    do i=1,n
                       temp1 = ZERO
@@ -3091,7 +3091,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
         if(aeq0) then
            if(upper) then
               if(beq0)  then
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                  do j=1,n
                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=1,j
@@ -3099,7 +3099,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end do
                  end do
               else
-                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                  do j=1,n
                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=1,j-1
@@ -3111,7 +3111,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               end if
            else
               if(beq0) then
-                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                  do j=1,n
                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=j,n
@@ -3120,7 +3120,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  end do
                  !$OMP END PARALLEL DO
               else
-                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                  do j=1,n
                     c(j,j) = beta.v*c(j,j).re
                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
@@ -3139,7 +3139,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            bneq1 = all(beta.v/=v8_n1.v)
            !   Form  C := alpha*A*A**H + beta*C.
            if(upper) then
-               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
               do j=1,n
                  if(beq0) then
                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
@@ -3168,7 +3168,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               end do
               !$OMP END PARALLEL DO
            else
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
               do j=1,n
                  if(beq0) then
                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(10)
@@ -3200,7 +3200,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          else
             ! Form  C := alpha*A**H*A + beta*C.
             if(upper) then
-                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) IF(n>=10)
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                do j=1,n
                   do i=1,j-1
                      temp = ZERO
@@ -3271,26 +3271,31 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features) 
 !*> \endverbatim
      !*>
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine zhpmv(uplo,n,alpha,ap,x,incx,beta,y,incy) !GCC$ ATTRIBUTES hot :: zhpmv !GCC$ ATTRIBUTES aligned(32) :: zhpmv !GCC$ ATTRIBUTES no_stack_protector :: zhpmv
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine zhpmv(uplo,n,alpha,ap,x,incx,beta,y,incy)  
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zhpmv
+    !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zhpmv
 
-     subroutine gms_zhpmv(uplo,n,alpha,ap,x,incx,beta,y,incy)
-#if defined __INTEL_COMPILER
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhpmv
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
 #endif
          character(len=1),                     intent(in),value :: uplo
-         integer(kind=int4),                   intent(in),value :: n
+         integer(kind=i4),                   intent(in),value :: n
          type(AVX512c8f64_t),                  intent(in)       :: alpha
-         type(AVX512c8f64_t), dimension(*),    intent(in)       :: ap
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED ap:64
-#endif
-         type(AVX512c8f64_t), dimension(*),    intent(in)       :: x
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED x:64
-#endif
+         !type(AVX512c8f64_t), dimension(*),    intent(in)       :: ap
+         type(AVX512c8f64_t), dimension(:), allocatable,    intent(in)       :: ap
+         !type(AVX512c8f64_t), dimension(*),    intent(in)       :: x
+         type(AVX512c8f64_t), dimension(:), allocatable,    intent(in)       :: x
          integer(kind=int4),                   intent(in),value :: incx
          type(AVX512c8f64_t),                  intent(in)       :: beta
-         type(AVX512c8f64_t), dimension(*),    intent(inout)    :: y
-         integer(kind=int4),                   intent(in),value :: incy
+         !type(AVX512c8f64_t), dimension(*),    intent(inout)    :: y
+         type(AVX512c8f64_t), dimension(:), allocatable,    intent(in)       :: y
+         integer(kind=i4),                   intent(in),value :: incy
          ! Locals
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
@@ -3300,8 +3305,8 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp2
 #endif
          type(AVX512c8f64_t), automatic :: temp2
-         integer(kind=int4),  automatic :: i,info,ix,iy,j,jx,jy,k,kk,kx,ky
-         logical(kind=int1),  automatic :: aeq0,beq1,bneq1,beq0
+         integer(kind=i4),  automatic :: i,info,ix,iy,j,jx,jy,k,kk,kx,ky
+         logical(kind=i1),  automatic :: aeq0,beq1,bneq1,beq0
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
 #endif
@@ -3317,26 +3322,26 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
          ! Exec code .....
-         info = 0
-         if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
-            info = 1
-         else if(n<0) then
-            info = 2
-         else if(incx==0) then
-            info = 6
-         else if(incy==0) then
-            info = 9
-         end if
-         if(info/=0) then
-            call xerbla('GMS_ZHPMV',info)
-            return
-         end if
-         aeq0 = .false.
-         beq1 = .false.
-         aeq0 = all(alpha==ZERO)
-         beq1 = all(beta==ONE)
+         !info = 0
+         !if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+         !   info = 1
+         !else if(n<0) then
+         !   info = 2
+        ! else if(incx==0) then
+         !   info = 6
+        ! else if(incy==0) then
+        !    info = 9
+        ! end if
+        ! if(info/=0) then
+        !    call xerbla('GMS_ZHPMV',info)
+        !    return
+        ! end if
+         !aeq0 = .false.
+         !beq1 = .false.
+        ! aeq0 = all(alpha==ZERO)
+        ! beq1 = all(beta==ONE)
          !   Quick return if possible.
-         if((n==0) .or. (aeq0 .and. beq1)) return
+        ! if((n==0) .or. (aeq0 .and. beq1)) return
          !  Set up the start points in  X  and  Y.
          if(incx>0) then
             kx = 1
@@ -3359,17 +3364,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          if(bneq1) then
             if(incy==1) then
                 if(beq0)  then
-                  
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(4)
+                   !$OMP SIMD ALIGNED(y:64) LINEAR(i:1) UNROLL PARTIAL(8)
                    do i=1,n
                       y(i) = ZERO
                    end do
                 else
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+                    !$OMP SIMD ALIGNED(y:64) LINEAR(i:1) UNROLL PARTIAL(6)
                    do i=1,n
                       y(i) = beta*y(i)
                    end do
@@ -3377,17 +3377,13 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
              else
                 iy = ky
                 if(beq0) then
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(4)
+                     !$OMP SIMD ALIGNED(y:64) LINEAR(i:1) UNROLL PARTIAL(8)
                    do i=1,n
                       y(iy) = ZERO
                       iy = iy+incy
                    end do
                 else
-                   !DIR$ VECTOR ALIGNED
-                   !DIR$ VECTOR ALWAYS
-                   !DIR$ UNROLL(10)
+                     !$OMP SIMD ALIGNED(y:64) LINEAR(i:1) UNROLL PARTIAL(6)
                    do i=1,n
                       y(iy) = beta*y(iy)
                       iy = iy+incy
@@ -3400,31 +3396,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
           if(lsame(uplo,'U')) then
              !  Form  y  when AP contains the upper triangle.
              if((incx==1) .and. (incy==1)) then
-               
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,k,kk) 
                 do j=1,n
                    temp1 = alpha*x(j)
                    temp2 = ZERO
                    k = kk
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(y:64,ap,x) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(10)
                    do i=1,j-1
                       y(i) = y(i)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(i)
@@ -3433,34 +3410,17 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    y(j) = y(j)+temp1*ap(kk+j-1).re+alpha*temp2
                    kk = kk+j
                 end do
+                !$OMP END PARALLEL DO
              else
                 jx = kx
                 jy = ky
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,kk) 
                 do j=1,n
                    temp1 = alpha*x(jx)
                    temp2 = ZERO
                    ix = kx
                    iy = ky
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(y:64,ap,x) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(10)
                    do k=kk,kk+j-2
                       y(iy) = y(iy)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(ix)
@@ -3472,36 +3432,18 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    jy = jy+incy
                    kk = kk+j
                 end do
+                !$OMP END PARALLEL DO
              end if
           else
              !   Form  y  when AP contains the lower triangle.
              if((incx==1) .and. (incy==1)) then
-               
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,k,kk) 
                 do j=1,n
                    temp1 = alpha*x(j)
                    temp2 = ZERO
                    y(j) = y(j)+temp1*ap(kk).re
                    k = kk+1
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(y:64,ap,x) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(10)
                    do i=j+1,n
                       y(i) = y(i)+temp1*ap(k)
                       temp2 = temp2+conjugate(ap(k))*x(i)
@@ -3510,35 +3452,18 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    y(j) = y(j)+alpha*temp2
                    kk = kk+(n-j+1)
                 end do
+                !$OMP END PARALLEL DO
              else
                 jx = kx
                 jy = ky
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1,temp2,ix,iy,jx,jy,kk) 
                 do j=1,n
                    temp1 = alpha*x(jx)
                    temp2 = ZERO
                    y(jy) = y(jy)+temp1*ap(kk).re
                    ix = jx
                    iy = jy
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(y:64,ap,x) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(10)
                    do k=kk+1,kk+n-j
                       ix = ix+incx
                       iy = iy+incy
@@ -3550,10 +3475,11 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    jy = jy+incy
                    kk = kk+(n-j+1)
                 end do
+                !$OMP END PARALLEL DO
              end if
           end if
           !End of ZHPMV
-     end subroutine gms_zhpmv
+     end subroutine zhpmv
 
 !     *  Authors:
 !*  ========
@@ -3581,24 +3507,29 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
      !*>     Richard Hanson, Sandia National Labs.
      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
      !*> \endverbatim
-
-     subroutine gms_zhpr(uplo,n,alpha,x,incx,ap)
-#if defined __INTEL_COMPILER
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zhpr
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine zhpr(uplo,n,alpha,x,incx,ap) !GCC$ ATTRIBUTES hot :: zhpr !GCC$ ATTRIBUTES aligned(32) :: zhpr !GCC$ ATTRIBUTES no_stack_protector :: zhpr
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine zhpr(uplo,n,alpha,x,incx,ap)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zhpr
+   !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zhpr
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+       
+
          use mod_vecconsts, only : v8_n0
          character(len=1),                  intent(in),value :: uplo
-         integer(kind=int4),                intent(in),value :: n
+         integer(kind=i4),                intent(in),value :: n
          type(ZMM8r8_t),                    intent(in)       :: alpha
-         type(AVX512c8f64_t), dimension(*), intent(in)       :: x
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED x:64
-#endif
+         !type(AVX512c8f64_t), dimension(*), intent(in)       :: x
+          type(AVX512c8f64_t), dimension(:),allocatable,  intent(in)       :: x
          integer(kind=int4),                intent(in),value :: incx
-         type(AVX512c8f64_t), dimension(*), intent(inout)    :: ap
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED ap:64
-#endif
+         !type(AVX512c8f64_t), dimension(*), intent(inout)    :: ap
+         type(AVX512c8f64_t), dimension(:), allocatable, intent(in)       :: x
          ! Locals
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp
@@ -3608,8 +3539,8 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          !DIR$ ATTRIBUTES ALIGN : 64 :: vtemp
 #endif
          type(ZMM8r8_t),      automatic :: vtemp
-         integer(kind=int4),  automatic :: i,info,ix,j,jx,k,kk,kx
-         integer(kind=int1),  automatic :: aeq0
+         integer(kind=i4),  automatic :: i,info,ix,j,jx,k,kk,kx
+         integer(kind=i1),  automatic :: aeq0
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
 #endif
@@ -3618,22 +3549,22 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                                                                 [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                 0.0_dp,0.0_dp,0.0_dp,0.0_dp])
          ! Test the input parameters.
-         info = 0
-         if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
-            info = 1
-         else if(n<0) then
-            info = 2
-         else if(incx==0) then
-            info = 5
-         end if
+         !info = 0
+         !if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+         !   info = 1
+        ! else if(n<0) then
+         !   info = 2
+         !else if(incx==0) then
+         !   info = 5
+         !end if
          if(info/=0) then
-            call xerbla('GMS_ZHPR',info)
-            return
-         end if
+         !   call xerbla('GMS_ZHPR',info)
+         !   return
+         !end if
          !  Quick return if possible.
-         aeq0 = .false.
-         aeq0 = all(alpha.v==ZERO.re)
-         if((n==0) .or. (aeq0)) return
+        ! aeq0 = .false.
+        ! aeq0 = all(alpha.v==ZERO.re)
+         !if((n==0) .or. (aeq0)) return
          ! Set the start point in X if the increment is not unity.
          if(incx<=0) then
             kx = 1-(n-1)*incx
@@ -3647,31 +3578,13 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          if(lsame(uplo,'U')) then
             !  Form  A  when upper triangle is stored in AP.
             if(incx==1) then
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,vtemp,temp,k,kk) IF(n>=10)
                do j=1,n
                   if(all(x(j)/=ZERO)) then
                      vtemp = conjugate(x(j))
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      k = kk
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                     !$OMP SIMD ALIGNED(a:64,x) LINEAR(i:1) UNROLL PARTIAL(10)
                      do i=1,j-1
                         ap(k) = ap(k)+x(i)*temp
                         k = k+1
@@ -3682,32 +3595,15 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                   end if
                   kk = kk+j
                end do
+               !$OMP END PARALLEL DO
             else
                jx = kx
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,vtemp,ix,jx,kk) 
                do j=1,n
                   if(all(x(jx)/=ZERO)) then
                      vtemp = conjugate(x(j))
                      ix = kx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                      !$OMP SIMD ALIGNED(a:64,x) LINEAR(i:1) UNROLL PARTIAL(10)
                      do k=kk,kk+j-2
                         ap(k) = ap(k)+x(ix)*temp
                         ix = ix+incx
@@ -3719,36 +3615,19 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                   jx = jx+incx
                   kk = kk+j
                end do
+               !$OMP END PARALLEL DO
             end if
          else
             ! Form  A  when lower triangle is stored in AP.
             if(incx==1) then
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,vtemp,temp,k,kk) 
                do j=1,n
                   if(all(x(j)/=ZERO)) then
                      vtemp = conjugate(x(j))
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      ap(kk).re = ap(kk).re+temp.v*x(j).re
                      k = kk+1
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                       !$OMP SIMD ALIGNED(a:64,x) LINEAR(i:1) UNROLL PARTIAL(10)
                      do i=j+1,n
                         ap(k) = ap(k)+x(i)*temp
                         k = k+1
@@ -3758,34 +3637,17 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                   end if
                   kk = kk+n-j+1
                end do
+               !$OMP END PARALLEL DO
             else
                jx = kx
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,vtemp,temp,ix,jx,kk) 
                do j=1,n
                   if(all(x(jx)/=ZERO)) then
                      vtemp = conjugate(x(j))
                      temp = zmm8r81x_init(alpha.v*vtemp.v)
                      ap(kk).re = app(kk).re+temp.v*x(jx).re
                      ix = jx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                       !$OMP SIMD ALIGNED(a:64,x) LINEAR(i:1) UNROLL PARTIAL(10)
                      do k=kk+1,kk+n-j
                         ix = ix+incx
                         ap(k) = ap(k)+x(ix)*temp
@@ -3796,10 +3658,11 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                   jx = jx+incx
                   kk = kk+n-j+1
                end do
+               !$OMP END PARALLEL DO
             end if
          end if
          ! End of ZHPR
-     end subroutine gms_zhpr
+     end subroutine zhpr
 
 !      Authors:
 !*  ========
@@ -3828,31 +3691,34 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
      !*> \endverbatim
 
-     subroutine gms_zsymm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
-#if defined __INTEL_COMPILER
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zsymm
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))       
+subroutine zsymm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zsymm !GCC$ ATTRIBUTES aligned(32) :: zsymm !GCC$ ATTRIBUTES no_stack_protector :: zsymm
+#elif defined __INTEL_COMPILER
+subroutine zsymm(side,uplo,m,n,alpha,a,lda,b,ldb,beta,c,ldc)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zsymm
+   !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zsymm
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+
          character(len=1),                       intent(in),value :: side
          character(len=1),                       intent(in),value :: uplo
-         integer(kind=int4),                     intent(in),value :: m
-         integer(kind=int4),                     intent(in),value :: n
+         integer(kind=i4),                     intent(in),value :: m
+         integer(kind=i4),                     intent(in),value :: n
          type(AVX512c8f64_t),                    intent(in)       :: alpha
-         type(AVX512c8f64_t), dimension(lda,*),  intent(in)       :: a
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED a:64
-#endif
-         integer(kind=int4),                     intent(in),value :: lda
-         type(AVX512c8f64_t), dimension(ldb,*),  intent(in)       :: b
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED b:64
-#endif
-         integer(kind=int4),                     intent(in),value :: ldb
+         !type(AVX512c8f64_t), dimension(lda,*),  intent(in)       :: a
+          type(AVX512c8f64_t), dimension(:,:),  allocatable, intent(in)       :: a
+         integer(kind=i4),                     intent(in),value :: lda
+         !type(AVX512c8f64_t), dimension(ldb,*),  intent(in)       :: b
+         type(AVX512c8f64_t), dimension(:,:),  allocatable, intent(in)       :: b
+         integer(kind=i4),                     intent(in),value :: ldb
          type(AVX512c8f64_t),                    intent(in)       :: beta
-         type(AVX512c8f64_t), dimension(ldc,*),  intent(inout)    :: c
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED c:64
-#endif
-         integer(kind=int4),                     intent(in)       :: ldc
+         !type(AVX512c8f64_t), dimension(ldc,*),  intent(inout)    :: c
+         type(AVX512c8f64_t), dimension(:,:),  allocatable, intent(in)       :: c
+         integer(kind=i4),                     intent(in)       :: ldc
          ! Locals
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
@@ -3888,49 +3754,48 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          end if
          upper = lsame(uplo,'U')
          !   Test the input parameters.
-         info = 0
-         if((.not.lsame(side,'L')) .and. (.not.lsame(side,'R'))) then
-            info = 1
-         else if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
-            info = 2
-         else if(m<0) then
-            info = 3
-         else if(n<0) then
-            info = 4
-         else if(lda < max(1,nrowa)) then
-            info = 7
-         else if(ldb < max(1,m)) then
-            info = 9
-         else if(ldc < max(1,m)) then
-            info = 12
-         end if
-         if(info/=0) then
-            call xerbla('GMS_ZSYMM',info)
-            return
-         end if
-         aeq0 = .false.
-         beq1 = .false.
-         aeq0 = all(alpha==ZERO)
-         beq1 = all(beta==ONE)
+         !info = 0
+         !if((.not.lsame(side,'L')) .and. (.not.lsame(side,'R'))) then
+         !   info = 1
+         !else if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+         !   info = 2
+         !else if(m<0) then
+         !   info = 3
+         !else if(n<0) then
+         !   info = 4
+         !else if(lda < max(1,nrowa)) then
+         !   info = 7
+         !else if(ldb < max(1,m)) then
+         !   info = 9
+         !else if(ldc < max(1,m)) then
+         !   info = 12
+         !end if
+         !if(info/=0) then
+         !   call xerbla('GMS_ZSYMM',info)
+         !   return
+         !end if
+         !aeq0 = .false.
+         !beq1 = .false.
+         !aeq0 = all(alpha==ZERO)
+         !beq1 = all(beta==ONE)
          ! Quick return if possible.
-         if((m==0) .or. (n==0) .or. &
-            ((aeq0) .and. (beq1))) return
+         !if((m==0) .or. (n==0) .or. &
+        !    ((aeq0) .and. (beq1))) return
          !  And when  alpha.eq.zero.
          if(aeq0) then
             if(beq0) then
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                do j=1,n
-                  !DIR$ VECTOR ALIGNED
-                  !DIR$ VECTOR ALWAYS
-                  !DIR$ UNROLL(6)
+                  !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                   do i=1,n
                      c(i,j) = ZERO
                   end do
                end do
+               !$OMP END PARALLEL DO
             else
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                do j=1,n
-                  !DIR$ VECTOR ALIGNED
-                  !DIR$ VECTOR ALWAYS
-                  !DIR$ UNROLL(8)
+                    !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                   do i=1,m
                      c(i,j) = beta*c(i,j)
                   end do
@@ -3942,22 +3807,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
          if(lsame(side,'L')) then
             ! Form  C := alpha*A*B + beta*C.
             if(upper) then
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                do j=1,n
                   do i=1,m
                      temp1 = alpha*b(i,j)
                      temp2 = ZERO
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#endif
+                      !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(6)
                      do k=1,i-1
                         c(k,j) = c(k,j)+temp1*a(k,i)
                         temp2 = temp2+b(k,j)*a(k,i)
@@ -3970,31 +3825,14 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                      end if
                   end do
                end do
+               !$OMP END PARALLEL DO
             else
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j) 
                do j=1,n
                   do i=m,1,-1
                      temp1 = alpha*b(i,j)
                      temp2 = ZERO
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                       !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(6)
                      do k=i+1,m
                         c(k,j) = c(k,j)+temp1*a(k,i)
                         temp2 = temp2+b(k,j)*a(k,i)
@@ -4007,39 +3845,20 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                      end if
                   end do
                end do
+               !$OMP END PARALLEL DO
             end if
          else
             !  Form  C := alpha*B*A + beta*C.
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp1) 
             do j=1,n
                temp1 = alpha*a(j,j)
                if(beq0) then
-                      !DIR$ VECTOR ALIGNED
-                      !DIR$ VECTOR ALWAYS
-                      !DIR$ UNROLL(8)
+                    !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) UNROLL PARTIAL(6)  
                   do i=1,m
                      c(i,j) = temp1*b(i,j)
                   end do
                else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                   !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(10)
                   do i=1,m
                      c(i,j) = beta*c(i,j)+temp1*b(i,j)
                   end do
@@ -4050,26 +3869,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                   else
                      temp1 = alpha*a(j,k)
                   end if
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(c:64,b) LINEAR(i:1) UNROLL PARTIAL(6)
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
@@ -4080,34 +3880,16 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    else
                       temp1 = alpha*a(k,j)
                    end if
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(c:64,b) LINEAR(i:1) REDUCTION(+:temp2) UNROLL PARTIAL(6)
                    do i=1,m
                       c(i,j) = c(i,j)+temp1*b(i,k)
                    end do
                 end do
              end do
+             !$OMP END PARALLEL DO
           end if
           !End of ZSYMM
-     end subroutine gms_zsymm
+     end subroutine zsymm
 
 !*  Authors:
 !*  ========
@@ -4134,32 +3916,35 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
 !*>     Jeremy Du Croz, Numerical Algorithms Group Ltd.
      !*>     Sven Hammarling, Numerical Algorithms Group Ltd.
       !Modified by Bernard Gingold on 29-11-2019 (removing built-in complex*16 data type,using modern Fortran features)
-!*> \endverbatim     
-     subroutine gms_zsyr2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)
-#if defined __INTEL_COMPILER
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zsyr2k
+     !*> \endverbatim
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))        
+subroutine zsyr2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zsyr2k !GCC$ ATTRIBUTES aligned(32) :: zsyr2k !GCC$ ATTRIBUTES no_stack_protector :: zsyr2k
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine zsyr2k(uplo,trans,n,k,alpha,a,lda,b,ldb,beta,c,ldc)  
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zsyr2k
+    !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zsyr2k
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+
         character(len=1),                      intent(in),value :: uplo
         character(len=1),                      intent(in),value :: trans
-        integer(kind=int4),                    intent(in),value :: n
-        integer(kind=int4),                    intent(in),value :: k
+        integer(kind=i4),                    intent(in),value :: n
+        integer(kind=i4),                    intent(in),value :: k
         type(AVX512c8f64_t),                   intent(in)       :: alpha
-        type(AVX512c8f64_t), dimension(lda,*), intent(in)       :: a
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUMED_ALIGNED a:64
-#endif
-        integer(kind=int4),                    intent(in),value :: lda
-        type(AVX512c8f64_t), dimension(ldb,*), intent(in)       :: b
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED b:64
-#endif
-        integer(kind=int4),                    intent(in),value :: ldb
+        !type(AVX512c8f64_t), dimension(lda,*), intent(in)       :: a
+        type(AVX512c8f64_t), dimension(:,:), allocatable,  intent(in)       :: a
+        integer(kind=i4),                    intent(in),value :: lda
+        !type(AVX512c8f64_t), dimension(ldb,*), intent(in)       :: b
+        type(AVX512c8f64_t), dimension(:,:), allocatable,  intent(in)       :: b
+        integer(kind=i4),                    intent(in),value :: ldb
         type(AVX512c8f64_t),                   intent(in)       :: beta
-        type(AVX512c8f64_t), dimension(ldc,*), intent(inout)    :: c
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED c:64
-#endif
-        integer(kind=int4),                    intent(in)       :: ldc
+        !type(AVX512c8f64_t), dimension(ldc,*), intent(inout)    :: c
+        type(AVX512c8f64_t), dimension(:,:), allocatable, intent(in)       :: c 
+        integer(kind=i4),                    intent(in)       :: ldc
         ! Locals
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp1
@@ -4169,9 +3954,9 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp2
 #endif
         type(AVX512c8f64_t), automatic :: temp2
-        integer(kind=int4),  automatic :: i,info,j,l,nrowa
-        logical(kind=int4),  automatic :: upper
-        logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+        integer(kind=i4),  automatic :: i,info,j,l,nrowa
+        logical(kind=i4),  automatic :: upper
+        logical(kind=i1),  automatic :: aeq0,beq1,beq0,bneq1
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
 #endif
@@ -4193,58 +3978,50 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            nrowa = k
         end if
         upper = lsame(uplo,'U')
-        info  = 0
-        if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
-           info = 1
-        else if((.not.lsame(trans,'N')) .and. &
-             (.not.lsame(trans,'T'))) then
-           info = 2
-        else if(n<0) then
-           info = 3
-        else if(k<0) then
-           info = 4
-        else if(lda < max(1,nrowa)) then
-           info = 7
-        else if(ldb < max(1,nrowa)) then
-           info = 9
-        else if(ldc < max(1,n)) then
-           info = 12
-        end if
-        if(info/=0) then
-           call xerbla('GMS_ZSYRK2',info)
-           return
-        end if
+        !info  = 0
+        !if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+        !   info = 1
+        !e!lse if((.not.lsame(trans,'N')) .and. &
+        !     (.not.lsame(trans,'T'))) then
+        !   info = 2
+        !else if(n<0) then
+        !   info = 3
+        !else if(k<0) then
+        !   info = 4
+        !else if(lda < max(1,nrowa)) then
+        !   info = 7
+        !else if(ldb < max(1,nrowa)) then
+        !   info = 9
+        !else if(ldc < max(1,n)) then
+        !   info = 12
+        !end if
+        !if(info/=0) then
+        !   call xerbla('GMS_ZSYRK2',info)
+        !   return
+        !end if
         !   Quick return if possible.
         aeq0 = .false.
         beq1 = .false.
         aeq0 = all(alpha==ZERO)
         beq1 = all(beta==ONE)
-        if((n==0) .or. (((aeq0) .or. &
-             (k==0)) .and. (beq1))) return
+        !if((n==0) .or. (((aeq0) .or. &
+        !     (k==0)) .and. (beq1))) return
         !  And when  alpha.eq.zero.
         if(aeq0) then
            if(upper) then
               if(beq0) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)
                  do j=1,n
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                    !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=1,j
                        c(i,j) = ZERO
                     end do
                  end do
+                 !$OMP END PARALLEL DO
               else
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)
                  do j=1,n
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=1,j
                        c(i,j) = beta*c(i,j)
                     end do
@@ -4252,55 +4029,38 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               end if
            else
               if(beq0) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j) 
                  do j=1,n
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=j,n
                        c(i,j) = ZERO
                     end do
                  end do
+                 !$OMP END PARALLEL DO
               else
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)
                  do j=1,n
-#if defined __INTEL_COMPILER                    
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
-#endif
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=j,n
                        c(i,j) = beta*c(i,j)
                     end do
                  end do
+                 !$OMP END PARALLEL DO
               end if
            end if
            return
         end if
         !  Start the operations.
         if(upper) then
+           !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j) 
            do j=1,n
               if(beq0) then
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                   !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8) 
                  do i=1,j
                     c(i,j) = ZERO
                  end do
               else if(bneq1) then
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif 
+                    !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                  do i=1,j
                     c(i,j) = beta*c(i,j)
                  end do
@@ -4309,89 +4069,32 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  if(all(a(j,l)/=ZERO) .or. all(b(j,l)/=ZERO)) then
                     temp1 = alpha*b(j,l)
                     temp2 = alpha*a(j,l)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                 
+                     !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=1,j
-                      
-                       c(i,j) = c(i,j)+a(i,l)*temp1 +
+                       c(i,j) = c(i,j)+a(i,l)*temp1 + &
                        b(i,l)*temp2
                     end do
                  end if
               end do
            end do
+           !$OMP END PARALLEL DO
         else
+            !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)  
            do j=1,n
               if(beq0) then
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                  !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)   
                  do i=j,n
                     c(i,j) = ZERO
                  end do
               else if(bneq1) then
-                  !DIR$ VECTOR ALIGNED
-                  !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif  
+                 !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                  do i=j,n
                     c(i,j) = beta*c(i,j)
                  end do
               end if
               do l=1,k
                  if(all(a(j,l)/=ZERO) .or. all(b(j,l)/=ZERO)) then
-                    temp1 = alpha*b(j,l)
-                    temp2 = alpha*a(j,l)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                   
+                     !$OMP SIMD ALIGNED(c:64,a,b) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=j,n
                        c(i,j) = c(i,j)+a(i,l)*temp1 + &
                             b(i,l)*temp2
@@ -4399,32 +4102,17 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  end if
               end do
            end do
+           !$OMP END PARALLEL DO
         end if
      else
         !  Form  C := alpha*A**T*B + alpha*B**T*A + C.
         if(upper) then
+           !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)  
            do j=1,n
               do i=1,j
                  temp1 = ZERO
                  temp2 = ZERO
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                   !$OMP SIMD ALIGNED(a:64,b) LINEAR(i:1) REDUCTION(+:temp1,temp2) UNROLL PARTIAL(10) 
                  do l=1,k
                     temp1 = temp1+a(l,i)*b(l,j)
                     temp2 = temp2+b(l,i)*a(l,j)
@@ -4437,31 +4125,14 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  end if
               end do
            end do
+           !$OMP END PARALLEL DO
         else
+            !$OMP PARALLEL DO SCHEDULE(STATIC) DEAFULT(SHARED) PRIVATE(j)  
            do j=1,n
               do i=j,n
                  temp1 = ZERO
                  temp = ZERO
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                   !$OMP SIMD ALIGNED(a:64,b) LINEAR(i:1) REDUCTION(+:temp1,temp2) UNROLL PARTIAL(10) 
                  do l=1,k
                     temp1 = temp1+a(l,i)*b(l,j)
                     temp2 = temp2+b(l,i)*a(l,j)
@@ -4474,10 +4145,11 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  end if
               end do
            end do
+           !$OMP END PARALLEL DO
         end if
      end if
       ! End of ZSYR2K
-   end subroutine gms_zsyr2k
+   end subroutine zsyr2k
 
 !     Authors:
 !*  ========
@@ -4505,35 +4177,39 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
    !*>     Sven Hammarling, Numerical Algorithms Group Ltd.
    ! !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
      !*> \endverbatim
-
-     subroutine gms_zsyrk(uplo,trans,n,k,alpha,a,lda,beta,c,ldc)
-#if defined __INTEL_COMPILER     
-        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_zsyrk
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine zsyrk(uplo,trans,n,k,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zsyrk !GCC$ ATTRIBUTES aligned(32) :: zsyrk !GCC$ ATTRIBUTES no_stack_protector :: zsyrk
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine zsyrk(uplo,trans,n,k,alpha,a,lda,beta,c,ldc)  
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zsyrk
+   !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zsyrk
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+
         character(len=1),                      intent(in),value  :: uplo
         character(len=1),                      intent(in),value  :: trans
-        integer(kind=int4),                    intent(in),value  :: n
-        integer(kind=int4),                    intent(in),value  :: k
+        integer(kind=i4),                    intent(in),value  :: n
+        integer(kind=i4),                    intent(in),value  :: k
         type(AVX512c8f64_t),                   intent(in)        :: alpha
-        type(AVX512c8f64_t), dimension(lda,*), intent(in)        :: a
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED a:64
-#endif
-        integer(kind=int4),                    intent(in),value  :: lda
+        !type(AVX512c8f64_t), dimension(lda,*), intent(in)        :: a
+         type(AVX512c8f64_t), dimension(:,:), allocatable, intent(in)        :: a
+        integer(kind=i4),                    intent(in),value  :: lda
         type(AVX512c8f64_t),                   intent(in)        :: beta
-        type(AVX512c8f64_t), dimension(ldc,*), intent(inout)     :: c
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED c:64
-#endif
-        integer(kind=int4),                    intent(in),value  :: ldc
+        !type(AVX512c8f64_t), dimension(ldc,*), intent(inout)     :: c
+         type(AVX512c8f64_t), dimension(:,:), allocatable, intent(in)        :: c
+        integer(kind=i4),                    intent(in),value  :: ldc
         ! LOcals
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
 #endif
         type(AVX512c8f64_t), automatic :: temp
-        integer(kind=int4),  automatic :: i,info,j,l,nrowa
-        logical(kind=int4),  automatic :: upper
-        logical(kind=int1),  automatic :: aeq0,beq1,beq0,bneq1
+        integer(kind=i4),  automatic :: i,info,j,l,nrowa
+        logical(kind=i4),  automatic :: upper
+        logical(kind=i1),  automatic :: aeq0,beq1,beq0,bneq1
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: ONE
 #endif
@@ -4555,57 +4231,48 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            nrowa = k
         end if
         upper = lsame(uplo,'U')
-        info = 0
-        if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
-           info = 1
-        else if((.not.lsame(trans,'N')) .and. &
-             (.not.lsame(trans,'T'))) then
-           info = 2
-        else if(n<0) then
-           info = 3
-        else if(k<0) then
-           info = 4
-        else if(lda < max(1,nrowa)) then
-           info = 7
-        else if(ldc < max(1,n)) then
-           info = 10
-        end if
-        if(info/=0) then
-           call xerbla('GMS_ZSYRK',info)
-           return
-        end do
+        !info = 0
+        !if((.not.upper) .and. (.not.lsame(uplo,'L'))) then
+        !   info = 1
+        !else if((.not.lsame(trans,'N')) .and. &
+       !      (.not.lsame(trans,'T'))) then
+        !   info = 2
+        !else if(n<0) then
+        !   info = 3
+        !else if(k<0) then
+        !   info = 4
+        !else if(lda < max(1,nrowa)) then
+        !   info = 7
+        !else if(ldc < max(1,n)) then
+        !   info = 10
+        !end if
+        !if(info/=0) then
+        !   call xerbla('GMS_ZSYRK',info)
+        !   return
+        !end do
         ! Quick return if possible.
         aeq0 = .false.
         beq1 = .false.
         aeq0 = all(alpha==ZERO)
         beq1 = all(beta==ONE)
-        if((n==0) .or. (((aeq0) .or. &
-             (k==0)) .and.(beq1))) return
+        !if((n==0) .or. (((aeq0) .or. &
+        !     (k==0)) .and.(beq1))) return
         !  And when  alpha.eq.zero.
         if(aeq0) then
            if(upper) then
               if(beq0) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                  do j=1,n
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                    !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=1,j
                        c(i,j) = ZERO
                     end do
                  end do
+                 !$OMP END PARALLEL DO
               else
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                  do j=1,n
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
-#endif
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=1,j
                        c(i,j) = beta*c(i,j)
                     end do
@@ -4613,31 +4280,22 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               end if
            else
               if(beq0) then
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                  do j=1,n
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=j,n
                        c(i,j) = ZERO
                     end do
                  end do
               else
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
                  do j=1,n
-#if defined __INTEL_COMPILER                    
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
-#endif
+                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=j,n
                        c(i,j) = beta*c(i,j)
                     end do
                  end do
+                 !$OMP END PARALLEL DO
               end if
            end if
            return
@@ -4650,26 +4308,15 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
         if(lsame(trans,'N')) then
            !  Form  C := alpha*A*A**T + beta*C.
            if(upper) then
+               !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
               do j=1,n
                  if(beq0) then
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=1,j
                        c(i,j) = ZERO
                     end do
                  else if(bneq1) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
-#endif
+                     !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=1,j
                        c(i,j) = beta*c(i,j)
                     end do
@@ -4677,53 +4324,24 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                  do l=1,k
                     if(all(a(j,l)/=ZERO)) then
                        temp = alpha*a(j,l)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                        !$OMP SIMD ALIGNED(c:64,a) LINEAR(i:1) UNROLL PARTIAL(10)
                        do i=1,j
                           c(i,j) = c(i,j)+temp*a(i,l)
                        end do
                     end if
                  end do
               end do
+              !$OMP END PARALLEL DO
            else
+                !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j)
               do j=1,n
                  if(beq0) then
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ UNROLL(6)
+                      !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(8)
                     do i=j,n
                        c(i,j) = ZERO
                     end do
                  else if(bneq1) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(4)
-#endif
-#endif
+                       !$OMP SIMD ALIGNED(c:64) LINEAR(i:1) UNROLL PARTIAL(6)
                     do i=j,n  
                       c(i,j) = beta*c(i,j)
                    end do
@@ -4731,59 +4349,23 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                 do l=1,k
                    if(all(a(j,l)/=ZERO)) then
                       temp = alpha*a(j,l)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                        !$OMP SIMD ALIGNED(c:64,a) LINEAR(i:1) UNROLL PARTIAL(10)
                       do i=j,n
                          c(i,j) = c(i,j)+temp*a(i,l)
                       end do
                    end if
                 end do
              end do
+             !$OMP END PARALLEL DO
           end if
        else
           !   Form  C := alpha*A**T*A + beta*C.
           if(upper) then
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,i) COLLAPSE(2)
              do j=1,n
                 do i=1,j
                    temp = ZERO
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(c:64,a) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                    do l=1,k
                       temp = temp+a(l,i)*a(l,j)
                    end do
@@ -4794,30 +4376,13 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    end if
                 end do
              end do
+             !$OMP END PARALLEL DO
           else
+             !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,i) COLLAPSE(2)
              do j=1,n
                 do i=1,n
                    temp = ZERO
-#if defined __INTE_COMPILER
-                     !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                    !$OMP SIMD ALIGNED(c:64,a) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                    do l=1,k
                       temp = temp+a(l,i)*a(l,j)
                    end do
@@ -4828,10 +4393,11 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                    end if
                 end do
              end do
+             !$OMP END PARALLEL DO
           end if
        end if
        ! End of ZSYRK
-     end subroutine gms_zsyrk
+     end subroutine zsyrk
 
 !  Authors:
 !*  ========
@@ -4860,33 +4426,36 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
      !*>     Richard Hanson, Sandia National Labs.
       !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
      !*> \endverbatim
-
-     subroutine gms_ztbsv(uplo,trans,diag,n,k,a,lda,x,incx)
-#if defined __INTEL_COMPILER
-       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztbsv
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine ztbsv(uplo,trans,diag,n,k,a,lda,x,incx) !GCC$ ATTRIBUTES hot :: ztbsv !GCC$ ATTRIBUTES aligned(32) :: ztbsv !GCC$ ATTRIBUTES no_stack_protector :: ztbsv
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine ztbsv(uplo,trans,diag,n,k,a,lda,x,incx)  
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ztbsv
+        !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ztbsv
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
         character(len=1),                         intent(in),value  :: uplo
         character(len=1),                         intent(in),value  :: trans
         character(len=1),                         intent(in),value  :: diag
-        integer(kind=int4),                       intent(in),value  :: n
-        integer(kind=int4),                       intent(in),value  :: k
-        type(AVX512c8f64_t), dimension(lda,*),    intent(in)        :: a
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED a:64
-#endif
-        integer(kind=int4),                       intent(in),value  :: lda
-        type(AVX512c8f64_t), dimension(*),        intent(inout)     :: x
-#if defined __INTEL_COMPILER
-        !DIR$ ASSUME_ALIGNED x:64
-#endif
-        integer(kind=int4),                       intent(in),value  :: incx
+        integer(kind=i4),                       intent(in),value  :: n
+        integer(kind=i4),                       intent(in),value  :: k
+        !type(AVX512c8f64_t), dimension(lda,*),    intent(in)        :: a
+        type(AVX512c8f64_t), dimension(:,:), allocatable,    intent(in)        :: a
+        integer(kind=i4),                       intent(in),value  :: lda
+        !type(AVX512c8f64_t), dimension(*),        intent(inout)     :: x
+        type(AVX512c8f64_t), dimension(:), allocatable,    intent(in)        :: a
+        integer(kind=i4),                       intent(in),value  :: incx
         ! Locals
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: temp
 #endif
         type(AVX512c8f64_t), automatic :: temp
-        integer(kind=int4),  automatic :: i,info,ix,j,jx,kplus1,kx,l
-        logical(kind=int4),  automatic :: noconj,nounit
+        integer(kind=i4),  automatic :: i,info,ix,j,jx,kplus1,kx,l
+        logical(kind=i4),  automatic :: noconj,nounit
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
 #endif
@@ -4895,29 +4464,29 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
         ! Test the input parameters.
-        info = 0
-        if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
-           info = 1
-        else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
-             .not.lsame(trans,'C')) then
-           info = 2
-        else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
-           info = 3
-        else if(n<0) then
-           info = 4
-        else if(k<0) then
-           info = 5
-        else if(lda<(k+1)) then
-           info = 7
-        else if(incx==0) then
-           info = 9
-        end if
-        if(info/=0) then
-           call xerbla('GMS_ZTBSV',info)
-           return
-        end if
+        !info = 0
+        !if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+         !  info = 1
+        !else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+        !     .not.lsame(trans,'C')) then
+        !   info = 2
+        !else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+        !   info = 3
+        !else if(n<0) then
+        !   info = 4
+        !else if(k<0) then
+        !   info = 5
+        !else if(lda<(k+1)) then
+        !   info = 7
+        !else if(incx==0) then
+        !   info = 9
+        !end if
+        !if(info/=0) then
+         !  call xerbla('GMS_ZTBSV',info)
+        !   return
+        !end if
         !  Quick return if possible.
-        if(n==0) return
+        !if(n==0) return
         noconj = lsame(trans,'T')
         nounit = lsame(diag,'N')
         !   Set up the start point in X if the increment is not unity. This
@@ -4934,39 +4503,23 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            if(lsame(uplo,'U')) then
               kplus1 = k+1
               if(incx==1) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,temp) 
                  do j=n,1,-1
                     if(all(x(j)/=ZERO)) then
                        l = kplus1-j
-                       if(nounit) x(j)/a(kplus1,j)
+                       if(nounit) x(j) = x(j)/a(kplus1,j)
                        temp = x(j)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                       !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) UNROLL PARTIAL(6)
                        do i=j-1,max(1,j-k),-1
                           x(i) = x(i)-temp*a(l+i,j)
                        end do
                     end if
                  end do
+                 !$OMP END PARALLEL DO
               else
                  kx = kx+(n-1)*incx
                  jx = kx
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,kx,ix,jx,l,temp) 
                  do j=n,1,-1
                     kx = kx-incx
                     if(all(x(jx)/=ZERO)) then
@@ -4974,67 +4527,33 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        l = kplus1-j
                        if(nounit) x(jx) = x(jx)/a(kplus1,j)
                        temp = x(jx)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) UNROLL PARTIAL(6)
                        do i=j-1,max(1,j-k),-1
                           x(ix) = x(ix)-temp*a(l+i,j)
                        end do
                     end if
                     jx = kx-incx
                  end do
+                 !$OMP END PARALLEL DO
               end if
            else
               if(incx==1) then
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,temp) 
                  do j=1,n
                     if(all(x(j)/=ZERO)) then
                        l = 1-j
                        if(nounit) x(j) = x(j)/a(1,j)
                        temp = x(j)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) UNROLL PARTIAL(6)
                        do i=j+1,min(n,j+k)
                           x(i) = x(i)-temp*a(l+i,j)
                        end do
                     end if
                  end do
+                 !$OMP END PARALLEL DO
               else
                  jx = kx
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,kx,ix,jx,l,temp) 
                  do j=1,n
                     kx = kx+incx
                     if(all(x(jx)/=ZERO)) then
@@ -5042,26 +4561,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        l = 1-j
                        if(nounit) x(jx) = x(jx)/a(1,j)
                        temp = x(jx)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                  
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) UNROLL PARTIAL(6)
                        do i=j+1,min(n,j+k)
                           x(ix) = x(ix)-temp*a(l+i,j)
                           ix = ix+incx
@@ -5069,6 +4569,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end if
                     jx = jx+incx
                  end do
+                 !$OMP END PARALLEL DO
               end if
            end if
         else
@@ -5076,55 +4577,18 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            if(lsame(uplo,'U')) then
               kplus1 = k+1
               if(incx==1) then
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,temp) 
                  do j=1,n
                     temp = x(j)
                     l = kplus1-j
                     if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                  
+                       !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=max(1,j-k),j-1
                           temp = temp-a(l+i,j)*x(i)
                        end do
                        if(nounit) temp = temp/a(kplus1,j)
                     else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                 
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=max(1,j-k),j-1
                           temp = temp-conjugate(a(l+i,j))*x(i)
                        end do
@@ -5132,58 +4596,22 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end if
                     x(j) = temp
                  end do
+                 !$OMP END PARALLEL DO
               else
                  jx = kx
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,ix,temp,jx,kx) 
                  do j=1,n
                     temp = x(jx)
                     ix = kx
                     l = kplus1-j
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                 
+                          !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=max(1,j-k),j-1
                           temp = temp-a(l+i,j)*x(ix)
                           ix = ix+incx
                        end do
                        if(nounit) temp = temp/a(kplus1,j)
                     else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                 
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=max(1,j-k),j-1
                           temp = temp-conjugate(a(l+i,j))*x(ix)
                           ix = ix+incx
@@ -5194,58 +4622,22 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     jx = jx+incx
                     if(j>k) kx = kx+incx
                  end do
+                 !$OMP END PARALLEL DO
               end if
            else
               if(incx==1) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,temp) 
                  do j=n,1,-1
                     temp = x(j)
                     l =1-j
                     if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                   
+                        !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=min(n,j+k),j+1,-1
                           temp = temp-a(l+i,j)*x(i)
                        end do
                        if(nounit) temp = temp/a(1,j)
                     else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=min(n,j+k),j+1,-1
                           temp = temp-conjugate(a(l+i,j))*x(i)
                        end do
@@ -5253,60 +4645,24 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end if
                     x(j) = temp
                  end do
+                 !$OMP END PARALLEL DO
               else
                  kx = kx+(n-1)*incx
                  jx = kx
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,l,ix,temp,jx,kx) 
                  do j=n,1,-1
                     temp = x(jx)
                     ix = kx
                     l = 1-j
                     if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
+                         !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=min(n,j+k),j+1,-1
                           temp = temp-a(l+i,j)*x(i)
                           ix = ix+incx
                        end do
                        if(nounit) temp = temp/a(1,j)
                     else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                      
+                          !$OMP SIMD ALIGNED(x:64,a) LINEAR(i:1) REDUCTION(-:temp) UNROLL PARTIAL(6)
                        do i=min(n,j+k),j+1,-1
                           temp = temp-conjugate(a(l+i,j))*x(ix)
                           ix = ix+incx
@@ -5317,11 +4673,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     jx = jx-incx
                     if((n-j)>=k) kx = kx-incx
                  end do
+                 !$OMP END PARALLEL DO
               end if
            end if
         end if
         !End of ZTBSV
-     end subroutine gms_ztbsv
+     end subroutine ztbsv
 
 ! Authors:
 !*  ========
@@ -5350,31 +4707,36 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
      !*>     Richard Hanson, Sandia National Labs.
      !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
      !*> \endverbatim
-
-     subroutine gms_ztpmv(uplo,trans,diag,n,ap,x,incx)
-#if defined __INTEL_COMPILER
-         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztpmv
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine ztpmv(uplo,trans,diag,n,ap,x,incx) !GCC$ ATTRIBUTES Hot :: ztpmv !GCC$ ATTRIBUTES aligned(32) :: ztpmv !GCC$ ATTRIBUTES no_stack_protector :: ztpmv
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine ztpmv(uplo,trans,diag,n,ap,x,incx)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ztpmv
+      !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ztpmv
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+
+   
          character(len=1),                         intent(in),value :: uplo
          character(len=1),                         intent(in),value :: trans
          character(len=1),                         intent(in),value :: diag
-         integer(kind=int4),                       intent(in),value :: n
-         type(AVX512c8f64_t), dimension(*),        intent(in)       :: ap
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED ap:64
-#endif
-         type(AVX512c8f64_t), dimension(*),        intent(inout)    :: x
-#if defined __INTEL_COMPILER
-         !DIR$ ASSUME_ALIGNED x:64
-#endif
-         integer(kind=int4),                       intent(in),value :: incx
+         integer(kind=i4),                       intent(in),value :: n
+         !type(AVX512c8f64_t), dimension(*),        intent(in)       :: ap
+         type(AVX512c8f64_t), dimension(:), allocatable,       intent(in)       :: ap
+         !type(AVX512c8f64_t), dimension(*),        intent(inout)    :: x
+         type(AVX512c8f64_t), dimension(:), allocatable,        intent(in)       :: x
+         integer(kind=i4),                       intent(in),value :: incx
          ! LOcals
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp
 #endif
          type(AVX512c8f64_t), automatic :: temp
-         integer(kind=int4),  automatic :: i,info,ix,j,jx,k,kk,kx
-         logical(kind=int4),  automatic :: noconj,nounit
+         integer(kind=i4),  automatic :: i,info,ix,j,jx,k,kk,kx
+         logical(kind=i4),  automatic :: noconj,nounit
 #if defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
 #endif
@@ -5383,25 +4745,25 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
         ! Exec code ....
-        info = 0
-        if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
-           info = 1
-        else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
-             .not.lsame(trans,'C')) then
-           info = 2
-        else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
-           info = 3
-        else if(n<0) then
-           info = 4
-        else if(incx==0) then
-           info = 7
-        end if
-        if(info/=0) then
-           call xerbla('GMS_ZTPMV',info)
-           return
-        end if
+        !info = 0
+       ! if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+        !   info = 1
+        !else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+        !     .not.lsame(trans,'C')) then
+        !   info = 2
+        !else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+        !   info = 3
+        !else if(n<0) then
+        !   info = 4
+        !else if(incx==0) then
+        !   info = 7
+        !end if
+        !if(info/=0) then
+        !   call xerbla('GMS_ZTPMV',info)
+        !   return
+        !end if
         !  Quick return if possible.
-        if(n==0) return
+        !if(n==0) return
         noconj = lsame(trans,'T')
         nounit = lsame(diag,'N')
         ! Set up the start point in X if the increment is not unity. This
@@ -5418,30 +4780,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
            if(lsame(uplo,'U')) then
               kk = 1
               if(incx==1) then
+                 !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                  do j=1,n
                     if(all(x(j)/=ZERO)) then
                        temp = x(j)
                        k = kk
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                        
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL PARTIAL(10)
                        do i=1,j-1
                           x(i) = x(i)+temp*ap(k)
                           k = k+1
@@ -5450,32 +4794,15 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end if
                     kk = kk+j
                  end do
+                 !$OMP END PARALLEL DO
               else
                  jx = kx
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                  do j=1,n
                     if(all(x(jx)/=ZERO)) then
                        temp = x(jx)
                        ix = kx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                        
+                         !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL PARTIAL(10)
                        do k=kk,kk+j-2
                           x(ix) = x(ix)+temp*ap(k)
                           ix = ix+incx
@@ -5485,34 +4812,17 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     jx = jx+incx
                     kk = kk+j
                  end do
+                 !$OMP END PARALLEL DO
               end if
            else
               kk = (n*(n+1))/2
               if(incx==1) then
+                  !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                  do j=n,1,-1
                     if(all(x(j)/=ZERO)) then
                        temp = x(j)
                        k = kk
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif  
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL PARTIAL(10)
                        do i=n,j+1,-1
                           x(i) = x(i)+temp*ap(k)
                           k = k-1
@@ -5521,33 +4831,16 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     end if
                     kk = kk-(n-j+1)
                  end do
+                 !$OMP END PARALLEL DO
               else
                  kx = kx+(n-1)*incx
                  jx = kx
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                  do j=n,1,-1
                     if(all(x(jx)/=ZERO)) then
                        temp = x(jx)
                        ix = kx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif   
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL PARTIAL(10)
                        do k=kk,kk-(n-(j+1)),-1
                           x(ix) = x(ix)+temp*ap(k)
                           ix = ix+incx
@@ -5557,6 +4850,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     jx = jx-incx
                     kk = kk-(n-j+1)
                  end do
+                 !$OMP END PARALLEL DO
               end if
             end if
          else
@@ -5564,57 +4858,20 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
             if(lsame(uplo,'U')) then
                kk = (n*(n+1))/2
                if(incx==1) then
+                   !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                   do j=n,1,-1
                      temp = x(j)
                      k = kk-1
                      if(noconj) then
                         if(nounit) temp = temp*ap(kk)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                        
+                         !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do i=j-1,1,-1
                            temp = temp+ap(k)*x(i)
                            k = k-1
                         end do
                      else
                         if(nounit) temp = temp*conjugate(ap(kk))
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                        
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do i=j-1,1,-1
                            temp = temp+conjugate(ap(k))*x(i)
                            k = k-1
@@ -5623,59 +4880,23 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                      x(j) = temp
                      kk = kk-j
                   end do
+                  !$OMP END PARALLEL DO
                else
                   jx = kx+(n-1)*incx
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                   do j=n,1,-1
                      temp = x(jx)
                      ix = jx
                      if(noconj) then
                         if(nounit) temp = temp*ap(kk)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                         
+                         !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do k=kk-1,kk-j+1,-1
                            ix = ix-incx
                            temp = temp+ap(k)*x(ix)
                         end do
                      else
                         if(nounit) temp = temp*conjugate(ap(kk))
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                        
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do k=kk-1,kk-j+1,-1
                            ix = ix-incx
                            temp = temp+conjugate(ap(k))*x(ix)
@@ -5685,41 +4906,25 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                      jx = jx-incx
                      kk = kk-j
                   end do
+                  !$OMP END PARALLEL DO
                end if
             else
                kk = 1
                if(incx==1) then
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                   do j=1,n
                      temp = x(j)
                      k = kk+1
                      if(noconj) then
                         if(nounit) temp = temp*ap(kk)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                         
+                        !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do i=j+1,n
                            temp = temp+ap(k)*x(i)
                            k = k+1
                         end do
                      else
                         if(nounit) temp = temp+conjugate(ap(kk))
+                         !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do i=j+1,n
                            temp = temp+conjugate(ap(k))*x(i)
                            k = k+1
@@ -5728,59 +4933,23 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                      x(j) = temp
                      kk = kk+(n-j+1)
                   end do
+                  !$OMP END PARALLEL DO
                else
                   jx = kx
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                   do j=1,n
                      temp = x(jx)
                      ix = jx
                      if(noconj) then
                         if(nounit) temp = temp*ap(kk)
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                         
+                          !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                         do k=kk+1,kk+n-j
                            ix = ix+incx
                            temp = temp+ap(k)*x(ix)
                         end do
                      else
                         if(nounit) temp = temp*conjugate(ap(k))
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                         
+                          !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(+:temp) UNROLL PARTIAL(10)
                        do k=kk+1,kk+n-j
                           ix = ix+incx
                           temp = temp+conjugate(ap(k))*x(ix)
@@ -5790,11 +4959,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                     jx = jx+incx
                     kk = kk+(n-j+1)
                  end do
+                 !$OMP END PARALLEL DO
               end if
             end if
          end if
          ! End of ZTPMV
-      end subroutine gms_ztpmv
+      end subroutine ztpmv
 
 ! Authors:
 !*  ========
@@ -5823,31 +4993,35 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
       !Modified by Bernard Gingold on 29-11-2019 (removing build-in complex*16 data type,using modern Fortran features)
 !*> \endverbatim
       !*>
-
-      subroutine gms_ztpsv(uplo,trans,diag,n,ap,x,incx)
-#if defined __INTEL_COMPILER
-           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: gms_ztpsv
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))  
+subroutine ztpsv(uplo,trans,diag,n,ap,x,incx) !GCC$ ATTRIBUTES hot :: ztpsv !GCC$ ATTRIBUTES aligned(32) :: ztpsv !GCC$ ATTRIBUTES no_stack_protector :: ztpsv
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+subroutine ztpsv(uplo,trans,diag,n,ap,x,incx)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ztpsv
+     !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ztpmv
 #endif
+          use module_kinds, only : i4, i1
+          use mod_avx512c8f64
+          use omp_lib
+          implicit none
+
            character(len=1),                    intent(in),value :: uplo
            character(len=1),                    intent(in),value :: trans
            character(len=1),                    intent(in),value :: diag
-           integer(kind=int4),                  intent(in),value :: n
-           type(AVX512c8f64_t), dimension(*),   intent(in)       :: ap
-#if defined __INTEL_COMPILER
-           !DIR$ ASSUME_ALIGNED ap:64
-#endif
-           type(AVX512c8f64_t), dimension(*),   intent(inout)    :: x
-#if defined __INTEL_COMPILER
-           !DIR$ ASSUME_ALIGNED x:64
-#endif
-           integer(kind=int4),                  intent(in),value :: incx
+           integer(kind=i4),                  intent(in),value :: n
+           !type(AVX512c8f64_t), dimension(*),   intent(in)       :: ap
+           type(AVX512c8f64_t), dimension(:), allocatable,   intent(in)       :: ap
+           !type(AVX512c8f64_t), dimension(*),   intent(inout)    :: x
+           type(AVX512c8f64_t), dimension(:), allocatable,  intent(in)       :: x
+           integer(kind=i4),                  intent(in),value :: incx
            ! LOcals
 #if defined __INTEL_COMPILER
          !DIR$ ATTRIBUTES ALIGN : 64 :: temp
 #endif
            type(AVX512c8f64_t), automatic :: temp
-           integer(kind=int4),  automatic :: i,info,ix,j,jx,k,kk,kx
-           logical(kind=int4),  automatic :: noconj,nounit           
+           integer(kind=i4),  automatic :: i,info,ix,j,jx,k,kk,kx
+           logical(kind=i4),  automatic :: noconj,nounit           
          
 #if defined __INTEL_COMPILER
           !DIR$ ATTRIBUTES ALIGN : 64 :: ZERO
@@ -5857,25 +5031,25 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                                                                [0.0_dp,0.0_dp,0.0_dp,0.0_dp, &
                                                                0.0_dp,0.0_dp,0.0_dp,0.0_dp])
            ! Exec code ....
-           info = 0
-           if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
-              info = 1
-           else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
-              .not.lsame(trans,'C')) then
-              info = 2
-           else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
-              info = 3
-           else if(n<0) then
-              info = 4
-           else if(incx==0) then
-              info = 7
-           end if
-           if(info/=0) then
-              call xerbla('GMS_ZTPSV',info)
-              return
-           end if
+          ! info = 0
+           !if(.not.lsame(uplo,'U') .and. .not.lsame(uplo,'L')) then
+          !    info = 1
+          ! else if(.not.lsame(trans,'N') .and. .not.lsame(trans,'T') .and. &
+          !    .not.lsame(trans,'C')) then
+          !    info = 2
+          ! else if(.not.lsame(diag,'U') .and. .not.lsame(diag,'N')) then
+          !    info = 3
+          ! else if(n<0) then
+          !    info = 4
+          ! else if(incx==0) then
+          !    info = 7
+          ! end if
+          ! if(info/=0) then
+          !    call xerbla('GMS_ZTPSV',info)
+          !    return
+          ! end if
            ! Quick return if possible.
-           if(n==0) return
+           !if(n==0) return
            noconj = lsame(trans,'T')
            nounit = lsame(diag,'N')
            !  Set up the start point in X if the increment is not unity. This
@@ -5892,31 +5066,13 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               if(lsame(uplo,'U')) then
                  kk = (n*(n+1))/2
                  if(incx==1) then
+                    !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                     do j=n,1,-1
                        if(all(x(j)/=ZERO)) then
                           if(nounit) x(j) = x(j)/ap(kk)
                           temp = x(j)
                           k = kk-1
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                          !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do i=j-1,1,-1
                              x(i) = x(i)-temp*ap(k)
                              k = k-1
@@ -5924,33 +5080,16 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        end if
                        kk = kk-j
                     end do
+                    !$OMP END PARALLEL DO
                  else
                     jx = kx+(n-1)*incx
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                     do j=n,1,-1
                        if(all(x(jx)/=ZERO)) then
                           if(nounit) x(jx) = x(jx)/ap(kk)
                           temp = x(jx)
                           ix = jx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                            !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do k=kk-1,kk-j+1,-1
                              ix = ix-incx
                              x(ix) = x(ix)-temp*ap(k)
@@ -5959,35 +5098,18 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        jx = jx-incx
                        kk = kk-j
                     end do
+                    !$OMP END PARALLEL DO
                  end if
               else
                  kk = 1
                  if(incx==1) then
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                     do j=1,n
                        if(all(x(j)/=ZERO)) then
                           if(nounit) x(j) = x(j)/ap(kk)
                           temp = x(j)
                           k = kk+1
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                            !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do i=j+1,n
                              x(i) = x(i)-temp*ap(k)
                              k = k+1
@@ -5995,33 +5117,16 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        end if
                        kk = kk+(n-j+1)
                     end do
+                    !$OMP END PARALLEL DO
                  else
                     jx = kx
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                     do j=1,n
                        if(all((jx)/=ZERO)) then
                           if(nounit) x(jx) = x(jx)/ap(kk)
                           temp = x(jx)
                           ix = jx
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                           
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do k=kk+1,kk+n-j
                              ix = ix+incx
                              x(ix) = x(ix)-temp*ap(k)
@@ -6030,6 +5135,7 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        jx = jx+incx
                        kk = kk+(n-j+1)
                     end do
+                    !$OMP END PARALLEL DO
                  end if
               end if
            else
@@ -6037,36 +5143,19 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
               if(lsame(uplo,'U')) then
                  kk = 1
                  if(incx==1) then
+                      !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                     do j=1,n
                        temp = x(j)
                        k = kk
                        if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                            !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do i=1,j-1
                              temp = temp-ap(k)*x(i)
                              k = k+1
                           end do
                           if(nounit) temp = temp/ap(kk+j-1)
                        else
+                            !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) UNROLL(6)
                           do i=1,j-1
                              temp = temp-conjugate(ap(k))*x(i)
                              k = k+1
@@ -6076,58 +5165,22 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        x(j) = temp
                        kk = kk+j
                     end do
+                    !$OMP END PARALLEL DO
                  else
                     jx = kx
+                      !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                     do j=1,n
                        temp = x(jx)
                        ix = kx
                        if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do k=kk,kk+j-2
                              temp = temp-ap(k)*x(ix)
                              ix = ix+incx
                           end do
                           if(nounit) temp = temp/ap(kk+j-1)
                        else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do k=kk,kk+j-2
                              temp = temp-conjugate(ap(k))*x(ix)
                              ix = ix+incx
@@ -6138,60 +5191,24 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        jx = jx+incx
                        kk = kk+j
                     end do
+                    !$OMP END PARALLEL DO
                  end if
               else
                  kk = (n*(n+1))/2
                  if(incx==1) then
+                     !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,k,kk)
                     do j=n,1,-1
                        temp = x(j)
                        k = kk
                        if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                           
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do i=n,j+1,-1
-                             temp = temp-ap(k)*x(i0
+                             temp = temp-ap(k)*x(i)
                              k = k-1
                           end do
                           if(nounit) temp = temp/ap(kk-n+j)
                        else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                          
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do i=n,j+1,-1
                              temp = temp/conjugate(ap(kk-n+j))
                              k = k-1
@@ -6201,60 +5218,23 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        x(j) = temp
                        kk = kk-(n-j+1)
                     end do
+                    !$OMP END PARALLEL DO
                  else
                     kx = kx+(n-1)*incx
                     jx = kx
+                       !$OMP PARALLEL DO SCHEDULE(STATIC) DEFAULT(SHARED) PRIVATE(j,temp,ix,jx,kk)
                     do j=n,1,-1
                        temp = x(jx)
                        ix = kx
                        if(noconj) then
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif
-                          
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do k=kk,kk-(n-(j+1)),-1
                              temp = temp-ap(k)*x(ix)
                              ix = ix-incx
                           end do
                           if(nounit) temp = temp/ap(kk-n+j)
                        else
-#if defined __INTEL_COMPILER
-                    !DIR$ VECTOR ALIGNED
-                    !DIR$ VECTOR ALWAYS
-                    !DIR$ FMA
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !DIR$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !DIR$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !DIR$ UNROLL(5)
-#endif
-#elif defined __GFORTRAN__
-#if (CURRENT_PROCESSOR_ARCH_NAME) == 1
-                    !GCC$ UNROLL(10)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 2
-                    !GCC$ UNROLL(8)
-#elif (CURRENT_PROCESSOR_ARCH_NAME) == 3
-                    !GCC$ UNROLL(4)
-#endif
-#endif                           
+                           !$OMP SIMD ALIGNED(x:64,ap) LINEAR(i:1) REDUCTION(-:temp) UNROLL(6)
                           do k=kk,kk-(n-(j+1)),-1
                              temp = temp-conjugate(ap(k))*x(ix)
                              ix = ix-incx
@@ -6265,11 +5245,12 @@ subroutine zherk(uplo,trans,n,alpha,a,lda,beta,c,ldc) !GCC$ ATTRIBUTES hot :: zh
                        jx = jx-incx
                        kk = kk-(n-j+1)
                     end do
+                    !$OMP END PARALLEL DO
                  end if
               end if
            end if
            ! End of ZTPSV
-      end subroutine gms_ztpsv
+      end subroutine ztpsv
         
     
 
