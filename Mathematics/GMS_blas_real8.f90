@@ -1301,7 +1301,1400 @@ SUBROUTINE DGER(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES inline :: DGER !
    30             CONTINUE
               END IF
               JY = JY + INCY
-   40     CONTINUE
+40        CONTINUE
+          !$OMP END PARALLEL DO    
+      END IF
+
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  -- This version written on 25-October-1982.
+!*>     Modified on 14-October-1993 to inline the call to DLASSQ.
+!*>     Sven Hammarling, Nag Ltd.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+DOUBLE PRECISION FUNCTION DNRM2(N,X,INCX) !GCC$ ATTRIBUTES inline :: DNRM2 !GCC$ ATTRIBUTES aligned(32) :: DNRM2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  DOUBLE PRECISION FUNCTION DNRM2(N,X,INCX)
+     !DIR$ ATTRIBUTES FORCEINLINE :: DNRM2
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DNRM2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DNRM2
+#endif
+      implicit none
+!*!
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      INTEGER INCX,N
+!*     ..
+!*     .. Array Arguments ..
+      DOUBLE PRECISION X(*)
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION ONE,ZERO
+      PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+!*     ..
+!*     .. Local Scalars ..
+      DOUBLE PRECISION ABSXI,NORM,SCALE,SSQ
+      INTEGER IX
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC ABS,SQRT
+!*     ..
+      IF (N.LT.1 .OR. INCX.LT.1) THEN
+          NORM = ZERO
+      ELSE IF (N.EQ.1) THEN
+          NORM = ABS(X(1))
+      ELSE
+          SCALE = ZERO
+          SSQ = ONE
+!*        The following loop is equivalent to this call to the LAPACK
+!*        auxiliary routine:
+!*        CALL DLASSQ( N, X, INCX, SCALE, SSQ )
+!*
+          DO 10 IX = 1,1 + (N-1)*INCX,INCX
+              IF (X(IX).NE.ZERO) THEN
+                  ABSXI = ABS(X(IX))
+                  IF (SCALE.LT.ABSXI) THEN
+                      SSQ = ONE + SSQ* (SCALE/ABSXI)**2
+                      SCALE = ABSXI
+                  ELSE
+                      SSQ = SSQ + (ABSXI/SCALE)**2
+                  END IF
+              END IF
+   10     CONTINUE
+          NORM = SCALE*SQRT(SSQ)
+      END IF
+
+      DNRM2 = NORM
+    
+END FUNCTION
+
+
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>     jack dongarra, linpack, 3/11/78.
+!*>     modified 12/3/93, array(1) declarations changed to array(*)
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DROT(N,DX,INCX,DY,INCY,C,S) !GCC$ ATTRIBUTES inline :: DROT !GCC$ ATTRIBUTES aligned(32) :: DROT
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DROT(N,DX,INCX,DY,INCY,C,S)
+     !DIR$ ATTRIBUTES FORCEINLINE :: DROT
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DROT
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DROT
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION C,S
+      INTEGER INCX,INCY,N
+!*     ..
+!*     .. Array Arguments ..
+      ! DOUBLE PRECISION DX(*),DY(*)
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DX
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DY
+!*     ..
+1*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION DTEMP
+      INTEGER I,IX,IY
+!*     ..
+!      IF (N.LE.0) RETURN
+      IF (INCX.EQ.1 .AND. INCY.EQ.1) THEN
+!*
+!*       code for both increments equal to 1
+         !*
+         !$OMP SIMD ALIGNED(DX:64,DY) LINEAR(I:1) UNROLL(10)
+         DO I = 1,N
+            DTEMP = C*DX(I) + S*DY(I)
+            DY(I) = C*DY(I) - S*DX(I)
+            DX(I) = DTEMP
+         END DO
+      ELSE
+!*
+!*       code for unequal increments or equal increments not equal
+!*         to 1
+!*
+         IX = 1
+         IY = 1
+         IF (INCX.LT.0) IX = (-N+1)*INCX + 1
+         IF (INCY.LT.0) IY = (-N+1)*INCY + 1
+         !$OMP SIMD ALIGNED(DX:64,DY) LINEAR(I:1) UNROLL(10)
+         DO I = 1,N
+            DTEMP = C*DX(IX) + S*DY(IY)
+            DY(IY) = C*DY(IY) - S*DX(IX)
+            DX(IX) = DTEMP
+            IX = IX + INCX
+            IY = IY + INCY
+         END DO
+      END IF
+     
+END SUBROUTINE
+
+
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>     jack dongarra, linpack, 3/11/78.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DROTG(DA,DB,C,S) !GCC$ ATTRIBUTES inline :: DROTG !GCC$ ATTRIBUTES aligned(32) :: DROTG
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DROTG(DA,DB,C,S)
+     !DIR$ ATTRIBUTES FORCEINLINE :: DROTG
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DROTG
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DROTG
+#endif
+       implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION C,DA,DB,S
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION R,ROE,SCALE,Z
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DABS,DSIGN,DSQRT
+!*     ..
+      ROE = DB
+      IF (DABS(DA).GT.DABS(DB)) ROE = DA
+      SCALE = DABS(DA) + DABS(DB)
+      IF (SCALE.EQ.0.0d0) THEN
+         C = 1.0d0
+         S = 0.0d0
+         R = 0.0d0
+         Z = 0.0d0
+      ELSE
+         R = SCALE*DSQRT((DA/SCALE)**2+ (DB/SCALE)**2)
+         R = DSIGN(1.0d0,ROE)*R
+         C = DA/R
+         S = DB/R
+         Z = 1.0d0
+         IF (DABS(DA).GT.DABS(DB)) Z = S
+         IF (DABS(DB).GE.DABS(DA) .AND. C.NE.0.0d0) Z = 1.0d0/C
+      END IF
+      DA = R
+      DB = Z
+END SUBROUTINE 
+
+    
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DROTM(N,DX,INCX,DY,INCY,DPARAM) !GCC$ ATTRIBUTES inline :: DROTM !GCC$ ATTRIBUTES aligned(32) :: DROTM
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DROTM(N,DX,INCX,DY,INCY,DPARAM)
+      !DIR$ ATTRIBUTES FORCEINLINE :: DROTM
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DROTM
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DROTM
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      INTEGER INCX,INCY,N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION DPARAM(5),DX(*),DY(*)
+      DOUBLE PRECISION, DIMENSION(5) :: DPARAM
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DX
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DY
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION DFLAG,DH11,DH12,DH21,DH22,TWO,W,Z,ZERO
+      INTEGER I,KX,KY,NSTEPS
+!*     ..
+!*     .. Data statements ..
+      DATA ZERO,TWO/0.D0,2.D0/
+!*     ..
+!*
+      DFLAG = DPARAM(1)
+      IF (DFLAG+TWO.EQ.ZERO) RETURN
+      IF (INCX.EQ.INCY.AND.INCX.GT.0) THEN
+!*
+         NSTEPS = N*INCX
+         IF (DFLAG.LT.ZERO) THEN
+            DH11 = DPARAM(2)
+            DH12 = DPARAM(4)
+            DH21 = DPARAM(3)
+            DH22 = DPARAM(5)
+            !$OMP SIMD ALIGNED(DX:64,DY) UNROLL PARTIAL(6)
+            DO I = 1,NSTEPS,INCX
+               W = DX(I)
+               Z = DY(I)
+               DX(I) = W*DH11 + Z*DH12
+               DY(I) = W*DH21 + Z*DH22
+            END DO
+         ELSE IF (DFLAG.EQ.ZERO) THEN
+            DH12 = DPARAM(4)
+            DH21 = DPARAM(3)
+            !$OMP SIMD ALIGNED(DX:64,DY) UNROLL PARTIAL(6)
+            DO I = 1,NSTEPS,INCX
+               W = DX(I)
+               Z = DY(I)
+               DX(I) = W + Z*DH12
+               DY(I) = W*DH21 + Z
+            END DO
+         ELSE
+            DH11 = DPARAM(2)
+            DH22 = DPARAM(5)
+            !$OMP SIMD ALIGNED(DX:64,DY) UNROLL PARTIAL(6)
+            DO I = 1,NSTEPS,INCX
+               W = DX(I)
+               Z = DY(I)
+               DX(I) = W*DH11 + Z
+               DY(I) = -W + DH22*Z
+            END DO
+         END IF
+      ELSE
+         KX = 1
+         KY = 1
+         IF (INCX.LT.0) KX = 1 + (1-N)*INCX
+         IF (INCY.LT.0) KY = 1 + (1-N)*INCY
+!*
+         IF (DFLAG.LT.ZERO) THEN
+            DH11 = DPARAM(2)
+            DH12 = DPARAM(4)
+            DH21 = DPARAM(3)
+            DH22 = DPARAM(5)
+            !$OMP SIMD ALIGNED(DX:64,DY) LINEAR(I:1) UNROLL PARTIAL(6)
+            DO I = 1,N
+               W = DX(KX)
+               Z = DY(KY)
+               DX(KX) = W*DH11 + Z*DH12
+               DY(KY) = W*DH21 + Z*DH22
+               KX = KX + INCX
+               KY = KY + INCY
+            END DO
+         ELSE IF (DFLAG.EQ.ZERO) THEN
+            DH12 = DPARAM(4)
+            DH21 = DPARAM(3)
+            !$OMP SIMD ALIGNED(DX:64,DY) LINEAR(I:1) UNROLL PARTIAL(6)
+            DO I = 1,N
+               W = DX(KX)
+               Z = DY(KY)
+               DX(KX) = W + Z*DH12
+               DY(KY) = W*DH21 + Z
+               KX = KX + INCX
+               KY = KY + INCY
+            END DO
+         ELSE
+             DH11 = DPARAM(2)
+             DH22 = DPARAM(5)
+             !$OMP SIMD ALIGNED(DX:64,DY) LINEAR(I:1) UNROLL PARTIAL(6)
+             DO I = 1,N
+                W = DX(KX)
+                Z = DY(KY)
+                DX(KX) = W*DH11 + Z
+                DY(KY) = -W + DH22*Z
+                KX = KX + INCX
+                KY = KY + INCY
+            END DO
+         END IF
+      END IF
+   
+END SUBROUTINE
+
+
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DROTMG(DD1,DD2,DX1,DY1,DPARAM) !GCC$ ATTRIBUTES inline :: DROTMG !GCC$ aligned(32) :: DROTMG
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DROTMG(DD1,DD2,DX1,DY1,DPARAM)
+      !DIR$ ATTRIBUTES FORCEINLINE :: DROTMG
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DROTMG
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DROTMG
+#endif
+    
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION DD1,DD2,DX1,DY1
+!*     ..
+!*     .. Array Arguments ..
+      DOUBLE PRECISION DPARAM(5)
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION DFLAG,DH11,DH12,DH21,DH22,DP1,DP2,DQ1,DQ2,DTEMP, &
+                       DU,GAM,GAMSQ,ONE,RGAMSQ,TWO,ZERO
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DABS
+!*     ..
+!*     .. Data statements ..
+!*
+      DATA ZERO,ONE,TWO/0.D0,1.D0,2.D0/
+      DATA GAM,GAMSQ,RGAMSQ/4096.D0,16777216.D0,5.9604645D-8/
+!*     ..
+
+      IF (DD1.LT.ZERO) THEN
+!*        GO ZERO-H-D-AND-DX1..
+         DFLAG = -ONE
+         DH11 = ZERO
+         DH12 = ZERO
+         DH21 = ZERO
+         DH22 = ZERO
+!*
+         DD1 = ZERO
+         DD2 = ZERO
+         DX1 = ZERO
+      ELSE
+!*        CASE-DD1-NONNEGATIVE
+         DP2 = DD2*DY1
+         IF (DP2.EQ.ZERO) THEN
+            DFLAG = -TWO
+            DPARAM(1) = DFLAG
+            RETURN
+         END IF
+!*        REGULAR-CASE..
+         DP1 = DD1*DX1
+         DQ2 = DP2*DY1
+         DQ1 = DP1*DX1
+!*
+         IF (DABS(DQ1).GT.DABS(DQ2)) THEN
+            DH21 = -DY1/DX1
+            DH12 = DP2/DP1
+!*
+            DU = ONE - DH12*DH21
+!*
+           IF (DU.GT.ZERO) THEN
+             DFLAG = ZERO
+             DD1 = DD1/DU
+             DD2 = DD2/DU
+             DX1 = DX1*DU
+           END IF
+         ELSE
+
+            IF (DQ2.LT.ZERO) THEN
+!*              GO ZERO-H-D-AND-DX1..
+               DFLAG = -ONE
+               DH11 = ZERO
+               DH12 = ZERO
+               DH21 = ZERO
+               DH22 = ZERO
+!*
+               DD1 = ZERO
+               DD2 = ZERO
+               DX1 = ZERO
+            ELSE
+               DFLAG = ONE
+               DH11 = DP1/DP2
+               DH22 = DX1/DY1
+               DU = ONE + DH11*DH22
+               DTEMP = DD2/DU
+               DD2 = DD1/DU
+               DD1 = DTEMP
+               DX1 = DY1*DU
+            END IF
+         END IF
+
+!*     PROCEDURE..SCALE-CHECK
+         IF (DD1.NE.ZERO) THEN
+            DO WHILE ((DD1.LE.RGAMSQ) .OR. (DD1.GE.GAMSQ))
+               IF (DFLAG.EQ.ZERO) THEN
+                  DH11 = ONE
+                  DH22 = ONE
+                  DFLAG = -ONE
+               ELSE
+                  DH21 = -ONE
+                  DH12 = ONE
+                  DFLAG = -ONE
+               END IF
+               IF (DD1.LE.RGAMSQ) THEN
+                  DD1 = DD1*GAM**2
+                  DX1 = DX1/GAM
+                  DH11 = DH11/GAM
+                  DH12 = DH12/GAM
+               ELSE
+                  DD1 = DD1/GAM**2
+                  DX1 = DX1*GAM
+                  DH11 = DH11*GAM
+                  DH12 = DH12*GAM
+               END IF
+            ENDDO
+         END IF
+
+         IF (DD2.NE.ZERO) THEN
+            DO WHILE ( (DABS(DD2).LE.RGAMSQ) .OR. (DABS(DD2).GE.GAMSQ) )
+               IF (DFLAG.EQ.ZERO) THEN
+                  DH11 = ONE
+                  DH22 = ONE
+                  DFLAG = -ONE
+               ELSE
+                  DH21 = -ONE
+                  DH12 = ONE
+                  DFLAG = -ONE
+               END IF
+               IF (DABS(DD2).LE.RGAMSQ) THEN
+                  DD2 = DD2*GAM**2
+                  DH21 = DH21/GAM
+                  DH22 = DH22/GAM
+               ELSE
+                  DD2 = DD2/GAM**2
+                  DH21 = DH21*GAM
+                  DH22 = DH22*GAM
+               END IF
+            END DO
+         END IF
+
+      END IF
+
+      IF (DFLAG.LT.ZERO) THEN
+         DPARAM(2) = DH11
+         DPARAM(3) = DH21
+         DPARAM(4) = DH12
+         DPARAM(5) = DH22
+      ELSE IF (DFLAG.EQ.ZERO) THEN
+         DPARAM(3) = DH21
+         DPARAM(4) = DH12
+      ELSE
+         DPARAM(2) = DH11
+         DPARAM(5) = DH22
+      END IF
+
+      DPARAM(1) = DFLAG
+    
+END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup double_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+!*>     Richard Hanson, Sandia National Labs.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSBMV !GCC$ ATTRIBUTES aligned(32) :: DSBMV !GCC$ ATTRIBUTES no_stack_protector :: DSBMV
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSBMV
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DSBMV
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION ALPHA,BETA
+      INTEGER INCX,INCY,K,LDA,N
+      CHARACTER UPLO
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION A(LDA,*),X(*),Y(*)
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION ONE,ZERO
+      PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+!*     ..
+!*     .. Local Scalars ..
+      DOUBLE PRECISION TEMP1,TEMP2
+      INTEGER I,INFO,IX,IY,J,JX,JY,KPLUS1,KX,KY,L
+!*     ..
+!*     .. External Functions ..
+      LOGICAL LSAME
+      EXTERNAL LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC MAX,MIN
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+    !  INFO = 0
+    !  IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+    !      INFO = 1
+    !  ELSE IF (N.LT.0) THEN
+    !      INFO = 2
+    !  ELSE IF (K.LT.0) THEN
+    !      INFO = 3
+   !   ELSE IF (LDA.LT. (K+1)) THEN
+    !      INFO = 6
+   !   ELSE IF (INCX.EQ.0) THEN
+    !      INFO = 8
+    !  ELSE IF (INCY.EQ.0) THEN
+    !      INFO = 11
+    !  END IF
+   !   IF (INFO.NE.0) THEN
+   !       CALL XERBLA('DSBMV ',INFO)
+   !       RETURN
+   !   END IF
+!!*
+!*     Quick return if possible.
+!*
+!      IF ((N.EQ.0) .OR. ((ALPHA.EQ.ZERO).AND. (BETA.EQ.ONE))) RETURN
+!*
+!*     Set up the start points in  X  and  Y.
+!*
+      IF (INCX.GT.0) THEN
+          KX = 1
+      ELSE
+          KX = 1 - (N-1)*INCX
+      END IF
+      IF (INCY.GT.0) THEN
+          KY = 1
+      ELSE
+          KY = 1 - (N-1)*INCY
+      END IF
+!*
+!*     Start the operations. In this version the elements of the array A
+!*     are accessed sequentially with one pass through A.
+!*
+!*     First form  y := beta*y.
+!*
+      IF (BETA.NE.ONE) THEN
+          IF (INCY.EQ.1) THEN
+             IF (BETA.EQ.ZERO) THEN
+                 !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(8)
+                  DO 10 I = 1,N
+                      Y(I) = ZERO
+   10             CONTINUE
+             ELSE
+                     !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(6)   
+                  DO 20 I = 1,N
+                      Y(I) = BETA*Y(I)
+   20             CONTINUE
+              END IF
+          ELSE
+              IY = KY
+              IF (BETA.EQ.ZERO) THEN
+                    !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                  DO 30 I = 1,N
+                      Y(IY) = ZERO
+                      IY = IY + INCY
+   30             CONTINUE
+              ELSE
+                        !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                  DO 40 I = 1,N
+                      Y(IY) = BETA*Y(IY)
+                      IY = IY + INCY
+   40             CONTINUE
+              END IF
+          END IF
+      END IF
+!      IF (ALPHA.EQ.ZERO) RETURN
+      IF (LSAME(UPLO,'U')) THEN
+!*
+!*        Form  y  when upper triangle of A is stored.
+!*
+          KPLUS1 = K + 1
+          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
+             !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,L) IF(N>=400)
+              DO 60 J = 1,N
+                  TEMP1 = ALPHA*X(J)
+                  TEMP2 = ZERO
+                  L = KPLUS1 - J
+                  DO 50 I = MAX(1,J-K),J - 1
+                      Y(I) = Y(I) + TEMP1*A(L+I,J)
+                      TEMP2 = TEMP2 + A(L+I,J)*X(I)
+   50             CONTINUE
+                  Y(J) = Y(J) + TEMP1*A(KPLUS1,J) + ALPHA*TEMP2
+60            CONTINUE
+              !$OMP END PARALLEL DO   
+          ELSE
+              JX = KX
+              JY = KY
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,IX,IY,JX,JY,KX,KY,L) IF(N>=400)
+              DO 80 J = 1,N
+                  TEMP1 = ALPHA*X(JX)
+                  TEMP2 = ZERO
+                  IX = KX
+                  IY = KY
+                  L = KPLUS1 - J
+                  DO 70 I = MAX(1,J-K),J - 1
+                      Y(IY) = Y(IY) + TEMP1*A(L+I,J)
+                      TEMP2 = TEMP2 + A(L+I,J)*X(IX)
+                      IX = IX + INCX
+                      IY = IY + INCY
+   70             CONTINUE
+                  Y(JY) = Y(JY) + TEMP1*A(KPLUS1,J) + ALPHA*TEMP2
+                  JX = JX + INCX
+                  JY = JY + INCY
+                  IF (J.GT.K) THEN
+                      KX = KX + INCX
+                      KY = KY + INCY
+                  END IF
+80            CONTINUE
+              !$OMP END PARALLEL DO    
+          END IF
+      ELSE
+!*
+!*        Form  y  when lower triangle of A is stored.
+!*
+         IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,L) IF(N>=400)
+              DO 100 J = 1,N
+                  TEMP1 = ALPHA*X(J)
+                  TEMP2 = ZERO
+                  Y(J) = Y(J) + TEMP1*A(1,J)
+                  L = 1 - J
+                  DO 90 I = J + 1,MIN(N,J+K)
+                      Y(I) = Y(I) + TEMP1*A(L+I,J)
+                      TEMP2 = TEMP2 + A(L+I,J)*X(I)
+   90             CONTINUE
+                  Y(J) = Y(J) + ALPHA*TEMP2
+100           CONTINUE
+              !$OMP END PARALLEL DO    
+          ELSE
+              JX = KX
+              JY = KY
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,IX,IY,JX,JY,L) IF(N>=400)
+              DO 120 J = 1,N
+                  TEMP1 = ALPHA*X(JX)
+                  TEMP2 = ZERO
+                  Y(JY) = Y(JY) + TEMP1*A(1,J)
+                  L = 1 - J
+                  IX = JX
+                  IY = JY
+                  DO 110 I = J + 1,MIN(N,J+K)
+                      IX = IX + INCX
+                      IY = IY + INCY
+                      Y(IY) = Y(IY) + TEMP1*A(L+I,J)
+                      TEMP2 = TEMP2 + A(L+I,J)*X(IX)
+  110             CONTINUE
+                  Y(JY) = Y(JY) + ALPHA*TEMP2
+                  JX = JX + INCX
+                  JY = JY + INCY
+120            CONTINUE
+                !$OMP END PARALLEL DO  
+          END IF
+      END IF
+
+END SUBROUTINE
+    
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date November 2017
+!*
+!*> \ingroup double_blas_level1
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>     jack dongarra, linpack, 3/11/78.
+!*>     modified 3/93 to return if incx .le. 0.
+!*>     modified 12/3/93, array(1) declarations changed to array(*)
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DSCAL(N,DA,DX,INCX) !GCC$ ATTRIBUTES inline :: DSCAL !GCC$ ATTRIBUTES aligned(32) :: DSCAL
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DSCAL(N,DA,DX,INCX)
+    !DIR$ ATTRIBUTES FORCEINLINE :: DSCAL
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSCAL
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DSCAL
+#endif
+      use omp_lib
+      implicit none
+
+!*
+!*  -- Reference BLAS level1 routine (version 3.8.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2017
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION DA
+      INTEGER INCX,N
+!*     ..
+!*     .. Array Arguments ..
+      !      DOUBLE PRECISION DX(*)
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DX
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,M,MP1,NINCX
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC MOD
+!*     ..
+!      IF (N.LE.0 .OR. INCX.LE.0) RETURN
+      IF (INCX.EQ.1) THEN
+!*
+!*        code for increment equal to 1
+!*
+!*
+!*        clean-up loop
+!*
+         M = MOD(N,5)
+         IF (M.NE.0) THEN
+            DO I = 1,M
+               DX(I) = DA*DX(I)
+            END DO
+            IF (N.LT.5) RETURN
+         END IF
+         MP1 = M + 1
+         !$OMP SIMD ALIGNED(DX:64) LINEAR(I:5)
+         DO I = MP1,N,5
+            DX(I) = DA*DX(I)
+            DX(I+1) = DA*DX(I+1)
+            DX(I+2) = DA*DX(I+2)
+            DX(I+3) = DA*DX(I+3)
+            DX(I+4) = DA*DX(I+4)
+         END DO
+      ELSE
+!*
+!*        code for increment not equal to 1
+!*
+         NINCX = N*INCX
+         !$OMP SIMD ALIGNED(DX:64) UNROLL PARTIAL(6)
+         DO I = 1,NINCX,INCX
+            DX(I) = DA*DX(I)
+         END DO
+      END IF
+    
+END SUBROUTINE
+
+
+!*>  C. L. Lawson, R. J. Hanson, D. R. Kincaid and F. T.
+!*>  Krogh, Basic linear algebra subprograms for Fortran
+!*>  usage, Algorithm No. 539, Transactions on Mathematical
+!*>  Software 5, 3 (September 1979), pp. 308-323.
+!*>
+!*>  REVISION HISTORY  (YYMMDD)
+!*>
+!*>  791001  DATE WRITTEN
+!*>  890831  Modified array declarations.  (WRB)
+!*>  890831  REVISION DATE from Version 3.2
+!*>  891214  Prologue converted to Version 4.0 format.  (BAB)
+!*>  920310  Corrected definition of LX in DESCRIPTION.  (WRB)
+!*>  920501  Reformatted the REFERENCES section.  (WRB)
+!!*>  070118  Reformat to LAPACK style (JL)
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+DOUBLE PRECISION FUNCTION DSDOT(N,SX,INCX,SY,INCY) !GCC$ ATTRIBUTES inline :: DSDOT !GCC$ ATTRIBUTES aligned(32) :: DSDOT
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  DOUBLE PRECISION FUNCTION DSDOT(N,SX,INCX,SY,INCY)
+       !DIR$ ATTRIBUTES FORCEINLINE :: DSDOT
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSDOT
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DSDOT
+#endif
+    use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level1 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER INCX,INCY,N
+!*     ..
+!*     .. Array Arguments ..
+      !REAL SX(*),SY(*)
+      REAL, DIMENSION(:), ALLOCATABLE :: SX
+      REAL, DIMENSION(:), ALLOCATABLE :: SY
+      
+!*     ..
+!*
+!*  Authors:
+!*  ========
+!*  Lawson, C. L., (JPL), Hanson, R. J., (SNLA),
+!*  Kincaid, D. R., (U. of Texas), Krogh, F. T., (JPL)
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      INTEGER I,KX,KY,NS
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC DBLE
+!*     ..
+      DSDOT = 0.0D0
+    !  IF (N.LE.0) RETURN
+      IF (INCX.EQ.INCY .AND. INCX.GT.0) THEN
+!*
+!*     Code for equal, positive, non-unit increments.
+!*
+         NS = N*INCX
+         !$OMP SIMD ALIGNED(SX:64,SY) REDUCTION(+:DSDOT) UNROLL PARTIAL(10)
+         DO I = 1,NS,INCX
+            DSDOT = DSDOT + DBLE(SX(I))*DBLE(SY(I))
+         END DO
+      ELSE
+!*
+!*     Code for unequal or nonpositive increments.
+!*
+         KX = 1
+         KY = 1
+         IF (INCX.LT.0) KX = 1 + (1-N)*INCX
+         IF (INCY.LT.0) KY = 1 + (1-N)*INCY
+          !$OMP SIMD ALIGNED(SX:64,SY) REDUCTION(+:DSDOT) UNROLL PARTIAL(10)
+         DO I = 1,N
+            DSDOT = DSDOT + DBLE(SX(KX))*DBLE(SY(KY))
+            KX = KX + INCX
+            KY = KY + INCY
+         END DO
+      END IF
+     
+END SUBROUTINE
+
+    
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup double_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>  The vector and matrix arguments are not referenced when N = 0, or M = 0
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+!*>     Richard Hanson, Sandia National Labs.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSPMV !GCC$ ATTRIBUTES aligned(32) :: DSPMV
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY)
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSPMV
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DSPMV
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION ALPHA,BETA
+      INTEGER INCX,INCY,N
+      CHARACTER UPLO
+!*     ..
+!*     .. Array Arguments ..
+      DOUBLE PRECISION AP(*),X(*),Y(*)
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: AP
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION ONE,ZERO
+      PARAMETER (ONE=1.0D+0,ZERO=0.0D+0)
+!*     ..
+!*     .. Local Scalars ..
+      DOUBLE PRECISION TEMP1,TEMP2
+      INTEGER I,INFO,IX,IY,J,JX,JY,K,KK,KX,KY
+!*     ..
+!*     .. External Functions ..
+      LOGICAL LSAME
+      EXTERNAL LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL XERBLA
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+!      INFO = 0
+!      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+!          INFO = 1
+!      ELSE IF (N.LT.0) THEN
+!          INFO = 2
+!      ELSE IF (INCX.EQ.0) THEN
+!          INFO = 6
+!      ELSE IF (INCY.EQ.0) THEN
+!          INFO = 9
+ !     END IF
+ !     IF (INFO.NE.0) THEN
+ !         CALL XERBLA('DSPMV ',INFO)
+!          RETURN
+!      END IF
+!*
+!*     Quick return if possible.
+!*
+!      IF ((N.EQ.0) .OR. ((ALPHA.EQ.ZERO).AND. (BETA.EQ.ONE))) RETURN
+!*
+!*     Set up the start points in  X  and  Y.
+!*
+      IF (INCX.GT.0) THEN
+          KX = 1
+      ELSE
+          KX = 1 - (N-1)*INCX
+      END IF
+      IF (INCY.GT.0) THEN
+          KY = 1
+      ELSE
+          KY = 1 - (N-1)*INCY
+      END IF
+!*
+!*     Start the operations. In this version the elements of the array AP
+!*     are accessed sequentially with one pass through AP.
+!*
+!*     First form  y := beta*y.
+!*
+      IF (BETA.NE.ONE) THEN
+          IF (INCY.EQ.1) THEN
+             IF (BETA.EQ.ZERO) THEN
+                 !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(8)
+                  DO 10 I = 1,N
+                      Y(I) = ZERO
+   10             CONTINUE
+             ELSE
+                     !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(6)   
+                  DO 20 I = 1,N
+                      Y(I) = BETA*Y(I)
+   20             CONTINUE
+              END IF
+          ELSE
+              IY = KY
+              IF (BETA.EQ.ZERO) THEN
+                   !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(8)
+                  DO 30 I = 1,N
+                      Y(IY) = ZERO
+                      IY = IY + INCY
+   30             CONTINUE
+              ELSE
+                     !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(6)   
+                  DO 40 I = 1,N
+                      Y(IY) = BETA*Y(IY)
+                      IY = IY + INCY
+   40             CONTINUE
+              END IF
+          END IF
+      END IF
+      !IF (ALPHA.EQ.ZERO) RETURN
+      KK = 1
+      IF (LSAME(UPLO,'U')) THEN
+!*
+!*        Form  y  when AP contains the upper triangle.
+!*
+         IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
+              !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,K,KK) IF(N>=400)
+              DO 60 J = 1,N
+                  TEMP1 = ALPHA*X(J)
+                  TEMP2 = ZERO
+                  K = KK
+                  !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  DO 50 I = 1,J - 1
+                      Y(I) = Y(I) + TEMP1*AP(K)
+                      TEMP2 = TEMP2 + AP(K)*X(I)
+                      K = K + 1
+   50             CONTINUE
+                  Y(J) = Y(J) + TEMP1*AP(KK+J-1) + ALPHA*TEMP2
+                  KK = KK + J
+60            CONTINUE
+              !$OMP END PARALLEL DO    
+          ELSE
+              JX = KX
+              JY = KY
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,IX,IY,JX,JY,KK) IF(N>=400)
+              DO 80 J = 1,N
+                  TEMP1 = ALPHA*X(JX)
+                  TEMP2 = ZERO
+                  IX = KX
+                  IY = KY
+                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  DO 70 K = KK,KK + J - 2
+                      Y(IY) = Y(IY) + TEMP1*AP(K)
+                      TEMP2 = TEMP2 + AP(K)*X(IX)
+                      IX = IX + INCX
+                      IY = IY + INCY
+   70             CONTINUE
+                  Y(JY) = Y(JY) + TEMP1*AP(KK+J-1) + ALPHA*TEMP2
+                  JX = JX + INCX
+                  JY = JY + INCY
+                  KK = KK + J
+80            CONTINUE
+                !$OMP END PARALLEL DO  
+          END IF
+      ELSE
+!*
+!*        Form  y  when AP contains the lower triangle.
+!*
+         IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,K,KK) IF(N>=400)
+              DO 100 J = 1,N
+                  TEMP1 = ALPHA*X(J)
+                  TEMP2 = ZERO
+                  Y(J) = Y(J) + TEMP1*AP(KK)
+                  K = KK + 1
+                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  DO 90 I = J + 1,N
+                      Y(I) = Y(I) + TEMP1*AP(K)
+                      TEMP2 = TEMP2 + AP(K)*X(I)
+                      K = K + 1
+   90             CONTINUE
+                  Y(J) = Y(J) + ALPHA*TEMP2
+                  KK = KK + (N-J+1)
+100           CONTINUE
+                !$OMP END PARALLEL DO  
+          ELSE
+              JX = KX
+              JY = KY
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP1,TEMP2,IX,IY,JX,JY,KK) IF(N>=400)
+              DO 120 J = 1,N
+                  TEMP1 = ALPHA*X(JX)
+                  TEMP2 = ZERO
+                  Y(JY) = Y(JY) + TEMP1*AP(KK)
+                  IX = JX
+                  IY = JY
+                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  DO 110 K = KK + 1,KK + N - J
+                      IX = IX + INCX
+                      IY = IY + INCY
+                      Y(IY) = Y(IY) + TEMP1*AP(K)
+                      TEMP2 = TEMP2 + AP(K)*X(IX)
+  110             CONTINUE
+                  Y(JY) = Y(JY) + ALPHA*TEMP2
+                  JX = JX + INCX
+                  JY = JY + INCY
+                  KK = KK + (N-J+1)
+120           CONTINUE
+               !$OMP END PARALLEL DO   
+          END IF
+      END IF
+
+END SUBROUTINE
+
+    
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup double_blas_level2
+!*
+!*> \par Further Details:
+!*  =====================
+!*>
+!*> \verbatim
+!*>
+!*>  Level 2 Blas routine.
+!*>
+!*>  -- Written on 22-October-1986.
+!*>     Jack Dongarra, Argonne National Lab.
+!*>     Jeremy Du Croz, Nag Central Office.
+!*>     Sven Hammarling, Nag Central Office.
+!*>     Richard Hanson, Sandia National Labs.
+!*> \endverbatim
+!*>
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRIBUTES aligned(32) :: DSPR !GCC$ ATTRIBUTES no_stack_protector :: DSPR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP)
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSPR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DSPR
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- Reference BLAS level2 routine (version 3.7.0) --
+!*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION ALPHA
+      INTEGER INCX,N
+      CHARACTER UPLO
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION AP(*),X(*)
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: AP
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: X
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION ZERO
+      PARAMETER (ZERO=0.0D+0)
+!*     ..
+!*     .. Local Scalars ..
+      DOUBLE PRECISION TEMP
+      INTEGER I,INFO,IX,J,JX,K,KK,KX
+!*     ..
+!*     .. External Functions ..
+      LOGICAL LSAME
+      EXTERNAL LSAME
+!*     ..
+!*     .. External Subroutines ..
+      EXTERNAL XERBLA
+!*     ..
+!*
+!*     Test the input parameters.
+!*
+!      INFO = 0
+!      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+ !         INFO = 1
+ !     ELSE IF (N.LT.0) THEN
+ !         INFO = 2
+ !     ELSE IF (INCX.EQ.0) THEN
+   !       INFO = 5
+   !   END IF
+      IF (INFO.NE.0) THEN
+  !        CALL XERBLA('DSPR  ',INFO)
+  !        RETURN
+   !   END IF
+!*
+!*     Quick return if possible.
+!*
+ !     IF ((N.EQ.0) .OR. (ALPHA.EQ.ZERO)) RETURN
+!*
+!*     Set the start point in X if the increment is not unity.
+!*
+      IF (INCX.LE.0) THEN
+          KX = 1 - (N-1)*INCX
+      ELSE IF (INCX.NE.1) THEN
+          KX = 1
+      END IF
+!*
+!*     Start the operations. In this version the elements of the array AP
+!*     are accessed sequentially with one pass through AP.
+!*
+      KK = 1
+      IF (LSAME(UPLO,'U')) THEN
+!*
+!*        Form  A  when upper triangle is stored in AP.
+!*
+         IF (INCX.EQ.1) THEN
+            !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP,K,KK) IF(N>=400)
+              DO 20 J = 1,N
+                  IF (X(J).NE.ZERO) THEN
+                      TEMP = ALPHA*X(J)
+                      K = KK
+                      !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                      DO 10 I = 1,J
+                          AP(K) = AP(K) + X(I)*TEMP
+                          K = K + 1
+   10                 CONTINUE
+                  END IF
+                  KK = KK + J
+20            CONTINUE
+              !$OMP END PARALLEL DO    
+          ELSE
+             JX = KX
+                !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP,IX,JX,KK) IF(N>=400)
+              DO 40 J = 1,N
+                  IF (X(JX).NE.ZERO) THEN
+                      TEMP = ALPHA*X(JX)
+                      IX = KX
+                       !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                      DO 30 K = KK,KK + J - 1
+                          AP(K) = AP(K) + X(IX)*TEMP
+                          IX = IX + INCX
+   30                 CONTINUE
+                  END IF
+                  JX = JX + INCX
+                  KK = KK + J
+40             CONTINUE
+                !$OMP END PARALLEL DO  
+          END IF
+      ELSE
+!*
+!*        Form  A  when lower triangle is stored in AP.
+!*
+         IF (INCX.EQ.1) THEN
+                !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP,K,KK) IF(N>=400)
+              DO 60 J = 1,N
+                  IF (X(J).NE.ZERO) THEN
+                      TEMP = ALPHA*X(J)
+                      K = KK
+                       !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                      DO 50 I = J,N
+                          AP(K) = AP(K) + X(I)*TEMP
+                          K = K + 1
+   50                 CONTINUE
+                  END IF
+                  KK = KK + N - J + 1
+60            CONTINUE
+                 !$OMP END PARALLEL DO 
+          ELSE
+             JX = KX
+               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J,TEMP,IX,JX,KK) IF(N>=400)
+              DO 80 J = 1,N
+                  IF (X(JX).NE.ZERO) THEN
+                      TEMP = ALPHA*X(JX)
+                      IX = JX
+                      !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                      DO 70 K = KK,KK + N - J
+                          AP(K) = AP(K) + X(IX)*TEMP
+                          IX = IX + INCX
+   70                 CONTINUE
+                  END IF
+                  JX = JX + INCX
+                  KK = KK + N - J + 1
+   80         CONTINUE
+          END IF
       END IF
 
 END SUBROUTINE
