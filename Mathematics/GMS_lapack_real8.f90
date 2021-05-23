@@ -8604,3 +8604,1737 @@ SUBROUTINE DLASRT( ID, N, D, INFO ) !GCC$ ATTRIBUTES hot :: DLASRT !GCC$ ATTRIBU
          GO TO 10
     
 END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLASR( SIDE, PIVOT, DIRECT, M, N, C, S, A, LDA ) !GCC$ ATTRIBUTES hot :: DLASR !GCC$ ATTRIBUTES aligned(32) :: DLASR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DLASR( SIDE, PIVOT, DIRECT, M, N, C, S, A, LDA )
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLASR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DLASR
+#endif
+    implicit none
+    
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          DIRECT, PIVOT, SIDE
+      INTEGER            LDA, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( * ), S( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: S
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, INFO, J
+      DOUBLE PRECISION   CTEMP, STEMP, TEMP
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+     ! EXTERNAL           XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input parameters
+!*
+      INFO = 0
+      IF( .NOT.( LSAME( SIDE, 'L' ) .OR. LSAME( SIDE, 'R' ) ) ) THEN
+         INFO = 1
+      ELSE IF( .NOT.( LSAME( PIVOT, 'V' ) .OR. LSAME( PIVOT, &
+              'T' ) .OR. LSAME( PIVOT, 'B' ) ) ) THEN
+         INFO = 2
+      ELSE IF( .NOT.( LSAME( DIRECT, 'F' ) .OR. LSAME( DIRECT, 'B' ) ) ) &
+               THEN
+         INFO = 3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = 4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = 5
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = 9
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DLASR ', INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+   !   IF( ( M.EQ.0 ) .OR. ( N.EQ.0 ) )
+    ! $   RETURN
+      IF( LSAME( SIDE, 'L' ) ) THEN
+!*
+!*        Form  P * A
+!*
+         IF( LSAME( PIVOT, 'V' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 20 J = 1, M - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 10 I = 1, N
+                        TEMP = A( J+1, I )
+                        A( J+1, I ) = CTEMP*TEMP - STEMP*A( J, I )
+                        A( J, I ) = STEMP*TEMP + CTEMP*A( J, I )
+   10                CONTINUE
+                  END IF
+   20          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 40 J = M - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 30 I = 1, N
+                        TEMP = A( J+1, I )
+                        A( J+1, I ) = CTEMP*TEMP - STEMP*A( J, I )
+                        A( J, I ) = STEMP*TEMP + CTEMP*A( J, I )
+   30                CONTINUE
+                  END IF
+   40          CONTINUE
+            END IF
+         ELSE IF( LSAME( PIVOT, 'T' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 60 J = 2, M
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 50 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = CTEMP*TEMP - STEMP*A( 1, I )
+                        A( 1, I ) = STEMP*TEMP + CTEMP*A( 1, I )
+   50                CONTINUE
+                  END IF
+   60          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 80 J = M, 2, -1
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 70 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = CTEMP*TEMP - STEMP*A( 1, I )
+                        A( 1, I ) = STEMP*TEMP + CTEMP*A( 1, I )
+   70                CONTINUE
+                  END IF
+   80          CONTINUE
+            END IF
+         ELSE IF( LSAME( PIVOT, 'B' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 100 J = 1, M - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 90 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = STEMP*A( M, I ) + CTEMP*TEMP
+                        A( M, I ) = CTEMP*A( M, I ) - STEMP*TEMP
+   90                CONTINUE
+                  END IF
+  100          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 120 J = M - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 110 I = 1, N
+                        TEMP = A( J, I )
+                        A( J, I ) = STEMP*A( M, I ) + CTEMP*TEMP
+                        A( M, I ) = CTEMP*A( M, I ) - STEMP*TEMP
+  110                CONTINUE
+                  END IF
+  120          CONTINUE
+            END IF
+         END IF
+      ELSE IF( LSAME( SIDE, 'R' ) ) THEN
+!*
+!*        Form A * P**T
+!*
+         IF( LSAME( PIVOT, 'V' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 140 J = 1, N - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 130 I = 1, M
+                        TEMP = A( I, J+1 )
+                        A( I, J+1 ) = CTEMP*TEMP - STEMP*A( I, J )
+                        A( I, J ) = STEMP*TEMP + CTEMP*A( I, J )
+  130                CONTINUE
+                  END IF
+  140          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 160 J = N - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 150 I = 1, M
+                        TEMP = A( I, J+1 )
+                        A( I, J+1 ) = CTEMP*TEMP - STEMP*A( I, J )
+                        A( I, J ) = STEMP*TEMP + CTEMP*A( I, J )
+  150                CONTINUE
+                  END IF
+  160          CONTINUE
+            END IF
+         ELSE IF( LSAME( PIVOT, 'T' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 180 J = 2, N
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 170 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = CTEMP*TEMP - STEMP*A( I, 1 )
+                        A( I, 1 ) = STEMP*TEMP + CTEMP*A( I, 1 )
+  170                CONTINUE
+                  END IF
+  180          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 200 J = N, 2, -1
+                  CTEMP = C( J-1 )
+                  STEMP = S( J-1 )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 190 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = CTEMP*TEMP - STEMP*A( I, 1 )
+                        A( I, 1 ) = STEMP*TEMP + CTEMP*A( I, 1 )
+  190                CONTINUE
+                  END IF
+  200          CONTINUE
+            END IF
+         ELSE IF( LSAME( PIVOT, 'B' ) ) THEN
+            IF( LSAME( DIRECT, 'F' ) ) THEN
+               DO 220 J = 1, N - 1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 210 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = STEMP*A( I, N ) + CTEMP*TEMP
+                        A( I, N ) = CTEMP*A( I, N ) - STEMP*TEMP
+  210                CONTINUE
+                  END IF
+  220          CONTINUE
+            ELSE IF( LSAME( DIRECT, 'B' ) ) THEN
+               DO 240 J = N - 1, 1, -1
+                  CTEMP = C( J )
+                  STEMP = S( J )
+                  IF( ( CTEMP.NE.ONE ) .OR. ( STEMP.NE.ZERO ) ) THEN
+                     DO 230 I = 1, M
+                        TEMP = A( I, J )
+                        A( I, J ) = STEMP*A( I, N ) + CTEMP*TEMP
+                        A( I, N ) = CTEMP*A( I, N ) - STEMP*TEMP
+  230                CONTINUE
+                  END IF
+  240          CONTINUE
+            END IF
+         END IF
+      END IF
+
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLASV2( F, G, H, SSMIN, SSMAX, SNR, CSR, SNL, CSL ) !GCC$ ATTRIBUTES inline :: DLASV2 !GCC$ ATTRIBUTES aligned(32) :: DLASV2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DLASV2( F, G, H, SSMIN, SSMAX, SNR, CSR, SNL, CSL )
+    !DIR$ ATTRIBUTES FORCEINLINE :: DLASV2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLASV2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DLASV2
+#endif
+      implicit none
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION   CSL, CSR, F, G, H, SNL, SNR, SSMAX, SSMIN
+!*     ..
+!*
+!* =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D0 )
+      DOUBLE PRECISION   HALF
+      PARAMETER          ( HALF = 0.5D0 )
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D0 )
+      DOUBLE PRECISION   TWO
+      PARAMETER          ( TWO = 2.0D0 )
+      DOUBLE PRECISION   FOUR
+      PARAMETER          ( FOUR = 4.0D0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            GASMAL, SWAP
+      INTEGER            PMAX
+      DOUBLE PRECISION   A, CLT, CRT, D, FA, FT, GA, GT, HA, HT, L, M, &
+                         MM, R, S, SLT, SRT, T, TEMP, TSIGN, TT
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, SIGN, SQRT
+!*     ..
+!*     .. External Functions ..
+      DOUBLE PRECISION   DLAMCH
+      EXTERNAL           DLAMCH
+!*     ..
+!*     .. Executable Statements ..
+!*
+      FT = F
+      FA = ABS( FT )
+      HT = H
+      HA = ABS( H )
+!*
+!*     PMAX points to the maximum absolute element of matrix
+!*       PMAX = 1 if F largest in absolute values
+!*       PMAX = 2 if G largest in absolute values
+!*       PMAX = 3 if H largest in absolute values
+!*
+      PMAX = 1
+      SWAP = ( HA.GT.FA )
+      IF( SWAP ) THEN
+         PMAX = 3
+         TEMP = FT
+         FT = HT
+         HT = TEMP
+         TEMP = FA
+         FA = HA
+         HA = TEMP
+!*
+!*        Now FA .ge. HA
+!*
+      END IF
+      GT = G
+      GA = ABS( GT )
+      IF( GA.EQ.ZERO ) THEN
+!*
+!*        Diagonal matrix
+!*
+         SSMIN = HA
+         SSMAX = FA
+         CLT = ONE
+         CRT = ONE
+         SLT = ZERO
+         SRT = ZERO
+      ELSE
+         GASMAL = .TRUE.
+         IF( GA.GT.FA ) THEN
+            PMAX = 2
+            IF( ( FA / GA ).LT.DLAMCH( 'EPS' ) ) THEN
+!*
+!*              Case of very large GA
+!*
+               GASMAL = .FALSE.
+               SSMAX = GA
+               IF( HA.GT.ONE ) THEN
+                  SSMIN = FA / ( GA / HA )
+               ELSE
+                  SSMIN = ( FA / GA )*HA
+               END IF
+               CLT = ONE
+               SLT = HT / GT
+               SRT = ONE
+               CRT = FT / GT
+            END IF
+         END IF
+         IF( GASMAL ) THEN
+!!*
+!*           Normal case
+!*
+            D = FA - HA
+            IF( D.EQ.FA ) THEN
+!*
+!*              Copes with infinite F or H
+!*
+               L = ONE
+            ELSE
+               L = D / FA
+            END IF
+!*
+!*           Note that 0 .le. L .le. 1
+!*
+            M = GT / FT
+!*
+!*           Note that abs(M) .le. 1/macheps
+!*
+            T = TWO - L
+!*
+!*           Note that T .ge. 1
+!*
+            MM = M*M
+            TT = T*T
+            S = SQRT( TT+MM )
+!*
+!*           Note that 1 .le. S .le. 1 + 1/macheps
+!*
+            IF( L.EQ.ZERO ) THEN
+               R = ABS( M )
+            ELSE
+               R = SQRT( L*L+MM )
+            END IF
+!*
+!*           Note that 0 .le. R .le. 1 + 1/macheps
+!*
+            A = HALF*( S+R )
+!*
+!*           Note that 1 .le. A .le. 1 + abs(M)
+!*
+            SSMIN = HA / A
+            SSMAX = FA*A
+            IF( MM.EQ.ZERO ) THEN
+!*
+!*              Note that M is very tiny
+!*
+               IF( L.EQ.ZERO ) THEN
+                  T = SIGN( TWO, FT )*SIGN( ONE, GT )
+               ELSE
+                  T = GT / SIGN( D, FT ) + M / T
+               END IF
+            ELSE
+               T = ( M / ( S+T )+M / ( R+L ) )*( ONE+A )
+            END IF
+            L = SQRT( T*T+FOUR )
+            CRT = TWO / L
+            SRT = T / L
+            CLT = ( CRT+SRT*M ) / A
+            SLT = ( HT / FT )*SRT / A
+         END IF
+      END IF
+      IF( SWAP ) THEN
+         CSL = SRT
+         SNL = CRT
+         CSR = SLT
+         SNR = CLT
+      ELSE
+         CSL = CLT
+         SNL = SLT
+         CSR = CRT
+         SNR = SRT
+      END IF
+!*
+!*     Correct signs of SSMAX and SSMIN
+!*
+      IF( PMAX.EQ.1 )&
+        TSIGN = SIGN( ONE, CSR )*SIGN( ONE, CSL )*SIGN( ONE, F )
+      IF( PMAX.EQ.2 ) &
+        TSIGN = SIGN( ONE, SNR )*SIGN( ONE, CSL )*SIGN( ONE, G )
+      IF( PMAX.EQ.3 ) &
+        TSIGN = SIGN( ONE, SNR )*SIGN( ONE, SNL )*SIGN( ONE, H )
+      SSMAX = SIGN( SSMAX, TSIGN )
+      SSMIN = SIGN( SSMIN, TSIGN*SIGN( ONE, F )*SIGN( ONE, H ) )
+  
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGELQF( M, N, A, LDA, TAU, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DGELQF !GCC$ ATTRIBUTES aligned(32) :: DGELQF
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DGELQF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGELQF
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGELQF
+#endif
+    implicit none
+    
+!*
+!*  -- LAPACK computational routine (version 3.9.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2019
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      LOGICAL            LQUERY
+      INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKOPT, NB, &
+                        NBMIN, NX
+!*     ..
+!*     .. External Subroutines ..
+     
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. External Functions ..
+      INTEGER            ILAENV
+      EXTERNAL           ILAENV
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      NB = ILAENV( 1, 'DGELQF', ' ', M, N, -1, -1 )
+      LWKOPT = M*NB
+      WORK( 1 ) = LWKOPT
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      ELSE IF( LWORK.LT.MAX( 1, M ) .AND. .NOT.LQUERY ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DGELQF', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      K = MIN( M, N )
+      IF( K.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         RETURN
+      END IF
+!*
+      NBMIN = 2
+      NX = 0
+      IWS = M
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+!*
+!*        Determine when to cross over from blocked to unblocked code.
+!*
+         NX = MAX( 0, ILAENV( 3, 'DGELQF', ' ', M, N, -1, -1 ) )
+         IF( NX.LT.K ) THEN
+!*
+!*           Determine if workspace is large enough for blocked code.
+!*
+            LDWORK = M
+            IWS = LDWORK*NB
+            IF( LWORK.LT.IWS ) THEN
+!*
+!*              Not enough workspace to use optimal NB:  reduce NB and
+!*              determine the minimum value of NB.
+!*
+               NB = LWORK / LDWORK
+               NBMIN = MAX( 2, ILAENV( 2, 'DGELQF', ' ', M, N, -1, &
+                      -1 ) )
+            END IF
+         END IF
+      END IF
+
+      IF( NB.GE.NBMIN .AND. NB.LT.K .AND. NX.LT.K ) THEN
+!*
+!*        Use blocked code initially
+!*
+         DO 10 I = 1, K - NX, NB
+            IB = MIN( K-I+1, NB )
+!*
+!*           Compute the LQ factorization of the current block
+!*           A(i:i+ib-1,i:n)
+!*
+            CALL DGELQ2( IB, N-I+1, A( I, I ), LDA, TAU( I ), WORK, &
+                         IINFO )
+            IF( I+IB.LE.M ) THEN
+!*
+!*              Form the triangular factor of the block reflector
+!*              H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I, I ), &
+                           LDA, TAU( I ), WORK, LDWORK )
+!*
+!*              Apply H to A(i+ib:m,i:n) from the right
+!*
+               CALL DLARFB( 'Right', 'No transpose', 'Forward', &
+                           'Rowwise', M-I-IB+1, N-I+1, IB, A( I, I ), &
+                           LDA, WORK, LDWORK, A( I+IB, I ), LDA, &
+                           WORK( IB+1 ), LDWORK )
+            END IF
+   10    CONTINUE
+      ELSE
+         I = 1
+      END IF
+!*
+!*     Use unblocked code to factor the last or only block.
+!*
+      IF( I.LE.K ) &
+        CALL DGELQ2( M-I+1, N-I+1, A( I, I ), LDA, TAU( I ), WORK, &
+                     IINFO )
+
+      WORK( 1 ) = IWS
+   
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DGEQRF !GCC$ ATTRIBUTES aligned(32) :: DGEQRF
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DGEQRF( M, N, A, LDA, TAU, WORK, LWORK, INFO )
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEQRF
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGEQRF
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.9.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2019
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      LOGICAL            LQUERY
+      INTEGER            I, IB, IINFO, IWS, K, LDWORK, LWKOPT, NB, &
+                        NBMIN, NX
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. External Functions ..
+      INTEGER            ILAENV
+      EXTERNAL           ILAENV
+!*     ..
+!*     .. Executable Statements ..
+!*
+!!*     Test the input arguments
+!*
+      INFO = 0
+      NB = ILAENV( 1, 'DGEQRF', ' ', M, N, -1, -1 )
+      LWKOPT = N*NB
+      WORK( 1 ) = LWKOPT
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      ELSE IF( LWORK.LT.MAX( 1, N ) .AND. .NOT.LQUERY ) THEN
+         INFO = -7
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DGEQRF', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      K = MIN( M, N )
+      IF( K.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         RETURN
+      END IF
+!*
+      NBMIN = 2
+      NX = 0
+      IWS = N
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+!*
+!*        Determine when to cross over from blocked to unblocked code.
+!*
+         NX = MAX( 0, ILAENV( 3, 'DGEQRF', ' ', M, N, -1, -1 ) )
+         IF( NX.LT.K ) THEN
+!*
+!*           Determine if workspace is large enough for blocked code.
+!*
+            LDWORK = N
+            IWS = LDWORK*NB
+            IF( LWORK.LT.IWS ) THEN
+!*
+!*              Not enough workspace to use optimal NB:  reduce NB and
+!*              determine the minimum value of NB.
+!*
+               NB = LWORK / LDWORK
+               NBMIN = MAX( 2, ILAENV( 2, 'DGEQRF', ' ', M, N, -1, &
+                      -1 ) )
+            END IF
+         END IF
+      END IF
+
+      IF( NB.GE.NBMIN .AND. NB.LT.K .AND. NX.LT.K ) THEN
+!*
+!*        Use blocked code initially
+!*
+         DO 10 I = 1, K - NX, NB
+            IB = MIN( K-I+1, NB )
+!*
+!*           Compute the QR factorization of the current block
+!*           A(i:m,i:i+ib-1)
+!*
+            CALL DGEQR2( M-I+1, IB, A( I, I ), LDA, TAU( I ), WORK, &
+                        IINFO )
+            IF( I+IB.LE.N ) THEN
+!*
+!*              Form the triangular factor of the block reflector
+!*              H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+               CALL DLARFT( 'Forward', 'Columnwise', M-I+1, IB, &
+                           A( I, I ), LDA, TAU( I ), WORK, LDWORK )
+!*
+!*              Apply H**T to A(i:m,i+ib:n) from the left
+!*
+               CALL DLARFB( 'Left', 'Transpose', 'Forward', &
+                           'Columnwise', M-I+1, N-I-IB+1, IB, &
+                           A( I, I ), LDA, WORK, LDWORK, A( I, I+IB ), &
+                           LDA, WORK( IB+1 ), LDWORK )
+            END IF
+   10    CONTINUE
+      ELSE
+         I = 1
+      END IF
+!*
+!*     Use unblocked code to factor the last or only block.
+!*
+      IF( I.LE.K ) &
+        CALL DGEQR2( M-I+1, N-I+1, A( I, I ), LDA, TAU( I ), WORK, &
+                     IINFO )
+
+      WORK( 1 ) = IWS
+   
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGEQR2( M, N, A, LDA, TAU, WORK, INFO ) !GCC$ ATTRIBUTES hot :: DGEQR2 !GCC$ ATTRIBUTES aligned(32) :: DGEQR2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DGEQR2( M, N, A, LDA, TAU, WORK, INFO )
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEQR2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGEQR2
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.9.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     November 2019
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+        DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, K
+      DOUBLE PRECISION   AII
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DLARF, DLARFG, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DGEQR2', -INFO )
+         RETURN
+      END IF
+!*
+      K = MIN( M, N )
+!*
+      DO 10 I = 1, K
+!*
+!*        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
+!*
+         CALL DLARFG( M-I+1, A( I, I ), A( MIN( I+1, M ), I ), 1, &
+                     TAU( I ) )
+         IF( I.LT.N ) THEN
+!*
+!*           Apply H(i) to A(i:m,i+1:n) from the left
+!*
+            AII = A( I, I )
+            A( I, I ) = ONE
+            CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ), &
+                       A( I, I+1 ), LDA, WORK )
+            A( I, I ) = AII
+         END IF
+   10 CONTINUE
+    
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORGBR( VECT, M, N, K, A, LDA, TAU, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORGBR !GCC$ ATTRIBUTES aligned(32) :: DORGBR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DORGBR( VECT, M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORGBR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_av512 :: DORGBR
+#endif
+      use omp_lib
+      implicit none
+
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     April 2012
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          VECT
+      INTEGER            INFO, K, LDA, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      ! DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+         DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+!*     ..
+*     .. Local Scalars ..
+      LOGICAL            LQUERY, WANTQ
+      INTEGER            I, IINFO, J, LWKOPT, MN
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           DORGLQ, DORGQR
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      WANTQ = LSAME( VECT, 'Q' )
+      MN = MIN( M, N )
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( .NOT.WANTQ .AND. .NOT.LSAME( VECT, 'P' ) ) THEN
+         INFO = -1
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 .OR. ( WANTQ .AND. ( N.GT.M .OR. N.LT.MIN( M, &
+              K ) ) ) .OR. ( .NOT.WANTQ .AND. ( M.GT.N .OR. M.LT. &
+              MIN( N, K ) ) ) ) THEN
+         INFO = -3
+      ELSE IF( K.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -6
+      ELSE IF( LWORK.LT.MAX( 1, MN ) .AND. .NOT.LQUERY ) THEN
+         INFO = -9
+      END IF
+
+      IF( INFO.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         IF( WANTQ ) THEN
+            IF( M.GE.K ) THEN
+               CALL DORGQR( M, N, K, A, LDA, TAU, WORK, -1, IINFO )
+            ELSE
+               IF( M.GT.1 ) THEN
+                  CALL DORGQR( M-1, M-1, M-1, A( 2, 2 ), LDA, TAU, WORK, &
+                              -1, IINFO )
+               END IF
+            END IF
+         ELSE
+            IF( K.LT.N ) THEN
+               CALL DORGLQ( M, N, K, A, LDA, TAU, WORK, -1, IINFO )
+            ELSE
+               IF( N.GT.1 ) THEN
+                  CALL DORGLQ( N-1, N-1, N-1, A( 2, 2 ), LDA, TAU, WORK, &
+                              -1, IINFO )
+               END IF
+            END IF
+         END IF
+         LWKOPT = WORK( 1 )
+         LWKOPT = MAX (LWKOPT, MN)
+      END IF
+
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORGBR', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         WORK( 1 ) = LWKOPT
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+     ! IF( M.EQ.0 .OR. N.EQ.0 ) THEN
+     !    WORK( 1 ) = 1
+     !    RETURN
+     ! END IF
+!*
+      IF( WANTQ ) THEN
+!*
+!*        Form Q, determined by a call to DGEBRD to reduce an m-by-k
+!*        matrix
+!*
+         IF( M.GE.K ) THEN
+!*
+!*           If m >= k, assume m >= n >= k
+!*
+            CALL DORGQR( M, N, K, A, LDA, TAU, WORK, LWORK, IINFO )
+!*
+         ELSE
+!*
+!*           If m < k, assume m = n
+!*
+!*           Shift the vectors which define the elementary reflectors one
+!*           column to the right, and set the first row and column of Q
+!*           to those of the unit matrix
+!*
+            DO 20 J = M, 2, -1
+               A( 1, J ) = ZERO
+               !$OMP SIMD ALIGNED(A:64)
+               DO 10 I = J + 1, M
+                  A( I, J ) = A( I, J-1 )
+   10          CONTINUE
+   20       CONTINUE
+            A( 1, 1 ) = ONE
+             !$OMP SIMD ALIGNED(A:64)  UNROLL PARTIAL(8)   
+            DO 30 I = 2, M
+               A( I, 1 ) = ZERO
+   30       CONTINUE
+            IF( M.GT.1 ) THEN
+!*
+!*              Form Q(2:m,2:m)
+!*
+               CALL DORGQR( M-1, M-1, M-1, A( 2, 2 ), LDA, TAU, WORK, &
+                           LWORK, IINFO )
+            END IF
+         END IF
+      ELSE
+!*
+!*        Form P**T, determined by a call to DGEBRD to reduce a k-by-n
+!*        matrix
+!*
+         IF( K.LT.N ) THEN
+!*
+!*           If k < n, assume k <= m <= n
+!*
+            CALL DORGLQ( M, N, K, A, LDA, TAU, WORK, LWORK, IINFO )
+!*
+         ELSE
+!*
+!*           If k >= n, assume m = n
+!*
+!*           Shift the vectors which define the elementary reflectors one
+!*           row downward, and set the first row and column of P**T to
+!*           those of the unit matrix
+!*
+            A( 1, 1 ) = ONE
+             !$OMP SIMD ALIGNED(A:64) UNROLL PARTIAL(8) 
+            DO 40 I = 2, N
+               A( I, 1 ) = ZERO
+40          CONTINUE
+            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFUALT(NONE) SHARED(A) PRIVATE(J,I)   
+            DO 60 J = 2, N
+                !$OMP SIMD ALIGNED(A:64) 
+               DO 50 I = J - 1, 2, -1
+                  A( I, J ) = A( I-1, J )
+   50          CONTINUE
+               A( 1, J ) = ZERO
+   60       CONTINUE
+            IF( N.GT.1 ) THEN
+!*
+!*              Form P**T(2:n,2:n)
+!*
+               CALL DORGLQ( N-1, N-1, N-1, A( 2, 2 ), LDA, TAU, WORK, &
+                           LWORK, IINFO )
+            END IF
+         END IF
+      END IF
+      WORK( 1 ) = LWKOPT
+   
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORGLQ( M, N, K, A, LDA, TAU, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORGLQ !GCC$ ATTRIBUTES aligned(32) :: DORGLQ
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DORGLQ( M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORGLQ
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_av512 :: DORGLQ
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, K, LDA, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LQUERY
+      INTEGER            I, IB, IINFO, IWS, J, KI, KK, L, LDWORK, &
+                        LWKOPT, NB, NBMIN, NX
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DLARFB, DLARFT, DORGL2, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. External Functions ..
+      INTEGER            ILAENV
+      EXTERNAL           ILAENV
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      NB = ILAENV( 1, 'DORGLQ', ' ', M, N, K, -1 )
+      LWKOPT = MAX( 1, M )*NB
+      WORK( 1 ) = LWKOPT
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.M ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 .OR. K.GT.M ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      ELSE IF( LWORK.LT.MAX( 1, M ) .AND. .NOT.LQUERY ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORGLQ', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+     ! IF( M.LE.0 ) THEN
+     !    WORK( 1 ) = 1
+     !    RETURN
+   !   END IF
+!*
+      NBMIN = 2
+      NX = 0
+      IWS = M
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+!*
+!*        Determine when to cross over from blocked to unblocked code.
+!*
+         NX = MAX( 0, ILAENV( 3, 'DORGLQ', ' ', M, N, K, -1 ) )
+         IF( NX.LT.K ) THEN
+!*
+!*           Determine if workspace is large enough for blocked code.
+!*
+            LDWORK = M
+            IWS = LDWORK*NB
+            IF( LWORK.LT.IWS ) THEN
+!*
+!*              Not enough workspace to use optimal NB:  reduce NB and
+!*              determine the minimum value of NB.
+!*
+               NB = LWORK / LDWORK
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGLQ', ' ', M, N, K, -1 ) )
+            END IF
+         END IF
+      END IF
+!*
+      IF( NB.GE.NBMIN .AND. NB.LT.K .AND. NX.LT.K ) THEN
+!*
+!*        Use blocked code after the last block.
+!*        The first kk rows are handled by the block method.
+!!*
+         KI = ( ( K-NX-1 ) / NB )*NB
+         KK = MIN( K, KI+NB )
+!*
+!*        Set A(kk+1:m,1:kk) to zero.
+!*
+         DO 20 J = 1, KK
+            !$OMP SIMD ALIGNED(A:64)
+            DO 10 I = KK + 1, M
+               A( I, J ) = ZERO
+   10       CONTINUE
+   20    CONTINUE
+      ELSE
+         KK = 0
+      END IF
+!*
+!*     Use unblocked code for the last or only block.
+!*
+      IF( KK.LT.M ) &
+        CALL DORGL2( M-KK, N-KK, K-KK, A( KK+1, KK+1 ), LDA, &
+                     TAU( KK+1 ), WORK, IINFO )
+!*
+      IF( KK.GT.0 ) THEN
+!*
+!*        Use blocked code
+!*
+         DO 50 I = KI + 1, 1, -NB
+            IB = MIN( NB, K-I+1 )
+            IF( I+IB.LE.M ) THEN
+!*
+!*              Form the triangular factor of the block reflector
+!*              H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+               CALL DLARFT( 'Forward', 'Rowwise', N-I+1, IB, A( I, I ), &
+                           LDA, TAU( I ), WORK, LDWORK )
+!*
+!*              Apply H**T to A(i+ib:m,i:n) from the right
+!*
+               CALL DLARFB( 'Right', 'Transpose', 'Forward', 'Rowwise', &
+                           M-I-IB+1, N-I+1, IB, A( I, I ), LDA, WORK, &
+                           LDWORK, A( I+IB, I ), LDA, WORK( IB+1 ), &
+                           LDWORK )
+            END IF
+!*
+!*           Apply H**T to columns i:n of current block
+!*
+            CALL DORGL2( IB, N-I+1, IB, A( I, I ), LDA, TAU( I ), WORK, &
+                        IINFO )
+!*
+!*           Set columns 1:i-1 of current block to zero
+!*
+            DO 40 J = 1, I - 1
+               !$OMP SIMD ALIGNED(A:64)
+               DO 30 L = I, I + IB - 1
+                  A( L, J ) = ZERO
+   30          CONTINUE
+   40       CONTINUE
+   50    CONTINUE
+      END IF
+
+      WORK( 1 ) = IWS
+    
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORGL2( M, N, K, A, LDA, TAU, WORK, INFO ) !GCC$ ATTRIBUTES inline :: DORGL2 !GCC$ ATTRIBUTES aligned(32) :: DORGL2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DORGL2( M, N, K, A, LDA, TAU, WORK, INFO )
+    !DIR$ ATTRIBUTES FORCEINLINE :: DORGL2
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORGL2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_av512 :: DORGL2
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, K, LDA, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+      
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, J, L
+!*     ..
+!*     .. External Subroutines ..
+     ! EXTERNAL           DLARF, DSCAL, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.M ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 .OR. K.GT.M ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORGL2', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+   !   IF( M.LE.0 )
+    ! $   RETURN
+!*
+      IF( K.LT.M ) THEN
+!*
+!*        Initialise rows k+1:m to rows of the unit matrix
+!*
+         DO 20 J = 1, N
+            DO 10 L = K + 1, M
+               A( L, J ) = ZERO
+   10       CONTINUE
+            IF( J.GT.K .AND. J.LE.M ) &
+               A( J, J ) = ONE
+   20    CONTINUE
+      END IF
+!*
+      DO 40 I = K, 1, -1
+!*
+!*        Apply H(i) to A(i:m,i:n) from the right
+!*
+         IF( I.LT.N ) THEN
+            IF( I.LT.M ) THEN
+               A( I, I ) = ONE
+               CALL DLARF( 'Right', M-I, N-I+1, A( I, I ), LDA, &
+                          TAU( I ), A( I+1, I ), LDA, WORK )
+            END IF
+            CALL DSCAL( N-I, -TAU( I ), A( I, I+1 ), LDA )
+         END IF
+         A( I, I ) = ONE - TAU( I )
+!*
+!*        Set A(i,1:i-1) to zero
+!*
+         DO 30 L = 1, I - 1
+            A( I, L ) = ZERO
+   30    CONTINUE
+   40 CONTINUE
+    
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORGQR( M, N, K, A, LDA, TAU, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORGQR !GCC$ ATTRIBUTES aligned(32) :: DORGQR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DORGQR( M, N, K, A, LDA, TAU, WORK, LWORK, INFO )
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORGQR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_av512 :: DORGQR
+#endif
+    implicit none
+    
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, K, LDA, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO
+      PARAMETER          ( ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LQUERY
+      INTEGER            I, IB, IINFO, IWS, J, KI, KK, L, LDWORK, &
+                        LWKOPT, NB, NBMIN, NX
+!*     ..
+!*     .. External Subroutines ..
+     ! EXTERNAL           DLARFB, DLARFT, DORG2R, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. External Functions ..
+      INTEGER            ILAENV
+      EXTERNAL           ILAENV
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      NB = ILAENV( 1, 'DORGQR', ' ', M, N, K, -1 )
+      LWKOPT = MAX( 1, N )*NB
+      WORK( 1 ) = LWKOPT
+      LQUERY = ( LWORK.EQ.-1 )
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 .OR. N.GT.M ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 .OR. K.GT.N ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      ELSE IF( LWORK.LT.MAX( 1, N ) .AND. .NOT.LQUERY ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORGQR', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!!*     Quick return if possible
+!*
+     ! IF( N.LE.0 ) THEN
+     !    WORK( 1 ) = 1
+     !    RETURN
+     ! END IF
+!*
+      NBMIN = 2
+      NX = 0
+      IWS = N
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+!*
+!*        Determine when to cross over from blocked to unblocked code.
+!*
+         NX = MAX( 0, ILAENV( 3, 'DORGQR', ' ', M, N, K, -1 ) )
+         IF( NX.LT.K ) THEN
+!*
+!*           Determine if workspace is large enough for blocked code.
+!*
+            LDWORK = N
+            IWS = LDWORK*NB
+            IF( LWORK.LT.IWS ) THEN
+!*
+!*              Not enough workspace to use optimal NB:  reduce NB and
+!*              determine the minimum value of NB.
+!*
+               NB = LWORK / LDWORK
+               NBMIN = MAX( 2, ILAENV( 2, 'DORGQR', ' ', M, N, K, -1 ) )
+            END IF
+         END IF
+      END IF
+!*
+      IF( NB.GE.NBMIN .AND. NB.LT.K .AND. NX.LT.K ) THEN
+!*
+!*        Use blocked code after the last block.
+!*        The first kk columns are handled by the block method.
+!*
+         KI = ( ( K-NX-1 ) / NB )*NB
+         KK = MIN( K, KI+NB )
+!*
+!*        Set A(1:kk,kk+1:n) to zero.
+!*
+         DO 20 J = KK + 1, N
+            DO 10 I = 1, KK
+               A( I, J ) = ZERO
+   10       CONTINUE
+   20    CONTINUE
+      ELSE
+         KK = 0
+      END IF
+!*
+!*     Use unblocked code for the last or only block.
+!*
+      IF( KK.LT.N ) &
+        CALL DORG2R( M-KK, N-KK, K-KK, A( KK+1, KK+1 ), LDA, &
+                     TAU( KK+1 ), WORK, IINFO )
+
+      IF( KK.GT.0 ) THEN
+!*
+!*        Use blocked code
+!*
+         DO 50 I = KI + 1, 1, -NB
+            IB = MIN( NB, K-I+1 )
+            IF( I+IB.LE.N ) THEN
+!*
+!*              Form the triangular factor of the block reflector
+!*              H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+               CALL DLARFT( 'Forward', 'Columnwise', M-I+1, IB, &
+                           A( I, I ), LDA, TAU( I ), WORK, LDWORK )
+!*
+!*              Apply H to A(i:m,i+ib:n) from the left
+!*
+               CALL DLARFB( 'Left', 'No transpose', 'Forward', &
+                           'Columnwise', M-I+1, N-I-IB+1, IB, &
+                           A( I, I ), LDA, WORK, LDWORK, A( I, I+IB ), &
+                           LDA, WORK( IB+1 ), LDWORK )
+            END IF
+!*
+!*           Apply H to rows i:m of current block
+!*
+            CALL DORG2R( M-I+1, IB, IB, A( I, I ), LDA, TAU( I ), WORK, &
+                         IINFO )
+!*
+!*           Set rows 1:i-1 of current block to zero
+!*
+            DO 40 J = I, I + IB - 1
+               DO 30 L = 1, I - 1
+                  A( L, J ) = ZERO
+   30          CONTINUE
+   40       CONTINUE
+   50    CONTINUE
+      END IF
+
+      WORK( 1 ) = IWS
+    
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORG2R( M, N, K, A, LDA, TAU, WORK, INFO ) !GCC$ ATTRIBUTES inline :: DORG2R !GCC$ ATTRIBUTES aligned(32) :: DORG2R
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DORG2R( M, N, K, A, LDA, TAU, WORK, INFO )
+    !DIR$ ATTRIBUTES FORCEINLINE :: DORG2R
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORG2R
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_av512 :: DORG2R
+#endif
+      use omp_lib
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, K, LDA, M, N
+!*     ..
+!*     .. Array Arguments ..
+      ! DOUBLE PRECISION   A( LDA, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, J, L
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DLARF, DSCAL, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 .OR. N.GT.M ) THEN
+         INFO = -2
+      ELSE IF( K.LT.0 .OR. K.GT.N ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -5
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORG2R', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+     ! IF( N.LE.0 )
+    ! $   RETURN
+!*
+!*     Initialise columns k+1:n to columns of the unit matrix
+!*
+      DO 20 J = K + 1, N
+         !$OMP SIMD ALIGNED(A:64) UNROLL PARTIAL(8)
+         DO 10 L = 1, M
+            A( L, J ) = ZERO
+   10    CONTINUE
+         A( J, J ) = ONE
+   20 CONTINUE
+
+      DO 40 I = K, 1, -1
+!*
+!*        Apply H(i) to A(i:m,i:n) from the left
+!*
+         IF( I.LT.N ) THEN
+            A( I, I ) = ONE
+            CALL DLARF( 'Left', M-I+1, N-I, A( I, I ), 1, TAU( I ), &
+                       A( I, I+1 ), LDA, WORK )
+         END IF
+         IF( I.LT.M ) &
+           CALL DSCAL( M-I, -TAU( I ), A( I+1, I ), 1 )
+         A( I, I ) = ONE - TAU( I )
+!*
+!*        Set A(1:i-1,i) to zero
+         !*
+           !$OMP SIMD ALIGNED(A:64) UNROLL PARTIAL(8)
+         DO 30 L = 1, I - 1
+            A( L, I ) = ZERO
+   30    CONTINUE
+   40 CONTINUE
+  
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORMBR( VECT, SIDE, TRANS, M, N, K, A, LDA, TAU, C, &
+     LDC, WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORMBR !GCC$ ATTRIBUTES aligned(32) :: DORMBR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DORMBR( VECT, SIDE, TRANS, M, N, K, A, LDA, TAU, C, &
+     LDC, WORK, LWORK, INFO )
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORMBR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DORMBR
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS, VECT
+      INTEGER            INFO, K, LDA, LDC, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: C
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      LOGICAL            APPLYQ, LEFT, LQUERY, NOTRAN
+      CHARACTER          TRANST
+      INTEGER            I1, I2, IINFO, LWKOPT, MI, NB, NI, NQ, NW
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            ILAENV
+      EXTERNAL           LSAME, ILAENV
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           DORMLQ, DORMQR, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      APPLYQ = LSAME( VECT, 'Q' )
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      LQUERY = ( LWORK.EQ.-1 )
+!*
+!*     NQ is the order of Q or P and NW is the minimum dimension of WORK
+!*
+      IF( LEFT ) THEN
+         NQ = M
+         NW = N
+      ELSE
+         NQ = N
+         NW = M
+      END IF
+      IF( .NOT.APPLYQ .AND. .NOT.LSAME( VECT, 'P' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -3
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -5
+      ELSE IF( K.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( ( APPLYQ .AND. LDA.LT.MAX( 1, NQ ) ) .OR. &
+              ( .NOT.APPLYQ .AND. LDA.LT.MAX( 1, MIN( NQ, K ) ) ) ) &
+             THEN
+         INFO = -8
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -11
+      ELSE IF( LWORK.LT.MAX( 1, NW ) .AND. .NOT.LQUERY ) THEN
+         INFO = -13
+      END IF
+
+      IF( INFO.EQ.0 ) THEN
+         IF( APPLYQ ) THEN
+            IF( LEFT ) THEN
+               NB = ILAENV( 1, 'DORMQR', SIDE // TRANS, M-1, N, M-1,-1)
+    
+            ELSE
+               NB = ILAENV( 1, 'DORMQR', SIDE // TRANS, M, N-1, N-1,-1)
+    
+            END IF
+         ELSE
+            IF( LEFT ) THEN
+               NB = ILAENV( 1, 'DORMLQ', SIDE // TRANS, M-1, N, M-1,-1)
+                
+            ELSE
+               NB = ILAENV( 1, 'DORMLQ', SIDE // TRANS, M, N-1, N-1,-1)
+ 
+            END IF
+         END IF
+         LWKOPT = MAX( 1, NW )*NB
+         WORK( 1 ) = LWKOPT
+      END IF
+
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DORMBR', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      WORK( 1 ) = 1
+   !   IF( M.EQ.0 .OR. N.EQ.0 )
+   !  $   RETURN
+!*
+      IF( APPLYQ ) THEN
+!*
+!*        Apply Q
+!*
+         IF( NQ.GE.K ) THEN
+!*
+!*           Q was determined by a call to DGEBRD with nq >= k
+!*
+            CALL DORMQR( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC,&
+                       WORK, LWORK, IINFO )
+         ELSE IF( NQ.GT.1 ) THEN
+!*
+!*           Q was determined by a call to DGEBRD with nq < k
+!*
+            IF( LEFT ) THEN
+               MI = M - 1
+               NI = N
+               I1 = 2
+               I2 = 1
+            ELSE
+               MI = M
+               NI = N - 1
+               I1 = 1
+               I2 = 2
+            END IF
+            CALL DORMQR( SIDE, TRANS, MI, NI, NQ-1, A( 2, 1 ), LDA, TAU, &
+                        C( I1, I2 ), LDC, WORK, LWORK, IINFO )
+         END IF
+      ELSE
+!!*
+!*        Apply P
+!*
+         IF( NOTRAN ) THEN
+            TRANST = 'T'
+         ELSE
+            TRANST = 'N'
+         END IF
+         IF( NQ.GT.K ) THEN
+
+            CALL DORMLQ( SIDE, TRANST, M, N, K, A, LDA, TAU, C, LDC, &
+                        WORK, LWORK, IINFO )
+         ELSE IF( NQ.GT.1 ) THEN
+
+            IF( LEFT ) THEN
+               MI = M - 1
+               NI = N
+               I1 = 2
+               I2 = 1
+            ELSE
+               MI = M
+               NI = N - 1
+               I1 = 1
+               I2 = 2
+            END IF
+            CALL DORMLQ( SIDE, TRANST, MI, NI, NQ-1, A( 1, 2 ), LDA, &
+                       TAU, C( I1, I2 ), LDC, WORK, LWORK, IINFO )
+         END IF
+      END IF
+      WORK( 1 ) = LWKOPT
+     
+END SUBROUTINE
