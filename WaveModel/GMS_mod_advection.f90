@@ -9,7 +9,7 @@ module GMS_mod_advection
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 24/03/2019
 ! Removing Object-Oriented crap.
 !===============================================================================
-    use GMS_mod_kinds, only : i4, dp
+    use mod_kinds, only : i4, dp
     implicit none
 
     private
