@@ -8,7 +8,7 @@ module GMS_mod_aero_drag
 ! Licensed under the BSD-3-clause license. See LICENSE for details.
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 13/03/2019
 
-    use GMS_mod_kinds, only : int32_t, dp
+    use mod_kinds, only : i4, dp
 
     implicit none
 
@@ -236,7 +236,7 @@ module GMS_mod_aero_drag
           !! Von Karman constant
           real(kind=dp), automatic :: z0 ! roughness length
           real(kind=dp), automatic :: ustar_old
-          integer(kind=int32_t), automatic :: n
+          integer(kind=i4), automatic :: n
           z0 = 0.001_dp
           ustar_old = 1e-2_dp
           do
