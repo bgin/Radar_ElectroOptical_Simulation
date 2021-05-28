@@ -9,7 +9,7 @@ module GMS_mod_advection
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 24/03/2019
 ! Removing Object-Oriented crap.
 !===============================================================================
-    use GMS_mod_kinds, only : int32_t, dp
+    use GMS_mod_kinds, only : i4, dp
     implicit none
 
     private
@@ -71,7 +71,7 @@ module GMS_mod_advection
           real(kind=dp), dimension(:), intent(out) :: dfdt
 
           ! Locals
-          integer(kind=dint32_t), automatic :: i,idm
+          integer(kind=i4), automatic :: i,idm
           ! EXec code ....
            idm = size(f)
            allocate(dfdt(2:idm-1))
@@ -111,7 +111,7 @@ module GMS_mod_advection
           real(kind=dp), dimension(:,:), intent(out) :: dfdt
 
           ! Locals
-          integer(kind=int32_t), automatic ::  i,m,idm,mdm
+          integer(kind=i4), automatic ::  i,m,idm,mdm
           ! EXec code ....
           mdm = size(f,dim=1)
           idm = size(f,dim=2)
@@ -151,7 +151,7 @@ module GMS_mod_advection
 !DIR$   ASSUME_ALIGNED dfdt:64
           real(kind=dp), dimension(:,:,:), intent(out) :: dfdt
           ! LOcals
-          integer(kind=int4) :: i,m,n
+          integer(kind=i4) :: i,m,n
 
           !Exec code ...
           mdm = size(f,dim=1)
@@ -218,8 +218,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j
-          integer(kind=int32_t) :: idm,jdm
+          integer(kind=i4t) :: i,j
+          integer(kind=i4t) :: idm,jdm
 !       EXEC CODE ....
           idm = size(f,dim=1)
           jdm = size(f,dim=2)
@@ -288,8 +288,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j,m
-          integer(kind=int32_t) :: idm,jdm,mdm
+          integer(kind=i4t) :: i,j,m
+          integer(kind=i4t) :: idm,jdm,mdm
 
           mdm = size(f,dim=1)
           idm = size(f,dim=2)
@@ -360,8 +360,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j,m,n
-          integer(kind=int32_t) :: idm,jdm,mdm,ndm
+          integer(kind=i4) :: i,j,m,n
+          integer(kind=i4) :: idm,jdm,mdm,ndm
 
           mdm = size(f,dim=1)
           ndm = size(f,dim=2)
@@ -417,8 +417,8 @@ module GMS_mod_advection
           real(kind=dp),dimension(:),allocatable :: dfdt
     !! Advective tendency
 
-            integer(kind=int32_t) :: i
-            integer(kind=int32_t) :: idm
+            integer(kind=i4) :: i
+            integer(kind=i4) :: idm
 
             idm = size(f)
 
@@ -464,8 +464,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,m
-          integer(kind=int32_y) :: idm,mdm
+          integer(kind=i4) :: i,m
+          integer(kind=i4) :: idm,mdm
 
           mdm = size(f,dim=1)
           idm = size(f,dim=2)
@@ -510,8 +510,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,m,n
-          integer(kind=int32_t) :: idm,mdm,ndm
+          integer(kind=i4) :: i,m,n
+          integer(kind=i4) :: idm,mdm,ndm
 
           mdm = size(f,dim=1)
           ndm = size(f,dim=2)
@@ -575,8 +575,8 @@ module GMS_mod_advection
           real(kind=dp),dimension(:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j
-          integer(kind=int32_t) :: idm,jdm
+          integer(kind=i4) :: i,j
+          integer(kind=i4) :: idm,jdm
 
           idm = size(f,dim=1)
           jdm = size(f,dim=2)
@@ -641,8 +641,8 @@ module GMS_mod_advection
           real(kind=dp),dimension(:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j,m
-          integer(kind=int32_t) :: idm,jdm,mdm
+          integer(kind=i4) :: i,j,m
+          integer(kind=i4) :: idm,jdm,mdm
 
           mdm = size(f,dim=1)
           idm = size(f,dim=2)
@@ -709,8 +709,8 @@ module GMS_mod_advection
           real(kind=dp),dimension(:,:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=int32_t) :: i,j,m,n
-          integer(kind=int32_t) :: idm,jdm,mdm,ndm
+          integer(kind=i4) :: i,j,m,n
+          integer(kind=i4) :: idm,jdm,mdm,ndm
 
           mdm = size(f,dim=1)
           ndm = size(f,dim=2)
