@@ -9,7 +9,7 @@ module GMS_mod_domain
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 21/03/2019
 ! Removing most of the Object-Oriented overhead.
 !
-    use GMS_mod_kinds,    only : int32_t, dp
+    use mod_kinds,    only : i4, dp
     use GMS_mod_spectrum, only : spectrum_type
     use GMS_mod_grid,     only : grid_type
     use GMS_mod_constants
@@ -41,11 +41,11 @@ module GMS_mod_domain
           real(kind=dp), allocatable, dimension(:,:)     :: eta
 !DIR$     ATTRIBUTES ALIGN : 64 :: depth
           real(kind=dp), allocatable, dimension(:,:)     :: depth
-          integer(kind=int32_t), dimension(2) :: lb
-          integer(kind=int32_t), dimension(2) :: ub
-          integer(kind=int32_t) :: nfreqs
-          integer(kind=int32_t) :: ndirs
-          logical(kind=int32_t) :: shallow_water_mode
+          integer(kind=i4), dimension(2) :: lb
+          integer(kind=i4), dimension(2) :: ub
+          integer(kind=i4) :: nfreqs
+          integer(kind=i4) :: ndirs
+          logical(kind=i4) :: shallow_water_mode
 
     end type domain_type
 
@@ -58,17 +58,17 @@ module GMS_mod_domain
           type(domain_type),        intent(inout) :: domain
           type(grid_type),          intent(in)    :: grid
           type(spectrum_type),      intent(in)    :: spectrum
-          logical(kind=int32_t),    intent(in), optional    :: shallow_water_mode
-          logical(kind=int32_t),    intent(inout) :: errstate
-          integer(kind=int32_t),    intent(in)    :: iounit
-          logical(kind=int32_t),    intent(in)    :: logging
-          logical(kind=int32_t),    intent(in)    :: verbose
-          logical(kind=int32_t),    intent(in)    :: append
+          logical(kind=i4),    intent(in), optional    :: shallow_water_mode
+          logical(kind=i4),    intent(inout) :: errstate
+          integer(kind=i4),    intent(in)    :: iounit
+          logical(kind=i4),    intent(in)    :: logging
+          logical(kind=i4),    intent(in)    :: verbose
+          logical(kind=i4),    intent(in)    :: append
           character(len=*),         intent(in)    :: fname
           ! LOcals
           character(len=256),    automatic :: emsg
-          integer(kind=int32_t), autimatic :: aerr
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), autimatic :: aerr
+          integer(kind=i4), automatic :: i,j
           ! Exec code ....
           if(present(shallow_water_mode)) then
                 domain.shallow_water_mode = shallow_water_mode
@@ -184,10 +184,10 @@ module GMS_mod_domain
                     real(kind=dp), dimension(:,:), allocatable, intent(out) :: tendency
                 end subroutine advection_mathod
            end interface
-           integer(kind=int32_t),   intent(in) :: halo_width
-           integer(kind=int32_t), dimension(:), intent(in) :: directional_type
+           integer(kind=i4),   intent(in) :: halo_width
+           integer(kind=i4), dimension(:), intent(in) :: directional_type
            ! Locals
-           integer(kind=int32_t), automatic :: idm
+           integer(kind=i4), automatic :: idm
 !DIR$   ATTRIBUTES ALIGN : 64 :: f
            real(kind=dp), allocatable, dimension(:,:)     :: f
 !DIR$   ATTRIBUTES ALIGN : 64 :: cg
@@ -241,10 +241,10 @@ module GMS_mod_domain
                     real(kind=dp), dimension(:,:,:), intent(inout) :: tendency
                  end subroutine advection_method
            end interface
-           integer(kind=int32_t),      intent(in)  :: halowidth
-           integer(kind=int32_t), dimension(:,:), intent(in) :: directional_type
+           integer(kind=i4),      intent(in)  :: halowidth
+           integer(kind=i4), dimension(:,:), intent(in) :: directional_type
            ! Locals
-           integer(kind=int32_t), automatic :: idm
+           integer(kind=i4), automatic :: idm
 !DIR$ ATTRIBUTES ALIGN : 64 :: f
            real(kind=dp),dimension(:,:,:),allocatable       :: f
 !DIR$ ATTRIBUTES ALIGN : 64 :: cg
@@ -302,9 +302,9 @@ module GMS_mod_domain
                     real(kind=dp), allocatable, dimension(:,:,:,:), intent(out) :: tendency
                  end subroutine
           end interface
-          integer(kind=int32_t), dimension(:), intent(in) :: halowidth
+          integer(kind=i4), dimension(:), intent(in) :: halowidth
           ! LOcals
-          integer(kind=int32_t), automatic :: idm,jdm,n
+          integer(kind=i4), automatic :: idm,jdm,n
 !DIR$ ATTRIBUTES ALIGN : 64 :: f
           real(kind=dp),dimension(:,:,:,:),allocatable :: f
 !DIR$ ATTRIBUTES ALIGN : 64 :: cg
@@ -361,13 +361,13 @@ module GMS_mod_domain
           type(domain_type),        intent(in) :: domain
 !DIR$   ASSUME_ALIGNED u:64
           real(kind=dp), dimension(lb1:ub1,lb2:ub2,:kdm), intent(out) :: u
-          integer(kind=int32_t),    intent(in) :: lb1
-          integer(kind=int32_t),    intent(in) :: ub1
-          integer(kind=int32_t),    intent(in) :: lb2
-          integer(kind=int32_t),    intent(in) :: ub2
-          integer(kind=int32_t),    intent(in) :: kdm
+          integer(kind=i4),    intent(in) :: lb1
+          integer(kind=i4),    intent(in) :: ub1
+          integer(kind=i4),    intent(in) :: lb2
+          integer(kind=i4),    intent(in) :: ub2
+          integer(kind=i4),    intent(in) :: kdm
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! EXec code ....
           do concurrent(i=lb1:ub1,j=lb2:ub2)
                 u(i,j,:) = domain.spectrum(i,j).u
@@ -385,13 +385,13 @@ module GMS_mod_domain
           type(domain_type),    intent(in) :: domain
 !DIR$   ASSUME_ALIGNED v:64
           real(kind=dp), dimension(lb1:ub1,lb2:ub2,kdm), intent(out) :: v
-          integer(kind=int32_t),    intent(in) :: lb1
-          integer(kind=int32_t),    intent(in) :: ub1
-          integer(kind=int32_t),    intent(in) :: lb2
-          integer(kind=int32_t),    intent(in) :: ub2
-          integer(kind=int32_t),    intent(in) :: kdm
+          integer(kind=i4),    intent(in) :: lb1
+          integer(kind=i4),    intent(in) :: ub1
+          integer(kind=i4),    intent(in) :: lb2
+          integer(kind=i4),    intent(in) :: ub2
+          integer(kind=i4),    intent(in) :: kdm
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! EXec code ....
           do concurrent(i=lb1:ub1,j=lb2:ub2)
                 v(i,j,:) = domain.spectrum(i,j).v
@@ -405,11 +405,11 @@ module GMS_mod_domain
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: getSpectrumArray
           type(domain_type),                   intent(in) :: domain
           real(kind=dp), allocatable, dimension(:,:,:,:), intent(out) :: spectrum_array
-          integer(kind=int32_t), dimension(2), intent(in) :: halowidth
-          logical(kind=int32_t),               intent(in) :: periodic
+          integer(kind=i4), dimension(2), intent(in) :: halowidth
+          logical(kind=i4),               intent(in) :: periodic
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
-          integer(kind=int32_t), automatic :: nfreqs,ndirs
+          integer(kind=i4), automatic :: i,j
+          integer(kind=i4), automatic :: nfreqs,ndirs
           ! EXec code ...
           if(allocated(spectrum_array)) return
           associate(lb=>domain.lb,ub=>domain.ub,hw=>halowidth)
@@ -438,10 +438,10 @@ module GMS_mod_domain
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: getGroupSpeed
           type(domain_type),                   intent(in) :: domain
           real(kind=dp), allocatable, dimension(:,:,:), intent(out) :: cg
-          integer(kind=int32_t), dimension(2), intent(in) :: halowidth
-          logical(kind=int32_t),               intent(in) :: periodic
+          integer(kind=i4), dimension(2), intent(in) :: halowidth
+          logical(kind=i4),               intent(in) :: periodic
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! Exec code ....
           if(allocated(cg)) return
           associate(lb=>domain.lb,ub=>domain.ub,hw=>halowidth)
@@ -465,9 +465,9 @@ module GMS_mod_domain
           type(domain_type),        intent(in) :: domain
 !DIR$   ASSUME_ALIGNED cg:64
           real(kind=dp), dimension(nfreqs,lb1:ub1,lb2:ub2), intent(out) :: cg
-          integer(kind=int32_t),    intent(in) :: nfreqs,lb1,ub1,lb2,ub2
+          integer(kind=i4),    intent(in) :: nfreqs,lb1,ub1,lb2,ub2
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! EXec code ....
           do concurrent(i=lb1:ub1,j=lb2:ub2)
                 cp(:,i,j) = domain.spectrum(i,j).cp
@@ -479,8 +479,8 @@ module GMS_mod_domain
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: getGridSpacingXWithHalo
           type(domain_type),                   intent(in) :: domain
           real(kind=dp), allocatable, dimension(:,:), intent(out) :: dx
-          integer(kind=int32_t), dimension(2), intent(in) :: halowidth
-          logical(kind=int32_t),               intent(in) :: periodic
+          integer(kind=i4), dimension(2), intent(in) :: halowidth
+          logical(kind=i4),               intent(in) :: periodic
           ! Exec code ...
           if(allocated(dx)) return
           associate(lb=>domain.lb,ub=>domain.ub,hw=>halowidth)
@@ -500,8 +500,8 @@ module GMS_mod_domain
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: getGridSpacingYWithHalo
           type(domain_type),                   intent(in) :: domain
           real(kind=dp), allocatable, dimension(:,:), intent(out) :: dy
-          integer(kind=int32_t), dimension(2), intent(in) :: halowidth
-          logical(kind=int32_t),               intent(in) :: periodic
+          integer(kind=i4), dimension(2), intent(in) :: halowidth
+          logical(kind=i4),               intent(in) :: periodic
           ! Exec code ...
           if(allocated(dy)) return
           associate(lb=>domain.lb,ub=>domain.ub,hw=>halowidth)
@@ -523,10 +523,10 @@ module GMS_mod_domain
           type(domain_type),                       intent(inout)   :: domain
 !DIR$   ASSUME_ALIGNED depth:64
           real(kind=dp),    dimension(lb1:ub1,lb2:ub2), intent(in) :: depth
-          integer(kind=int32_t),          intent(in)               :: lb1,ub1, &
+          integer(kind=i4),          intent(in)               :: lb1,ub1, &
                                                                       lb2,ub2
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! Exec code....
 
          do i=lb1,ub1
@@ -542,10 +542,10 @@ module GMS_mod_domain
           type(domain_type),              intent(inout) :: domain
 !DIR$   ASSIME_ALIGNED elevation:64
           real(kind=dp),    dimension(lb1:ub1,lb2:ub2), intent(in)    :: elevation
-          integer(kind=int32_t),          intent(in)    :: lb1,ub1, &
+          integer(kind=i4),          intent(in)    :: lb1,ub1, &
                                                            lb2,ub2
           ! LOcals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! EXec code ....
           do i=lb1, ub1
                do j=lb2,ub2
@@ -560,7 +560,7 @@ module GMS_mod_domain
           type(domain_type),        intent(inout) :: domain
 !DIR$   ASSUME_ALIGNED gravity:64
           real(kind=dp),    dimension(length), intent(in) :: gravity
-          integer(kind=int32_t),               intent(in) :: lb1,ub1, &
+          integer(kind=i4),               intent(in) :: lb1,ub1, &
                                                              lb2,ub2
           ! LOcals
           integer(kind=int32_t), automatic :: i,j
@@ -578,7 +578,7 @@ module GMS_mod_domain
           type(domain_type),        intent(inout) :: domain
 !DIR$   ASSUME_ALIGNED st:64
           real(kind=dp),    dimension(lb1:ub1,lb2:ub2), intent(in) :: st
-          integer(kind=int32_t),                        intent(in) :: lb1,ub1, &
+          integer(kind=i4),                        intent(in) :: lb1,ub1, &
                                                                       lb2,ub2
           ! LOcals
           integer(kind=int32_t), automatic :: i,j
@@ -597,10 +597,10 @@ module GMS_mod_domain
 !DIR$   ASSUME_ALIGNED ad:64
           real(kind=dp),    dimension(lb1:ub1,lb2:ub2), intent(in) :: ad
 
-          integer(kind=int32_t),                        intent(in) :: lb1,ub1, &
+          integer(kind=i4),                        intent(in) :: lb1,ub1, &
                                                                       lb2,ub2
           ! LOcals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! Exec code ...
           do i=lb1,ub1
                 do j=lb2,ub2
@@ -615,10 +615,10 @@ module GMS_mod_domain
           type(domain_type),            intent(inout) :: domain
 !DIR$   ASSUME_ALIGNED wd:64
           real(kind=dp),      dimension(lb1:ub1,lb2:ub2), intent(in)   :: wd
-          integer(kind=int32_t),                          intent(in)   :: lb1,ub1, &
+          integer(kind=i4),                          intent(in)   :: lb1,ub1, &
                                                                            lb2,ub2
           ! LOcals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! Exec code ...
           do i=lb1,ub1
                 do j=lb2,ub2
@@ -635,7 +635,7 @@ module GMS_mod_domain
 !DIR$   ASSUME_ALIGNED spectrum_array:64
           real(kind=dp),    dimension(:,:),  intent(in) :: spectrum_array
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           ! Exec code....
           associate(lb=>domain.lb,ub=>domain.ub)
                do concurrent(i=lb(1):ub(1),j=lb(2):ub(2))
@@ -653,7 +653,7 @@ module GMS_mod_domain
 !DIR$   ASSUME_ALIGNED spectrum_array:64
           real(kind=dp),     dimension(:,:,:), intent(in) :: spectrum_array
           ! Locals
-          integer(kind=int32_t), automatic :: i,j
+          integer(kind=i4), automatic :: i,j
           associate(lb=>domain.lb,ub=>domain.ub)
                 if(lb(2) == ub(2)) then
                        do concurrent(i=lb(1):ub(1),j=lb(2):ub(2))
@@ -675,7 +675,7 @@ module GMS_mod_domain
 !DIR$   ASSUME_ALIGNED spectrum_array:64
           real(kind=dp),dimension(:,:,:,:),intent(in) :: spectrum_array
     !! Spectrum array
-          integer(kind=32_t) :: i,j
+          integer(kind=i4) :: i,j
           associate(lb => self % lb,ub => self % ub)
                 do concurrent(i=lb(1):ub(1),j=lb(2):ub(2))
                     domain.spectrum(i,j).spec(:,:) = spectrum_array(:,:,i,j)
