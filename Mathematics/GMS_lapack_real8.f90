@@ -10338,3 +10338,1799 @@ SUBROUTINE DORMBR( VECT, SIDE, TRANS, M, N, K, A, LDA, TAU, C, &
       WORK( 1 ) = LWKOPT
      
 END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleOTHERcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DORMLQ( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+     WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORMLQ !GCC$ ATTRIBUTES aligned(32) :: DORMLQ
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DORMLQ( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+     WORK, LWORK, INFO )
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORMLQ
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DORMLQ
+#endif
+       implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, LWORK, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: C
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      INTEGER            NBMAX, LDT, TSIZE
+      PARAMETER          ( NBMAX = 64, LDT = NBMAX+1, &
+                         TSIZE = LDT*NBMAX )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LEFT, LQUERY, NOTRAN
+      CHARACTER          TRANST
+      INTEGER            I, I1, I2, I3, IB, IC, IINFO, IWT, JC, LDWORK, &
+                        LWKOPT, MI, NB, NBMIN, NI, NQ, NW
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            ILAENV
+      EXTERNAL           LSAME, ILAENV
+!!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DLARFB, DLARFT, DORML2, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      LQUERY = ( LWORK.EQ.-1 )
+!*
+!*     NQ is the order of Q and NW is the minimum dimension of WORK
+!*
+      IF( LEFT ) THEN
+         NQ = M
+         NW = N
+      ELSE
+         NQ = N
+         NW = M
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, K ) ) THEN
+         INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      ELSE IF( LWORK.LT.MAX( 1, NW ) .AND. .NOT.LQUERY ) THEN
+         INFO = -12
+      END IF
+!*
+      IF( INFO.EQ.0 ) THEN
+!*
+!*        Compute the workspace requirements
+!*
+         NB = MIN( NBMAX, ILAENV( 1, 'DORMLQ', SIDE // TRANS, M, N, K, &
+             -1 ) )
+         LWKOPT = MAX( 1, NW )*NB + TSIZE
+         WORK( 1 ) = LWKOPT
+      END IF
+
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORMLQ', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         RETURN
+      END IF
+!*
+      NBMIN = 2
+      LDWORK = NW
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+         IF( LWORK.LT.NW*NB+TSIZE ) THEN
+            NB = (LWORK-TSIZE) / LDWORK
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMLQ', SIDE // TRANS, M, N, K, &
+                   -1 ) )
+         END IF
+      END IF
+
+      IF( NB.LT.NBMIN .OR. NB.GE.K ) THEN
+!*
+!*        Use unblocked code
+!*
+         CALL DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK, &
+                     IINFO )
+      ELSE
+!*
+!*        Use blocked code
+!*
+         IWT = 1 + NW*NB
+         IF( ( LEFT .AND. NOTRAN ) .OR. &
+            ( .NOT.LEFT .AND. .NOT.NOTRAN ) ) THEN
+            I1 = 1
+            I2 = K
+            I3 = NB
+         ELSE
+            I1 = ( ( K-1 ) / NB )*NB + 1
+            I2 = 1
+            I3 = -NB
+         END IF
+
+         IF( LEFT ) THEN
+            NI = N
+            JC = 1
+         ELSE
+            MI = M
+            IC = 1
+         END IF
+
+         IF( NOTRAN ) THEN
+            TRANST = 'T'
+         ELSE
+            TRANST = 'N'
+         END IF
+
+         DO 10 I = I1, I2, I3
+            IB = MIN( NB, K-I+1 )
+!*
+!*           Form the triangular factor of the block reflector
+!*           H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+            CALL DLARFT( 'Forward', 'Rowwise', NQ-I+1, IB, A( I, I ), &
+                        LDA, TAU( I ), WORK( IWT ), LDT )
+            IF( LEFT ) THEN
+!*
+!*              H or H**T is applied to C(i:m,1:n)
+!*
+               MI = M - I + 1
+               IC = I
+            ELSE
+!*
+!*              H or H**T is applied to C(1:m,i:n)
+!*
+               NI = N - I + 1
+               JC = I
+            END IF
+!*
+!*           Apply H or H**T
+!*
+            CALL DLARFB( SIDE, TRANST, 'Forward', 'Rowwise', MI, NI, IB, &
+                        A( I, I ), LDA, WORK( IWT ), LDT, &
+                        C( IC, JC ), LDC, WORK, LDWORK )
+   10    CONTINUE
+      END IF
+      WORK( 1 ) = LWKOPT
+     
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleOTHERcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      SUBROUTINE DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+           WORK, INFO ) !GCC$ ATTRIBUTES hot :: DORML2 !GCC$ ATTRIBUTES aligned(32) :: DORML2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+ SUBROUTINE DORML2( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+      WORK, INFO )
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORML2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DORML2
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, M, N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: C
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LEFT, NOTRAN
+      INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
+      DOUBLE PRECISION   AII
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+!      EXTERNAL           DLARF, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+!*
+!*     NQ is the order of Q
+!*
+      IF( LEFT ) THEN
+         NQ = M
+      ELSE
+         NQ = N
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, K ) ) THEN
+         INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORML2', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 ) RETURN
+   
+!*
+      IF( ( LEFT .AND. NOTRAN ) .OR. ( .NOT.LEFT .AND. .NOT.NOTRAN ) ) &
+          THEN
+         I1 = 1
+         I2 = K
+         I3 = 1
+      ELSE
+         I1 = K
+         I2 = 1
+         I3 = -1
+      END IF
+
+      IF( LEFT ) THEN
+         NI = N
+         JC = 1
+      ELSE
+         MI = M
+         IC = 1
+      END IF
+
+      DO 10 I = I1, I2, I3
+         IF( LEFT ) THEN
+!*
+!*           H(i) is applied to C(i:m,1:n)
+!*
+            MI = M - I + 1
+            IC = I
+         ELSE
+!*
+!*           H(i) is applied to C(1:m,i:n)
+!*
+            NI = N - I + 1
+            JC = I
+         END IF
+!*
+!*        Apply H(i)
+!*
+         AII = A( I, I )
+         A( I, I ) = ONE
+         CALL DLARF( SIDE, MI, NI, A( I, I ), LDA, TAU( I ), &
+                    C( IC, JC ), LDC, WORK )
+         A( I, I ) = AII
+   10 CONTINUE
+     
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleOTHERcomputational
+!!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+ SUBROUTINE DORMQR( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+      WORK, LWORK, INFO ) !GCC$ ATTRIBUTES hot :: DORMQR !GCC$ ATTRIBUTES aligned(32) :: DORMQR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DORMQR( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+     WORK, LWORK, INFO )
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORMQR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DORMQR
+#endif
+  implicit none
+  
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, LWORK, M, N
+!*     ..
+!*!     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+        DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: C
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+          DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      INTEGER            NBMAX, LDT, TSIZE
+      PARAMETER          ( NBMAX = 64, LDT = NBMAX+1, &
+                          TSIZE = LDT*NBMAX )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LEFT, LQUERY, NOTRAN
+      INTEGER            I, I1, I2, I3, IB, IC, IINFO, IWT, JC, LDWORK, &
+                        LWKOPT, MI, NB, NBMIN, NI, NQ, NW
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      INTEGER            ILAENV
+      EXTERNAL           LSAME, ILAENV
+!*     ..
+!*     .. External Subroutines ..
+     ! EXTERNAL           DLARFB, DLARFT, DORM2R, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      LQUERY = ( LWORK.EQ.-1 )
+!*
+!*     NQ is the order of Q and NW is the minimum dimension of WORK
+!*
+      IF( LEFT ) THEN
+         NQ = M
+         NW = N
+      ELSE
+         NQ = N
+         NW = M
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, NQ ) ) THEN
+         INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      ELSE IF( LWORK.LT.MAX( 1, NW ) .AND. .NOT.LQUERY ) THEN
+         INFO = -12
+      END IF
+!*
+      IF( INFO.EQ.0 ) THEN
+!*
+!*        Compute the workspace requirements
+!*
+         NB = MIN( NBMAX, ILAENV( 1, 'DORMQR', SIDE // TRANS, M, N, K, &
+             -1 ) )
+         LWKOPT = MAX( 1, NW )*NB + TSIZE
+         WORK( 1 ) = LWKOPT
+      END IF
+!*
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DORMQR', -INFO )
+         RETURN
+      ELSE IF( LQUERY ) THEN
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 ) THEN
+         WORK( 1 ) = 1
+         RETURN
+      END IF
+!*
+      NBMIN = 2
+      LDWORK = NW
+      IF( NB.GT.1 .AND. NB.LT.K ) THEN
+         IF( LWORK.LT.NW*NB+TSIZE ) THEN
+            NB = (LWORK-TSIZE) / LDWORK
+            NBMIN = MAX( 2, ILAENV( 2, 'DORMQR', SIDE // TRANS, M, N, K, &
+                   -1 ) )
+         END IF
+      END IF
+
+      IF( NB.LT.NBMIN .OR. NB.GE.K ) THEN
+!*
+!*        Use unblocked code
+!*
+         CALL DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, WORK, &
+                    IINFO )
+      ELSE
+!*
+!*        Use blocked code
+!*
+         IWT = 1 + NW*NB
+         IF( ( LEFT .AND. .NOT.NOTRAN ) .OR. &
+            ( .NOT.LEFT .AND. NOTRAN ) ) THEN
+            I1 = 1
+            I2 = K
+            I3 = NB
+         ELSE
+            I1 = ( ( K-1 ) / NB )*NB + 1
+            I2 = 1
+            I3 = -NB
+         END IF
+
+         IF( LEFT ) THEN
+            NI = N
+            JC = 1
+         ELSE
+            MI = M
+            IC = 1
+         END IF
+
+         DO 10 I = I1, I2, I3
+            IB = MIN( NB, K-I+1 )
+!*
+!*           Form the triangular factor of the block reflector
+!*           H = H(i) H(i+1) . . . H(i+ib-1)
+!*
+            CALL DLARFT( 'Forward', 'Columnwise', NQ-I+1, IB, A( I, I ), &
+                        LDA, TAU( I ), WORK( IWT ), LDT )
+            IF( LEFT ) THEN
+!*
+!*              H or H**T is applied to C(i:m,1:n)
+!*
+               MI = M - I + 1
+               IC = I
+            ELSE
+!*
+!*              H or H**T is applied to C(1:m,i:n)
+!*
+               NI = N - I + 1
+               JC = I
+            END IF
+!*
+!*           Apply H or H**T
+!*
+            CALL DLARFB( SIDE, TRANS, 'Forward', 'Columnwise', MI, NI, &
+                        IB, A( I, I ), LDA, WORK( IWT ), LDT, &
+                        C( IC, JC ), LDC, WORK, LDWORK )
+   10    CONTINUE
+      END IF
+      WORK( 1 ) = LWKOPT
+  
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleOTHERcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+  SUBROUTINE DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+       WORK, INFO ) !GCC$ ATTRIBUTES hot :: DORM2R !GCC$ ATTRIBUTES aligned(32) :: DORM2R
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+ SUBROUTINE DORM2R( SIDE, TRANS, M, N, K, A, LDA, TAU, C, LDC, &
+      WORK, INFO )
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DORM2R
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DORM2R
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          SIDE, TRANS
+      INTEGER            INFO, K, LDA, LDC, M, N
+!*     ..
+!*     .. Array Arguments ..
+      ! DOUBLE PRECISION   A( LDA, * ), C( LDC, * ), TAU( * ), WORK( * )
+        DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: C
+        DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: TAU
+          DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: WORK
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            LEFT, NOTRAN
+      INTEGER            I, I1, I2, I3, IC, JC, MI, NI, NQ
+      DOUBLE PRECISION   AII
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DLARF, XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input arguments
+!*
+      INFO = 0
+      LEFT = LSAME( SIDE, 'L' )
+      NOTRAN = LSAME( TRANS, 'N' )
+!*
+!*     NQ is the order of Q
+!*
+      IF( LEFT ) THEN
+         NQ = M
+      ELSE
+         NQ = N
+      END IF
+      IF( .NOT.LEFT .AND. .NOT.LSAME( SIDE, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) ) THEN
+         INFO = -2
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( K.LT.0 .OR. K.GT.NQ ) THEN
+         INFO = -5
+      ELSE IF( LDA.LT.MAX( 1, NQ ) ) THEN
+         INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, M ) ) THEN
+         INFO = -10
+      END IF
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DORM2R', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 .OR. K.EQ.0 ) &
+       RETURN
+
+      IF( ( LEFT .AND. .NOT.NOTRAN ) .OR. ( .NOT.LEFT .AND. NOTRAN ) )
+     $     THEN
+         I1 = 1
+         I2 = K
+         I3 = 1
+      ELSE
+         I1 = K
+         I2 = 1
+         I3 = -1
+      END IF
+
+      IF( LEFT ) THEN
+         NI = N
+         JC = 1
+      ELSE
+         MI = M
+         IC = 1
+      END IF
+
+      DO 10 I = I1, I2, I3
+         IF( LEFT ) THEN
+!*
+!*           H(i) is applied to C(i:m,1:n)
+!*
+            MI = M - I + 1
+            IC = I
+         ELSE
+!*
+!*           H(i) is applied to C(1:m,i:n)
+!*
+            NI = N - I + 1
+            JC = I
+         END IF
+!*
+!*        Apply H(i)
+!*
+         AII = A( I, I )
+         A( I, I ) = ONE
+         CALL DLARF( SIDE, MI, NI, A( I, I ), 1, TAU( I ), C( IC, JC ), &
+                    LDC, WORK )
+         A( I, I ) = AII
+   10 CONTINUE
+    
+END SUBROUTINE
+
+
+!*  Authors:
+!*  ========
+!*
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date April 2012
+!*
+!*> \ingroup doubleGEsolve
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGESVXX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, &
+                         EQUED, R, C, B, LDB, X, LDX, RCOND, RPVGRW, &
+                         BERR, N_ERR_BNDS, ERR_BNDS_NORM, &
+                         ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, IWORK, &
+                         INFO ) !GCC$ ATTRIBUTES hot :: DGESVXX !GCC$ ATTRIBUTES aligned(32) :: DGESVXX
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DGESVXX( FACT, TRANS, N, NRHS, A, LDA, AF, LDAF, IPIV, &
+                         EQUED, R, C, B, LDB, X, LDX, RCOND, RPVGRW, &
+                         BERR, N_ERR_BNDS, ERR_BNDS_NORM, &
+                         ERR_BNDS_COMP, NPARAMS, PARAMS, WORK, IWORK, &
+                         INFO )
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGESVXX
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGESVXX
+#endif
+       implicit none
+!*
+!*  -- LAPACK driver routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     April 2012
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          EQUED, FACT, TRANS
+      INTEGER            INFO, LDA, LDAF, LDB, LDX, N, NRHS, NPARAMS, &
+                        N_ERR_BNDS
+      DOUBLE PRECISION   RCOND, RPVGRW
+!*     ..
+!*     .. Array Arguments ..
+      !INTEGER            IPIV( * ), IWORK( * )
+      !DOUBLE PRECISION   A( LDA, * ), AF( LDAF, * ), B( LDB, * ), &
+      !                  X( LDX , * ),WORK( * )
+      !DOUBLE PRECISION   R( * ), C( * ), PARAMS( * ), BERR( * ), &
+      !                  ERR_BNDS_NORM( NRHS, * ), &
+      !                  ERR_BNDS_COMP( NRHS, * )
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IPIV
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IWORK
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: AF
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: B
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: WORK
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: R
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: PARAMS
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: BERR
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERR_BNDS_NORM
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERR_BNDS_COMP
+!*     ..
+!*
+!*  =====================================================================
+!!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      INTEGER            FINAL_NRM_ERR_I, FINAL_CMP_ERR_I, BERR_I
+      INTEGER            RCOND_I, NRM_RCOND_I, NRM_ERR_I, CMP_RCOND_I
+      INTEGER            CMP_ERR_I, PIV_GROWTH_I
+      PARAMETER          ( FINAL_NRM_ERR_I = 1, FINAL_CMP_ERR_I = 2, &
+                        BERR_I = 3 )
+      PARAMETER          ( RCOND_I = 4, NRM_RCOND_I = 5, NRM_ERR_I = 6 )
+      PARAMETER          ( CMP_RCOND_I = 7, CMP_ERR_I = 8, &
+                        PIV_GROWTH_I = 9 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            COLEQU, EQUIL, NOFACT, NOTRAN, ROWEQU
+      INTEGER            INFEQU, J
+      DOUBLE PRECISION   AMAX, BIGNUM, COLCND, RCMAX, RCMIN, ROWCND, &
+                        SMLNUM
+!*     ..
+!*     .. External Functions ..
+      EXTERNAL           LSAME, DLAMCH, DLA_GERPVGRW
+      LOGICAL            LSAME
+      DOUBLE PRECISION   DLAMCH, DLA_GERPVGRW
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           DGETRF, DGETRS, DLACPY, DLAQGE,
+     !$                   DLASCL2, DGERFSX
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+      INFO = 0
+      NOFACT = LSAME( FACT, 'N' )
+      EQUIL = LSAME( FACT, 'E' )
+      NOTRAN = LSAME( TRANS, 'N' )
+      SMLNUM = DLAMCH( 'Safe minimum' )
+      BIGNUM = ONE / SMLNUM
+      IF( NOFACT .OR. EQUIL ) THEN
+         EQUED = 'N'
+         ROWEQU = .FALSE.
+         COLEQU = .FALSE.
+      ELSE
+         ROWEQU = LSAME( EQUED, 'R' ) .OR. LSAME( EQUED, 'B' )
+         COLEQU = LSAME( EQUED, 'C' ) .OR. LSAME( EQUED, 'B' )
+      END IF
+!*
+!*     Default is failure.  If an input parameter is wrong or
+!*     factorization fails, make everything look horrible.  Only the
+!*     pivot growth is set here, the rest is initialized in DGERFSX.
+!*
+      RPVGRW = ZERO
+!*
+!*     Test the input parameters.  PARAMS is not tested until DGERFSX.
+!*
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT. &
+          LSAME( FACT, 'F' ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT. &
+             LSAME( TRANS, 'C' ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      ELSE IF( LSAME( FACT, 'F' ) .AND. .NOT. &
+             ( ROWEQU .OR. COLEQU .OR. LSAME( EQUED, 'N' ) ) ) THEN
+         INFO = -10
+      ELSE
+         IF( ROWEQU ) THEN
+            RCMIN = BIGNUM
+            RCMAX = ZERO
+            DO 10 J = 1, N
+               RCMIN = MIN( RCMIN, R( J ) )
+               RCMAX = MAX( RCMAX, R( J ) )
+ 10         CONTINUE
+            IF( RCMIN.LE.ZERO ) THEN
+               INFO = -11
+            ELSE IF( N.GT.0 ) THEN
+               ROWCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+            ELSE
+               ROWCND = ONE
+            END IF
+         END IF
+         IF( COLEQU .AND. INFO.EQ.0 ) THEN
+            RCMIN = BIGNUM
+            RCMAX = ZERO
+            DO 20 J = 1, N
+               RCMIN = MIN( RCMIN, C( J ) )
+               RCMAX = MAX( RCMAX, C( J ) )
+ 20         CONTINUE
+            IF( RCMIN.LE.ZERO ) THEN
+               INFO = -12
+            ELSE IF( N.GT.0 ) THEN
+               COLCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+            ELSE
+               COLCND = ONE
+            END IF
+         END IF
+         IF( INFO.EQ.0 ) THEN
+            IF( LDB.LT.MAX( 1, N ) ) THEN
+               INFO = -14
+            ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+               INFO = -16
+            END IF
+         END IF
+      END IF
+
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'DGESVXX', -INFO )
+         RETURN
+      END IF
+
+      IF( EQUIL ) THEN
+!*
+!*     Compute row and column scalings to equilibrate the matrix A.
+!*
+         CALL DGEEQUB( N, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+             INFEQU )
+         IF( INFEQU.EQ.0 ) THEN
+!*
+!*     Equilibrate the matrix.
+!*
+            CALL DLAQGE( N, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+                EQUED )
+            ROWEQU = LSAME( EQUED, 'R' ) .OR. LSAME( EQUED, 'B' )
+            COLEQU = LSAME( EQUED, 'C' ) .OR. LSAME( EQUED, 'B' )
+         END IF
+!*
+!*     If the scaling factors are not applied, set them to 1.0.
+!*
+         IF ( .NOT.ROWEQU ) THEN
+            DO J = 1, N
+               R( J ) = 1.0D+0
+            END DO
+         END IF
+         IF ( .NOT.COLEQU ) THEN
+            DO J = 1, N
+               C( J ) = 1.0D+0
+            END DO
+         END IF
+      END IF
+!*
+!*     Scale the right-hand side.
+!*
+      IF( NOTRAN ) THEN
+         IF( ROWEQU ) CALL DLASCL2( N, NRHS, R, B, LDB )
+      ELSE
+         IF( COLEQU ) CALL DLASCL2( N, NRHS, C, B, LDB )
+      END IF
+!*
+      IF( NOFACT .OR. EQUIL ) THEN
+!*
+!*        Compute the LU factorization of A.
+!*
+         CALL DLACPY( 'Full', N, N, A, LDA, AF, LDAF )
+         CALL DGETRF( N, N, AF, LDAF, IPIV, INFO )
+!*
+!*        Return if INFO is non-zero.
+!*
+         IF( INFO.GT.0 ) THEN
+!*
+!!*           Pivot in column INFO is exactly 0
+!*           Compute the reciprocal pivot growth factor of the
+!*           leading rank-deficient INFO columns of A.
+!*
+            RPVGRW = DLA_GERPVGRW( N, INFO, A, LDA, AF, LDAF )
+            RETURN
+         END IF
+      END IF
+!*
+!*     Compute the reciprocal pivot growth factor RPVGRW.
+!*
+      RPVGRW = DLA_GERPVGRW( N, N, A, LDA, AF, LDAF )
+!*
+!*     Compute the solution matrix X.
+!*
+      CALL DLACPY( 'Full', N, NRHS, B, LDB, X, LDX )
+      CALL DGETRS( TRANS, N, NRHS, AF, LDAF, IPIV, X, LDX, INFO )
+!*
+!*     Use iterative refinement to improve the computed solution and
+!*     compute error bounds and backward error estimates for it.
+!*
+      CALL DGERFSX( TRANS, EQUED, N, NRHS, A, LDA, AF, LDAF, &
+          IPIV, R, C, B, LDB, X, LDX, RCOND, BERR, &
+          N_ERR_BNDS, ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS, &
+          WORK, IWORK, INFO )
+!*
+!*     Scale solutions.
+!*
+      IF ( COLEQU .AND. NOTRAN ) THEN
+         CALL DLASCL2 ( N, NRHS, C, X, LDX )
+      ELSE IF ( ROWEQU .AND. .NOT.NOTRAN ) THEN
+         CALL DLASCL2 ( N, NRHS, R, X, LDX )
+      END IF
+
+
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleGEcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGEEQUB( M, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+                      INFO ) !GCC$ ATTRIBUTES INLINE :: DGEEQUB !GCC$ ATTRIBUTES aligned(32) :: DGEEQUB
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DGEEQUB( M, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+     INFO )
+   !DIR$ ATTRIBUTES FORCEINLINE :: DGEEQUB
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEEQUB
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGEEQUB
+#endif
+  use omp_lib
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, M, N
+      DOUBLE PRECISION   AMAX, COLCND, ROWCND
+!*     ..
+!*     .. Array Arguments ..
+      ! DOUBLE PRECISION   A( LDA, * ), C( * ), R( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: R
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, J
+      DOUBLE PRECISION   BIGNUM, RCMAX, RCMIN, SMLNUM, RADIX, LOGRDX
+!*     ..
+!*     .. External Functions ..
+      DOUBLE PRECISION   DLAMCH
+      EXTERNAL           DLAMCH
+!*     ..
+!*     .. External Subroutines ..
+      !EXTERNAL           XERBLA
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, MAX, MIN, LOG
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input parameters.
+!*
+      INFO = 0
+      IF( M.LT.0 ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+         INFO = -4
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DGEEQUB', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF( M.EQ.0 .OR. N.EQ.0 ) THEN
+         ROWCND = ONE
+         COLCND = ONE
+         AMAX = ZERO
+         RETURN
+      END IF
+!*
+!1!*     Get machine constants.  Assume SMLNUM is a power of the radix.
+!*
+      SMLNUM = DLAMCH( 'S' )
+      BIGNUM = ONE / SMLNUM
+      RADIX = DLAMCH( 'B' )
+      LOGRDX = LOG( RADIX )
+!*
+!*     Compute row scale factors.
+      !*
+      !$OMP SIMD ALIGNED(R:64) LINEAR(I:1) UNROLL PARTIAL(8)
+      DO 10 I = 1, M
+         R( I ) = ZERO
+   10 CONTINUE
+!*
+!*     Find the maximum element in each row.
+!*
+     DO 30 J = 1, N
+          !$OMP SIMD ALIGNED(R:64) LINEAR(I:1) UNROLL PARTIAL(8)  
+         DO 20 I = 1, M
+            R( I ) = MAX( R( I ), ABS( A( I, J ) ) )
+   20    CONTINUE
+   30 CONTINUE
+      DO I = 1, M
+         IF( R( I ).GT.ZERO ) THEN
+            R( I ) = RADIX**INT( LOG( R( I ) ) / LOGRDX )
+         END IF
+      END DO
+!*
+!*     Find the maximum and minimum scale factors.
+!*
+      RCMIN = BIGNUM
+      RCMAX = ZERO
+      DO 40 I = 1, M
+         RCMAX = MAX( RCMAX, R( I ) )
+         RCMIN = MIN( RCMIN, R( I ) )
+   40 CONTINUE
+      AMAX = RCMAX
+!*
+      IF( RCMIN.EQ.ZERO ) THEN
+!*
+!*        Find the first zero scale factor and return an error code.
+!*
+         DO 50 I = 1, M
+            IF( R( I ).EQ.ZERO ) THEN
+               INFO = I
+               RETURN
+            END IF
+   50    CONTINUE
+      ELSE
+!*
+!*        Invert the scale factors.
+         !*
+         !$OMP SIMD ALIGNED(R:64) LINEAR(I:1) 
+         DO 60 I = 1, M
+            R( I ) = ONE / MIN( MAX( R( I ), SMLNUM ), BIGNUM )
+   60    CONTINUE
+!*
+!*        Compute ROWCND = min(R(I)) / max(R(I)).
+!*
+         ROWCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+      END IF
+!*
+!*     Compute column scale factors
+      !*
+      !$OMP SIMD ALIGNED(R:64) LINEAR(I:1) UNROLL PARTIAL(8)  
+      DO 70 J = 1, N
+         C( J ) = ZERO
+   70 CONTINUE
+!*
+!*     Find the maximum element in each column,
+!*     assuming the row scaling computed above.
+!*
+      DO 90 J = 1, N
+         !$OMP SIMD ALIGNED(R:64) LINEAR(I:1)  
+         DO 80 I = 1, M
+            C( J ) = MAX( C( J ), ABS( A( I, J ) )*R( I ) )
+   80    CONTINUE
+         IF( C( J ).GT.ZERO ) THEN
+            C( J ) = RADIX**INT( LOG( C( J ) ) / LOGRDX )
+         END IF
+   90 CONTINUE
+!*
+!*     Find the maximum and minimum scale factors.
+!*
+      RCMIN = BIGNUM
+      RCMAX = ZERO
+      DO 100 J = 1, N
+         RCMIN = MIN( RCMIN, C( J ) )
+         RCMAX = MAX( RCMAX, C( J ) )
+  100 CONTINUE
+!*
+      IF( RCMIN.EQ.ZERO ) THEN
+!*
+!*        Find the first zero scale factor and return an error code.
+!*
+         DO 110 J = 1, N
+            IF( C( J ).EQ.ZERO ) THEN
+               INFO = M + J
+               RETURN
+            END IF
+  110    CONTINUE
+      ELSE
+!*
+!*        Invert the scale factors.
+         !*
+         !$OMP SIMD ALIGNED(R:64) LINEAR(I:1) UNROLL PARTIAL(8)  
+         DO 120 J = 1, N
+            C( J ) = ONE / MIN( MAX( C( J ), SMLNUM ), BIGNUM )
+  120    CONTINUE
+!*
+!*        Compute COLCND = min(C(J)) / max(C(J)).
+!*
+         COLCND = MAX( RCMIN, SMLNUM ) / MIN( RCMAX, BIGNUM )
+      END IF
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleGEcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO ) !GCC$ ATTRIBUTES inline :: DGETRS !GCC$ ATTRIBUTES aligned(32) :: DGETRS
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DGETRS( TRANS, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+     !DIR$ ATTRIBUTES FORCEINLINE :: DGETRS
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGETRS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGETRS
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          TRANS
+      INTEGER            INFO, LDA, LDB, N, NRHS
+!*     ..
+!*     .. Array Arguments ..
+      !INTEGER            IPIV( * )
+      !DOUBLE PRECISION   A( LDA, * ), B( LDB, * )
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IPIV
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: B
+      
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE
+      PARAMETER          ( ONE = 1.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            NOTRAN
+!*     ..
+!*     .. External Functions ..
+      LOGICAL            LSAME
+      EXTERNAL           LSAME
+!*     ..
+!*     .. External Subroutines ..
+      EXTERNAL           DLASWP, DTRSM
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input parameters.
+!*
+      INFO = 0
+      NOTRAN = LSAME( TRANS, 'N' )
+      IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT. &
+         LSAME( TRANS, 'C' ) ) THEN
+         INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      END IF
+      IF( INFO.NE.0 ) THEN
+         !CALL XERBLA( 'DGETRS', -INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible
+!*
+!      IF( N.EQ.0 .OR. NRHS.EQ.0 )
+!     $   RETURN
+!*
+      IF( NOTRAN ) THEN
+!*
+!*        Solve A * X = B.
+!*
+!*        Apply row interchanges to the right hand sides.
+!*
+         CALL DLASWP( NRHS, B, LDB, 1, N, IPIV, 1 )
+!*
+!*        Solve L*X = B, overwriting B with X.
+!*
+         CALL DTRSM( 'Left', 'Lower', 'No transpose', 'Unit', N, NRHS, &
+                    ONE, A, LDA, B, LDB )
+!*
+!*        Solve U*X = B, overwriting B with X.
+!*
+         CALL DTRSM( 'Left', 'Upper', 'No transpose', 'Non-unit', N, &
+                    NRHS, ONE, A, LDA, B, LDB )
+      ELSE
+!*
+!*        Solve A**T * X = B.
+!*
+!*        Solve U**T *X = B, overwriting B with X.
+!*
+         CALL DTRSM( 'Left', 'Upper', 'Transpose', 'Non-unit', N, NRHS, &
+                    ONE, A, LDA, B, LDB )
+!*
+!*        Solve L**T *X = B, overwriting B with X.
+!*
+         CALL DTRSM( 'Left', 'Lower', 'Transpose', 'Unit', N, NRHS, ONE, &
+                    A, LDA, B, LDB )
+!*
+!*        Apply row interchanges to the solution vectors.
+!*
+         CALL DLASWP( NRHS, B, LDB, 1, N, IPIV, -1 )
+      END IF
+
+END SUBROUTINE
+    
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLAQGE( M, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+     EQUED ) !GCC$ ATTRIBUTES hot :: DLAQGE !GCC$ ATTRIBUTES aligned(32) :: DLAQGE
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DLAQGE( M, N, A, LDA, R, C, ROWCND, COLCND, AMAX, &
+     EQUED )
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLAQGE
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DLAQGE
+#endif
+  use omp_lib
+      implicit none
+!*
+!*  -- LAPACK auxiliary routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          EQUED
+      INTEGER            LDA, M, N
+      DOUBLE PRECISION   AMAX, COLCND, ROWCND
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), C( * ), R( * )
+       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: R
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, THRESH
+      PARAMETER          ( ONE = 1.0D+0, THRESH = 0.1D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      INTEGER            I, J
+      DOUBLE PRECISION   CJ, LARGE, SMALL
+!*     ..
+!*     .. External Functions ..
+      DOUBLE PRECISION   DLAMCH
+      EXTERNAL           DLAMCH
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Quick return if possible
+!*
+      IF( M.LE.0 .OR. N.LE.0 ) THEN
+         EQUED = 'N'
+         RETURN
+      END IF
+!*
+!!*     Initialize LARGE and SMALL.
+!*!
+      SMALL = DLAMCH( 'Safe minimum' ) / DLAMCH( 'Precision' )
+      LARGE = ONE / SMALL
+!*
+      IF( ROWCND.GE.THRESH .AND. AMAX.GE.SMALL .AND. AMAX.LE.LARGE ) &
+          THEN
+!*
+!*        No row scaling
+!*
+         IF( COLCND.GE.THRESH ) THEN
+!*
+!*           No column scaling
+!*
+            EQUED = 'N'
+         ELSE
+!*
+!*           Column scaling
+            !*
+            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A) PRIVATE(J,CJ,I)
+            DO 20 J = 1, N
+               CJ = C( J )
+               !$OMP SIMD ALIGNED(A:64,C) LINEAR(I:1) UNROLL PARTIAL(6)
+               DO 10 I = 1, M
+                  A( I, J ) = CJ*A( I, J )
+   10          CONTINUE
+   20       CONTINUE
+            EQUED = 'C'
+         END IF
+      ELSE IF( COLCND.GE.THRESH ) THEN
+!*
+!*        Row scaling, no column scaling
+         !*
+          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A,R) PRIVATE(J,I)
+         DO 40 J = 1, N
+              !$OMP SIMD ALIGNED(A:64,C,R) LINEAR(I:1) UNROLL PARTIAL(6)
+            DO 30 I = 1, M
+               A( I, J ) = R( I )*A( I, J )
+   30       CONTINUE
+   40    CONTINUE
+         EQUED = 'R'
+      ELSE
+!*
+!*        Row and column scaling
+         !*
+          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A,R) PRIVATE(J,CJ,I)
+         DO 60 J = 1, N
+            CJ = C( J )
+            !$OMP SIMD ALIGNED(A:64,C,R) LINEAR(I:1) UNROLL PARTIAL(6)
+            DO 50 I = 1, M
+               A( I, J ) = CJ*R( I )*A( I, J )
+   50       CONTINUE
+   60    CONTINUE
+         EQUED = 'B'
+      END IF
+
+END SUBROUTINE
+
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLASCL2 ( M, N, D, X, LDX ) !GCC$ ATTRIBUTES inline :: DLASCL2 !GCC$ ATTRIBUTES aligned(32) :: DLASCL2
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DLASCL2 ( M, N, D, X, LDX )
+    !DIR$ ATTRIBUTES FORCEINLINE :: DLASCL2
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLASCL2
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DLASCL2
+#endif
+    use omp_lib
+       implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     June 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            M, N, LDX
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   D( * ), X( LDX, * )
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: D
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: X
+!*     ..
+!*
+!*  =====================================================================
+!!*
+!*     .. Local Scalars ..
+      INTEGER            I, J
+!*     ..
+!*     .. Executable Statements ..
+!*
+      DO J = 1, N
+         !$OMP SIMD ALIGNED(X:64,D) LINEAR(I:1) UNROLL PARTIAL(6)
+         DO I = 1, M
+            X( I, J ) = X( I, J ) * D( I )
+         END DO
+      END DO
+
+     
+END SUBROUTINE DLASCL2
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+*!> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date December 2016
+!*
+!*> \ingroup doubleGEcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+   SUBROUTINE DGERFSX( TRANS, EQUED, N, NRHS, A, LDA, AF, LDAF, IPIV, &
+                         R, C, B, LDB, X, LDX, RCOND, BERR, N_ERR_BNDS, &
+                         ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS, &
+                         WORK, IWORK, INFO ) !GCC$ ATTRIBUTES hot :: DGERFSX !GCC$ ATTRIBUTES aligned(32) :: DGERFSX
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+ SUBROUTINE DGERFSX( TRANS, EQUED, N, NRHS, A, LDA, AF, LDAF, IPIV, &
+                         R, C, B, LDB, X, LDX, RCOND, BERR, N_ERR_BNDS, &
+                         ERR_BNDS_NORM, ERR_BNDS_COMP, NPARAMS, PARAMS, &
+                         WORK, IWORK, INFO )
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGERFSX
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DGERFSX
+#endif
+       implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      CHARACTER          TRANS, EQUED
+      INTEGER            INFO, LDA, LDAF, LDB, LDX, N, NRHS, NPARAMS, &
+                         N_ERR_BNDS
+      DOUBLE PRECISION   RCOND
+!*     ..
+!*     .. Array Arguments ..
+     ! INTEGER            IPIV( * ), IWORK( * )
+     ! DOUBLE PRECISION   A( LDA, * ), AF( LDAF, * ), B( LDB, * ),
+     !$                   X( LDX , * ), WORK( * )
+     ! DOUBLE PRECISION   R( * ), C( * ), PARAMS( * ), BERR( * ),
+     !$                   ERR_BNDS_NORM( NRHS, * ),
+      !$                   ERR_BNDS_COMP( NRHS, * )
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IPIV, IWORK
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: AF
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: B
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: WORK
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: R
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: PARAMS
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: BERR
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERR_BNDS_NORM
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERR_BNDS_COMP
+!*     ..
+!*
+!*  ==================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ZERO, ONE
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0 )
+      DOUBLE PRECISION   ITREF_DEFAULT, ITHRESH_DEFAULT
+      DOUBLE PRECISION   COMPONENTWISE_DEFAULT, RTHRESH_DEFAULT
+      DOUBLE PRECISION   DZTHRESH_DEFAULT
+      PARAMETER          ( ITREF_DEFAULT = 1.0D+0 )
+      PARAMETER          ( ITHRESH_DEFAULT = 10.0D+0 )
+      PARAMETER          ( COMPONENTWISE_DEFAULT = 1.0D+0 )
+      PARAMETER          ( RTHRESH_DEFAULT = 0.5D+0 )
+      PARAMETER          ( DZTHRESH_DEFAULT = 0.25D+0 )
+      INTEGER            LA_LINRX_ITREF_I, LA_LINRX_ITHRESH_I, &
+                        LA_LINRX_CWISE_I
+      PARAMETER          ( LA_LINRX_ITREF_I = 1, &
+                        LA_LINRX_ITHRESH_I = 2 )
+      PARAMETER          ( LA_LINRX_CWISE_I = 3 )
+      INTEGER            LA_LINRX_TRUST_I, LA_LINRX_ERR_I, &
+                        LA_LINRX_RCOND_I
+      PARAMETER          ( LA_LINRX_TRUST_I = 1, LA_LINRX_ERR_I = 2 )
+      PARAMETER          ( LA_LINRX_RCOND_I = 3 )
+!*     ..
+!*     .. Local Scalars ..
+      CHARACTER(1)       NORM
+      LOGICAL            ROWEQU, COLEQU, NOTRAN
+      INTEGER            J, TRANS_TYPE, PREC_TYPE, REF_TYPE
+      INTEGER            N_NORMS
+      DOUBLE PRECISION   ANORM, RCOND_TMP
+      DOUBLE PRECISION   ILLRCOND_THRESH, ERR_LBND, CWISE_WRONG
+      LOGICAL            IGNORE_CWISE
+      INTEGER            ITHRESH
+      DOUBLE PRECISION   RTHRESH, UNSTABLE_THRESH
+!*     ..
+!*     .. External Subroutines ..
+     ! EXTERNAL           XERBLA, DGECON, DLA_GERFSX_EXTENDED
+!*     ..
+*!     .. Intrinsic Functions ..
+      INTRINSIC          MAX, SQRT
+!*     ..
+!*     .. External Functions ..
+      EXTERNAL           LSAME, ILATRANS, ILAPREC
+      EXTERNAL           DLAMCH, DLANGE, DLA_GERCOND
+      DOUBLE PRECISION   DLAMCH, DLANGE, DLA_GERCOND
+      LOGICAL            LSAME
+      INTEGER            ILATRANS, ILAPREC
+!*     ..
+!*     .. Executable Statements ..
+!*
+!!*     Check the input parameters.
+!*
+      INFO = 0
+      TRANS_TYPE = ILATRANS( TRANS )
+      REF_TYPE = INT( ITREF_DEFAULT )
+      IF ( NPARAMS .GE. LA_LINRX_ITREF_I ) THEN
+         IF ( PARAMS( LA_LINRX_ITREF_I ) .LT. 0.0D+0 ) THEN
+            PARAMS( LA_LINRX_ITREF_I ) = ITREF_DEFAULT
+         ELSE
+            REF_TYPE = PARAMS( LA_LINRX_ITREF_I )
+         END IF
+      END IF
+!*
+!*     Set default parameters.
+!*
+      ILLRCOND_THRESH = DBLE( N ) * DLAMCH( 'Epsilon' )
+      ITHRESH = INT( ITHRESH_DEFAULT )
+      RTHRESH = RTHRESH_DEFAULT
+      UNSTABLE_THRESH = DZTHRESH_DEFAULT
+      IGNORE_CWISE = COMPONENTWISE_DEFAULT .EQ. 0.0D+0
+!*
+      IF ( NPARAMS.GE.LA_LINRX_ITHRESH_I ) THEN
+         IF ( PARAMS( LA_LINRX_ITHRESH_I ).LT.0.0D+0 ) THEN
+            PARAMS( LA_LINRX_ITHRESH_I ) = ITHRESH
+         ELSE
+            ITHRESH = INT( PARAMS( LA_LINRX_ITHRESH_I ) )
+         END IF
+      END IF
+      IF ( NPARAMS.GE.LA_LINRX_CWISE_I ) THEN
+         IF ( PARAMS( LA_LINRX_CWISE_I ).LT.0.0D+0 ) THEN
+            IF ( IGNORE_CWISE ) THEN
+               PARAMS( LA_LINRX_CWISE_I ) = 0.0D+0
+            ELSE
+               PARAMS( LA_LINRX_CWISE_I ) = 1.0D+0
+            END IF
+         ELSE
+            IGNORE_CWISE = PARAMS( LA_LINRX_CWISE_I ) .EQ. 0.0D+0
+         END IF
+      END IF
+      IF ( REF_TYPE .EQ. 0 .OR. N_ERR_BNDS .EQ. 0 ) THEN
+         N_NORMS = 0
+      ELSE IF ( IGNORE_CWISE ) THEN
+         N_NORMS = 1
+      ELSE
+         N_NORMS = 2
+      END IF
+!*
+      NOTRAN = LSAME( TRANS, 'N' )
+      ROWEQU = LSAME( EQUED, 'R' ) .OR. LSAME( EQUED, 'B' )
+      COLEQU = LSAME( EQUED, 'C' ) .OR. LSAME( EQUED, 'B' )
+!*
+!*     Test input parameters.
+!*
+      IF( TRANS_TYPE.EQ.-1 ) THEN
+        INFO = -1
+      ELSE IF( .NOT.ROWEQU .AND. .NOT.COLEQU .AND. &
+              .NOT.LSAME( EQUED, 'N' ) ) THEN
+        INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+        INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+        INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+        INFO = -6
+      ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
+        INFO = -8
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+        INFO = -13
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+        INFO = -15
+      END IF
+      IF( INFO.NE.0 ) THEN
+        !CALL XERBLA( 'DGERFSX', -INFO )
+        RETURN
+      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF( N.EQ.0 .OR. NRHS.EQ.0 ) THEN
+         RCOND = 1.0D+0
+         DO J = 1, NRHS
+            BERR( J ) = 0.0D+0
+            IF ( N_ERR_BNDS .GE. 1 ) THEN
+               ERR_BNDS_NORM( J, LA_LINRX_TRUST_I) = 1.0D+0
+               ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
+            END IF
+            IF ( N_ERR_BNDS .GE. 2 ) THEN
+               ERR_BNDS_NORM( J, LA_LINRX_ERR_I) = 0.0D+0
+               ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 0.0D+0
+            END IF
+            IF ( N_ERR_BNDS .GE. 3 ) THEN
+               ERR_BNDS_NORM( J, LA_LINRX_RCOND_I) = 1.0D+0
+               ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 1.0D+0
+            END IF
+         END DO
+         RETURN
+      END IF
+!*
+!*     Default to failure.
+!*
+      RCOND = 0.0D+0
+      DO J = 1, NRHS
+         BERR( J ) = 1.0D+0
+         IF ( N_ERR_BNDS .GE. 1 ) THEN
+            ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
+            ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
+         END IF
+         IF ( N_ERR_BNDS .GE. 2 ) THEN
+            ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
+            ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
+         END IF
+         IF ( N_ERR_BNDS .GE. 3 ) THEN
+            ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = 0.0D+0
+            ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = 0.0D+0
+         END IF
+      END DO
+!*
+!*     Compute the norm of A and the reciprocal of the condition
+!*     number of A.
+!*
+      IF( NOTRAN ) THEN
+         NORM = 'I'
+      ELSE
+         NORM = '1'
+      END IF
+      ANORM = DLANGE( NORM, N, N, A, LDA, WORK )
+      CALL DGECON( NORM, N, AF, LDAF, ANORM, RCOND, WORK, IWORK, INFO )
+!*
+!*     Perform refinement on each right-hand side
+!*
+      IF ( REF_TYPE .NE. 0 ) THEN
+
+         PREC_TYPE = ILAPREC( 'E' )
+
+         IF ( NOTRAN ) THEN
+            CALL DLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE,  N, &
+                NRHS, A, LDA, AF, LDAF, IPIV, COLEQU, C, B, &
+                LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM, &
+                ERR_BNDS_COMP, WORK(N+1), WORK(1), WORK(2*N+1), &
+                WORK(1), RCOND, ITHRESH, RTHRESH, UNSTABLE_THRESH, &
+                IGNORE_CWISE, INFO )
+         ELSE
+            CALL DLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE,  N, &
+                NRHS, A, LDA, AF, LDAF, IPIV, ROWEQU, R, B, &
+                LDB, X, LDX, BERR, N_NORMS, ERR_BNDS_NORM, &
+                ERR_BNDS_COMP, WORK(N+1), WORK(1), WORK(2*N+1), &
+                WORK(1), RCOND, ITHRESH, RTHRESH, UNSTABLE_THRESH, &
+                IGNORE_CWISE, INFO )
+         END IF
+      END IF
+
+      ERR_LBND = MAX( 10.0D+0, SQRT( DBLE( N ) ) ) * DLAMCH( 'Epsilon' )
+      IF ( N_ERR_BNDS .GE. 1 .AND. N_NORMS .GE. 1 ) THEN
+!*
+!*     Compute scaled normwise condition number cond(A*C).
+!*
+         IF ( COLEQU .AND. NOTRAN ) THEN
+            RCOND_TMP = DLA_GERCOND( TRANS, N, A, LDA, AF, LDAF, IPIV, &
+                -1, C, INFO, WORK, IWORK )
+         ELSE IF ( ROWEQU .AND. .NOT. NOTRAN ) THEN
+            RCOND_TMP = DLA_GERCOND( TRANS, N, A, LDA, AF, LDAF, IPIV, &
+                -1, R, INFO, WORK, IWORK )
+         ELSE
+            RCOND_TMP = DLA_GERCOND( TRANS, N, A, LDA, AF, LDAF, IPIV, &
+                0, R, INFO, WORK, IWORK )
+         END IF
+         DO J = 1, NRHS
+!*
+!*     Cap the error at 1.0.
+!*
+            IF ( N_ERR_BNDS .GE. LA_LINRX_ERR_I &
+                .AND. ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) .GT. 1.0D+0 ) &
+                ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
+!*
+!*     Threshold the error (see LAWN).
+!*
+            IF ( RCOND_TMP .LT. ILLRCOND_THRESH ) THEN
+               ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = 1.0D+0
+               ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 0.0D+0
+               IF ( INFO .LE. N ) INFO = N + J
+            ELSE IF ( ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) .LT. ERR_LBND ) &
+            THEN
+               ERR_BNDS_NORM( J, LA_LINRX_ERR_I ) = ERR_LBND
+               ERR_BNDS_NORM( J, LA_LINRX_TRUST_I ) = 1.0D+0
+            END IF
+!*
+!*     Save the condition number.
+!*
+            IF ( N_ERR_BNDS .GE. LA_LINRX_RCOND_I ) THEN
+               ERR_BNDS_NORM( J, LA_LINRX_RCOND_I ) = RCOND_TMP
+            END IF
+         END DO
+      END IF
+
+      IF ( N_ERR_BNDS .GE. 1 .AND. N_NORMS .GE. 2 ) THEN
+!*
+!*     Compute componentwise condition number cond(A*diag(Y(:,J))) for
+!*     each right-hand side using the current solution as an estimate of
+!*     the true solution.  If the componentwise error estimate is too
+!*     large, then the solution is a lousy estimate of truth and the
+!*     estimated RCOND may be too optimistic.  To avoid misleading users,
+!*     the inverse condition number is set to 0.0 when the estimated
+!*     cwise error is at least CWISE_WRONG.
+!*
+         CWISE_WRONG = SQRT( DLAMCH( 'Epsilon' ) )
+         DO J = 1, NRHS
+            IF ( ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) .LT. CWISE_WRONG ) &
+                THEN 
+               RCOND_TMP = DLA_GERCOND( TRANS, N, A, LDA, AF, LDAF, &
+                   IPIV, 1, X(1,J), INFO, WORK, IWORK )
+            ELSE
+               RCOND_TMP = 0.0D+0
+            END IF
+!*
+!*     Cap the error at 1.0.
+!*
+            IF ( N_ERR_BNDS .GE. LA_LINRX_ERR_I &
+                .AND. ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) .GT. 1.0D+0 ) &
+                ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
+!*
+!*     Threshold the error (see LAWN).
+!!*
+            IF ( RCOND_TMP .LT. ILLRCOND_THRESH ) THEN
+               ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = 1.0D+0
+               ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 0.0D+0
+               IF ( PARAMS( LA_LINRX_CWISE_I ) .EQ. 1.0D+0 &
+                   .AND. INFO.LT.N + J ) INFO = N + J
+            ELSE IF ( ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) &
+                   .LT. ERR_LBND ) THEN
+               ERR_BNDS_COMP( J, LA_LINRX_ERR_I ) = ERR_LBND
+               ERR_BNDS_COMP( J, LA_LINRX_TRUST_I ) = 1.0D+0
+            END IF
+!*
+!*     Save the condition number.
+!*
+            IF ( N_ERR_BNDS .GE. LA_LINRX_RCOND_I ) THEN
+               ERR_BNDS_COMP( J, LA_LINRX_RCOND_I ) = RCOND_TMP
+            END IF
+         END DO
+      END IF
+
+      END SUBROUTINE
