@@ -12133,4 +12133,736 @@ END SUBROUTINE DLASCL2
          END DO
       END IF
 
-      END SUBROUTINE
+END SUBROUTINE
+
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date June 2017
+!*
+!*> \ingroup doubleGEcomputational
+!*
+!*  =====================================================================
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE, N, NRHS, A, &
+                                     LDA, AF, LDAF, IPIV, COLEQU, C, B, &
+                                     LDB, Y, LDY, BERR_OUT, N_NORMS, &
+                                     ERRS_N, ERRS_C, RES, AYB, DY, &
+                                     Y_TAIL, RCOND, ITHRESH, RTHRESH, &
+                                     DZ_UB, IGNORE_CWISE, INFO ) !GCC$ ATTRIBUTES hot :: DLA_GERFSX_EXTENDED !GCC$ ATTRIBUTES aligned(32) :: DLA_GERFSX_EXTENDED
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE DLA_GERFSX_EXTENDED( PREC_TYPE, TRANS_TYPE, N, NRHS, A, &
+                                     LDA, AF, LDAF, IPIV, COLEQU, C, B, &
+                                     LDB, Y, LDY, BERR_OUT, N_NORMS, &
+                                     ERRS_N, ERRS_C, RES, AYB, DY, &
+                                     Y_TAIL, RCOND, ITHRESH, RTHRESH, &
+                                     DZ_UB, IGNORE_CWISE, INFO )
+   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLA_DGERFSX_EXTENDED
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DLA_DGERFSX_EXTENDED
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.1) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     June 2017
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            INFO, LDA, LDAF, LDB, LDY, N, NRHS, PREC_TYPE, &
+                        TRANS_TYPE, N_NORMS, ITHRESH
+      LOGICAL            COLEQU, IGNORE_CWISE
+      DOUBLE PRECISION   RTHRESH, DZ_UB, RCOND
+!*     ..
+!*     .. Array Arguments ..
+      !INTEGER            IPIV( * )
+      !DOUBLE PRECISION   A( LDA, * ), AF( LDAF, * ), B( LDB, * ),
+     !$                   Y( LDY, * ), RES( * ), DY( * ), Y_TAIL( * )
+      !DOUBLE PRECISION   C( * ), AYB( * ), RCOND, BERR_OUT( * ),
+      !$                   ERRS_N( NRHS, * ), ERRS_C( NRHS, * )
+      INTEGER, DIMENSION(:), ALLOCATABLE :: IPIV
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: AF
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: B
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: Y
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: RES
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DY
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: Y_TAIL
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: AYB
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: BERR_OUT
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERRS_N
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: ERRS_C
+      
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      CHARACTER          TRANS
+      INTEGER            CNT, I, J, X_STATE, Z_STATE, Y_PREC_STATE
+      DOUBLE PRECISION   YK, DYK, YMIN, NORMY, NORMX, NORMDX, DXRAT, &
+                        DZRAT, PREVNORMDX, PREV_DZ_Z, DXRATMAX, &
+                        DZRATMAX, DX_X, DZ_Z, FINAL_DX_X, FINAL_DZ_Z, &
+                        EPS, HUGEVAL, INCR_THRESH
+      LOGICAL            INCR_PREC
+!*     ..
+!*     .. Parameters ..
+      INTEGER            UNSTABLE_STATE, WORKING_STATE, CONV_STATE, &
+                        NOPROG_STATE, BASE_RESIDUAL, EXTRA_RESIDUAL, &
+                        EXTRA_Y
+      PARAMETER          ( UNSTABLE_STATE = 0, WORKING_STATE = 1, &
+                        CONV_STATE = 2, NOPROG_STATE = 3 )
+      PARAMETER          ( BASE_RESIDUAL = 0, EXTRA_RESIDUAL = 1, &
+                        EXTRA_Y = 2 )
+      INTEGER            FINAL_NRM_ERR_I, FINAL_CMP_ERR_I, BERR_I
+      INTEGER            RCOND_I, NRM_RCOND_I, NRM_ERR_I, CMP_RCOND_I
+      INTEGER            CMP_ERR_I, PIV_GROWTH_I
+      PARAMETER          ( FINAL_NRM_ERR_I = 1, FINAL_CMP_ERR_I = 2, &
+                          BERR_I = 3 )
+      PARAMETER          ( RCOND_I = 4, NRM_RCOND_I = 5, NRM_ERR_I = 6 )
+      PARAMETER          ( CMP_RCOND_I = 7, CMP_ERR_I = 8, &
+                        PIV_GROWTH_I = 9 )
+      INTEGER            LA_LINRX_ITREF_I, LA_LINRX_ITHRESH_I, &
+                        LA_LINRX_CWISE_I
+      PARAMETER          ( LA_LINRX_ITREF_I = 1, &
+                        LA_LINRX_ITHRESH_I = 2 )
+      PARAMETER          ( LA_LINRX_CWISE_I = 3 )
+      INTEGER            LA_LINRX_TRUST_I, LA_LINRX_ERR_I, &
+                        LA_LINRX_RCOND_I
+      PARAMETER          ( LA_LINRX_TRUST_I = 1, LA_LINRX_ERR_I = 2 )
+      PARAMETER          ( LA_LINRX_RCOND_I = 3 )
+!*     ..
+!*     .. External Subroutines ..
+      EXTERNAL           DAXPY, DCOPY, DGETRS, DGEMV, BLAS_DGEMV_X, &
+                        BLAS_DGEMV2_X,  DLAMCH
+                       
+      DOUBLE PRECISION   DLAMCH
+      
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, MAX, MIN
+!*     ..
+!*     .. Executable Statements ..
+!*
+      IF ( INFO.NE.0 ) RETURN
+      TRANS = CHLA_TRANSTYPE(TRANS_TYPE)
+      EPS = DLAMCH( 'Epsilon' )
+      HUGEVAL = DLAMCH( 'Overflow' )
+!*     Force HUGEVAL to Inf
+      HUGEVAL = HUGEVAL * HUGEVAL
+!*     Using HUGEVAL may lead to spurious underflows.
+      INCR_THRESH = DBLE( N ) * EPS
+!*
+      DO J = 1, NRHS
+         Y_PREC_STATE = EXTRA_RESIDUAL
+         IF ( Y_PREC_STATE .EQ. EXTRA_Y ) THEN
+            DO I = 1, N
+               Y_TAIL( I ) = 0.0D+0
+            END DO
+         END IF
+
+         DXRAT = 0.0D+0
+         DXRATMAX = 0.0D+0
+         DZRAT = 0.0D+0
+         DZRATMAX = 0.0D+0
+         FINAL_DX_X = HUGEVAL
+         FINAL_DZ_Z = HUGEVAL
+         PREVNORMDX = HUGEVAL
+         PREV_DZ_Z = HUGEVAL
+         DZ_Z = HUGEVAL
+         DX_X = HUGEVAL
+
+         X_STATE = WORKING_STATE
+         Z_STATE = UNSTABLE_STATE
+         INCR_PREC = .FALSE.
+
+         DO CNT = 1, ITHRESH
+!*
+!*         Compute residual RES = B_s - op(A_s) * Y,
+!*             op(A) = A, A**T, or A**H depending on TRANS (and type).
+!*
+            CALL DCOPY( N, B( 1, J ), 1, RES, 1 )
+            IF ( Y_PREC_STATE .EQ. BASE_RESIDUAL ) THEN
+               CALL DGEMV( TRANS, N, N, -1.0D+0, A, LDA, Y( 1, J ), 1, &
+                   1.0D+0, RES, 1 )
+            ELSE IF ( Y_PREC_STATE .EQ. EXTRA_RESIDUAL ) THEN
+               CALL BLAS_DGEMV_X( TRANS_TYPE, N, N, -1.0D+0, A, LDA, &
+                   Y( 1, J ), 1, 1.0D+0, RES, 1, PREC_TYPE )
+            ELSE
+               CALL BLAS_DGEMV2_X( TRANS_TYPE, N, N, -1.0D+0, A, LDA, &
+                  Y( 1, J ), Y_TAIL, 1, 1.0D+0, RES, 1, PREC_TYPE )
+            END IF
+
+!        XXX: RES is no longer needed.
+            CALL DCOPY( N, RES, 1, DY, 1 )
+            CALL DGETRS( TRANS, N, 1, AF, LDAF, IPIV, DY, N, INFO )
+!*
+!*         Calculate relative changes DX_X, DZ_Z and ratios DXRAT, DZRAT.
+!*
+            NORMX = 0.0D+0
+            NORMY = 0.0D+0
+            NORMDX = 0.0D+0
+            DZ_Z = 0.0D+0
+            YMIN = HUGEVAL
+!*
+            DO I = 1, N
+               YK = ABS( Y( I, J ) )
+               DYK = ABS( DY( I ) )
+
+               IF ( YK .NE. 0.0D+0 ) THEN
+                  DZ_Z = MAX( DZ_Z, DYK / YK )
+               ELSE IF ( DYK .NE. 0.0D+0 ) THEN
+                  DZ_Z = HUGEVAL
+               END IF
+
+               YMIN = MIN( YMIN, YK )
+
+               NORMY = MAX( NORMY, YK )
+
+               IF ( COLEQU ) THEN
+                  NORMX = MAX( NORMX, YK * C( I ) )
+                  NORMDX = MAX( NORMDX, DYK * C( I ) )
+               ELSE
+                  NORMX = NORMY
+                  NORMDX = MAX( NORMDX, DYK )
+               END IF
+            END DO
+
+            IF ( NORMX .NE. 0.0D+0 ) THEN
+               DX_X = NORMDX / NORMX
+            ELSE IF ( NORMDX .EQ. 0.0D+0 ) THEN
+               DX_X = 0.0D+0
+            ELSE
+               DX_X = HUGEVAL
+            END IF
+
+            DXRAT = NORMDX / PREVNORMDX
+            DZRAT = DZ_Z / PREV_DZ_Z
+!*
+!*         Check termination criteria
+!*
+            IF (.NOT.IGNORE_CWISE &
+                .AND. YMIN*RCOND .LT. INCR_THRESH*NORMY &
+                .AND. Y_PREC_STATE .LT. EXTRA_Y) &
+                INCR_PREC = .TRUE.
+
+            IF ( X_STATE .EQ. NOPROG_STATE .AND. DXRAT .LE. RTHRESH ) &
+                 X_STATE = WORKING_STATE
+            IF ( X_STATE .EQ. WORKING_STATE ) THEN
+               IF ( DX_X .LE. EPS ) THEN
+                  X_STATE = CONV_STATE
+               ELSE IF ( DXRAT .GT. RTHRESH ) THEN
+                  IF ( Y_PREC_STATE .NE. EXTRA_Y ) THEN
+                     INCR_PREC = .TRUE.
+                  ELSE
+                     X_STATE = NOPROG_STATE
+                  END IF
+               ELSE
+                  IF ( DXRAT .GT. DXRATMAX ) DXRATMAX = DXRAT
+               END IF
+               IF ( X_STATE .GT. WORKING_STATE ) FINAL_DX_X = DX_X
+            END IF
+
+            IF ( Z_STATE .EQ. UNSTABLE_STATE .AND. DZ_Z .LE. DZ_UB ) &
+                Z_STATE = WORKING_STATE
+            IF ( Z_STATE .EQ. NOPROG_STATE .AND. DZRAT .LE. RTHRESH ) &
+                Z_STATE = WORKING_STATE
+            IF ( Z_STATE .EQ. WORKING_STATE ) THEN
+               IF ( DZ_Z .LE. EPS ) THEN
+                  Z_STATE = CONV_STATE
+               ELSE IF ( DZ_Z .GT. DZ_UB ) THEN
+                  Z_STATE = UNSTABLE_STATE
+                  DZRATMAX = 0.0D+0
+                  FINAL_DZ_Z = HUGEVAL
+               ELSE IF ( DZRAT .GT. RTHRESH ) THEN
+                  IF ( Y_PREC_STATE .NE. EXTRA_Y ) THEN
+                     INCR_PREC = .TRUE.
+                  ELSE
+                     Z_STATE = NOPROG_STATE
+                  END IF
+               ELSE
+                  IF ( DZRAT .GT. DZRATMAX ) DZRATMAX = DZRAT
+               END IF
+               IF ( Z_STATE .GT. WORKING_STATE ) FINAL_DZ_Z = DZ_Z
+            END IF
+!*
+!*           Exit if both normwise and componentwise stopped working,
+!*           but if componentwise is unstable, let it go at least two
+!*           iterations.
+!*
+            IF ( X_STATE.NE.WORKING_STATE ) THEN
+               IF ( IGNORE_CWISE) GOTO 666
+               IF ( Z_STATE.EQ.NOPROG_STATE .OR. Z_STATE.EQ.CONV_STATE ) &
+                   GOTO 666
+               IF ( Z_STATE.EQ.UNSTABLE_STATE .AND. CNT.GT.1 ) GOTO 666
+            END IF
+
+            IF ( INCR_PREC ) THEN
+               INCR_PREC = .FALSE.
+               Y_PREC_STATE = Y_PREC_STATE + 1
+               DO I = 1, N
+                  Y_TAIL( I ) = 0.0D+0
+               END DO
+            END IF
+
+            PREVNORMDX = NORMDX
+            PREV_DZ_Z = DZ_Z
+!*
+!*           Update soluton.
+!*
+            IF ( Y_PREC_STATE .LT. EXTRA_Y ) THEN
+               CALL DAXPY( N, 1.0D+0, DY, 1, Y( 1, J ), 1 )
+            ELSE
+               CALL DLA_WWADDW( N, Y( 1, J ), Y_TAIL, DY )
+            END IF
+
+         END DO
+!*        Target of "IF (Z_STOP .AND. X_STOP)".  Sun's f77 won't EXIT.
+ 666     CONTINUE
+!*
+!*     Set final_* when cnt hits ithresh.
+!*
+         IF ( X_STATE .EQ. WORKING_STATE ) FINAL_DX_X = DX_X
+         IF ( Z_STATE .EQ. WORKING_STATE ) FINAL_DZ_Z = DZ_Z
+!1*
+!*     Compute error bounds
+!*
+         IF (N_NORMS .GE. 1) THEN
+            ERRS_N( J, LA_LINRX_ERR_I ) = FINAL_DX_X / (1 - DXRATMAX)
+         END IF
+         IF ( N_NORMS .GE. 2 ) THEN
+            ERRS_C( J, LA_LINRX_ERR_I ) = FINAL_DZ_Z / (1 - DZRATMAX)
+         END IF
+!*
+!*     Compute componentwise relative backward error from formula
+!*         max(i) ( abs(R(i)) / ( abs(op(A_s))*abs(Y) + abs(B_s) )(i) )
+!*     where abs(Z) is the componentwise absolute value of the matrix
+!*     or vector Z.
+!*
+!*         Compute residual RES = B_s - op(A_s) * Y,
+!*             op(A) = A, A**T, or A**H depending on TRANS (and type).
+!*
+         CALL DCOPY( N, B( 1, J ), 1, RES, 1 )
+         CALL DGEMV( TRANS, N, N, -1.0D+0, A, LDA, Y(1,J), 1, 1.0D+0, &
+          RES, 1 )
+
+         DO I = 1, N
+            AYB( I ) = ABS( B( I, J ) )
+         END DO
+!*
+!*     Compute abs(op(A_s))*abs(Y) + abs(B_s).
+!*
+         CALL DLA_GEAMV ( TRANS_TYPE, N, N, 1.0D+0, &
+             A, LDA, Y(1, J), 1, 1.0D+0, AYB, 1 )
+
+         CALL DLA_LIN_BERR ( N, N, 1, RES, AYB, BERR_OUT( J ) )
+!*
+!*     End of loop for each RHS.
+!*
+      END DO
+
+END SUBROUTINE
+
+
+!*> \author Univ. of Tennessee
+!*> \author Univ. of California Berkeley
+!*> \author Univ. of Colorado Denver
+!*> \author NAG Ltd.
+!*
+!*> \date June 2017
+!*
+!*> \ingroup doubleGEcomputational
+!*
+!*  =====================================================================
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      SUBROUTINE DLA_GEAMV ( TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, &
+           Y, INCY ) !GCC$ ATTRIBUTES hot :: DLA_GEAMV !GCC$ ATTRIBUTES aligned(32) :: DLA_GEAMV
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+ SUBROUTINE DLA_GEAMV ( TRANS, M, N, ALPHA, A, LDA, X, INCX, BETA, &
+      Y, INCY )
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLA_GEAMV
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DLA_GEAMV
+#endif
+   use omp_lib
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.1) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     June 2017
+!*
+!*     .. Scalar Arguments ..
+      DOUBLE PRECISION   ALPHA, BETA
+      INTEGER            INCX, INCY, LDA, M, N, TRANS
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   A( LDA, * ), X( * ), Y( * )
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: Y
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      DOUBLE PRECISION   ONE, ZERO
+      PARAMETER          ( ONE = 1.0D+0, ZERO = 0.0D+0 )
+!*     ..
+!*     .. Local Scalars ..
+      LOGICAL            SYMB_ZERO
+      DOUBLE PRECISION   TEMP, SAFE1
+      INTEGER            I, INFO, IY, J, JX, KX, KY, LENX, LENY
+!*     ..
+!*     .. External Subroutines ..
+      EXTERNAL           DLAMCH
+      DOUBLE PRECISION   DLAMCH
+!*     ..
+!*     .. External Functions ..
+      EXTERNAL           ILATRANS
+      INTEGER            ILATRANS
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          MAX, ABS, SIGN
+!*     ..
+!*     .. Executable Statements ..
+!*
+!*     Test the input parameters.
+!*
+      INFO = 0
+      IF     ( .NOT.( ( TRANS.EQ.ILATRANS( 'N' ) ) &
+                .OR. ( TRANS.EQ.ILATRANS( 'T' ) ) &
+                .OR. ( TRANS.EQ.ILATRANS( 'C' )) ) ) THEN
+         INFO = 1
+      ELSE IF( M.LT.0 )THEN
+         INFO = 2
+      ELSE IF( N.LT.0 )THEN
+         INFO = 3
+      ELSE IF( LDA.LT.MAX( 1, M ) )THEN
+         INFO = 6
+      ELSE IF( INCX.EQ.0 )THEN
+         INFO = 8
+      ELSE IF( INCY.EQ.0 )THEN
+         INFO = 11
+      END IF
+      IF( INFO.NE.0 )THEN
+         !CALL XERBLA( 'DLA_GEAMV ', INFO )
+         RETURN
+      END IF
+!*
+!*     Quick return if possible.
+!*
+      IF( ( M.EQ.0 ).OR.( N.EQ.0 ).OR. &
+         ( ( ALPHA.EQ.ZERO ).AND.( BETA.EQ.ONE ) ) ) &
+        RETURN
+!*
+!*     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+!*     up the start points in  X  and  Y.
+!*
+      IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+         LENX = N
+         LENY = M
+      ELSE
+         LENX = M
+         LENY = N
+      END IF
+      IF( INCX.GT.0 )THEN
+         KX = 1
+      ELSE
+         KX = 1 - ( LENX - 1 )*INCX
+      END IF
+      IF( INCY.GT.0 )THEN
+         KY = 1
+      ELSE
+         KY = 1 - ( LENY - 1 )*INCY
+      END IF
+!*
+!*     Set SAFE1 essentially to be the underflow threshold times the
+!*     number of additions in each row.
+!*
+      SAFE1 = DLAMCH( 'Safe minimum' )
+      SAFE1 = (N+1)*SAFE1
+!*
+!*     Form  y := alpha*abs(A)*abs(x) + beta*abs(y).
+!*
+!*     The O(M*N) SYMB_ZERO tests could be replaced by O(N) queries to
+!*     the inexact flag.  Still doesn't help change the iteration order
+!*     to per-column.
+!*
+      IY = KY
+      IF ( INCX.EQ.1 ) THEN
+         IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,X) PRIVATE(I,SYMB_ZERO,J,TEMP,IY)
+            DO I = 1, LENY
+               IF ( BETA .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. ZERO ) THEN
+                  !$OMP SIMD ALIGNED(X:64,Y) LINEAR(J:1)
+                  DO J = 1, LENX
+                     TEMP = ABS( A( I, J ) )
+                     SYMB_ZERO = SYMB_ZERO .AND. &
+                         ( X( J ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+
+                     Y( IY ) = Y( IY ) + ALPHA*ABS( X( J ) )*TEMP
+                  END DO
+               END IF
+
+               IF ( .NOT.SYMB_ZERO ) &
+                   Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+            !$OMP END PARALLEL DO
+         ELSE
+            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,X) PRIVATE(I,SYMB_ZERO,J,TEMP,IY)
+            DO I = 1, LENY
+               IF ( BETA .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. ZERO ) THEN
+                    !$OMP SIMD ALIGNED(X:64,Y) LINEAR(J:1)
+                  DO J = 1, LENX
+                     TEMP = ABS( A( J, I ) )
+                     SYMB_ZERO = SYMB_ZERO .AND. &
+                          ( X( J ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+
+                     Y( IY ) = Y( IY ) + ALPHA*ABS( X( J ) )*TEMP
+                  END DO
+               END IF
+
+               IF ( .NOT.SYMB_ZERO ) &
+                   Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+            !$OMP END PARALLEL DO
+         END IF
+      ELSE
+         IF( TRANS.EQ.ILATRANS( 'N' ) )THEN
+             !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,X) PRIVATE(I,SYMB_ZERO,JX,J,TEMP,IY)
+            DO I = 1, LENY
+               IF ( BETA .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. ZERO ) THEN
+                  JX = KX
+                     !$OMP SIMD ALIGNED(X:64,Y) LINEAR(J:1)
+                  DO J = 1, LENX
+                     TEMP = ABS( A( I, J ) )
+                     SYMB_ZERO = SYMB_ZERO .AND. &
+                        ( X( JX ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+
+                     Y( IY ) = Y( IY ) + ALPHA*ABS( X( JX ) )*TEMP
+                     JX = JX + INCX
+                  END DO
+               END IF
+
+               IF (.NOT.SYMB_ZERO) &
+                   Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+            !$OMP END PARALLEL DO
+         ELSE
+             !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,X) PRIVATE(I,SYMB_ZERO,JX,J,TEMP,IY)
+            DO I = 1, LENY
+               IF ( BETA .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+                  Y( IY ) = 0.0D+0
+               ELSE IF ( Y( IY ) .EQ. ZERO ) THEN
+                  SYMB_ZERO = .TRUE.
+               ELSE
+                  SYMB_ZERO = .FALSE.
+                  Y( IY ) = BETA * ABS( Y( IY ) )
+               END IF
+               IF ( ALPHA .NE. ZERO ) THEN
+                  JX = KX
+                   !$OMP SIMD ALIGNED(X:64,Y) LINEAR(J:1)
+                  DO J = 1, LENX
+                     TEMP = ABS( A( J, I ) )
+                     SYMB_ZERO = SYMB_ZERO .AND. &
+                         ( X( JX ) .EQ. ZERO .OR. TEMP .EQ. ZERO )
+
+                     Y( IY ) = Y( IY ) + ALPHA*ABS( X( JX ) )*TEMP
+                     JX = JX + INCX
+                  END DO
+               END IF
+
+               IF (.NOT.SYMB_ZERO) &
+                   Y( IY ) = Y( IY ) + SIGN( SAFE1, Y( IY ) )
+
+               IY = IY + INCY
+            END DO
+            !$OMP END PARALLEL DO
+         END IF
+
+      END IF
+
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLA_WWADDW( N, X, Y, W ) !GCC$ ATTRIBUTES inline :: DLA_WWADDW !GCC$ ATTRIBUTES aligned(32) :: DLA_WWADDW
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DLA_WWADDW( N, X, Y, W )
+    !DIR$ ATTRIBUTES FORCEINLINE :: DLA_WWADDW
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLA_WWADDW
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DLA_WWADDW
+#endif
+    use omp_lib
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            N
+!*     ..
+!*     .. Array Arguments ..
+      !DOUBLE PRECISION   X( * ), Y( * ), W( * )
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: X, Y, W
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION   S
+      INTEGER            I
+!*     ..
+!*     .. Executable Statements ..
+      !*
+      !$OMP SIMD ALIGNED(X:64,Y,W) LINEAR(I:1) UNROLL PARTIAL(6)
+      DO 10 I = 1, N
+        S = X(I) + W(I)
+        S = (S + S) - S
+        Y(I) = ((X(I) - S) + W(I)) + Y(I)
+        X(I) = S
+ 10   CONTINUE
+     
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE DLA_LIN_BERR ( N, NZ, NRHS, RES, AYB, BERR ) !GCC$ ATTRIBUTES inline :: DLA_LIN_BERR !GCC$ ATTRIBUTES aligned(32) :: DLA_LIN_BERR
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  SUBROUTINE DLA_LIN_BERR ( N, NZ, NRHS, RES, AYB, BERR )
+     !DIR$ ATTRIBUTES FORCEINLINE :: DLA_LIN_BERR
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DLA_LIN_BERR
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: DLA_LIN_BERR
+#endif
+      implicit none
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            N, NZ, NRHS
+!*     ..
+!*     .. Array Arguments ..
+      DOUBLE PRECISION   AYB( N, NRHS ), BERR( NRHS )
+      DOUBLE PRECISION   RES( N, NRHS )
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Local Scalars ..
+      DOUBLE PRECISION   TMP
+      INTEGER            I, J
+!*     ..
+!*     .. Intrinsic Functions ..
+      INTRINSIC          ABS, MAX
+!*     ..
+!*     .. External Functions ..
+      EXTERNAL           DLAMCH
+      DOUBLE PRECISION   DLAMCH
+      DOUBLE PRECISION   SAFE1
+!*     ..
+!*     .. Executable Statements ..
+!*
+!!*     Adding SAFE1 to the numerator guards against spuriously zero
+!*     residuals.  A similar safeguard is in the SLA_yyAMV routine used
+!*     to compute AYB.
+!*
+      SAFE1 = DLAMCH( 'Safe minimum' )
+      SAFE1 = (NZ+1)*SAFE1
+
+      DO J = 1, NRHS
+         BERR(J) = 0.0D+0
+         DO I = 1, N
+            IF (AYB(I,J) .NE. 0.0D+0) THEN
+               TMP = (SAFE1+ABS(RES(I,J)))/AYB(I,J)
+               BERR(J) = MAX( BERR(J), TMP )
+            END IF
+!*
+!*     If AYB is exactly 0.0 (and if computed by SLA_yyAMV), then we know
+!*     the true residual also must be exactly 0.0.
+!*
+         END DO
+      END DO
+END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+CHARACTER*1 FUNCTION CHLA_TRANSTYPE( TRANS ) !GCC$ ATTRIBUTES inline :: CHLA_TRANSTYPE !GCC$ ATTRIBUTES aligned(32) :: CHLA_TRANSTYPE
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+  CHARACTER*1 FUNCTION CHLA_TRANSTYPE( TRANS )
+     !DIR$ ATTRIBUTES FORCEINLINE :: CHLA_TRANSTYPE
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CHLA_TRANSTYPE
+#endif
+!*
+!*  -- LAPACK computational routine (version 3.7.0) --
+!*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+!*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+!*     December 2016
+!*
+!*     .. Scalar Arguments ..
+      INTEGER            TRANS
+!*     ..
+!*
+!*  =====================================================================
+!*
+!*     .. Parameters ..
+      INTEGER BLAS_NO_TRANS, BLAS_TRANS, BLAS_CONJ_TRANS
+      PARAMETER ( BLAS_NO_TRANS = 111, BLAS_TRANS = 112, &
+          BLAS_CONJ_TRANS = 113 )
+!*     ..
+!*     .. Executable Statements ..
+      IF( TRANS.EQ.BLAS_NO_TRANS ) THEN
+         CHLA_TRANSTYPE = 'N'
+      ELSE IF( TRANS.EQ.BLAS_TRANS ) THEN
+         CHLA_TRANSTYPE = 'T'
+      ELSE IF( TRANS.EQ.BLAS_CONJ_TRANS ) THEN
+         CHLA_TRANSTYPE = 'C'
+      ELSE
+         CHLA_TRANSTYPE = 'X'
+      END IF
+   
+END FUNCTION
