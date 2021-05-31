@@ -38,7 +38,7 @@ module mod_mkl_fft
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use module_kinds, only : I32P, R64P
+    use module_kinds, only : i4, dp
     use IFPORT,       only :  TRACEBACKQQ
     
     use mkl_dfti , work_prec => DFTI_DOUBLE, DFTI_DOUBLE => DFTI_DOUBLE_R
@@ -54,18 +54,18 @@ module mod_mkl_fft
     !=====================================================59
     
     ! Major version
-    integer(I32P), parameter, public :: MOD_MKL_FFT_MAJOR = 1_I32P
+    integer(i4), parameter, public :: MOD_MKL_FFT_MAJOR = 1
     
     ! Minor version
-    integer(I32P), parameter, public :: MOD_MKL_FFT_MINOR = 0_I32P
+    integer(i4), parameter, public :: MOD_MKL_FFT_MINOR = 1
     
     ! Micro version
-    integer(I32P), parameter, public :: MOD_MKL_FFT_MICRO = 0_I32P
+    integer(i4), parameter, public :: MOD_MKL_FFT_MICRO = 0
     
     ! Module full version
-    integer(I32P), parameter, public :: MOD_MKL_FFT_FULLVER = 1000_I32P*MOD_MKL_FFT_MAJOR + &
-                                                              100_I32P*MOD_MKL_FFT_MINOR  + &
-                                                              10_I32P*MOD_MKL_FFT_MICRO
+    integer(i4), parameter, public :: MOD_MKL_FFT_FULLVER = 1000*MOD_MKL_FFT_MAJOR + &
+                                                              100*MOD_MKL_FFT_MINOR  + &
+                                                              10*MOD_MKL_FFT_MICRO
     
     ! Module creation date
     character(*),  parameter, public :: MOD_MKL_FFT_CREATE_DATE = "06-05-2018 10:42 +00200 (SUN 06 MAY 2018 GMT+2)"
@@ -94,23 +94,23 @@ module mod_mkl_fft
     !
     subroutine fft1D_ccop( data_in,data_out,data_len,status,fft_type,  &
                          dim_len,verbose,callstack)
-          complex(R64P), dimension(data_len), intent(in) :: data_in
+          complex(dp), dimension(data_len), intent(in) :: data_in
           !DIR$ ASSUME_ALIGNED data_in:64
-          complex(R64P), dimension(data_out), intent(out) :: data_out
+          complex(dp), dimension(data_out), intent(out) :: data_out
           !DIR$ ASSUME)ALIGNED data_out:64
-          integer(I32P),                      intent(in)              ::  data_len
-          integer(I32P),                      intent(inout)           ::  status
-          integer(I32P),                      intent(in)              ::  fft_type ! backward or forward  (
-          integer(I32P),                      intent(in)              ::  dim_len
-          logical(I32P),                      intent(in),optional     ::  verbose
-          logical(I32P),                      intent(in)              ::  callstack
+          integer(i4),                      intent(in)              ::  data_len
+          integer(i4),                      intent(inout)           ::  status
+          integer(i4),                      intent(in)              ::  fft_type ! backward or forward  (
+          integer(i4),                      intent(in)              ::  dim_len
+          logical(i4),                      intent(in),optional     ::  verbose
+          logical(i4),                      intent(in)              ::  callstack
          ! type(QPCTimer_t),                   intent(inout)  ::  qpctimer
           ! Locals
           type(DFTI_DESCRIPTOR), pointer :: handle => null()
           !integer(BOOL) :: ifail
           ! logical(I32P) :: bfail
-          integer(I32P) :: status_on_fail ! return value (status) used on failure of FFT functions.
-          integer(I32P) :: caller_stat
+          integer(i4) :: status_on_fail ! return value (status) used on failure of FFT functions.
+          integer(i4) :: caller_stat
           ! Executable statements
           if(0_I32P /= status) status = 0_I32P
           
