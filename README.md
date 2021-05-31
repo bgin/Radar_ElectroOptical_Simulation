@@ -6,7 +6,7 @@ Main changes are related to drastically improved modeling of Radar interaction
 with targets and environment.
 T-Matrix models(by Mishchenko and by Xu) will be used to compute scattering coefficients returned by
 single particles and ensemble of particles.
-Target's RCS will be computed by the MoM programs.
+
 Atmospheric quantities and wind will be based on WRF modules and WRF output files.
 Work in progress...
 
