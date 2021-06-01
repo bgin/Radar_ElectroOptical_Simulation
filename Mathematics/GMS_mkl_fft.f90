@@ -112,29 +112,29 @@ module mod_mkl_fft
           integer(i4) :: status_on_fail ! return value (status) used on failure of FFT functions.
           integer(i4) :: caller_stat
           ! Executable statements
-          if(0_I32P /= status) status = 0_I32P
+          if(0 /= status) status = 0
           
           status = DftiCreateDescriptor(handle,DFTI_DOUBLE,DFTI_COMPLEX,dim_len,data_len)
-          if(0_I32P /= status) then
+          if(0 /= status) then
                call handle_descriptor_error(handle, "fft1D_ccop: Fatal Local Error -- DftiCreateDescriptor failed with an error:", &
                                                     "fft1D_ccop: DftiCreateDescriptor -- FAILED !!!", callstack,status)
               return                                       
           end if    
           status = DftiSetValue(handle,DFTI_PLACEMENT,DFTI_NOT_INPLACE)
-         if(0_I32P /= status) then
+         if(0 /= status) then
               call handle_descriptor_error(handle, "fft1D_ccop: Fatal Local Error -- DftiSetValue failed with an error:", &
                                                    "fft1D_ccop: DftiSetValue -- FAILED !!!",callstack,status)
               return
          end if 
          status = DftiCommitDescriptor(handle)
-         if(0_I32P /= status) then
+         if(0 /= status) then
              call handle_descriptor_error(handle, "fft1D_ccop: Fatal Local Error -- DftiCommitDescriptor failed with an error:", &
                                                   "fft1D_ccop: DftiCommitDescriptor -- FAILED !!!",callstack,status)
              return
          end if
          if(fft_type == TRANSFORM_FORWARD) then
                status = DftiComputeForward(handle,data_in,data_out)
-               if(0_I32P /= status) then
+               if(0 /= status) then
                    call handle_descriptor_error(handle, "fft1D_ccop: Fatal Local Error -- DftiComputeForward failed with an error:", &
                                                         "fft1D_ccop: DftiComputeForward -- FAILED !!!",callstack,status )
                   return
@@ -142,7 +142,7 @@ module mod_mkl_fft
               
           else if(fft_type == TRANSFORM_BACKWARD) then
                status = DftiComputeBackward(handle,data_in,data_out)
-               if(0_I32P /= status) then
+               if(0 /= status) then
                    call handle_descriptor_error(handle, "fft1D_ccop: Fatal Local Error -- DftiComputeBackward failed with an error:", &
                                                         "fft1D_ccop: DftiComputeBackward -- FAILED !!!",callstack,status)
                    return
@@ -151,7 +151,7 @@ module mod_mkl_fft
          if(verbose == .true.) then
               call print_descriptor_state(handle,caller_stat)
          end if
-         if(0_I32P == status)  then
+         if(0 == status)  then
              status_on_faile = DftiFreeDescriptor(handle)
          end if
    end subroutine      
@@ -163,39 +163,39 @@ module mod_mkl_fft
     !           
     subroutine fft1D_ccip(data_inout,data_len,status,fft_type, &
                             dim_len,verbose,callstack  )
-          complex(R64P), dimension(data_len), intent(inout) :: data_inout
+          complex(dp), dimension(data_len), intent(inout) :: data_inout
           !DIR$ ASSUME_ALIGNED data_inout:64
-          integer(I32P),                      intent(in)    :: data_len
-          integer(I32P),                      intent(inout) :: status
-          integer(I32P),                      intent(in)    :: fft_type,dim_len
-          logical(I32P),                      intent(in)    :: verbose,callstack
+          integer(i4),                      intent(in)    :: data_len
+          integer(i4),                      intent(inout) :: status
+          integer(i4),                      intent(in)    :: fft_type,dim_len
+          logical(i4),                      intent(in)    :: verbose,callstack
           ! Locals
           type(DFT_DESCRIPTOR), pointer :: handle => null()
-          integer(I32P) :: status_on_fail,caller_stat
+          integer(i4) :: status_on_fail,caller_stat
           ! Executable statements
-          if(0_I32P /= status) status = 0_I32P
+          if(0 /= status) status = 0
           status =  DftiCreateDescriptor(handle,DFTI_DOUBLE,DFTI_COMPLEX,dim_len,data_len)
-          if(0_I32P /= status) then
+          if(0 /= status) then
               call handle_descriptor_error(handle,"fft1D_ccin: Fatal Local Error -- DftiCreateDescriptor failed with an error:",&
                                                   "fft1D_ccin: DftiCreateDescriptor -- FAILED !!!",callstack,status )
               return
           end if
           status = DftiCommitDescriptor(handle)
-          if(0_I32P /= status) then
+          if(0 /= status) then
               call handle_descriptor_error(handle,"fft1D_ccin: Fatal Local Error -- DftiCommitDescriptor failed with an error:", &
                                                   "fft1D_ccin: DftiCommitDescriptor -- FAILED !!!",callstack,status)
               return
           end if
           if(fft_type == TRANSFORM_FORWARD) then
               status = DftiComputeForward(handle,data_inout)
-              if(0_I32P /= status) then
+              if(0 /= status) then
                   call handle_descriptor_error(handle,"fft1D_ccin: Fatal Local Error -- DftiComputeForward failed with an error:", &
                                                       "fft1D_ccin: DftiComputeForward -- FAILED !!!",callstack,status)
                   return
               end if
           else if(fft_type == TRANSFORM_BACKWARD) then
               status = DftiComputeBackward(handle,data_inout)
-              if(0_I32P /= status) then
+              if(0 /= status) then
                   call handle_descriptor_error(handle,"fft1D_ccin: Fatal Local Error -- DftiComputeBackward failed with an error:", &
                                                       "fft1D_ccin: DftiComputeBackwad -- FAILED !!!",callstack,status)
                   return
@@ -207,7 +207,7 @@ module mod_mkl_fft
           if(verbose == .true.) then
               call print_descriptor_state(handle,caller_stat)
           end if
-          if(0_I32P ==  status) then
+          if(0 ==  status) then
               status_on_fail = DftiFreeDescriptor(handle)
           end if
     end subroutine 
@@ -219,48 +219,48 @@ module mod_mkl_fft
     !                        
     subroutine fft2D_ccop(data_in,data_out,data_len1,data_len2,dim_len, &
                           status,fft_type,verbose,callstack    )
-          complex(R64P), dimension(data_len1,data_len2), intent(in)     :: data_in
+          complex(dp), dimension(data_len1,data_len2), intent(in)     :: data_in
           !DIR$ ASSUME_ALIGNED data_in:64
-          complex(R64P), dimension(data_len1,data_len2), intent(out)    :: data_out
+          complex(dp), dimension(data_len1,data_len2), intent(out)    :: data_out
           !DIR$ ASSUME_ALIGNED data_out:64
-          integer(I32P),                                 intent(in)     :: data_len1,data_len2, &
+          integer(dp),                                 intent(in)     :: data_len1,data_len2, &
                                                                             dim_len
-          integer(I32P),                                 intent(inout)  :: status
-          integer(I32P),                                 intent(in)     :: fft_type
-          logical(I32P),                                 intent(in)     :: verbose,callstack
+          integer(i4),                                 intent(inout)  :: status
+          integer(i4),                                 intent(in)     :: fft_type
+          logical(i4),                                 intent(in)     :: verbose,callstack
           ! Locals
           type(DFTI_DESCRIPTOR), pointer :: handle => null()
-          integer(I32P) :: stat_dont_care ,caller_stat
+          integer(i4) :: stat_dont_care ,caller_stat
           ! Executable statements
-          if(0_I32P /= status) status = 0_I32P
+          if(0 /= status) status = 0
           status = DftiCreateDescriptor(handle,DFTI_DOUBLE,DFTI_COMPLEX,dim_len,[data_len1,data_len2])
-          if(0_I32P /= status) then
+          if(0 /= status) then
               call handle_descriptor_error(handle,"fft2D_ccop: Fatal Local Error -- DftiCreateDescriptor failed with an error:", &
                                                   "fft2D_ccop: DftiCreateDescriptor -- FAILED !!!", callstack,status)
               return
           end if
           status = DftiSetValue(handle,DFTI_PLACEMENT,DFTI_NOT_INPLACE)
-          if(0_I32P /= status) then
+          if(0 /= status) then
               call handle_descriptor_error(handle, "fft2D_ccop: Fatal Local Error -- DftiSetValue failed with an error:", &
                                                    "fft2D_ccop: DftiSetValue -- FAILED !!!",callstack,status)
               return
           end if
           status = DftiCommitDescriptor(handle)
-          if(0_I32P /= status) then
+          if(0 /= status) then
               call handle_descriptor_error(handle,"fft2D_ccop: Fatal Local Error -- DftiCommitDescriptor failed with an error:", &
                                                   "fft2D_ccop: DftiCommitDescriptor -- FAILED !!!",callstack,status)
               return
           end if
           if(fft_type == TRANSFORM_FORWARD) then
               status = DftiComputeForward(handle,data_in(:,1),data_out(:,1))
-              if(0_I32P /= status) then
+              if(0 /= status) then
                   call handle_descriptor_error(handle, "fft2D_ccop: Fatal Local Error -- DftiComputeForward failed with an error:", &
                                                        "fft2D_ccop: DftiComputeForward -- FAILED !!!",callstack,status )
                   return
               end if
           else if(fft_type == TRANSFORM_BACKWARD) then
               status = DftiComputeBackward(handle,data_in(:,1),data_out(:,1))
-              if(0_I32P /= status) then
+              if(0 /= status) then
                   call handle_descriptor_error(handle, "fft2D_ccop: Fatal Local Error -- DftiComputeBackward failed with an error:", &
                                                        "fft2D_ccop: DftiComputeBackward -- FAILED !!!",callstack,status)
                   return
@@ -269,7 +269,7 @@ module mod_mkl_fft
           if(verbose == .true.) then
               call print_descriptor_state(handle,caller_stat)
           end if
-          if(0_I32P == status) then
+          if(0 == status) then
               stat_dont_care = DftiFreeDescript(handle)
           end if
     end subroutine
