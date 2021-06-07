@@ -12,7 +12,7 @@ module mod_utility
 ! Removing an excessive usage of 'functional' style which will result
 ! in reduced performance by using extensive and expensive copy operations.
 
-     use mod_kinds, only : int32_t, dp
+     use mod_kinds, only : i4, dp
      implicit none
      private
 
@@ -69,7 +69,7 @@ module mod_utility
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: diff_1d
         real(kind=dp), dimension(nx), intent(in)  :: x
         real(kind=dp), dimension(nx), intent(out) :: dx
-        integer(kind=int32_t),        intent(in)  :: nx
+        integer(kind=i4),        intent(in)  :: nx
         ! Exec code .....
 !DIR$   VECTOR ALIGNED
         dx(2:nx-1) = 0.5_dp*(x(3:nx)-x(1:nx-2))
@@ -87,9 +87,9 @@ module mod_utility
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: diff_2d
          real(kind=dp), dimension(nx,ny), intent(in)  :: x
          real(kind=dp), dimension(nx,ny), intent(out) :: dx
-         integer(kind=int32_t),           intent(in)  :: nx
-         integer(kind=int32_t),           intent(in)  :: ny
-         integer(kind=int32_t),           intent(in)  :: dim
+         integer(kind=i4),           intent(in)  :: nx
+         integer(kind=i4),           intent(in)  :: ny
+         integer(kind=i4),           intent(in)  :: dim
          ! Exec code .....
          if(1 == dim) then
 !DIR$  VECTOR ALIGNED
@@ -130,9 +130,9 @@ module mod_utility
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: diff_periodic_2d
         real(kind=dp),  dimension(nx,ny),   intent(in)   :: x
         real(kind=dp),  dimension(nx,ny),   intent(out)  :: dx
-        integer(kind=int32_t),              intent(in)   :: nx
-        integer(kind=int32_t),              intent(in)   :: ny
-        integer(kind=int32_t),              intent(in)   :: dim
+        integer(kind=i4),              intent(in)   :: nx
+        integer(kind=i4),              intent(in)   :: ny
+        integer(kind=i4),              intent(in)   :: dim
         ! EXec code .....
         if(1 == dim) then
 !DIR$   VECTOR ALIGNED
@@ -154,9 +154,9 @@ module mod_utility
         !! generic procedure `ones`.
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: ones_int
 !DIR$   ASSUME_ALIGNED ones:64
-        integer(kind=int32_t),  dimension(length),  intent(out)   :: x
-        integer(kind=int32_t),                      intent(in)    :: length
-        integer(kind=int32_t),                      intent(in)    :: kflag
+        integer(kind=i4),  dimension(length),  intent(out)   :: x
+        integer(kind=i4),                      intent(in)    :: length
+        integer(kind=i4),                      intent(in)    :: kflag
         ! Exec code
 !DIR$   VECTOR ALIGNED
         ones = 1  ! Probably memset (optimized?) will be inserted here
@@ -171,8 +171,8 @@ module mod_utility
 !DIR$    ATTRIBUTES CODE_ALIGN:32 :: ones_real
 !DIR$    ASSUME_ALIGNED ones:64
          real(kind=dp), dimension(length),  intent(out) :: x
-         integer(kind=int32_t),             intent(in)  :: length
-         integer(kind=int32_t),             intent(in)  :: kflag
+         integer(kind=i4),             intent(in)  :: length
+         integer(kind=i4),             intent(in)  :: kflag
          ! EXec code ....
 !DIR$    VECTOR ALIGNED
          ones = 1.0_dp  ! Probably memset (optimized?) will be inserted here
