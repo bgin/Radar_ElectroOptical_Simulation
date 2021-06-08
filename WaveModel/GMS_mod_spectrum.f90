@@ -10,7 +10,7 @@ module GMS_mod_spectrum
     !
 
     use ,intrinsic :: ISO_C_BINDING, Only :  c_int, c_double
-    use GMS_mod_kinds,     only : int32_t, dp
+    use GMS_mod_kinds,     only : i4, dp
     use GMS_mod_utility,   only : diff, diff_periodic
     use GMS_mod_datetime,  only : datetime
     use GMS_mod_timedelta, only : timedelta
@@ -70,26 +70,26 @@ module GMS_mod_spectrum
           real(kind=dp),            intent(in)    :: fmin
           real(kind=dp),            intent(in)    :: fmax
           real(kind=dp),            intent(in)    :: df
-          integer(kind=int32_t),    intent(in)    :: ndirs
+          integer(kind=i4),    intent(in)    :: ndirs
           real(kind=dp),            intent(in)    :: depth
           real(kind=dp),            intent(in), optional :: grav
           real(kind=dp),            intent(in), optional :: air_density
           real(kind=dp),            intent(in), optional :: water_density
           real(kind=dp),            intent(in), optional :: surface_tension
-          logical(kind=int32_t),    intent(inout) :: errstate
-          integer(kind=int32_t),    intent(in)    :: iounit
-          logical(kind=int32_t),    intent(in)    :: logging
-          logical(kind=int32_t),    intent(in)    :: verbose
-          logical(kind=int32_t),    intent(in)    :: append
+          logical(kind=i4),    intent(inout) :: errstate
+          integer(kind=i4),    intent(in)    :: iounit
+          logical(kind=i4),    intent(in)    :: logging
+          logical(kind=i4),    intent(in)    :: verbose
+          logical(kind=i4),    intent(in)    :: append
           character(len=*),         intent(in)    :: fname
           ! Locals
 !DIR$   ATTRIBUTES ALIGN : 64 :: tmp_f,tmp_k,th_tmp
           real(kind=dp), allocatable, dimension(:) :: tmp_f,tmp_k,th_tmp
           character(len=256),    automatic :: emsg
 
-          integer(kind=int32_t), automatic :: aerr
-          integer(kind=int32_t), automatic :: n
-          integer(kind=int32_t), automatic :: nfreqs
+          integer(kind=i4), automatic :: aerr
+          integer(kind=i4), automatic :: n
+          integer(kind=i4), automatic :: nfreqs
           ! EXec code.....
           if(present(grav)) then
                 spectrum.grav = grav
@@ -259,7 +259,7 @@ module GMS_mod_spectrum
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: isMonochromatic
           type(spectrum_type),      intent(in) :: spectrum
           ! Locals
-          logical(kind=int32_t) :: monochromatic
+          logical(kind=i4) :: monochromatic
           ! Exec code ....
           if(size(spectrum.f) == 1) then
                 monochromatic = .true.
@@ -275,7 +275,7 @@ module GMS_mod_spectrum
 !DIR$   ATTRIBUTES CODE_ALIGN:32 :: isOmnidirectional
           type(spectrum_type),      intent(in) :: spectrum
           ! LOcals
-          logical(kind=int32_t) :: omnidirect
+          logical(kind=i4) :: omnidirect
           ! Exec code ...
           if(size(spectrum.th) == 1) then
                 omnidirect = .true.
@@ -292,10 +292,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
  !DIR$  ASSUME_ALIGNED f_out:64
           real(kind=dp),    dimension(nfreqs,ndirs), intent(out) :: f_out
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t), automatic :: ndir
+          integer(kind=i4), automatic :: ndir
           do concurrent(ndir=1:ndirs)
                 f_out(:,ndir) = spectrum.f
           end do
@@ -309,10 +309,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED k_out:64
           real(kind=dp),    dimension(nfreqs,ndirs), intent(out) :: k_out
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t), automatic :: ndir
+          integer(kind=i4), automatic :: ndir
           ! EXec code ....
           do concurrent(ndir=1:ndirs)
                 k_out(:,ndir) = spectrum.k
@@ -327,7 +327,7 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED lambda:64
           real(kind=dp),    dimension(nfreqs), intent(out) :: lambda
-          integer(kind=int32_t),    intent(in) ::nfreqs
+          integer(kind=i4),    intent(in) ::nfreqs
           ! Exec code ....
           lambda = pi2_const/spectrum.k
     end subroutine getWavelength
@@ -340,10 +340,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED th_out:64
           real(kind=dp),    dimension(nfreqs,ndirs), intent(out) :: th_out
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t), automatic :: ndir
+          integer(kind=i4), automatic :: ndir
           ! EXec code ....
           do concurrent(ndir=1:ndirs)
                 th_out(nfreq,:) = spectrum.th
@@ -356,10 +356,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$ ASSUME_ALIGNED cp_out:64
           real(kind=dp),    dimension(nfreqs,ndirs),  intent(out) :: cp_out
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t), automatic :: ndir
+          integer(kind=i4), automatic :: ndir
           ! EXec code ....
           do concurrent(ndir=1:ndirs)
                 cp_out(:,ndir) = spectrum.cp
@@ -372,10 +372,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED cg:64
           real(kind=dp), dimension(nfreqs,ndirs),   intent(out) :: cg_out
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t), automatic :: ndir
+          integer(kind=i4), automatic :: ndir
           ! EXec code ....
           do concurrent(ndir=1:ndirs)
                 cg_out(:,ndir) = spectrum.cg
