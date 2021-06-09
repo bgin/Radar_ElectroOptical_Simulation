@@ -392,8 +392,8 @@ module GMS_mod_spectrum
           real(kind=dp), dimension(nfreqs,ndirs), intent(in) :: wave_action
 !DIR$   ASSUME_ALIGNED freq2d:64
           real(kind=dp), dimension(nfreqs,ndirs), intent(in) :: freq2d
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Exec code
           wave_action = spectrum.spec/freq2d
     end subroutine getWaveAction
@@ -405,10 +405,10 @@ module GMS_mod_spectrum
           type(spectrum_type),      intent(in) :: spectrum
 !DIR$   ASSUME_ALIGNED a:64
           real(kind=dp),    dimension(nfreqs,ndirs), intent(out) :: a
-          integer(kind=int32_t),    intent(in) :: nfreqs
-          integer(kind=int32_t),    intent(in) :: ndirs
+          integer(kind=i4),    intent(in) :: nfreqs
+          integer(kind=i4),    intent(in) :: ndirs
           ! Locals
-          integer(kind=int32_t) :: ndir,ndirs2
+          integer(kind=i4) :: ndir,ndirs2
           ! Exec code ...
           if(isMonochromatic(spectrum)) then
                 a = sqrt(spectrum.spec+spectrum.spec)
