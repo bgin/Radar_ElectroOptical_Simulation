@@ -1,78 +1,31 @@
 !C      ALGORITHM 733, COLLECTED ALGORITHMS FROM ACM.
 !C      THIS WORK PUBLISHED IN TRANSACTIONS ON MATHEMATICAL SOFTWARE,
 !C      VOL. 20, NO. 3, SEPTEMBER, 1994, PP. 262-281.
-!File TOMP.TXT
-!=============
-#if 0
-!The file TOMP.FOR contains the following groups of subroutines
-!for solving optimal control problems as described in [1].
-
-   1. A SIMULATOR, in which initial-value problems are solved
-      for given parameter values.
-      Cost function and constraint vector together with gradient
-      vector and Jacobi matrix are evaluated.
-
-   2. An OPTIMIZER, in which new parameter values are proposed
-      as a result of the SIMULATOR output.
-
-   3. A test driver which solves the state-constrained
-      brachistochrone problem.
-      Test results for a couple of other problems can be found in [1].
 
 
-Only a double precision version exists at the moment.
-Creating of a single precision version should not be to difficult,
-as ALL variables are explicitely declared in TYPE statements.
-All major subroutines are carefully commented
-The heading comments (parameter description, dimensioning, etc.)
-are also given in the appendices to [1].
-The optimizer makes havy use of some level 1 Blas [2] routines which are
-included. Also modified versions of the routines HFTI, LDP and NNLS
-from [3], RKF45 from [4], LEFT from [5], and FMIN from [6] are included.
-I acknowledge the influence of these examplary software projects
-on my programming style.
 
-The sample data for the test driver are included by parameter,
-data, or assignment statements within the driver.
-The execution output from file TOMP.OUT follows at the end of this file.
-Also included is the output from file TOMP.M for graphical postprocessing
-with MATLAB [7]. If MATLAB is available to you, just type (at the DOS prompt):
-MATLAB
-and then (at the Matlab prompt)
->tomp
->plot(x1,-x2), grid
-(and you should see fig.2 of accompanying VDI-report on screen)
+![1] D. Kraft: TOMP -- FORTRAN Modules for Optimal Control Calculations.
+!Fortschritt-Berichte VDI Reihe 8 Nr. 254. VDI-Verlag, Dsseldorf, 1991.
 
-This output has been produced on a Compaq DeskPro 486/33L with the
-integrated Intel Co-Processor, using version 2.5 of the 32-bit compiler
-FTN77 of the University of Salford.
-The program has been run under a series of other compilers including
-FORTRAN/2 Version 1.04, LAHEY F77L32 Version 3.0,
-MICROSOFT FORTRAN Version 5.0, MICROWAY NDPF486 Version 3.2,
-WATCOM WATFOR78 Version 3.1, WATCOM WFL386 Version 8.0.
+![2] C.L. Lawson, R.J. Hanson, D.R. Kincaid, F.T. Krogh:
+!Basic Linear Algebra Subprograms for FORTRAN Usage.
+!Sandia Laboratories Tech. Rept. SAND77-0898, and
+!ACM Trans. Math. Softw. 5 (1979) 324-325.
 
-[1] D. Kraft: TOMP -- FORTRAN Modules for Optimal Control Calculations.
-Fortschritt-Berichte VDI Reihe 8 Nr. 254. VDI-Verlag, Dsseldorf, 1991.
+![3] C.L. Lawson, R.J. Hanson: Solving Least Squares Problems.
+!Prentice Hall, Englewood Cliffs, New Jersey, 1974.
 
-[2] C.L. Lawson, R.J. Hanson, D.R. Kincaid, F.T. Krogh:
-Basic Linear Algebra Subprograms for FORTRAN Usage.
-Sandia Laboratories Tech. Rept. SAND77-0898, and
-ACM Trans. Math. Softw. 5 (1979) 324-325.
+![4] L.F. Shampine, H.A. Watts: The Art of Writing a Runge-Kutta Code
+!Appl. Math. Comp. 5 (1979) 93-121.
 
-[3] C.L. Lawson, R.J. Hanson: Solving Least Squares Problems.
-Prentice Hall, Englewood Cliffs, New Jersey, 1974.
+![5] C. de Boor: A Practical Guide to Splines. Springer, New York, 1978.
 
-[4] L.F. Shampine, H.A. Watts: The Art of Writing a Runge-Kutta Code
-Appl. Math. Comp. 5 (1979) 93-121.
+![6] R.P.Brent: Algorithms for Minimization without Derivatives.
+!Prentice-Hall, Englewood Cliffs, 1973.
 
-[5] C. de Boor: A Practical Guide to Splines. Springer, New York, 1978.
-
-[6] R.P.Brent: Algorithms for Minimization without Derivatives.
-Prentice-Hall, Englewood Cliffs, 1973.
-
-[7] J. Little, C. Moler: 386-MATLAB User's Guide.
+![7] J. Little, C. Moler: 386-MATLAB User's Guide.
 !The MathWorks, Natick, MA, 1989.
-#endif
+
 
 
 
