@@ -86,8 +86,18 @@ Prentice-Hall, Englewood Cliffs, 1973.
 !                              SIMULATOR                               *
 !***********************************************************************
 
-      SUBROUTINE d_TOMP (SLV, RHS, VALUES, OUTPUT, IV, X, Y,
-     *                   Z, Z0, Z1, ACC, F, C, DF, DC, LC)
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      SUBROUTINE d_TOMP (SLV, RHS, VALUES, OUTPUT, IV, X, Y, &
+      Z, Z0, Z1, ACC, F, C, DF, DC, LC) !GCC$ ATTRIBUTES hot :: d_TOMP !GCC$ ATTRIBUTES aligned(32) :: d_TOMP
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+        SUBROUTINE d_TOMP (SLV, RHS, VALUES, OUTPUT, IV, X, Y, &
+      Z, Z0, Z1, ACC, F, C, DF, DC, LC)
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: d_TOMP
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: d_TOMP
+#endif
+     use omp_lib
+     implicit none
 
 !   d_TOMP    EVALUATION OF COST FUNCTION F(X) AND CONSTRAINT VECTOR
 !             C(X), TOGETHER WITH GRADIENT DF(X) AND JACOBIAN DC(X).
@@ -390,18 +400,34 @@ C     date and time routines are de-activate
 
       INTEGER*2 IHR, IMIN, ISEC, IHUN, IYR, IMON, IDAY
       INTEGER IV(20), IW(5)
-      INTEGER I, MODE, IFLAG, IG, IP, IPL, IPLOT, IS, ISW, I1, IVI,
-     *  J, JSW, J1, J2, K, KP, K1, L, LC, LW, LEND, LONG, M, N, NI,
-     *  NJ, NK, NO, NP, NUMBER, NY, NU, NW, NZ, N1, N2, N3, N4, N5,
-     *  O, IDUMMY, IANF, BROAD, LONG1, JFLAG, IFC, IVJ
+      INTEGER I, MODE, IFLAG, IG, IP, IPL, IPLOT, IS, ISW, I1, IVI, &
+       J, JSW, J1, J2, K, KP, K1, L, LC, LW, LEND, LONG, M, N, NI, &
+       NJ, NK, NO, NP, NUMBER, NY, NU, NW, NZ, N1, N2, N3, N4, N5, &
+       O, IDUMMY, IANF, BROAD, LONG1, JFLAG, IFC, IVJ
 
       PARAMETER (LW = 750, LONG = 501, LONG1 = LONG-1, BROAD = 18)
 
-      DOUBLE PRECISION F, C(*), DF(*), DC(LC,*), W(LW), X(*), Y(*),
-     *  Z(*), Z0(*), Z1(*), E, H, T, T0, T1, TF, RE, AE, ACC, DEL, EPS,
-     *  EPMACH, RTEPS, ZERO, TEN, FLARGE, SPLINT, DFLOAT
+     ! DOUBLE PRECISION F, C(*), DF(*), DC(LC,*), W(LW), X(*), Y(*),
+    ! *  Z(*), Z0(*), Z1(*), E, H, T, T0, T1, TF, RE, AE, ACC, DEL, EPS,
+! *  EPMACH, RTEPS, ZERO, TEN, FLARGE, SPLINT, DFLOAT
+      DOUBLE PRECISION :: F,  E, H, T, T0, T1, TF, RE, AE, ACC, DEL, EPS, &
+                          EPMACH, RTEPS, ZERO, TEN, FLARGE, SPLINT, DFLOAT
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DF
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: DC
+      DOUBLE PRECISION, DIMENSION(LW) :: W
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: Y
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: Z
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: Z0
+      DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: Z1
 
-      REAL G(LONG,BROAD), TANF, TEND, HSP
+      
+      REAL G(LONG,BROAD)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+!DIR$ ATTRIBUTES ALIGN : 64 :: G
+#endif
+      REAL TANF, TEND, HSP
 
       LOGICAL ONESTP, MATLAB, RASP
 
@@ -409,7 +435,7 @@ C     date and time routines are de-activate
 
       INTRINSIC ABS, MAX, MIN, SQRT
 
-!     COMMON /CXTOMP/  G, TANF, TEND, HSP
+     COMMON /CXTOMP/  G, TANF, TEND, HSP
 
 !ONTROLS FORWARD DIFFERENCE INTERVAL; FOR TESTING PURPOSES ONLY
 !     DOUBLE PRECISION DEL1
@@ -426,42 +452,42 @@ C     date and time routines are de-activate
 !-----------------------------------------------------------------------
 !  EXTRACT PLOT INDICES FROM IP
 
-      IF (IANF .EQ. 1) THEN
-         IP = IV(20)
-         IPL = IP/10
-         IPLOT = IP - IPL*10
-         IANF = 0
-         IV(20) = 0
-         OPEN (UNIT=IPL, FILE='TOMP.M')
-      END IF
+    !  IF (IANF .EQ. 1) THEN
+    !     IP = IV(20)
+    !     IPL = IP/10
+    !     IPLOT = IP - IPL*10
+    !     IANF = 0
+    !     IV(20) = 0
+    !     OPEN (UNIT=IPL, FILE='TOMP.M')
+     ! END IF
 
-C  MATLAB or RASP GRAPHICS?
+!C  MATLAB or RASP GRAPHICS?
 
-      RASP = .NOT. MATLAB
+    !  RASP = .NOT. MATLAB
 
-C  SET INTEGRATION ACCURACY
+!C  SET INTEGRATION ACCURACY
 
       RE = ACC
       AE = ACC
       RTEPS = SQRT(EPMACH)
 
-C  LOWER BOUND FOR PERTURBATION
+!C  LOWER BOUND FOR PERTURBATION
 
       EPS = MAX(RTEPS,ACC/TEN)
 
-C  RECOVER FROM
-C  INTEGER ARRAY IV(I), I=1, ..., 20, WHICH CONTAINS
-C     NI(I), I=1, ... , 6, NUMBER OF BREAKPOINTS FOR MAXIMAL 6 CONTROLS
-C     NI(I+NU), I=1, ... , 6, INTERPOLATION MODE OF MAXIMAL 6 CONTROLS
-C     NP NUMBER OF DESIGN PARAMETERS (INCLUDING FREE FINAL TIME)
-C     NU NUMBER OF CONTROLS
-C     NY NUMBER OF COMMUNICATION POINTS
-C     NZ NUMBER OF STATES
-C     M  NUMBER OF CONSTRAINTS(BOUNDARY VALUES + TRAJECTORY CONSTRAINTS)
-C     ISW  SIMULATION SWITCH
-C     MODE  OPTIMIZATION ALTERNATIVES (SEE COMMENT IMMEDIATELY AFTER
-C        LABEL 220)
-C     IFC NUMBER OF RHS-EVALUATIONS
+!C  RECOVER FROM
+!C  INTEGER ARRAY IV(I), I=1, ..., 20, WHICH CONTAINS
+!C     NI(I), I=1, ... , 6, NUMBER OF BREAKPOINTS FOR MAXIMAL 6 CONTROLS
+!C     NI(I+NU), I=1, ... , 6, INTERPOLATION MODE OF MAXIMAL 6 CONTROLS
+!C     NP NUMBER OF DESIGN PARAMETERS (INCLUDING FREE FINAL TIME)
+!C     NU NUMBER OF CONTROLS
+!C     NY NUMBER OF COMMUNICATION POINTS
+!C     NZ NUMBER OF STATES
+!C     M  NUMBER OF CONSTRAINTS(BOUNDARY VALUES + TRAJECTORY CONSTRAINTS)
+!C     ISW  SIMULATION SWITCH
+!C     MODE  OPTIMIZATION ALTERNATIVES (SEE COMMENT IMMEDIATELY AFTER
+!C        LABEL 220)
+!C     IFC NUMBER OF RHS-EVALUATIONS
 
       NP = IV(13)
       NU = IV(14)
@@ -474,48 +500,50 @@ C     IFC NUMBER OF RHS-EVALUATIONS
 
       IF (NP .LT. 0) THEN
          WRITE (IS, 9830) NP
-         STOP
+         RETURN
       END IF
 
       IF (NU .LT. 1 .OR. NU .GT. 6) THEN
          WRITE (IS, 9840) NU
-         STOP
+         RETURN
       END IF
 
       IF (NY .LT. 2) THEN
          WRITE (IS, 9850) NY
-         STOP
+         RETURN
       END IF
 
       IF (NZ .LT. 1) THEN
          WRITE (IS, 9860) NZ
-         STOP
+         RETURN
       END IF
 
       IF (MODE .LT. 1 .OR. MODE .GT. 3) THEN
          WRITE (IS, 9870) MODE
-         STOP
+         RETURN
       END IF
 
       IF (ISW .LT. -4 .OR. ISW .GT. 1) THEN
          WRITE (IS, 9880) ISW
-         STOP
+         RETURN
       END IF
 
       I = NU+NZ
       IF (I .GT. BROAD) THEN
          WRITE (IS, 9890) I
-         PAUSE
-     +   'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-         STOP
+        ! PAUSE
+     !+   'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+!STOP
+         RETURN
       END IF
 
       I = M + 13*NZ + 3
       IF (I .GT. LW) THEN
          WRITE (IS, 9900) I
-         PAUSE
-     +  'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-         STOP
+        ! PAUSE
+    ! +  'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+! STOP
+         RETURN
       END IF
 
 C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
@@ -525,20 +553,22 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
          IVI = IV(I)
          IVJ = IV(NU+I)
          N = N + IVI
-         IF (IVJ .EQ. 1 .AND. IVI .LT. 1
-     +  .OR. IVJ .EQ. 2 .AND. IVI .LT. 2
-     +  .OR. IVJ .GE. 3 .AND. IVI .LT. 4) THEN
+         IF (IVJ .EQ. 1 .AND. IVI .LT. 1 &
+       .OR. IVJ .EQ. 2 .AND. IVI .LT. 2 &
+       .OR. IVJ .GE. 3 .AND. IVI .LT. 4) THEN
             WRITE (IS, 9902) I
-            PAUSE
-     +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-            STOP
+          !  PAUSE
+    ! +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+!  STOP
+            RETURN
          END IF
          IVI = IV(NU+I)
          IF (IVI .LT. 1 .OR. IVI .GT. 6) THEN
             WRITE (IS, 9904) I
-            PAUSE
-     +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-            STOP
+          !  PAUSE
+   !  +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+!  STOP
+            RETURN
          END IF
    10 CONTINUE
       N1 = N + NP
@@ -551,80 +581,83 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
       DO 15 I=1,NU-1
          IF (ABS(X(N1+J+IV(I))-X(N1+J)).GT.EPMACH) THEN
             WRITE (IS, 9906)
-            PAUSE
-     +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-            STOP
+           ! PAUSE
+    ! +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+! STOP
+            RETURN
          END IF
-         IF (ABS(X(N1+J+IV(I)+IV(I+1)-1)-X(N1+J+IV(I)-1)).GT.EPMACH)
-     +   THEN
+         IF (ABS(X(N1+J+IV(I)+IV(I+1)-1)-X(N1+J+IV(I)-1)).GT.EPMACH) &
+         THEN
             WRITE (IS, 9906)
-            PAUSE
-     +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-            STOP
+           ! PAUSE
+    ! +     'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+!  STOP
+            RETURN
          END IF
          J = J + IV(I)
    15 CONTINUE
 
       IF (ISW.EQ.(-1)) GO TO 220
 
-C  ONE-STEP INTEGRATION MODE?
+!C  ONE-STEP INTEGRATION MODE?
 
       ONESTP = .FALSE.
       ONESTP = ISW.LE.(-3)
 
-C-----------------------------------------------------------------------
+!C-----------------------------------------------------------------------
 
-C          FUNCTIONS  BY  TRAJECTORY SIMULATION WITH BASIS FUNCTIONS
-C                             FROM SPLINE AS CONTROLS
+!C          FUNCTIONS  BY  TRAJECTORY SIMULATION WITH BASIS FUNCTIONS
+!C                             FROM SPLINE AS CONTROLS
 
-C-----------------------------------------------------------------------
+!C-----------------------------------------------------------------------
 
-C  COMPUTE SPLINE COEFFICIENTS X(N1+N+N+J) .... X(N1+N+N+N+J)
-C  FOR GIVEN BREAKPOINTS X(N1+J), DATA X(J), AND TENSIONS X(N1+N+J),
-C  J=1, ... , IV(I), I=1, ... , NU.
-C  EVALUATE SPLINES IN SUBROUTINE RHS FOR GIVEN TIME T.
+!C  COMPUTE SPLINE COEFFICIENTS X(N1+N+N+J) .... X(N1+N+N+N+J)
+!C  FOR GIVEN BREAKPOINTS X(N1+J), DATA X(J), AND TENSIONS X(N1+N+J),
+!C  J=1, ... , IV(I), I=1, ... , NU.
+!C  EVALUATE SPLINES IN SUBROUTINE RHS FOR GIVEN TIME T.
 
       J = 1
       DO 20 I=1,NU
-         CALL SPLINE (IV(NU+I), IV(I), X(N1+J), X(   J),
-     *               X(N2+J), X(N3+J), X(N4+J), X(N5+J))
+         CALL SPLINE (IV(NU+I), IV(I), X(N1+J), X(   J), &
+                    X(N2+J), X(N3+J), X(N4+J), X(N5+J))
          J = J + IV(I)
-C        TENSIONS HAVE BEEN CALCULATED;
-C        NOW RESET INTERPOLATION MODE
+!C        TENSIONS HAVE BEEN CALCULATED;
+!C        NOW RESET INTERPOLATION MODE
          IF (IV(NU+I) .EQ. 4) IV(NU+I) = 5
    20 CONTINUE
 
-C  INITIAL CONDITIONS ARE IN Z0(I), I=1, ... , NZ,
-C  OR ARE FREE PARAMETERS IN X AND WILL BE SWAPPED FROM
-C  X TO Z0 IN VALUES FOR MODE = 0.
-C  ALSO VECTOR Y OF COMMUNICATION POINTS MAY BE ASSIGNED IN VALUES
-C  FOR MODE = 0.
+!C  INITIAL CONDITIONS ARE IN Z0(I), I=1, ... , NZ,
+!C  OR ARE FREE PARAMETERS IN X AND WILL BE SWAPPED FROM
+!C  X TO Z0 IN VALUES FOR MODE = 0.
+!C  ALSO VECTOR Y OF COMMUNICATION POINTS MAY BE ASSIGNED IN VALUES
+!C  FOR MODE = 0.
 
    30 CALL VALUES (RHS, IV, T0, X, Y, Z, Z0, Z1, W, F, C, 0)
 
       T0 = Y(1)
+      !$OMP SIMD ALIGNED(Z:64,Z0) LINEAR(I:1) UNROLL PARTIAL(8)
       DO 40 I=1,NZ
          Z(I) = Z0(I)
    40 CONTINUE
 
-C  IS GRAPH OF TRAJECTORIES WANTED ONLY?
+!C  IS GRAPH OF TRAJECTORIES WANTED ONLY?
 
       IF (ISW.EQ.(-2)) GO TO 530
       IFLAG = 1
       IF (.NOT.ONESTP) GO TO 50
 
-C  ONE-STEP-INTEGRATION-MODE
+!C  ONE-STEP-INTEGRATION-MODE
 
       IFLAG = -1
       WRITE (IS, 9760)
 
-C  INTEGRATE SYSTEM GIVEN IN RHS BY INITIAL-VALUE-SOLVER SLV
-C  WITH SPLINE-BREAKPOINTS X(N1+J), J=1, ... , IV(I), I=1, ... , NU,
-C  AND COMMUNICATION POINTS Y(I), I=1, ... , NY, AS OUTPUT INTERVALS.
+!C  INTEGRATE SYSTEM GIVEN IN RHS BY INITIAL-VALUE-SOLVER SLV
+!C  WITH SPLINE-BREAKPOINTS X(N1+J), J=1, ... , IV(I), I=1, ... , NU,
+!C  AND COMMUNICATION POINTS Y(I), I=1, ... , NY, AS OUTPUT INTERVALS.
 
    50 DO 210 I=1,NY
 
-C  FIND LEFTMOST BREAKPOINT LARGER THAN T0
+!C  FIND LEFTMOST BREAKPOINT LARGER THAN T0
 
    60    K1 = N1
          TF = Y(NY)
@@ -639,28 +672,28 @@ C  FIND LEFTMOST BREAKPOINT LARGER THAN T0
    90    CONTINUE
          T1 = Y(I)
 
-C  IS NEXT COMMUNICATION POINT SMALLER THAN BREAKPOINT FOUND ?
+!C  IS NEXT COMMUNICATION POINT SMALLER THAN BREAKPOINT FOUND ?
 
          IF (TF.LT.T1) T1 = TF
 
-C  RESET CONTINUATION FLAG FOR ERROR CONDITIONS IN SLV
+!C  RESET CONTINUATION FLAG FOR ERROR CONDITIONS IN SLV
 
          JFLAG = 0
 
-C  INITIAL VALUE SOLVER; TAKE HIGH ORDER FORMULAE (E.G. 8(7)) FOR
-C  SPARSE OUTPUT, AND LOW ORDER FORMULAE (E.G. 5(4)) FOR DENSE OUTPUT.
+!C  INITIAL VALUE SOLVER; TAKE HIGH ORDER FORMULAE (E.G. 8(7)) FOR
+!C  SPARSE OUTPUT, AND LOW ORDER FORMULAE (E.G. 5(4)) FOR DENSE OUTPUT.
 
   100    CALL SLV(RHS, NZ, Z, T0, T1, RE, AE, IFLAG, W, IW, X, IV)
 
          IF (ONESTP) GO TO 180
 
-C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
+!C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
 
          IF (ABS(IFLAG).EQ.2) GO TO 200
          J = 1
          DO 110 K=1,NU
-            W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J),
-     *                X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
+            W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J), &
+                     X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
             J = J + IV(K)
   110    CONTINUE
          JFLAG = JFLAG + 1
@@ -695,10 +728,11 @@ C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
   160    WRITE (IS, 9740)
          ONESTP = .TRUE.
          GO TO 30
-  170    WRITE (IS, 9750)
-         PAUSE
-     *  'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
-         STOP
+ 170     WRITE (IS, 9750)
+         RETURN
+        ! PAUSE
+   !  *  'PAUSE: YOU MAY INVOKE A DEBUGGER DISPLAY HERE BEFORE STOP'
+        ! STOP
 
 !C  IN ONE-STEP-INTEGRATION-MODE PRINT STATES AND CONTROLS
 
@@ -859,10 +893,11 @@ C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
   410          WRITE (IS, 9740)
                ONESTP = .TRUE.
                GO TO 280
-  420          WRITE (IS, 9750)
-               PAUSE
-     *        'PAUSE: YOU MAY INVOKE A DISPLAY HERE BEFORE STOP'
-               STOP
+ 420           WRITE (IS, 9750)
+               RETURN
+             !  PAUSE
+    ! *        'PAUSE: YOU MAY INVOKE A DISPLAY HERE BEFORE STOP'
+             !  STOP
 
 !C  IN ONE-STEP-INTEGRATION-MODE PRINT STATES AND CONTROLS
 
@@ -1044,55 +1079,55 @@ C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
 !C     OPEN ONLY ONCE AT THE BEGINNING
 !*     OPEN (UNIT=IPL, FILE='TOMP.DAT')
 
-      IF (RASP) THEN
-         J = IPLOT*NO
-         DO 580 I=1,NO
-            NUMBER = J + I
-            WRITE (IPL, 9790) IDAY, IMON, IYR, IHR, IMIN, ISEC, IHUN
-            WRITE (IPL, 9800) NUMBER
-            WRITE (IPL, 9810) TANF, HSP, K
-            WRITE (IPL, 9820) (G(L,I), L=1,K)
-  580    CONTINUE
-      ELSE IF (MATLAB) THEN
+   !   IF (RASP) THEN
+   !      J = IPLOT*NO
+   !      DO 580 I=1,NO
+   !         NUMBER = J + I
+   !         WRITE (IPL, 9790) IDAY, IMON, IYR, IHR, IMIN, ISEC, IHUN
+   !         WRITE (IPL, 9800) NUMBER
+   !         WRITE (IPL, 9810) TANF, HSP, K
+   !         WRITE (IPL, 9820) (G(L,I), L=1,K)
+ ! 580    CONTINUE
+  !    ELSE IF (MATLAB) THEN
 
 !C  MATLAB METACOMMANDS TO BE WRITTEN INTO TOMP.M-FILE
 
-         J = IPLOT*NO
-         DO 590 I=1,NO
-            NUMBER = J + I
-            IF (NUMBER .LE. 9) THEN
-               WRITE (IPL, 9910) NUMBER
-            ELSE
-               WRITE (IPL, 9920) NUMBER
-            END IF
-            WRITE (IPL, 9930) (G(L,I), L=1,K)
-            WRITE (IPL, 9940)
-            IF (NUMBER .LE. 9) THEN
-               WRITE (IPL, 9950) NUMBER, NUMBER
-            ELSE
-               WRITE (IPL, 9960) NUMBER, NUMBER
-            END IF
-  590    CONTINUE
-         WRITE (IPL, 9970) TANF, HSP, TEND
-         WRITE (IPL, 9971)
-         WRITE (IPL, 9972)
-         WRITE (IPL, 9973)
-         WRITE (IPL, 9974) HSP
-         WRITE (IPL, 9975)
-         DO 595 I=1,NO
-            NUMBER = J + I
-            IF (NUMBER .LE. 9) THEN
-               WRITE (IPL, 9980) NUMBER
-            ELSE
-               WRITE (IPL, 9990) NUMBER
-            END IF
-  595    CONTINUE
+      !   J = IPLOT*NO
+      !   DO 590 I=1,NO
+      !      NUMBER = J + I
+      !      IF (NUMBER .LE. 9) THEN
+      !         WRITE (IPL, 9910) NUMBER
+       !     ELSE
+       !        WRITE (IPL, 9920) NUMBER
+       !     END IF
+       !     WRITE (IPL, 9930) (G(L,I), L=1,K)
+       !     WRITE (IPL, 9940)
+       !     IF (NUMBER .LE. 9) THEN
+       !        WRITE (IPL, 9950) NUMBER, NUMBER
+       !     ELSE
+       !        WRITE (IPL, 9960) NUMBER, NUMBER
+       !     END IF
+ ! 590    CONTINUE
+       !  WRITE (IPL, 9970) TANF, HSP, TEND
+       !  WRITE (IPL, 9971)
+       !  WRITE (IPL, 9972)
+      !   WRITE (IPL, 9973)
+      !   WRITE (IPL, 9974) HSP
+      !   WRITE (IPL, 9975)
+      !   DO 595 I=1,NO
+       !     NUMBER = J + I
+       !     IF (NUMBER .LE. 9) THEN
+       !        WRITE (IPL, 9980) NUMBER
+       !     ELSE
+       !        WRITE (IPL, 9990) NUMBER
+       !     END IF
+!  595    CONTINUE
 
-      ELSE
+   !   ELSE
 
-         WRITE (*,*) '==> NO PLOTTING PROVIDED IN TOMP'
+    !     WRITE (*,*) '==> NO PLOTTING PROVIDED IN TOMP'
 
-      END IF
+    !  END IF
 
 !C     CLOSE (UNIT=IPL)
 
@@ -1144,7 +1179,7 @@ C  INTEGRATION OUTPUT FLAG OK FOR CONTINUATION ?
  9904 FORMAT (43H TOMP: WRONG INTERPOLATION MODE OF CONTROL:, I3)
  9906 FORMAT (41H TOMP: INITIAL AND/OR FINAL POINT DEVIATE)
 
-C     FORMAT STATEMENTS FOR MATLAB META-COMMANDS
+!C     FORMAT STATEMENTS FOR MATLAB META-COMMANDS
 
  9910 FORMAT (1Ho,I1,2H=[)
  9920 FORMAT (1Ho,I2,2H=[)
@@ -1163,7 +1198,7 @@ C     FORMAT STATEMENTS FOR MATLAB META-COMMANDS
 
 !C-----------------------------------------------------------------------
 
-      END
+END SUBROUTINE
 
       SUBROUTINE CONTRL (T,X,IV,Y)
 
