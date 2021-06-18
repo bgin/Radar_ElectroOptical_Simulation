@@ -14,9 +14,7 @@ program TMatrix_MPS_Test
     ! integer(kmp_affinity_mask_kind) :: mask
     ! integer(kind=int4) :: hw_thread
     ! integer(kind=int4) :: success
-     integer(kind=int4) :: pmc_loop744,pmc_loop965,pmc_loop1097,pmc_loop1179, &
-                           pmc_loop1778,pmc_loop1828,pmc_loop2039,pmc_loop2092, &
-                           pmc_loop2323
+    
      integer(kind=int4) :: MXINT = 200
      integer(kind=int4) :: NADD  = 0
      integer(kind=int4) :: idscmt = 1
