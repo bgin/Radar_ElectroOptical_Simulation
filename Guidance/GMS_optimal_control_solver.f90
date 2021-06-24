@@ -1367,7 +1367,7 @@ SUBROUTINE SPLINE (MODE, N, X, Y, P, A, B, C) !GCC$ ATTRIBUTES hot :: SPLINE !GC
       U = ZERO
       V = U
       B(1) = V
-        !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(B,A,X) PRIVATE(I,V,U) IF(N>=1000)
+      
       DO 100 I = 2,N-1
           B(I) = B(I)+U*B(I-1)
           A(I) = TWO*(X(I-1)-X(I+1))-U*V
@@ -1379,7 +1379,7 @@ SUBROUTINE SPLINE (MODE, N, X, Y, P, A, B, C) !GCC$ ATTRIBUTES hot :: SPLINE !GC
       A(N) = ZERO
       B(N) = ZERO
       C(N) = ZERO
-           !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(B,C,A) PRIVATE(I,IBACK)   IF(N>=1000) 
+           
       DO 110 I = 2,N-1
           IBACK = N+1-I
 110       B(IBACK) = (C(IBACK)*B(IBACK+1)-B(IBACK))/A(IBACK)
