@@ -252,7 +252,7 @@ DOUBLE PRECISION FUNCTION DLANGE( NORM, M, N, A, LDA, WORK ) !GCC$ ATTRIBUTES HO
          DO 50 I = 1, M
             WORK( I ) = ZERO
 50       CONTINUE
-         !$OMP PARALLEL DO SCHEDULE(STATIC,10) DEFAULT(NONE) SHARED(WORK,A,N,M) PRIVATE(J,I) COLLAPSE(2)    
+         !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(WORK,A,N,M) PRIVATE(J,I) COLLAPSE(2)    
          DO 70 J = 1, N
                 !$OMP SIMD ALIGNED(A:64) LINEAR(I:1)  UNROLL PARTIAL(6)
             DO 60 I = 1, M
@@ -261,12 +261,12 @@ DOUBLE PRECISION FUNCTION DLANGE( NORM, M, N, A, LDA, WORK ) !GCC$ ATTRIBUTES HO
 70       CONTINUE
          !$OMP END PARALLEL DO      
          VALUE = ZERO
-         !$OMP PARALLEL DO SCHEDULE(STATIC,10) DEFAULT(NONE) SHARED(M,WORK,VALUE) PRIVATE(I,TEMP) IF(M>=1000)     
+        
          DO 80 I = 1, M
             TEMP = WORK( I )
-            !$OMP CRITICAL
+           
             IF( VALUE.LT.TEMP .OR. DISNAN( TEMP ) ) VALUE = TEMP
-            !$OMP END CRITICAL
+          
    80    CONTINUE
       ELSE IF( ( LSAME( NORM, 'F' ) ) .OR. ( LSAME( NORM, 'E' ) ) ) THEN
 !*
@@ -465,7 +465,7 @@ SUBROUTINE DLACPY( UPLO, M, N, A, LDA, B, LDB )  !GCC$ ATTRIBUTES hot :: DLACPY 
 *!     .. Executable Statements ..
 !*
       IF( LSAME( UPLO, 'U' ) ) THEN
-         !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE) SHARED(B,A,N,M) PRIVATE(J,I)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(B,A,N,M) PRIVATE(J,I)
          DO 20 J = 1, N
             !$OMP SIMD ALIGNED(A:64,B) LINEAR(I:1) UNROLL PARTIAL(8)
             DO 10 I = 1, MIN( J, M )
@@ -474,7 +474,7 @@ SUBROUTINE DLACPY( UPLO, M, N, A, LDA, B, LDB )  !GCC$ ATTRIBUTES hot :: DLACPY 
 20       CONTINUE
           !$OMP END PARALLEL DO     
      ELSE IF( LSAME( UPLO, 'L' ) ) THEN
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(B,A) COLLAPSE(2) PRIVATE(J,I)    
+            !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(B,A,N,M) COLLAPSE(2) PRIVATE(J,I)    
         DO 40 J = 1, N
               !$OMP SIMD ALIGNED(A:64,B) LINEAR(I:1) UNROLL PARTIAL(8)
             DO 30 I = J, M
@@ -483,7 +483,7 @@ SUBROUTINE DLACPY( UPLO, M, N, A, LDA, B, LDB )  !GCC$ ATTRIBUTES hot :: DLACPY 
 40       CONTINUE
          !$OMP END PARALLEL DO      
      ELSE
-           !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(B,A,N,M) COLLAPSE(2) PRIVATE(J,I)       
+           !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(B,A,N,M) COLLAPSE(2) PRIVATE(J,I)       
         DO 60 J = 1, N
              !$OMP SIMD ALIGNED(A:64,B) LINEAR(I:1) UNROLL PARTIAL(8)
             DO 50 I = 1, M
@@ -778,7 +778,7 @@ SUBROUTINE DLASET( UPLO, M, N, ALPHA, BETA, A, LDA )  !GCC$ ATTRIBUTES hot :: DL
 !*        Set the strictly upper triangular or trapezoidal part of the
 !*        array to ALPHA.
          !*
-         !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE) SHARED(A,N,M,ALPHA) PRIVATE(J,I)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(A,N,M,ALPHA) PRIVATE(J,I)
          DO 20 J = 2, N
             !$OMP SIMD ALIGNED(A:64) LINEAR(I:1) UNROLL PARTIAL(8)
             DO 10 I = 1, MIN( J-1, M )
@@ -792,7 +792,7 @@ SUBROUTINE DLASET( UPLO, M, N, ALPHA, BETA, A, LDA )  !GCC$ ATTRIBUTES hot :: DL
 !*        Set the strictly lower triangular or trapezoidal part of the
 !*        array to ALPHA.
          !*
-          !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE) SHARED(A,M,N,ALPHA) PRIVATE(J,I) 
+          !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(A,M,N,ALPHA) PRIVATE(J,I) 
          DO 40 J = 1, MIN( M, N )
              !$OMP SIMD ALIGNED(A:64) LINEAR(I:1) 
             DO 30 I = J + 1, M
@@ -805,7 +805,7 @@ SUBROUTINE DLASET( UPLO, M, N, ALPHA, BETA, A, LDA )  !GCC$ ATTRIBUTES hot :: DL
 !*
 !*        Set the leading m-by-n submatrix to ALPHA.
          !*
-          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,N,M,ALPHA) COLLAPSE(2) PRIVATE(J,I)
+          !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(A,N,M,ALPHA) COLLAPSE(2) PRIVATE(J,I)
          DO 60 J = 1, N
               !$OMP SIMD ALIGNED(A:64) LINEAR(I:1) 
             DO 50 I = 1, M
@@ -1036,7 +1036,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C1**T
                !*
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)
                DO 10 J = 1, K
                   CALL DCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
 10             CONTINUE
@@ -1078,7 +1078,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C1 := C1 - W**T
                !*
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,N) PRIVATE(J,I) COLLAPSE(2) 
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(WORK,K,N) PRIVATE(J,I) COLLAPSE(2) REDUCTION(-:C)
                DO 30 J = 1, K
                   DO 20 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
@@ -1094,7 +1095,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C1
                !!*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J) 
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J) 
                DO 40 J = 1, K
                   CALL DCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
    40          CONTINUE
@@ -1135,7 +1136,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C1 := C1 - W
                !*
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,M) PRIVATE(J,I) COLLAPSE(2) 
+                 !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                 !$OMP& SHARED(WORK,K,M) REDUCTION(-:C) PRIVATE(J,I) COLLAPSE(2) 
                DO 60 J = 1, K
                   !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 50 I = 1, M
@@ -1160,7 +1162,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C2**T
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)   
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)   
                DO 70 J = 1, K
                   CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
    70          CONTINUE
@@ -1199,7 +1201,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C2 := C2 - W**T
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,N) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(WORK,K,N) PRIVATE(J,I) REDUCTION(-:C) COLLAPSE(2)
                DO 90 J = 1, K
                   DO 80 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
@@ -1214,7 +1217,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*              W := C * V  =  (C1*V1 + C2*V2)  (stored in WORK)
 !*
 !*              W := C2
-!*           !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
+!*           !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
                DO 100 J = 1, K
                   CALL DCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
   100          CONTINUE
@@ -1253,7 +1256,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C2 := C2 - W
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,M) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(WORK,K,M) PRIVATE(J,I)  REDUCTION(-:C) COLLAPSE(2)
                DO 120 J = 1, K
                   !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 110 I = 1, M
@@ -1280,7 +1284,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C1**T
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK) PRIVATE(J)   IF(K>=200)
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK) PRIVATE(J)   IF(K>=200)
                DO 130 J = 1, K
                   CALL DCOPY( N, C( J, 1 ), LDC, WORK( 1, J ), 1 )
   130          CONTINUE
@@ -1321,7 +1325,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C1 := C1 - W**T
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,N) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K,N) PRIVATE(J,I)  
                DO 150 J = 1, K
                   DO 140 I = 1, N
                      C( J, I ) = C( J, I ) - WORK( I, J )
@@ -1336,7 +1340,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C1
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
                DO 160 J = 1, K
                   CALL DCOPY( M, C( 1, J ), 1, WORK( 1, J ), 1 )
   160          CONTINUE
@@ -1377,7 +1381,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C1 := C1 - W
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,M) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(WORK,K,M) PRIVATE(J,I)  REDUCTION(-:C) COLLAPSE(2)
                DO 180 J = 1, K
                   !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 170 I = 1, M
@@ -1401,7 +1406,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C2**T
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
                DO 190 J = 1, K
                   CALL DCOPY( N, C( M-K+J, 1 ), LDC, WORK( 1, J ), 1 )
   190          CONTINUE
@@ -1440,7 +1445,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C2 := C2 - W**T
                           !*
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,N) PRIVATE(J,I)  
+                 !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                 !$OMP& SHARED(WORK,K,N) PRIVATE(J,I)  REDUCTION(-:C) COLLAPSE(2)
                DO 210 J = 1, K
                   DO 200 I = 1, N
                      C( M-K+J, I ) = C( M-K+J, I ) - WORK( I, J )
@@ -1455,7 +1461,7 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              W := C2
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,WORK,K) PRIVATE(J)  
                DO 220 J = 1, K
                   CALL DCOPY( M, C( 1, N-K+J ), 1, WORK( 1, J ), 1 )
   220          CONTINUE
@@ -1494,7 +1500,8 @@ T, LDT, C, LDC, WORK, LDWORK )  !GCC$ ATTRIBUTES hot :: DLARFB !GCC$ ATTRIBUTES 
 !*
 !*              C1 := C1 - W
                !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,WORK,K,M) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(WORK,K,M) PRIVATE(J,I) REDUCTION(-:C) COLLAPSE(2) 
                DO 240 J = 1, K
                   !$OMP SIMD ALIGNED(C:64,WORK) LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 230 I = 1, M
@@ -6857,7 +6864,8 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
 !*        Full matrix
          !*
-         !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) PRIVATE(J,I) SHARED(A,N,M,MUL)
+         !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+         !$OMP& COLLAPSE(2) PRIVATE(J,I) SHARED(N,M,MUL) REDUCTION(*:A)
          DO 30 J = 1, N
             !$OMP SIMD LINEAR(I:1) UNROLL PARTIAL(6)
             DO 20 I = 1, M
@@ -6869,7 +6877,8 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
 !*        Lower triangular matrix
          !*
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,N,M,MUL)
+            !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+            !$OMP& PRIVATE(J,I) SHARED(N,M,MUL) REDUCTION(*:A)
          DO 50 J = 1, N
              !$OMP SIMD LINEAR(I:1)
             DO 40 I = J, M
@@ -6881,7 +6890,8 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
 !*        Upper triangular matrix
          !*
-           !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,N,M,MUL)
+           !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+           !$OMP& PRIVATE(J,I) SHARED(N,M,MUL) REDUCTION(*:A)
          DO 70 J = 1, N
              !$OMP SIMD 
             DO 60 I = 1, MIN( J, M )
@@ -6893,8 +6903,10 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
 !*        Upper Hessenberg matrix
          !*
-           !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,N,M,MUL)
+           !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+           !$OMP& PRIVATE(J,I) SHARED(N,M,MUL) REDUCTION(*:A)
          DO 90 J = 1, N
+              !$OMP SIMD ALIGNED(A:64)
             DO 80 I = 1, MIN( J+1, M )
                A( I, J ) = A( I, J )*MUL
    80       CONTINUE
@@ -6906,8 +6918,10 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
          K3 = KL + 1
          K4 = N + 1
-           !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,N,K3,K4,MUL)
+           !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+           !$OMP& PRIVATE(J,I) SHARED(N,K3,K4,MUL) REDUCTION(*:A)
          DO 110 J = 1, N
+              !$OMP SIMD ALIGNED(A:64)
             DO 100 I = 1, MIN( K3, K4-J )
                A( I, J ) = A( I, J )*MUL
   100       CONTINUE
@@ -6919,8 +6933,10 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
 !*
          K1 = KU + 2
          K3 = KU + 1
-           !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,K1,K3,MUL,N)
+           !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+           !$OMP& PRIVATE(J,I) SHARED(K1,K3,MUL,N) REDUCTION(*:A)
          DO 130 J = 1, N
+              !$OMP SIMD ALIGNED(A:64)
             DO 120 I = MAX( K1-J, 1 ), K3
                A( I, J ) = A( I, J )*MUL
   120       CONTINUE
@@ -6934,7 +6950,8 @@ SUBROUTINE DLASCL( TYPE, KL, KU, CFROM, CTO, M, N, A, LDA, INFO ) !GCC$ ATTRIBUT
          K2 = KL + 1
          K3 = 2*KL + KU + 1
          K4 = KL + KU + 1 + M
-           !$OMP PARALLEL DO SCHEDULE(GUIDED,1) DEFAULT(NONE)  PRIVATE(J,I) SHARED(A,K1,K2,K3,K4,N,MUL)
+           !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+           !$OMP& PRIVATE(J,I) SHARED(K1,K2,K3,K4,N,MUL) REDUCTION(*:A)
          DO 150 J = 1, N
             DO 140 I = MAX( K1-J, K2 ), MIN( K3, K4-J )
                A( I, J ) = A( I, J )*MUL
