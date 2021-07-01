@@ -525,29 +525,29 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
 !*
 !*     Test the input parameters.
 !*
-!      INFO = 0
- !     IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-   !  +    .NOT.LSAME(TRANS,'C')) THEN
-  !!        INFO = 1
-   !   ELSE IF (M.LT.0) THEN
-   !       INFO = 2
-   !   ELSE IF (N.LT.0) THEN
-    !      INFO = 3
-     ! ELSE IF (KL.LT.0) THEN
-     !     INFO = 4
-     ! ELSE IF (KU.LT.0) THEN
-    !      INFO = 5
-     ! ELSE IF (LDA.LT. (KL+KU+1)) THEN
-     !     INFO = 8
-     ! ELSE IF (INCX.EQ.0) THEN
-     !     INFO = 10
-     ! ELSE IF (INCY.EQ.0) THEN
-     !     INFO = 13
-     ! END IF
-     ! IF (INFO.NE.0) THEN
+     INFO = 0
+      IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND. &
+      .NOT.LSAME(TRANS,'C')) THEN
+          INFO = 1
+      ELSE IF (M.LT.0) THEN
+          INFO = 2
+     ELSE IF (N.LT.0) THEN
+         INFO = 3
+     ELSE IF (KL.LT.0) THEN
+          INFO = 4
+     ELSE IF (KU.LT.0) THEN
+         INFO = 5
+      ELSE IF (LDA.LT. (KL+KU+1)) THEN
+          INFO = 8
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 10
+      ELSE IF (INCY.EQ.0) THEN
+         INFO = 13
+      END IF
+      IF (INFO.NE.0) THEN
       !    CALL XERBLA('DGBMV ',INFO)
-      !    RETURN
-     ! END IF
+          RETURN
+      END IF
 !*
 !*     Quick return if possible.
 !*
@@ -618,7 +618,9 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
 !*
           JX = KX
           IF (INCY.EQ.1) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP,K,I,JX)
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(X,Y,A,N,M,ALPHA,KUP1,INCX) 
+              !$OMP& FIRSTPRIVATE(JX) PRIVATE(J,TEMP,K,I,KU,KL)
               DO 60 J = 1,N
                   TEMP = ALPHA*X(JX)
                   K = KUP1 - J
@@ -629,7 +631,9 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
    60          CONTINUE
                !$OMP END PARALLEL DO   
           ELSE
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP,K,IY,I,JX)  
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(X,Y,A,N,M,ALPHA,KUP1,INCY,KY) 
+              !$OMP& PRIVATE(J,TEMP,K,IY,I,JX,KU,KL)  
               DO 80 J = 1,N
                   TEMP = ALPHA*X(JX)
                   IY = KY
@@ -639,7 +643,9 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
                       IY = IY + INCY
    70             CONTINUE
                   JX = JX + INCX
+                  !$OMP ATOMIC
                   IF (J.GT.KU) KY = KY + INCY
+                  !$OMP END ATOMIC
 80            CONTINUE
               !$OMP END PARALLEL DO    
           END IF
@@ -649,9 +655,13 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
 !*
           JY = KY
           IF (INCX.EQ.1) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,A,Y) PRIVATE(J,TEMP,K,I,JY) 
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(X,A,Y,N,M,KUP1,ALPHA) PRIVATE(J,K,I,KU,KL) 
+              !$OMP& FIRSTPRIVATE(JY) REDUCTION(+:TEMP)
               DO 100 J = 1,N
+                 
                   TEMP = ZERO
+                  
                   K = KUP1 - J
                   DO 90 I = MAX(1,J-KU),MIN(M,J+KL)
                       TEMP = TEMP + A(K+I,J)*X(I)
@@ -661,8 +671,11 @@ SUBROUTINE DGBMV(TRANS,M,N,KL,KU,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTE
 100           CONTINUE
               !$OMP END PARALLEL DO
                ELSE
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,A,Y) PRIVATE(J,TEMP,IX,K,I,KX,JY)  
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,A,Y,N,M,ALPHA,INCX,INCY) 
+               !$OMP& PRIVATE(J,IX,K,I,KX,JY)  REDUCTION(+:TEMP)
               DO 120 J = 1,N
+                  
                   TEMP = ZERO
                   IX = KX
                   K = KUP1 - J
@@ -779,30 +792,30 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*
 !*     Test the input parameters.
 !*
-!      INFO = 0
-!      IF ((.NOT.NOTA) .AND. (.NOT.LSAME(TRANSA,'C')) .AND.
-!     +    (.NOT.LSAME(TRANSA,'T'))) THEN
-!          INFO = 1
-!      ELSE IF ((.NOT.NOTB) .AND. (.NOT.LSAME(TRANSB,'C')) .AND.
-!     +         (.NOT.LSAME(TRANSB,'T'))) THEN
-!          INFO = 2
-!      ELSE IF (M.LT.0) THEN
-!          INFO = 3
-!      ELSE IF (N.LT.0) THEN
-!          INFO = 4
-!      ELSE IF (K.LT.0) THEN
-!          INFO = 5
-!      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
-!!          INFO = 8
-!      ELSE IF (LDB.LT.MAX(1,NROWB)) THEN
-!          INFO = 10
-!      ELSE IF (LDC.LT.MAX(1,M)) THEN
-!          INFO = 13
-!      END IF
-!      IF (INFO.NE.0) THEN
+      INFO = 0
+      IF ((.NOT.NOTA) .AND. (.NOT.LSAME(TRANSA,'C')) .AND. &
+         (.NOT.LSAME(TRANSA,'T'))) THEN
+          INFO = 1
+      ELSE IF ((.NOT.NOTB) .AND. (.NOT.LSAME(TRANSB,'C')) .AND. &
+              (.NOT.LSAME(TRANSB,'T'))) THEN
+          INFO = 2
+     ELSE IF (M.LT.0) THEN
+          INFO = 3
+      ELSE IF (N.LT.0) THEN
+          INFO = 4
+     ELSE IF (K.LT.0) THEN
+          INFO = 5
+     ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+          INFO = 8
+      ELSE IF (LDB.LT.MAX(1,NROWB)) THEN
+         INFO = 10
+      ELSE IF (LDC.LT.MAX(1,M)) THEN
+          INFO = 13
+      END IF
+     IF (INFO.NE.0) THEN
 !          CALL XERBLA('DGEMM ',INFO)
-!          RETURN
-!      END IF
+         RETURN
+      END IF
 !*
 !*     Quick return if possible.
 !*
@@ -812,23 +825,23 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*     And if  alpha.eq.zero.
 !*
       IF (ALPHA.EQ.ZERO) THEN
-       !  IF (BETA.EQ.ZERO) THEN
-        !      !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J) IF(N>=400)
-         !   DO 20 J = 1,N
-         !         !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)
-         !1         DO 10 I = 1,M
-         !             C(I,J) = ZERO
-  ! 10    !         CONTINUE
-  ! 20         CONTINUE
-       !  ELSE
-       !        !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(SHARED) PRIVATE(J) IF(N>=100)        
-       !     DO 40 J = 1,N
-       !            !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(6)
-        !          DO 30 I = 1,M
-        !              C(I,J) = BETA*C(I,J)
-  ! 30             CONTINUE
-  ! 40         CONTINUE
-   !       END IF
+         IF (BETA.EQ.ZERO) THEN
+        
+            DO 20 J = 1,N
+                  !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)
+                  DO 10 I = 1,M
+                      C(I,J) = ZERO
+   10             CONTINUE
+   20         CONTINUE
+         ELSE
+        
+           DO 40 J = 1,N
+                   !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(6)
+                 DO 30 I = 1,M
+                      C(I,J) = BETA*C(I,J)
+   30             CONTINUE
+   40         CONTINUE
+          END IF
           RETURN
       END IF
 !*
@@ -839,7 +852,7 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*
 !*           Form  C := alpha*A*B + beta*C.
              !*
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,B,A) PRIVATE(J,I,L,TEMP)       
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) SHARED(C,B,A) PRIVATE(J,I,L,TEMP)       
               DO 90 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                          !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)
