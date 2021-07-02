@@ -3857,7 +3857,9 @@ SUBROUTINE DSYR2(UPLO,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTTRIBUTES inline :: D
 !*        Form  A  when A is stored in the upper triangle.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A)  PRIVATE(J,TEMP1,TEMP2,I) 
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,ZERO,ALPHA,N)  PRIVATE(J,TEMP1,TEMP2,I) 
+               !$OMP& REDUCTION(+:A)
               DO 20 J = 1,N
                   IF ((X(J).NE.ZERO) .OR. (Y(J).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(J)
@@ -3870,7 +3872,10 @@ SUBROUTINE DSYR2(UPLO,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTTRIBUTES inline :: D
 20            CONTINUE
                  !$OMP END PARALLEL DO 
          ELSE
-                   !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY)
+                   !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                   !$OMP& SHARED(X,Y,N,ZERO,ALPHA,KX,KY,INCX,INCY) 
+                   !$OMP& PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY) 
+                   !$OMP& REDUCTION(+:A)
               DO 40 J = 1,N
                   IF ((X(JX).NE.ZERO) .OR. (Y(JY).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(JY)
@@ -3894,7 +3899,9 @@ SUBROUTINE DSYR2(UPLO,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTTRIBUTES inline :: D
 !*        Form  A  when A is stored in the lower triangle.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A)  PRIVATE(J,TEMP1,TEMP2,I)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,,N,ZERO,ALPHA)  PRIVATE(J,TEMP1,TEMP2,I)
+               !$OMP& REDUCTION(+:A)
               DO 60 J = 1,N
                   IF ((X(J).NE.ZERO) .OR. (Y(J).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(J)
@@ -3907,7 +3914,9 @@ SUBROUTINE DSYR2(UPLO,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTTRIBUTES inline :: D
 60            CONTINUE
                !$OMP END PARALLEL DO   
         ELSE
-                   !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY)
+                   !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                   !$OMP& SHARED(X,Y,N,ZERO,ALPHA,INCX,INCY) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY)
+                   !$OMP& REDUCTION(+:A)
               DO 80 J = 1,N
                   IF ((X(JX).NE.ZERO) .OR. (Y(JY).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(JY)
@@ -4018,28 +4027,28 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
       END IF
       UPPER = LSAME(UPLO,'U')
 !*
-!      INFO = 0
-!      IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
-!          INFO = 1
-!      ELSE IF ((.NOT.LSAME(TRANS,'N')) .AND.
-!              (.NOT.LSAME(TRANS,'T')) .AND.
-!              (.NOT.LSAME(TRANS,'C'))) THEN
-!          INFO = 2
-!      ELSE IF (N.LT.0) THEN
-!          INFO = 3
- !     ELSE IF (K.LT.0) THEN
-!          INFO = 4
-!      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
- !         INFO = 7
-!!      ELSE IF (LDB.LT.MAX(1,NROWA)) THEN
- !         INFO = 9
- !     ELSE IF (LDC.LT.MAX(1,N)) THEN
- !         INFO = 12
- !     END IF
- !     IF (INFO.NE.0) THEN
+     INFO = 0
+     IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
+         INFO = 1
+      ELSE IF ((.NOT.LSAME(TRANS,'N')) .AND. &
+              (.NOT.LSAME(TRANS,'T')) .AND. &
+               (.NOT.LSAME(TRANS,'C'))) THEN
+         INFO = 2
+     ELSE IF (N.LT.0) THEN
+         INFO = 3
+      ELSE IF (K.LT.0) THEN
+         INFO = 4
+     ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+         INFO = 7
+     ELSE IF (LDB.LT.MAX(1,NROWA)) THEN
+         INFO = 9
+      ELSE IF (LDC.LT.MAX(1,N)) THEN
+          INFO = 12
+      END IF
+      IF (INFO.NE.0) THEN
  !         CALL XERBLA('DSYR2K',INFO)
- !         RETURN
- !     END IF
+         RETURN
+     END IF
 !*
 !*     Quick return if possible.
 !*
@@ -4049,35 +4058,35 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
 !*     And when  alpha.eq.zero.
 !*
       IF (ALPHA.EQ.ZERO) THEN
-       !   IF (UPPER) THEN
-       !       IF (BETA.EQ.ZERO) THEN
-       !           DO 20 J = 1,N
-      !                DO 10 I = 1,J
-       !                   C(I,J) = ZERO
-!   10                 CONTINUE
- !  20             CONTINUE
-    !          ELSE
-  !                DO 40 J = 1,N
-     !                 DO 30 I = 1,J
-     !                     C(I,J) = BETA*C(I,J)
-  ! 30                 CONTINUE
-  ! 40             CONTINUE
-   !           END IF
-    !      ELSE
-    !          IF (BETA.EQ.ZERO) THEN
-    !              DO 60 J = 1,N
-     !                 DO 50 I = J,N
-     !                     C(I,J) = ZERO
- !  50                 CONTINUE
-  ! 60             CONTINUE
-  !            ELSE
-  !                DO 80 J = 1,N
-   !                   DO 70 I = J,N
-                        !  C(I,J) = BETA*C(I,J)
-  ! 70                 CONTINUE
-  ! 80             CONTINUE
-   !           END IF
-    !      END IF
+         IF (UPPER) THEN
+              IF (BETA.EQ.ZERO) THEN
+                  DO 20 J = 1,N
+                      DO 10 I = 1,J
+                          C(I,J) = ZERO
+   10                 CONTINUE
+  20             CONTINUE
+             ELSE
+                  DO 40 J = 1,N
+                      DO 30 I = 1,J
+                          C(I,J) = BETA*C(I,J)
+   30                 CONTINUE
+  40             CONTINUE
+              END IF
+          ELSE
+             IF (BETA.EQ.ZERO) THEN
+                 DO 60 J = 1,N
+                     DO 50 I = J,N
+                         C(I,J) = ZERO
+   50                 CONTINUE
+  60             CONTINUE
+              ELSE
+                 DO 80 J = 1,N
+                     DO 70 I = J,N
+                          C(I,J) = BETA*C(I,J)
+  70                 CONTINUE
+  80             CONTINUE
+              END IF
+            END IF
           RETURN
       END IF
 !*
@@ -4088,7 +4097,8 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
 !*        Form  C := alpha*A*B**T + alpha*B*A**T + C.
 !*
          IF (UPPER) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A,B)  PRIVATE(J,I,TEMP1,TEMP2,L) 
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(C,A,B,N,K,BETA,ZERO,ALPHA)  PRIVATE(J,I,TEMP1,TEMP2,L) 
               DO 130 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                      !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(10)
@@ -4115,7 +4125,8 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
 130            CONTINUE
                !$OMP END PARALLEL DO        
              ELSE
-                    !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A,B)  PRIVATE(J,I,L,TEMP1,TEMP2)
+                    !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                    !$OMP& SHARED(C,A,B,N,ZERO,BETA,ALPHA,K)  PRIVATE(J,I,L,TEMP1,TEMP2)
               DO 180 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                         !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(10)
@@ -4147,12 +4158,14 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
 !*        Form  C := alpha*A**T*B + alpha*B**T*A + C.
 !*
          IF (UPPER) THEN
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,B,C) COLLAPSE(2) PRIVATE(J,I,TEMP1,TEMP2,L)     
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(A,B,C,N,ZERO,BETA,ALPHA,K)  PRIVATE(J,I,TEMP1,TEMP2,L)   
+                !$OMP& REDUCTION(+:TEMP1,TEMP2)
               DO 210 J = 1,N
                   DO 200 I = 1,J
                       TEMP1 = ZERO
                       TEMP2 = ZERO
-                       !$OMP SIMD ALIGNED(C:64,A,B) LINEAR(I:1) REDUCTION(+:TEMP1,TEMP2) UNROLL PARTIAL(10)
+                       !$OMP SIMD ALIGNED(C:64,A,B) LINEAR(I:1)  UNROLL PARTIAL(10)
                       DO 190 L = 1,K
                           TEMP1 = TEMP1 + A(L,I)*B(L,J)
                           TEMP2 = TEMP2 + B(L,I)*A(L,J)
@@ -4167,7 +4180,9 @@ SUBROUTINE DSYR2K(UPLO,TRANS,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES 
 210            CONTINUE
                 !$OMP END PARALLEL DO      
             ELSE
-                  !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,B,C)  PRIVATE(J,I,TEMP1,TEMP2,L)         
+                  !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                  !$OMP& SHARED(A,B,C,N,ZERO,K,ALPHA,BETA)  PRIVATE(J,I,TEMP1,TEMP2,L)   
+                  !$OMP& REDUCTION(+TEMP1,TEMP2)
               DO 240 J = 1,N
                   DO 230 I = J,N
                       TEMP1 = ZERO
@@ -4275,26 +4290,26 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
       END IF
       UPPER = LSAME(UPLO,'U')
 !*
-    !  INFO = 0
-    !  IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
-    !      INFO = 1
-    !  ELSE IF ((.NOT.LSAME(TRANS,'N')) .AND.
-    ! +         (.NOT.LSAME(TRANS,'T')) .AND.
-    ! +         (.NOT.LSAME(TRANS,'C'))) THEN
-    !      INFO = 2
-    !  ELSE IF (N.LT.0) THEN
-    !      INFO = 3
-    !  ELSE IF (K.LT.0) THEN
-    !      INFO = 4
-    !  ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
-    !      INFO = 7
-    !  ELSE IF (LDC.LT.MAX(1,N)) THEN
-    !      INFO = 10
-    !  END IF
-   !   IF (INFO.NE.0) THEN
+     INFO = 0
+     IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
+         INFO = 1 
+     ELSE IF ((.NOT.lsame(trans,'N')) .AND. &
+              (.NOT.lsame(trans,'T')) .AND. &
+               (.NOT.lsame(trans,'C'))) THEN   
+          INFO = 2
+     ELSE IF (N.LT.0) THEN
+          INFO = 3
+      ELSE IF (K.LT.0) THEN
+          INFO = 4
+      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+          INFO = 7
+     ELSE IF (LDC.LT.MAX(1,N)) THEN
+         INFO = 10
+      END IF
+     IF (INFO.NE.0) THEN
     !      CALL XERBLA('DSYRK ',INFO)
-    !      RETURN
-    !  END IF
+          RETURN
+     END IF
 !*
 !*     Quick return if possible.
 !*
@@ -4304,35 +4319,36 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
 !!*     And when  alpha.eq.zero.
 !*
       IF (ALPHA.EQ.ZERO) THEN
-      !    IF (UPPER) THEN
-      !        IF (BETA.EQ.ZERO) THEN
-      !            DO 20 J = 1,N
-       !               DO 10 I = 1,J
-        !                  C(I,J) = ZERO
- !  10   !              CONTINUE
-  ! 20             CONTINUE
-     !         ELSE
-        !          DO 40 J = 1,N
-         !             DO 30 I = 1,J
-         !                 C(I,J) = BETA*C(I,J)
-  ! 30                 CONTINUE
-  ! 40             CONTINUE
-   !           END IF
-    !      ELSE
-     !         IF (BETA.EQ.ZERO) THEN
-     !             DO 60 J = 1,N
-     !                 DO 50 I = J,N
-     !                     C(I,J) = ZERO
-  ! 50                 CONTINUE
-  ! 60             CONTINUE
-   !           ELSE
-     !             DO 80 J = 1,N
-      !                DO 70 I = J,N
-      !                    C(I,J) = BETA*C(I,J)
-  ! 70                 CONTINUE
-  ! 80             CONTINUE
-  !            END IF
-   !       END IF
+         IF (UPPER) THEN
+             IF (BETA.EQ.ZERO) THEN
+                 DO 20 J = 1,N
+                      DO 10 I = 1,J
+                         C(I,J) = ZERO
+   10                CONTINUE
+  20             CONTINUE
+             ELSE
+                  DO 40 J = 1,N
+                     DO 30 I = 1,J
+                        C(I,J) = BETA*C(I,J)
+  30                 CONTINUE
+   40             CONTINUE
+              END IF
+          ELSE
+             IF (BETA.EQ.ZERO) THEN
+                 DO 60 J = 1,N
+                     DO 50 I = J,N
+                         C(I,J) = ZERO
+   50                 CONTINUE
+   60             CONTINUE
+             ELSE
+                 DO 80 J = 1,N
+                     DO 70 I = J,N
+                         C(I,J) = BETA*C(I,J)
+   70                 CONTINUE
+  
+  80             CONTINUE
+              END IF
+          END IF
           RETURN
       END IF
 !*
@@ -4343,7 +4359,8 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
 !*        Form  C := alpha*A*A**T + beta*C.
 !*
          IF (UPPER) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,B,A) PRIVATE(J,I,L,TEMP) 
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(C,B,A,N,ZERO,BETA,ONE,ZERO,ALPHA,K) PRIVATE(J,I,L,TEMP) 
               DO 130 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                       !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)
@@ -4368,7 +4385,8 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
 130           CONTINUE
                !$OMP END PARALLEL DO       
           ELSE
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A) PRIVATE(J,I,L,TEMP)     
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(C,A,N,BETA,ZERO,ONE,ALPHA,K) PRIVATE(J,I,L,TEMP)     
               DO 180 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                         !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)
@@ -4398,11 +4416,13 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
 !*        Form  C := alpha*A**T*A + beta*C.
 !*
          IF (UPPER) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(A,C) PRIVATE(J,I,L,TEMP)
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)  
+              !$OMP& SHARED(A,C,N,ZERO,K,BETA,ALPHA) PRIVATE(J,I,L)
+              !$OMP& REDUCTION(+:TEMP)
               DO 210 J = 1,N
                   DO 200 I = 1,J
                      TEMP = ZERO
-                      !$OMP SIMD ALIGNED(A:64) LINEAR(L:1) REDUCTION(+:TEMP) UNROLL PARTIAL(10)
+                      !$OMP SIMD ALIGNED(A:64) LINEAR(L:1)  UNROLL PARTIAL(10)
                       DO 190 L = 1,K
                           TEMP = TEMP + A(L,I)*A(L,J)
   190                 CONTINUE
@@ -4415,11 +4435,13 @@ SUBROUTINE DSYRK(UPLO,TRANS,N,K,ALPHA,A,LDA,BETA,C,LDC) !GCC$ ATTRIBUTES hot :: 
 210           CONTINUE
                !$OMP END PARALLEL DO       
            ELSE
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,C) PRIVATE(J,I,L,TEMP)       
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(A,C,N,ZERO,K,BETA,ALPHA) PRIVATE(J,I,L) 
+                !$OMP& REDUCTION(+:TEMP)
               DO 240 J = 1,N
                   DO 230 I = J,N
                      TEMP = ZERO
-                       !$OMP SIMD ALIGNED(A:64) LINEAR(L:1) REDUCTION(+:TEMP) UNROLL PARTIAL(10)
+                       !$OMP SIMD ALIGNED(A:64) LINEAR(L:1)  UNROLL PARTIAL(10)
                       DO 220 L = 1,K
                           TEMP = TEMP + A(L,I)*A(L,J)
   220                 CONTINUE
