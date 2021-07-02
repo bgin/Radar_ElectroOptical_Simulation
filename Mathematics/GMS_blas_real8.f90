@@ -879,11 +879,13 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*
 !*           Form  C := alpha*A**T*B + beta*C
              !*
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,B,C) COLLAPSE(2) PRIVATE(J,I,TEMP,L)  
+                 !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                 !$OMP& SHARED(A,B,C,N,M,K,ZERO,ALPHA,BETA) COLLAPSE(2) 
+                 !$OMP& PRIVATE(J,I,L)  REDUCTION(+:TEMP)
               DO 120 J = 1,N
                   DO 110 I = 1,M
                      TEMP = ZERO
-                        !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) REDUCTION(+:TEMP) UNROLL PARTIAL(10)   
+                        !$OMP SIMD ALIGNED(C:64) LINEAR(I:1)  UNROLL PARTIAL(10)   
                       DO 100 L = 1,K
                           TEMP = TEMP + A(L,I)*B(L,J)
   100                 CONTINUE
@@ -901,7 +903,8 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*
 !*           Form  C := alpha*A*B**T + beta*C
              !*
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,A,B) PRIVATE(J,I,L,TEMP)     
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) 
+               !$OMP& DEFAULT(NONE) SHARED(C,A,B,N,M,K,BETA,ALPHA,ZERO) PRIVATE(J,I,L,TEMP)     
               DO 170 J = 1,N
                  IF (BETA.EQ.ZERO) THEN
                          !$OMP SIMD ALIGNED(C:64) LINEAR(I:1) UNROLL PARTIAL(8)   
@@ -927,11 +930,13 @@ SUBROUTINE DGEMM(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBU
 !*
 !*           Form  C := alpha*A**T*B**T + beta*C
              !*
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(A,B,C) PRIVATE(J,I,TEMP,L)  
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& COLLAPSE(2) SHARED(A,B,C,N,M,K,ALPHA,BETA,ZERO) 
+               !$OMP& PRIVATE(J,I,L)  REDUCTION(+:TEMP)
               DO 200 J = 1,N
                   DO 190 I = 1,M
                      TEMP = ZERO
-                       !$OMP SIMD ALIGNED(C:64) LINEAR(I:1)  REDUCTION(+:TEMP) UNROLL PARTIAL(10)   
+                       !$OMP SIMD ALIGNED(C:64) LINEAR(I:1)  UNROLL PARTIAL(10)   
                       DO 180 L = 1,K
                           TEMP = TEMP + A(L,I)*B(J,L)
   180                 CONTINUE
@@ -1022,7 +1027,7 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
       EXTERNAL LSAME
 !*     ..
 !*     .. External Subroutines ..
-      EXTERNAL XERBLA
+    !  EXTERNAL XERBLA
 !*     ..
 !*     .. Intrinsic Functions ..
       INTRINSIC MAX
@@ -1030,25 +1035,25 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
 !*
 !*     Test the input parameters.
 !*
-!      INFO = 0
-    !  IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND.
-    ! +    .NOT.LSAME(TRANS,'C')) THEN
-    !      INFO = 1
-    !  ELSE IF (M.LT.0) THEN
-    !      INFO = 2
-   !   ELSE IF (N.LT.0) THEN
-    !      INFO = 3
-    !  ELSE IF (LDA.LT.MAX(1,M)) THEN
-   !       INFO = 6
-   !   ELSE IF (INCX.EQ.0) THEN
-   !       INFO = 8
-   !   ELSE IF (INCY.EQ.0) THEN
-   !       INFO = 11
-   !   END IF
-   !   IF (INFO.NE.0) THEN
+     INFO = 0
+      IF (.NOT.LSAME(TRANS,'N') .AND. .NOT.LSAME(TRANS,'T') .AND. &
+         .NOT.LSAME(TRANS,'C')) THEN
+          INFO = 1
+     ELSE IF (M.LT.0) THEN
+          INFO = 2
+      ELSE IF (N.LT.0) THEN
+          INFO = 3
+     ELSE IF (LDA.LT.MAX(1,M)) THEN
+          INFO = 6
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 8
+      ELSE IF (INCY.EQ.0) THEN
+          INFO = 11
+      END IF
+      IF (INFO.NE.0) THEN
  !!         CALL XERBLA('DGEMV ',INFO)
- !         RETURN
- !     END IF
+          RETURN
+      END IF
 !*
 !*     Quick return if possible.
 !*
@@ -1118,7 +1123,9 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
 !*
           JX = KX
           IF (INCY.EQ.1) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP,I,JX) 
+              !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+              !$OMP& SHARED(X,A,N,M,ALPHA,INCX) 
+              !$OMP FIRSTPRIVATE(JX) PRIVATE(J,TEMP,I) REDUCTION(+:Y)
               DO 60 J = 1,N
                  TEMP = ALPHA*X(JX)
                     !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) UNROLL PARTIAL(10)    
@@ -1129,7 +1136,9 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
 60            CONTINUE
               !$OMP END PARALLEL DO    
            ELSE
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP,IY,I,JX)   
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(X,A,N,ALPHA,KY,M,INCY,INCX) 
+                !$OMP& FIRSTPRIVATE(JX) PRIVATE(J,TEMP,IY,I)  REDUCTION(+:Y)
               DO 80 J = 1,N
                   TEMP = ALPHA*X(JX)
                   IY = KY
@@ -1148,10 +1157,12 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
 !*
           JY = KY
           IF (INCX.EQ.1) THEN
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP,I,JY)  
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,A,N,ZERO,ALPHA,M,INCY) 
+               !$OMP& FIRSTPRIVAYTE(JY) PRIVATE(J,I)  REDUCTION(+:TEMP) COLLAPSE(2)
               DO 100 J = 1,N
                  TEMP = ZERO
-                   !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) REDUCTION(+:TEMP) UNROLL PARTIAL(10)    
+                   !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)  UNROLL PARTIAL(10)    
                   DO 90 I = 1,M
                       TEMP = TEMP + A(I,J)*X(I)
    90             CONTINUE
@@ -1160,11 +1171,13 @@ SUBROUTINE DGEMV(TRANS,M,N,ALPHA,A,LDA,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot 
 100            CONTINUE
                 !$OMP END PARALLEL DO       
            ELSE
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE)  SHARED(X,Y,A) PRIVATE(J,TEMP,IX,I,JY)    
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE)  
+                !$OMP& SHARED(X,Y,A,N,ZERO,KX,M,ALPHA,INCY) 
+                !&OMP& FIRSTPRIVATE(JY) PRIVATE(J,IX,I)  REDUCTION(+:TEMP)  
               DO 120 J = 1,N
                   TEMP = ZERO
                   IX = KX
-                   !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1) REDUCTION(+:TEMP) UNROLL PARTIAL(10) 
+                   !$OMP SIMD ALIGNED(Y:64) LINEAR(I:1)  UNROLL PARTIAL(10) 
                   DO 110 I = 1,M
                       TEMP = TEMP + A(I,J)*X(IX)
                       IX = IX + INCX
@@ -1254,22 +1267,22 @@ SUBROUTINE DGER(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES inline :: DGER !
 !!*
 !*     Test the input parameters.
 !*
-!      INFO = 0
-!      IF (M.LT.0) THEN
-!          INFO = 1
- !     ELSE IF (N.LT.0) THEN
-!          INFO = 2
-!      ELSE IF (INCX.EQ.0) THEN
-!          INFO = 5
-!      ELSE IF (INCY.EQ.0) THEN
-!          INFO = 7
-!      ELSE IF (LDA.LT.MAX(1,M)) THEN
-!          INFO = 9
-!      END IF
-!      IF (INFO.NE.0) THEN
+     INFO = 0
+     IF (M.LT.0) THEN
+         INFO = 1
+      ELSE IF (N.LT.0) THEN
+          INFO = 2
+     ELSE IF (INCX.EQ.0) THEN
+          INFO = 5
+     ELSE IF (INCY.EQ.0) THEN
+         INFO = 7
+     ELSE IF (LDA.LT.MAX(1,M)) THEN
+          INFO = 9
+      END IF
+      IF (INFO.NE.0) THEN
 !          CALL XERBLA('DGER  ',INFO)
-!          RETURN
-!      END IF
+          RETURN
+      END IF
 !*
 !*     Quick return if possible.
 !*
@@ -1284,7 +1297,9 @@ SUBROUTINE DGER(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES inline :: DGER !
           JY = 1 - (N-1)*INCY
       END IF
       IF (INCX.EQ.1) THEN
-          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,A,X) PRIVATE(J,TEMP,I,JY) 
+          !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+          !$OMP& SHARED(Y,X,N,M,ZERO,ALPHA) FIRSTPRIVATE(JY) 
+          !$OMP& PRIVATE(J,TEMP,I) REDUCTION(+:A)
           DO 20 J = 1,N
               IF (Y(JY).NE.ZERO) THEN
                  TEMP = ALPHA*Y(JY)
@@ -1302,7 +1317,9 @@ SUBROUTINE DGER(M,N,ALPHA,X,INCX,Y,INCY,A,LDA) !GCC$ ATTRIBUTES inline :: DGER !
           ELSE
               KX = 1 - (M-1)*INCX
           END IF
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(Y,A,X) PRIVATE(J,TEMP,IX,I,JY)
+            !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+            !&OMP& SHARED(Y,X,N,M,KX,INCX,AKPHA) 
+            !$OMP& PRIVATE(J,TEMP,IX,I,JY) REDUCTION(+:A)
           DO 40 J = 1,N
               IF (Y(JY).NE.ZERO) THEN
                   TEMP = ALPHA*Y(JY)
@@ -2034,7 +2051,9 @@ SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
 !*
           KPLUS1 = K + 1
           IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-             !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,L,I) 
+             !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+             !$OMP& SHARED(X,Y,A,N,K,ALPHA,ZERO,KPLUS1,K) 
+             !$OMP& PRIVATE(J,TEMP1,TEMP2,L,I) 
               DO 60 J = 1,N
                   TEMP1 = ALPHA*X(J)
                   TEMP2 = ZERO
@@ -2049,7 +2068,9 @@ SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
           ELSE
               JX = KX
               JY = KY
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY,KX,KY,L)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,A,N,K,ALPHA,ZERO,INCX,INCY) 
+               !$OMP FIRSTPRIVATE(JX,JY) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,KX,KY,L)
               DO 80 J = 1,N
                   TEMP1 = ALPHA*X(JX)
                   TEMP2 = ZERO
@@ -2077,7 +2098,8 @@ SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
 !*        Form  y  when lower triangle of A is stored.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,L,I) 
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,A,N,K,ALPHA,ZERO) PRIVATE(J,TEMP1,TEMP2,L,I) 
               DO 100 J = 1,N
                   TEMP1 = ALPHA*X(J)
                   TEMP2 = ZERO
@@ -2093,7 +2115,9 @@ SUBROUTINE DSBMV(UPLO,N,K,ALPHA,A,LDA,X,INCX,BETA,Y,INCY)
           ELSE
               JX = KX
               JY = KY
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,A) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,JX,JY,L) 
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,A,N,ALPHA,ZERO,INCX,INCY) 
+               !$OMP& FIRSTPRIVATE(JX,JY) PRIVATE(J,TEMP1,TEMP2,IX,IY,I,L) 
               DO 120 J = 1,N
                   TEMP1 = ALPHA*X(JX)
                   TEMP2 = ZERO
@@ -2373,20 +2397,20 @@ SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSP
 !*
 !*     Test the input parameters.
 !*
-!      INFO = 0
-!      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
-!          INFO = 1
-!      ELSE IF (N.LT.0) THEN
-!          INFO = 2
-!      ELSE IF (INCX.EQ.0) THEN
-!          INFO = 6
-!      ELSE IF (INCY.EQ.0) THEN
-!          INFO = 9
- !     END IF
- !     IF (INFO.NE.0) THEN
+      INFO = 0
+      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+          INFO = 1
+      ELSE IF (N.LT.0) THEN
+          INFO = 2
+     ELSE IF (INCX.EQ.0) THEN
+         INFO = 6
+      ELSE IF (INCY.EQ.0) THEN
+          INFO = 9
+      END IF
+      IF (INFO.NE.0) THEN
  !         CALL XERBLA('DSPMV ',INFO)
-!          RETURN
-!      END IF
+          RETURN
+!     END IF
 !*
 !*     Quick return if possible.
 !*
@@ -2447,12 +2471,14 @@ SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSP
 !*        Form  y  when AP contains the upper triangle.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,I,K,KK) 
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(X,AP,N,ZERO,ALPHA) PRIVATE(J,TEMP1,TEMP2,I,K,KK) 
+              !$OMP& REDUCTION(+:Y)
               DO 60 J = 1,N
                   TEMP1 = ALPHA*X(J)
                   TEMP2 = ZERO
                   K = KK
-                  !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  UNROLL PARTIAL(10)
                   DO 50 I = 1,J - 1
                       Y(I) = Y(I) + TEMP1*AP(K)
                       TEMP2 = TEMP2 + AP(K)*X(I)
@@ -2465,13 +2491,15 @@ SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSP
           ELSE
               JX = KX
               JY = KY
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,AP,N,ALPHA,ZERO,INCX,INCY) 
+               !$OMP& PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK) REDUCTION(+:Y)
               DO 80 J = 1,N
                   TEMP1 = ALPHA*X(JX)
                   TEMP2 = ZERO
                   IX = KX
                   IY = KY
-                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  
                   DO 70 K = KK,KK + J - 2
                       Y(IY) = Y(IY) + TEMP1*AP(K)
                       TEMP2 = TEMP2 + AP(K)*X(IX)
@@ -2490,13 +2518,15 @@ SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSP
 !*        Form  y  when AP contains the lower triangle.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE)) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,K,I,KK) 
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+               !$OMP& SHARED(X,AP,N,ALPHA) PRIVATE(J,TEMP1,TEMP2,K,I,KK) 
+               !$OMP& REDUCTION(+:Y,TEMP2) 
               DO 100 J = 1,N
                   TEMP1 = ALPHA*X(J)
                   TEMP2 = ZERO
                   Y(J) = Y(J) + TEMP1*AP(KK)
                   K = KK + 1
-                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  UNROLL PARTIAL(10)
                   DO 90 I = J + 1,N
                       Y(I) = Y(I) + TEMP1*AP(K)
                       TEMP2 = TEMP2 + AP(K)*X(I)
@@ -2509,14 +2539,16 @@ SUBROUTINE DSPMV(UPLO,N,ALPHA,AP,X,INCX,BETA,Y,INCY) !GCC$ ATTRIBUTES hot :: DSP
           ELSE
               JX = KX
               JY = KY
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,AP,N,ALPHA,ZERO) 
+               !$OMP& FIRSTPRIVATE(JX,JY) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,KK)
               DO 120 J = 1,N
                   TEMP1 = ALPHA*X(JX)
                   TEMP2 = ZERO
                   Y(JY) = Y(JY) + TEMP1*AP(KK)
                   IX = JX
                   IY = JY
-                   !$OMP SIMD ALIGNED(Y:64,X,AP) LINEAR(I:1)  REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                  
                   DO 110 K = KK + 1,KK + N - J
                       IX = IX + INCX
                       IY = IY + INCY
@@ -2606,18 +2638,18 @@ SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRI
 !*
 !*     Test the input parameters.
 !*
-!      INFO = 0
-!      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
- !         INFO = 1
- !     ELSE IF (N.LT.0) THEN
- !         INFO = 2
- !     ELSE IF (INCX.EQ.0) THEN
-   !       INFO = 5
-   !   END IF
-    !  IF (INFO.NE.0) THEN
+      INFO = 0
+      IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+          INFO = 1
+      ELSE IF (N.LT.0) THEN
+          INFO = 2
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 5
+      END IF
+      IF (INFO.NE.0) THEN
   !        CALL XERBLA('DSPR  ',INFO)
-  !        RETURN
-   !   END IF
+         RETURN
+     END IF
 !*
 !*     Quick return if possible.
 !*
@@ -2640,7 +2672,9 @@ SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRI
 !*        Form  A  when upper triangle is stored in AP.
 !*
          IF (INCX.EQ.1) THEN
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,AP) PRIVATE(J,TEMP,I,K,KK) 
+            !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+            !$OMP& SHARED(X,N,ALPHA,ZERO) 
+            !$OMP& FIRSTPRIVATE(KK) PRIVATE(J,TEMP,I,K) REDUCTION(+:AP)
               DO 20 J = 1,N
                   IF (X(J).NE.ZERO) THEN
                       TEMP = ALPHA*X(J)
@@ -2656,12 +2690,14 @@ SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRI
               !$OMP END PARALLEL DO    
           ELSE
              JX = KX
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,AP)  PRIVATE(J,TEMP,IX,K,JX,KK) 
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(X,AP,ALPHA,ZERO,N,INCX) 
+                !$OMP& FIRSTPRIVATE(JX) PRIVATE(J,TEMP,IX,K,KK) 
               DO 40 J = 1,N
                   IF (X(JX).NE.ZERO) THEN
                       TEMP = ALPHA*X(JX)
                       IX = KX
-                       !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                       !$OMP SIMD ALIGNED(AP:64,X) 
                       DO 30 K = KK,KK + J - 1
                           AP(K) = AP(K) + X(IX)*TEMP
                           IX = IX + INCX
@@ -2677,7 +2713,8 @@ SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRI
 !*        Form  A  when lower triangle is stored in AP.
 !*
          IF (INCX.EQ.1) THEN
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,AP) PRIVATE(J,TEMP,K,I,KK) 
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(X,AP,N,ALPHA,ZERO) PRIVATE(J,TEMP,K,I,KK) 
               DO 60 J = 1,N
                   IF (X(J).NE.ZERO) THEN
                       TEMP = ALPHA*X(J)
@@ -2693,12 +2730,13 @@ SUBROUTINE DSPR(UPLO,N,ALPHA,X,INCX,AP) !GCC$ ATTRIBUTES hot :: DSPR !GCC$ ATTRI
                  !$OMP END PARALLEL DO 
           ELSE
              JX = KX
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,AP) PRIVATE(J,TEMP,IX,JX,K,KK) 
+               !$OMP PARALLEL DO SCHEDULE(SGUIDED,8) DEFAULT(NONE) 
+               !$OMP& FIRSTPRIVATE(JX) SHARED(X,AP,N,ALPHA,ZERO) PRIVATE(J,TEMP,IX,K,KK) 
               DO 80 J = 1,N
                   IF (X(JX).NE.ZERO) THEN
                       TEMP = ALPHA*X(JX)
                       IX = JX
-                      !$OMP SIMD ALIGNED(AP:64,X) LINEAR(I:1) UNROLL PARTIAL(10)
+                      !$OMP SIMD ALIGNED(AP:64,X) 
                       DO 70 K = KK,KK + N - J
                           AP(K) = AP(K) + X(IX)*TEMP
                           IX = IX + INCX
@@ -2786,20 +2824,20 @@ SUBROUTINE DSPR2(UPLO,N,ALPHA,X,INCX,Y,INCY,AP) !GCC$ ATTRIBUTES hot :: DSPR2 !G
 !*
 !*     Test the input parameters.
 !*
-    !  INFO = 0
-    !  IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
-    !      INFO = 1
-     ! ELSE IF (N.LT.0) THEN
-     !     INFO = 2
-     ! ELSE IF (INCX.EQ.0) THEN
-     !     INFO = 5
-     ! ELSE IF (INCY.EQ.0) THEN
-     !     INFO = 7
-     ! END IF
-     ! IF (INFO.NE.0) THEN
+     INFO = 0
+     IF (.NOT.LSAME(UPLO,'U') .AND. .NOT.LSAME(UPLO,'L')) THEN
+         INFO = 1
+      ELSE IF (N.LT.0) THEN
+          INFO = 2
+      ELSE IF (INCX.EQ.0) THEN
+          INFO = 5
+      ELSE IF (INCY.EQ.0) THEN
+          INFO = 7
+      END IF
+      IF (INFO.NE.0) THEN
      !     CALL XERBLA('DSPR2 ',INFO)
-     !     RETURN
-     ! END IF
+         RETURN
+      END IF
 !*
 !*     Quick return if possible.
 !*
@@ -2832,13 +2870,15 @@ SUBROUTINE DSPR2(UPLO,N,ALPHA,X,INCX,Y,INCY,AP) !GCC$ ATTRIBUTES hot :: DSPR2 !G
 !*        Form  A  when upper triangle is stored in AP.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-             !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,K,I,KK)
+             !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+             !$OMP& SHARED(X,Y,N,ALPHA,ZERO) PRIVATE(J,TEMP1,TEMP2,K,I,KK)
+             !$OMP& REDUCTION(+:AP)
               DO 20 J = 1,N
                   IF ((X(J).NE.ZERO) .OR. (Y(J).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(J)
                       TEMP2 = ALPHA*X(J)
                       K = KK
-                      !$OMP SIMD ALIGNED(AP:64,X,Y) LINEAR(I:1) UNROLL PARTIAL(10)
+                      !$OMP SIMD ALIGNED(AP:64,X,Y) LINEAR(I:1) 
                       DO 10 I = 1,J
                           AP(K) = AP(K) + X(I)*TEMP1 + Y(I)*TEMP2
                           K = K + 1
@@ -2848,14 +2888,17 @@ SUBROUTINE DSPR2(UPLO,N,ALPHA,X,INCX,Y,INCY,AP) !GCC$ ATTRIBUTES hot :: DSPR2 !G
 20            CONTINUE
               !$OMP END PARALLEL DO    
           ELSE
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK)   
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(X,Y,N,ALPHA,ZERO,INCX,INCY) 
+               !$OMP& PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK) 
+               !$REDUCTION(+:AP)
              DO 40 J = 1,N
                 IF ((X(JX).NE.ZERO) .OR. (Y(JY).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(JY)
                       TEMP2 = ALPHA*X(JX)
                       IX = KX
                       IY = KY
-                       !$OMP SIMD ALIGNED(AP:64,X,Y) LINEAR(I:1) UNROLL PARTIAL(10)
+                       !$OMP SIMD ALIGNED(AP:64,X,Y)
                       DO 30 K = KK,KK + J - 1
                           AP(K) = AP(K) + X(IX)*TEMP1 + Y(IY)*TEMP2
                           IX = IX + INCX
@@ -2873,7 +2916,10 @@ SUBROUTINE DSPR2(UPLO,N,ALPHA,X,INCX,Y,INCY,AP) !GCC$ ATTRIBUTES hot :: DSPR2 !G
 !*        Form  A  when lower triangle is stored in AP.
 !*
          IF ((INCX.EQ.1) .AND. (INCY.EQ.1)) THEN
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,K,I,KK) 
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(X,Y,ALPHA,ZERO) 
+                !$OMP& PRIVATE(J,TEMP1,TEMP2,K,I,KK) 
+                !$OMP& REDUCTION(+:AP)
               DO 60 J = 1,N
                   IF ((X(J).NE.ZERO) .OR. (Y(J).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(J)
@@ -2889,14 +2935,16 @@ SUBROUTINE DSPR2(UPLO,N,ALPHA,X,INCX,Y,INCY,AP) !GCC$ ATTRIBUTES hot :: DSPR2 !G
 60            CONTINUE
               !$OMP END PARALLEL DO  
           ELSE
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(X,Y,AP) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK)   
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+                !$OMP& SHARED(X,Y,N,ZERO,ALPHA) PRIVATE(J,TEMP1,TEMP2,IX,IY,K,JX,JY,KK) 
+                !$OMP REDUCTION(+:AP)
               DO 80 J = 1,N
                   IF ((X(JX).NE.ZERO) .OR. (Y(JY).NE.ZERO)) THEN
                       TEMP1 = ALPHA*Y(JY)
                       TEMP2 = ALPHA*X(JX)
                       IX = JX
                       IY = JY
-                        !$OMP SIMD ALIGNED(AP:64,X,Y) LINEAR(I:1) UNROLL PARTIAL(10)
+                        !$OMP SIMD ALIGNED(AP:64,X,Y) 
                       DO 70 K = KK,KK + N - J
                           AP(K) = AP(K) + X(IX)*TEMP1 + Y(IY)*TEMP2
                           IX = IX + INCX
@@ -3108,23 +3156,23 @@ SUBROUTINE DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES ho
 !*
 !*     Test the input parameters.
 !*
- !     INFO = 0
+      INFO = 0
       IF ((.NOT.LSAME(SIDE,'L')) .AND. (.NOT.LSAME(SIDE,'R'))) THEN
- !         INFO = 1
-  !    ELSE IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
- !         INFO = 2
-  !    ELSE IF (M.LT.0) THEN
-  !!        INFO = 3
- ! 1    ELSE IF (N.LT.0) THEN
-  !        INFO = 4
-    !  ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
-    !      INFO = 7
-    !  ELSE IF (LDB.LT.MAX(1,M)) THEN
-    !      INFO = 9
-    !  ELSE IF (LDC.LT.MAX(1,M)) THEN
-    !      INFO = 12
-    !  END IF
-   !   IF (INFO.NE.0) THEN
+          INFO = 1
+      ELSE IF ((.NOT.UPPER) .AND. (.NOT.LSAME(UPLO,'L'))) THEN
+         INFO = 2
+      ELSE IF (M.LT.0) THEN
+         INFO = 3
+     ELSE IF (N.LT.0) THEN
+         INFO = 4
+      ELSE IF (LDA.LT.MAX(1,NROWA)) THEN
+          INFO = 7
+      ELSE IF (LDB.LT.MAX(1,M)) THEN
+          INFO = 9
+      ELSE IF (LDC.LT.MAX(1,M)) THEN
+          INFO = 12
+      END IF
+   !  IF (INFO.NE.0) THEN
     !      CALL XERBLA('DSYMM ',INFO)
          RETURN
      END IF
@@ -3137,19 +3185,19 @@ SUBROUTINE DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES ho
 !*     And when  alpha.eq.zero.
 !*
       IF (ALPHA.EQ.ZERO) THEN
-   !      IF (BETA.EQ.ZERO) THEN
-   !           DO 20 J = 1,N
-   !               DO 10 I = 1,M
-  !                    C(I,J) = ZERO
-  ! 10             CONTINUE
-  ! 20         CONTINUE
-  !        ELSE
-  !            DO 40 J = 1,N
-  !                DO 30 I = 1,M
-  !                    C(I,J) = BETA*C(I,J)
- !  30             CONTINUE
-  ! 40         CONTINUE
-  !        END IF
+         IF (BETA.EQ.ZERO) THEN
+              DO 20 J = 1,N
+                  DO 10 I = 1,M
+                      C(I,J) = ZERO
+   10             CONTINUE
+   20         CONTINUE
+          ELSE
+              DO 40 J = 1,N
+                  DO 30 I = 1,M
+                     C(I,J) = BETA*C(I,J)
+   30             CONTINUE
+   40         CONTINUE
+         END IF
           RETURN
       END IF
 !*
@@ -3160,12 +3208,14 @@ SUBROUTINE DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES ho
 !*        Form  C := alpha*A*B + beta*C.
 !*
          IF (UPPER) THEN
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(B,C,A) PRIVATE(J,I,TEMP1,TEMP2,K) 
+              !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+              !$OMP& COLLAPSE(2) SHARED(B,C,A,N,M,ZERO,ALPHA,BETA) PRIVATE(J,I,TEMP1,TEMP2,K) 
+              !$OMP& REDUCTION(+:TEMP2)
               DO 70 J = 1,N
                   DO 60 I = 1,M
                       TEMP1 = ALPHA*B(I,J)
                       TEMP2 = ZERO
-                      !$OMP SIMD ALIGNED(C:64,B,A) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                      !$OMP SIMD ALIGNED(C:64,B,A)  UNROLL PARTIAL(10)
                       DO 50 K = 1,I - 1
                           C(K,J) = C(K,J) + TEMP1*A(K,I)
                           TEMP2 = TEMP2 + B(K,J)*A(K,I)
@@ -3180,12 +3230,15 @@ SUBROUTINE DSYMM(SIDE,UPLO,M,N,ALPHA,A,LDA,B,LDB,BETA,C,LDC) !GCC$ ATTRIBUTES ho
 70             CONTINUE
                 !$OMP END PARALLEL DO      
           ELSE
-              !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(C,B,A) PRIVATE(J,I,TEMP1,TEMP2,K)       
+              !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+              !$OMP& SHARED(B,A,N,M,ALPHA,ZERO,BETA) 
+              !$OMP& PRIVATE(J,I,TEMP1,TEMP2,K)   
+              !$OMP REDUCTION(+:C)
               DO 100 J = 1,N
                   DO 90 I = M,1,-1
                       TEMP1 = ALPHA*B(I,J)
                       TEMP2 = ZERO
-                       !$OMP SIMD ALIGNED(C:64,B,A) REDUCTION(+:TEMP2) UNROLL PARTIAL(10)
+                       !$OMP SIMD ALIGNED(C:64,B,A) UNROLL PARTIAL(10)
                       DO 80 K = I + 1,M
                           C(K,J) = C(K,J) + TEMP1*A(K,I)
                           TEMP2 = TEMP2 + B(K,J)*A(K,I)
