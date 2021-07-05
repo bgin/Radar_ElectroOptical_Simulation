@@ -22335,33 +22335,33 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-     ! IF( .NOT.LLERI .AND. .NOT.LSAME( LERI, 'R' ) ) THEN
-     !    INFO = -1
-     ! ELSE IF( M.LT.0 ) THEN
-     !    INFO = -2
-    !  ELSE IF( P.LT.0 ) THEN
-     !    INFO = -3
-     ! ELSE IF( INDLIM.LT.1 ) THEN
-    !     INFO = -4
-     ! ELSE IF( ( LLERI .AND. LDPCO1.LT.MAX( 1, P ) ) .OR.
-    ! $    ( .NOT.LLERI .AND. LDPCO1.LT.MAX( 1, M ) ) ) THEN
-    !     INFO = -6
-    !  ELSE IF( ( LLERI .AND. LDPCO2.LT.MAX( 1, P ) ) .OR.
-   !  $    ( .NOT.LLERI .AND. LDPCO2.LT.MAX( 1, M ) ) ) THEN
-    !     INFO = -7
-    !  ELSE IF( LDQCO1.LT.MAX( 1, MPLIM ) ) THEN
-    !     INFO = -9
-    !  ELSE IF( LDQCO2.LT.MAX( 1, MPLIM ) ) THEN
-    !     INFO = -10
-    !  END IF
+     IF( .NOT.LLERI .AND. .NOT.LSAME( LERI, 'R' ) ) THEN
+        INFO = -1
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -2
+     ELSE IF( P.LT.0 ) THEN
+        INFO = -3
+      ELSE IF( INDLIM.LT.1 ) THEN
+         INFO = -4
+     ELSE IF( ( LLERI .AND. LDPCO1.LT.MAX( 1, P ) ) .OR. &
+         ( .NOT.LLERI .AND. LDPCO1.LT.MAX( 1, M ) ) ) THEN
+        INFO = -6
+      ELSE IF( ( LLERI .AND. LDPCO2.LT.MAX( 1, P ) ) .OR. &
+       ( .NOT.LLERI .AND. LDPCO2.LT.MAX( 1, M ) ) ) THEN
+         INFO = -7
+      ELSE IF( LDQCO1.LT.MAX( 1, MPLIM ) ) THEN
+         INFO = -9
+      ELSE IF( LDQCO2.LT.MAX( 1, MPLIM ) ) THEN
+         INFO = -10
+      END IF
 !C
-  !    IF ( INFO.NE.0 ) THEN
+     IF ( INFO.NE.0 ) THEN
 !C
 !C        Error return.
 !C
-!         CALL XERBLA( 'TC01OD', -INFO )
-!         RETURN
-!      END IF
+!        CALL XERBLA( 'TC01OD', -INFO )
+        RETURN
+    END IF
 !C
 !C     Quick return if possible.
 !C
@@ -22649,29 +22649,29 @@ C
 !C     Decode and Test input parameters.
 !C
       INFO = 0
-     ! IF( N.LT.0 ) THEN
-     !    INFO = -1
-     ! ELSE IF( M.LT.0 ) THEN
-     !    INFO = -2
-     ! ELSE IF( NP.LT.0 ) THEN
-     !    INFO = -3
-    !  ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
-     !    INFO = -5
-     ! ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
-     !    INFO = -7
-     ! ELSE IF( LDC.LT.MAX( 1, NP ) ) THEN
-     !    INFO = -9
-     ! ELSE IF( FACTOR.LT.ONE ) THEN
-     !    INFO = -10
-     ! ELSE IF( LDAK.LT.MAX( 1, N ) ) THEN
-     !    INFO = -12
-     ! ELSE IF( LDBK.LT.MAX( 1, N ) ) THEN
-     !    INFO = -14
-     ! ELSE IF( LDCK.LT.MAX( 1, M ) ) THEN
-     !    INFO = -16
-     ! ELSE IF( LDDK.LT.MAX( 1, M ) ) THEN
-    !     INFO = -18
-    !  END IF
+      IF( N.LT.0 ) THEN
+        INFO = -1
+      ELSE IF( M.LT.0 ) THEN
+        INFO = -2
+      ELSE IF( NP.LT.0 ) THEN
+        INFO = -3
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+        INFO = -5
+      ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+        INFO = -7
+      ELSE IF( LDC.LT.MAX( 1, NP ) ) THEN
+        INFO = -9
+     ELSE IF( FACTOR.LT.ONE ) THEN
+         INFO = -10
+     ELSE IF( LDAK.LT.MAX( 1, N ) ) THEN
+         INFO = -12
+     ELSE IF( LDBK.LT.MAX( 1, N ) ) THEN
+        INFO = -14
+     ELSE IF( LDCK.LT.MAX( 1, M ) ) THEN
+        INFO = -16
+     ELSE IF( LDDK.LT.MAX( 1, M ) ) THEN
+        INFO = -18
+      END IF
 !C
 !C     Compute workspace.
 !C
@@ -23508,45 +23508,45 @@ C
       M11  = M1 - NP2
 !C
       INFO = 0
-     ! IF ( JOB.LT.1 .OR. JOB.GT.4 ) THEN
-     !    INFO = -1
-     ! ELSE IF( N.LT.0 ) THEN
-    !     INFO = -2
-    !  ELSE IF( M.LT.0 ) THEN
-    !     INFO = -3
-    !  ELSE IF( NP.LT.0 ) THEN
-    !     INFO = -4
-     ! ELSE IF( NCON.LT.0 .OR. M1.LT.0 .OR. M2.GT.NP1 ) THEN
-    !     INFO = -5
-    !  ELSE IF( NMEAS.LT.0 .OR. NP1.LT.0 .OR. NP2.GT.M1 ) THEN
-     !    INFO = -6
-    !  ELSE IF( GAMMA.LT.ZERO ) THEN
-    !     INFO = -7
-    !  ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
-    !     INFO = -9
-    !  ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
-   !      INFO = -11
-   !   ELSE IF( LDC.LT.MAX( 1, NP ) ) THEN
-   !      INFO = -13
-    !  ELSE IF( LDD.LT.MAX( 1, NP ) ) THEN
-   !      INFO = -15
-   !   ELSE IF( LDAK.LT.MAX( 1, N ) ) THEN
-    !     INFO = -17
-   !   ELSE IF( LDBK.LT.MAX( 1, N ) ) THEN
-    !     INFO = -19
-   !   ELSE IF( LDCK.LT.MAX( 1, M2 ) ) THEN
-       !  INFO = -21
-    !  ELSE IF( LDDK.LT.MAX( 1, M2 ) ) THEN
-       !  INFO = -23
-    !  ELSE IF( LDAC.LT.MAX( 1, 2*N ) ) THEN
-       !  INFO = -25
-    !  ELSE IF( LDBC.LT.MAX( 1, 2*N ) ) THEN
-     !    INFO = -27
-    !  ELSE IF( LDCC.LT.MAX( 1, NP1 ) ) THEN
-    !     INFO = -29
-    !  ELSE IF( LDDC.LT.MAX( 1, NP1 ) ) THEN
-    !     INFO = -31
-    !  ELSE
+     IF ( JOB.LT.1 .OR. JOB.GT.4 ) THEN
+        INFO = -1
+      ELSE IF( N.LT.0 ) THEN
+        INFO = -2
+     ELSE IF( M.LT.0 ) THEN
+         INFO = -3
+     ELSE IF( NP.LT.0 ) THEN
+       INFO = -4
+      ELSE IF( NCON.LT.0 .OR. M1.LT.0 .OR. M2.GT.NP1 ) THEN
+        INFO = -5
+     ELSE IF( NMEAS.LT.0 .OR. NP1.LT.0 .OR. NP2.GT.M1 ) THEN
+         INFO = -6
+     ELSE IF( GAMMA.LT.ZERO ) THEN
+         INFO = -7
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -9
+     ELSE IF( LDB.LT.MAX( 1, N ) ) THEN
+        INFO = -11
+      ELSE IF( LDC.LT.MAX( 1, NP ) ) THEN
+         INFO = -13
+      ELSE IF( LDD.LT.MAX( 1, NP ) ) THEN
+        INFO = -15
+     ELSE IF( LDAK.LT.MAX( 1, N ) ) THEN
+         INFO = -17
+      ELSE IF( LDBK.LT.MAX( 1, N ) ) THEN
+        INFO = -19
+     ELSE IF( LDCK.LT.MAX( 1, M2 ) ) THEN
+         INFO = -21
+      ELSE IF( LDDK.LT.MAX( 1, M2 ) ) THEN
+        INFO = -23
+      ELSE IF( LDAC.LT.MAX( 1, 2*N ) ) THEN
+        INFO = -25
+      ELSE IF( LDBC.LT.MAX( 1, 2*N ) ) THEN
+         INFO = -27
+      ELSE IF( LDCC.LT.MAX( 1, NP1 ) ) THEN
+         INFO = -29
+      ELSE IF( LDDC.LT.MAX( 1, NP1 ) ) THEN
+         INFO = -31
+      ELSE
 !C
 !C        Compute workspace.
 !C Nonsenical bullshit!!
@@ -23633,7 +23633,7 @@ C
       CALL DLACPY( 'Full', NP, M, D, LDD, DWORK( IWD ), NP )
 !C
 !C     Transform the system so that D12 and D21 satisfy the formulas
-C!     in the computation of the Hinf optimal controller.
+!C!     in the computation of the Hinf optimal controller.
 !C     Workspace:  need   LW1 + MAX(1,LWP1,LWP2,LWP3,LWP4),
 !C                 prefer larger,
 !C                 where
