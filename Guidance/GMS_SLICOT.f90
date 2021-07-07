@@ -26117,54 +26117,54 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-   !   IF( .NOT.( JBXA .OR. JOBC .OR. JOBE ) ) THEN
-   !      INFO = -1
-    !  ELSE IF( .NOT.( DISCR .OR. LSAME( DICO, 'C' ) ) ) THEN
-   !      INFO = -2
-    !  ELSE IF( DISCR .AND. JBXA ) THEN
-   !      IF( .NOT.( LHINV .OR. LSAME( HINV, 'I' ) ) )
-    ! $      INFO = -3
-   !   END IF
-   !   IF( INFO.EQ.0 ) THEN
-    !     IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR.
-    ! $                          LSAME( TRANA, 'C' ) ) ) THEN
-    !        INFO = -4
-    !     ELSE IF( .NOT.( LUPLO .OR. LSAME( UPLO, 'L' ) ) )
-   !  $      THEN
-       !     INFO = -5
-       !  ELSE IF( JBXA ) THEN
-       !     IF( .NOT.( LSCAL .OR. LSAME( SCAL, 'N' ) ) ) THEN
-       !        INFO = -6
-       !     ELSE IF( .NOT.( LSORT .OR. LSAME( SORT, 'U' ) ) ) THEN
-      !         INFO = -7
-      !      END IF
-      !   END IF
-      !   IF( INFO.EQ.0 .AND. .NOT.JOBX ) THEN
-      !      IF( .NOT.( NOFACT .OR. LSAME( FACT, 'F' ) ) ) THEN
-      !         INFO = -8
-      !      ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
-      !         INFO = -9
-      !      END IF
-      !   END IF
-      !   IF( INFO.EQ.0 ) THEN
-     !       IF( N.LT.0 ) THEN
-     ! !         INFO = -10
-     !       ELSE IF( LDA.LT.1 .OR. ( ( JBXA .OR. NOFACT .OR. UPDATE )
-    ! $         .AND. LDA.LT.N ) ) THEN
-        !       INFO = -12
-        !    ELSE IF( LDT.LT.1 .OR. ( .NOT. JOBX .AND. LDT.LT.N ) ) THEN
-        !       INFO = -14
-       ! !    ELSE IF( LDV.LT.1 .OR. ( .NOT. JOBX .AND. LDV.LT.N ) ) THEN
-         !      INFO = -16
-       !     ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
-        !       INFO = -18
-         !   ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
-         !      INFO = -20
-        !    ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
-        !       INFO = -22
-        !    ELSE IF( LDS.LT.1 .OR. ( JBXA .AND. LDS.LT.N2 ) ) THEN
-         !      INFO = -29
-         !   ELSE
+      IF( .NOT.( JBXA .OR. JOBC .OR. JOBE ) ) THEN
+        INFO = -1
+     ELSE IF( .NOT.( DISCR .OR. LSAME( DICO, 'C' ) ) ) THEN
+       INFO = -2
+     ELSE IF( DISCR .AND. JBXA ) THEN
+        IF( .NOT.( LHINV .OR. LSAME( HINV, 'I' ) ) ) &
+         INFO = -3
+     END IF
+     IF( INFO.EQ.0 ) THEN
+        IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR. &
+                             LSAME( TRANA, 'C' ) ) ) THEN
+           INFO = -4
+        ELSE IF( .NOT.( LUPLO .OR. LSAME( UPLO, 'L' ) ) ) &
+        THEN
+            INFO = -5
+         ELSE IF( JBXA ) THEN
+            IF( .NOT.( LSCAL .OR. LSAME( SCAL, 'N' ) ) ) THEN
+               INFO = -6
+            ELSE IF( .NOT.( LSORT .OR. LSAME( SORT, 'U' ) ) ) THEN
+              INFO = -7
+           END IF
+         END IF
+        IF( INFO.EQ.0 .AND. .NOT.JOBX ) THEN
+           IF( .NOT.( NOFACT .OR. LSAME( FACT, 'F' ) ) ) THEN
+              INFO = -8
+            ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
+              INFO = -9
+            END IF
+        END IF
+        IF( INFO.EQ.0 ) THEN
+           IF( N.LT.0 ) THEN
+             INFO = -10
+            ELSE IF( LDA.LT.1 .OR. ( ( JBXA .OR. NOFACT .OR. UPDATE ) &
+            .AND. LDA.LT.N ) ) THEN
+              INFO = -12
+           ELSE IF( LDT.LT.1 .OR. ( .NOT. JOBX .AND. LDT.LT.N ) ) THEN
+              INFO = -14
+           ELSE IF( LDV.LT.1 .OR. ( .NOT. JOBX .AND. LDV.LT.N ) ) THEN
+              INFO = -16
+           ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
+              INFO = -18
+            ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+              INFO = -20
+           ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+              INFO = -22
+           ELSE IF( LDS.LT.1 .OR. ( JBXA .AND. LDS.LT.N2 ) ) THEN
+              INFO = -29
+           ELSE
                IF( JBXA ) THEN
                   IF( LDWORK.LT.5 + MAX( 1, 4*NN + 8*N ) ) &
                      INFO = -32
@@ -26718,7 +26718,8 @@ C
 !C
 !C        Column scaling, no row scaling.
          !C
-         !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(A,C) PRIVATE(J,CJ,I)
+         !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+         !$OMP& COLLAPSE(2) SHARED(A,C,N,M) PRIVATE(J,CJ,I)
          DO 20 J = 1, N
             CJ = C(J)
             !$OMP SIMD ALIGNED(A:64,C) LINEAR(I:1) UNROLL PARTIAL(6)
@@ -26730,7 +26731,8 @@ C
 !C
 !C        Row scaling, no column scaling.
          !C
-          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(A,R) PRIVATE(J,I)
+          !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+          !$OMP& COLLAPSE(2) SHARED(A,R,N,M) PRIVATE(J,I)
          DO 40 J = 1, N
              !$OMP SIMD ALIGNED(A:64,R) LINEAR(I:1) UNROLL PARTIAL(6)
             DO 30 I = 1, M
@@ -26741,7 +26743,8 @@ C
 !C
 !C        Row and column scaling.
          !C
-          !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(A,R,C) PRIVATE(J,CJ,I)
+          !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+          !$OMP& COLLAPSE(2) SHARED(A,R,C,N,M) PRIVATE(J,CJ,I)
          DO 60 J = 1, N
             CJ = C(J)
               !$OMP SIMD ALIGNED(A:64,R,C) LINEAR(I:1) UNROLL PARTIAL(6)
@@ -27122,23 +27125,23 @@ C
 !C
 !C     Test the input parameters.
 !C
-     ! IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
-    ! $     THEN
-    !     INFO = -1
-    !  ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT.
-    ! $                                LSAME( TRANS, 'C' ) ) THEN
-    !     INFO = -2
-    !  ELSE IF( N.LT.0 ) THEN
-    !!     INFO = -3
-    !!  ELSE IF( NRHS.LT.0 ) THEN
-   !      INFO = -4
-   !   ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
-   !      INFO = -6
-   !   ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
-   !!      INFO = -8
-   !   ELSE IF( LSAME( FACT, 'F' ) .AND. .NOT.
-   !  $         ( ROWEQU .OR. COLEQU .OR. LSAME( EQUED, 'N' ) ) ) THEN
-   !      INFO = -10
+      IF( .NOT.NOFACT .AND. .NOT.EQUIL .AND. .NOT.LSAME( FACT, 'F' ) )
+         THEN
+         INFO = -1
+      ELSE IF( .NOT.NOTRAN .AND. .NOT.LSAME( TRANS, 'T' ) .AND. .NOT. &
+                                   LSAME( TRANS, 'C' ) ) THEN
+         INFO = -2
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( NRHS.LT.0 ) THEN
+         INFO = -4
+      ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+         INFO = -6
+      ELSE IF( LDAF.LT.MAX( 1, N ) ) THEN
+         INFO = -8
+      ELSE IF( LSAME( FACT, 'F' ) .AND. .NOT. &
+            ( ROWEQU .OR. COLEQU .OR. LSAME( EQUED, 'N' ) ) ) THEN
+         INFO = -10
       
          IF( ROWEQU ) THEN
             RCMIN = BIGNUM
@@ -27204,7 +27207,8 @@ C
 !C
       IF( NOTRAN ) THEN
          IF( ROWEQU ) THEN
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) COLLAPSE(2) SHARED(B,R) PRIVATE(J,I)
+            !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+            !$OMP& COLLAPSE(2) SHARED(B,R,NRHS,N) PRIVATE(J,I)
             DO 40 J = 1, NRHS
                !$OMP SIMD ALIGNED(B:64,R) LINEAR(I:1) UNROLL PARTIAL(6)
                DO 30 I = 1, N
@@ -27213,7 +27217,8 @@ C
    40       CONTINUE
          END IF
       ELSE IF( COLEQU ) THEN
-            !$OMP PARALLEL DO SCHEDULE(STATIC,1) DEFAULT(NONE) COLLAPSE(2) SHARED(B,C) PRIVATE(J,I)
+            !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+            !$OMP& COLLAPSE(2) SHARED(B,C,NRHS,N) PRIVATE(J,I)
          DO 60 J = 1, NRHS
               !$OMP SIMD ALIGNED(B:64,C) LINEAR(I:1) UNROLL PARTIAL(6)
             DO 50 I = 1, N
@@ -27296,7 +27301,8 @@ C
 !C
       IF( NOTRAN ) THEN
          IF( COLEQU ) THEN
-             !$OMP PARALLEL DO SCHEDULE(STATIC,1) DEFAULT(NONE) COLLAPSE(2) SHARED(X,C) PRIVATE(J,I)
+             !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+             !$OMP& COLLAPSE(2) SHARED(X,C,NRHS,N) PRIVATE(J,I)
             DO 80 J = 1, NRHS
                 !$OMP SIMD ALIGNED(X:64,C) LINEAR(I:1) UNROLL PARTIAL(6)
                DO 70 I = 1, N
@@ -27308,7 +27314,8 @@ C
    90       CONTINUE
          END IF
       ELSE IF( ROWEQU ) THEN
-          !$OMP PARALLEL DO SCHEDULE(STATIC,1) DEFAULT(NONE) COLLAPSE(2) SHARED(X,R) PRIVATE(J,I)
+          !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+          !$OMP& COLLAPSE(2) SHARED(X,R,NRHS,N) PRIVATE(J,I)
          DO 110 J = 1, NRHS
              !$OMP SIMD ALIGNED(X:64,R) LINEAR(I:1) UNROLL PARTIAL(6)
             DO 100 I = 1, N
@@ -27719,33 +27726,33 @@ C
       END IF
 !C
       INFO = 0
-     ! IF( .NOT.( JOBB .OR. JOBC .OR. JOBE ) ) THEN
-     !    INFO = -1
-     ! ELSE IF( .NOT.( NOFACT .OR. LSAME( FACT,   'F' ) ) ) THEN
-     !    INFO = -2
-     ! ELSE IF( .NOT.( NOTRNA .OR. LSAME( TRANA,  'T' ) .OR.
-    ! $                            LSAME( TRANA,  'C' ) ) ) THEN
-     !    INFO = -3
-     ! ELSE IF( .NOT.( LOWER  .OR. LSAME( UPLO,   'U' ) ) ) THEN
-     !    INFO = -4
-    !  ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
-     !    INFO = -5
-    !  ELSE IF( N.LT.0 ) THEN
-     !    INFO = -6
-     ! ELSE IF( LDA.LT.1 .OR.
-   !  $       ( LDA.LT.N .AND. ( UPDATE .OR. NOFACT ) ) ) THEN
-   ! !     INFO = -8
-    !  ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
-     !    INFO = -10
-     ! ELSE IF( LDU.LT.1 .OR. ( LDU.LT.N .AND. UPDATE ) ) THEN
-     !    INFO = -12
-     ! ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
-    !     INFO = -14
-    !  ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
-    !     INFO = -16
-    !  ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
-    !     INFO = -18
-    !ELSE
+      IF( .NOT.( JOBB .OR. JOBC .OR. JOBE ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( NOFACT .OR. LSAME( FACT,   'F' ) ) ) THEN
+         INFO = -2
+      ELSE IF( .NOT.( NOTRNA .OR. LSAME( TRANA,  'T' ) .OR. &
+                                LSAME( TRANA,  'C' ) ) ) THEN
+         INFO = -3
+      ELSE IF( .NOT.( LOWER  .OR. LSAME( UPLO,   'U' ) ) ) THEN
+         INFO = -4
+      ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
+         INFO = -5
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -6
+      ELSE IF( LDA.LT.1 .OR. &
+          ( LDA.LT.N .AND. ( UPDATE .OR. NOFACT ) ) ) THEN
+       INFO = -8
+      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -10
+      ELSE IF( LDU.LT.1 .OR. ( LDU.LT.N .AND. UPDATE ) ) THEN
+         INFO = -12
+      ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
+         INFO = -14
+      ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+        INFO = -16
+      ELSE IF( LDX.LT.MAX( 1, N ) ) THEN
+         INFO = -18
+    ELSE
          LQUERY = LDWORK.EQ.-1
          IF( UPDATE ) THEN
             SJOB = 'V'
@@ -28054,6 +28061,8 @@ C
 !!C                 + abs(X)*abs(op(T))) + 2*(n+1)*abs(X)*abs(G)*abs(X)),
 !C        where EPS is the machine precision.
 !C
+         !$OMP PARALLEL DO DEFUALT(NONE) SCHEDULE(STATIC,8) SHARED(N,DWORK,IXBS,X)
+         !$OMP& PRIVATE(J,I) COLLAPSE(2)
          DO 50 J = 1, N
             !$OMP SIMD ALIGNED(DWORK:64,X) LINEAR(I:1) UNROLL PARTIAL(8)
             DO 40 I = 1, N
@@ -28062,6 +28071,8 @@ C
    50    CONTINUE
 !C
          IF( LOWER ) THEN
+           !$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(GUIDED,8) SHARED(N,DWORK,IRES,TEMP,Q)
+           !$OMP& PRIVATE(J,I)
             DO 70 J = 1, N
                 !$OMP SIMD ALIGNED(DWORK:64,X,Q) LINEAR(I:1) 
                DO 60 I = J, N
@@ -28070,6 +28081,8 @@ C
    60          CONTINUE
    70       CONTINUE
          ELSE
+            !$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(GUIDED,8)
+            !$OMP& SHARED(N,DWORK,ORES,TEMP,Q) PRIVATE(J,I)
             DO 90 J = 1, N
                 !$OMP SIMD ALIGNED(DWORK:64,X,Q) LINEAR(I:1) 
                DO 80 I = 1, J
@@ -28080,7 +28093,8 @@ C
          END IF
 
          IF( UPDATE ) THEN
-
+            !$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+            !$OMP& SHARED(N,DWORK,IABS) PRIVATE(J,I) COLLAPSE(2)
             DO 110 J = 1, N
                DO 100 I = 1, N
                   DWORK( IABS+(J-1)*N+I ) = &
@@ -28091,7 +28105,8 @@ C
             CALL DSYR2K( UPLO, TRANAT, N, N, EPSN, DWORK( IABS+1 ), N,
                         DWORK( IXBS+1 ), N, ONE,  DWORK( IRES+1 ), N )
          ELSE
-
+            !$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(GUIDED,8)
+            !$OMP& SHARED(N,DWORK,IABS,T) PRIVATE(J,I)
             DO 130 J = 1, N
                 !$OMP SIMD ALIGNED(DWORK:64,T) LINEAR(I:1) 
                DO 120 I = 1, MIN( J+1, N )
@@ -28124,6 +28139,8 @@ C
          END IF
 
          IF( LOWER ) THEN
+          !$OMP PARALLEL DO DEFAULT(NONE) SHEDULE(STATIC,8)
+          !$OMP& SHARED(N,DWORK,IABS,G) PRIVATE(I,J) COLLAPSE(2)
             DO 170 J = 1, N
                 !$OMP SIMD ALIGNED(DWORK:64,G) LINEAR(I:1)
                DO 160 I = J, N
@@ -28131,6 +28148,8 @@ C
   160          CONTINUE
   170       CONTINUE
          ELSE
+           !$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+           !$OMP& SHARED(N,DWORK,IABS,G) PRIVATE(I,J) COLLAPSE(2)
             DO 190 J = 1, N
                 !$OMP SIMD ALIGNED(DWORK:64,G) LINEAR(I:1) 
                DO 180 I = 1, J
