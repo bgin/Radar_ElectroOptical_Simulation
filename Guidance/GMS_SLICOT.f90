@@ -20419,29 +20419,29 @@ C
 !C
       NN   = N*N
       INFO = 0
-!      IF( .NOT. ( WANTS .OR. WANTT .OR. LSAME( JOB, 'B' ) ) ) THEN
-!         INFO = -1
-      !ELSE IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR.
-!     $                            LSAME( TRANA, 'C' ) ) ) THEN
-!         INFO = -2
-!      ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
-!         INFO = -3
-!      ELSE IF( N.LT.0 ) THEN
-!         INFO = -4
-!      ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
-!         INFO = -6
- !     ELSE IF( LDU.LT.1 .OR. ( UPDATE .AND. LDU.LT.N ) ) THEN
-!         INFO = -8
-!      ELSE IF( LDX.LT.1 .OR. ( .NOT.WANTS .AND. LDX.LT.N ) ) THEN
-!         INFO = -10
-!      ELSE IF( LDWORK.LT.2*NN ) THEN
-!         INFO = -15
-!      END IF
+     IF( .NOT. ( WANTS .OR. WANTT .OR. LSAME( JOB, 'B' ) ) ) THEN
+        INFO = -1
+      ELSE IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR. &
+                           LSAME( TRANA, 'C' ) ) ) THEN
+         INFO = -2
+     ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+        INFO = -4
+     ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+        INFO = -6
+     ELSE IF( LDU.LT.1 .OR. ( UPDATE .AND. LDU.LT.N ) ) THEN
+        INFO = -8
+     ELSE IF( LDX.LT.1 .OR. ( .NOT.WANTS .AND. LDX.LT.N ) ) THEN
+        INFO = -10
+     ELSE IF( LDWORK.LT.2*NN ) THEN
+        INFO = -15
+     END IF
 !C
-!      IF( INFO.NE.0 ) THEN
+     IF( INFO.NE.0 ) THEN
 !         CALL XERBLA( 'SB03QY', -INFO )
-!         RETURN
-!      END IF
+        RETURN
+     END IF
 !C
 !C     Quick return if possible.
 !C
@@ -21492,19 +21492,19 @@ C
 !C     .. External Subroutines ..
 !      EXTERNAL          XERBLA
 !C     .. Intrinsic Functions ..
-!      INTRINSIC         MAX
+      INTRINSIC         MAX
 !C     .. Executable Statements ..
 !C
       INFO = 0
 !C
 !C     Test the input scalar arguments.
 !C
-!      IF( NC.LT.0 ) THEN
-!         INFO = -1
-!      ELSE IF( NB.LT.0 ) THEN
-!         INFO = -2
-!      ELSE IF( N.LT.0 ) THEN
-!         INFO = -3
+     IF( NC.LT.0 ) THEN
+        INFO = -1
+     ELSE IF( NB.LT.0 ) THEN
+         INFO = -2
+     ELSE IF( N.LT.0 ) THEN
+        INFO = -3
       IF( LDH.LT.MAX( 1, NC ) ) THEN
          INFO = -8
       END IF
@@ -21998,34 +21998,34 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-   !   IF( .NOT.LLERI .AND. .NOT.LSAME( LERI, 'R' ) ) THEN
-    !     INFO = -1
-    !  ELSE IF( M.LT.0 ) THEN
-    !     INFO = -2
-    !  ELSE IF( P.LT.0 ) THEN
-    !     INFO = -3
-    !  ELSE IF( ( LLERI .AND. LDPCO1.LT.MAX( 1, P ) ) .OR.
-    ! $    ( .NOT.LLERI .AND. LDPCO1.LT.MAX( 1, M ) ) ) THEN
-    !     INFO = -7
-   !   ELSE IF( ( LLERI .AND. LDPCO2.LT.MAX( 1, P ) ) .OR.
-   !  $    ( .NOT.LLERI .AND. LDPCO2.LT.MAX( 1, M ) ) ) THEN
-   !      INFO = -8
-   !   ELSE IF( ( LLERI .AND. LDQCO1.LT.MAX( 1, P ) ) .OR.
-   !  $    ( .NOT.LLERI .AND. LDQCO1.LT.MAX( 1, M, P ) ) ) THEN
-   !      INFO = -10
-  !    ELSE IF( ( LLERI .AND. LDQCO2.LT.MAX( 1, M ) ) .OR.
-  !   $    ( .NOT.LLERI .AND. LDQCO2.LT.MAX( 1, MPLIM ) ) ) THEN
-   !      INFO = -11
-    !  ELSE IF( ( LLERI .AND. LDCFRE.LT.MAX( 1, P ) ) .OR.
-    ! $    ( .NOT.LLERI .AND. LDCFRE.LT.MAX( 1, MPLIM ) ) ) THEN
-    !     INFO = -14
-    !  END IF
+     IF( .NOT.LLERI .AND. .NOT.LSAME( LERI, 'R' ) ) THEN
+         INFO = -1
+      ELSE IF( M.LT.0 ) THEN
+         INFO = -2
+      ELSE IF( P.LT.0 ) THEN
+         INFO = -3
+      ELSE IF( ( LLERI .AND. LDPCO1.LT.MAX( 1, P ) ) .OR. &
+         ( .NOT.LLERI .AND. LDPCO1.LT.MAX( 1, M ) ) ) THEN
+        INFO = -7
+      ELSE IF( ( LLERI .AND. LDPCO2.LT.MAX( 1, P ) ) .OR. &
+         ( .NOT.LLERI .AND. LDPCO2.LT.MAX( 1, M ) ) ) THEN
+         INFO = -8
+      ELSE IF( ( LLERI .AND. LDQCO1.LT.MAX( 1, P ) ) .OR. &
+         ( .NOT.LLERI .AND. LDQCO1.LT.MAX( 1, M, P ) ) ) THEN
+        INFO = -10
+      ELSE IF( ( LLERI .AND. LDQCO2.LT.MAX( 1, M ) ) .OR. &
+        ( .NOT.LLERI .AND. LDQCO2.LT.MAX( 1, MPLIM ) ) ) THEN
+          INFO = -11
+       ELSE IF( ( LLERI .AND. LDCFRE.LT.MAX( 1, P ) ) .OR. &
+         ( .NOT.LLERI .AND. LDCFRE.LT.MAX( 1, MPLIM ) ) ) THEN
+           INFO = -14
+      END IF
 
-    !  IF ( INFO.NE.0 ) THEN
+     IF ( INFO.NE.0 ) THEN
 
    
-     !    RETURN
-    !  END IF
+         RETURN
+      END IF
 !C
 !C     Quick return if possible.
 !C
@@ -22063,7 +22063,8 @@ C
 !C
 !C     Calculate the complex denominator matrix P(SVAL), row by row.
       !C
-      !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(ZWORK,PCOEFF,INDEX) PRIVATE(I,IJ,J,K)
+      !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+      !$OMP& SHARED(ZWORK,PCOEFF,INDEX,PWORK,SVAL,ZERO) PRIVATE(I,IJ,J,K)
       DO 50 I = 1, PWORK
          IJ = I
 !C
@@ -22119,7 +22120,8 @@ C
 !C
 !C           Calculate the complex numerator matrix Q(SVAL), row by row.
             !C
-            !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(CFREQR,QCOEFF,INDEX) PRIVATE(I,J,K)
+            !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+            !$OMP& SHARED(CFREQR,QCOEFF,INDEX,PWORK,MWORK,SVAL,ZERO) PRIVATE(I,J,K)
             DO 90 I = 1, PWORK
 !C
                DO 60 J = 1, MWORK
