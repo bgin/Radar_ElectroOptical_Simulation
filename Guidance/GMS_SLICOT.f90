@@ -28415,40 +28415,40 @@ C
 !C
 !C     Test the input scalar arguments.
 !C
-    !  IF( .NOT.DISCR .AND. .NOT.LSAME( DICO, 'C' ) ) THEN
-    !     INFO = -1
-    !  ELSE IF( DISCR ) THEN
-    !     IF( .NOT.LHINV .AND. .NOT.LSAME( HINV, 'I' ) )
-    ! $      INFO = -2
-    !  ELSE IF( INFO.EQ.0 ) THEN
-    !     IF( .NOT.NOTRNA .AND. .NOT.LSAME( TRANA, 'T' )
-    ! $                   .AND. .NOT.LSAME( TRANA, 'C' ) ) THEN
-    !        INFO = -3
-    !     ELSE IF( .NOT.LUPLO .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
-     !       INFO = -4
-     !    ELSE IF( N.LT.0 ) THEN
-      !      INFO = -5
-      !   ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
-      !      INFO = -7
-       !  ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
-       !     INFO = -9
-      !   ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
-      !      INFO = -11
-      !   ELSE IF( LDS.LT.MAX( 1, N2 ) ) THEN
-      !      INFO = -13
-      !   ELSE IF( ( LDWORK.LT.0 ) .OR.
-   ! !! $            ( DISCR .AND. LDWORK.LT.MAX( 2, 6*N ) ) ) THEN
+      IF( .NOT.DISCR .AND. .NOT.LSAME( DICO, 'C' ) ) THEN
+        INFO = -1
+     ELSE IF( DISCR ) THEN
+        IF( .NOT.LHINV .AND. .NOT.LSAME( HINV, 'I' ) ) &
+         INFO = -2
+     ELSE IF( INFO.EQ.0 ) THEN
+         IF( .NOT.NOTRNA .AND. .NOT.LSAME( TRANA, 'T' ) &
+                      .AND. .NOT.LSAME( TRANA, 'C' ) ) THEN
+           INFO = -3
+        ELSE IF( .NOT.LUPLO .AND. .NOT.LSAME( UPLO, 'L' ) ) THEN
+            INFO = -4
+        ELSE IF( N.LT.0 ) THEN
+            INFO = -5
+         ELSE IF( LDA.LT.MAX( 1, N ) ) THEN
+           INFO = -7
+         ELSE IF( LDG.LT.MAX( 1, N ) ) THEN
+            INFO = -9
+         ELSE IF( LDQ.LT.MAX( 1, N ) ) THEN
+           INFO = -11
+         ELSE IF( LDS.LT.MAX( 1, N2 ) ) THEN
+           INFO = -13
+         ELSE IF( ( LDWORK.LT.0 ) .OR. &
+               ( DISCR .AND. LDWORK.LT.MAX( 2, 6*N ) ) ) THEN
             INFO = -16
-    !     END IF
-   !   END IF
+         END IF
+   !  END IF
 !C
-!      IF ( INFO.NE.0 ) THEN
+      IF ( INFO.NE.0 ) THEN
 !C
 !C        Error return.
 !C
       !   CALL XERBLA( 'SB02RU', -INFO )
-      !   RETURN
-     ! END IF
+        RETURN
+      END IF
 !C
 !C     Quick return if possible.
 !C
@@ -28503,7 +28503,8 @@ C
 !C        Construct full G in S(1:N,N+1:2*N) and change the sign, and
 !C        construct -op(A)' in S(N+1:2*N,N+1:2*N).
             !C
-         !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(S,G,A) PRIVATE(J,NJ,I)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+         !$OMP& SHARED(S,G,A,N,LUPLO,NOTRNA) PRIVATE(J,NJ,I)
          DO 240 J = 1, N
             NJ = N + J
             IF ( LUPLO ) THEN
