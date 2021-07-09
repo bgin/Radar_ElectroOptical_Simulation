@@ -14,20 +14,20 @@ module mod_grid
 ! Adding ATTRIBUTE ALIGNE Compiler directives
 !===============================================================================
 
-    use mod_kinds,   only :  int32_t, dp
+    use mod_kinds,   only :  i4, dp
     use mod_utility, only :  diff
     implicit none
 
-    integer(kind=int32_t), parameter, private :: stdout = 6
-    integer(kind=int32_t), parameter, private :: stderr = 0
+    integer(kind=i4), parameter, private :: stdout = 6
+    integer(kind=i4), parameter, private :: stderr = 0
 
     type, public :: grid_type
 
         public
 
-        integer(kind=int32_t), dimension(2) :: lb
+        integer(kind=i4), dimension(2) :: lb
              !! Lower bounds of the grid
-        integer(kind=int32_t), dimension(2) :: ub
+        integer(kind=i4), dimension(2) :: ub
              !! Upper bounds of the grid
 !DIR$   ATTRIBUTES ALIGN : 64 :: x
         real(kind=dp), allocatable, dimension(:,:) :: x
@@ -61,23 +61,23 @@ module mod_grid
                                      handle_fatal_memory_error
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: constructor_1d
         type(grid_type),              intent(inout)        :: grid
-        integer(kind=int32_t),        intent(in)           :: lb
-        integer(kind=int32_t),        intent(in)           :: ub
+        integer(kind=i4),        intent(in)           :: lb
+        integer(kind=i4),        intent(in)           :: ub
 !DIR$ ASSUME_ALIGNED x:64
         real(kind=dp),  dimension(:), intent(in), optional :: x
 !DIR$ ASSUME_ALIGNED dx:64
         real(kind=dp),  dimension(:), intent(in), optional :: dx
-        logical(kind=int32_t),        intent(inout)        :: errstate
-        integer(kind=int32_t),        intent(in)           :: iounit
-        logical(kind=int32_t),        intent(in)           :: logging
-        logical(kind=int32_t),        intent(in)           :: verbose
-        logical(kind=int32_t),        intent(in)           :: append
+        logical(kind=i4),        intent(inout)        :: errstate
+        integer(kind=i4),        intent(in)           :: iounit
+        logical(kind=i4),        intent(in)           :: logging
+        logical(kind=i4),        intent(in)           :: verbose
+        logical(kind=i4),        intent(in)           :: append
         character(len=*),             intent(in)           :: fname
         ! LOcals
 !DIR$   ATTRIBUTES ALIGN : 64 :: tmp
         real(kind=dp), allocatable,dimension(:) :: tmp
-        integer(kind=int32_t), automatic :: i
-        integer(kind=int32_t), automatic :: aerr
+        integer(kind=i4), automatic :: i
+        integer(kind=i4), automatic :: aerr
         character(len=256),    automatic :: emsg
         ! EXec code .....
         grid.lb(1)=lb; grid.ub(1)=ub
@@ -135,9 +135,9 @@ module mod_grid
                                        print_non_fatal_error
 !DIR$     ATTRIBUTES CODE_ALIGN:32 :: constructor_2d
           type(grid_type),                        intent(inout) :: grid
-          integer(kind=int32_t), dimension(2),    intent(in)    :: lb
+          integer(kind=i4), dimension(2),    intent(in)    :: lb
           ! Arrays lb,ub must be of size = 2
-          integer(kind=int32_t), dimension(2),    intent(in)    :: ub
+          integer(kind=i4), dimension(2),    intent(in)    :: ub
 !DIR$     ASSUME_ALIGNED x:64
           real(kind=dp),         dimension(:,:),  intent(in), optional    :: x
 !DIR$     ASSUME_ALIGNED y:64
@@ -150,20 +150,20 @@ module mod_grid
           real(kind=dp),         dimension(:,:),  intent(in), optional    :: lon
 !DIR$     ASSUME_ALIGNED lat:64
           real(kind=dp),         dimension(:,:),  intent(in), optional    :: lat
-          logical(kind=int32_t),                  intent(inout)        :: errstate
-          integer(kind=int32_t),                  intent(in)           :: iounit
-          logical(kind=int32_t),                  intent(in)           :: logging
-          logical(kind=int32_t),                  intent(in)           :: verbose
-          logical(kind=int32_t),                  intent(in)           :: append
+          logical(kind=i4),                  intent(inout)        :: errstate
+          integer(kind=i4),                  intent(in)           :: iounit
+          logical(kind=i4),                  intent(in)           :: logging
+          logical(kind=i4),                  intent(in)           :: verbose
+          logical(kind=i4),                  intent(in)           :: append
           character(len=*),                       intent(in)           :: fname
           ! LOcals
 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp_dx, tmp_dy
           real(kind=dp), allocatable, dimension(:,:) :: tmp_dx,tmp_dy
           character(len=256),     automatic :: emsg
-          integer(kind=int32_t),  automatic :: aerr
-          integer(kind=int32_t),  automatic :: grid_rank
-          integer(kind=int32_t),  automatic :: idm,jdm
-          integer(kind=int32_t),  automatic :: i,j
+          integer(kind=i4),  automatic :: aerr
+          integer(kind=i4),  automatic :: grid_rank
+          integer(kind=i4),  automatic :: idm,jdm
+          integer(kind=i4),  automatic :: i,j
           ! EXec code .....
           if(size(lb) /= size(ub)) then
                call print_non_fatal_error( " ================= Non-Fatal ================== " , &
