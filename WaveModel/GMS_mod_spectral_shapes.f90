@@ -8,7 +8,7 @@ module GMS_mod_spectral_shapes
 ! Licensed under the BSD-3 clause license. See LICENSE for details.
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 15/03/2019
 
-    use GMS_mod_kinds,          only : int32_t, dp
+    use mod_kinds,          only : i4, dp
     use GMS_mod_constants,      only : pi2_const
     use GMS_mod_nondimensional, only : nondimensionalFetch,nondimensionalFrequency
     implicit none
@@ -132,14 +132,14 @@ module GMS_mod_spectral_shapes
           real(kind=dp), dimension(ntheta),    intent(in)  :: theta
 !DIR$   ASSUME_ALIGNED  spec:64
           real(kind=dp), dimension(nf,ntheta), intent(out) :: spec
-          integer(kind=int32_t),               intent(in)  :: nf
-          integer(kind=int32_t),               intent(in)  :: ntheta
+          integer(kind=i4),               intent(in)  :: nf
+          integer(kind=i4),               intent(in)  :: ntheta
           real(kind=dp),                       intent(in)  :: wspd
           real(kind=dp),                       intent(in)  :: fpeak
           real(kind=dp),                       intent(in)  :: theta_mean
           real(kind=dp),                       intent(in)  :: grav
           ! Locals
-          integer(kind=int32_t) :: ndir
+          integer(kind=i4) :: ndir
           ! EXec code ....
           do concurrent(ndir=1:ntheta)
                 spec(:,ndir) = donelanHamiltonHui(f,fpeak,wspd,grav) &
