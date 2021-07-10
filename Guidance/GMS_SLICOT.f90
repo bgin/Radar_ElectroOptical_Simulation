@@ -13213,9 +13213,9 @@ SUBROUTINE MB01RB( SIDE, UPLO, TRANS, M, N, ALPHA, BETA, R, LDR, &
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
  SUBROUTINE MB01RB( SIDE, UPLO, TRANS, M, N, ALPHA, BETA, R, LDR, &
       A, LDA, B, LDB, INFO)
- !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MA01RB
+ !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MB01RB
     !DIR$ OPTIMIZE : 3
-   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: MA01RB
+   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: MB01RB
 #endif
 #if 0
 C
@@ -13677,9 +13677,9 @@ SUBROUTINE MB01RX( SIDE, UPLO, TRANS, M, N, ALPHA, BETA, R, LDR, &
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
  SUBROUTINE MB01RX( SIDE, UPLO, TRANS, M, N, ALPHA, BETA, R, LDR, &
       A, LDA, B, LDB, INFO )
-!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MA01RX
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MB01RX
     !DIR$ OPTIMIZE : 3
-   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: MA01RX
+   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: MB01RX
 #endif
 #if 0
 C
@@ -14003,6 +14003,10 @@ SUBROUTINE SB10ZD( N, M, NP, A, LDA, B, LDB, C, LDC, D, LDD, &
 LDDK, RCOND, TOL, IWORK, DWORK, LDWORK, BWORK, &
 INFO ) !GCC$ ATTRIBUTES Hot :: SB10ZD !GCC$ ATTRIBUTES aligned(32) :: SB10ZD !GCC$ ATTRIBUTES no_stack_protector :: SB10ZD
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE SB10ZD( N, M, NP, A, LDA, B, LDB, C, LDC, D, LDD, &
+  FACTOR, AK, LDAK, BK, LDBK, CK, LDCK, DK, &
+LDDK, RCOND, TOL, IWORK, DWORK, LDWORK, BWORK, &
+INFO )
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SB10ZD
     !DIR$ OPTIMIZE : 3
    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=Haswell :: SB10ZD
@@ -14213,12 +14217,16 @@ C
       DOUBLE PRECISION   FACTOR, TOL
 !C     ..
 !C     .. Array Arguments ..
+       
       INTEGER            IWORK( * )
       LOGICAL            BWORK( * )
-      !DOUBLE PRECISION   A ( LDA,  * ), AK( LDAK, * ), B ( LDB,  * ),
-    ! $                   BK( LDBK, * ), C ( LDC,  * ), CK( LDCK, * ),
-    ! $                   D ( LDD,  * ), DK( LDDK, * ), DWORK( * ),
-      ! $                   RCOND( 6 )
+      DOUBLE PRECISION, DIMENSION(6) :: RCOND
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 1  
+      DOUBLE PRECISION   A ( LDA,  * ), AK( LDAK, * ), B ( LDB,  * ), &
+                         BK( LDBK, * ), C ( LDC,  * ), CK( LDCK, * ), &
+                         D ( LDD,  * ), DK( LDDK, * ), DWORK( * )
+                         
+#else
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: AK
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: B
@@ -14228,7 +14236,8 @@ C
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: D
       DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: DK
       DOUBLE PRECISION, DIMENSION(:), ALLOCATABLE :: DWORK
-      DOUBLE PRECISION, DIMENSION(6) :: RCOND
+     
+#endif
       
 !C     ..
 !C     .. Local Scalars ..
@@ -19524,33 +19533,33 @@ C
       LSIDE  = LSAME( SIDE,  'L' )
       LTRANS = LSAME( TRANS, 'T' ) .OR. LSAME( TRANS, 'C' )
 !C
-!      IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
-!         INFO = -1
-!      ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
-!         INFO = -2
-!      ELSE IF( M.LT.0 ) THEN
-!         INFO = -3
-!      ELSE IF( N.LT.0 ) THEN
-!         INFO = -4
-!      ELSE IF( LDH.LT.1 .OR. ( LSIDE .AND. LDH.LT.M ) .OR.
-!     $                  ( .NOT.LSIDE .AND. LDH.LT.N ) ) THEN
-!1         INFO = -7
-!!      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
-!         INFO = -9
-!      ELSE IF( LDWORK.LT.0 .OR.
-!     $       ( ALPHA.NE.ZERO .AND. MIN( M, N ).GT.0 .AND.
-!     $            ( ( LSIDE .AND. LDWORK.LT.M-1 ) .OR.
-!     $         ( .NOT.LSIDE .AND. LDWORK.LT.N-1 ) ) ) ) THEN
-!         INFO = -11
-!      END IF
+     IF(      ( .NOT.LSIDE  ).AND.( .NOT.LSAME( SIDE,  'R' ) ) )THEN
+        INFO = -1
+     ELSE IF( ( .NOT.LTRANS ).AND.( .NOT.LSAME( TRANS, 'N' ) ) )THEN
+        INFO = -2
+     ELSE IF( M.LT.0 ) THEN
+        INFO = -3
+     ELSE IF( N.LT.0 ) THEN
+        INFO = -4
+     ELSE IF( LDH.LT.1 .OR. ( LSIDE .AND. LDH.LT.M ) .OR. &
+                      ( .NOT.LSIDE .AND. LDH.LT.N ) ) THEN
+         INFO = -7
+      ELSE IF( LDA.LT.MAX( 1, M ) ) THEN
+        INFO = -9
+     ELSE IF( LDWORK.LT.0 .OR. &
+           ( ALPHA.NE.ZERO .AND. MIN( M, N ).GT.0 .AND. &
+                ( ( LSIDE .AND. LDWORK.LT.M-1 ) .OR. &
+              ( .NOT.LSIDE .AND. LDWORK.LT.N-1 ) ) ) ) THEN
+         INFO = -11
+      END IF
 !C
-!      IF ( INFO.NE.0 ) THEN
+      IF ( INFO.NE.0 ) THEN
 !C
 !C        Error return.
 !C
 !         CALL XERBLA( 'MB01UW', -INFO )
-!         RETURN
-!      END IF
+         RETURN
+      END IF
 !C
 !C     Quick return, if possible.
 !C
@@ -19598,7 +19607,9 @@ C
                CALL DSWAP( M-2, H( 3, 2 ), LDH+1, H( 3, 1 ), 1 )
             IF( LTRANS ) THEN
                JW = 1
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,H,DWORK) PRIVATE(J,JW,I)
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(A,H,DWORK,N,M,ALPHA) 
+               !$OMP& FIRSTPRIVATE(JW) PRIVATE(J,I) COLLAPSE(2)
                DO 20 J = 1, N
                   JW = JW + 1
                   !$OMP SIMD ALIGNED(A:64,H,DWORK) LINEAR(I:1) UNROLL PARTIAL(10)
@@ -19610,7 +19621,9 @@ C
    20          CONTINUE
             ELSE
                JW = 0
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(A,H,DWORK) PRIVATE(J,JW,I)
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(A,H,DWORK,N,M,ALPHA) 
+                !$OMP& FIRSTPRIVATE(JW) PRIVATE(J,I) COLLAPSE(2)
                DO 40 J = 1, N
                   JW = JW + 1
                   !$OMP SIMD ALIGNED(A:64,H:64,DWORK:64) LINEAR(I:1) UNROLL PARTIAL(10)
@@ -19653,7 +19666,8 @@ C
             IF( M.GT.2 ) &
                CALL DSWAP( M-2, H( 3, 2 ), LDH+1, H( 3, 1 ), 1 )
             IF( LTRANS ) THEN
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(H,DWORK,A) PRIVATE(J,I)
+                 !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                 !$OMP& SHARED(H,DWORK,A,N,M,ONE) PRIVATE(J,I) 
                DO 80 J = 1, N
 !C
 !C                 Compute the contribution of the subdiagonal of H to
@@ -19676,7 +19690,8 @@ C
    80          CONTINUE
 !C
             ELSE
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(H,DWORK,A) PRIVATE(J,I)  
+                 !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                 !$OMP& SHARED(H,DWORK,A,N,M,ONE) PRIVATE(J,I)  
                DO 100 J = 1, N
 !C
 !C                 Compute the contribution of the subdiagonal of H to
@@ -19708,7 +19723,8 @@ C
             IF( N.GT.2 ) &
                CALL DSWAP( N-2, H( 3, 2 ), LDH+1, H( 3, 1 ), 1 )
             IF( LTRANS ) THEN
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(H,DWORK,A) PRIVATE(J,I)  
+                !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+                !$OMP& SHARED(H,DWORK,A,M,N,ONE,LDA) PRIVATE(J,I)  
                DO 120 I = 1, M
 !C
 !C                 Compute the contribution of the subdiagonal of H to
@@ -19731,7 +19747,8 @@ C
   120          CONTINUE
 
            ELSE
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(H,DWORK,A) PRIVATE(J,I)  
+               !$OMP PARALLEL DO SCHEDULE(STATIC,8) DEFAULT(NONE) 
+               !$OMP& SHARED(H,DWORK,A,M,N,ONE,LDA) PRIVATE(J,I)  
                DO 140 I = 1, M
 !C
 !C                 Compute the contribution of the subdiagonal of H to
@@ -19993,32 +20010,32 @@ C
 !C
       NN   = N*N
       INFO = 0
-    !  IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR.
-    ! $                       LSAME( TRANA, 'C' ) ) ) THEN
-    !     INFO = -1
-    !  ELSE IF( .NOT.( LSAME( UPLO, 'L' ) .OR. LSAME( UPLO, 'U' ) ) )
-    ! $   THEN
-    !     INFO = -2
-    !  ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
-    !     INFO = -3
-   !   ELSE IF( N.LT.0 ) THEN
-    !!     INFO = -4
-    !  ELSE IF( XANORM.LT.ZERO ) THEN
-    !     INFO = -5
-    !  ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
-    !     INFO = -7
-    !  ELSE IF( LDU.LT.1 .OR. ( UPDATE .AND. LDU.LT.N ) ) THEN
-    !     INFO = -9
-    !  ELSE IF( LDR.LT.MAX( 1, N ) ) THEN
-    !     INFO = -11
-    !  ELSE IF( LDWORK.LT.2*NN ) THEN
-    !     INFO = -15
-    !  END IF
+      IF( .NOT.( NOTRNA .OR. LSAME( TRANA, 'T' ) .OR. &
+                           LSAME( TRANA, 'C' ) ) ) THEN
+         INFO = -1
+      ELSE IF( .NOT.( LSAME( UPLO, 'L' ) .OR. LSAME( UPLO, 'U' ) ) ) &
+       THEN
+        INFO = -2
+     ELSE IF( .NOT.( UPDATE .OR. LSAME( LYAPUN, 'R' ) ) ) THEN
+         INFO = -3
+      ELSE IF( N.LT.0 ) THEN
+         INFO = -4
+     ELSE IF( XANORM.LT.ZERO ) THEN
+        INFO = -5
+     ELSE IF( LDT.LT.MAX( 1, N ) ) THEN
+         INFO = -7
+     ELSE IF( LDU.LT.1 .OR. ( UPDATE .AND. LDU.LT.N ) ) THEN
+        INFO = -9
+     ELSE IF( LDR.LT.MAX( 1, N ) ) THEN
+        INFO = -11
+     ELSE IF( LDWORK.LT.2*NN ) THEN
+        INFO = -15
+     END IF
 !C
- !     IF( INFO.NE.0 ) THEN
+     IF( INFO.NE.0 ) THEN
  !        CALL XERBLA( 'SB03QX', -INFO )
-!         RETURN
-!      END IF
+         RETURN
+      END IF
 !C
 !C     Quick return if possible.
 !C
@@ -20065,7 +20082,8 @@ C
 !C              Scale the lower triangular part of symmetric matrix
 !C              by the residual matrix.
                !C
-               !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(DWORK,R) PRIVATE(J,I,IJ)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+               !$OMP& SHARED(DWORK,R,N) PRIVATE(J,I,IJ)
                DO 30 J = 1, N
                   !$OMP SIMD ALIGNED(DWORK:64,R) LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 20 I = J, N
@@ -20080,7 +20098,7 @@ C
 !C              Scale the upper triangular part of symmetric matrix
 !C              by the residual matrix.
                !C
-                 !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(DWORK,R) PRIVATE(J,I,IJ)
+                 !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(DWORK,R,N) PRIVATE(J,I,IJ)
                DO 50 J = 1, N
                   !$OMP SIMD ALIGNED(DWORK:64,R) LINEAR(I:1) UNROLL PARTIAL(6)
                    DO 40 I = 1, J
@@ -20135,7 +20153,7 @@ C
 !C              Scale the lower triangular part of symmetric matrix
 !C              by the residual matrix.
                !C
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(DWORK,R) PRIVATE(J,I,IJ)
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(DWORK,R,N) PRIVATE(J,I,IJ)
                DO 70 J = 1, N
                   !$OMP SIMD ALIGNED(DWORK:64,R)  LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 60 I = J, N
@@ -20150,7 +20168,7 @@ C
 !C              Scale the upper triangular part of symmetric matrix
 !C              by the residual matrix.
                !C
-                !$OMP PARALLEL DO SCHEDULE(STATIC,4) DEFAULT(NONE) SHARED(DWORK,R) PRIVATE(J,I,IJ)
+                !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) SHARED(DWORK,R,N) PRIVATE(J,I,IJ)
                DO 90 J = 1, N
                   !$OMP SIMD ALIGNED(DWORK:64,R)  LINEAR(I:1) UNROLL PARTIAL(6)
                   DO 80 I = 1, J
