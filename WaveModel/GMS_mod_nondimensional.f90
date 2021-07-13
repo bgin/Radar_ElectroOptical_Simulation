@@ -8,7 +8,7 @@ module mod_nondimensional
 ! Licensed under the BSD-3 clause license. See LICENSE for details.
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 14/03/2019
 !
-    use mod_kinds, only : int32_t, dp
+    use mod_kinds, only : i4, dp
     implicit none
 
     private
@@ -141,9 +141,9 @@ module mod_nondimensional
         !! after Huang (1986).
          !!
  !DIR$  ATTRIBUTES CODE_ALIGN:32 :: nondimensionalRoughness_H1986
-          real(kind=realkind),intent(in) :: z0
+          real(kind=dp),intent(in) :: z0
          !! Roughness length [m]
-          real(kind=realkind),intent(in) :: hs
+          real(kind=dp),intent(in) :: hs
          !! Significant wave height [m]
                 nondimensionalRoughness_H1986 = z0 / hs
     end function nondimensionalRoughness_H1986
