@@ -218,8 +218,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=i4t) :: i,j
-          integer(kind=i4t) :: idm,jdm
+          integer(kind=i4) :: i,j
+          integer(kind=i4) :: idm,jdm
 !       EXEC CODE ....
           idm = size(f,dim=1)
           jdm = size(f,dim=2)
@@ -288,8 +288,8 @@ module GMS_mod_advection
     real(kind=dp),dimension(:,:,:),allocatable :: dfdt
     !! Advective tendency
 
-          integer(kind=i4t) :: i,j,m
-          integer(kind=i4t) :: idm,jdm,mdm
+          integer(kind=i4) :: i,j,m
+          integer(kind=i4) :: idm,jdm,mdm
 
           mdm = size(f,dim=1)
           idm = size(f,dim=2)
