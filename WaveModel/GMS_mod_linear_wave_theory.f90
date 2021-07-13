@@ -8,7 +8,7 @@ module mod_linear_wave_theory
 ! Licensed under the BSD-3 clause license. See LICENSE for details.
 ! Modified by Bernard Gingold (beniekg@gmail.com) on 14/03/2019
 !===============================================================================
-    use mod_kinds, only : int32_t, dp
+    use mod_kinds, only : i4, dp
 
     implicit none
 
