@@ -71,16 +71,16 @@ module mkl_fft_wrappers
                                                               10*MKL_FFT_WRAPPER_MICRO
     
     ! Module creation date
-    character(*),  parameter, public :: MOD_MKL_FFT_CREATE_DATE = "06-05-2018 10:42 +00200 (SUN 06 MAY 2018 GMT+2)"
+    character(*),  parameter, public :: MKL_FFT_CREATE_DATE = "06-05-2018 10:42 +00200 (SUN 06 MAY 2018 GMT+2)"
     
     ! Module build date (should be set after successful compilation date/time)
-    character(*),  parameter, public :: MOD_MKL_FFT_BUILD_DATE = " "
+    character(*),  parameter, public :: MKL_FFT_BUILD_DATE = " "
     
     ! Module author info
-    character(*),  parameter, public :: MOD_MKL_FFT_AUTHOR = "Programmer: Bernard Gingold, e-mail: beniekg@gmail.com"
+    character(*),  parameter, public :: MKL_FFT_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
     
     ! Module short description
-    character(*),  parameter, public :: MOD_MKL_FFT_DESCRIPT = "Wrappers around Intel MKL Fortran FFT implementation."
+    character(*),  parameter, public :: MKL_FFT_DESCRIPT = "Wrappers around Intel MKL Fortran FFT implementation."
     
     ! Module constants
     
@@ -103,7 +103,7 @@ module mkl_fft_wrappers
 #endif
       complex(dp), dimension(data_out), intent(out) :: data_out
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-      !DIR$ ASSUME)ALIGNED data_out:64
+      !DIR$ ASSUME_ALIGNED data_out:64
 #endif
           integer(i4),                      intent(in)              ::  data_len
           integer(i4),                      intent(inout)           ::  status
