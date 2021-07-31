@@ -40,7 +40,7 @@ module mod_avx512c8f64
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int1,int4,dp
+     use mod_kinds, only : i1,i4,dp
      use mod_vectypes, only : ZMM8r8_t
      use,  intrinsic :: ISO_C_BINDING
      implicit none
@@ -51,13 +51,13 @@ module mod_avx512c8f64
      !=====================================================59
 
      ! Major version
-     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MAJOR = 1
+     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MAJOR = 1
      ! Minor version
-     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MINOR = 0
+     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MINOR = 0
      ! Micro version
-     integer(kind=int4),  parameter :: MOD_AVX512C8F64_MICRO = 0
+     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MICRO = 0
      ! Full version
-     integer(kind=int4),  parameter :: MOD_AVX512C8F64_FULLVER =   &
+     integer(kind=i4),  parameter :: MOD_AVX512C8F64_FULLVER =   &
             1000*MOD_AVX512C8F64_MAJOR+100*MOD_AVX512C8F64_MINOR+10*MOD_AVX512C8F64
      ! Module creation date
      character(*),        parameter :: MOD_AVX512C8F64_CREATE_DATE = "03-11-2019 15:54 +00200 (SUN 03 NOV 2019 GMT+2)"
