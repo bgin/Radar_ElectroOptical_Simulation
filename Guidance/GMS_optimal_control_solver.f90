@@ -646,7 +646,8 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
 
          IF (ABS(IFLAG).EQ.2) GO TO 200
          J = 1
-          !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(NONE) PRIVATE(K,J) SHARED(NU,W,IV,X)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+         !$OMP& FIRSTPRIVATE(J) PRIVATE(K) SHARED(NU,N1,N2,N3,N4,N5,W,IV,X,T0)
          DO 110 K=1,NU
             W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J), &
                      X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
@@ -693,7 +694,8 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
 !C  IN ONE-STEP-INTEGRATION-MODE PRINT STATES AND CONTROLS
 
 180      J = 1
-          !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(NONE) PRIVATE(K,J) SHARED(NU,W,IV,X)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+         !$OMP& FIRSTPRIVATE(J) PRIVATE(K) SHARED(NU,N1,N2,N3,N4,N5,LW,W,IV,X,T0)
          DO 190 K=1,NU
             W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J), &
                     X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
@@ -825,7 +827,8 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
 
                IF (ABS(IFLAG).EQ.2) GO TO 450
                J = 1
-                !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(NONE) PRIVATE(K,J) SHARED(NU,W,IV,X)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+               !$OMP& FIRSTPRIVATE(J) PRIVATE(K) SHARED(NU,N1,N2,N3,N4,N5,W,IV,X,T0)
                DO 360 K=1,NU
                   W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J), &
                            X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
@@ -861,7 +864,8 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
 !C  IN ONE-STEP-INTEGRATION-MODE PRINT STATES AND CONTROLS
 
 430            J = 1
-               !$OMP PARALLEL DO SCHEDULE(DYNAMIC) DEFAULT(NONE) PRIVATE(K,J) SHARED(NU,W,IV,X)
+               !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+               !$OMP& FIRSTPRIVATE(J) PRIVATE(K) SHARED(NU,N1,N2,N3,N4,N5,W,IV,X,T0)
                DO 440 K=1,NU
                   W(LW-K) = SPLINT (IV(NU+K), IV(K), X(N1+J), X(J), &
                            X(N2+J), X(N3+J), X(N4+J), X(N5+J), T0)
@@ -1005,7 +1009,8 @@ C  SUM UP TOTAL NUMBER N OF SPLINE-BREAKPOINTS
 !C  STORE CONTROLS
 
          J = 1
-         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) PRIVATE(I,E,J) SHARED(NU,IV,X,G,N1,N2,N3,N4,N5,T)
+         !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE)
+         !$OMP& FIRSTPRIVATE(J) PRIVATE(I,E) SHARED(NU,IV,X,G,N1,N2,N3,N4,N5,T)
       DO 570 I=1,NU
          E = SPLINT (IV(NU+I), IV(I), X(N1+J), X(J), &
             X(N2+J), X(N3+J), X(N4+J), X(N5+J), T)
@@ -3418,10 +3423,8 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
       DO 10 I=1,N
    10 E(I) = Y(I)+T1*F1(I)
       CALL F (T+0.0555555555555555555556D0*H, E, F2, W, IW)
-      T1 = (           1.0D0
-     .     /          48.0D0) * H
-      T2 = (           1.0D0
-     .     /          16.0D0) * H
+      T1 = 0.0208333333333333333333D0 * H
+      T2 = 0.0625D0 * H
       DO 20 I=1,N
    20 E(I) = Y(I)+T1*F1(I)+T2*F2(I)
       CALL F (T+0.0833333333333333333333D0*H, E, F3, W, IW)
@@ -3445,7 +3448,7 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
      !.     /          64.0D0) * H
       DO 40 I=1,N
    40 E(I) = Y(I)+T1*F1(I)+T2*F3(I)+T3*F2(I)
-      CALL F (T+(5.0D0/16.0D0)*H, E, F3, W, IW)
+      CALL F (T+0.3125D0*H, E, F3, W, IW)
       T1 = 0.0375D0*H
       T2 = 0.1875D0*H
       T3 = 0.15D0*H
@@ -3457,7 +3460,7 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
      !.     /          20.0D0) * H
       DO 50 I=1,N
    50 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)
-      CALL F (T+(3.0D0/8.0D0)*H, E, F4, W, IW)
+      CALL F (T+0.375D0*H, E, F4, W, IW)
       T1 = 0.0479101371111111103879D0*H
       T2 = 0.1122487127777777769756D0*H
       T3 = -0.0255056737777777777778D0*H
@@ -3472,7 +3475,7 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
      !.     /  1800000000.0D0) * H
       DO 60 I=1,N
    60 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)
-      CALL F (T+(59.0D0/400.0D0)*H, E, F5, W, IW)
+      CALL F (T+0.1475D0*H, E, F5, W, IW)
       T1 = 0.016917989787292280675D0*H
       T2 = 0.3878482784860431695594D0*H
       T3 = 0.0359773698515003281804D0*H
@@ -3490,7 +3493,7 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
      !.     /  1043307555.0D0) * H
       DO 70 I=1,N
    70 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)
-      CALL F (T+(93.0D0/200.0D0)*H, E, F6, W, IW)
+      CALL F (T+0.465D0*H, E, F6, W, IW)
       T1 = 0.0690957533591923011118D0*H
       T2 = -0.6342479767288541507979D0*H
       T3 = -0.1611975752246040798941D0*H
@@ -3511,7 +3514,14 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
      !.     /  3783071287.0D0) * H
       DO 80 I=1,N
    80 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I)
-      CALL F (T+(5490023248.0D0/9719169821.0D0)*H, E, F7, W, IW)
+      CALL F (T+0.5648654513822595753984D0*H, E, F7, W, IW)
+      T1 =  0.1835569968390453852463D0*H
+      T2 =  −2.4687680843155924492106D0*H
+      T3 = −0.2912868878163004555206D0*H
+      T4 = −0.0264730202331173757662D0*H
+      T5 = 2.8478387641928004432811D0*H
+      T6 = 0.2813873314698497918114D0*H
+      T7 = 0.1237448998633146570626D0*H
       !T1 = (   246121993.0D0
      !.     /  1340847787.0D0) * H
       !T2 = (-37695042795.0D0
@@ -3529,7 +3539,7 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
       DO 90 I=1,N
    90 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I)+ &
              T7*F7(I)
-      CALL F (T+(13.0D0/20.0D0)*H, E, F8, W, IW)
+      CALL F (T+0.65D0*H, E, F8, W, IW)
       T1 = -1.2154248173958880574553D0*H
       T2 = 16.6726086659457723990819D0*H
       T3 = 0.9157418284168179579473D0*H
@@ -3557,9 +3567,16 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
       DO 100 I=1,N
   100 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I)+ &
              T7*F7(I)+T8*F8(I)
-      CALL F (T+(1201146811.0D0/1299019798.0D0)*H, E, F9, W, IW)
+      CALL F (T+0.9246562776405044444134*H, E, F9, W, IW)
       T1 = 0.2588609164382642820305D0*H
-      T2 = 
+      T2 = −4.7744857854892051023015D0*H
+      T3 = −0.4350930137770325086988D0*H
+      T4 = −3.0494833320722415055844D0*H
+      T5 = 5.5779200399360991038599D0*H
+      T6 = 6.1558315898610400936332D0*H
+      T7 = −5.0621045867369383601671D0*H
+      T8 = 2.1939261731806790585137D0*H
+      T9 = 0.1346279986593349414343D0*H
       !T1 = (   185892177.0D0
      !.     /   718116043.0D0) * H
       !T2 = ( -3185094517.0D0
@@ -3579,70 +3596,62 @@ SUBROUTINE PD87(F, N, Y, T, H, F1, F2, F3, F4, F5, &
       !T9 = (    65686358.0D0
      !.     /   487910083.0D0) * H
       DO 110 I=1,N
-  110 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I)
-     .           +T7*F7(I)+T8*F8(I)+T9*F9(I)
+  110 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I) &
+                 +T7*F7(I)+T8*F8(I)+T9*F9(I)
       CALL F (T+H, E, F10, W, IW)
-      T1 = (   403863854.0D0
-     .     /   491063109.0D0) * H
-      T2 = ( -5068492393.0D0
-     .     /   434740067.0D0) * H
-      T3 = (  -411421997.0D0
-     .     /   543043805.0D0) * H
-      T4 = (   652783627.0D0
-     .     /   914296604.0D0) * H
-      T5 = ( 11173962825.0D0
-     .     /   925320556.0D0) * H
-      T6 = (-13158990841.0D0
-     .     /  6184727034.0D0) * H
-      T7 = (  3936647629.0D0
-     .     /  1978049680.0D0) * H
-      T8 = (  -160528059.0D0
-     .     /   685178525.0D0) * H
-      T9 = (   248638103.0D0
-     .     /  1413531060.0D0) * H
+      T1 =  0.8224275996265074760483D0*H
+      T2 =  −11.6586732572776642646099D0*H
+      T3 =  −0.7576221166909361943647D0*H
+      T4 =  0.7139735881595815267843D0*H
+      T5 =  12.0757749868900567253798D0*H
+      T6 =  −2.1276591139204026510315D0*H
+      T7 =  1.990166207048955413496D0*H
+      T8 =  −0.2342864715440402922727D0*H
+      T9 =  0.1758985777079422648131D0*H
+     ! T1 = (   403863854.0D0
+     !.     /   491063109.0D0) * H
+     ! T2 = ( -5068492393.0D0
+     !.     /   434740067.0D0) * H
+     !! T3 = (  -411421997.0D0
+     !.     /   543043805.0D0) * H
+     ! T4 = (   652783627.0D0
+     !.     /   914296604.0D0) * H
+     !! T5 = ( 11173962825.0D0
+     !.     /   925320556.0D0) * H
+     ! T6 = (-13158990841.0D0
+    ! .     /  6184727034.0D0) * H
+     ! T7 = (  3936647629.0D0
+     !.     /  1978049680.0D0) * H
+     ! T8 = (  -160528059.0D0
+     !.     /   685178525.0D0) * H
+    !  T9 = (   248638103.0D0
+     !.     /  1413531060.0D0) * H
       DO 120 I=1,N
-  120 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I)
-     .           +T7*F7(I)+T8*F8(I)+T9*F9(I)
+  120 E(I) = Y(I)+T1*F1(I)+T2*F2(I)+T3*F3(I)+T4*F4(I)+T5*F5(I)+T6*F6(I) +  &
+                 T7*F7(I)+T8*F8(I)+T9*F9(I)
       CALL F (T+H, E, F11, W,IW)
 
-C   LOCALLY EXTRAPOLATED SOLUTION & ERROR
+!C   LOCALLY EXTRAPOLATED SOLUTION & ERROR
 
       DO 130 I=1,N
-      S(I)=(    14005451.0D0
-     .     /   335480064.0D0) * F1(I)
-     .   + (   -59238493.0D0
-     .     /  1068277825.0D0) * F4(I)
-     .   + (   181606767.0D0
-     .     /   758867731.0D0) * F5(I)
-     .   + (   561292985.0D0
-     .     /   797845732.0D0) * F6(I)
-     .   + ( -1041891430.0D0
-     .     /  1371343529.0D0) * F7(I)
-     .   + (   760417239.0D0
-     .     /  1151165299.0D0) * F8(I)
-     .   + (   118820643.0D0
-     .     /   751138087.0D0) * F9(I)
-     .   + (  -528747749.0D0
-     .     /  2220607170.0D0) * F10(I)
-     .   + (           1.0D0
-     .     /           4.0D0) * F11(I)
+      S(I)= 0.0417474911415302460417D0  * F1(I)  + &
+            −0.0554523286112393093997D0 * F4(I)  + &
+            0.2393128072011800960344D0  * F5(I)  + &
+            0.7035106694034430204861D0  * F6(I)  + &
+            −0.7597596138144609278278D0 * F7(I)  + &
+            0.6605630309222863396962D0  * F8(I)  + &
+            0.1581874825101233350187D0  * F9(I)  + &
+            −0.2381095387528628037349D0 * F10(I) + &
+            0.25D0                      * F11(I)
       E(I)=S(I)-
-     .    ((    13451932.0D0
-     .     /   455176623.0D0) * F1(I)
-     .   + (  -808719846.0D0
-     .     /   976000145.0D0) * F4(I)
-     .   + (  1757004468.0D0
-     .     /  5645159321.0D0) * F5(I)
-     .   + (   656045339.0D0
-     .     /   265891186.0D0) * F6(I)
-     .   + ( -3867574721.0D0
-     .     /  1518517206.0D0) * F7(I)
-     .   + (   465885868.0D0
-     .     /   322736535.0D0) * F8(I)
-     .   + (    53011238.0D0
-     .     /   667516719.0D0) * F9(I)
-     .   + (           2.0D0
-     .     /          45.0D0) * F10(I))
+           (   0.029553213676353497618D0     * F1(I) + &
+               −0.8286062764877970381859D0   * F4(I) + &
+               0.3112409000511183269756D0    * F5(I) + &
+               2.4673451905998869778256D0    * F6(I) + &
+               −2.5469416518419087310625D0   * F7(I) + &
+               1.4435485836767752371141D0    * F8(I) + &
+               0.0794155958811272860418D0    * F9(I) + &
+               0.0444444444444444444444D0    * F10(I))
   130 S(I) = Y(I)+H*S(I)
      
 END SUBROUTINE
@@ -3651,10 +3660,17 @@ END SUBROUTINE
 !************************************************************************
 !*                              OPTIMIZER                               *
 !************************************************************************
-
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
 SUBROUTINE SLSQP (M, MEQ, LA, N, X, XL, XU, F, C, G, A, &
-       ACC, ITER, MODE, W, L_W, JW, L_JW)
-
+     ACC, ITER, MODE, W, L_W, JW, L_JW) !GCC$ ATTRIBUTES HOT :: SLSQP !GCC$ ATTRIBUTES aligned(32) :: SLSQP
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+ SUBROUTINE SLSQP (M, MEQ, LA, N, X, XL, XU, F, C, G, A, &
+      ACC, ITER, MODE, W, L_W, JW, L_JW)
+!DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SLSQP
+    !DIR$ OPTIMIZE : 3
+#endif
+   implicit none
+#if 0
 C   SLSQP       S EQUENTIAL  L EAST  SQ UARES  P ROGRAMMING
 C            TO SOLVE GENERAL NONLINEAR OPTIMIZATION PROBLEMS
 
@@ -3799,7 +3815,7 @@ C*     IF IT IS NOT AVAILABLE USE LSEI, A CONSTRAINT LINEAR LEAST      *
 C*     SQUARES SOLVER IMPLEMENTED USING THE SOFTWARE HFTI, LDP, NNLS   *
 C*     FROM C.L. LAWSON, R.J.HANSON: SOLVING LEAST SQUARES PROBLEMS,   *
 C*     PRENTICE HALL, ENGLEWOOD CLIFFS, 1974.                          *
-C*     LSEI COMES WITH THIS PACKAGE, together with all necessary SR's. *
+!C*     LSEI COMES WITH THIS PACKAGE, together with all necessary SR's. *
 C*                                                                     *
 C*     TOGETHER WITH A COUPLE OF SUBROUTINES FROM BLAS LEVEL 1         *
 C*                                                                     *
@@ -3828,27 +3844,37 @@ C*                                                                     *
 C*  Copyright 1991: Dieter Kraft, FHM                                  *
 C*                                                                     *
 C***********************************************************************
+#endif
 
-      INTEGER          IL, IM, IR, IS, ITER, IU, IV, IW, IX, L_W, L_JW,
-     *                 JW(L_JW), LA, M, MEQ, MINEQ, MODE, N, N1
 
-      DOUBLE PRECISION ACC, A(LA,N+1), C(LA), F, G(N+1),
-     *                 X(N), XL(N), XU(N), W(L_W)
+      INTEGER          IL, IM, IR, IS, ITER, IU, IV, IW, IX, L_W, L_JW, &
+                       JW(L_JW), LA, M, MEQ, MINEQ, MODE, N, N1
 
-c     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
-c                    +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ          for LSI
-c                    +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1        for LSEI
-c                    + N1*N/2 + 2*M + 3*N +3*N1 + 1           for SLSQPB
-c                      with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+     ! DOUBLE PRECISION ACC, A(LA,N+1), C(LA), F, G(N+1),
+      !*                 X(N), XL(N), XU(N), W(L_W)
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: G
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XL
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: W
+      DOUBLE PRECISION :: ACC, F
+
+!c     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
+!c                    +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ          for LSI
+!c                    +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1        for LSEI
+!c                    + N1*N/2 + 2*M + 3*N +3*N1 + 1           for SLSQPB
+!!c                      with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
 
 C   CHECK LENGTH OF WORKING ARRAYS
 
       N1 = N+1
       MINEQ = M-MEQ+N1+N1
       IL = (3*N1+M)*(N1+1) +
-     .(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ +
-     .(N1+MINEQ)*(N1-MEQ)  + 2*MEQ +
-     .N1*N/2 + 2*M + 3*N + 4*N1 + 1
+      (N1-MEQ+1)*(MINEQ+2) + 2*MINEQ + &
+      (N1+MINEQ)*(N1-MEQ)  + 2*MEQ + &
+      N1*N/2 + 2*M + 3*N + 4*N1 + 1
       IM = MAX(MINEQ, N1-MEQ)
       IF (L_W .LT. IL .OR. L_JW .LT. IM) THEN
           MODE = 1000*MAX(10,IL)
@@ -3856,7 +3882,7 @@ C   CHECK LENGTH OF WORKING ARRAYS
           RETURN
       ENDIF
 
-C   PREPARE DATA FOR CALLING SQPBDY  -  INITIAL ADDRESSES IN W
+!C   PREPARE DATA FOR CALLING SQPBDY  -  INITIAL ADDRESSES IN W
 
       IM = 1
       IL = IM + MAX(1,M)
@@ -3869,40 +3895,64 @@ C   PREPARE DATA FOR CALLING SQPBDY  -  INITIAL ADDRESSES IN W
       IV = IU + N1
       IW = IV + N1
 
-      CALL SLSQPB  (M, MEQ, LA, N, X, XL, XU, F, C, G, A, ACC, ITER,
-     * MODE, W(IR), W(IL), W(IX), W(IM), W(IS), W(IU), W(IV), W(IW), JW)
+      CALL SLSQPB  (M, MEQ, LA, N, X, XL, XU, F, C, G, A, ACC, ITER, &
+       MODE, W(IR), W(IL), W(IX), W(IM), W(IS), W(IU), W(IV), W(IW), JW)
 
-      END
+END SUBROUTINE
 
-      SUBROUTINE SLSQPB (M, MEQ, LA, N, X, XL, XU, F, C, G, A, ACC,
-     *                   ITER, MODE, R, L, X0, MU, S, U, V, W, IW)
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE SLSQPB (M, MEQ, LA, N, X, XL, XU, F, C, G, A, ACC, &
+     ITER, MODE, R, L, X0, MU, S, U, V, W, IW) !GCC$ ATTRIBUTES HOT :: SLSQPB !GCC$ ATTRIBUTES aligned(32) :: SLSQPB
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE SLSQPB (M, MEQ, LA, N, X, XL, XU, F, C, G, A, ACC, &
+     ITER, MODE, R, L, X0, MU, S, U, V, W, IW)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SLSQPB
+  !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SLSQPB
+#endif
+     use omp_lib
+     implicit none
+!C   NONLINEAR PROGRAMMING BY SOLVING SEQUENTIALLY QUADRATIC PROGRAMS
 
-C   NONLINEAR PROGRAMMING BY SOLVING SEQUENTIALLY QUADRATIC PROGRAMS
+!C        -  L1 - LINE SEARCH,  POSITIVE DEFINITE  BFGS UPDATE  -
 
-C        -  L1 - LINE SEARCH,  POSITIVE DEFINITE  BFGS UPDATE  -
+!C                      BODY SUBROUTINE FOR SLSQP
 
-C                      BODY SUBROUTINE FOR SLSQP
+      INTEGER          IW(*), I, IEXACT, INCONS, IRESET, ITER, ITERMX, &
+                       K, J, LA, LINE, M, MEQ, MODE, N, N1, N2, N3
 
-      INTEGER          IW(*), I, IEXACT, INCONS, IRESET, ITER, ITERMX,
-     *                 K, J, LA, LINE, M, MEQ, MODE, N, N1, N2, N3
+     ! DOUBLE PRECISION A(LA,N+1), C(LA), G(N+1), L((N+1)*(N+2)/2),
+     !*                 MU(LA), R(M+N+N+2), S(N+1), U(N+1), V(N+1), W(*),
+      !*                 X(N), XL(N), XU(N), X0(N),
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: C
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: G
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: L
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: MU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: R
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: S
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: U
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: V
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: W
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XL
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X0
+      
+      DOUBLE PRECISION :: DDOT, DNRM2, LINMIN, &
+                          ACC, ALFMIN, ALPHA, F, F0, GS, H1, H2, H3, H4, &
+                          HUN, ONE, T, T0, TEN, TOL, TWO, ZERO
 
-      DOUBLE PRECISION A(LA,N+1), C(LA), G(N+1), L((N+1)*(N+2)/2),
-     *                 MU(LA), R(M+N+N+2), S(N+1), U(N+1), V(N+1), W(*),
-     *                 X(N), XL(N), XU(N), X0(N),
-     *                 DDOT, DNRM2, LINMIN,
-     *                 ACC, ALFMIN, ALPHA, F, F0, GS, H1, H2, H3, H4,
-     *                 HUN, ONE, T, T0, TEN, TOL, TWO, ZERO
+!c     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
+!c                     +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ
+!c                     +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI
+!c                      with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
 
-c     dim(W) =         N1*(N1+1) + MEQ*(N1+1) + MINEQ*(N1+1)  for LSQ
-c                     +(N1-MEQ+1)*(MINEQ+2) + 2*MINEQ
-c                     +(N1+MINEQ)*(N1-MEQ) + 2*MEQ + N1       for LSEI
-c                      with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
+      SAVE             ALPHA, F0, GS, H1, H2, H3, H4, T, T0, TOL, &
+                       IEXACT, INCONS, IRESET, ITERMX, LINE, N1, N2, N3
 
-      SAVE             ALPHA, F0, GS, H1, H2, H3, H4, T, T0, TOL,
-     *                 IEXACT, INCONS, IRESET, ITERMX, LINE, N1, N2, N3
-
-      DATA             ZERO /0.0D0/, ONE /1.0D0/, ALFMIN /1.0D-1/,
-     *                 HUN /1.0D+2/, TEN /1.0D+1/, TWO /2.0D0/
+      DATA             ZERO /0.0D0/, ONE /1.0D0/, ALFMIN /1.0D-1/, &
+                       HUN /1.0D+2/, TEN /1.0D+1/, TWO /2.0D0/
 
       IF (MODE) 260, 100, 220
 
@@ -3924,7 +3974,7 @@ c                      with MINEQ = M - MEQ + 2*N1  &  N1 = N+1
       CALL DCOPY(N, S(1),  0, S,  1)
       CALL DCOPY(M, MU(1), 0, MU, 1)
 
-C   RESET BFGS MATRIX
+!C   RESET BFGS MATRIX
 
   110 IRESET = IRESET + 1
       IF (IRESET.GT.5) GO TO 255
@@ -3936,13 +3986,13 @@ C   RESET BFGS MATRIX
          J = J + N1 - I
   120 CONTINUE
 
-C   MAIN ITERATION : SEARCH DIRECTION, STEPLENGTH, LDL'-UPDATE
+!C   MAIN ITERATION : SEARCH DIRECTION, STEPLENGTH, LDL'-UPDATE
 
   130 ITER = ITER + 1
       MODE = 9
       IF (ITER.GT.ITERMX) GO TO 330
 
-C   SEARCH DIRECTION AS SOLUTION OF QP - SUBPROBLEM
+!C   SEARCH DIRECTION AS SOLUTION OF QP - SUBPROBLEM
 
       CALL DCOPY(N, XL, 1, U, 1)
       CALL DCOPY(N, XU, 1, V, 1)
@@ -3951,7 +4001,7 @@ C   SEARCH DIRECTION AS SOLUTION OF QP - SUBPROBLEM
       H4 = ONE
       CALL LSQ (M, MEQ, N , N3, LA, L, G, A, C, U, V, S, R, W, IW, MODE)
 
-C   AUGMENTED PROBLEM FOR INCONSISTENT LINEARIZATION
+!C   AUGMENTED PROBLEM FOR INCONSISTENT LINEARIZATION
 
       IF (MODE.EQ.6) THEN
           IF (N.EQ.MEQ) THEN
@@ -3959,6 +4009,7 @@ C   AUGMENTED PROBLEM FOR INCONSISTENT LINEARIZATION
           ENDIF
       ENDIF
       IF (MODE.EQ.4) THEN
+          !$OMP SIMD ALIGNED(A:64,C) LINEAR(J:1) UNROLL PARTIAL(8)
           DO 140 J=1,M
              IF (J.LE.MEQ) THEN
                  A(J,N1) = -C(J)
@@ -3975,8 +4026,8 @@ C   AUGMENTED PROBLEM FOR INCONSISTENT LINEARIZATION
           U(N1) = ZERO
           V(N1) = ONE
           INCONS = 0
-  150     CALL LSQ (M, MEQ, N1, N3, LA, L, G, A, C, U, V, S, R,
-     *              W, IW, MODE)
+  150     CALL LSQ (M, MEQ, N1, N3, LA, L, G, A, C, U, V, S, R, &
+                   W, IW, MODE)
           H4 = ONE - S(N1)
           IF (MODE.EQ.4) THEN
               L(N3) = TEN*L(N3)
@@ -3990,7 +4041,7 @@ C   AUGMENTED PROBLEM FOR INCONSISTENT LINEARIZATION
           GOTO 330
       ENDIF
 
-C   UPDATE MULTIPLIERS FOR L1-TEST
+!C   UPDATE MULTIPLIERS FOR L1-TEST
 
       DO 160 I=1,N
          V(I) = G(I) - DDOT(M,A(1,I),1,R,1)
@@ -4000,6 +4051,7 @@ C   UPDATE MULTIPLIERS FOR L1-TEST
       GS = DDOT(N, G, 1, S, 1)
       H1 = ABS(GS)
       H2 = ZERO
+      !$OMP SIMD ALIGNED(C:64,R,MU) LINEAR(J:1) REDUCTION(+:H1)
       DO 170 J=1,M
          IF (J.LE.MEQ) THEN
              H3 = C(J)
@@ -4012,11 +4064,12 @@ C   UPDATE MULTIPLIERS FOR L1-TEST
          H1 = H1 + H3*ABS(C(J))
   170 CONTINUE
 
-C   CHECK CONVERGENCE
+!C   CHECK CONVERGENCE
 
       MODE = 0
       IF (H1.LT.ACC .AND. H2.LT.ACC) GO TO 330
       H1 = ZERO
+      !$OMP SIMD ALIGNED(C:64,MU) LINEAR(J:1) REDUCTION(+:H1)
       DO 180 J=1,M
          IF (J.LE.MEQ) THEN
              H3 = C(J)
@@ -4030,13 +4083,13 @@ C   CHECK CONVERGENCE
       MODE = 8
       IF (H3.GE.ZERO) GO TO 110
 
-C   LINE SEARCH WITH AN L1-TESTFUNCTION
+!C   LINE SEARCH WITH AN L1-TESTFUNCTION
 
       LINE = 0
       ALPHA = ONE
       IF (IEXACT.EQ.1) GOTO 210
 
-C   INEXACT LINESEARCH
+!C   INEXACT LINESEARCH
 
   190     LINE = LINE + 1
           H3 = ALPHA*H3
@@ -4049,7 +4102,7 @@ C   INEXACT LINESEARCH
               ALPHA = MAX(H3/(TWO*(H3-H1)),ALFMIN)
               GO TO 190
 
-C   EXACT LINESEARCH
+!C   EXACT LINESEARCH
 
   210 IF (LINE.NE.3) THEN
           ALPHA = LINMIN(LINE,ALFMIN,ONE,T,TOL)
@@ -4061,9 +4114,10 @@ C   EXACT LINESEARCH
       CALL DSCAL(N, ALPHA, S, 1)
       GOTO 240
 
-C   CALL FUNCTIONS AT CURRENT X
+!C   CALL FUNCTIONS AT CURRENT X
 
-  220     T = F
+    220   T = F
+          !$OMP SIMD ALIGNED(C:64,MU) LINEAR(J:1) REDUCTION(+:T)
           DO 230 J=1,M
              IF (J.LE.MEQ) THEN
                  H1 = C(J)
@@ -4075,9 +4129,10 @@ C   CALL FUNCTIONS AT CURRENT X
           H1 = T - T0
           GOTO (200, 210) IEXACT+1
 
-C   CHECK CONVERGENCE
+!C   CHECK CONVERGENCE
 
-  240 H3 = ZERO
+  240  H3 = ZERO
+      !$OMP SIMD ALIGNED(C:64) LINEAR(J:1) REDUCTION(+:H3)    
       DO 250 J=1,M
          IF (J.LE.MEQ) THEN
              H1 = C(J)
@@ -4086,39 +4141,42 @@ C   CHECK CONVERGENCE
          ENDIF
          H3 = H3 + MAX(-C(J),H1)
   250 CONTINUE
-      IF ((ABS(F-F0).LT.ACC .OR. DNRM2(N,S,1).LT.ACC) .AND. H3.LT.ACC)
-     *   THEN
+      IF ((ABS(F-F0).LT.ACC .OR. DNRM2(N,S,1).LT.ACC) .AND. H3.LT.ACC) &
+         THEN
             MODE = 0
          ELSE
             MODE = -1
          ENDIF
       GO TO 330
 
-C   CHECK relaxed CONVERGENCE in case of positive directional derivative
+!C   CHECK relaxed CONVERGENCE in case of positive directional derivative
 
   255 CONTINUE
-      IF ((ABS(F-F0).LT.TOL .OR. DNRM2(N,S,1).LT.TOL) .AND. H3.LT.TOL)
-     *   THEN
+      IF ((ABS(F-F0).LT.TOL .OR. DNRM2(N,S,1).LT.TOL) .AND. H3.LT.TOL) &
+         THEN
             MODE = 0
          ELSE
             MODE = 8
          ENDIF
       GO TO 330
 
-C   CALL JACOBIAN AT CURRENT X
+!C   CALL JACOBIAN AT CURRENT X
 
-C   UPDATE CHOLESKY-FACTORS OF HESSIAN MATRIX BY MODIFIED BFGS FORMULA
+!C   UPDATE CHOLESKY-FACTORS OF HESSIAN MATRIX BY MODIFIED BFGS FORMULA
 
   260 DO 270 I=1,N
          U(I) = G(I) - DDOT(M,A(1,I),1,R,1) - V(I)
   270 CONTINUE
 
-C   L'*S
+!C   L'*S
 
       K = 0
+      !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) FIRSTPRIVATE(K)
+      !$OMP& PRIVATE(I,J) SHARED(N,ZERO,L,S,V) REDUCTION(+:H1)
       DO 290 I=1,N
          H1 = ZERO
          K = K + 1
+         !$OMP SIMD ALIGNED(L:64,S)
          DO 280 J=I+1,N
             K = K + 1
             H1 = H1 + L(K)*S(J)
@@ -4126,16 +4184,19 @@ C   L'*S
          V(I) = S(I) + H1
   290 CONTINUE
 
-C   D*L'*S
+!C   D*L'*S
 
-      K = 1
+         K = 1
+      !$OMP SIMD ALIGNED(V:64,L) LINEAR(I:1)
       DO 300 I=1,N
          V(I) = L(K)*V(I)
          K = K + N1 - I
   300 CONTINUE
 
-C   L*D*L'*S
+!C   L*D*L'*S
 
+      !$OMP PARALLEL DO SCHEDULE(GUIDED,8) DEFAULT(NONE) 
+      !$OMP& PRIVATE(I,J,K) SHARED(N,ZERO,L,V) REDUCTION(+:H1)
       DO 320 I=N,1,-1
          H1 = ZERO
          K = I
@@ -4158,17 +4219,25 @@ C   L*D*L'*S
       CALL LDL(N, L, U, +ONE/H1, V)
       CALL LDL(N, L, V, -ONE/H2, U)
 
-C   END OF MAIN ITERATION
+!C   END OF MAIN ITERATION
 
       GO TO 130
 
-C   END OF SLSQPB
+!C   END OF SLSQPB
 
-  330 END
+  330 END SUBROUTINE
+
+#if defined(__GFORTRAN__) && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+SUBROUTINE LSQ(M,MEQ,N,NL,LA,L,G,A,B,XL,XU,X,Y,W,JW,MODE) !GCC$ ATTRIBUTES HOT :: LSQ !GCC$ ATTRIBUTES aligned(32) :: LSQ
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+SUBROUTINE LSQ(M,MEQ,N,NL,LA,L,G,A,B,XL,XU,X,Y,W,JW,MODE)
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: LSQ
+  !DIR$ OPTIMIZE : 3
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: LSQ
+#endif
 
 
-      SUBROUTINE LSQ(M,MEQ,N,NL,LA,L,G,A,B,XL,XU,X,Y,W,JW,MODE)
-
+#if 0
 C   MINIMIZE with respect to X
 
 C             ||E*X - F||
@@ -4209,15 +4278,26 @@ C               7: RANK DEFECT IN HFTI
 
 c     coded            Dieter Kraft, april 1987
 c     revised                        march 1989
+#endif
 
-      DOUBLE PRECISION L,G,A,B,W,XL,XU,X,Y,
-     .                 DIAG,ZERO,ONE,DDOT,XNORM
+      DOUBLE PRECISION :: L,G,A,B,W,XL,XU,X,Y, &
+                      DIAG,ZERO,ONE,DDOT,XNORM
 
-      INTEGER          JW(*),I,IC,ID,IE,IF,IG,IH,IL,IM,IP,IU,IW,
-     .                 I1,I2,I3,I4,LA,M,MEQ,MINEQ,MODE,M1,N,NL,N1,N2,N3
+      INTEGER          JW(*),I,IC,ID,IE,IF,IG,IH,IL,IM,IP,IU,IW, &
+                       I1,I2,I3,I4,LA,M,MEQ,MINEQ,MODE,M1,N,NL,N1,N2,N3
 
-      DIMENSION        A(LA,N), B(LA), G(N), L(NL),
-     .                 W(*), X(N), XL(N), XU(N), Y(M+N+N)
+      !DIMENSION        A(LA,N), B(LA), G(N), L(NL),
+      !.                 W(*), X(N), XL(N), XU(N), Y(M+N+N)
+      DOUBLE PRECISION, DIMENSION(:,:), ALLOCATABLE :: A
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: B
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: G
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: L
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: W
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: X
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XL
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: XU
+      DOUBLE PRECISION, DIMENSION(:),   ALLOCATABLE :: Y
+      
 
       DATA             ZERO/0.0D0/, ONE/1.0D0/
 
@@ -4225,9 +4305,9 @@ c     revised                        march 1989
       MINEQ = M - MEQ
       M1 = MINEQ + N + N
 
-c  determine whether to solve problem
-c  with inconsistent linerarization (n2=1)
-c  or not (n2=0)
+!c  determine whether to solve problem
+!c  with inconsistent linerarization (n2=1)
+!c  or not (n2=0)
 
       N2 = N1*N/2 + 1
       IF (N2.EQ.NL) THEN
@@ -4237,7 +4317,7 @@ c  or not (n2=0)
       ENDIF
       N3 = N-N2
 
-C  RECOVER MATRIX E AND VECTOR F FROM L AND G
+!C  RECOVER MATRIX E AND VECTOR F FROM L AND G
 
       I2 = 1
       I3 = 1
@@ -4270,13 +4350,13 @@ C  RECOVER MATRIX E AND VECTOR F FROM L AND G
 
       IF (MEQ .GT. 0) THEN
 
-C  RECOVER MATRIX C FROM UPPER PART OF A
+!C  RECOVER MATRIX C FROM UPPER PART OF A
 
           DO 20 I=1,MEQ
               CALL DCOPY (N, A(I,1), LA, W(IC-1+I), MEQ)
    20     CONTINUE
 
-C  RECOVER VECTOR D FROM UPPER PART OF B
+!C  RECOVER VECTOR D FROM UPPER PART OF B
 
           CALL DCOPY (MEQ, B(1), 1, W(ID), 1)
           CALL DSCAL (MEQ,   - ONE, W(ID), 1)
@@ -4287,7 +4367,7 @@ C  RECOVER VECTOR D FROM UPPER PART OF B
 
       IF (MINEQ .GT. 0) THEN
 
-C  RECOVER MATRIX G FROM LOWER PART OF A
+!C  RECOVER MATRIX G FROM LOWER PART OF A
 
           DO 30 I=1,MINEQ
               CALL DCOPY (N, A(MEQ+I,1), LA, W(IG-1+I), M1)
@@ -4295,7 +4375,7 @@ C  RECOVER MATRIX G FROM LOWER PART OF A
 
       ENDIF
 
-C  AUGMENT MATRIX G BY +I AND -I
+!C  AUGMENT MATRIX G BY +I AND -I
 
       IP = IG + MINEQ
       DO 40 I=1,N
@@ -4317,14 +4397,14 @@ C  AUGMENT MATRIX G BY +I AND -I
 
       IF (MINEQ .GT. 0) THEN
 
-C  RECOVER H FROM LOWER PART OF B
+!C  RECOVER H FROM LOWER PART OF B
 
           CALL DCOPY (MINEQ, B(MEQ+1), 1, W(IH), 1)
           CALL DSCAL (MINEQ,       - ONE, W(IH), 1)
 
       ENDIF
 
-C  AUGMENT VECTOR H BY XL AND XU
+!C  AUGMENT VECTOR H BY XL AND XU
 
       IL = IH + MINEQ
       CALL DCOPY (N, XL, 1, W(IL), 1)
@@ -4334,12 +4414,12 @@ C  AUGMENT VECTOR H BY XL AND XU
 
       IW = IU + N
 
-      CALL LSEI (W(IC), W(ID), W(IE), W(IF), W(IG), W(IH), MAX(1,MEQ),
-     .           MEQ, N, N, M1, M1, N, X, XNORM, W(IW), JW, MODE)
+      CALL LSEI (W(IC), W(ID), W(IE), W(IF), W(IG), W(IH), MAX(1,MEQ), &
+                MEQ, N, N, M1, M1, N, X, XNORM, W(IW), JW, MODE)
 
       IF (MODE .EQ. 1) THEN
 
-c   restore Lagrange multipliers
+!c   restore Lagrange multipliers
 
           CALL DCOPY (M,  W(IW),     1, Y(1),      1)
           CALL DCOPY (N3, W(IW+M),   1, Y(M+1),    1)
@@ -4347,9 +4427,9 @@ c   restore Lagrange multipliers
 
       ENDIF
 
-C   END OF SUBROUTINE LSQ
+!C   END OF SUBROUTINE LSQ
 
-      END
+END SUBROUTINE
 
 
       SUBROUTINE LSEI(C,D,E,F,G,H,LC,MC,LE,ME,LG,MG,N,X,XNRM,W,JW,MODE)
@@ -5814,7 +5894,7 @@ C        CLEAN-UP LOOP
    !   write(l,'(10h iteration, 16h  value of cost ,
    !  1 23h  constraint violations)')
 
-c optimization loop (see fig.1 in accompanying VDI-report)
+!c optimization loop (see fig.1 in accompanying VDI-report)
 
  !  10 iv(19) = mode
 !*     simulator
@@ -5836,7 +5916,7 @@ c optimization loop (see fig.1 in accompanying VDI-report)
      ! endif
     !  if (iabs(mode) .eq. 1) goto 10
 
-c end of optimization loop
+!c end of optimization loop
 
     !  write
    !  1    (l, '(5x,7hmode  =, i4, 8h   after , i3, 12h  iterations)')
@@ -5871,9 +5951,9 @@ c end of optimization loop
     !  np=iu(13)
     !  tf=u(nc+np)
     !  call contrl(t,u,iu,theta)
-*     the time interval is normalized
-*     to  0 .le. t .le. 1
-*     therefore dz must be multiplied by tf
+!*     the time interval is normalized
+!*     to  0 .le. t .le. 1
+!*     therefore dz must be multiplied by tf
     !  dz(1)=tf*z(3)*cos(theta(1))
     !  dz(2)=tf*z(3)*sin(theta(1))
     !  dz(3)=tf*g*sin(theta(1))
@@ -5924,7 +6004,7 @@ c end of optimization loop
 
    !   end if
 
-c cost and final states
+!c cost and final states
    !   if (mode.eq.ny) then
 
     !     f=u(nc+np)
