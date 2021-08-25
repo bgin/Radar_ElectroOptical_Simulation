@@ -1,0 +1,19 @@
+
+#ifndef __GMS_BLAS_KERNELS_DEFS_H__
+#define __GMS_BLAS_KERNELS_DEFS_H__
+
+
+#if !defined(GMS_INTERLEAVE_SIMD_OPS_SCHEDULE)
+    #define GMS_INTERLEAVE_SIMD_OPS_SCHEDULE 1
+#endif
+
+
+
+
+
+
+
+
+
+
+#endif /*__GMS_BLAS_KERNELS_DEFS_H__*/
