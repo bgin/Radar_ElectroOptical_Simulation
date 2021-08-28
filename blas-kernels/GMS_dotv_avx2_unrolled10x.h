@@ -50,6 +50,7 @@
 
 #include <stdint.h>
 #include <immintrin.h>
+#include "GMS_blas_kernels_defs.h"
 
 /*
      Helper unions
@@ -58,14 +59,14 @@
 typedef union {
 
     __m256 v;
-    __attribute__((aligned(32))) float f[8];
+    __ATTR_ALIGN__(32) float f[8];
 
 } ymm8r4_t;
 
 typedef union {
 
     __m256d v;
-    __attribute__((aligned(32))) double f[4];
+    __ATTR_ALIGN__(32) double f[4];
 } ymm4r8_t;
 
 
