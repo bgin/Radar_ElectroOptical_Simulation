@@ -1165,7 +1165,20 @@
             ain = ai*(rhosu/rho)**0.35_r8
             !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
             ! Get humidity and saturation vapor pressures
+!$OMP PARALLEL DO SCHEDULE(STATIC,16) DEFAULT(NONE) PRIVATE(k,i) &
+!$OMP&      SHARED(nlev,mgncol,t,p,esl,qvl,tmelt,esi,qvi)            
             DO k=1,nlev
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+!DIR$ CODE_ALIGN(32)
+!DIR$ PREFETCH t:0:4
+!DIR$ PREFETCH t:1:16
+!DIR$ PREFETCH p:0:4
+!DIR$ PREFETCH p:1:16
+!DIR$ PREFETCH esl:0:4
+!DIR$ PREFETCH esl:1:16
+!DIR$ PREFETCH qvl:0:4
+!DIR$ PREFETCH qvl:1:16
+#endif
                 DO i=1,mgncol
                     CALL qsat_water(t(i,k), p(i,k), esl(i,k), qvl(i,k))
                     ! make sure when above freezing that esi=esl, not active yet
@@ -1176,7 +1189,8 @@
                         CALL qsat_ice(t(i,k), p(i,k), esi(i,k), qvi(i,k))
                     END IF 
                 END DO 
-            END DO 
+            END DO
+!$OMP END PARALLEL DO NOWAIT             
             relhum = q / max(qvl, qsmall)
             !===============================================
             ! set mtime here to avoid answer-changing
