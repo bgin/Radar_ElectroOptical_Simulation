@@ -517,45 +517,55 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 				for(i = 0; (i+159) < n; i += 160) {
                                       ii = i;
                                      _mm_prefetch((const char*)&x[i+32],_MM_HINT_T0);
-				     _mm_prefetch((const char*)&x[i+32],_MM_HINT_T0);
-				     xv[0]     = _mm512_load_ps(&x[i+0]);
-				     yv[0]     = _mm512_load_ps(&y[i+0]);
-				     rhov0.v = _mm512_fmadd_ps(xv[0],yv[0],rhov0.v);
-				     xv[1]     = _mm512_load_ps(&x[i+16]);
-				     yv[1]     = _mm512_load_ps(&y[i+16]);
-				     rhov1.v = _mm512_fmadd_ps(xv[1],yv[1],rhov1.v);
+				     _mm_prefetch((const char*)&y[i+32],_MM_HINT_T0);
+				     rhov0.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+0]),
+				                              _mm512_load_ps(&y[i+0]),
+							      rhov0.v);               
+				     rhov1.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+16]),
+				                              _mm512_load_ps(&y[i+16]),
+							      rhov1.v);   
 				     _mm_prefetch((const char*)&x[i+64],_MM_HINT_T0);
-				     _mm_prefetch((const char*)&x[i+64],_MM_HINT_T0);
-				     xv[2]     = _mm512_load_ps(&x[i+32]);
-				     yv[2]     = _mm512_load_ps(&y[i+32]);
-				     rhov2.v = _mm512_fmadd_ps(xv[2],yv[2],rhov2.v);
-				     xv[3]     = _mm512_load_ps(&x[i+48]);
-				     yv[3]     = _mm512_load_ps(&y[i+48]);
-				     rhov3.v = _mm512_fmadd_ps(xv[3],yv[3],rhov3.v);
+				     _mm_prefetch((const char*)&y[i+64],_MM_HINT_T0);
+				     rhov2.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+32]),
+				                              _mm512_load_ps(&y[i+32]),
+							      rhov2.v);
+				     rhov3.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+48]),
+				                              _mm512_load_ps(&y[i+48]),
+							      rhov3.v);   
 				     _mm_prefetch((const char*)&x[i+96],_MM_HINT_T0);
-				     _mm_prefetch((const char*)&x[i+96],_MM_HINT_T0);
-				     xv[4]     = _mm512_load_ps(&x[i+64]);
-				     yv[4]     = _mm512_load_ps(&y[i+64]);
-				     rhov4.v = _mm512_fmadd_ps(xv[4],yv[4],rhov4.v);
-				     xv[5]     = _mm512_load_ps(&x[i+80]);
-				     yv[5]     = _mm512_load_ps(&y[i+80]);
-				     rhov5.v = _mm512_fmadd_ps(xv[5],yv[5],rhov5.v);
+				     _mm_prefetch((const char*)&y[i+96],_MM_HINT_T0);
+				     rhov4.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+64]),
+				                              _mm512_load_ps(&y[i+64]),
+							      rhov4.v);
+				     rhov5.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+80]),
+				                              _mm512_load_ps(&y[i+80]),
+							      rhov5.v);   
 				     _mm_prefetch((const char*)&x[i+128],_MM_HINT_T0);
-				     _mm_prefetch((const char*)&x[i+128],_MM_HINT_T0);
-				     xv[6]     = _mm512_load_ps(&x[i+96]);
-				     yv[6]     = _mm512_load_ps(&y[i+96]);
-				     rhov6.v = _mm512_fmadd_ps(xv[6],yv[6],rhov6.v);
-				     xv[7]     = _mm512_load_ps(&x[i+112]);
-				     yv[7]     = _mm512_load_ps(&y[i+112]);
-				     rhov7.v = _mm512_fmadd_ps(xv[7],yv[7],rhov7.v);
+				     _mm_prefetch((const char*)&y[i+128],_MM_HINT_T0);
+				     rhov6.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+96]),
+				                              _mm512_load_ps(&y[i+96]),
+							      rhov6.v);   
+				     rhov7.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+112]),
+				                              _mm512_load_ps(&y[i+112]),
+							      rhov7.v);   
 				     _mm_prefetch((const char*)&x[i+160],_MM_HINT_T0);
-				     _mm_prefetch((const char*)&x[i+160],_MM_HINT_T0);
-				     xv[8]     = _mm512_load_ps(&x[i+128]);
-				     yv[8]     = _mm512_load_ps(&y[i+128]);
-				     rhov8.v = _mm512_fmadd_ps(xv[8],yv[8],rhov8.v);
-				     xv[9]     = _mm512_load_ps(&x[i+144]);
-				     yv[9]     = _mm512_load_ps(&y[i+144]);
-				     rhov9.v = _mm512_fmadd_ps(xv[9],yv[9],rhov9.v);
+				     _mm_prefetch((const char*)&y[i+160],_MM_HINT_T0);
+				     rhov8.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+128]),
+				                              _mm512_load_ps(&y[i+128]),
+							      rhov8.v);   
+				     rhov9.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[i+144]),
+				                              _mm512_load_ps(&y[i+144]),
+							      rhov9.v);   
 				                                     
 				}
 
@@ -565,57 +575,61 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 		                      rhov3.v += rhov8.v;
 		                      rhov4.v += rhov9.v;
 
-				for(; (i+79) < n; i += 80) {
+				for(; (ii+79) < n; ii += 80) {
 
-                                       xv[0]     = _mm512_load_ps(&x[i+0]);
-				       yv[0]     = _mm512_load_ps(&y[i+0]);
-				       rhov0.v = _mm512_fmadd_ps(xv[0],yv[0],rhov0.v);
-				       xv[1]     = _mm512_load_ps(&x[i+16]);
-				       yv[1]     = _mm512_load_ps(&y[i+16]);
-				       rhov1.v = _mm512_fmadd_ps(xv[1],yv[1],rhov1.v);
-				       //_mm_prefetch((const char*)&x[i+64],_MM_HINT_T0);
-				       //_mm_prefetch((const char*)&x[i+64],_MM_HINT_T0);
-				       xv[2]     = _mm512_load_ps(&x[i+32]);
-				       yv[2]     = _mm512_load_ps(&y[i+32]);
-				       rhov2.v = _mm512_fmadd_ps(xv[2],yv[2],rhov2.v);
-				       xv[3]     = _mm512_load_ps(&x[i+48]);
-				       yv[3]     = _mm512_load_ps(&y[i+48]);
-				       rhov3.v = _mm512_fmadd_ps(xv[3],yv[3],rhov3.v);
-				       //_mm_prefetch((const char*)&x[i+96],_MM_HINT_T0);
-				       //_mm_prefetch((const char*)&x[i+96],_MM_HINT_T0);
-				       xv[4]     = _mm512_load_ps(&x[i+64]);
-				       yv[4]     = _mm512_load_ps(&y[i+64]);
-				       rhov4.v = _mm512_fmadd_ps(xv[4],yv[4],rhov4.v);
-
+                                     rhov0.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+0]),
+				                              _mm512_load_ps(&y[ii+0]),
+							      rhov0.v);               
+				     rhov1.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+16]),
+				                              _mm512_load_ps(&y[ii+16]),
+							      rhov1.v);   
+				    
+				     rhov2.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+32]),
+				                              _mm512_load_ps(&y[ii+32]),
+							      rhov2.v);
+				     rhov3.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+48]),
+				                              _mm512_load_ps(&y[ii+48]),
+							      rhov3.v);   
+				      rhov4.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+64]),
+				                              _mm512_load_ps(&y[ii+64]),
+							      rhov4.v);
 				}
 
 				     rhov0.v += rhov2.v;
 		                     rhov1.v += rhov3.v;
 		                     rhov0.v += rhov4.v;
 
-				for(; (i+31) < n; i += 32) {
+				for(; (ii+31) < n; ii += 32) {
 
-                                       xv[0]     = _mm512_load_ps(&x[i+0]);
-				       yv[0]     = _mm512_load_ps(&y[i+0]);
-				       rhov0.v = _mm512_fmadd_ps(xv[0],yv[0],rhov0.v);
-				       xv[1]     = _mm512_load_ps(&x[i+16]);
-				       yv[1]     = _mm512_load_ps(&y[i+16]);
-				       rhov1.v = _mm512_fmadd_ps(xv[1],yv[1],rhov1.v); 
+                                     rhov0.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+0]),
+				                              _mm512_load_ps(&y[ii+0]),
+							      rhov0.v);               
+				     rhov1.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+16]),
+				                              _mm512_load_ps(&y[ii+16]),
+							      rhov1.v);   
 
 				}
 
 				    	rhov0.v += rhov1.v;
 
-			        for(; (i+15) < n; i += 16) {
+			        for(; (ii+15) < n; ii += 16) {
 
-                                       xv[0]     = _mm512_load_ps(&x[i+0]);
-				       yv[0]     = _mm512_load_ps(&y[i+0]);
-				       rhov0.v = _mm512_fmadd_ps(xv[0],yv[0],rhov0.v);
+                                      rhov0.v =
+				              _mm512_fmadd_ps(_mm512_load_ps(&x[ii+0]),
+				                              _mm512_load_ps(&y[ii+0]),
+							      rhov0.v);   
 
 				}
 
-				for(; (i+0) < n; i += 1) {
-                                      rho0 += x[i] * y[i];
+				for(; (ii+0) < n; ii += 1) {
+                                      rho0 += x[ii] * y[ii];
 				}
 
 				rho0 += _mm512_reduce_add_ps(rhov0.v);
@@ -1222,44 +1236,54 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 
                                      _mm_prefetch((const char*)&x[i+16],_MM_HINT_T0);
 				     _mm_prefetch((const char*)&y[i+16],_MM_HINT_T0);
-				     xv[0] = _mm512_load_pd(&x[i+0]);
-				     yv[0] = _mm512_load_pd(&y[i+0]);
-				     rhov[0].v = _mm512_fmadd_pd(xv[0],yv[0],rhov[0].v);
-				     xv[1] = _mm512_load_pd(&x[i+8]);
-				     yv[1] = _mm512_load_pd(&y[i+8]);
-				     rhov[1].v = _mm512_fmadd_pd(xv[1],yv[1],rhov[1].v);
+				     rhov0.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+0]),
+						                _mm512_load_pd(&y[i+0]),
+								rhov0.v);
+				      rhov1.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+8]),
+						                _mm512_load_pd(&y[i+8]),
+								rhov1.v);
 				     _mm_prefetch((const char*)&x[i+32],_MM_HINT_T0);
 				     _mm_prefetch((const char*)&y[i+32],_MM_HINT_T0);
-				     xv[2] = _mm512_load_pd(&x[i+16]);
-				     yv[2] = _mm512_load_pd(&y[i+16]);
-				     rhov[2].v = _mm512_fmadd_pd(xv[2],yv[2],rhov[2].v);
-				     xv[3] = _mm512_load_pd(&x[i+24]);
-				     yv[3] = _mm512_load_pd(&y[i+24]);
-				     rhov[3].v = _mm512_fmadd_pd(xv[3],yv[3],rhov[3].v);
+				      rhov2.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+16]),
+						                _mm512_load_pd(&y[i+16]),
+								rhov2.v);
+				      rhov3.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+24]),
+						                _mm512_load_pd(&y[i+24]),
+								rhov3.v);
 				     _mm_prefetch((const char*)&x[i+48],_MM_HINT_T0);
 				     _mm_prefetch((const char*)&y[i+48],_MM_HINT_T0);
-				     xv[4] = _mm512_load_pd(&x[i+32]);
-				     yv[4] = _mm512_load_pd(&y[i+32]);
-				     rhov[4].v = _mm512_fmadd_pd(xv[4],yv[4],rhov[4].v);
-				     xv[5] = _mm512_load_pd(&x[i+40]);
-				     yv[5] = _mm512_load_pd(&y[i+40]);
-				     rhov[5].v = _mm512_fmadd_pd(xv[5],yv[5],rhov[5].v);
+				      rhov4.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+32]),
+						                _mm512_load_pd(&y[i+32]),
+								rhov4.v);
+				      rhov5.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+40]),
+						                _mm512_load_pd(&y[i+40]),
+								rhov5.v);
 				     _mm_prefetch((const char*)&x[i+64],_MM_HINT_T0);
 				     _mm_prefetch((const char*)&y[i+64],_MM_HINT_T0);
-				     xv[6] = _mm512_load_pd(&x[i+48]);
-				     yv[6] = _mm512_load_pd(&y[i+48]);
-				     rhov[6].v = _mm512_fmadd_pd(xv[6],yv[6],rhov[6].v);
-				     xv[7] = _mm512_load_pd(&x[i+56]);
-				     yv[7] = _mm512_load_pd(&y[i+56]);
-				     rhov[7].v = _mm512_fmadd_pd(xv[7],yv[7],rhov[7].v);
+				      rhov6.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+48]),
+						                _mm512_load_pd(&y[i+48]),
+								rhov6.v);
+				      rhov7.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+56]),
+						                _mm512_load_pd(&y[i+56]),
+								rhov7.v);
 				     _mm_prefetch((const char*)&x[i+80],_MM_HINT_T0);
 				     _mm_prefetch((const char*)&y[i+80],_MM_HINT_T0);
-				     xv[8] = _mm512_load_pd(&x[i+64]);
-				     yv[8] = _mm512_load_pd(&y[i+64]);
-				     rhov[8].v = _mm512_fmadd_pd(xv[8],yv[8],rhov[8].v);
-				     xv[9] = _mm512_load_pd(&x[i+72]);
-				     yv[9] = _mm512_load_pd(&y[i+72]);
-				     rhov[9].v = _mm512_fmadd_pd(xv[9],yv[9],rhov[9].v);
+				     rhov8.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+64]),
+						                _mm512_load_pd(&y[i+64]),
+								rhov8.v);
+				     rhov9.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[i+72]),
+						                _mm512_load_pd(&y[i+72]),
+								rhov9.v);
 
 			       }
 
@@ -1271,25 +1295,28 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 
 			       for(; (ii+39) < n; ii += 40) {
 
-                                     xv[0] = _mm512_load_pd(&x[ii+0]);
-				     yv[0] = _mm512_load_pd(&y[ii+0]);
-				     rhov[0].v = _mm512_fmadd_pd(xv[0],yv[0],rhov[0].v);
-				     xv[1] = _mm512_load_pd(&x[ii+8]);
-				     yv[1] = _mm512_load_pd(&y[ii+8]);
-				     rhov[1].v = _mm512_fmadd_pd(xv[1],yv[1],rhov[1].v);
-				     //_mm_prefetch((const char*)&x[i+32],_MM_HINT_T0);
-				     //_mm_prefetch((const char*)&y[i+32],_MM_HINT_T0);
-				     xv[2] = _mm512_load_pd(&x[ii+16]);
-				     yv[2] = _mm512_load_pd(&y[ii+16]);
-				     rhov[2].v = _mm512_fmadd_pd(xv[2],yv[2],rhov[2].v);
-				     xv[3] = _mm512_load_pd(&x[ii+24]);
-				     yv[3] = _mm512_load_pd(&y[ii+24]);
-				     rhov[3].v = _mm512_fmadd_pd(xv[3],yv[3],rhov[3].v);
-				     //_mm_prefetch((const char*)&x[i+48],_MM_HINT_T0);
-				     // _mm_prefetch((const char*)&y[i+48],_MM_HINT_T0);
-				     xv[4] = _mm512_load_pd(&x[ii+32]);
-				     yv[4] = _mm512_load_pd(&y[ii+32]);
-				     rhov[4].v = _mm512_fmadd_pd(xv[4],yv[4],rhov[4].v);
+                                      rhov0.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+0]),
+						                _mm512_load_pd(&y[ii+0]),
+								rhov0.v);
+				      rhov1.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+8]),
+						                _mm512_load_pd(&y[ii+8]),
+								rhov1.v);
+				    
+				      rhov2.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+16]),
+						                _mm512_load_pd(&y[ii+16]),
+								rhov2.v);
+				      rhov3.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+24]),
+						                _mm512_load_pd(&y[ii+24]),
+								rhov3.v);
+				    
+				      rhov4.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+32]),
+						                _mm512_load_pd(&y[ii+32]),
+								rhov4.v);
 
 				 }
 
@@ -1299,20 +1326,23 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 
 				 for(; (ii+31) < n; ii += 32) {
 
-                                        xv[0] = _mm512_load_pd(&x[ii+0]);
-				        yv[0] = _mm512_load_pd(&y[ii+0]);
-				        rhov[0].v = _mm512_fmadd_pd(xv[0],yv[0],rhov[0].v);
-				        xv[1] = _mm512_load_pd(&x[ii+8]);
-				        yv[1] = _mm512_load_pd(&y[ii+8]);
-				        rhov[1].v = _mm512_fmadd_pd(xv[1],yv[1],rhov[1].v);
-				     //_mm_prefetch((const char*)&x[i+32],_MM_HINT_T0);
-				     //_mm_prefetch((const char*)&y[i+32],_MM_HINT_T0);
-				        xv[2] = _mm512_load_pd(&x[ii+16]);
-				        yv[2] = _mm512_load_pd(&y[ii+16]);
-				        rhov[2].v = _mm512_fmadd_pd(xv[2],yv[2],rhov[2].v);
-				        xv[3] = _mm512_load_pd(&x[ii+24]);
-				        yv[3] = _mm512_load_pd(&y[ii+24]);
-				        rhov[3].v = _mm512_fmadd_pd(xv[3],yv[3],rhov[3].v);
+                                       rhov0.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+0]),
+						                _mm512_load_pd(&y[ii+0]),
+								rhov0.v);
+				      rhov1.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+8]),
+						                _mm512_load_pd(&y[ii+8]),
+								rhov1.v);
+				    
+				      rhov2.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+16]),
+						                _mm512_load_pd(&y[ii+16]),
+								rhov2.v);
+				      rhov3.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+24]),
+						                _mm512_load_pd(&y[ii+24]),
+								rhov3.v);
 
 				 }
 
@@ -1321,12 +1351,14 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 
 				 for(; (ii+15) < n; ii += 16) {
 
-                                        xv[0] = _mm512_load_pd(&x[ii+0]);
-				        yv[0] = _mm512_load_pd(&y[ii+0]);
-				        rhov[0].v = _mm512_fmadd_pd(xv[0],yv[0],rhov[0].v);
-				        xv[1] = _mm512_load_pd(&x[ii+8]);
-				        yv[1] = _mm512_load_pd(&y[ii+8]);
-				        rhov[1].v = _mm512_fmadd_pd(xv[1],yv[1],rhov[1].v);
+                                      rhov0.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+0]),
+						                _mm512_load_pd(&y[ii+0]),
+								rhov0.v);
+				      rhov1.v =
+				                _mm512_fmadd_pd(_mm512_load_pd(&x[ii+8]),
+						                _mm512_load_pd(&y[ii+8]),
+								rhov1.v);
 
 				 }
 				     
@@ -1335,9 +1367,10 @@ void sdotv_a_zmm16r4_unroll10x(const int32_t n,
 
 			        for(; (ii+7) < n; ii += 8) {
 
-                                        xv[0] = _mm512_load_pd(&x[ii+0]);
-				        yv[0] = _mm512_load_pd(&y[ii+0]);
-				        rhov[0].v = _mm512_fmadd_pd(xv[0],yv[0],rhov[0].v);
+                                      rhov0.v =
+				              _mm512_fmadd_pd(_mm512_load_pd(&x[ii+0]),
+						                _mm512_load_pd(&y[ii+0]),
+								rhov0.v);
 
 				}
 
