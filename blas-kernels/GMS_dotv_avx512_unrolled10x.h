@@ -49,25 +49,10 @@
  // This code must be compiled as C code.
 
 #include <stdint.h>
-#include <immintrin.h>
 #include "GMS_blas_kernels_defs.h"
 
-                    /*
-                        Helper unions
-                     */
-
-		   typedef union {
-
-                       __m512 v;
-		       __ATTR_ALIGN__(64) float f[16];
-		       
-		   } zmm16r4_t;
-
-		   typedef union {
-
-		       __m512d v;
-		       __ATTR_ALIGN__(64) double f[8];
-		   } zmm8r8_t;
+                   
+		 
 
 
 void
