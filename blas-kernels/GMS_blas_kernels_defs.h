@@ -2,6 +2,7 @@
 #ifndef __GMS_BLAS_KERNELS_DEFS_H__
 #define __GMS_BLAS_KERNELS_DEFS_H__
 
+#include <immintrin.h>
 
 #if !defined(GMS_INTERLEAVE_SIMD_OPS_SCHEDULE)
     #define GMS_INTERLEAVE_SIMD_OPS_SCHEDULE 1
@@ -72,6 +73,31 @@
 #endif
 
 
+                  typedef union {
+
+                      __m256 v;
+                      __ATTR_ALIGN__(32) float f[8];
+                  } ymm8r4_t;
+
+                  typedef union {
+                      
+                       __m256d v;
+                       __ATTR_ALIGN__(32) double f[4];
+                  } ymm4r8_t;
+
+
+                  typedef union {
+
+                       __m512 v;
+		       __ATTR_ALIGN__(64) float f[16];
+		       
+		   } zmm16r4_t;
+
+		   typedef union {
+
+		       __m512d v;
+		       __ATTR_ALIGN__(64) double f[8];
+		   } zmm8r8_t;
 
 
 
