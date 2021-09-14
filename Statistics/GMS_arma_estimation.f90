@@ -258,43 +258,27 @@ SUBROUTINE karma(ip,iq,ir,phi,theta,a,p,v,n,w,resid,sumlog,ssq,  &
 INTEGER(i4), INTENT(IN)      :: ip
 INTEGER(i4), INTENT(IN)      :: iq
 INTEGER(i4), INTENT(IN)      :: ir
-REAL(sp), INTENT(IN)         :: phi(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED phi:64
-#endif
-REAL(sp), INTENT(IN)         :: theta(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED theta:64
-#endif
-REAL(sp), INTENT(IN OUT)     :: a(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED a:64
-#endif
-REAL(sp), INTENT(IN OUT)     :: p(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED p:64
-#endif
-REAL(sp), INTENT(IN)         :: v(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED v:64
-#endif
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: phi(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: theta(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN OUT)     :: a(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN OUT)     :: p(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: v(:)
+
 INTEGER(i4), INTENT(IN)      :: n
-REAL(sp), INTENT(IN)         :: w(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED w:64
-#endif
-REAL(sp), INTENT(OUT)        :: resid(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED resid:64
-#endif
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: w(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)        :: resid(:)
+
 REAL(sp), INTENT(IN OUT)     :: sumlog
 REAL(sp), INTENT(IN OUT)     :: ssq
 INTEGER(i4), INTENT(IN)      :: iupd
 REAL(sp), INTENT(IN)         :: delta
-REAL(sp), INTENT(OUT)        :: e(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED e:64
-#endif
+REAL(sp), ALLOCATABLE, INTENT(OUT)        :: e(:)
+
 INTEGER(i4), INTENT(IN OUT)  :: nit
 
 REAL(sp)     :: wnext, a1, dt, et, ft, ut, g
@@ -327,18 +311,13 @@ IF (nit == 0) THEN
       END IF
       a(ir) = zero
       IF (ip /= 0) THEN
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(a:64,phi:64)
-#endif        
+
+
+ !$OMP SIMD  REDUCTION(+:a) ALIGNED(a:64) ALIGNED(phi:64) LINEAR(j:1)
         DO  j = 1, ip
           a(j) = a(j) + phi(j) * a1
        END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif       
+     
       END IF
       ind = 0
       indn = ir
@@ -363,6 +342,7 @@ IF (nit == 0) THEN
       DO  j = 2, ir
         g = p(j) / ft
         a(j) = a(j) + g * ut
+!$OMP SIMD ALIGNED(p:64) LINEAR(l:1)        
         DO  l = j, ir
           ind = ind + 1
           p(ind) = p(ind) - g * p(l)
@@ -390,36 +370,26 @@ DO  ii = i, n
   et = w(ii)
   indw = ii
   IF (ip /= 0) THEN
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD REDUCTION(-:et)
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD REDUCTION(-:et) ALIGNED(w:64,phi:64)
+
+!$OMP SIMD REDUCTION(-:et) ALIGNED(w:64) ALIGNED(phi:64) LINEAR(j:1)
 #endif   
     DO  j = 1, ip
       indw = indw - 1
       IF (indw < 1) EXIT
       et = et - phi(j) * w(indw)
    END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif     
+   
   END IF
   IF (iq /= 0) THEN
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD REDUCTION(-:et)
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD REDUCTION(-:et) ALIGNED(theta:64,e:64)
-#endif       
+
+
+ !$OMP SIMD REDUCTION(-:et) ALIGNED(theta:64) ALIGNED(e:64) LINEAR(j:1)
     DO  j = 1, iq
       inde = inde - 1
       IF (inde == 0) inde = iq
       et = et - theta(j) * e(inde)
    END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif     
+   
   END IF
   e(inde) = et
   resid(ii) = et
@@ -607,13 +577,13 @@ END SUBROUTINE inclu2
 
 
 #if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
-SUBROUTINE regres(np,nrbar,rbar,thetab,beta)  !GCC$ ATTRIBUTES inline :: regress  !GCC$ ATTRIBUTES ALIGNED(32) :: regress
+SUBROUTINE regres(np,nrbar,rbar,thetab,beta)  !GCC$ ATTRIBUTES inline :: regres  !GCC$ ATTRIBUTES ALIGNED(32) :: regres
 #elif defined (__INTEL_COMPILER) || defined (__ICC)
 SUBROUTINE regres(np,nrbar,rbar,thetab,beta)
-      !DIR$ ATTRIBUTES FORCEINLINE :: regress
-      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: regress
+      !DIR$ ATTRIBUTES FORCEINLINE :: regres
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: regres
       !DIR$ OPTIMIZE : 3
-      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: regress
+      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: regres
 #endif
 
 !   ALGORITHM AS 154.4  APPL. STATIST. (1980) VOL.29, P.311
