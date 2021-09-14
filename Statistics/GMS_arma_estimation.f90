@@ -1,9 +1,8 @@
 MODULE mod_arma_estimation
 
   use mod_kinds, only : i4,sp
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
   use omp_lib
-#endif
+
 IMPLICIT NONE
 
 ! Code converted using TO_F90 by Alan Miller
@@ -24,7 +23,7 @@ integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_MAJOR = 1
   
 integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_MINOR = 1
    
-integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_MICRO = 0
+integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_MICRO = 1
    
 integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_FULLVER = 1000*MOD_ARMA_ESTIMATION_MAJOR + &
                                                              100*MOD_ARMA_ESTIMATION_MINOR  + &
@@ -33,7 +32,7 @@ integer(kind=i4), parameter, public :: MOD_ARMA_ESTIMATION_FULLVER = 1000*MOD_AR
 character(*),  parameter, public :: MOD_ARMA_ESTIMATION_CREATE_DATE = "29-11-2018 15:37 +00200 (SUN 29 NOV  2020 GMT+2) "
    
     ! Module build date ( should be set after successful compilation)
-character(*),  parameter, public :: MOD_ARMA_ESTIMATION_BUILD_DATE = __DATE__ " " __TIME__
+character(*),  parameter, public :: MOD_ARMA_ESTIMATION_BUILD_DATE = __DATE__ ":" __TIME__
    
     ! Module author info
 character(*),  parameter, public :: MOD_ARMA_ESTIMATION_AUTHOR = "ALGORITHM AS 154, ALGORITHM AS 182 (converted to F90 by Alan Miller), modified by Bernard Gingold, beniekg@gmail.com "
@@ -54,7 +53,8 @@ SUBROUTINE starma(ip,iq,ir,np,phi,theta,a,p,v,thetab,xnext,xrow,  &
 SUBROUTINE starma(ip,iq,ir,np,phi,theta,a,p,v,thetab,xnext,xrow,  &
      rbar,nrbar,ifault)
   !DIR$ CODE_ALIGN : 32 :: starma
-  !DIR$ ATTRIBUTES INLINE :: starma
+  !DIR$ OPTIMIZE : 3 
+  !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: starma
 #endif
 
 !  INVOKING THIS SUBROUTINE SETS THE VALUES OF V AND PHI, AND
@@ -69,42 +69,24 @@ INTEGER(i4), INTENT(IN)   :: ip
 INTEGER(i4), INTENT(IN)   :: iq
 INTEGER(i4), INTENT(IN)   :: ir
 INTEGER(i4), INTENT(IN)   :: np
-REAL(sp), INTENT(OUT)     :: phi(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED phi:64
-#endif
-REAL(sp), INTENT(IN)      :: theta(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED theta:64
-#endif
-REAL(sp), INTENT(OUT)     :: a(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED a:64
-#endif
-REAL(sp), INTENT(OUT)     :: p(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED p:64
-#endif
-REAL(sp), INTENT(OUT)     :: v(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED v:64
-#endif
-REAL(sp), INTENT(OUT)     :: thetab(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED thetab:64
-#endif
-REAL(sp), INTENT(OUT)     :: xnext(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED xnext:64
-#endif
-REAL(sp), INTENT(OUT)     :: xrow(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED xrow:64
-#endif
-REAL(sp), INTENT(OUT)     :: rbar(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED rbar:64
-#endif
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: phi(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN)      :: theta(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: a(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: p(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: v(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: thetab(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: xnext(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: xrow(:)
+
+REAL(sp), ALLOCATABLE, INTENT(OUT)     :: rbar(:)
+
 INTEGER(i4), INTENT(IN)   :: nrbar
 INTEGER(i4), INTENT(OUT)  :: ifault
 
@@ -126,21 +108,16 @@ IF (ir == 1) ifault = 8
 IF (ifault /= 0) RETURN
 
 !        NOW SET A(0), V AND PHI.
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(a:64,v:64,phi:64,theta:64)
-#endif
+
+!$OMP SIMD ALIGNED(a:64) ALIGNED(v:64) \
+!$OMP& ALIGNED(phi:64) ALIGNED(theta:64) LINEAR(i:1)
 DO  i = 2, ir
   a(i) = zero
   IF (i > ip) phi(i) = zero
   v(i) = zero
   IF (i <= iq+1) v(i) = theta(i-1)
 END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif
+
 a(1) = zero
 IF (ip == 0) phi(1) = zero
 v(1) = one
@@ -166,20 +143,16 @@ IF (ip /= 0) THEN
   irank = 0
   ssqerr = zero
   rbar(1:nrbar) = zero
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(p:64,xnext:64,thetab:64)
+
+!$OMP SIMD ALIGNED(p:64) ALIGNED(thetab:64) ALIGNED(xnext:64) \
+!$OMP& LINEAR(i:1)
 #endif
   DO  i = 1, np
     p(i) = zero
     thetab(i) = zero
     xnext(i) = zero
  END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif
+
   ind = 0
   ind1 = 0
   npr = np - ir
@@ -225,19 +198,13 @@ IF (ip /= 0) THEN
 !        NOW RE-ORDER P.
   
   ind = npr
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(p:64,xnext:64)
-#endif
+
+!$OMP SIMD ALIGNED(p:64) ALIGNED(xnext:64) LINEAR(i:1)
   DO  i = 1, ir
     ind = ind + 1
     xnext(i) = p(ind)
  END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif
+
   ind = np
   ind1 = npr
   DO  i = 1, npr
@@ -466,11 +433,12 @@ END SUBROUTINE karma
 
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v) !GCC$ ATTRIBUTES HOT :: kalfor !GCC$ ATTRIBUTES INLINE :: kalfor !GCC$ ATTRIBUTES ALIGNED(32) :: kalfor
+SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v) !GCC$ ATTRIBUTES HOT :: kalfor  !GCC$ ATTRIBUTES ALIGNED(32) :: kalfor
 #elif defined __INTEL_COMPILER || defined __ICC
 SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v)
     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: kalfor
-    !DIR$ ATTRIBUTES INLINE :: kalfor
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: kalfor
 #endif
 
 ! N.B. Argument WORK has been removed.
@@ -483,22 +451,14 @@ INTEGER(i4), INTENT(IN)      :: m
 INTEGER(i4), INTENT(IN)      :: ip
 INTEGER(i4), INTENT(IN)      :: ir
 INTEGER(i4), INTENT(IN OUT)  :: np
-REAL(sp), INTENT(IN)         :: phi(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED phi:64
-#endif
-REAL(sp), INTENT(IN OUT)     :: a(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED a:64
-#endif
-REAL(sp), INTENT(IN OUT)     :: p(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED p:64
-#endif
-REAL(sp), INTENT(IN)         :: v(:)
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$  ASSUME_ALIGNED v:64
-#endif
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: phi(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN OUT)     :: a(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN OUT)     :: p(:)
+
+REAL(sp), ALLOCATABLE, INTENT(IN)         :: v(:)
+
 REAL(sp)     :: dt, a1, phii, phij, phijdt, t0
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
 REAL(sp), dimension(ir) :: work !GCC$ ATTRIBUTES ALIGNED(64) ::  work
@@ -514,35 +474,24 @@ DO  l = 1, m
   
   a1 = a(1)
   IF (ir /= 1) THEN
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(a:64)
-#endif 
+
+
     DO  i = 1, ir1
          t0 = a(i+1)
          a(i) = t0
     END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif         
+       
   END IF
   a(ir) = zero
 
   IF (ip /= 0) THEN
-#if defined __INTEL_COMPILER || defined __ICC
-!DIR$      VECTOR ALIGNED
-!DIR$      SIMD VECTORLENGTHFOR(REAL(KIND=4))
-#elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP SIMD ALIGNED(a:64,phi:64)
-#endif 
+
+!$OMP SIMD REDUCTION(+:a) ALIGNED(a:64) \
+!$OMP& ALIGNED(phi:64) LINEAR(j:1)
     DO  j = 1, ip
       a(j) = a(j) + phi(j) * a1
    END DO
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-!$OMP END SIMD
-#endif   
+ 
   END IF
   
 !        PREDICT P.
@@ -571,10 +520,17 @@ RETURN
 END SUBROUTINE kalfor
 
 
-
+#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
 SUBROUTINE inclu2(np,weight,xnext,xrow,ynext,d,rbar,thetab,  &
-                  ssqerr,recres,irank,ifault)
-
+                  ssqerr,recres,irank,ifault) !GCC$ ATTRIBUTES inline :: inclu2  !GCC$ ATTRIBUTES ALIGNED(32) :: inclu2
+#elif defined (__INTEL_COMPILER) || defined (__ICC)
+SUBROUTINE inclu2(np,weight,xnext,xrow,ynext,d,rbar,thetab,  &
+                  ssqerr,recres,irank,ifault) 
+      !DIR$ ATTRIBUTES FORCEINLINE :: inclu2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: inclu2
+      !DIR$ OPTIMIZE : 3
+      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: inclu2
+#endif
 ! N.B. Argument NRBAR has been removed.
 
 !   ALGORITHM AS 154.3  APPL. STATIST. (1980) VOL.29, P.311
@@ -585,12 +541,12 @@ SUBROUTINE inclu2(np,weight,xnext,xrow,ynext,d,rbar,thetab,  &
 
 INTEGER, INTENT(IN)   :: np
 REAL, INTENT(IN)      :: weight
-REAL, INTENT(IN)      :: xnext(:)
-REAL, INTENT(OUT)     :: xrow(:)
+REAL, ALLOCATable, INTENT(IN)      :: xnext(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: xrow(:)
 REAL, INTENT(IN)      :: ynext
-REAL, INTENT(IN OUT)  :: d(:)
-REAL, INTENT(IN OUT)  :: rbar(:)
-REAL, INTENT(IN OUT)  :: thetab(:)
+REAL, ALLOCATABLE, INTENT(IN OUT)  :: d(:)
+REAL, ALLOCATABLE, INTENT(IN OUT)  :: rbar(:)
+REAL, ALLOCATABLE, INTENT(IN OUT)  :: thetab(:)
 REAL, INTENT(OUT)     :: ssqerr
 REAL, INTENT(OUT)     :: recres
 INTEGER, INTENT(OUT)  :: irank
@@ -626,6 +582,7 @@ DO  i = 1, np
     wt = cbar * wt
     IF (i /= np) THEN
       i1 = i + 1
+   !$OMP SIMD ALIGNED(xrow:64) ALIGNED(rbar:64) LINEAR(k:1)
       DO  k = i1, np
         ithisr = ithisr + 1
         xk = xrow(k)
@@ -649,8 +606,15 @@ RETURN
 END SUBROUTINE inclu2
 
 
-
+#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
+SUBROUTINE regres(np,nrbar,rbar,thetab,beta)  !GCC$ ATTRIBUTES inline :: regress  !GCC$ ATTRIBUTES ALIGNED(32) :: regress
+#elif defined (__INTEL_COMPILER) || defined (__ICC)
 SUBROUTINE regres(np,nrbar,rbar,thetab,beta)
+      !DIR$ ATTRIBUTES FORCEINLINE :: regress
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: regress
+      !DIR$ OPTIMIZE : 3
+      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: regress
+#endif
 
 !   ALGORITHM AS 154.4  APPL. STATIST. (1980) VOL.29, P.311
 
@@ -661,9 +625,9 @@ SUBROUTINE regres(np,nrbar,rbar,thetab,beta)
 
 INTEGER, INTENT(IN)  :: np
 INTEGER, INTENT(IN)  :: nrbar
-REAL, INTENT(IN)     :: rbar(:)
-REAL, INTENT(IN)     :: thetab(:)
-REAL, INTENT(OUT)    :: beta(:)
+REAL, ALLOCATABLE, INTENT(IN)     :: rbar(:)
+REAL, ALLOCATABLE, INTENT(IN)     :: thetab(:)
+REAL, ALLOCATABLE, INTENT(OUT)    :: beta(:)
 
 REAL     :: bi
 INTEGER  :: i, i1, im, ithisr, j, jm
@@ -675,6 +639,8 @@ DO  i = 1, np
   IF (im /= np) THEN
     i1 = i - 1
     jm = np
+!$OMP SIMD REDUCTION(-:bi) ALIGNED(rbar:64) ALIGNED(beta:64) \
+!$OMP& LINEAR(j:1)
     DO  j = 1, i1
       bi = bi - rbar(ithisr) * beta(jm)
       ithisr = ithisr - 1
@@ -689,10 +655,18 @@ RETURN
 END SUBROUTINE regres
 
 
-
+#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
 SUBROUTINE forkal(ip, iq, ir, np, ird, irz, id, il, n, nrbar, phi, theta,  &
                   delta, w, y, amse, a, p, v, resid, e, xnext, xrow,  &
-                  rbar, thetab, store, ifault)
+                  rbar, thetab, store, ifault) !GCC$ ATTRIBUTES hot :: forkal  !GCC$ ATTRIBUTES ALIGNED(32) :: forkal
+#elif defined (__INTEL_COMPILER) || defined (__ICC)
+SUBROUTINE forkal(ip, iq, ir, np, ird, irz, id, il, n, nrbar, phi, theta,  &
+                  delta, w, y, amse, a, p, v, resid, e, xnext, xrow,  &
+                  rbar, thetab, store, ifault) 
+     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: forkal
+      !DIR$ OPTIMIZE : 3
+      !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: forkal
+#endif
  
 !  ALGORITHM AS 182  APPL. STATIST. (1982) VOL.31, NO.2
 
@@ -708,22 +682,22 @@ INTEGER, INTENT(IN)   :: id
 INTEGER, INTENT(IN)   :: il
 INTEGER, INTENT(IN)   :: n
 INTEGER, INTENT(IN)   :: nrbar
-REAL, INTENT(OUT)     :: phi(:)
-REAL, INTENT(IN)      :: theta(:)
-REAL, INTENT(IN)      :: delta(:)
-REAL, INTENT(IN OUT)  :: w(:)
-REAL, INTENT(OUT)     :: y(:)
-REAL, INTENT(OUT)     :: amse(:)
-REAL, INTENT(OUT)     :: a(:)
-REAL, INTENT(OUT)     :: p(:)
-REAL, INTENT(OUT)     :: v(:)
-REAL, INTENT(OUT)     :: resid(:)
-REAL, INTENT(OUT)     :: e(:)
-REAL, INTENT(OUT)     :: xnext(:)
-REAL, INTENT(OUT)     :: xrow(:)
-REAL, INTENT(OUT)     :: rbar(:)
-REAL, INTENT(OUT)     :: thetab(:)
-REAL, INTENT(OUT)     :: store(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: phi(:)
+REAL, ALLOCATABLE, INTENT(IN)      :: theta(:)
+REAL, ALLOCATABLE, INTENT(IN)      :: delta(:)
+REAL, ALLOCATABLE, INTENT(IN OUT)  :: w(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: y(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: amse(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: a(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: p(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: v(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: resid(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: e(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: xnext(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: xrow(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: rbar(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: thetab(:)
+REAL, ALLOCATABLE, INTENT(OUT)     :: store(:)
 INTEGER, INTENT(OUT)  :: ifault
 
 !     Invoking this routine will calculate the finite sample predictions
@@ -760,6 +734,8 @@ IF (np == 1) GO TO 130
 v(2:np) = zero
 IF (iq == 0) GO TO 130
 iq1 = iq + 1
+!$OMP SIMD ALIGNED(v:64) ALIGNED(theta:64) \
+!$OMP& LINEAR(i:1)
 DO  i = 2, iq1
   v(i) = theta(i-1)
 END DO
@@ -783,12 +759,15 @@ IF (ir /= 1) CALL starma(ip, iq, ir, np, phi, theta, a, p, v,  &
 
 nt = n - id
 IF (id == 0) GO TO 170
+!$OMP SIMD ALIGNED(store:64) ALIGNED(w:64) LINEAR(j:1)
 DO  j = 1, id
   nj = n - j
   store(j) = w(nj)
 END DO
 DO  i = 1, nt
   aa = zero
+ !$OMP SIMD REDUCTION(-:aa) ALIGNED(delta:64) \
+ !$OMP& ALIGNED(w:64) LINEAR(k:1)
   DO  k = 1, id
     idk = id + i - k
     aa = aa - delta(k) * w(idk)
@@ -810,17 +789,21 @@ CALL karma(ip, iq, ir, phi, theta, a, p, v, nt, w, resid,  &
 !     Calculate M.L.E. of sigma squared
 
 sigma = zero
+!$OMP SIMD REDUCTION(+:sigma) ALIGNED(resid:64) \
+!$OMP& LINEAR(j:1)
 DO  j = 1, nt
-  sigma = sigma + resid(j)**2
+  sigma = sigma + resid(j)*resid(j)
 END DO
 sigma = sigma / nt
 
 !     Reset the initial A and P when differencing occurs
 
 IF (id == 0) GO TO 250
+!$OMP SIMD ALIGNED(xrow:64) ALIGNED(p:64) LINEAR(i:1)
 DO  i = 1, np
   xrow(i) = p(i)
 END DO
+!$OMP SIMD ALIGNED(p:64) LINEAR(j:1)
 DO  i = 1, irz
   p(i) = zero
 END DO
@@ -833,6 +816,7 @@ DO  j = 1, ir
     p(k) = xrow(ind)
   END DO
 END DO
+!$OMP SIMD ALIGNED(a:64) ALIGNED(p:64) ALIGNED(store:64) LINEAR(j:1)
 DO  j = 1, id
   irj = ir + j
   a(irj) = store(j)
@@ -865,10 +849,14 @@ DO  l = 1, il
   END DO
   310 a(ir) = zero
   IF (ip == 0) GO TO 330
+  !$OMP SIMD REDUCTION(+:a) ALIGNED(a:64) \
+  !$OMP& ALIGNED(phi:64) LINEAR(j:1)
   DO  j = 1, ip
     a(j) = a(j) + phi(j) * a1
   END DO
   330 IF (id == 0) GO TO 360
+  !$OMP SIMD REDUCTION(+:a1) ALIGNED(delta:64) \
+  !$OMP& ALIGNED(a:64) LINEAR(j:1)
   DO  j = 1, id
     irj = ir + j
     a1 = a1 + delta(j) * a(irj)
@@ -885,6 +873,8 @@ DO  l = 1, il
   IF (id == 0) GO TO 480
   DO  i = 1, id
     store(i) = zero
+  !$OMP SIMD REDUCTION(+:store) ALIGNED(store:64) \
+  !$OMP& ALIGNED(delta:64) ALIGNED(p:64) LINEAR(j:1)
     DO  j = 1, id
       ll = MAX(i,j)
       k = MIN(i,j)
@@ -910,6 +900,8 @@ DO  l = 1, il
   END DO
 
   p(jkl1) = p(1)
+  !$OMP SIMD REDUCTION(+:p) ALIGNED(p:64) \
+  !$OMP& ALIGNED(delta:64) ALIGNED(store:64) LINEAR(i:1)
   DO  i = 1, id
     iri = ir + i
     p(jkl1) = p(jkl1) + delta(i) * (store(i) + two * p(iri))
@@ -932,6 +924,8 @@ DO  l = 1, il
   DO  j = 1, ir
     store(j) = zero
     kkk = j * (i45 - j) / 2 - id
+ !$OMP SIMD REDUCTION(+:store) ALIGNED(store:64) \
+  !$OMP& ALIGNED(delta:64) ALIGNED(p:64) LINEAR(i:1)   
     DO  i = 1, id
       kkk = kkk + 1
       store(j) = store(j) + delta(i) * p(kkk)
@@ -975,6 +969,8 @@ DO  l = 1, il
   
   y(l) = a(1)
   IF (id == 0) GO TO 520
+  !$OMP SIMD REDUCTION(+:y) ALIGNED(a:64) \
+  !$OMP& ALIGNED(y:64) LINEAR(j:1)
   DO  j = 1, id
     irj = ir + j
     y(l) = y(l) + a(irj) * delta(j)
@@ -991,6 +987,8 @@ DO  l = 1, il
   DO  j = 1, id1
     j1 = j + 1
     jrk = ibc + 1 + (j-1) * (idd2 - j) / 2
+ !$OMP SIMD REDUCTION(+:ams) ALIGNED(delta:64) \
+  !$OMP& ALIGNED(p:64) LINEAR(j:1)   
     DO  i = j1, id
       jrk = jrk + 1
       ams = ams + two * delta(i) * delta(j) * p(jrk)
