@@ -1,7 +1,7 @@
 
 
 #ifndef __GMS_SCALV_AVX_UNROLLED8X_H__
-#define __GMS_SCALV_AVX_UNROLLED8X_H__
+#define __GMS_SCALV_AVX_UNROLLED8X_H__ 120920210912
 
 
 /*
@@ -9,7 +9,7 @@
      Few changes were introduced in order to more easily adapt it 
      to 'Guided Missile Simulation' project.
      //=========================================================================
-     // Modified and optimized version of BLIS (AMD) swap routines.
+     // Modified and optimized version of BLIS (AMD) scalv routines.
      // Programmer: Bernard Gingold, contact: beniekg@gmail.com
      // 12-09-2021 09:12  +00200
      // Original copyright below
