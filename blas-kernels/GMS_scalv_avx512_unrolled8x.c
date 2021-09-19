@@ -1,7 +1,7 @@
 
 #include <omp.h>
 #include "GMS_scalv_avx512_unrolled8x.h"
-
+#include "GMS_setv_avx512_unrolled16x.h"
 
           void
           sscalv_u_zmm16r4_unroll8x(const int32_t n,
@@ -15,6 +15,9 @@
 			}
 			if(__builtin_expect(0.0f==alpha,0)) {
                            // call setv here!!
+                           ssetv_u_zmm16r4_unroll16x(n,alpha,
+                                                     x,incx);
+                           return;
 			}
 			__ATTR_ALIGN__(64) zmm16r4_t xv[8];
 			zmm16r4_t alphav;
@@ -174,6 +177,9 @@
 			}
 			if(__builtin_expect(0.0f==alpha,0)) {
                            // call setv here!!
+                            ssetv_a_zmm16r4_unroll16x(n,alpha,
+                                                     x,incx);
+                           return;
 			}
 			__ATTR_ALIGN__(64) zmm16r4_t xv[8];
 			zmm16r4_t alphav;
@@ -337,6 +343,9 @@
 			}
 			if(__builtin_expect(0.0f==alpha,0)) {
                            // call setv here!!
+                           ssetv_a_zmm16r4_unroll16x(n,alpha,
+                                                     x,incx);
+                           return;
 			}
 		        zmm16r4_t xv0;
 			zmm16r4_t xv1;
@@ -477,6 +486,9 @@
 			}
 			if(__builtin_expect(0.0==alpha,0)) {
                            // call setv here!!
+                             dsetv_u_zmm8r8_unroll16x(n,alpha,
+                                                     x,incx);
+                             return;
 			}
 			__ATTR_ALIGN__(64) zmm16r4_t xv[8];
 			zmm8r8_t alphav;
@@ -635,6 +647,9 @@
 			}
 			if(__builtin_expect(0.0==alpha,0)) {
                            // call setv here!!
+                             dsetv_a_zmm8r8_unroll16x(n,alpha,
+                                                     x,incx);
+                             return;
 			}
 			__ATTR_ALIGN__(64) zmm16r4_t xv[8];
 			zmm8r8_t alphav;
@@ -801,6 +816,9 @@
 			}
 			if(__builtin_expect(0.0==alpha,0)) {
                            // call setv here!!
+                             dsetv_a_zmm8r8_unroll16x(n,alpha,
+                                                     x,incx);
+                             return;
 			}
 		        zmm8r8_t xv0;
 			zmm8r8_t xv1;
