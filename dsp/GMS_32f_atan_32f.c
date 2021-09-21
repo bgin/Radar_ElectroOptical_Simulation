@@ -23,7 +23,7 @@
 
 
 void
-atan_u_ymm8r4_ymm8r4(float * __restrict b,
+atan_u_ymm8r4_ymm8r4_looped(float * __restrict b,
 		     float * __restrict a,
 		     const int32_t npoints) {
 
@@ -84,7 +84,7 @@ atan_u_ymm8r4_ymm8r4(float * __restrict b,
 
 
 void
-atan_a_ymm8r4_ymm8r4(float * __restrict __attribute__((aligned(32))) b,
+atan_a_ymm8r4_ymm8r4_looped(float * __restrict __attribute__((aligned(32))) b,
 		     float * __restrict __attribute__((aligned(32))) a,
 		     const int32_t npoints) {
 
