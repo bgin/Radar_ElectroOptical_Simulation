@@ -40,7 +40,7 @@
 
 
 void
-atan_u_ymm8r4_ymm8r4(float * __restrict,
+atan_u_ymm8r4_ymm8r4_looped(float * __restrict,
 		     float * __restrict,
 		     const int32_t) __attribute__((noinline))
 			            __attribute__((hot))
@@ -48,7 +48,7 @@ atan_u_ymm8r4_ymm8r4(float * __restrict,
 
 
 void
-atan_a_ymm8r4_ymm8r4(float * __restrict,
+atan_a_ymm8r4_ymm8r4_looped(float * __restrict,
 		     float * __restrict,
 		     const int32_t) __attribute__((noinline))
 			            __attribute__((hot))
