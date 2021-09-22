@@ -36,7 +36,7 @@
  */
 
 #include <stdint.h>
-
+#include <immintrin.h>
 
 
 void
@@ -55,6 +55,13 @@ atan_a_ymm8r4_ymm8r4_looped(float * __restrict,
 				    __attribute__((aligned(32)));
                                     
 
+__m256
+atan_ymm8r4_ymm8r4(const __m256) __attribute__((noinline))
+			         __attribute__((hot))
+				 __attribute__((aligned(32)))
+                                 __attribute__((vectorcall))
+                                 __attribute__((regcall)); // This __attribute__((regcall)) is an Intel Compiler only!!
+                                 
 
 
 
