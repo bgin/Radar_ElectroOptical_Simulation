@@ -42,27 +42,27 @@ module mod_haswell_msr
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int4, int8b
+     use mod_kinds, only : i4, int8b
      implicit none
 
      ! Haswell  CPUID: -- 06_3CH/06_45H/06_46H
 
      type, public :: MSR_IA32_TSC_ADJUST_HASWELL
         public
-        integer(kind=int4)    :: addr_dec = 59
+        integer(kind=i4)    :: addr_dec = 59
         character(len=4)      :: addr_hex = "0x3B"
         character(len=16)     :: msr_name = "IA32_TSC_ADJUST"
-        integer(kind=int8b), dimension(0:7)  msr_read
-        integer(kind=int8b), dimension(0:7) :: msr_write
+        integer(kind=i8), dimension(0:7)  msr_read
+        integer(kind=i8), dimension(0:7) :: msr_write
         character(len=16),   dimension(0:7) :: msrw_hex
         ! Per-Logical-Processor TSC ADJUST (R/W)
      end type MSR_IA32_TSC_ADJUST_HASWELL
 
      type, public :: MSR_PLATFORM_INFO_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 206
+        integer(kind=4)     :: addr_dec = 206
         character(len=4)       :: addr_hex = "0xCE"
-        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=i8), dimension(0:1) :: msr_read
         character(len=17)      :: msr_name = "MSR_PLATFORM_INFO"
         ! MSR_PLATFORM_INFO
         ! Package
@@ -71,11 +71,11 @@ module mod_haswell_msr
 
      type, public :: MSR_IA32_PERFEVTSEL0_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 390
+        integer(kind=i4)     :: addr_dec = 390
         character(len=5)       :: addr_hex = "0x186"
         character(len=16)      :: msr_name = "IA32_PERFEVTSEL0"
-        integer(kind=int4), dimension(0:7) :: msr_read
-        integer(kind=int4), dimension(0:7) :: msr_write
+        integer(kind=i4), dimension(0:7) :: msr_read
+        integer(kind=i4), dimension(0:7) :: msr_write
         character(len=8),   dimension(0:7) :: msrw_hex
         ! Thread
         ! Performance Event Select for Counter 0 (R/W)
@@ -83,11 +83,11 @@ module mod_haswell_msr
 
      type, public :: MSR_IA32_PERFEVTSEL1_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 391
+        integer(kind=i4)     :: addr_dec = 391
         character(len=5)       :: addr_hex = "0x187"
         character(len=16)      :: msr_name = "IA32_PERFEVTSEL1"
-        integer(kind=int4), dimension(0:7) :: msr_read
-        integer(kind=int4), dimension(0:7) :: msr_write
+        integer(kind=i4), dimension(0:7) :: msr_read
+        integer(kind=i4), dimension(0:7) :: msr_write
         character(len=8),   dimension(0:7) :: msrw_hex
         ! Thread
         ! Performance Event Select for Counter 1 (R/W)
@@ -95,11 +95,11 @@ module mod_haswell_msr
 
      type, public :: MSR_IA32_PERFEVTSEL2_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 392
+        integer(kind=i4)     :: addr_dec = 392
         character(len=5)       :: addr_hex = "0x188"
         character(len=16)      :: msr_name = "IA32_PERFEVTSEL2"
-        integer(kind=int4), dimension(0:55) :: msr_read
-        integer(kind=int4), dimension(0:55) :: msr_write
+        integer(kind=i4), dimension(0:55) :: msr_read
+        integer(kind=i4), dimension(0:55) :: msr_write
         character(len=8),   dimension(0:55) :: msrw_hex
         ! Thread
         ! Performance Event Select for Counter 2 (R/W)
@@ -107,11 +107,11 @@ module mod_haswell_msr
 
      type, public :: MSR_IA32_PERFEVTSEL3_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 393
+        integer(kind=i4)     :: addr_dec = 393
         character(len=5)       :: addr_hex = "0x189"
         character(len=16)      :: msr_name = "IA32_PERFEVTSEL3"
-        integer(kind=int4), dimension(0:7) :: msr_read
-        integer(kind=int4), dimension(0:7) :: msr_write
+        integer(kind=i4), dimension(0:7) :: msr_read
+        integer(kind=i4), dimension(0:7) :: msr_write
         character(len=8),   dimension(0:7) :: msrw_hex
         ! Thread
         ! Performance Event Select for Counter 3 (R/W)
@@ -119,32 +119,32 @@ module mod_haswell_msr
 
      type, public :: MSR_LBR_SELECT_HASWELL
         public
-        integer(kind=int4)      :: addr_dec = 456
+        integer(kind=i4)      :: addr_dec = 456
         character(len=5)        :: addr_hex = "0x1C8"
         character(len=14)       :: msr_name = "MSR_LBR_SELECT"
-        integer(kind=int8b), dimension(0:7) :: msr_read
-        integer(kind=int8b), dimension(0:7) :: msr_write
+        integer(kind=i8), dimension(0:7) :: msr_read
+        integer(kind=i8), dimension(0:7) :: msr_write
         character(len=16),   dimension(0:7) :: msrw_hex
         ! Last Branch Record Filtering Select Register (R/W)
      end type MSR_LBR_SELECT_HASWELL
 
      type, public :: MSR_IA32_DEBUGCTL_HASWELL
         public
-        integer(kind=int4)      :: addr_dec = 473
+        integer(kind=i4)      :: addr_dec = 473
         character(len=5)        :: addr_hex = "0x1D9"
         character(len=13)       :: msr_name = "IA32_DEBUGCTL"
-        integer(kind=int8b), dimension(0:7) :: msr_read
-        integer(kind=int8b), dimension(0:7) :: msr_write
+        integer(kind=i8), dimension(0:7) :: msr_read
+        integer(kind=i8), dimension(0:7) :: msr_write
         character(len=16),   dimension(0:7) :: msrw_hex
         ! Debug Control (R/W)
      end type MSR_IA32_DEBUGCTL_HASWELL
 
      type, public :: MSR_PKGC_IRTL1_HASWELL
         public
-        integer(kind=int4)      :: addr_dec = 1548
+        integer(kind=i4)      :: addr_dec = 1548
         character(len=5)        :: addr_hex = "0x60B"
-        integer(kind=int8b), dimension(0:1)     :: msr_read
-        integer(kind=int8b), dimension(0:1)     :: msr_write
+        integer(kind=i8), dimension(0:1)     :: msr_read
+        integer(kind=i8), dimension(0:1)     :: msr_write
         character(len=16),   dimension(0:1)     :: msrw_hex
         character(len=14)       :: msr_name = "MSR_PKGC_IRTL1"
         ! Package C6/C7 Interrupt Response Limit 1 (R/W)
@@ -152,10 +152,10 @@ module mod_haswell_msr
 
      type, public :: MSR_PKGC_IRTL2_HASWELL
         public
-        integer(kind=int4)      :: addr_dec = 1549
+        integer(kind=i4)      :: addr_dec = 1549
         character(len=5)        :: addr_hex = "0x60C"
-        integer(kind=int8b), dimension(0:1)     :: msr_read
-        integer(kind=int8b), dimension(0:1)     :: msr_write
+        integer(kind=i8), dimension(0:1)     :: msr_read
+        integer(kind=i8), dimension(0:1)     :: msr_write
         character(len=16),   dimension(0:1)     :: msrw_hex
         character(len=14)       :: msr_name = "MSR_PKGC_IRTL2"
         ! Package C6/C7 Interrupt Response Limit 2 (R/W)
@@ -163,18 +163,18 @@ module mod_haswell_msr
 
      type, public :: MSR_PKG_PERF_STATUS_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 1555
+        integer(kind=i4)     :: addr_dec = 1555
         character(len=5)       :: addr_hex = "0x613"
-        integer(kind=int8b), dimension(0:1)    :: msr_read
+        integer(kind=i8), dimension(0:1)    :: msr_read
         character(len=19)      :: msr_name = "MSR_PKG_PERF_STATUS"
         ! PKG Perf Status (R/O)
      end type MSR_PKG_PERF_STATUS_HASWELL
 
      type, public :: MSR_DRAM_ENERGY_STATUS_HASWELL
         public
-        integer(kind=int4)     :: addr_dec = 1561
+        integer(kind=i4)     :: addr_dec = 1561
         character(len=5)       :: addr_hex = "0x619"
-        integer(kind=int8b), dimension(0:1)    :: msr_read
+        integer(kind=i8), dimension(0:1)    :: msr_read
         character(len=24)      :: msr_name = "MSR_DRAM_ENERGY_STATUS"
         ! DRAM Energy Status (R/O)
      end type MSR_DRAM_ENERGY_STATUS_HASWELL
