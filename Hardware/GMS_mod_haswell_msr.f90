@@ -23,7 +23,7 @@ module mod_haswell_msr
  !          Version:
  !
  !                      Major: 1
- !                      Minor: 0
+ !                      Minor: 1
  !                      Micro: 0
  !
  !    
@@ -463,151 +463,151 @@ module mod_haswell_msr
 
      type, public :: MSR_UNC_CBO_0_PERFCTR1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1799
+        integer(kind=i4)   :: addr_dec = 1799
         character(len=5)     :: addr_hex = "0x707"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_0_PERFCTR1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 0, Performance Counter 1
      end type MSR_UNC_CBO_0_PERFCTR1_HASWELL
 
      type, public :: MSR_UNC_CBO_1_PERFEVTSEL0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1808
+        integer(kind=i4)   :: addr_dec = 1808
         character(len=5)     :: addr_hex = "0x710"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_1_PERFEVTSEL0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 1, Counter 0 Event Select MSR
      end type MSR_UNC_CBO_1_PERFEVTSEL0_HASWELL
 
      type, public :: MSR_UNC_CBO_1_PERFEVTSEL1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1809
+        integer(kind=i4)   :: addr_dec = 1809
         character(len=5)     :: addr_hex = "0x711"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_1_PERFEVTSEL1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 1, Counter 1 Event Select MSR
      end type MSR_UNC_CBO_1_PERFEVTSEL1_HASWELL
 
      type, public :: MSR_UNC_CBO_1_PERFCTR0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1814
+        integer(kind=i4)   :: addr_dec = 1814
         character(len=5)     :: addr_hex = "0x716"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_1_PERFCTR0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 1, Performance Counter 0
      end type MSR_UNC_CBO_1_PERFCTR0_HASWELL
 
      type, public :: MSR_UNC_CBO_1_PERFCTR1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1815
+        integer(kind=i4)   :: addr_dec = 1815
         character(len=5)     :: addr_hex = "0x717"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_1_PERFCTR1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 1, Performance Counter 1
      end type MSR_UNC_CBO_1_PERFCTR1_HASWELL
 
      type, public :: MSR_UNC_CBO_2_PERFEVTSEL0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1824
+        integer(kind=i4)   :: addr_dec = 1824
         character(len=5)     :: addr_hex = "0x720"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_2_PERFEVTSEL0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 2, Counter 0 Event Select MSR
      end type MSR_UNC_CBO_2_PERFEVTSEL0_HASWELL
 
      type, public :: MSR_UNC_CBO_2_PERFEVTSEL1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1825
+        integer(kind=i4)   :: addr_dec = 1825
         character(len=5)     :: addr_hex = "0x721"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_2_PERFEVTSEL1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 2, Counter 1 Event Select MSR
      end type MSR_UNC_CBO_2_PERFEVTSEL1_HASWELL
 
      type, public :: MSR_UNC_CBO_2_PERFCTR0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1830
+        integer(kind=i4)   :: addr_dec = 1830
         character(len=5)     :: addr_hex = "0x726"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_2_PERFCTR0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 2, Performance Counter 0
      end type MSR_UNC_CBO_2_PERFCTR0_HASWELL
 
      type, public :: MSR_UNC_CBO_2_PERFCTR1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1831
+        integer(kind=i4)   :: addr_dec = 1831
         character(len=5)     :: addr_hex = "0x727"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_2_PERFCTR1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 2, Performance Counter 1
      end type MSR_UNC_CBO_2_PERFCTR1_HASWELL
 
      type, public :: MSR_UNC_CBO_3_PERFEVTSEL0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1840
+        integer(kind=i4)   :: addr_dec = 1840
         character(len=5)     :: addr_hex = "0x730"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_3_PERFEVTSEL0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 3, Counter 0 Event Select MSR
      end type MSR_UNC_CBO_3_PERFEVTSEL0_HASWELL
 
      type, public :: MSR_UNC_CBO_3_PERFEVTSEL1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1841
+        integer(kind=i4)   :: addr_dec = 1841
         character(len=5)     :: addr_hex = "0x731"
         character(len=24)    :: msr_name = "MSR_UNC_CBO_3_PERFEVTSEL1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=ib), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 3, Counter 1 Event Select MSR
      end type MSR_UNC_CBO_3_PERFEVTSEL1_HASWELL
 
      type, public :: MSR_UNC_CBO_3_PERFCTR0_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1846
+        integer(kind=i4)   :: addr_dec = 1846
         character(len=5)     :: addr_hex = "0x736"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_3_PERFCTR0"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 3, Performance Counter 0
      end type MSR_UNC_CBO_3_PERFCTR0_HASWELL
 
      type, public :: MSR_UNC_CBO_3_PERFCTR1_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1847
+        integer(kind=i4)   :: addr_dec = 1847
         character(len=5)     :: addr_hex = "0x737"
         character(len=21)    :: msr_name = "MSR_UNC_CBO_3_PERFCTR1"
         !DIR$ ATTRIBUTES ALIGN : 64 :: msr_read
-        integer(kind=int8b), dimension(1000,0:1) :: msr_read
+        integer(kind=i8), dimension(1000,0:1) :: msr_read
         ! Uncore C-Box 2, Performance Counter 1
      end type MSR_UNC_CBO_3_PERFCTR1_HASWELL
 
      type, public :: MSR_PKG_CST_CONFIG_CONTROL_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 226
+        integer(kind=i4)   :: addr_dec = 226
         character(len=4)     :: addr_hex = "0xE2"
         character(len=26)    :: msr_name = "MSR_PKG_CST_CONFIG_CONTROL"
-        integer(kind=int8b), dimension(0:3) :: msr_read
-        integer(kind=int8b), dimension(0:3) :: msr_write
+        integer(kind=i8), dimension(0:3) :: msr_read
+        integer(kind=i8), dimension(0:3) :: msr_write
         character(len=16),   dimension(0:3) :: msrw_hex
         ! C-State Configuration Control (R/W)
      end type MSR_PKG_CST_CONFIG_CONTROL_HASWELL
 
      type, public :: MSR_PKG_C8_RESIDENCY_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1584
+        integer(kind=i4)   :: addr_dec = 1584
         character(len=5)     :: addr_hex = "0x630"
         character(len=19)    :: msr_name = "MSR_PKG_C8_RESIDENCY"
-        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=i8), dimension(0:1) :: msr_read
         ! C-state values are processor specific C-state code
         ! names, unrelated to MWAIT extension C-state
         ! parameters or ACPI C-States.
@@ -615,10 +615,10 @@ module mod_haswell_msr
 
      type, public :: MSR_PKG_C9_RESIDENCY_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1585
+        integer(kind=i4)   :: addr_dec = 1585
         character(len=5)     :: addr_hex = "0x631"
         character(len=19)    :: msr_name = "MSR_PKG_C9_RESIDENCY"
-        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=i8), dimension(0:1) :: msr_read
         ! C-state values are processor specific C-state code
         ! names, unrelated to MWAIT extension C-state
         ! parameters or ACPI C-States.
@@ -626,10 +626,10 @@ module mod_haswell_msr
 
      type, public :: MSR_PKG_C10_RESIDENCY_HASWELL
         public
-        integer(kind=int4)   :: addr_dec = 1586
+        integer(kind=i4)   :: addr_dec = 1586
         character(len=5)     :: addr_hex = "0x632"
         character(len=20)    :: msr_name = "MSR_PKG_C10_RESIDENCY"
-        integer(kind=int8b), dimension(0:1) :: msr_read
+        integer(kind=i8), dimension(0:1) :: msr_read
         ! C-state values are processor specific C-state code
         ! names, unrelated to MWAIT extension C-state
         ! parameters or ACPI C-States.
