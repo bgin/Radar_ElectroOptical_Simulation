@@ -1,7 +1,7 @@
 
 
 #ifndef __SIMD_AVX512_H__
-#define __SIMD_AVX512_H__
+#define __SIMD_AVX512_H__ 101020191139
 
 
 const unsigned int gGMS_SIMD_AVX512_MAJOR = 1;
@@ -17,15 +17,7 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 // Compile it as a C-code
 
     // Interoperable with corresponding Fortran derived type
-#if defined _WIN64
-        typedef struct __declspec(align(64)) v8f64 {
-                 double v[8];
-	}v8f64;
 
-	typedef struct __declspec(align(64)) v16f32 {
-                 double v[16];
-	}v16f32;
-#elif defined __linux
         typedef struct __attribute__((align(64))) v8f64 {
                  double v[8];
         }v8f64;
@@ -33,9 +25,7 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
         typedef struct __attribute__((align(64))) v16f32 {
                  double v[16];
 	}v16f32;
-#else
-#error  Unsupported OS (Linux and Win64 are supported only!!)
-#endif
+
 
 #if !defined(__ATTR_REGCALL__)
     #define __ATTR_REGCALL__ __attribute__((regcall))
