@@ -14,17 +14,17 @@
 #define _mm_rol_ps(vec,i)   (((i)%4) ? (_mm_shuffle_ps(vec,vec, _MM_SHUFFLE((unsigned char)(7-i)%4,(unsigned char)(6-i)%4,(unsigned char)(5-i)%4,(unsigned char)(4-i)%4))) : (vec))
 #endif
 
-static const __declspec(align(16))  int mask_neg[4] = { 0x80000000, 0x80000000,
+static const __attribute__((aligned(16))) int mask_neg[4] = { 0x80000000, 0x80000000,
 												   0x80000000, 0x80000000 };
 
-static const __declspec(align(16))  int mask[4] = {0x00000000,0x80000000,0x80000000,0x00000000};
+static const __attribute__((aligned(16))) int mask[4] = {0x00000000,0x80000000,0x80000000,0x00000000};
 
-static const __declspec(align(16))  int mask8F[4] = {0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF};
+static const __attribute__((aligned(16))) int mask8F[4] = {0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF};
 
-static const __declspec(align(16)) float PIoY[4]  = {0.0f,M_PI*0.5f,M_PI*0.5f,-M_PI};
-static const __declspec(align(16)) float PIoXZ[4] = {-M_PI,M_PI*0.5f,M_PI*0.5f,0.0f};
+static const __attribute__((aligned(16))) float PIoY[4]  = {0.0f,M_PI*0.5f,M_PI*0.5f,-M_PI};
+static const __attribute__((aligned(16))) float PIoXZ[4] = {-M_PI,M_PI*0.5f,M_PI*0.5f,0.0f};
 
-void warmup_fp128unit(volatile float * __restrict vc,
+/*void warmup_fp128unit(volatile float * __restrict vc,
 					  const float * __restrict vb,
 					  const float * __restrict va,
 					  const int n) {
@@ -40,7 +40,7 @@ void warmup_fp128unit(volatile float * __restrict vc,
 	for (i; i != n; i += 4) {
 		_mm_store_ps(&vc[i], _mm_div_ps(*(__m128*)&vb[i], *(__m128*)&va[i]));
 	}
-}
+}*/
 
 void M4x4f32_setzero(struct M4x4f32 * __restrict m) {
 	_mm_store_ps(&m->row0[0], _mm_setzero_ps());
