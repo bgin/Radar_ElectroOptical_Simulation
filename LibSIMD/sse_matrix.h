@@ -31,15 +31,27 @@ typedef struct __attribute__((aligned(16)))  V1x3f32 {
 					  const float * __restrict ,
 					  const int n );*/
 
-void M4x4f32_setzero(struct M4x4f32 * __restrict);
+void M4x4f32_setzero(struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                          __attribute__((vectorcall))
+			                          __attribute__((hot))
+				                   __attribute__((aligned(32)));
 
-void M4x4f32_setzero_stream(struct M4x4f32 * __restrict);
+void M4x4f32_setzero_stream(struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                                 __attribute__((vectorcall))
+			                                 __attribute__((hot))
+				                         __attribute__((aligned(32)));
 
 void M4x4f32_set1(struct M4x4f32 * __restrict,
-				  const float);
+				  const float) __attribute__((noinline))
+	                                       __attribute__((vectorcall))
+			                       __attribute__((hot))
+				               __attribute__((aligned(32)));
 
 void M4x4f32_set1_stream(struct M4x4f32 * __restrict,
-					     const float);
+					     const float) __attribute__((noinline))
+	                                                  __attribute__((vectorcall))
+			                __attribute__((hot))
+				        __attribute__((aligned(32)));
 
 void M4x4f32_set_scalars(struct M4x4f32 * __restrict, 
 							  const float, const float,
@@ -49,7 +61,10 @@ void M4x4f32_set_scalars(struct M4x4f32 * __restrict,
 							  const float, const float,
 							  const float, const float,
 							  const float, const float,
-							  const float, const float );
+							  const float, const float ) __attribute__((noinline))
+	                                                                             __attribute__((vectorcall))
+			                                                             __attribute__((hot))
+				                                                     __attribute__((aligned(32)));
 
 void M4x4f32_set_scalars_stream(struct M4x4f32 * __restrict,
 								const float, const float,
@@ -59,174 +74,327 @@ void M4x4f32_set_scalars_stream(struct M4x4f32 * __restrict,
 								const float, const float,
 								const float, const float,
 								const float, const float,
-								const float, const float);
+								const float, const float) __attribute__((noinline))
+	                                                                                  __attribute__((vectorcall))
+			                                                                  __attribute__((hot))
+				                                                          __attribute__((aligned(32)));
 
 void M4x4f32_set_arrays(struct M4x4f32 * __restrict,
 						     const float * __restrict,
 							 const float * __restrict,
 							 const float * __restrict,
-							 const float * __restrict);
+							 const float * __restrict) __attribute__((noinline))
+	                                                                          __attribute__((vectorcall))
+			                                                           __attribute__((hot))
+				                                                   __attribute__((aligned(32)));
 
 void M4x4f32_set_arrays_stream(struct M4x4f32 * __restrict,
 							   const float * __restrict,
 							   const float * __restrict,
 							   const float * __restrict,
-							   const float * __restrict);
+							   const float * __restrict) __attribute__((noinline))
+	                                                                             __attribute__((vectorcall))
+			                                                             __attribute__((hot))
+				                                                     __attribute__((aligned(32)));
 
 void M4x4f32_set_array(struct M4x4f32 * __restrict,
-							const float * __restrict);
+		       const float * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_set_array_stream(struct M4x4f32 * __restrict,
-							  const float * __restrict);
+			      const float * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_set_M4x4f32(struct M4x4f32 * __restrict,
-							  const struct M4x4f32 * __restrict);
+			 const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_set_M4x4f32_stream(struct M4x4f32 * __restrict,
-							    const struct M4x4f32 * __restrict);
+				const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_identity_matrix(struct M4x4f32 * __restrict);
+void M4x4f32_identity_matrix(struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 
 void M4x4f32_add_M4x4f32(struct M4x4f32 * __restrict,
-				         const struct M4x4f32 *  __restrict,
-						 const struct M4x4f32 * __restrict);
+		         const struct M4x4f32 *  __restrict,
+			const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_add_M4x4f32_inplace(struct M4x4f32 * __restrict,
-							     const struct M4x4f32 * __restrict);
+				 const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_sub_M4x4f32(struct M4x4f32 * __restrict,
-						 const struct M4x4f32 * __restrict,
-						 const struct M4x4f32 * __restrict);
+			const struct M4x4f32 * __restrict,
+			const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_sub_M4x4f32_inplace(struct M4x4f32 * __restrict,
-							     const struct M4x4f32 * __restrict);
+				const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 	
 	// Matrix 4x4 - mul - Matrix 4x4
 void M4x4f32_mul_M4x4f32(struct M4x4f32 * __restrict , 
-						 const struct M4x4f32 * __restrict , 
-						 const struct M4x4f32 * __restrict );
+			const struct M4x4f32 * __restrict , 
+			const struct M4x4f32 * __restrict ) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_mul_M4x4f32_inplace(struct M4x4f32 * __restrict,
-								 const struct M4x4f32 * __restrict);
+				 const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_mul_scalar(struct M4x4f32 * __restrict,
-					    const struct M4x4f32 * __restrict,
-						const float);
+			const struct M4x4f32 * __restrict,
+					const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_mul_scalar_inplace(struct M4x4f32 * __restrict,
-							    const float);
+					const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_negate(struct M4x4f32 * __restrict,
-				    const struct M4x4f32 * __restrict);
+		   const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_transpose(struct M4x4f32 * __restrict);
+void M4x4f32_transpose(struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_rotateX(struct M4x4f32 * __restrict,
-					 const float);
+					 const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_rotateY(struct M4x4f32 * __restrict,
-					 const float);
+					 const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_rotateZ(struct M4x4f32 * __restrict,
-					 const float);
+					 const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_translate_xyz(struct M4x4f32 * __restrict,
 					   const float, const float,
-					   const float);
+					   const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_scale_xyz(struct M4x4f32 * __restrict,
 				   const float, const float,
-				   const float);
+				   const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void M4x4f32_scale_s(struct M4x4f32 * __restrict,
-					 const float);
+					 const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_minimum(float * , const struct M4x4f32 * __restrict);
+void M4x4f32_minimum(float *  __restrict, const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_maximum(float * , const struct M4x4f32 * __restrict);
+void M4x4f32_maximum(float * __restrict , const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_det(float * , const struct M4x4f32 * __restrict);
+void M4x4f32_det(float * __restrict, const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void M4x4f32_inverse(float * , const struct M4x4f32 * __restrict);
+void M4x4f32_inverse(float * __restrict , const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void V1x4f32_setzero(struct V1x4f32 * __restrict);
+void V1x4f32_setzero(struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void V1x4f32_setzero_stream(struct V1x4f32 * __restrict);
+void V1x4f32_setzero_stream(struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set1(struct V1x4f32 * __restrict,
-				  const float);
+				  const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set1_stream(struct V1x4f32 * __restrict,
-					     const float);
+					     const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_scalars(struct V1x4f32 * __restrict,
-					     const float, const float,
-						 const float, const float);
+			const float, const float,
+			const float, const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_scalars_stream(struct V1x4f32 * __restrict,
-							    const float, const float,
-								const float, const float);
+					const float, const float,
+					const float, const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_array(struct V1x4f32 * __restrict,
-					   const float * __restrict);
+					   const float * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_array_stream(struct V1x4f32 * __restrict,
-							  const float * __restrict);
+							  const float * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_V1x4f32(struct V1x4f32 * __restrict,
-					     const struct V1x4f32 * __restrict);
+			const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_V1x4f32_stream(struct V1x4f32 * __restrict,
-							    const struct V1x4f32 * __restrict);
+				const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_M4x4f32(struct V1x4f32 * __restrict,
-						 const struct M4x4f32 * __restrict,
-						 const int);
+			const struct M4x4f32 * __restrict,
+						 const int) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_set_M4x4f32_stream(struct V1x4f32 * __restrict,
-								const struct M4x4f32 * __restrict,
-								const int);
+				const struct M4x4f32 * __restrict,
+						const int) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_mul_M4x4f32(struct V1x4f32 * __restrict,
-						 const struct V1x4f32 * __restrict ,
-						 const struct M4x4f32 * __restrict);
+			const struct V1x4f32 * __restrict ,
+			const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_mul_M4x4f32_inplace(struct V1x4f32 * __restrict,
-								 const struct M4x4f32 * __restrict);
+				 const struct M4x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_product(struct V1x4f32 * __restrict,
 					 const struct V1x4f32 * __restrict,
-					 const struct V1x4f32 * __restrict);
+					 const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_product_inplace(struct V1x4f32 * __restrict,
-							 const struct V1x4f32 * __restrict);
+			const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_mul_scalar(struct V1x4f32 * __restrict ,
 					    const struct V1x4f32 * __restrict,
-						const float);
+						const float) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_add_V1x4f32(struct V1x4f32 * __restrict,
-						 const struct V1x4f32 * __restrict,
-						 const struct V1x4f32 * __restrict);
+			const struct V1x4f32 * __restrict,
+			const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_add_V1x4f32_inplace(struct V1x4f32 * __restrict,
-								 const struct V1x4f32 * __restrict);
+				 const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_sub_V1x4f32(struct V1x4f32 * __restrict,
-						 const struct V1x4f32 * __restrict,
-						 const struct V1x4f32 * __restrict);
+			const struct V1x4f32 * __restrict,
+			const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_sub_V1x4f32_inplace(struct V1x4f32 * __restrict,
-							     const struct V1x4f32 * __restrict);
+				const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
-void V1x4f32_dot(float * ,
+void V1x4f32_dot(float * __restrict ,
 				 const struct V1x4f32 * __restrict,
-				 const struct V1x4f32 * __restrict);
+				 const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 void V1x4f32_cross(struct V1x4f32 * __restrict,
-				   const struct V1x4f32 * __restrict,
-				   const struct V1x4f32 * __restrict);
+		const struct V1x4f32 * __restrict,
+		const struct V1x4f32 * __restrict) __attribute__((noinline))
+	                                         __attribute__((vectorcall))
+			                         __attribute__((hot))
+				                 __attribute__((aligned(32)));
 
 //void V1x4f32_normalize(struct V1x4f32 * __restrict);
 
