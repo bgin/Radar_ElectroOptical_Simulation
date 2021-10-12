@@ -26,79 +26,80 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
                  double v[16];
 	}v16f32;
 
-
-#if !defined(__ATTR_REGCALL__)
-    #define __ATTR_REGCALL__ __attribute__((regcall))
+#ifndef _FUNC_ATTR_BLOCK_
+#define _FUNC_ATTR_BLOCK_      \
+   __attribute__((noinline))   \
+   __attribute__((regcall))    \
+   __attribute__ ((hot))       \
+   __attribute__((aligned(32)))
 #endif
 
-#if !defined(__ATTR_VECTORCALL__)
-    #define __ATTR_VECTORCALL__ __attribute__((vectorcall))
-#endif
-
-#if !defined(__ATTR_HOT__)
-    #define  __ATTR_HOT__  __attribute__ ((hot))
-#endif
-
-#if !defined(__ATTR_COLD__)
-    #define __ATTR_COLD__ __attribute__ ((cold))
-#endif
-
-#if !defined(__ATTR_ALIGN__)
-    #define __ATTR_ALIGN__(n) __attribute__ ((aligned((n))))
-#endif
-
+        _FUNC_ATTR_BLOCK_
         v8f64 v8f64_add_pd(v8f64 ,v8f64 );
-
+        
+         _FUNC_ATTR_BLOCK_
         v16f32 v16f32_add_ps(v16f32, v16f32);
 
+         _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_sub_pd(v8f64 ,v8f64 );
-
+        
+          _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_sub_ps(v16f32, v16f32);
 
+           _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_mul_pd(v8f64 ,v8f64 );
-
+           
+            _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mul_ps(v16f32, v16f32);
-
+              
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_div_pd(v8f64 ,v8f64 );
 
+             _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_div_ps(v16f32, v16f32);
 
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_mask_ceil_pd(v8f64 ,unsigned char ,v8f64 );
 
+             _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_ceil_ps(v16f32, unsigned short, v16f32);
 
+              _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_ceil_pd(v8f64 );
 
+              _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_ceil_ps(v16f32);
-
+              
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_abs_pd(v8f64 );
 
+              _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_abs_ps(v16f32);
-
-	v8f64 v8f64_mask_abs_pd(v8f64 ,unsigned char ,v8f64 );
-
+               _FUNC_ATTR_BLOCK_  
+        v8f64 v8f64_mask_abs_pd(v8f64 ,unsigned char ,v8f64 );   
+                _FUNC_ATTR_BLOCK_  
 	v16f32 v16f32_mask_abs_ps(v16f32, unsigned short, v16f32);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_mask_add_pd(v8f64 ,unsigned char ,v8f64 ,v8f64 );
-
+                  _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_add_ps(v16f32, unsigned short, v16f32);
-
+                  _FUNC_ATTR_BLOCK_  
 	v8f64 v8f64_maskz_add_pd(unsigned char ,v8f64 ,v8f64 );
-
+                  _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_add_ps(unsigned short, v16f32, v16f32);
-
+                 _FUNC_ATTR_BLOCK_  
 	v8f64 v8f64_add_round_pd(v8f64 ,v8f64 ,int);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_add_round_ps(v16f32, v16f32, int);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_mask_add_round_pd(v8f64 ,unsigned char ,v8f64 ,v8f64 ,int );
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_add_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_maskz_add_round_pd(unsigned char ,v8f64 ,v8f64 ,int );
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_add_round_ps(unsigned short, v16f32, v16f32, int);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_mask_div_pd(v8f64 ,unsigned char ,v8f64 ,v8f64 );
 
 	v16f32 v16f32_mask_div_ps(v16f32, unsigned short, v16f32, v16f32);
@@ -640,101 +641,101 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 	float  v16f32_reduce_max_ps(v16f32);
 
 	double  v8f64_mask_reduce_min_pd(unsigned char, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	float  v16f32_mask_reduce_min_ps(unsigned short, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	double  v8f64_reduce_min_pd(v8f64);
-
+                  _FUNC_ATTR_BLOCK_ 
 	float  v16f32_reduce_min_ps(v16f32);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_unpacklo_pd(v8f64, unsigned char, v8f64, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_unpacklo_ps(v16f32, unsigned short, v16f32, v16f32);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_unpacklo_pd(unsigned char, v8f64, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_unpacklo_ps(unsigned short, v16f32, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_unpacklo_pd(v8f64, v8f64);
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_unpacklo_ps(v16f32, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_unpackhi_pd(v8f64, unsigned char, v8f64, v8f64);
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_unpackhi_ps(v16f32, unsigned short, v16f32, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_unpackhi_pd(unsigned char, v8f64, v8f64);
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_unpackhi_ps(unsigned short, v16f32, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_unpackhi_pd(v8f64, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_unpackhi_ps(v16f32, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_shuffle_pd(v8f64, unsigned char, v8f64, v8f64, int);
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_shuffle_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_shuffle_pd(unsigned char, v8f64, v8f64, int);
-
+                _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_shuffle_ps(unsigned short, v16f32, v16f32, int);
-
+                  _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_shuffle_pd(v8f64, v8f64, int);
-
+                      _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_shuffle_ps(v16f32, v16f32, int);
-
+                      _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_shuffle_f64x2(v8f64, unsigned char, v8f64, v8f64, int);
-
+                     _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_shuffle_f64x2(unsigned char, v8f64, v8f64, int);
-
+                     _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_shuffle_f64x2(v8f64, v8f64, int);
-
+                    _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_permutex_pd(v8f64, unsigned char, v8f64, int);
-
+                    _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_permutex_ps(v16f32, unsigned short, v16f32, int);
-
+                     _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_permutex_pd(unsigned char, v8f64, int);
-
+                    _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_permutex_ps(unsigned short, v16f32, int);
-
+                   _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_permutex_pd(v8f64, int);
-
+                    _FUNC_ATTR_BLOCK_  
 	v16f32 v16f32_permutex_ps(v16f32, int);
-
+                   _FUNC_ATTR_BLOCK_   
 	v8f64  v8f64_mask_blend_pd(unsigned char, v8f64, v8f64);
-
+                   _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_blend_ps(unsigned short, v16f32, v16f32);
-
+                  _FUNC_ATTR_BLOCK_  
 	v8f64  v8f64_mask_compress_pd(v8f64, unsigned char, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_compress_ps(v16f32, unsigned short, v16f32);
-
+                  _FUNC_ATTR_BLOCK_  
 	v8f64  v8f64_maskz_compress_pd(unsigned char, v8f64);
-
+                 _FUNC_ATTR_BLOCK_  
 	v16f32 v16f32_maskz_compress_ps(unsigned short, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	void   v8f64_mask_compressstoreu_pd(void *, unsigned char, v8f64);
-
+                _FUNC_ATTR_BLOCK_ 
 	void   v16f32_mask_compressstoreu_ps(void *, unsigned short, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_expand_pd(v8f64, unsigned char, v8f64);
-
+                 _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_expand_ps(v16f32, unsigned short, v16f32);
-
+                _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_expand_pd(unsigned char, v8f64);
-
+               _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_expand_ps(unsigned short, v16f32);
-
+	       _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_mask_permute_pd(v8f64, unsigned char, v8f64, int);
-
+              _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_mask_permute_ps(v16f32, unsigned short, v16f32, int);
-
+              _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_permute_pd(unsigned char, v8f64, int);
-
+              _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_permute_ps(unsigned short, v16f32, int);
-
+               _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_permute_pd(v8f64, int);
-
+              _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_permute_ps(v16f32, int);
 
 // The same wrappers implemented as a void functions in order to reduce to 3
@@ -742,27 +743,27 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 // The naming of functions was changed.
 
 
-
+         _FUNC_ATTR_BLOCK_ 
         void avx512_add_pd(double       * __restrict,
 	                   const double * __restrict,
-			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+			   const double * __restrict);
+         _FUNC_ATTR_BLOCK_ 
 	void avx512_add_ps(float        * __restrict,
 	                   const float  * __restrict,
 			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+         _FUNC_ATTR_BLOCK_ 
 	void avx512_sub_pd(double       * __restrict,
 	                   const double * __restrict,
 			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+         _FUNC_ATTR_BLOCK_ 
         void avx512_sub_ps(float        * __restrict,
 	                   const float  * __restrict,
 			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+           _FUNC_ATTR_BLOCK_ 
 	void avx512_mul_pd(double       * __restrict,
 	                   const double * __restrict,
 			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+            _FUNC_ATTR_BLOCK_ 
 	void avx512_mul_ps(float        * __restrict,
 	                   const float  * __restrict,
 			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
@@ -921,90 +922,90 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 				  const unsigned short,
 				  const float  * __restrict,
 				  const float  * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_pd(double       * __restrict,
 	                           const double * __restrict,
 				   const double * __restrict,
 				   const double * __restrict,
 				   const unsigned char)       __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_ps(float        * __restrict,
 	                           const float  * __restrict,
 				   const float  * __restrict,
 				   const float  * __restrict,
 				   const unsigned short)      __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+              _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_pd(double       * __restrict,
 	                           const unsigned char,
 				   const double * __restrict,
 				   const double * __restrict,
 				   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_ps(float        * __restrict,
 	                           const unsigned short,
 				   const float  * __restrict,
 				   const float  * __restrict,
 				   const float  * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_fmadd_round_pd(double       * __restrict,
 	                           const double * __restrict,
 				   const double * __restrict,
 				   const double * __restrict,
 				   const int)                  __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_fmadd_round_ps(float        * __restrict,
 	                           const float  * __restrict,
 				   const float  * __restrict,
 				   const float  * __restrict,
 				   const int)                   __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_ 
 	void avx512_mask_fmadd_round_pd(double       * __restrict,
 	                                const double * __restrict,
 					const unsigned char,
 					const double * __restrict,
 					const double * __restrict,
 					const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+               _FUNC_ATTR_BLOCK_  
 	void avx512_mask_fmadd_round_ps(float        * __restrict,
 	                                const float  * __restrict,
 					const unsigned short,
 					const float  * __restrict,
 					const float  * __restrict,
 					const int)                __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+             _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_round_pd(double       * __restrict,
 	                                 const double * __restrict,
 				         const double * __restrict,
 				         const double * __restrict,
 					 const unsigned char,
 					 const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+             _FUNC_ATTR_BLOCK_ 
         void avx512_mask3_fmadd_round_ps(float        * __restrict,
 	                                 const float  * __restrict,
 				         const float  * __restrict,
 				         const float  * __restrict,
 					 const unsigned short,
 					 const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+            _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_round_pd(double      * __restrict,
 	                                const unsigned char,
 					const double * __restrict,
 				        const double * __restrict,
 				        const double * __restrict,
 					const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+            _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_round_ps(float       * __restrict,
 	                                 const unsigned short,
 					 const float  * __restrict,
 				         const float  * __restrict,
 				         const float  * __restrict,
 				         const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+            _FUNC_ATTR_BLOCK_ 
 	void avx512_fmaddsub_pd(double       * __restrict,
 	                        const double * __restrict,
 				const double * __restrict,
 				const double * __restrict)           __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+           _FUNC_ATTR_BLOCK_ 
 	void avx512_fmaddsub_ps(float        * __restrict,
 	                        const float  * __restrict,
 			        const float  * __restrict,
