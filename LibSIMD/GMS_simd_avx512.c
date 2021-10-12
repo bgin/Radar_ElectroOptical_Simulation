@@ -1646,130 +1646,130 @@
 	return (*(v16f32*)&zmm);
      }
 
-     void avx512_add_pd(double   * __restrict c,
-			const double * __restrict b,
-			const double * __restrict a) {
+     void avx512_add_pd(double   * __restrict __attribute__((aligned(64))) c,
+			const double * __restrict __attribute__((aligned(64))) b,
+			const double * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_pd(&c[0],_mm512_add_pd(*(__m512d*)&b[0],*(__m512d*)&a[0]));
      }
 
-     void avx512_add_ps(float   * __restrict c,
-			const float * __restrict b,
-			const float * __restrict a) {
+     void avx512_add_ps(float   * __restrict __attribute__((aligned(64))) c,
+			const float * __restrict __attribute__((aligned(64))) b,
+			const float * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_ps(&c[0],_mm512_add_ps(*(__m512*)&b[0],*(__m512*)&a[0]));
      }
 
-     void avx512_sub_pd(double  * __restrict c,
-			const double * __restrict b,
-			const double * __restrict a) {
+     void avx512_sub_pd(double  * __restrict __attribute__((aligned(64))) c,
+			const double * __restrict __attribute__((aligned(64))) b,
+			const double * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_pd(&c[0],_mm512_sub_pd(*(__m512d*)&b[0],*(__m512*)&a[0]));
      }
 
-     void avx512_sub_ps(float * __restrict c,
-			const float * __restrict b,
-			const float * __restrict a) {
+     void avx512_sub_ps(float * __restrict __attribute__((aligned(64))) c,
+			const float * __restrict __attribute__((aligned(64))) b,
+			const float * __restrict __attribute__((aligned(64))) a) {
 
         _mm512_store_ps(&c[0],_mm512_sub_ps(*(__m512*)&b[0],*(__m512*)&a[0]));
      }
 
-     void avx512_mul_pd(double   * __restrict c,
-			const double * __restrict b,
-			const double * __restrict a) {
+     void avx512_mul_pd(double   * __restrict __attribute__((aligned(64))) c,
+			const double * __restrict __attribute__((aligned(64))) b,
+			const double * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_pd(&c[0],_mm512_mul_pd(*(__m512d*)&b[0],*(__m512d*)&a[0]));
      }
 
-     void avx512_mul_ps(float  * __restrict c,
-			const float * __restrict b,
-			const float * __restrict a) {
+     void avx512_mul_ps(float  * __restrict __attribute__((aligned(64))) c,
+			const float * __restrict __attribute__((aligned(64))) b,
+			const float * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_ps(&c[0],_mm512_mul_ps(*(__m512*)&b[0],*(__m512*)&a[0]));
      }
 
-     void avx512_div_pd(double  * __restrict c,
-			const double * __restrict b,
-			const double * __restrict a) {
+     void avx512_div_pd(double  * __restrict __attribute__((aligned(64))) c,
+			const double * __restrict __attribute__((aligned(64))) b,
+			const double * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_pd(&c[0],_mm512_div_pd(*(__m512d*)&b[0],*(__m512*)&a[0]));
      }
 
-     void avx512_div_ps(float  * __restrict c,
-			const float * __restrict b,
-			const float * __restrict a) {
+     void avx512_div_ps(float  * __restrict __attribute__((aligned(64))) c,
+			const float * __restrict __attribute__((aligned(64))) b,
+			const float * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_ps(&c[0],_mm512_div_ps(*(__m512*)&b[0],*(__m51*)&a[0]));
      }
 
-     void avx512_mask_ceil_pd(double * __restrict c,
-			      const double * __restrict src,
+     void avx512_mask_ceil_pd(double * __restrict __attribute__((aligned(64))) c,
+			      const double * __restrict __attribute__((aligned(64))) src,
 			      const unsigned char k,
-			      const double * __restrict a) {
+			      const double * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_pd(&c[0],_mm512_mask_ceil_pd(*(__m512d*)&src,k,*(__m512d*)&a[0]));
      }
 
-     void avx512_mask_ceil_ps(float  * __restrict c,
-			      const float * __restrict src,
+     void avx512_mask_ceil_ps(float  * __restrict __attribute__((aligned(64))) c,
+			      const float * __restrict __attribute__((aligned(64))) src,
 			      const unsigned short k,
-			      const float * __restrict a) {
+			      const float * __restrict __attribute__((aligned(64))) a) {
 
        _mm512_store_ps(&c[0],_mm512_mask_ceil_ps(*(__m512*)&src,k,*(__m512*)&a[0]));
      }
 
-     void avx512_ceil_pd(double * __restrict c,
-			 const double * __restrict b) {
+     void avx512_ceil_pd(double * __restrict __attribute__((aligned(64))) c,
+			 const double * __restrict __attribute__((aligned(64))) b) {
 
        _mm512_store_pd(&c[0], _mm512_ceil_pd(*(__m512d*)&b[0]));
      }
 
-     void avx512_ceil_ps(float * __restrict c,
-			 const float * __restrict b) {
+     void avx512_ceil_ps(float * __restrict __attribute__((aligned(64))) c,
+			 const float * __restrict __attribute__((aligned(64))) b) {
 
        _mm512_store_ps(&c[0], _mm512_ceil_ps(*(__m512*)&b[0]));
      }
 
-     void avx512_mask_abs_pd(double * __restrict c,
-			      const double * __restrict src,
+     void avx512_mask_abs_pd(double * __restrict __attribute__((aligned(64))) c,
+			      const double * __restrict __attribute__((aligned(64))) src,
 			      const unsigned char k,
-			      const double * __restrict a) {
+			      const double * __restrict __attribute__((aligned(64))) a) {
 
         _mm512_store_pd(&c[0], _mm512_mask_abs_pd(*(__m512d*)&src[0],k,*(__m512d*)&a[0]));
       }
 
-     void avx512_mask_abs_ps(float  * __restrict c,
-			      const float * __restrict src,
+     void avx512_mask_abs_ps(float  * __restrict __attribute__((aligned(64))) c,
+			      const float * __restrict __attribute__((aligned(64))) src,
 			      const unsigned short k,
-			      const float * __restrict a) {
+			      const float * __restrict __attribute__((aligned(64))) a) {
 
         _mm512_store_ps(&c[0], _mm512_mask_abs_ps(*(__m512*)&src[0],k,*(__m512*)&a[0]));
       }
 
-     void avx512_mask_add_pd(double * __restrict c,
-                             const double * __restrict src,
+     void avx512_mask_add_pd(double * __restrict __attribute__((aligned(64))) c,
+                             const double * __restrict __attribute__((aligned(64))) src,
 			     const unsigned char k,
-			     const double * __restrict a,
-			     const double * __restrict b) {
+			     const double * __restrict __attribute__((aligned(64))) a,
+			     const double * __restrict __attribute__((aligned(64))) b) {
 
         _mm512_store_pd(&c[0], _mm512_mask_add_pd(*(__m512d*)&src[0],
 	                                               k,*(__m512d*)&a[0],*(__m512d*)&b[0]));
       }
 
-     void avx512_mask_add_ps(float * __restrict c,
-                             const float * __restrict src,
+     void avx512_mask_add_ps(float * __restrict __attribute__((aligned(64))) c,
+                             const float * __restrict __attribute__((aligned(64))) src,
 			     const unsigned short k,
-			     const float * __restrict a,
-			     const float * __restrict b) {
+			     const float * __restrict __attribute__((aligned(64))) a,
+			     const float * __restrict __attribute__((aligned(64))) b) {
 
         _mm512_store_ps(&c[0], _mm512_mask_add_ps(*(__m512*)&src[0],
 	                                               k,*(__m512*)&a[0],*(__m512*)&b[0]));
       }
 
-     void avx512_maskz_add_pd(double * __restrict c,
+     void avx512_maskz_add_pd(double * __restrict __attribute__((aligned(64))) c,
                               const unsigned char k,
-			      const double * __restrict a,
-			      const double * __restrict b) {
+			      const double * __restrict __attribute__((aligned(64))) a,
+			      const double * __restrict __attribute__((aligned(64))) b) {
 
         _mm512_store_pd(&c[0], _mm512_maskz_add_pd(k,*(__m512d*)&a[0],*(__m512d*)&b[0]));
       }
