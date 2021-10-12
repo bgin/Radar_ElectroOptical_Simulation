@@ -750,266 +750,266 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
          _FUNC_ATTR_BLOCK_ 
 	void avx512_add_ps(float        * __restrict,
 	                   const float  * __restrict,
-			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const float  * __restrict);
          _FUNC_ATTR_BLOCK_ 
 	void avx512_sub_pd(double       * __restrict,
 	                   const double * __restrict,
-			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const double * __restrict);
          _FUNC_ATTR_BLOCK_ 
         void avx512_sub_ps(float        * __restrict,
 	                   const float  * __restrict,
-			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const float  * __restrict);
            _FUNC_ATTR_BLOCK_ 
 	void avx512_mul_pd(double       * __restrict,
 	                   const double * __restrict,
-			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const double * __restrict);
             _FUNC_ATTR_BLOCK_ 
 	void avx512_mul_ps(float        * __restrict,
 	                   const float  * __restrict,
-			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const float  * __restrict);
 
 	void avx512_div_pd(double       * __restrict,
 	                   const double * __restrict,
-			   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const double * __restrict);
 
 	void avx512_div_ps(float        * __restrict,
 	                   const float  * __restrict,
-			   const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+			   const float  * __restrict);
 
 	void avx512_mask_ceil_pd(double       * __restrict,
 	                         const double * __restrict,
 	                         const unsigned char,
-				 const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const double * __restrict);
 
         void avx512_mask_ceil_ps(float        * __restrict,
 	                         const float  * __restrict,
 				 const unsigned short,
-				 const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const float  * __restrict);
 
 	void avx512_ceil_pd(double       * __restrict,
-	                    const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+	                    const double * __restrict);
 
 	void avx512_ceil_ps(float        * __restrict,
-	                    const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+	                    const float  * __restrict);
 
 	void avx512_mask_abs_pd(double       * __restrict,
 	                        const double * __restrict,
 				const unsigned char,
-				const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const double * __restrict);
 
 	void avx512_mask_abs_ps(float        * __restrict,
 	                        const float  * __restrict,
 				const unsigned short,
 				const float  * __restrict,
-				const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const float  * __restrict);
 
 	void avx512_mask_add_pd(double       * __restrict,
 	                        const double * __restrict,
 				const unsigned char,
 				const double * __restrict,
-				const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const double * __restrict);
 
 	void avx512_mask_add_ps(float        * __restrict,
 	                        const float  * __restrict,
 				const unsigned short,
 				const float  * __restrict,
-				const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const float  * __restrict);
 
 	void avx512_maskz_add_pd(double       * __restrict,
 	                         const unsigned char,
 				 const double * __restrict,
-				 const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const double * __restrict);
 
 	void avx512_maskz_add_ps(float        * __restrict,
 	                         const unsigned short,
 				 const float  * __restrict,
-				 const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const float  * __restrict);
 
 	void avx512_add_round_pd(double       * __restrict,
 	                         const double * __restrict,
 				 const double * __restrict,
-				 const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const int);              
 
 	void avx512_add_round_ps(float        * __restrict,
 	                         const float  * __restrict,
 				 const float  * __restrict,
-				 const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const int);             
 
 	void avx512_maskz_add_round_pd(double       * __restrict,
 	                               const double * __restrict,
 	                               const unsigned char,
 				       const double * __restrict,
 				       const double * __restrict,
-				       const int)           __ATTR_HOT__ __ATTR_ALIGN__(16);
+				       const int);
 
 	void avx512_maskz_add_round_ps(float        * __restrict,
 	                               const float  * __restrict,
 				       const unsigned short,
 				       const float  * __restrict,
 				       const float  * __restrict,
-				       const int)           __ATTR_HOT__ __ATTR_ALIGN__(16);
+				       const int);
 
 	void avx512_mask_div_pd(double       * __restrict,
 	                        const double * __restrict,
 				const unsigned char,
 				const double * __restrict,
-				const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const double * __restrict);
 
 	void avx512_mask_div_ps((float       * __restrict,
 	                        const float  * __restrict,
 				const unsigned short,
 				const float  * __restrict,
-				const float  * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const float  * __restrict);
 
 	void avx512_maskz_div_pd(double       * __restrict,
 	                         const unsigned char,
 				 const double * __restrict,
-				 const double * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
-
+				 const double * __restrict);
+				
 	void avx512_maskz_div_ps(float        * __restrict,
 	                         const unsigned short,
 				 const float  * __restrict,
-				 const float  * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const float  * __restrict);
 
 	void avx512_div_round_pd(double       * __restrict,
 	                         const double * __restrict,
 				 const double * __restrict,
-				 const int)                  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const int);                 
 
 	void avx512_div_round_ps(float        * __restrict,
 	                         const float  * __restrict,
 				 const float  * __restrict,
-				 const int)                  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				 const int);            
 
         void avx512_mask_div_round_pd(double       * __restrict,
 	                              const double * __restrict,
 				      const unsigned char,
 				      const double * __restrict,
 				      const double * __restrict,
-				      const int)             __ATTR_HOT__ __ATTR_ALIGN__(16);
+				      const int);
 
 	void avx512_mask_div_round_ps(float        * __restrict,
 	                              const float  * __restrict,
 				      const unsigned short,
 				      const float  * __restrict,
 				      const float  * __restrict,
-				      const int)            __ATTR_HOT__ __ATTR_ALIGN__(16);
+				      const int);
 
 	void avx512_maskz_div_round_ps(double       * __restrict,
 	                               const unsigned char,
 				       const double * __restrict,
 				       const double * __restrict,
-				       const int)          __ATTR_HOT__ __ATTR_ALIGN__(16);
+				       const int);
 
 	void avx512_fmadd_pd(double       * __restrict,
 	                     const double * __restrict,
 			     const double * __restrict,
-			     const double * __restrict)    __ATTR_HOT__ __ATTR_ALIGN__(16);
+			     const double * __restrict);
 
 	void avx512_fmadd_ps(float        * __restrict,
 	                     const float  * __restrict,
 			     const float  * __restrict,
-			     const float  * __restrict)     __ATTR_HOT__ __ATTR_ALIGN__(16);
+			     const float  * __restrict);
 
 	void avx512_mask_fmadd_pd(double       * __restrict,
 	                          const double * __restrict,
 	                          const unsigned char,
 	                          const double * __restrict,
-                                  const double * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
+                                  const double * __restrict);
 
 	void avx512_mask_fmadd_ps(float        * __restrict,
 	                          const float  * __restrict,
 				  const unsigned short,
 				  const float  * __restrict,
-				  const float  * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				  const float  * __restrict);
                _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_pd(double       * __restrict,
 	                           const double * __restrict,
 				   const double * __restrict,
 				   const double * __restrict,
-				   const unsigned char)       __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const unsigned char);       
                _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_ps(float        * __restrict,
 	                           const float  * __restrict,
 				   const float  * __restrict,
 				   const float  * __restrict,
-				   const unsigned short)      __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const unsigned short);      
               _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_pd(double       * __restrict,
 	                           const unsigned char,
 				   const double * __restrict,
 				   const double * __restrict,
-				   const double * __restrict) __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const double * __restrict);
                _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_ps(float        * __restrict,
 	                           const unsigned short,
 				   const float  * __restrict,
 				   const float  * __restrict,
-				   const float  * __restrict)  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const float  * __restrict);  
                _FUNC_ATTR_BLOCK_ 
 	void avx512_fmadd_round_pd(double       * __restrict,
 	                           const double * __restrict,
 				   const double * __restrict,
 				   const double * __restrict,
-				   const int)                  __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const int);                  
                _FUNC_ATTR_BLOCK_ 
 	void avx512_fmadd_round_ps(float        * __restrict,
 	                           const float  * __restrict,
 				   const float  * __restrict,
 				   const float  * __restrict,
-				   const int)                   __ATTR_HOT__ __ATTR_ALIGN__(16);
+				   const int);                  
                _FUNC_ATTR_BLOCK_ 
 	void avx512_mask_fmadd_round_pd(double       * __restrict,
 	                                const double * __restrict,
 					const unsigned char,
 					const double * __restrict,
 					const double * __restrict,
-					const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
+					const int);               
                _FUNC_ATTR_BLOCK_  
 	void avx512_mask_fmadd_round_ps(float        * __restrict,
 	                                const float  * __restrict,
 					const unsigned short,
 					const float  * __restrict,
 					const float  * __restrict,
-					const int)                __ATTR_HOT__ __ATTR_ALIGN__(16);
+					const int);              
              _FUNC_ATTR_BLOCK_ 
 	void avx512_mask3_fmadd_round_pd(double       * __restrict,
 	                                 const double * __restrict,
 				         const double * __restrict,
 				         const double * __restrict,
 					 const unsigned char,
-					 const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
+					 const int);               
              _FUNC_ATTR_BLOCK_ 
         void avx512_mask3_fmadd_round_ps(float        * __restrict,
 	                                 const float  * __restrict,
 				         const float  * __restrict,
 				         const float  * __restrict,
 					 const unsigned short,
-					 const int)               __ATTR_HOT__ __ATTR_ALIGN__(16);
+					 const int);               
             _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_round_pd(double      * __restrict,
 	                                const unsigned char,
 					const double * __restrict,
 				        const double * __restrict,
 				        const double * __restrict,
-					const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
+					const int);                
             _FUNC_ATTR_BLOCK_ 
 	void avx512_maskz_fmadd_round_ps(float       * __restrict,
 	                                 const unsigned short,
 					 const float  * __restrict,
 				         const float  * __restrict,
 				         const float  * __restrict,
-				         const int)                 __ATTR_HOT__ __ATTR_ALIGN__(16);
+				         const int);                
             _FUNC_ATTR_BLOCK_ 
 	void avx512_fmaddsub_pd(double       * __restrict,
 	                        const double * __restrict,
 				const double * __restrict,
-				const double * __restrict)           __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const double * __restrict);        
            _FUNC_ATTR_BLOCK_ 
 	void avx512_fmaddsub_ps(float        * __restrict,
 	                        const float  * __restrict,
 			        const float  * __restrict,
-				const float  * __restrict)            __ATTR_HOT__ __ATTR_ALIGN__(16);
+				const float  * __restrict);
 
 	
 
