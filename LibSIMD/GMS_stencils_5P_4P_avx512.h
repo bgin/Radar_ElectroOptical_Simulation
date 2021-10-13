@@ -3,7 +3,7 @@
 #ifndef __GMS_STENCILS_5P_4P_AVX512_H__
 #define __GMS_STENCILS_5P_4P_AVX512_H__ 101020210944
 
-/*
+
 
     const unsigned int gGMS_DERIVATIVE_AVX512_MAJOR = 1U;
     const unsigned int gGMS_DERIVATIVE_AVX512_MINOR = 0U;
@@ -16,7 +16,7 @@
     const char * const pgGMS_DERIVATIVE_AVX512_BUILD_DATE    = __DATE__ ":" __TIME__;
     const char * const pgGMS_DERIVATIVE_AVX512_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com";
     const char * const pgGMS_DERIVATIVE_AVX512_DESCRIPTION   = "Vectorized (AVX512) derivative implementation."
-*/
+
 
 
 #include <immintrin.h>
