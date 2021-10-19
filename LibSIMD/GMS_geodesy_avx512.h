@@ -88,7 +88,20 @@ geodetic_to_cart_u_zmm8r8_looped(const double,
 			                          __attribute__((hot))
 					          __attribute__((aligned(32)));
 
-						  
+
+void
+geodetic_to_cart_a_zmm8r8_looped(const double,
+			         const double,
+				 const double * __restrict,
+				 const double * __restrict,
+				 const double * __restrict,
+				 double * __restrict,
+				 double * __restrict,
+				 double * __restrict,
+				 const int32_t)   __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
 
 
 
