@@ -125,27 +125,27 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 	v16f32 v16f32_fmadd_ps(v16f32, v16f32, v16f32);
                 _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_mask_fmadd_pd(v8f64, unsigned char, v8f64, v8f64);
-
+              _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_fmadd_ps(v16f32, unsigned short, v16f32, v16f32);
-
+             _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_mask3_fmadd_pd(v8f64, v8f64, v8f64, unsigned char);
-
+             _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask3_fmadd_ps(v16f32, v16f32, v16f32, unsigned short);
-
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_maskz_fmadd_pd(unsigned char, v8f64, v8f64, v8f64);
-
+             _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_maskz_fmadd_ps(unsigned short, v16f32, v16f32, v16f32);
-
+             _FUNC_ATTR_BLOCK_ 
 	v8f64 v8f64_fmadd_round_pd(v8f64, v8f64, v8f64, int);
-
+             _FUNC_ATTR_BLOCK_ 
 	v16f32 v16f32_fmadd_round_ps(v16f32, v16f32, v16f32, int);
-
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_mask_fmadd_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
-
+             _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_fmadd_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+             _FUNC_ATTR_BLOCK_
 	v8f64 v8f64_mask3_fmadd_round_pd(v8f64, v8f64, v8f64, unsigned char, int);
-
+             _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask3_fmadd_round_ps(v16f32, v16f32, v16f32, unsigned short, int);
 
 	v8f64 v8f64_maskz_fmadd_round_pd(unsigned char, v8f64, v8f64, v8f64, int);
