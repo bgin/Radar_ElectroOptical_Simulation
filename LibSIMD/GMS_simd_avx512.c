@@ -1945,21 +1945,21 @@
         _mm512_store_pd(&c[0], _mm512_maskz_fmadd_pd(k,*(__m512d*)&x[0],*(__m512d*)&y[0],*(__m512d*)&z[0]));
       }
 
-      void avx512_maskz_fmadd_ps(float * __restrict c,
+      void avx512_maskz_fmadd_ps(float * __restrict __attribute__((aligned(64)))  c,
                                  const unsigned short k,
-				 const float * __restrict x,
-				 const float * __restrict y,
-				 const float * __restrict z) {
+				 const float * __restrict __attribute__((aligned(64)))  x,
+				 const float * __restrict __attribute__((aligned(64)))  y,
+				 const float * __restrict __attribute__((aligned(64)))  z) {
 
         _mm512_store_ps(&c[0], _mm512_maskz_fmadd_ps(k,*(__m512*)&x[0],
 	                                                  *(__m512*)&y[0],
 							          *(__m512*)&z[0]));
       }
 
-      void avx512_fmadd_round_pd(double * __restrict c,
-                                 const double * __restrict x,
-				 const double * __restrict y,
-				 const double * __restrict z,
+      void avx512_fmadd_round_pd(double * __restrict __attribute__((aligned(64)))  c,
+                                 const double * __restrict __attribute__((aligned(64)))  x,
+				 const double * __restrict __attribute__((aligned(64)))  y,
+				 const double * __restrict __attribute__((aligned(64)))  z,
 				 const int rounding) {
 
         _mm512_store_pd(&c[0], _mm512_fmadd_round_pd(*(__m512d*)&x[0],
@@ -1968,10 +1968,10 @@
 							          rounding));
       }
       
-      void avx512_fmadd_round_ps(float * __restrict c,
-                                 const float * __restrict x,
-				 const float * __restrict y,
-				 const float * __restrict z,
+      void avx512_fmadd_round_ps(float * __restrict __attribute__((aligned(64)))  c,
+                                 const float * __restrict __attribute__((aligned(64)))  x,
+				 const float * __restrict __attribute__((aligned(64))) y,
+				 const float * __restrict __attribute__((aligned(64))) z,
 				 const int rounding) {
 
          _mm512_store_ps(&c[0], _mm512_fmadd_round_ps(*(__m512*)&x[0],
@@ -1980,11 +1980,11 @@
 							          rounding));
       }
 
-      void avx512_mask_fmadd_round_pd(double  * __restrict c,
-                                      const double * __restrict x,
+      void avx512_mask_fmadd_round_pd(double  * __restrict __attribute__((aligned(64))) c,
+                                      const double * __restrict __attribute__((aligned(64))) x,
 				      const unsigned char k,
-				      const double * __restrict y,
-				      const double * __restrict z,
+				      const double * __restrict __attribute__((aligned(64))) y,
+				      const double * __restrict __attribute__((aligned(64))) z,
 				      const int rounding) {
 
         _mm512_store_pd(&c[0], _mm512_mask_fmadd_round_pd(*(__m512d*)&x[0],
@@ -1993,11 +1993,11 @@
 								             rounding));
       }
 
-      void avx512_mask_fmadd_round_ps(float  * __restrict c,
-                                      const float * __restrict x,
+      void avx512_mask_fmadd_round_ps(float  * __restrict __attribute__((aligned(64))) c,
+                                      const float * __restrict __attribute__((aligned(64))) x,
 				      const unsigned short k,
-				      const float * __restrict y,
-				      const float * __restrict z,
+				      const float * __restrict __attribute__((aligned(64))) y,
+				      const float * __restrict __attribute__((aligned(64))) z,
 				      const int rounding) {
 
           _mm512_store_ps(&c[0], _mm512_mask_fmadd_round_ps(*(__m512*)&x[0],
@@ -2006,10 +2006,10 @@
 								             rounding));
       }
 
-      void avx512_mask3_fmadd_round_pd(double * __restrict c,
-                                       const double * __restrict x,
-				       const double * __restrict y,
-				       const double * __restrict z,
+      void avx512_mask3_fmadd_round_pd(double * __restrict __attribute__((aligned(64))) c,
+                                       const double * __restrict __attribute__((aligned(64))) x,
+				       const double * __restrict __attribute__((aligned(64))) y,
+				       const double * __restrict __attribute__((aligned(64))) z,
 				       const unsigned short k,
 				       const int rounding) {
 
@@ -2019,10 +2019,10 @@
 								                 rounding));
       }
 
-      void avx512_mask3_fmadd_round_ps(float * __restrict c,
-                                       const float * __restrict x,
-				       const float * __restrict y,
-				       const float * __restrict z,
+      void avx512_mask3_fmadd_round_ps(float * __restrict __attribute__((aligned(64))) c,
+                                       const float * __restrict __attribute__((aligned(64))) x,
+				       const float * __restrict __attribute__((aligned(64))) y,
+				       const float * __restrict __attribute__((aligned(64))) z,
 				       const unsigned short k,
 				       const int rounding) {
 
@@ -2032,11 +2032,11 @@
 								                 rounding));
       }
 
-      void avx512_maskz_fmadd_round_pd(double  * __restrict c,
+      void avx512_maskz_fmadd_round_pd(double  * __restrict __attribute__((aligned(64))) c,
                                        const unsigned char k,
-				       const double * __restrict x,
-				       const double * __restrict y,
-				       const double * __restrict z,
+				       const double * __restrict __attribute__((aligned(64))) x,
+				       const double * __restrict __attribute__((aligned(64))) y,
+				       const double * __restrict __attribute__((aligned(64))) z,
                                        const int rounding) {
 
         _mm512_store_pd(&c[0], _mm512_maskz_fmadd_round_pd(k,
@@ -2046,11 +2046,11 @@
 								                 rounding));
       }
 
-      void avx512_maskz_fmadd_round_ps(float * __restrict c,
+      void avx512_maskz_fmadd_round_ps(float * __restrict __attribute__((aligned(64))) c,
                                        const unsigned short k,
-				       const float * __restrict x,
-				       const float * __restrict y,
-				       const float * __restrict z,
+				       const float * __restrict __attribute__((aligned(64))) x,
+				       const float * __restrict __attribute__((aligned(64))) y,
+				       const float * __restrict __attribute__((aligned(64))) z,
 				       const int rounding) {
 
          _mm512_store_ps(&c[0], _mm512_maskz_fmadd_round_ps(k,
@@ -2060,31 +2060,31 @@
 								                 rounding));
       }
 
-      void avx512_fmaddsub_pd(double  * __restrict c,
-                              const double * __restrict x,
-			      const double * __restrict y,
-			      const double * __restrict z) {
+      void avx512_fmaddsub_pd(double  * __restrict __attribute__((aligned(64))) c,
+                              const double * __restrict __attribute__((aligned(64))) x,
+			      const double * __restrict __attribute__((aligned(64))) y,
+			      const double * __restrict __attribute__((aligned(64))) z) {
 
         _mm512_store_pd(&c[0], _mm512_fmaddsub_pd(*(__m512d*)&x[0],
 	                                             *(__m512d*)&y[0],
 						          *(__m512d*)&z[0]));
       }
 
-      void avx512_fmaddsub_ps(float  * __restrict c,
-                              const float * __restrict x,
-			      const float * __restrict y,
-			      const float * __restrict z) {
+      void avx512_fmaddsub_ps(float  * __restrict __attribute__((aligned(64))) c,
+                              const float * __restrict __attribute__((aligned(64))) x,
+			      const float * __restrict __attribute__((aligned(64))) y,
+			      const float * __restrict __attribute__((aligned(64))) z) {
 
         _mm512_store_ps(&c[0], _mm512_fmaddsub_ps(*(__m512*)&x[0],
 	                                             *(__m512*)&y[0],
 						          *(__m512*)&z[0]));
       }
 
-      void avx512_mask_fmaddsub_pd(double  * __restrict c,
-                                const double * __restrict x,
+      void avx512_mask_fmaddsub_pd(double  * __restrict __attribute__((aligned(64))) c,
+                                const double * __restrict __attribute__((aligned(64))) x,
 				const unsigned char k,
-				const double * __restrict y,
-				const double * __restrict z) {
+				const double * __restrict __attribute__((aligned(64))) y,
+				const double * __restrict __attribute__((aligned(64))) z) {
    
          _mm512_store_pd(&c[0], _mm512_mask_fmaddsub_pd(*(__m512d*)&x[0],
 	                                                    k, *(__m512d*)&y[0],
@@ -2092,21 +2092,21 @@
       }	                                                    
       
 
-      void avx512_mask_fmaddsub_ps(float  * __restrict c,
-                                const float * __restrict x
+      void avx512_mask_fmaddsub_ps(float  * __restrict __attribute__((aligned(64))) c,
+                                const float * __restrict __attribute__((aligned(64))) x
                                 const unsigned short k,
-				const float * __restrict y,
-				const float * __restrict z) {
+				const float * __restrict __attribute__((aligned(64))) y,
+				const float * __restrict __attribute__((aligned(64))) z) {
 
           _mm512_store_ps(&c[0], _mm512_mask_fmaddsub_ps(*(__m512*)&x[0],
 	                                                    k, *(__m512*)&y[0],
 							             *(__m512*)&z[0]));
       }
 
-      void avx512_mask3_fmaddsub_pd(double * __restrict c,
-                                 const double * __restrict x,
-				 const double * __restrict y,
-				 const double * __restrict z,
+      void avx512_mask3_fmaddsub_pd(double * __restrict __attribute__((aligned(64))) c,
+                                 const double * __restrict __attribute__((aligned(64))) x,
+				 const double * __restrict __attribute__((aligned(64))) y,
+				 const double * __restrict __attribute__((aligned(64))) z,
 				 const unsigned char k) {
 
           _mm512_store_pd(&c[0], _mm512_mask3_fmaddsub_pd(*(__m512d*)&x[0],
@@ -2114,10 +2114,10 @@
 								       *(__m512d*)&z[0], k));
       }
 
-      void avx512_mask3_fmaddsub_ps(float * __restrict c,
-                                 const float * __restrict x,
-				 const float * __restrict y,
-				 const float * __restrict z,
+      void avx512_mask3_fmaddsub_ps(float * __restrict __attribute__((aligned(64))) c,
+                                 const float * __restrict __attribute__((aligned(64))) x,
+				 const float * __restrict __attribute__((aligned(64))) y,
+				 const float * __restrict __attribute__((aligned(64))) z,
 				 const unsigned short k) {
 
           _mm512_store_ps(&c[0], _mm512_mask3_fmaddsub_ps(*(__m512*)&x[0],
