@@ -18,7 +18,7 @@
 
 
 #include <immintrin.h>
-#include <math.h>
+
 #include <stdint.h>
 
 
@@ -29,6 +29,7 @@ cart_to_geodetic_zmm8r8( const __m512d,
 			 const __m512d,
 			 const __m512d,
 			 const __m512d,
+			 __m512d * __restrict,
 			 __m512d * __restrict,
 			 __m512d * __restrict) __attribute__((noinline))
 			                       __attribute__((hot))
@@ -90,18 +91,49 @@ geodetic_to_cart_u_zmm8r8_looped(const double,
 
 
 void
-geodetic_to_cart_a_zmm8r8_looped(const double,
-			         const double,
-				 const double * __restrict,
-				 const double * __restrict,
-				 const double * __restrict,
-				 double * __restrict,
-				 double * __restrict,
-				 double * __restrict,
-				 const int32_t)   __attribute__((noinline))
+forward_method_zmm8r8(const __m512d,
+                      const __m512d,
+		      const __m512d,
+		      const __m512d,
+		      const __m512d,
+		      const __m512d,
+		      __m512d * __restrict,
+		      __m512d * __restrict,
+		      __m512d * __restrict)       __attribute__((noinline))
 			                          __attribute__((hot))
 					          __attribute__((aligned(32)));
 
+
+void
+forward_method_u_zmm8r8_looped(const double,
+                               const double,
+			       const double * __restrict,
+			       const double * __restrict,
+			       const double * __restrict,
+			       const double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       const int32_t)     __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
+
+
+void
+forward_method_u_zmm8r8_looped(const double,
+                               const double,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       double * __restrict,
+			       const int32_t)     __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+						  
 
 
 
