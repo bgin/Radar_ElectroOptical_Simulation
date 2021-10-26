@@ -429,219 +429,219 @@ const char * const pgGMS_SIMD_AVX512_SYNOPSIS = "Callable from Fortran C wrapper
 	v8f64  v8f64_mask_sqrt_pd(v8f64, unsigned char, v8f64);
                  _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_sqrt_ps(v16f32, unsigned short, v16f32);
-
+            _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_sqrt_pd(unsigned char, v8f64);
-
+       _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_sqrt_ps(unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_sqrt_round_pd(v8f64, unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_sqrt_round_ps(v16f32, unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_sqrt_round_pd(unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_sqrt_round_ps(unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_expandloadu_pd(v8f64, unsigned char, void *);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_expandloadu_ps(v16f32, unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_expandload_pd(unsigned char, void *);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_expandloadu_ps(unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_load_pd(v8f64, unsigned char, void *);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_load_ps(v16f32, unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_load_pd(unsigned char, void *);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_load_ps(unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_loadu_pd(v8f64, unsigned char, void *);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_loadu_ps(v16f32, unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_loadu_pd(unsigned char, void * );
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_loadu_ps(unsigned short, void *);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_getexp_pd(v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_getexp_ps(v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_getexp_pd(v8f64, unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_getexp_ps(v16f32, unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_getexp_pd(unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_getexp_ps(unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_getexp_round_pd(v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_getexp_round_ps(v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_getexp_round_pd(v8f64, unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_getexp_round_ps(v16f32, unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_getexp_round_pd(unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_getexp_round_ps(unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_getmant_pd(v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_getmant_ps(v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_getmant_pd(v8f64, unsigned char, v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_getmant_ps(v16f32, unsigned short, v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_getmant_pd(unsigned char, v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v1632_maskz_getmant_ps(unsigned short, v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_getmant_round_pd(v8f64, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_getmant_round_ps(v16f32, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_getmant_round_pd(v8f64, unsigned char, v8f64, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_getmant_round_ps(v16f32, unsigned short, v16f32, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_getmant_round_pd(unsigned char, v8f64, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_getmant_round_ps(unsigned short, v16f32, int, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_roundscale_pd(v8f64, unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
         v16f32 v16f32_mask_roundscale_ps(v16f32, unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
         v8f64  v8f64_maskz_roundscale_pd(unsigned char, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_roundscale_ps(unsigned short, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_roundscale_pd(v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_roundscale_ps(v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_roundscale_round_pd(v8f64, unsigned char, v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_roundscale_round_ps(v16f32, unsigned short, v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_roundscale_round_pd(unsigned char, v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_roundscale_round_ps(unsigned short, v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_roundscale_round_pd(v8f64, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_roundscale_round_ps(v16f32, int, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_scalef_pd(v8f64, unsigned char, v8f64, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_scalef_ps(v16f32, unsigned short, v16f32, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_scalef_pd(unsigned char, v8f64, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_scalef_ps(unsigned short, v16f32, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_scalef_pd(v8f64, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_scalef_ps(v16f32, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_scalef_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_scalef_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_scalef_round_pd(unsigned char, v8f64, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_scalef_round_ps(unsigned short, v16f32, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_scalef_round_pd(v8f64, v8f64, int);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_scalef_round_ps(v16f32, v16f32, int);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_mov_pd(v8f64, unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_mov_ps(v16f32, unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_mov_pd(unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_mov_ps(unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_movedup_pd(v8f64, unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_movedup_ps(v16f32, unsigned short, v16f32);
-
+_FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_movedup_pd(unsigned char, v8f64);
-
+_FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_movedup_ps(unsigned short, v16f32);
-
+           _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_movedup_pd(v8f64);
-
+          _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_movedup_ps(v16f32);
-
+          _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_set4_pd(double, double, double, double);
 
         
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_max_pd(v8f64, unsigned char, v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_max_ps(v16f32, unsigned short, v16f32, v16f32);
-
+        _FUNC_ATTR_BLOCK_ 
 	v8f64  v8f64_maskz_max_pd(unsigned char, v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_max_ps(unsigned short, v16f32, v16f32);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_max_pd(v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_max_ps(v16f32, v16f32);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_max_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_max_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_max_round_pd(unsigned char, v8f64, v8f64, int);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_max_round_ps(unsigned short, v16f32, v16f32, int);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_max_round_pd(v8f64, v8f64, int);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_max_round_ps(v16f32, v16f32, int);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_min_pd(v8f64, unsigned char, v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_min_ps(v16f32, unsigned short, v16f32, v16f32);
-
+         _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_min_pd(unsigned char, v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_min_ps(unsigned short, v16f32, v16f32);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_min_pd(v8f64, v8f64);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_min_ps(v16f32, v16f32);
-
+        _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_mask_min_round_pd(v8f64, unsigned char, v8f64, v8f64, int);
-
+        _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_mask_min_round_ps(v16f32, unsigned short, v16f32, v16f32, int);
-
+         _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_maskz_min_round_pd(unsigned char, v8f64, v8f64, int);
-
+         _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_maskz_min_round_ps(unsigned short, v16f32, v16f32, int);
-
+         _FUNC_ATTR_BLOCK_
 	v8f64  v8f64_min_round_pd(v8f64, v8f64, int);
-
+         _FUNC_ATTR_BLOCK_
 	v16f32 v16f32_min_round_ps(v16f32, v16f32, int);
-
+          _FUNC_ATTR_BLOCK_
 	double  v8f64_mask_reduce_max_pd(unsigned char, v8f64);
-
+          _FUNC_ATTR_BLOCK_
 	float  v16f32_mask_reduce_max_ps(unsigned short, v16f32);
-
+         _FUNC_ATTR_BLOCK_
 	double  v8f64_reduce_max_pd(v8f64);
-
+         _FUNC_ATTR_BLOCK_
 	float  v16f32_reduce_max_ps(v16f32);
-
+         _FUNC_ATTR_BLOCK_
 	double  v8f64_mask_reduce_min_pd(unsigned char, v8f64);
                  _FUNC_ATTR_BLOCK_ 
 	float  v16f32_mask_reduce_min_ps(unsigned short, v16f32);
