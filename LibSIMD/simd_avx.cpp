@@ -278,125 +278,125 @@ void vec4f64_and_pd(double * __restrict __attribute__((aligned(32))) c,
 	_mm256_store_pd(&c[0], _mm256_and_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void vec4f64_andnot_pd(double * __restrict c,
-				     double * __restrict b,
-					 double * __restrict a) {
+void vec4f64_andnot_pd(double * __restrict  __attribute__((aligned(32))) c,
+				     double * __restrict __attribute__((aligned(32))) b,
+					 double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_andnot_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
 
 
-void vec4f64_blendv_pd(double * __restrict c,
-					 double * __restrict b,
-					 double * __restrict a,
-					 double * __restrict pred) {
+void vec4f64_blendv_pd(double * __restrict  __attribute__((aligned(32))) c,
+					 double * __restrict  __attribute__((aligned(32))) b,
+					 double * __restrict  __attribute__((aligned(32))) a,
+					 double * __restrict  __attribute__((aligned(32))) pred) {
 	_mm256_store_pd(&c[0], _mm256_blendv_pd(*(__m256d*)&b[0],*(__m256d*)&a[0],*(__m256d*)&pred[0]));
 }
 
-void vec4f64_ceil_pd(double * __restrict c,
-				   double * __restrict a) {
+void vec4f64_ceil_pd(double * __restrict  __attribute__((aligned(32))) c,
+				   double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_ceil_pd(*(__m256d*)&a[0]));
 }
 
-void vec4f64_cmpeq_pd(double * __restrict c,
-				  double * __restrict b,
-				  double * __restrict a) {
+void vec4f64_cmpeq_pd(double * __restrict  __attribute__((aligned(32))) c,
+				  double * __restrict  __attribute__((aligned(32))) b,
+				  double * __restrict  __attribute__((aligned(32))) a) {
 				 
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0],*(__m256d*)&a[0],0));
 }
 
 void vec4f64_cmpneq_pd(double * __restrict c,
-					   double * __restrict b,
-					   double * __restrict a) {
+					   double * __restrict  __attribute__((aligned(32))) b,
+					   double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0],12));
 }
 
-void vec4f64_cmplt_pd(double * __restrict c,
-					  double * __restrict b,
-					  double * __restrict a) {
+void vec4f64_cmplt_pd(double * __restrict  __attribute__((aligned(32))) c,
+					  double * __restrict  __attribute__((aligned(32))) b,
+					  double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 17));
 }
 
-void vec4f64_cmple_pd(double * __restrict c,
-					  double * __restrict b,
-					  double * __restrict a) {
+void vec4f64_cmple_pd(double * __restrict  __attribute__((aligned(32))) c,
+					  double * __restrict  __attribute__((aligned(32))) b,
+					  double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 18));
 }
 
-void vec4f64_cmpgt_pd(double * __restrict c,
-					  double * __restrict b,
-					  double * __restrict a) {
+void vec4f64_cmpgt_pd(double * __restrict  __attribute__((aligned(32))) c,
+					  double * __restrict  __attribute__((aligned(32))) b,
+					  double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 29));
 }
 
-void vec4f64_cmpge_pd(double * __restrict c,
-					  double * __restrict b,
-					  double * __restrict a) {
+void vec4f64_cmpge_pd(double * __restrict  __attribute__((aligned(32))) c,
+					  double * __restrict  __attribute__((aligned(32))) b,
+					  double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_cmp_pd(*(__m256d*)&b[0], *(__m256d*)&a[0], 30));
 }
 
-void vec4f64_floor_pd(double * __restrict c,
-				    double * __restrict a) {
+void vec4f64_floor_pd(double * __restrict  __attribute__((aligned(32))) c,
+				    double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_floor_pd(*(__m256d*)&a[0]));
 }
 
-void vec4f64_fmadd_pd(double * __restrict d,
-				    double * __restrict c,
-					double * __restrict b,
-				    double * __restrict a) {
+void vec4f64_fmadd_pd(double * __restrict  __attribute__((aligned(32))) d,
+				    double * __restrict  __attribute__((aligned(32))) c,
+					double * __restrict  __attribute__((aligned(32))) b,
+				    double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&d[0], _mm256_fmadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void vec4f64_fmaddsub_pd(double * __restrict d,
-					   double * __restrict c,
-					   double * __restrict b,
-					   double * __restrict a) {
+void vec4f64_fmaddsub_pd(double * __restrict  __attribute__((aligned(32))) d,
+					   double * __restrict  __attribute__((aligned(32))) c,
+					   double * __restrict  __attribute__((aligned(32))) b,
+					   double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_fmaddsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
 void vec4f64_fmsub_pd(double * __restrict d,
-					 double * __restrict c,
-					 double * __restrict b,
-					 double * __restrict a) {
+					 double * __restrict  __attribute__((aligned(32))) c,
+					 double * __restrict  __attribute__((aligned(32))) b,
+					 double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&d[0], _mm256_fmsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
 void vec4f64_fmsubadd_pd(double * __restrict d,
-					   double * __restrict c,
-					   double * __restrict b,
-					   double * __restrict a) {
+					   double * __restrict  __attribute__((aligned(32))) c,
+					   double * __restrict  __attribute__((aligned(32))) b,
+					   double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&d[0], _mm256_fmsubadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a));
 }
 
-void vec4f64_fnmadd_pd(double * __restrict d,
-					   double * __restrict c,
-					   double * __restrict b,
-				       double * __restrict a) {
+void vec4f64_fnmadd_pd(double * __restrict  __attribute__((aligned(32))) d,
+					   double * __restrict  __attribute__((aligned(32))) c,
+					   double * __restrict  __attribute__((aligned(32)))b,
+				       double * __restrict  __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&d[0], _mm256_fnmadd_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void vec4f64_fnmsub_pd(double * __restrict d,
-					   double * __restrict c,
-					   double * __restrict b,
-					   double * __restrict a) {
+void vec4f64_fnmsub_pd(double * __restrict __attribute__((aligned(32))) d,
+					   double * __restrict __attribute__((aligned(32))) c,
+					   double * __restrict __attribute__((aligned(32))) b,
+					   double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&d[0], _mm256_fnmsub_pd(*(__m256d*)&c[0],*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void vec4f64_hadd_pd(double * __restrict c,
-					 double * __restrict b,
-				     double * __restrict a) {
+void vec4f64_hadd_pd(double * __restrict __attribute__((aligned(32))) c,
+					 double * __restrict __attribute__((aligned(32))) b,
+				     double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_hadd_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void vec4f64_hsub_pd(double * __restrict c,
-				     double * __restrict b,
-					 double * __restrict a) {
+void vec4f64_hsub_pd(double * __restrict __attribute__((aligned(32))) c,
+				     double * __restrict __attribute__((aligned(32))) b,
+					 double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_hsub_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
-void vec4f64_max_pd(double * __restrict c,
-				    double * __restrict b,
-					double * __restrict a) {
+void vec4f64_max_pd(double * __restrict __attribute__((aligned(32))) c,
+				    double * __restrict __attribute__((aligned(32))) b,
+					double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_max_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
@@ -505,15 +505,15 @@ void vec4f64_stream_pd(double * __restrict b,
 	_mm256_stream_pd(&b[0], *(__m256d*)&a[0]);
 }
 
-void vec4f64_unpacklo_pd(double * __restrict c,
-					     double * __restrict b,
-					     double * __restrict a) {
+void vec4f64_unpacklo_pd(double * __restrict __attribute__((aligned(32))) c,
+					     double * __restrict __attribute__((aligned(32))) b,
+					     double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_unpacklo_pd(*(__m256d*)&b[0],*(__m256d*)&a[0]));
 }
 
-void vec4f64_unpackhi_pd(double * __restrict c,
-						 double * __restrict b,
-						 double * __restrict a) {
+void vec4f64_unpackhi_pd(double * __restrict __attribute__((aligned(32))) c,
+						 double * __restrict __attribute__((aligned(32))) b,
+						 double * __restrict __attribute__((aligned(32))) a) {
 	_mm256_store_pd(&c[0], _mm256_unpackhi_pd(*(__m256d*)&b[0], *(__m256d*)&a[0]));
 }
 
