@@ -121,7 +121,7 @@ forward_method_u_zmm8r8_looped(const double,
 
 
 void
-forward_method_u_zmm8r8_looped(const double,
+forward_method_a_zmm8r8_looped(const double,
                                const double,
 			       double * __restrict,
 			       double * __restrict,
