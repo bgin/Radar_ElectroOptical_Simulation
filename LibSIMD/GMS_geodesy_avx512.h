@@ -133,6 +133,70 @@ forward_method_a_zmm8r8_looped(const double,
 			       const int32_t)     __attribute__((noinline))
 			                          __attribute__((hot))
 					          __attribute__((aligned(32)));
+
+
+__m512d
+spheroid_distance_zmm8r8(const __m512d,
+			 const __m512d,
+			 const __m512d,
+			 const __m512d,
+			 const __m512d)        __attribute__((noinline))
+			                       __attribute__((hot))
+					       __attribute__((regcall))
+					       __attribute__((aligned(32)));
+
+
+void
+spheroid_distance_u_zmm8r8_looped(const double,
+			          double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  const int32_t)  __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
+void
+spheroid_distance_a_zmm8r8_looped(const double,
+			          double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  double * __restrict,
+				  const int32_t)  __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
+
+__m512d
+geocentric_radius_zmm8r8(const __m512d,
+			 const __m512d,
+			 const __m512d)        __attribute__((noinline))
+			                       __attribute__((hot))
+					       __attribute__((regcall))
+					       __attribute__((aligned(32)));
+
+
+void
+geocentric_radius_u_zmm8r8_looped(const double,
+			          const double * __restrict,
+				  const double * __restrict,
+				  double * __restrict,
+				  const int32_t)  __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
+
+void
+geocentric_radius_a_zmm8r8_looped(const double,
+			          const double * __restrict,
+				  const double * __restrict,
+				  double * __restrict,
+				  const int32_t)  __attribute__((noinline))
+			                          __attribute__((hot))
+					          __attribute__((aligned(32)));
+
 						  
 
 
