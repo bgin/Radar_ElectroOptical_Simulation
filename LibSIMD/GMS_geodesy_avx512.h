@@ -198,9 +198,25 @@ geocentric_radius_a_zmm8r8_looped(const double,
 					          __attribute__((aligned(32)));
 
 						  
-
-
-
+void
+inverse_method_zmm8r8(const __m512d,    // Semi-major axis (equatorial)
+		      const __m512d,   // reciprocal flattening
+		      const __m512d, // Latitude of 8 points [rad, positive north]
+		      const __m512d, // longtitude of 8 points [rad,positive east]
+		      const __m512d, // Latitude of 8 points [rad, positive north]
+		      const __m512d, // Longtitude of 8 points [rad, positive east]
+		      __m512d * __restrict,       // Vector of 8 forward azimuths [rad]
+		      __m512d * __restrict,       // Vector of 8 backward azimuthes [rad]
+		      __m512d * __restrict,         // Ellipsoidal distance
+		      int32_t * __restrict,     // iteration count
+		      __m512d * __restrict,       // Spherical distance (auxiliary sphere)
+		      __m512d * __restrict,        // Longtitude difference (auxiliary sphere)
+		     int32_t  * __restrict)        // solution flag: kind=1: long-line; kind=2: antipodal
+                                               __attribute__((noinline))
+			                       __attribute__((hot))
+					       __attribute__((regcall))
+					       __attribute__((aligned(32)));
+           
 
 
 
