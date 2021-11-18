@@ -1,6 +1,6 @@
 
 #include "GMS_rotation_kernels_avx512.h"
-
+#include "GMS_rotations_avx512_helpers.h"
 
                        RotM9x16v16
                        q4x16_to_rmat9x16_zmm16r4(const __m512 q_x,
