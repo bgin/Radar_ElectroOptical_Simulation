@@ -36,7 +36,7 @@ module mod_sse_matrix
 
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
-    use mod_kinds, only : int4
+    use mod_kinds, only : i4
     use, intrinsic :: ISO_C_BINDING
     implicit none
     public
@@ -47,18 +47,18 @@ module mod_sse_matrix
     !  File and module information:
     !  version,creation and build date, author,description
     !=====================================================59
-    integer(kind=int4), parameter, public :: MOD_SSE_MATRIX_MAJOR = 1_int4
+    integer(kind=i4), parameter, public :: MOD_SSE_MATRIX_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_SSE_MATRIX_MINOR = 0_int4
+    integer(kind=i4), parameter, public :: MOD_SSE_MATRIX_MINOR = 0
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_SSE_MATRIX_MICRO = 0_int4
+    integer(kind=i4), parameter, public :: MOD_SSE_MATRIX_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_SSE_MATRIX_FULLVER = 1000_int4*MOD_SSE_MATRIX_MAJOR + &
-                                                                      100_int4*MOD_SSE_MATRIX_MINOR  + &
-                                                                      10_int4*MOD_SSE_MATRIX_MICRO
+    integer(kind=i4), parameter, public :: MOD_SSE_MATRIX_FULLVER = 1000*MOD_SSE_MATRIX_MAJOR + &
+                                                                      100*MOD_SSE_MATRIX_MINOR  + &
+                                                                      10*MOD_SSE_MATRIX_MICRO
     
     character(*),       parameter, public :: MOD_SSE_MATRIX_CREATE_DATE = "30-12-2018 16:42 +00200 (SUN 30 DEC 2018 GMT+2)"
     
