@@ -1021,16 +1021,16 @@ Comparison:   select case("method")
        !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitReal8CompareData1D
            use mod_print_error, only : handle_fatal_memory_error
            type(Real8CompareData1D_t),              intent(inout) :: Datum
-           integer(kind=int4),                      intent(in)    :: nx
-           logical(kind=int1),                      intent(inout) :: errstate
-           integer(kind=int4),                      intent(in)    :: iounit
-           logical(kind=int4),                      intent(in)    :: logging
-           logical(kind=int4),                      intent(in)    :: verbose
-           logical(kind=int4),                      intent(in)    :: append
+           integer(kind=i4),                      intent(in)    :: nx
+           logical(kind=i1),                      intent(inout) :: errstate
+           integer(kind=i4),                      intent(in)    :: iounit
+           logical(kind=i4),                      intent(in)    :: logging
+           logical(kind=i4),                      intent(in)    :: verbose
+           logical(kind=i4),                      intent(in)    :: append
            character(len=*),                        intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! EXec coce ...
            Datum.cfname = "Not initialized yet."
            Datum.gfname = "Not initialized yet."
@@ -1114,14 +1114,14 @@ Comparison:   select case("method")
       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal8Data1D
            use mod_print_error, only : print_non_fatal_error
            type(Real8CompareData1D_t),       intent(inout) :: Datum
-           integer(kind=int4),               intent(in)    :: ulp
+           integer(kind=i4),               intent(in)    :: ulp
            real(kind=dp),                    intent(in)    :: percent
-           integer(kind=int4),               intent(in)    :: n
+           integer(kind=i4),               intent(in)    :: n
            real(kind=dp),                    intent(in)    :: cutoff
            character(len=*),                 intent(in)    :: method
            ! Locals
-           logical(kind=int4), automatic :: bres
-           integer(kind=int4), automatic :: i
+           logical(kind=i4), automatic :: bres
+           integer(kind=i4), automatic :: i
            ! Exec code ....
 Comparison: select case("method")
                   case("EqualTo")
@@ -1202,17 +1202,17 @@ Comparison: select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitReal8CompareData2D
            use mod_print_error, only : handle_fatal_memory_error
            type(Real8CompareData2D),        intent(inout) :: Datum
-           integer(kind=int4),              intent(in)    :: nx
-           integer(kind=int4),              intent(in)    :: ny
-           logical(kind=int1),              intent(inout) :: errstate
-           integer(kind=int4),              intent(in)    :: iounit
-           logical(kind=int4),              intent(in)    :: logging
-           logical(kind=int4),              intent(in)    :: verbose
-           logical(kind=int4),              intent(in)    :: append
+           integer(kind=i4),              intent(in)    :: nx
+           integer(kind=i4),              intent(in)    :: ny
+           logical(kind=i1),              intent(inout) :: errstate
+           integer(kind=i4),              intent(in)    :: iounit
+           logical(kind=i4),              intent(in)    :: logging
+           logical(kind=i4),              intent(in)    :: verbose
+           logical(kind=i4),              intent(in)    :: append
            character(len=*),                intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code ....
            Datum.cfname = "Not initialized yet."
            Datum.gfname = "Not initialized yet."
@@ -1297,14 +1297,14 @@ Comparison: select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal8Data2D
            use mod_print_error, only : print_non_fatal_error
            type(Real8CompareData2D_t),          intent(inout) :: Datum
-           integer(kind=int4),                  intent(in)    :: ulp
+           integer(kind=i4),                  intent(in)    :: ulp
            real(kind=dp),                       intent(in)    :: percent
-           integer(kind=int4),                  intent(in)    :: n
+           integer(kind=i4),                  intent(in)    :: n
            real(kind=dp),                       intent(in)    :: cutoff
            character(len=*),                    intent(in)    :: method
            ! LOcals
-           logical(kind=int4), automatic :: bres
-           integer(kind=int4), automatic :: i,j,idx
+           logical(kind=i4), automatic :: bres
+           integer(kind=i4), automatic :: i,j,idx
            ! EXec code .....
 Comparison:    select case("method")
                    case("EqualTo")
@@ -1397,18 +1397,18 @@ Comparison:    select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitReal8CompareData3D
            use mod_print_error, only : handle_fatal_memory_error
            type(Real8CompareData3D_t),           intent(inout) :: Datum
-           integer(kind=int4),                   intent(in)    :: nx
-           integer(kind=int4),                   intent(in)    :: ny
-           integer(kind=int4),                   intent(in)    :: nz
-           logical(kind=int1),                   intent(in)    :: errstate
-           integer(kind=int4),                   intent(in)    :: iounit
-           logical(kind=int4),                   intent(in)    :: logging
-           logical(kind=int4),                   intent(in)    :: verbose
-           logical(kind=int4),                   intent(in)    :: append
+           integer(kind=i4),                   intent(in)    :: nx
+           integer(kind=i4),                   intent(in)    :: ny
+           integer(kind=i4),                   intent(in)    :: nz
+           logical(kind=i1),                   intent(in)    :: errstate
+           integer(kind=i4),                   intent(in)    :: iounit
+           logical(kind=i4),                   intent(in)    :: logging
+           logical(kind=i4),                   intent(in)    :: verbose
+           logical(kind=i4),                   intent(in)    :: append
            character(len=*),                     intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code ....
            Datum.cfname = "Not initiliazed yet."
            Datum.gfname = "Not initialized yet."
@@ -1494,14 +1494,14 @@ Comparison:    select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal8Data3D
            use mod_print_error, only : print_non_fatal_error
            type(Real8CompareData3D_t),       intent(inout) :: Datum
-           integer(kind=int4),               intent(in)    :: ulp
+           integer(kind=i4),               intent(in)    :: ulp
            real(kind=dp),                    intent(in)    :: percent
-           integer(kind=int4),               intent(in)    :: n
+           integer(kind=i4),               intent(in)    :: n
            real(kind=dp),                    intent(in)    :: cutoff
            character(len=*),                 intent(in)    :: method
            ! Locals
-           logical(kind=int4), automatic :: bres
-           integer(kind=int4), automatic :: i,j,k,idx
+           logical(kind=i4), automatic :: bres
+           integer(kind=i4), automatic :: i,j,k,idx
            ! Exec code ...
 Comparison:  select case("method")
                 case("EqualTo")
@@ -1597,16 +1597,16 @@ Comparison:  select case("method")
 !DIR$ ATTRIBUTES ALIGN:32 :: InitComplex4CompareData
            use mod_print_error, only : handle_fatal_memory_error
            type(Complex4CompareData_t),     intent(inout) :: Datum
-           integer(kind=int4),              intent(in)    :: nx
-           logical(kind=int1),              intent(inout) :: errstate
-           integer(kinbd=int4),             intent(in)    :: iounit
-           logical(kind=int4),              intent(in)    :: logging
-           logical(kind=int4),              intent(in)    :: verbose
-           logical(kind=int4),              intent(in)    :: append
+           integer(kind=i4),              intent(in)    :: nx
+           logical(kind=i1),              intent(inout) :: errstate
+           integer(kinbd=i4),             intent(in)    :: iounit
+           logical(kind=i4),              intent(in)    :: logging
+           logical(kind=i4),              intent(in)    :: verbose
+           logical(kind=i4),              intent(in)    :: append
            character(len=*),                intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code .....
            Datum.cfname = "Not initiliazed yet."
            Datum.gfname = "Not initialized yet."
@@ -1690,14 +1690,14 @@ Comparison:  select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPComplex4CompareData
            use mod_print_error, only : print_non_fatal_error
            type(Complex4CompareData_t),         intent(inout) :: Datum
-           integer(kind=int4),                  intent(in)    :: ulp
+           integer(kind=i4),                  intent(in)    :: ulp
            real(kind=sp),                       intent(in)    :: percent
-           integer(kind=int4),                  intent(in)    :: n
+           integer(kind=i4),                  intent(in)    :: n
            real(kind=sp),                       intent(in)    :: cutoff
            character(len=32),                   intent(in)    :: method
            ! Locals
-           logical(kind=int4), automatic :: bres
-           integer(kind=int4), automatic :: i
+           logical(kind=i4), automatic :: bres
+           integer(kind=i4), automatic :: i
            ! EXec code .....
 Comparison: select case("method")
                 case("EqualTo")
@@ -1775,16 +1775,16 @@ Comparison: select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitXMM2r8Data
            use mod_print_error,  only : handle_fatal_memory_error
            type(XMM2r8CompareData_t),        intent(inout) :: Datum
-           integer(kind=int4),               intent(in)    :: nx
-           logical(kind=int1),               intent(inout) :: errstate
-           integer(kind=int4),               intent(in)    :: iounit
-           logical(kind=int4),               intent(in)    :: logging
-           logical(kind=int4),               intent(in)    :: verbose
-           logical(kind=int4),               intent(in)    :: append
+           integer(kind=i4),               intent(in)    :: nx
+           logical(kind=i1),               intent(inout) :: errstate
+           integer(kind=i4),               intent(in)    :: iounit
+           logical(kind=i4),               intent(in)    :: logging
+           logical(kind=i4),               intent(in)    :: verbose
+           logical(kind=i4),               intent(in)    :: append
            character(len=*),                 intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code ....
            Datum.cfname = "Not initiliazed yet."
            Datum.gfname = "Not initialized yet."
@@ -1873,7 +1873,7 @@ Comparison: select case("method")
        ! Locals
 !DIR$  ATTRIBUTES ALIGN : 8 :: bres
        type(Mask2_t), automatic :: bres
-       integer(kind=int4), automatic :: i
+       integer(kind=i4), automatic :: i
        ! Exec code ....
 Comparison: select case("method")
                 case("vectype_equalto_vectype")
@@ -1928,12 +1928,12 @@ Comparison: select case("method")
                               append, fname)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitXMM4r4Data
            type(XMM4r4CompareData_t),             intent(inout) :: Datum
-           integer(kind=int4),                    intent(in) :: nx
-           logical(kind=int1),                    intent(inout) :: errstate
-           integer(kind=int4),                    intent(in)    :: iounit
-           logical(kind=int4),                    intent(in)    :: logging
-           logical(kind=int4),                    intent(in)    :: verbose
-           logical(kind=int4),                    intent(in)    :: append
+           integer(kind=i4),                    intent(in) :: nx
+           logical(kind=i1),                    intent(inout) :: errstate
+           integer(kind=i4),                    intent(in)    :: iounit
+           logical(kind=i4),                    intent(in)    :: logging
+           logical(kind=i4),                    intent(in)    :: verbose
+           logical(kind=i4),                    intent(in)    :: append
            character(len=*),                      intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
@@ -2026,7 +2026,7 @@ Comparison: select case("method")
            ! Locals
 !DIR$      ATTRIBUTES ALIGN : 16 :: bres
            type(Mask4_t), automatic :: bres
-           integer(kind=int4), automatic :: i
+           integer(kind=i4), automatic :: i
            ! Exec code ....
 Comparison:   select case("method")
                  case("vectype_equalto_vectype")
@@ -2081,12 +2081,12 @@ Comparison:   select case("method")
                                append,fname )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitYMM4r8Data
            type(YMM4r8CompareData_t),            intent(inout) :: Datum
-           integer(kind=int4),                   intent(in)    :: nx
-           logical(kind=int1),                   intent(inout) :: errstate
-           integer(kind=int4),                   intent(in)    :: iounit
-           logical(kind=int4),                   intent(in)    :: logging
-           logical(kind=int4),                   intent(in)    :: verbose
-           logical(kind=int4),                   intent(in)    :: append
+           integer(kind=i4),                   intent(in)    :: nx
+           logical(kind=i1),                   intent(inout) :: errstate
+           integer(kind=i4),                   intent(in)    :: iounit
+           logical(kind=i4),                   intent(in)    :: logging
+           logical(kind=i4),                   intent(in)    :: verbose
+           logical(kind=i4),                   intent(in)    :: append
            character(len=*),                     intent(in)    :: fname
            ! LOcals
            character(len=256), automatic ::  emsg
@@ -2179,7 +2179,7 @@ Comparison:   select case("method")
            ! Locals
 !DIR$ ATTRIBUTES ALIGN : 16 :: bres
            type(Mask4_t), automatic :: bres
-           integer(kind=int4), automatic :: i
+           integer(kind=i4), automatic :: i
 Comparison: select case("method")
                   case("vectype_equalto_vectype")
                      Datum.cmpfname = "ymm4r8_equalto_ymm4r8"
@@ -2233,12 +2233,12 @@ Comparison: select case("method")
                                append,fname )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitYMM8r4Data
            type(YMM8r4CompareData_t),           intent(inout) :: Datum
-           integer(kind=int4),                  intent(in)    :: nx
-           logical(kind=int1),                  intent(inout) :: errstate
-           integer(kind=int4),                  intent(in)    :: iounit
-           logical(kind=int4),                  intent(in)    :: logging
-           logical(kind=int4),                  intent(in)    :: verbose
-           logical(kind=int4),                  intent(in)    :: append
+           integer(kind=i4),                  intent(in)    :: nx
+           logical(kind=i1),                  intent(inout) :: errstate
+           integer(kind=i4),                  intent(in)    :: iounit
+           logical(kind=i4),                  intent(in)    :: logging
+           logical(kind=i4),                  intent(in)    :: verbose
+           logical(kind=i4),                  intent(in)    :: append
            character(len=*),                    intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
@@ -2332,7 +2332,7 @@ Comparison: select case("method")
            ! Locals
 !DIR$      ATTRIBUTES ALIGN : 32 :: bres
            type(Mask8_t), automatic :: bres
-           integer(kind=int4), automatic :: i
+           integer(kind=i4), automatic :: i
            ! Exec code ....
 Comparison:  select case("method")
                 case("vectype_equalto_vectype")
@@ -2387,16 +2387,16 @@ Comparison:  select case("method")
                                append,fname)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitZMM16r4Data
            type(ZMM16r4CompareData_t),       intent(inout) :: Datum
-           integer(kind=int4),               intent(in)    :: nx
-           logical(kind=int1),               intent(inout) :: errstate
-           integer(kind=int4),               intent(in)    :: iounit
-           logical(kind=int4),               intent(in)    :: logging
-           logical(kind=int4),               intent(in)    :: verbose
-           logical(kind=int4),               intent(in)    :: append
+           integer(kind=i4),               intent(in)    :: nx
+           logical(kind=i1),               intent(inout) :: errstate
+           integer(kind=i4),               intent(in)    :: iounit
+           logical(kind=i4),               intent(in)    :: logging
+           logical(kind=i4),               intent(in)    :: verbose
+           logical(kind=i4),               intent(in)    :: append
            character(len=*),                 intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code ....
            Datum.cfname = "Not initiliazed yet."
            Datum.gfname = "Not initialized yet."
@@ -2485,7 +2485,7 @@ Comparison:  select case("method")
             ! Locals
 !DIR$ ATTRIBUTES ALIGN : 64 :: bres
             type(Mask16_t), automatic :: bres
-            integer(kind=int4), automatic :: i
+            integer(kind=i4), automatic :: i
             ! Exec code ....
 Comparison: select case("method")
                case("vectype_equalto_vectype")
@@ -2540,12 +2540,12 @@ Comparison: select case("method")
           append,fname)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitZMM8r8Data
            type(ZMM8r8CompareData_t),          intent(inout) :: Datum
-           integer(kind=int4),                 intent(in)    :: nx
-           logical(kind=int1),                 intent(in)    :: errstate
-           integer(kind=int4),                 intent(in)    :: iounit
-           logical(kind=int4),                 intent(in)    :: logging
-           logical(kind=int4),                 intent(in)    :: verbose
-           logical(kind=int4),                 intent(in)    :: append
+           integer(kind=i4),                 intent(in)    :: nx
+           logical(kind=i1),                 intent(in)    :: errstate
+           integer(kind=i4),                 intent(in)    :: iounit
+           logical(kind=i4),                 intent(in)    :: logging
+           logical(kind=i4),                 intent(in)    :: verbose
+           logical(kind=i4),                 intent(in)    :: append
            character(len=*),                   intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
@@ -2638,7 +2638,7 @@ Comparison: select case("method")
            ! Locals
 !DIR$  ATTRIBUTES ALIGN : 32 :: bres
            type(Mask8_t), automatic :: bres
-           integer(kind=int4), automatic :: i
+           integer(kind=i4), automatic :: i
            ! Exec code ......
 Comparison:   select case("method")
                  case("vectype_equalto_vectype")
