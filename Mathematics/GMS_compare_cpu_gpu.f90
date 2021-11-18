@@ -38,7 +38,7 @@ module mod_compare_cpu_gpu
   !=================================================================================
   ! Tab:5 col - Type and etc.. definitions
   ! Tab:10,11 col - Type , function and subroutine code blocks.
-  use mod_kinds,    only : int1, int4, sp, dp
+  use mod_kinds,    only : i1, i4, sp, dp
   use mod_vectypes, only : XMM2i4_t,XMM2r8_t,XMM4r4_t,XMM4i4,YMM4r8_t,YMM8r4_t,YMM8i4_t,   &
                            ZMM16r4_t,ZMM16i4_t,ZMM8r8_t,Mask2_t,Mask4_t,Mask8_t
   use mod_fpcompare
@@ -50,18 +50,18 @@ module mod_compare_cpu_gpu
   !=====================================================59
 
   ! Major version
-  integer(kind=int4), parameter, public :: MOD_COMPARE_CPU_GPU_MAJOR = 1_int4
+  integer(kind=i4), parameter, public :: MOD_COMPARE_CPU_GPU_MAJOR = 1_int4
 
   ! Minor version
-  integer(kind=int4), parameter, public :: MOD_COMPARE_CPU_GPU_MINOR = 0_int4
+  integer(kind=i4), parameter, public :: MOD_COMPARE_CPU_GPU_MINOR = 0_int4
 
   ! Micro version
-  integer(kind=int4), parameter, public :: MOD_COMPARE_CPU_GPU_MICRO = 0_int4
+  integer(kind=i4), parameter, public :: MOD_COMPARE_CPU_GPU_MICRO = 0_int4
 
   ! Module full version
-  integer(kind=int4), parameter, public :: MOD_COMPARE_CPU_GPU_FULLVER = 1000_int4*MOD_COMPARE_CPU_GPU_MAJOR + &
-       100_int4*MOD_COMPARE_CPU_GPU_MINOR  + &
-       10_int4*MOD_COMPARE_CPU_GPU_MICRO
+  integer(kind=i4), parameter, public :: MOD_COMPARE_CPU_GPU_FULLVER = 1000*MOD_COMPARE_CPU_GPU_MAJOR + &
+       100*MOD_COMPARE_CPU_GPU_MINOR  + &
+       10*MOD_COMPARE_CPU_GPU_MICRO
   ! Module creation date
   character(*),       parameter, public :: MOD_COMPARE_CPU_GPU_CREATION_DATE = "04-04-2019 20:33 +00200 (THR 4 APR 2019 GMT+2) "
 
@@ -100,9 +100,9 @@ module mod_compare_cpu_gpu
   real(kind=sp), parameter, private :: SRSR4     = 5.9604645E-8_sp
   real(kind=dp), parameter, private :: LRSR8     = 2.220446049250313E-16_dp
   real(kind=sp), parameter, private :: LRSR4     = 1.1920929E-7_sp
-  integer(kind=int4), parameter, private :: EXPR4 = 24
-  integer(kind=int4), parameter, private :: EXPR8 = 53
-  integer(kind=int4), parameter, public  :: MAX_FUNC_NAME = 256
+  integer(kind=i4), parameter, private :: EXPR4 = 24
+  integer(kind=i4), parameter, private :: EXPR8 = 53
+  integer(kind=i4), parameter, public  :: MAX_FUNC_NAME = 256
   type(XMM2r8_t),     parameter, private :: XMM2r8_InitVal  = XMM2r8_t(TINYR8)
   type(XMM4r4_t),     parameter, private :: XMM4r4_InitVal  = XMM4r4_t(TINYR4)
   type(YMM4r8_t),     parameter, private :: YMM4r8_InitVal  = YMM4r8_t(TINYR8)
@@ -120,11 +120,11 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
    
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
      
     
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values, indices of failed GPU results
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results        
      real(kind=sp),      allocatable, dimension(:) :: cpu_results ! valid cpu values (reference)
@@ -147,11 +147,11 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
     
-     integer(kind=int4)           :: nx
-     integer(kind=int4)           :: ny
+     integer(kind=i4)           :: nx
+     integer(kind=i4)           :: ny
     
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:,:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:,:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values.
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results       
      real(kind=sp),      allocatable, dimension(:,:) :: cpu_results ! valid cpu values (reference)
@@ -162,7 +162,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      real(kind=sp),      allocatable, dimension(:,:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4), allocatable, dimension(:,:) :: status
+     logical(kind=i4), allocatable, dimension(:,:) :: status
   
   end type Real4CompareData2D_t
   !=================================================================================================================!
@@ -172,12 +172,12 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
     
-     integer(kind=int4)           :: nx
-     integer(kind=int4)           :: ny
-     integer(kind=int4)           :: nz
+     integer(kind=i4)           :: nx
+     integer(kind=i4)           :: ny
+     integer(kind=i4)           :: nz
    
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:,:,:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:,:,:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values.
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results        
      real(kind=sp),      allocatable, dimension(:,:,:) :: cpu_results ! valid cpu values (reference)
@@ -188,7 +188,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      real(kind=sp),      allocatable, dimension(:,:,:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4), allocatable, dimension(:,:,:) :: status
+     logical(kind=i4), allocatable, dimension(:,:,:) :: status
    
   end type Real4CompareData3D_t
  
@@ -199,10 +199,10 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
     
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
    
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values, indices of failed GPU results
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results      
      real(kind=dp),      allocatable, dimension(:) :: cpu_results ! valid cpu values (reference)
@@ -213,7 +213,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      real(kind=dp),      allocatable, dimension(:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4), allocatable, dimension(:) :: status ! logical -- return value of fp-compare functions
+     logical(kind=i4), allocatable, dimension(:) :: status ! logical -- return value of fp-compare functions
     
   end type Real8CompareData1D_t
   !===============================================================================================================================!
@@ -223,11 +223,11 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
     
-     integer(kind=int4)           :: nx
-     integer(kind=int4)           :: ny
+     integer(kind=i4)           :: nx
+     integer(kind=i4)           :: ny
     
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:,:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:,:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values.
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results       
      real(kind=dp),      allocatable, dimension(:,:) :: cpu_results ! valid cpu values (reference)
@@ -238,7 +238,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      real(kind=dp),      allocatable, dimension(:,:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4), allocatable, dimension(:,:) :: status
+     logical(kind=i4), allocatable, dimension(:,:) :: status
    
   end type Real8CompareData2D_t
   !======================================================================================================================!
@@ -248,12 +248,12 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
    
-     integer(kind=int4)           :: nx
-     integer(kind=int4)           :: ny
-     integer(kind=int4)           :: nz
+     integer(kind=i4)           :: nx
+     integer(kind=i4)           :: ny
+     integer(kind=i4)           :: nz
     
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4), allocatable, dimension(:,:,:) :: gloop_idx !  Same as above stores indices
+     integer(kind=i4), allocatable, dimension(:,:,:) :: gloop_idx !  Same as above stores indices
      !  // of GPU failed values.
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results        
      real(kind=dp),      allocatable, dimension(:,:,:) :: cpu_results ! valid cpu values (reference)
@@ -264,7 +264,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      real(kind=dp),      allocatable, dimension(:,:,:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4), allocatable, dimension(:,:,:) :: status
+     logical(kind=i4), allocatable, dimension(:,:,:) :: status
     
   end type Real8CompareData3D_t
  
@@ -275,10 +275,10 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: gfname !  // name of tested gpu(kernel) function
      character(len=64)            :: cmpfname  ! name of floating-point reliable comparison function
 
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
     
      !DIR$   ATTRIBUTES ALIGN : 64 :: gloop_idx
-     integer(kind=int4),   allocatable, dimension(:) :: gloop_idx
+     integer(kind=i4),   allocatable, dimension(:) :: gloop_idx
      !DIR$   ATTRIBUTES ALIGN : 64 :: cpu_results
      complex(kind=sp),     allocatable, dimension(:) :: cpu_results
      !DIR$   ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -288,7 +288,7 @@ module mod_compare_cpu_gpu
      !DIR$   ATTRIBUTES ALIGN : 64 :: delta
      complex(kind=sp),     allocatable, dimension(:) :: delta
      !DIR$   ATTRIBUTES ALIGN : 64 :: status
-     logical(kind=int4),   allocatable, dimension(:) :: status
+     logical(kind=i4),   allocatable, dimension(:) :: status
 
   end type Complex4CompareData_t
 
@@ -302,7 +302,7 @@ module mod_compare_cpu_gpu
      character(len=64)            :: cmpfname
      integer(kind=int4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$ ATTRIBUTES ALIGN : 64 :: cpu_results
      type(XMM2r8_t),  allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -320,9 +320,9 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: cfname
      character(len=MAX_FUNC_NAME) :: gfname
      character(len=64)            :: cmpfname
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$  ATTRIBUTES ALIGN : 64 :: cpu_results
      type(XMM4r4_t), allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -342,7 +342,7 @@ module mod_compare_cpu_gpu
      character(len=64)            :: cmpfname
      integer(kind=int4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$ ATTRIBUTES ALIGN : 64 :: cpu_results
      type(YMM4r8_t), allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -360,9 +360,9 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: cfname
      character(len=MAX_FUNC_NAME) :: gfname
      character(len=64)            :: cmpfname
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$ ATTRIBUTES ALIGN : 64 :: cpu_results
      type(YMM8r4_t), allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -380,9 +380,9 @@ module mod_compare_cpu_gpu
      character(len=MAX_FUNC_NAME) :: cfname
      character(len=MAX_FUNC_NAME) :: gfname
      character(len=64)            :: cmpfname
-     integer(kind=int4)           :: nx
+     integer(kind=i4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$ ATTRIBUTES ALIGN : 64 :: cpu_results
      type(ZMM8r8_t), allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -402,7 +402,7 @@ module mod_compare_cpu_gpu
      character(len=64)            :: cmpfname
      integer(kind=int4)           :: nx
 !DIR$ ATTRIBUTES ALIGN : 64 :: vidx
-     integer(kind=int4), allocatable, dimension(:) :: vidx
+     integer(kind=i4), allocatable, dimension(:) :: vidx
 !DIR$ ATTRIBUTES ALIGN : 64 :: cpu_results
      type(ZMM16r4_t), allocatable, dimension(:) :: cpu_results
 !DIR$ ATTRIBUTES ALIGN : 64 :: gpu_results
@@ -430,17 +430,17 @@ contains
         use GMS_mod_print_error, only : handle_fatal_memory_error
         type(Real4CompareData1D_t),       intent(inout) :: R4Data1D
 
-        integer(kind=int4),               intent(in)    :: nx
+        integer(kind=i4),               intent(in)    :: nx
 
-        logical(kind=int1),               intent(inout) :: errstate
-        integer(kind=int4),               intent(in)    :: iounit
-        logical(kind=int4),               intent(in)    :: logging
-        logical(kind=int4),               intent(in)    :: verbose
-        logical(kind=int4),               intent(in)    :: append
+        logical(kind=i1),               intent(inout) :: errstate
+        integer(kind=i4),               intent(in)    :: iounit
+        logical(kind=i4),               intent(in)    :: logging
+        logical(kind=i4),               intent(in)    :: verbose
+        logical(kind=i4),               intent(in)    :: append
         character(len=*),                 intent(in)    :: fname
         ! Locals
         character(len=256), automatic :: emsg
-        integer(kind=int4), automatic :: aerr
+        integer(kind=i4), automatic :: aerr
         ! Exec code .....
         R4Data1D.cfname   = "Not initialized yet "
         R4Data1D.gfname   = "Not initialized yet "
@@ -530,14 +530,14 @@ contains
         !DIR$  ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal4Data1D
            use mod_print_error,  only : print_non_fatal_error
            type(Real4CompareData1D_t),      intent(inout) :: R4Data1D
-           integer(kind=int4),              intent(in)    :: ulp
+           integer(kind=i4),              intent(in)    :: ulp
            real(kind=sp),                   intent(in)    :: percent
-           integer(kind=int4),              intent(in)    :: n
+           integer(kind=i4),              intent(in)    :: n
            real(kind=sp),                   intent(in)    :: cutoff
            character(len=32),               intent(in)    :: method
            ! Locals
-           integer(kind=int4), automatic :: i
-           logical(kind=int4), automatic :: bres
+           integer(kind=i4), automatic :: i
+           logical(kind=i4), automatic :: bres
            ! Exec code .....
 Comparison:  select case(method)
                case("EqualTo")
@@ -616,14 +616,14 @@ Comparison:  select case(method)
            use mod_print_error, only : handle_fatal_memory_error
            type(Real4CompareData2D_t),            intent(inout) :: R4Data2D
 
-           integer(kind=int4),               intent(in)    :: nx
-           integer(kind=int4),               intent(in)    :: ny
+           integer(kind=i4),               intent(in)    :: nx
+           integer(kind=i4),               intent(in)    :: ny
 
-           logical(kind=int1),               intent(inout) :: errstate
-           integer(kind=int4),               intent(in)    :: iounit
-           logical(kind=int4),               intent(in)    :: logging
-           logical(kind=int4),               intent(in)    :: verbose
-           logical(kind=int4),               intent(in)    :: append
+           logical(kind=i1),               intent(inout) :: errstate
+           integer(kind=i4),               intent(in)    :: iounit
+           logical(kind=i4),               intent(in)    :: logging
+           logical(kind=i4),               intent(in)    :: verbose
+           logical(kind=i4),               intent(in)    :: append
            character(len=*),                 intent(in)    :: fname
            ! Locals
            character(len=256), automatic :: emsg
@@ -720,14 +720,14 @@ Comparison:  select case(method)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal4Data2D
             use mod_print_error, only : print_non_fatal_error
             type(Real4CompareData2D_t),       intent(inout) :: Data2D
-            integer(kind=int4),               intent(in)    :: ulp
+            integer(kind=i4),               intent(in)    :: ulp
             real(kind=sp),                    intent(in)    :: percent
-            integer(kind=int4),               intent(in)    :: n
+            integer(kind=i4),               intent(in)    :: n
             real(kind=sp),                    intent(in)    :: cutoff
             character(len=32),                intent(in)    :: method
             ! Locals
-            integer(kind=int4) :: i,j,idx
-            logical(kind=int4) :: bres
+            integer(kind=i4) :: i,j,idx
+            logical(kind=i4) :: bres
             ! Exec code .....
 Comparison:   select case("method")
                  case("EqualTo")
@@ -821,18 +821,18 @@ Comparison:   select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: InitReal4CompareData3D
            use mod_print_error, only : handle_fatal_memory_error
            type(Real4CompareData3D_t),          intent(inout) :: Data3D
-           integer(kind=int4),                  intent(in)    :: nx
-           integer(kind=int4),                  intent(in)    :: ny
-           integer(kind=int4),                  intent(in)    :: nz
-           logical(kind=int1),                  intent(inout) :: errstate
-           integer(kind=int4),                  intent(in)    :: iounit
-           logical(kind=int4),                  intent(in)    :: logging
-           logical(kind=int4),                  intent(in)    :: verbose
-           logical(kind=int4),                  intent(in)    :: append
+           integer(kind=i4),                  intent(in)    :: nx
+           integer(kind=i4),                  intent(in)    :: ny
+           integer(kind=i4),                  intent(in)    :: nz
+           logical(kind=i1),                  intent(inout) :: errstate
+           integer(kind=i4),                  intent(in)    :: iounit
+           logical(kind=i4),                  intent(in)    :: logging
+           logical(kind=i4),                  intent(in)    :: verbose
+           logical(kind=i4),                  intent(in)    :: append
            character(len=*),                    intent(in)    :: fname
            ! LOcals
            character(len=256), automatic :: emsg
-           integer(kind=int4), automatic :: aerr
+           integer(kind=i4), automatic :: aerr
            ! Exec code ....
            Data3D.cfname = "Not initialized yet."
            Data3D.gfname = "Not initialized yet."
@@ -919,14 +919,14 @@ Comparison:   select case("method")
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: FPCompareReal4Data3D
            use mod_print_error, only : print_non_fatal_error
            type(Real4CompareData3D_t),    intent(inou) :: Data3D
-           integer(kind=int4),            intent(in)   :: ulp
+           integer(kind=i4),            intent(in)   :: ulp
            real(kind=sp),                 intent(in)   :: percent
-           integer(kind=int4),            intent(in)   :: n
+           integer(kind=i4),            intent(in)   :: n
            real(kind=sp),                 intent(in)   :: cutoff
            character(len=32),             intent(in)   :: method
            ! Locals
-           integer(kind=int4), automatic :: i,k,j,idx
-           logical(kind=int4), automatic :: bres
+           integer(kind=i4), automatic :: i,k,j,idx
+           logical(kind=i4), automatic :: bres
            ! Exec code .....
 Comparison:   select case("method")
                 case("EqualTo")
