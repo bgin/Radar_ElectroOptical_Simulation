@@ -42,7 +42,7 @@ module  mod_avx512c16f32
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int1,int4,sp
+     use mod_kinds, only : i1,i4,sp
      use mod_vectypes, only : ZMM16r4_t
      use, intrinsic :: ISO_C_BINDING
      implicit none
@@ -52,13 +52,13 @@ module  mod_avx512c16f32
      !=====================================================59
 
      ! Major version
-     integer(kind=int4), parameter :: MOD_AVX512C16F32_MAJOR = 1
+     integer(kind=i4), parameter :: MOD_AVX512C16F32_MAJOR = 1
      ! Minor version
-     integer(kind=int4), parameter :: MOD_AVX512C16F32_MINOR = 0
+     integer(kind=i4), parameter :: MOD_AVX512C16F32_MINOR = 0
      ! Micro version
-     integer(kind=int4), parameter :: MOD_AVX512C16F32_MICRO = 0
+     integer(kind=i4), parameter :: MOD_AVX512C16F32_MICRO = 0
      ! Full version
-     integer(kind=int4), parameter :: MOD_AVX512C16F32_FULLVER = &
+     integer(kind=i4), parameter :: MOD_AVX512C16F32_FULLVER = &
           1000*MOD_AVX512C16F32_MAJOR+100*MOD_AVX512C16F32_MINOR+10*MOD_AVX512C16F32_MICRO
      ! Module creation date
      character(*),       parameter :: MOD_AVX512C16F32_CREATION_DATE = "03-02-2020 11:57 +00200 (MON 03 FEB 2020 GMT+2)"
@@ -1641,8 +1641,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
         logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
@@ -1668,8 +1668,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
         logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
@@ -1695,8 +1695,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1721,10 +1721,10 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re /= y.re)
         mim = .false.
@@ -1748,10 +1748,10 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1775,8 +1775,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1802,10 +1802,10 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re > y.re)
         mim = .false.
@@ -1827,12 +1827,12 @@ module  mod_avx512c16f32
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1856,8 +1856,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1880,12 +1880,12 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re < y.re)
         mim = .false.
@@ -1907,12 +1907,12 @@ module  mod_avx512c16f32
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1934,10 +1934,10 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1961,12 +1961,12 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re >= y.re)
         mim = .false.
@@ -1988,12 +1988,12 @@ module  mod_avx512c16f32
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -2015,10 +2015,10 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -2041,12 +2041,12 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re <= y.re)
         mim = .false.
@@ -2068,12 +2068,12 @@ module  mod_avx512c16f32
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=int1), dimension(0:1) :: bres
+        logical(kind=i1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -2095,10 +2095,10 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=int4), dimension(0:15) :: mre,mim
+        logical(kind=i4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
