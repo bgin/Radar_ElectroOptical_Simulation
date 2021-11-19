@@ -42,7 +42,7 @@ module mod_quadratures
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int4, dp
+     use mod_kinds, only : i4, dp
      use modprint_error, only : print_non_fatal_error
      implicit none
 
@@ -70,22 +70,22 @@ module mod_quadratures
            real(kind=dp),                        intent(in)    :: a
            real(kind=dp),                        intent(in)    :: b
            real(kind=dp),                        intent(in)    :: omega
-           integer(kind=int4),                   intent(in)    :: integr
+           integer(kind=i4),                   intent(in)    :: integr
            real(kind=dp),                        intent(in)    :: epsabs
            real(kind=dp),                        intent(in)    :: epsrel
            real(kind=dp),                        intent(out)   :: res
            real(kind=dp),                        intent(out)   :: abserr
-           integer(kind=int4),                   intent(out)   :: neval
-           integer(kind=int4),                   intent(inout) :: ier
-           integer(kind=int4),                   intent(in)    :: leniw
-           integer(kind=int4),                   intent(in)    :: maxp1
-           integer(kind=int4),                   intent(in)    :: lenw
-           integer(kind=int4),                   intent(iout)  :: last
-           integer(kind=int4), dimension(leniw), intent(inout) :: iwork
+           integer(kind=i4),                   intent(out)   :: neval
+           integer(kind=i4),                   intent(inout) :: ier
+           integer(kind=i4),                   intent(in)    :: leniw
+           integer(kind=i4),                   intent(in)    :: maxp1
+           integer(kind=i4),                   intent(in)    :: lenw
+           integer(kind=i4),                   intent(iout)  :: last
+           integer(kind=i4), dimension(leniw), intent(inout) :: iwork
            real(kind=dp),      dimension(lenw),  intent(in)    :: work
            ! Locals
-           integer(kind=int4), automatic :: limit
-           integer(kind=int4), automatic :: lvl,l1,l2,l3,l4,momcom
+           integer(kind=i4), automatic :: limit
+           integer(kind=i4), automatic :: lvl,l1,l2,l3,l4,momcom
            ! Exec code ....
            ier = 6
            neval = 0
@@ -138,23 +138,23 @@ module mod_quadratures
            real(kind=dp),                             intent(in)    :: a
            real(kind=dp),                             intent(in)    :: b
            real(kind=dp),                             intent(in)    :: omega
-           integer(kind=int4),                        intent(in)    :: integr
+           integer(kind=i4),                        intent(in)    :: integr
            real(kind=dp),                             intent(in)    :: epsabs
            real(kind=dp),                             intent(in)    :: epsrel
-           integer(kind=int4),                        intent(in)    :: limit
-           integer(kind=int4),                        intent(in)    :: icall
-           integer(kind=int4),                        intent(in)    :: maxp1
+           integer(kind=i4),                        intent(in)    :: limit
+           integer(kind=i4),                        intent(in)    :: icall
+           integer(kind=i4),                        intent(in)    :: maxp1
            real(kind=dp),                             intent(out)   :: res
            real(kind=dp),                             intent(out)   :: abserr
-           integer(kind=int4),                        intent(out)   :: neval
-           integer(kind=int4),                        intent(out)   :: ier
+           integer(kind=i4),                        intent(out)   :: neval
+           integer(kind=i4),                        intent(out)   :: ier
            real(kind=dp),      dimension(limit),      intent(inout) :: alist
            real(kind=dp),      dimension(limit),      intent(inout) :: blist
            real(kind=dp),      dimension(limit),      intent(inout) :: rlist
            real(kind=dp),      dimension(limit),      intent(inout) :: elist
-           integer(kind=int4), dimension(limit),      intent(inout) :: iord
-           integer(kind=int4), dimension(limit),      intent(inout) :: nnlog
-           integer(kind=int4),                        intent(inout) :: momcom
+           integer(kind=i4), dimension(limit),      intent(inout) :: iord
+           integer(kind=i4), dimension(limit),      intent(inout) :: nnlog
+           integer(kind=i4),                        intent(inout) :: momcom
            real(kind=dp),      dimension(maxp1,25),   intent(inout) :: chebmo
            ! LOcals
 !DIR$      ATTRIBUTES ALIGN : 64 :: rlist2
@@ -432,16 +432,16 @@ module mod_quadratures
            real(kind=dp),                      intent(in) :: a
            real(kind=dp),                      intent(in) :: b
            real(kind=dp),                      intent(in) :: omega
-           integer(kind=int4),                 intent(in) :: integr
-           integer(kind=int4),                 intent(in) :: nrmom
-           integer(kind=int4),                 intent(in) :: maxp1
-           integer(kind=int4),                 intent(in) :: ksave
+           integer(kind=i4),                 intent(in) :: integr
+           integer(kind=i4),                 intent(in) :: nrmom
+           integer(kind=i4),                 intent(in) :: maxp1
+           integer(kind=i4),                 intent(in) :: ksave
            real(kind=dp),                      intent(out) :: res
            real(kind=dp),                      intent(out) :: abserr
-           integer(kind=int4),                 intent(out) :: neval
+           integer(kind=i4),                 intent(out) :: neval
            real(kind=dp),                      intent(out) :: resabs
            real(kind=dp),                      intent(out) :: resasc
-           integer(kind=int4),                 intent(inout) :: momcom
+           integer(kind=i4),                 intent(inout) :: momcom
            real(kind=dp), dimension(maxp1,25), intent(inout) :: chebmo
            ! LOcals
            real(kind=dp), dimension(11), parameter ::  x = [ 0.991444861373810411144557526928563_dp,    &
@@ -709,7 +709,7 @@ module mod_quadratures
                 real(kind=dp), intent(in) :: p2
                 real(kind=dp), intent(in) :: p3
                 real(kind=dp), intent(in) :: p4
-                integer(kind=int4), intent(in) :: integr
+                integer(kind=i4), intent(in) :: integr
                 real(kind=dp), intent(in) :: integr
               end function w
            end interface
@@ -717,7 +717,7 @@ module mod_quadratures
            real(kind=dp),      intent(in) :: p2
            real(kind=dp),      intent(in) :: p3
            real(kind=dp),      intent(in) :: p4
-           integer(kind=dint4), intent(in) :: kp
+           integer(kind=i4), intent(in) :: kp
            real(kind=dp),       intent(in) :: a
            real(kind=dp),       intent(in) :: b
            real(kind=dp),       intent(inout) :: res
@@ -803,7 +803,7 @@ module mod_quadratures
            real(kind=dp),      intent(in) :: p2
            real(kind=dp),      intent(in) :: p3
            real(kind=dp),      intent(in) :: p4
-           integer(kind=int4), intent(in) :: integr
+           integer(kind=i4), intent(in) :: integr
            ! Locals/return
            real(kind=dp) :: res
            real(kind=dp), automatic :: omx
@@ -818,12 +818,12 @@ module mod_quadratures
 
      subroutine dgtsl(n,c,d,e,b,info)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: dgtsl
-       integer(kind=int4),          intent(in) ::  n
+       integer(kind=i4),          intent(in) ::  n
        real(kind=dp), dimension(n), intent(in) :: c
        real(kind=dp), dimension(n), intent(in) :: d
        real(kind=dp), dimension(n), intent(in) :: e
        real(kind=dp), dimension(n), intent(inout) :: b
-       integer(kind=int4),          intent(inout) :: info
+       integer(kind=i4),          intent(inout) :: info
        
 !c
 !c     dgtsl given a general tridiagonal matrix and a right hand
@@ -950,7 +950,7 @@ module mod_quadratures
            ! LOcals
            real(kind=dp), automatic, dimension(12) :: v
            real(kind=dp), automatic :: alam,alam1,alam2,part1,part2
-           integer(kind=int4), automatic :: i,j
+           integer(kind=i4), automatic :: i,j
            ! Exec code ......
            do 10 i=1,12
                  j = 26-i
@@ -1050,13 +1050,13 @@ module mod_quadratures
 
      subroutine dqpsrt(limit,last,maxerr,ermax,elist,iord,nrmax)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: dqpsrt
-           integer(kind=int4),     intent(out)              :: limit
-           integer(kind=int4),     intent(out)              :: last
-           integer(kind=int4),     intent(out)              :: maxerr
+           integer(kind=i4),     intent(out)              :: limit
+           integer(kind=i4),     intent(out)              :: last
+           integer(kind=i4),     intent(out)              :: maxerr
            real(kind=dp),          intent(out)              :: ermax
            real(kind=dp),      dimension(last), intent(out) :: elist
-           integer(kind=int4), dimension(last), intent(out) :: iord
-           integer(kind=int4),     intent(out)              :: nrmax
+           integer(kind=i4), dimension(last), intent(out) :: iord
+           integer(kind=i4),     intent(out)              :: nrmax
            ! LOcals
            real(kind=dp), automatic :: errmax,errmin
            integer(kind=int4), automatic :: i,ibeg,ido,isucc.j,jbnd,jupbn,k
@@ -1130,13 +1130,13 @@ module mod_quadratures
      subroutine dqelg(n,epstab,result,abserr,res3la,nres)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: dqelg
            use mod_machine_prec, only : d1mach
-           integer(kind=int4),     intent(in) :: n
+           integer(kind=i4),     intent(in) :: n
            !DIR$ ASSUME_ALIGNED epstab:32
            real(kind=dp), dimension(52), intent(inout) :: epstab
            real(kind=dp),                intent(inout) :: result
            real(kind=dp),                intent(out)   :: abserr
            real(kind=dp), dimension(3),  intent(inout) :: res3la
-           integer(kind=int4),           intent(inout) :: nres
+           integer(kind=i4),           intent(inout) :: nres
             ! Locals
            real(kind=dp), automatic :: delta1,delta2,delta3,d1mach,epmach,epsinf,error,err1,err2, &
             err3,e0,e1,e1abs,e2,e3,oflow,res,ss,tol1,tol2,tol3
