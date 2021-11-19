@@ -46,7 +46,7 @@ module mod_quaternion
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     
-    use mod_kinds,    only : int1, int4, dp
+    use mod_kinds,    only : i1, i4, dp
     use mod_vectypes, only : YMM4r8_t
     implicit none
     private
@@ -71,17 +71,17 @@ module mod_quaternion
     !=====================================================59
 
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_QUATERNION_MAJOR = 1_int4
+    integer(kind=i4), parameter, public :: MOD_QUATERNION_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_QUATERNION_MINOR = 0_int4
+    integer(kind=i4), parameter, public :: MOD_QUATERNION_MINOR = 0
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_QUATERNION_MICRO = 0_int4
+    integer(kind=i4), parameter, public :: MOD_QUATERNION_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_QUATERNION_FULLVER = 1000_int4*MOD_QUATERNION_MAJOR+100_int4*MOD_QUATERNION_MINOR+ &
-                                                                 10_int4*MOD_QUATERNION_MICRO
+    integer(kind=i4), parameter, public :: MOD_QUATERNION_FULLVER = 1000*MOD_QUATERNION_MAJOR+100*MOD_QUATERNION_MINOR+ &
+                                                                 10*MOD_QUATERNION_MICRO
     
     ! Module/file creation date
     character(*),  parameter, public :: MOD_QUATERNION_CREATE_DATE = "02-12-2017 09:38 +00200 (SAT 02 DEC 2017 GMT+2)"
@@ -395,8 +395,8 @@ module mod_quaternion
          
           class(Quaternion_t),       intent(inout)    :: this
           character(len=*),          intent(in)       :: filename
-          integer(kind=int4),        intent(in)       :: iounit
-          integer(kind=int4),        intent(inout)    :: ioerr
+          integer(kind=i4),        intent(in)       :: iounit
+          integer(kind=i4),        intent(inout)    :: ioerr
           ! Stat of executable statements
           open(UNIT=iounit,FILE=trim(filename),ACTION='READ',STATUS='OLD',IOSTAT=ioerr)
           if(ioerr > 0) return
@@ -413,8 +413,8 @@ module mod_quaternion
           
           class(Quaternion_t),       intent(inout)    :: this
           character(len=*),          intent(in)    :: filename
-          integer(kind=int4),        intent(in)    :: iounit
-          integer(kind=int4),        intent(inout) :: ioerr
+          integer(kind=i4),        intent(in)    :: iounit
+          integer(kind=i4),        intent(inout) :: ioerr
           ! Stat of executable statements
           open(UNIT=iounit,FILE=trim(filename),ACTION='WRITE',STATUS='NEW',IOSTAT=ioerr)
           if(ioerr > 0) return
@@ -558,7 +558,7 @@ module mod_quaternion
   pure function mat4x4(this,mtype) result(m4x4)
          
           class(Quaternion_t), intent(in) :: this
-          integer(kind=int4),       intent(in) :: mtype
+          integer(kind=i4),       intent(in) :: mtype
           ! Locals
           
           real(kind=dp) :: ty,tw,tz
@@ -1090,7 +1090,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           real(kind=dp),         intent(in) :: s
           ! Locals
-          logical(kind=int4) :: eq
+          logical(kind=i4) :: eq
           ! Start of executable statemetns
           eq = q.m_q.v(0) == s       .AND. &
                q.m_q.v(1) == 0.0_dp  .AND. &
@@ -1108,7 +1108,7 @@ module mod_quaternion
           complex(kind=dp),      intent(in) :: c
           type(Quaternion_t),    intent(in) :: q
           ! Locals
-          logical(kind=int4) :: eq
+          logical(kind=i4) :: eq
           real(kind=dp)       :: re,im
           ! Start of executable statement
           re = REAL(c,KIND=dp)
@@ -1129,7 +1129,7 @@ module mod_quaternion
           real(kind=dp),         intent(in) :: s
           type(Quaternion_t),    intent(in) :: q
           ! Locals
-          logical(kind=int4) :: eq
+          logical(kind=i4) :: eq
           ! Start of executable statements
           eq =  s == q.m_q.v(0)      .AND. &
                 0.0_dp == q.m_q.v(1) .AND. &
@@ -1146,7 +1146,7 @@ module mod_quaternion
          
           type(Quaternion_t), intent(in) :: q1,q2
           ! locals
-          logical(kind=int4) :: neq
+          logical(kind=i4) :: neq
           ! Start of executable statements
           neq =  q1.m_q.v(0) /= q2.m_q.v(0) .AND. &
                  q1.m_q.v(1) /= q2.m_q.v(1) .AND. &
@@ -1164,7 +1164,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           complex(kind=dp),      intent(in) :: c
           ! Locals
-          logical(kind=int4) :: neq
+          logical(kind=i4) :: neq
           real(kind=dp) :: re,im
           ! Start of executale statemnts
           re = REAL(c,KIND=dp)
@@ -1185,7 +1185,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           real(kind=dp),         intent(in) :: s
           ! Locals
-          logical(kind=int4) :: neq
+          logical(kind=i4) :: neq
           ! Start of excutable statments
           neq =  q.m_q.v(0) /= s       .AND. &
                  q.m_q.v(1) /= 0._dp .AND. &
@@ -1203,7 +1203,7 @@ module mod_quaternion
           complex(kind=dp),      intent(in) :: c
           type(Quaternion_t), intent(in) :: q
           ! Locals
-          logical(kind=int4) :: neq
+          logical(kind=i4) :: neq
           real(kind=dp) :: re,im
           ! Start of executable sattaements
           re = REAL(c,KIND=dp)
@@ -1224,7 +1224,7 @@ module mod_quaternion
           real(kind=dp),         intent(in) :: s
           type(Quaternion_t), intent(in) :: q
           ! Locals
-          logical(kind=int4) :: neq
+          logical(kind=i4) :: neq
           ! Start of executable statements
           neq = s /= q.m_q.v(0)   .AND. &
                  s /= 0._dp .AND. &
@@ -1241,7 +1241,7 @@ module mod_quaternion
          
           type(Quaternion_t), intent(in) :: q1,q2
           !Locals
-          logical(kind=int4) :: gt
+          logical(kind=i4) :: gt
           ! Start of executable statements
           gt =  q1.m_q.v(0) > q2.m_q.v(0)  .AND. &
                 q1.m_q.v(1) > q2.m_q.v(1)  .AND. &
@@ -1259,7 +1259,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           complex(kind=dp),      intent(in) :: c
           ! Locals
-          logical(kind=int4) :: gt
+          logical(kind=i4) :: gt
           real(kind=dp) :: re,im
           ! Start of executable statemetns
           re = REAL(c,KIND=dp)
@@ -1280,7 +1280,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           real(kind=dp),         intent(in) :: s
           ! Locals
-          logical(kind=int4) :: gt
+          logical(kind=i4) :: gt
           ! Start of executable statemetns
           gt =  q.m_q.v(0) > s       .AND. &
                 q.m_q.v(1) > 0._dp   .AND. &
@@ -1299,7 +1299,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           ! Locals
           real(kind=dp) :: re,im
-          logical(kind=int4) :: gt
+          logical(kind=i4) :: gt
           ! Start of executable statemetns
           re = REAL(c,KIND=dp)
           im = AIMAG(c)
@@ -1319,7 +1319,7 @@ module mod_quaternion
           real(kind=dp),  intent(in) :: s
           type(Quaternion_t), intent(in) :: q
           ! Locals
-          logical(kind=int4) :: gt
+          logical(kind=i4) :: gt
           ! Start of executable statemetns
           gt =  s > q.m_q.v(0)          .AND. &
                 0._dp > q.m_q.v(1)      .AND. &
@@ -1336,7 +1336,7 @@ module mod_quaternion
         
           type(Quaternion_t), intent(in) :: q1,q2
           ! Locals
-          logical(kind=int4) :: lt
+          logical(kind=i4) :: lt
           ! Strat of executable statements
           lt =  q1.m_q.v(0) < q2.m_q.v(0)  .AND. &
                 q1.m_q.v(1) < q2.m_q.v(1)  .AND. &
@@ -1354,7 +1354,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           complex(kind=dp),      intent(in) :: c
           ! Locals
-          logical(kind=int4) :: lt
+          logical(kind=i4) :: lt
           real(kind=dp) :: re,im
           ! Start of executable statemetns
           re = REAL(c,KIND=dp)
@@ -1375,7 +1375,7 @@ module mod_quaternion
           type(Quaternion_t), intent(in) :: q
           real(kind=dp),         intent(in) :: s
           ! Locals
-          logical(kind=int4) :: lt
+          logical(kind=i4) :: lt
           ! Start of executable statemetns
           lt =  q.m_q.v(0) < s       .AND.  &
                 q.m_q.v(1) < 0._dp .AND. &
@@ -1393,7 +1393,7 @@ module mod_quaternion
           complex(kind=dp),      intent(in) :: c
           type(Quaternion_t), intent(in) :: q
           ! Locals
-          logical(kind=int4) :: lt
+          logical(kind=i4) :: lt
           real(kind=dp) :: re,im
           ! Start of executable statemetns
           re = REAL(c,KIND=dp)
@@ -1414,7 +1414,7 @@ module mod_quaternion
           real(kind=dp), intent(in) :: s
           type(Quaternion_t), intent(in) :: q
           ! Locals
-          logical(kind=int4) :: lt
+          logical(kind=i4) :: lt
           ! Start of executable sattemets
           lt =  s < q.m_q.v(0)       .AND. &
                  0._dp < q.m_q.v(1) .AND. &
