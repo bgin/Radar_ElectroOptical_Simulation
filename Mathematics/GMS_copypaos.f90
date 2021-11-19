@@ -38,7 +38,7 @@ module mod_copypaos
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds,     only : int1,int4, sp, dp, ep
+     use mod_kinds,     only : i1,i4, sp, dp, ep
      use mod_vecconsts, only : v8_n0, v4_n0
                               
      implicit none
@@ -49,18 +49,18 @@ module mod_copypaos
     !=====================================================59
 
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_COPYPAOS_MAJOR = 1_int4
+    integer(kind=i4), parameter, public :: MOD_COPYPAOS_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_COPYPAOS_MINOR = 0_int4
+    integer(kind=int4), parameter, public :: MOD_COPYPAOS_MINOR = 0
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_COPYPAOS_MICRO = 0_int4
+    integer(kind=int4), parameter, public :: MOD_COPYPAOS_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_COPYPAOS_FULLVER = 1000_int4*MOD_COPYPAOS_MAJOR+   &
-                                                                    100_int4*MOD_COPYPAOS_MINOR+    &
-                                                                    10_int4*MOD_COPYPAOS_MICRO
+    integer(kind=int4), parameter, public :: MOD_COPYPAOS_FULLVER = 1000*MOD_COPYPAOS_MAJOR+   &
+                                                                    100*MOD_COPYPAOS_MINOR+    &
+                                                                    10*MOD_COPYPAOS_MICRO
     
     ! Module creation date 
     character(*),       parameter, public :: MOD_COPYPAOS_CREATE_DATE = "08-11-2018 19:02 +00200 (THU 08 NOV 2018 GMT+2) " 
@@ -76,15 +76,15 @@ module mod_copypaos
     
     ! Module parameters
     
-    integer(kind=int4), parameter, private :: v2len  = 2
+    integer(kind=i4), parameter, private :: v2len  = 2
     
-    integer(kind=int4), parameter, private :: v3len  = 3
+    integer(kind=i4), parameter, private :: v3len  = 3
     
-    integer(kind=int4), parameter, private :: v4len  = 4
+    integer(kind=i4), parameter, private :: v4len  = 4
     
-    integer(kind=int4), parameter, private :: v8len  = 8
+    integer(kind=i4), parameter, private :: v8len  = 8
     
-    integer(kind=int4), parameter, private :: v16len = 16
+    integer(kind=i4), parameter, private :: v16len = 16
     
     contains
     
@@ -103,8 +103,8 @@ module mod_copypaos
           type(XMM2r8_t),  contiguous,   dimension(:),   intent(inout) :: output  
           real(kind=dp),   contiguous,   dimension(:),   intent(in)    :: input    
           ! Locals
-          integer(kind=int4),automatic :: i
-          integer(kind=int4),automatic :: j
+          integer(kind=i4),automatic :: i
+          integer(kind=i4),automatic :: j
              
               
        
@@ -142,8 +142,8 @@ module mod_copypaos
     type(XMM2r8_t), contiguous, dimension(:), intent(in)    :: input
     ! Locals
    
-         integer(kind=int4),automatic :: i
-         integer(kind=int4),automatic :: j
+         integer(kind=i4),automatic :: i
+         integer(kind=i4),automatic :: j
 
     ! Exec code ....
     do i = 0, size(input,dim=1)-1
@@ -178,8 +178,8 @@ module mod_copypaos
           integer(kind=int4), contiguous, dimension(:),   intent(in)    :: input
           ! Locals
          
-              integer(kind=int4) :: i
-              integer(kind=int4) :: j
+              integer(kind=i4) :: i
+              integer(kind=i4) :: j
          
 
 
@@ -212,13 +212,13 @@ module mod_copypaos
        !DIR$  ATTRIBUTES VECTOR :: copy_xmm2i4_i4
 #endif
           use mod_vectypes,  only : XMM2i4_t
-          integer(kind=int4), contiguous, dimension(:), intent(inout) :: output
+          integer(kind=i4), contiguous, dimension(:), intent(inout) :: output
           type(XMM2i4_t),     contiguous, dimension(:), intent(in)    :: input
           ! Locals
         
            
-             integer(kind=int4) :: i
-             integer(kind=int4) :: j
+             integer(kind=i4) :: i
+             integer(kind=i4) :: j
 
           ! Exec code ...
           do i = 0, size(input,dim=1)-1
@@ -254,8 +254,8 @@ module mod_copypaos
           ! Locals
          
                
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ....
          do i = 0, size(output,dim=1)-1
@@ -290,8 +290,8 @@ module mod_copypaos
           type(YMM3r8_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
         
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
@@ -325,12 +325,12 @@ module mod_copypaos
 #endif
           use mod_vectypes, only : XMM3i4_t
           type(XMM3i4_t),     contiguous,  dimension(:),   intent(inout) :: output
-          integer(kind=int4), contiguous,  dimension(:),   intent(in)    :: input
+          integer(kind=i4), contiguous,  dimension(:),   intent(in)    :: input
           ! Locals
          
               
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
         
           ! Exec code ...
           do i = 0, size(output,dim=1)-1
@@ -361,13 +361,13 @@ module mod_copypaos
 !DIR$ ATTRIBUTES VECTOR :: copy_xmm3i4_i4
 #endif
           use mod_vectypes, only : XMM3i4_t
-          integer(kind=int4), contiguous, dimension(:), intent(inout) :: output
+          integer(kind=i4), contiguous, dimension(:), intent(inout) :: output
           type(XMM3i4_t),     contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
              
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
@@ -405,8 +405,8 @@ module mod_copypaos
           ! Locals
         
               
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
         
           ! Exec code ....
          do i = 0, size(output,dim=1)-1
@@ -441,8 +441,8 @@ module mod_copypaos
           type(YMM4r8_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
        
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
           do i = 0, size(input,dim=1)-1
 
@@ -473,11 +473,11 @@ module mod_copypaos
 #endif
           use mod_vectypes, only : XMM4i4_t
           type(XMM4i4_t),     contiguous,   dimension(:), intent(inout) :: output
-          integer(kind=int4), contiguous,  dimension(:), intent(in)    :: input
+          integer(kind=i4), contiguous,  dimension(:), intent(in)    :: input
           ! Locals
         
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ....
           do i = 0, size(output,dim=1)-1
@@ -508,12 +508,12 @@ module mod_copypaos
 !DIR$  ATTRIBUTES VECTOR :: copy_xmm4i4_i4
 #endif
           use mod_vectypes, only : XMM4i4_t
-          integer(kind=int4), contiguous, dimension(:), intent(inout) :: output
+          integer(kind=i4), contiguous, dimension(:), intent(inout) :: output
           type(XMM4i4_t),     contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
@@ -546,11 +546,11 @@ module mod_copypaos
 #endif
           use mod_vectypes, only : YMM8i4_t
           type(YMM8i4_t),     contiguous,   dimension(:), intent(inout) :: output
-          integer(kind=int4), contiguous,   dimension(:), intent(in)    :: input
+          integer(kind=i4), contiguous,   dimension(:), intent(in)    :: input
           ! Locals
        
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ....
                do i = 0, size(output,dim=1)-1
@@ -581,12 +581,12 @@ module mod_copypaos
 !DIR$ ATTRIBUTES VECTOR :: copy_ymm8i4_i4
 #endif
           use mod_vectypes, only : YMM8i4_t
-          integer(kind=int4), contiguous, dimension(:), intent(inout) :: output
+          integer(kind=i4), contiguous, dimension(:), intent(inout) :: output
           type(YMM8i4_t),     contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -619,11 +619,11 @@ module mod_copypaos
 #endif
           use mod_vectypes,  only : ZMM16i4_t
           type(ZMM16i4_t),    contiguous, dimension(:), intent(inout) :: output
-          integer(kind=int4), contiguous, dimension(:), intent(in)    :: input
+          integer(kind=i4), contiguous, dimension(:), intent(in)    :: input
           ! Locals
           
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ...
            do i = 0, size(output,dim=1)-1
@@ -658,8 +658,8 @@ module mod_copypaos
           type(ZMM16i4_t),    contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -695,8 +695,8 @@ module mod_copypaos
           real(kind=dp),  contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ...
                do i = 0, size(output,dim=1)-1
@@ -731,8 +731,8 @@ module mod_copypaos
           type(ZMM8r8_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
         
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
 
           ! Exec code .....
@@ -768,8 +768,8 @@ module mod_copypaos
           real(kind=sp),  contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
           ! Exec code ....
                do i = 0, size(output,dim=1)-1
@@ -804,8 +804,8 @@ module mod_copypaos
           type(XMM2r4_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
         
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -842,8 +842,8 @@ module mod_copypaos
           real(kind=sp),   contiguous,  dimension(:), intent(in)    :: input
          ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
          
 
          ! Exec code ....
@@ -879,8 +879,8 @@ module mod_copypaos
           type(XMM3r4_t),  contiguous,  dimension(:), intent(in)       :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
 
 
           ! Exec code .....
@@ -916,8 +916,8 @@ module mod_copypaos
           real(kind=sp),      contiguous,  dimension(:), intent(in)    :: input
           ! Locals
          
-               integer(kind=int4) :: i
-               integer(kind=int4) :: j
+               integer(kind=i4) :: i
+               integer(kind=i4) :: j
                  
           ! Exec code ....
          do i = 0, size(output,dim=1)-1
@@ -949,8 +949,8 @@ module mod_copypaos
            type(XMM4r4_t),  contiguous, dimension(:), intent(in)    :: input
            ! Locals
             
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 #if defined __INTEL_COMPILER           
                  !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
 #endif
@@ -990,8 +990,8 @@ module mod_copypaos
           real(kind=sp),     contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           !Exec code ....
             do i = 0, size(output,dim=1)-1
@@ -1026,8 +1026,8 @@ module mod_copypaos
           type(YMM8r4_t),   contiguous, dimension(:), intent(in)    :: input
           ! Locals
           
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -1063,8 +1063,8 @@ module mod_copypaos
           real(kind=sp),    contiguous,  dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           ! Exec code ....
           do i = 0, size(output,dim=1)-1
@@ -1098,8 +1098,8 @@ module mod_copypaos
           type(ZMM16r4_t),  contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 
           ! Exec code ....
           do i = 0, size(input,dim=1)-1
@@ -1136,8 +1136,8 @@ module mod_copypaos
           real(kind=sp), contiguous, dimension(:), intent(in)    :: input2
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           ! Exec code ....
            do i = 0, size(output,dim=1)-1
@@ -1174,8 +1174,8 @@ module mod_copypaos
           type(XMM2c4_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
           
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -1211,8 +1211,8 @@ module mod_copypaos
           real(kind=dp),  contiguous, dimension(:), intent(in)    :: input2
           ! Locals
           
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           ! Exec code ....
            do i = 0, size(output,dim=1)-1
@@ -1242,7 +1242,7 @@ module mod_copypaos
       real(kind=sp),  contiguous, dimension(:), intent(in)    :: input1
       real(kind=sp),  contiguous, dimension(:), intent(in)    :: input2
       !  Locals
-      integer(kind=int4), automatic :: i,j
+      integer(kind=i4), automatic :: i,j
       ! Exec code ...
       do i = 0, size(output,dim=1)-1
 #if defined __INTEL_COMPILER
@@ -1278,8 +1278,8 @@ module mod_copypaos
           type(YMM4c8_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 
 
           ! Exec code ....
@@ -1310,7 +1310,7 @@ module mod_copypaos
            real(kind=sp),  contiguous, dimension(:), intent(inout) :: output2
            type(YMM8c4_t), contiguous, dimension(:), intent(in)    :: input
            ! Locals
-           integer(kind=int4), automatic :: i,j
+           integer(kind=i4), automatic :: i,j
 #if defined __INTEL_COMPILER
            !DIR$ ATTRIBUTES ALIGN : 32 :: tmp
 #endif
@@ -1349,8 +1349,8 @@ module mod_copypaos
           real(kind=dp),  contiguous,     dimension(:),   intent(in)      :: input2
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           ! Exec code ....
            do i = 0, size(output,dim=1)-1
@@ -1382,8 +1382,8 @@ module mod_copypaos
           type(ZMM8c8_t),   contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
 #if defined __INTEL_COMPILER         
                  !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
 #endif
@@ -1421,8 +1421,8 @@ module mod_copypaos
           real(kind=ep),    contiguous, dimension(:), intent(in)    :: input2
           ! Locals
         
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
           ! Exec code ...
           do i = 0, size(output,dim=1)-1
@@ -1444,8 +1444,8 @@ module mod_copypaos
           type(ZMM2c16_t),  contiguous, dimension(:), intent(in)    :: input
           ! Locals
           
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
         
 !DIR$     ATTRIBUTES ALIGN : 64 :: tmp
           type(ZMM2c16_t)  :: tmp
@@ -1471,8 +1471,8 @@ module mod_copypaos
           real(kind=ep),     contiguous, dimension(:), intent(in)    :: input2
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
           
           ! Exec code ....
           do i = 0,  size(input1,dim=1)-1
@@ -1494,8 +1494,8 @@ module mod_copypaos
           type(ZMM4c16_t), contiguous, dimension(:), intent(in)    :: input
           ! Locals
          
-                 integer(kind=int4) :: i
-                 integer(kind=int4) :: j
+                 integer(kind=i4) :: i
+                 integer(kind=i4) :: j
          
 !DIR$ ATTRIBUTES ALIGN : 64 :: tmp
           type(ZMM4c16_t) ::  tmp
