@@ -18,7 +18,7 @@ MODULE mod_fpcompare
   ! Environment setup
   ! -----------------
   ! Module usage
-  USE mod_kinds, ONLY: int4, sp, dp
+  USE mod_kinds, ONLY: i4, sp, dp
   USE mod_vectypes, ONLY : XMM2i4_t, XMM4i4_t, XMM2r8_t, XMM4r4_t,YMM4r8_t,YMM8r4_t,YMM8i4_t, ZMM16i4_t, ZMM16r4_t,ZMM8r8_t, &
                            Mask2_t, Mask4_t, Mask8_t, Mask16_t
   ! Disable all implicit typing
@@ -123,8 +123,7 @@ MODULE mod_fpcompare
   ! Module parameters
   ! -----------------
   ! Module Version Id
-  !CHARACTER(*), PARAMETER :: MODULE_VERSION_ID = &
-  !  '$Id: Compare_Float_Numbers.f90 60152 2015-08-13 19:19:13Z paul.vandelst@noaa.gov $'
+  
   character(*), parameter :: module_version_id = &
        '$Id: GMS_mod_fpcompare.f90 -00200 2019-04-03 20:28 Bernard Gingold, contact: beniekg@gmail.com '
   ! PAOS constants
@@ -170,7 +169,7 @@ MODULE mod_fpcompare
   REAL(sp), PARAMETER :: SP_COMPARE_CUTOFF = 1.0e-15_sp
   REAL(dp), PARAMETER :: DP_COMPARE_CUTOFF = 1.0e-15_dp
   ! Default number of significant figures
-  INTEGER(kind=int4), PARAMETER :: DEFAULT_N_SIGFIG = 6
+  INTEGER(kind=i4), PARAMETER :: DEFAULT_N_SIGFIG = 6
   
 
 CONTAINS
@@ -649,9 +648,9 @@ CONTAINS
   ELEMENTAL FUNCTION Tolerance_Real_Single(x,n) RESULT( Tolerance )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Real_Single
     REAL(kind=sp), INTENT(IN) :: x
-    INTEGER(kind=int4)     , INTENT(IN) :: n
+    INTEGER(kind=i4)     , INTENT(IN) :: n
     REAL(kind=sp) :: Tolerance
-    INTEGER(kind=int4) :: e
+    INTEGER(kind=i4) :: e
     IF (ABS(x) > SP_ZERO) THEN
       e = FLOOR(LOG10(ABS(x))) - n
       Tolerance = SP_TEN**e
@@ -664,7 +663,7 @@ CONTAINS
   ELEMENTAL FUNCTION Tolerance_Real_Double(x,n) RESULT( Tolerance )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Real_Double
     REAL(kind=dp), INTENT(IN) :: x
-    INTEGER(kind=int4),      INTENT(IN) :: n
+    INTEGER(kind=i4),      INTENT(IN) :: n
     REAL(kind=dp) :: Tolerance
     INTEGER :: e
     IF (ABS(x) > DP_ZERO) THEN
@@ -679,7 +678,7 @@ CONTAINS
   ELEMENTAL FUNCTION Tolerance_Complex_Single(x,n) RESULT( Tolerance )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Complex_Single
     COMPLEX(kind=sp), INTENT(IN) :: x
-    INTEGER(kind=int4),         INTENT(IN) :: n
+    INTEGER(kind=i4),         INTENT(IN) :: n
     COMPLEX(kind=sp) :: Tolerance
     REAL(kind=sp) :: tr, ti
     tr = Tolerance_Real_Single(REAL(x,sp),n)
@@ -691,7 +690,7 @@ CONTAINS
   ELEMENTAL FUNCTION Tolerance_Complex_Double(x,n) RESULT( Tolerance )
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: Tolerance_Complex_Double
     COMPLEX(kind=dp), INTENT(IN) :: x
-    INTEGER(kind=int4),         INTENT(IN) :: n
+    INTEGER(kind=i4),         INTENT(IN) :: n
     COMPLEX(kind=dp) :: Tolerance
     REAL(kind=dp) :: tr, ti
     tr = Tolerance_Real_Double(REAL(x,dp),n)
@@ -758,7 +757,7 @@ CONTAINS
   ELEMENTAL FUNCTION cwt_Real_Single(x,y,n,cutoff) RESULT(is_comparable)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Real_Single
     REAL(kind=sp),           INTENT(IN) :: x, y
-    INTEGER(kind=int4),                INTENT(IN) :: n
+    INTEGER(kind=i4),                INTENT(IN) :: n
     REAL(kind=sp), OPTIONAL, INTENT(IN) :: cutoff
     LOGICAL :: is_comparable
     REAL(kind=sp) :: c
@@ -775,7 +774,7 @@ CONTAINS
   ELEMENTAL FUNCTION cwt_Real_Double(x,y,n,cutoff) RESULT(is_comparable)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Real_Double
     REAL(kind=dp),           INTENT(IN) :: x, y
-    INTEGER(kind=int4),                INTENT(IN) :: n
+    INTEGER(kind=i4),                INTENT(IN) :: n
     REAL(kind=dp), OPTIONAL, INTENT(IN) :: cutoff
     LOGICAL :: is_comparable
     REAL(kind=dp) :: c
@@ -792,7 +791,7 @@ CONTAINS
   ELEMENTAL FUNCTION cwt_Complex_Single(x,y,n,cutoff) RESULT(is_comparable)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Complex_Single
     COMPLEX(kind=sp),           INTENT(IN) :: x, y
-    INTEGER(kind=int4),                   INTENT(IN) :: n
+    INTEGER(kind=i4),                   INTENT(IN) :: n
     COMPLEX(kind=sp), OPTIONAL, INTENT(IN) :: cutoff
     LOGICAL :: is_comparable
     COMPLEX(kind=sp) :: c
@@ -809,7 +808,7 @@ CONTAINS
   ELEMENTAL FUNCTION cwt_Complex_Double(x,y,n,cutoff) RESULT(is_comparable)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: cwt_Complex_Double
     COMPLEX(kind=dp),           INTENT(IN) :: x, y
-    INTEGER(kind=int4),                   INTENT(IN) :: n
+    INTEGER(kind=i4),                   INTENT(IN) :: n
     COMPLEX(kind=dp), OPTIONAL, INTENT(IN) :: cutoff
     LOGICAL :: is_comparable
     COMPLEX(kind=dp) :: c
