@@ -37,7 +37,7 @@ module mod_constants
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     
-    use mod_kinds, only : int4,int8,sp,dp
+    use mod_kinds, only : i4,i8,sp,dp
     implicit none
     !=====================================================59
     !  File and module information:
@@ -45,17 +45,17 @@ module mod_constants
     !=====================================================59
 
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_CONSTANTS_MAJOR = 1_int4
+    integer(kind=i4), parameter, public :: MOD_CONSTANTS_MAJOR = 1
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_CONSTANTS_MINOR = 0_int4
+    integer(kind=i4), parameter, public :: MOD_CONSTANTS_MINOR = 0
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_CONSTANTS_MICRO = 0_int4
+    integer(kind=i4), parameter, public :: MOD_CONSTANTS_MICRO = 0
     
     ! Module/file version
-    integer(kind=int4), parameter, public :: MOD_CONSTANTS_FULLVER = 1000_int4*MOD_CONSTANTS_MAJOR+100_int4* &
-                                             MOD_CONSTANTS_MINOR+10_int4*MOD_CONSTANTS_MICRO
+    integer(kind=i4), parameter, public :: MOD_CONSTANTS_FULLVER = 1000*MOD_CONSTANTS_MAJOR+100* &
+                                             MOD_CONSTANTS_MINOR+10*MOD_CONSTANTS_MICRO
     
     ! Module creation date
     character(*),  parameter, public :: MOD_CONSTANTS_CREATE_DATE = "08-10-2018 11:31 +00200 (MON 08 OCT 2018 GMT+2)"
@@ -76,7 +76,7 @@ module mod_constants
     
     
     ! Default loop-blocking size
-    integer(kind=int4), parameter, public :: DEFAULT_LOOP_BLOCKING_SIZE = 8_int4
+    integer(kind=i4), parameter, public :: DEFAULT_LOOP_BLOCKING_SIZE = 8
     
     ! One nano-second
     real(kind=dp),    parameter, public :: one_ns = 0.000000001E+00_dp
@@ -202,13 +202,13 @@ module mod_constants
     
     ! Array of increment coefficients which are of value 1/2^-n
     ! where n = 1,2...32
-    real(dp64),   dimension(16), parameter, public :: ipow2_coeff = [ 0.5_dp64,0.25_dp64,                            &
-                                                                        0.125_dp64,0.0625_dp64,0.03125_dp64,         &
-                                                                        0.015625_dp64,0.0078125_dp64,                &
-                                                                        0.00390625_dp64,0.001953125_dp64,            &
-                                                                        0.0009765625_dp64,0.00048828125_dp64,        &
-                                                                        0.000244140625_dp64,0.0001220703125_dp64,    &
-                                                                        6.1169562025935894298996819182775e-5_dp64,   &
-                                                                        0.000030517578125_dp64,0.0000152587890625_dp64 ]
+    real(dp),   dimension(16), parameter, public :: ipow2_coeff = [ 0.5_dp,0.25_dp,                            &
+                                                                        0.125_dp,0.0625_dp,0.03125_dp,         &
+                                                                        0.015625_dp,0.0078125_dp,                &
+                                                                        0.00390625_dp,0.001953125_dp,            &
+                                                                        0.0009765625_dp,0.00048828125_dp,        &
+                                                                        0.000244140625_dp,0.0001220703125_dp,    &
+                                                                        6.1169562025935894298996819182775e-5_dp,   &
+                                                                        0.000030517578125_dp,0.0000152587890625_dp ]
 
 end module mod_constants
