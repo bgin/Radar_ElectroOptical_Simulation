@@ -16,7 +16,7 @@ module mod_datetime
 !=======================================================================
 
 !use,intrinsic :: iso_fortran_env,only  : real32,real64
-use mod_kinds, only : int32_t, sp, dp
+use mod_kinds, only : i4, sp, dp
 use,intrinsic :: iso_c_binding,only : c_char,c_int,c_null_char
 use :: mod_timedelta,only : timedelta
 use :: mod_strftime, only : tm_struct,c_strftime,c_strptime
@@ -42,13 +42,13 @@ type :: datetime
 
   private
 
-  integer(kind=int32_t) :: year        = 1 !! year [1-HUGE(year)]
-  integer(kind=int32_t) :: month       = 1 !! month in year [1-12]
-  integer(kind=int32_t) :: day         = 1 !! day in month [1-31]
-  integer(kind=int32_t) :: hour        = 0 !! hour in day [0-23]
-  integer(kind=int32_t) :: minute      = 0 !! minute in hour [0-59]
-  integer(kind=int32_t) :: second      = 0 !! second in minute [0-59]
-  integer(kind=int32_t) :: millisecond = 0 !! milliseconds in second [0-999]
+  integer(kind=i4) :: year        = 1 !! year [1-HUGE(year)]
+  integer(kind=i4) :: month       = 1 !! month in year [1-12]
+  integer(kind=i4) :: day         = 1 !! day in month [1-31]
+  integer(kind=i4) :: hour        = 0 !! hour in day [0-23]
+  integer(kind=i4) :: minute      = 0 !! minute in hour [0-59]
+  integer(kind=i4) :: second      = 0 !! second in minute [0-59]
+  integer(kind=i4) :: millisecond = 0 !! milliseconds in second [0-999]
 
   real(kind=dp) :: tz = 0.0_dp !! timezone offset from UTC [hours]
 
@@ -128,13 +128,13 @@ pure elemental type(datetime) function datetime_constructor(year,month,&
 
   !! Constructor function for the `datetime` class.
 
-  integer(kind=int32_t),          intent(in),optional :: year        !! year
-  integer(kind=int32_t),          intent(in),optional :: month       !! month
-  integer(kind=int32_t),          intent(in),optional :: day         !! day
-  integer(kind=int32_t),          intent(in),optional :: hour        !! hour
-  integer(kind=int32_t),          intent(in),optional :: minute      !! minute
-  integer(kind=int32_t),           intent(in),optional :: second      !! second
-  integer(kind=int32_t),          intent(in),optional :: millisecond !! millisecond
+  integer(kind=i4),          intent(in),optional :: year        !! year
+  integer(kind=i4),          intent(in),optional :: month       !! month
+  integer(kind=i4),          intent(in),optional :: day         !! day
+  integer(kind=i4),          intent(in),optional :: hour        !! hour
+  integer(kind=i4),          intent(in),optional :: minute      !! minute
+  integer(kind=i4),           intent(in),optional :: second      !! second
+  integer(kind=i4),          intent(in),optional :: millisecond !! millisecond
   real(kind=dp),intent(in),optional :: tz          !! timezone offset in hours
 
   if(present(year))then
@@ -262,7 +262,7 @@ pure elemental subroutine addMilliseconds(self,ms)
   !! addition (`+`) and subtraction (`-`) operators.
 
   class(datetime),intent(inout) :: self !! `datetime` instance
-  integer(kind=int32_t),        intent(in)    :: ms   !! number of milliseconds to add
+  integer(kind=i4),        intent(in)    :: ms   !! number of milliseconds to add
 
   self % millisecond = self % millisecond+ms
 
@@ -290,7 +290,7 @@ pure elemental subroutine addSeconds(self,s)
   !! addition (`+`) and subtraction (`-`) operators.
 
   class(datetime),intent(inout) :: self !! `datetime` instance
-  integer(kind=int32_t),        intent(in)    :: s    !! number of seconds to add
+  integer(kind=i4),        intent(in)    :: s    !! number of seconds to add
 
   self % second = self % second+s
 
@@ -316,7 +316,7 @@ pure elemental subroutine addMinutes(self,m)
   !! addition (`+`) and subtraction (`-`) operators.
 
   class(datetime),intent(inout) :: self !! `datetime` instance
-  integer(kind=int32_t),        intent(in)    :: m    !! number of minutes to add
+  integer(kind=i4),        intent(in)    :: m    !! number of minutes to add
 
   self % minute = self % minute+m
 
@@ -342,7 +342,7 @@ pure elemental subroutine addHours(self,h)
   !! addition (`+`) and subtraction (`-`) operators.
 
   class(datetime),intent(inout) :: self !! `datetime` instance
-  integer(kind=int32_t),        intent(in)    :: h    !! number of hours to add
+  integer(kind=i4),        intent(in)    :: h    !! number of hours to add
 
   self % hour = self % hour+h
 
@@ -368,9 +368,9 @@ pure elemental subroutine addDays(self,d)
   !! addition (`+`) and subtraction (`-`) operators.
 
   class(datetime),intent(inout) :: self !! `datetime` instance
-  integer(kind=int32_t),        intent(in)    :: d    !! number of days to add
+  integer(kind=i4),        intent(in)    :: d    !! number of days to add
 
-  integer(kind=int32_t) :: daysInCurrentMonth
+  integer(kind=i4) :: daysInCurrentMonth
 
   self % day = self % day+d
   do
@@ -528,8 +528,8 @@ pure elemental integer function weekday(self)
 
   class(datetime),intent(in) :: self !! `datetime` instance
 
-  integer(kind=int32_t) :: year,month
-  integer(kind=int32_t) :: j,k
+  integer(kind=i4) :: year,month
+  integer(kind=i4) :: j,k
 
   year  = self % year
   month = self % month
@@ -646,9 +646,9 @@ function isocalendar(self)
 
   class(datetime),intent(in) :: self !! `datetime` instance
 
-  integer(kind=int32_t),dimension(3) :: isocalendar
-  integer(kind=int32_t)              :: year,week,wday
-  integer(kind=int32_t)              :: rc
+  integer(kind=i4),dimension(3) :: isocalendar
+  integer(kind=i4)              :: year,week,wday
+  integer(kind=i4)              :: rc
   character(len=20)    :: string
 
   rc = c_strftime(string,len(string),'%G %V %u'//c_null_char,&
@@ -691,7 +691,7 @@ function strftime(self,format)
 
   character(len=:),allocatable :: strftime
 
-  integer(kind=int32_t)                  :: n,rc
+  integer(kind=i4)                  :: n,rc
   character(len=MAXSTRLEN) :: resultString
 
   resultString = ""
@@ -732,7 +732,7 @@ pure elemental character(len=5) function tzOffset(self)
 
   class(datetime),intent(in) :: self !! `datetime` instance
 
-  integer(kind=int32_t) :: hours,minutes
+  integer(kind=i4) :: hours,minutes
 
   if(self % tz < 0)then
     tzOffset(1:1) = '-'
@@ -760,7 +760,7 @@ pure elemental type(datetime) function utc(self)
 
   class(datetime),intent(in) :: self !! `datetime` instance
 
-  integer(kind=int32_t) :: hours,minutes,sgn
+  integer(kind=i4) :: hours,minutes,sgn
 
   hours   = int(abs(self % tz))
   minutes = nint((abs(self % tz)-hours)*60)
@@ -779,7 +779,7 @@ pure elemental integer function yearday(self)
 
   class(datetime),intent(in) :: self !! `datetime` instance
 
-  integer(kind=int32_t) :: month
+  integer(kind=i4) :: month
 
   yearday = 0
   do month=1,self % month-1
@@ -803,7 +803,7 @@ pure elemental function datetime_plus_timedelta(d0,t) result(d)
   class(timedelta),intent(in) :: t  !! `timedelta` instance
   type(datetime)              :: d
 
-  integer(kind=int32_t) :: milliseconds,seconds,minutes,hours,days
+  integer(kind=i4) :: milliseconds,seconds,minutes,hours,days
 
   d = datetime(year        = d0 % getYear(),       &
                month       = d0 % getMonth(),      &
@@ -869,9 +869,9 @@ pure elemental function datetime_minus_datetime(d0,d1) result(t)
   class(datetime),intent(in) :: d1 !! rhs `datetime` instance
   type(timedelta)            :: t
 
-  real(kind=real64) :: daysDiff
-  integer(kind=int32_t) :: days,hours,minutes,seconds,milliseconds
-  integer(kind=int32_t) :: sign_
+  real(kind=dp) :: daysDiff
+  integer(kind=i4) :: days,hours,minutes,seconds,milliseconds
+  integer(kind=i4) :: sign_
 
   daysDiff = date2num(d0)-date2num(d1)
 
@@ -887,7 +887,7 @@ pure elemental function datetime_minus_datetime(d0,d1) result(t)
   minutes      = int((daysDiff-days-hours*h2d)*d2m)
   seconds      = int((daysDiff-days-hours*h2d-minutes*m2d)*d2s)
   milliseconds = nint((daysDiff-days-hours*h2d-minutes*m2d&
-                               -seconds*s2d)*d2s*1e3_real64)
+                               -seconds*s2d)*d2s*1e3_dp)
 
   t = timedelta(sign_*days,sign_*hours,sign_*minutes,sign_*seconds,&
                 sign_*milliseconds)
@@ -1062,7 +1062,7 @@ pure elemental logical function isLeapYear(year)
 
   !! Returns `.true.` if year is leap year and `.false.` otherwise.
 
-  integer(kind=int32_t),intent(in) :: year !! year
+  integer(kind=i4),intent(in) :: year !! year
 
   isLeapYear = (mod(year,4) == 0 .and. .not. mod(year,100) == 0)&
           .or. (mod(year,400) == 0)
@@ -1113,8 +1113,8 @@ pure elemental integer function daysInMonth(month,year)
   !! Given integer month and year, returns an integer number
   !! of days in that particular month.
 
-  integer(kind=int32_t),intent(in) :: month !! month
-  integer(kind=int32_t),intent(in) :: year  !! year
+  integer(kind=i4),intent(in) :: month !! month
+  integer(kind=i4),intent(in) :: year  !! year
 
   integer(kind=int32_t),parameter,dimension(12) :: &
           days = [31,28,31,30,31,30,31,31,30,31,30,31]
@@ -1141,7 +1141,7 @@ pure elemental integer function daysInYear(year)
 
   !! Returns the number of days in year.
 
-  integer(kind=int32_t),intent(in) :: year !! year
+  integer(kind=i4),intent(in) :: year !! year
 
   if(isLeapYear(year))then
     daysInYear = 366
@@ -1161,7 +1161,7 @@ pure elemental real(kind=real64) function date2num(d)
   type(datetime),intent(in) :: d !! `datetime` instance
 
   type(datetime) :: d_utc
-  integer(kind=int32_t) :: year
+  integer(kind=i4) :: year
 
   ! Convert to UTC first
   d_utc = d % utc()
@@ -1195,7 +1195,7 @@ pure elemental type(datetime) function num2date(num)
   real(kind=dp),intent(in) :: num
     !! number of days since `0001-01-01 00:00:00`
 
-  integer(kind=int32_t) :: year,month,day,hour,minute,second,millisecond
+  integer(kind=i4) :: year,month,day,hour,minute,second,millisecond
   real(kind=dp) :: days,totseconds
 
   ! num must be positive:
@@ -1260,7 +1260,7 @@ type(datetime) function strptime(str,format)
   character(len=*),intent(in) :: str    !! time string
   character(len=*),intent(in) :: format !! time format
 
-  integer(kind=int32_t)         :: rc
+  integer(kind=i4)         :: rc
   type(tm_struct) :: tm
 
   rc = c_strptime(trim(str)//c_null_char,trim(format)//c_null_char,tm)
@@ -1298,8 +1298,8 @@ pure function int2str(i,length)
   !! Converts an integer `i` into a character string of requested length,
   !! pre-pending zeros if necessary.
 
-  integer(kind=int32_t),intent(in) :: i      !! integer to convert to string
-  integer(kind=int32_t),intent(in) :: length !! desired length of string
+  integer(kind=i4),intent(in) :: i      !! integer to convert to string
+  integer(kind=i4),intent(in) :: length !! desired length of string
 
   character(len=length) :: int2str
   character(len=2)      :: string
