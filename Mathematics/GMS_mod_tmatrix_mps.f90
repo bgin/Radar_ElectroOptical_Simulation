@@ -89,7 +89,7 @@ module  mod_tmatrix_mps
     ! Tab:10,11 col - Type , function and subroutine code blocks.
         
    
-    use mod_kinds,    only : int4, sp, dp
+    use mod_kinds,    only : i4, sp, dp
 #if defined __INTEL_COMPILER
     use IFCORE,       only : TRACEBACKQQ
     use IFPORT,       only : SYSTEMQQ,GETLASTERRORQQ,DCLOCK
@@ -102,16 +102,16 @@ module  mod_tmatrix_mps
     !=====================================================59
     
     ! Major version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MAJOR = 2
+    integer(kind=i4), parameter, public :: MOD_TMATRIX_MPS_MAJOR = 2
     
     ! Minor version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MINOR = 0
+    integer(kind=i4), parameter, public :: MOD_TMATRIX_MPS_MINOR = 0
     
     ! Micro version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_MICRO = 0
+    integer(kind=i4), parameter, public :: MOD_TMATRIX_MPS_MICRO = 0
     
     ! Module full version
-    integer(kind=int4), parameter, public :: MOD_TMATRIX_MPS_FULLVER = 1000*MOD_TMATRIX_MPS_MAJOR + &
+    integer(kind=i4), parameter, public :: MOD_TMATRIX_MPS_FULLVER = 1000*MOD_TMATRIX_MPS_MAJOR + &
                                                                   100*MOD_TMATRIX_MPS_MINOR  + &
                                                                   10*MOD_TMATRIX_MPS_MICRO
     
@@ -128,25 +128,25 @@ module  mod_tmatrix_mps
     character(*),  parameter, public :: MOD_TMATRIX_MPS_DESCRIPT = " Calculation of random- orientation averaged radiative-scattering by a single or an ensemble of variously shaped small particles" 
                          
     ! Constants
-    integer(kind=int4), parameter, private :: NPN1  = 100
+    integer(kind=i4), parameter, private :: NPN1  = 100
     
-    integer(kind=int4), parameter, private :: NPNG1 = 500
+    integer(kind=i4), parameter, private :: NPNG1 = 500
     
-    integer(kind=int4), parameter, private :: NPNG2 = 2*NPNG1
+    integer(kind=i4), parameter, private :: NPNG2 = 2*NPNG1
     
-    integer(kind=int4), parameter, private :: NPN2  =  2*NPN1
+    integer(kind=i4), parameter, private :: NPN2  =  2*NPN1
     
-    integer(kind=int4), parameter, private :: NPL   = NPN2+1
+    integer(kind=i4), parameter, private :: NPL   = NPN2+1
     
-    integer(kind=int4), parameter, private :: NPN3  = NPN1+1
+    integer(kind=i4), parameter, private :: NPN3  = NPN1+1
     
-    integer(kind=int4), parameter, private :: NPN4  = NPN1
+    integer(kind=i4), parameter, private :: NPN4  = NPN1
     
-    integer(kind=int4), parameter, private :: NPN5  = 2*NPN4
+    integer(kind=i4), parameter, private :: NPN5  = 2*NPN4
     
-    integer(kind=int4), parameter, private :: NPN6  = NPN4+1
+    integer(kind=i4), parameter, private :: NPN6  = NPN4+1
     
-    integer(kind=int4), parameter, public  :: NANGMAX = 1808
+    integer(kind=i4), parameter, public  :: NANGMAX = 1808
     
     complex(16),   parameter, private :: CZERO = DCMPLX(0._dp,0._dp)
     
@@ -163,12 +163,12 @@ module  mod_tmatrix_mps
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: tmatrix_mps_driver
           include 'tmatrix_mps_np.inc'
          
-          integer(kind=int4)                   :: idMie
+          integer(kind=i4)                   :: idMie
           real(kind=dp)                        :: small
-          integer(kind=int4)                   :: MXINT,NADD,idscmt
+          integer(kind=i4)                   :: MXINT,NADD,idscmt
           real(kind=dp)                        :: sang,w
-          integer(kind=int4)                   :: irat,nL
-          integer(kind=int4), dimension(nLp)   :: idshp
+          integer(kind=i4)                   :: irat,nL
+          integer(kind=i4), dimension(nLp)   :: idshp
           real(kind=dp),    dimension(3,nLp)   :: shp
           real(kind=dp),    dimension(9,nLp)   :: r0
           real(kind=dp)                        :: cext,cabs,csca,assym,cextv,cabsv,  &
@@ -178,26 +178,26 @@ module  mod_tmatrix_mps
           real(kind=dp),    dimension(nLp)     :: cexti,cabsi,cscai,assymi,cpri
           real(kind=dp),    dimension(4,4,NANGMAX) :: mue
           ! Locals
-          integer(kind=int4), parameter :: nmp   =   np*(np+2)       !
-          integer(kind=int4), parameter :: nmp0  =   (np+1)*(np+4)/2 
-          integer(kind=int4), parameter :: np2   =   2*np
-          integer(kind=int4), parameter :: ni0   =   np*(np+1)*(np2+1)/3+np*np
-          integer(kind=int4), parameter :: ng0   =   np*(2*np**3+10*np**2+19*np+5)/6
-          integer(kind=int4), parameter :: nrc   =   4*np*(np+1)*(np+2)/3+np
-          integer(kind=int4), parameter :: nij   =   nLp*(nLp-1)/2
+          integer(kind=i4), parameter :: nmp   =   np*(np+2)       !
+          integer(kind=i4), parameter :: nmp0  =   (np+1)*(np+4)/2 
+          integer(kind=i4), parameter :: np2   =   2*np
+          integer(kind=i4), parameter :: ni0   =   np*(np+1)*(np2+1)/3+np*np
+          integer(kind=i4), parameter :: ng0   =   np*(2*np**3+10*np**2+19*np+5)/6
+          integer(kind=i4), parameter :: nrc   =   4*np*(np+1)*(np+2)/3+np
+          integer(kind=i4), parameter :: nij   =   nLp*(nLp-1)/2
 #if defined __INTEL_COMPILER
           real(kind=dp), automatic :: start,end,duration
 #elif defined __GFORTRAN__
           integer(kind=8), automatic :: count_s,count_e,delta
           real(kind=dp),   automatic :: count_rate
 #endif
-          integer(kind=int4) :: u,v,u0
-          logical(kind=int4), automatic :: result
-          integer(kind=int4), automatic :: ret
-          integer(kind=int4), automatic :: line
-          integer(kind=int4), automatic :: aerr
+          integer(kind=i4) :: u,v,u0
+          logical(kind=i4), automatic :: result
+          integer(kind=i4), automatic :: ret
+          integer(kind=i4), automatic :: line
+          integer(kind=i4), automatic :: aerr
           character(len=256), automatic :: emsg
-          integer(kind=int4), dimension(nLp) :: nmax,uvmax,ind
+          integer(kind=i4), dimension(nLp) :: nmax,uvmax,ind
           real(kind=dp), dimension(nLp), automatic :: x,xc
 #if defined __INTEL_COMPILER
           !DIR$     ATTRIBUTES ALIGN : 64 :: x,xc
@@ -379,7 +379,7 @@ module  mod_tmatrix_mps
              !DIR$ ATTRIBUTES ALIGN : 4 ::  itmax,ia,iang,ik,jk,itau,itau0,jtau0
              !DIR$ ATTRIBUTES ALIGN : 4 ::  jtau,nang,nang2,nsmall,j,NDGS,in,jj,nm1,nj
 #endif              
-             integer(kind=int4) :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
+             integer(kind=i4) :: i,j1,j2,n,in0,iv0,m,imn,iuv,imn1,        &
                            iuv1,nmax0,imax,n0,ii,ij,iv,inn,n1,      &     !! in original code was: in, here it was changed to: inn
                            ip,iq,is,isn,isv,nlarge,nbes,irc,        &
                            itrc,iuvc,niter,ijmax,ijmin,iuvp,        &
