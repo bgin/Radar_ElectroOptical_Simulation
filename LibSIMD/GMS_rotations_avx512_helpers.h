@@ -6,6 +6,10 @@
 
 #include <immintrin.h>
 
+#if !defined(GMS_INTERLEAVE_SIMD_OPS_SCHEDULE)
+    #define GMS_INTERLEAVE_SIMD_OPS_SCHEDULE 1
+#endif
+
 
                                const __m512 v16_0      = _mm512_set1_ps(0.0F);
 		               const __m512 v16_2      = _mm512_set1_ps(2.0f);
