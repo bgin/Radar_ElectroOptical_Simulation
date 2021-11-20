@@ -52,13 +52,13 @@ module mod_vectypes
     !=====================================================59
 
     ! Major version
-    integer(kind=i4), parameter, public :: MOD_VECTYPES_MAJOR = 1_int4
+    integer(kind=i4), parameter, public :: MOD_VECTYPES_MAJOR = 1
     
     ! Minor version
-    integer(kind=i4), parameter, public :: MOD_VECTYPES_MINOR = 0_int4
+    integer(kind=i4), parameter, public :: MOD_VECTYPES_MINOR = 0
     
     ! Micro version
-    integer(kind=i4), parameter, public :: MOD_VECTYPES_MICRO = 0_int4
+    integer(kind=i4), parameter, public :: MOD_VECTYPES_MICRO = 0
     
     ! Module full version
     integer(kind=i4), parameter, public :: MOD_VECTYPES_FULLVER = 1000_i4*MOD_VECTYPES_MAJOR+100_i4*MOD_VECTYPES_MINOR+ &
@@ -68,7 +68,7 @@ module mod_vectypes
     character(*),       parameter, public :: MOD_VECTYPES_CREATE_DATE = "10-10-2018 16:31 +00200 (WED 10 OCT 2018 GMT+2)"
     
     ! Module build date
-    character(*),       parameter, public :: MOD_VECTYPES_BUILD_DATE = " "
+    character(*),       parameter, public :: MOD_VECTYPES_BUILD_DATE = __DATE__ ":"__TIME__
     
     ! Module author info
     character(*),       parameter, public :: MOD_VECTYPES_AUTHOR = "Programmer: Bernard Gingold, contact: beniekg@gmail.com "
@@ -84,7 +84,7 @@ module mod_vectypes
      type, public :: XMM2r8_t
            SEQUENCE
            real(kind=dp), dimension(0:1) :: v
-           !DIR$ ATTRIBUTES ALIGN : 16 :: v
+        
      end type XMM2r8_t
      
     !!===========================================!!
@@ -94,7 +94,7 @@ module mod_vectypes
      type, public :: XMM2i4_t
            SEQUENCE
            integer(kind=i4), dimension(0:1) :: v
-           !DIR$ ATTRIBUTES ALIGN : 8 :: v
+         
      end type XMM2i4_t
      
      !!===========================================!!
@@ -122,7 +122,7 @@ module mod_vectypes
      type, public :: YMM4r8_t
            SEQUENCE
            real(kind=dp), dimension(0:3) :: v
-           !DIR$ ATTRIBUTES ALIGN : 32 :: v
+         
      end type YMM4r8_t
      
      !!===========================================!!
@@ -132,7 +132,7 @@ module mod_vectypes
      type, public :: XMM4i4_t
            SEQUENCE
            integer(kind=i4), dimension(0:3) :: v
-           !DIR$ ATTRIBUTES ALIGN : 16 :: v
+         
      end type XMM4i4_t
      
      !!===========================================!!
@@ -142,7 +142,7 @@ module mod_vectypes
      type, public :: YMM8i4_t
            SEQUENCE
            integer(kind=int4), dimension(0:7) :: v
-           !DIR$ ATTRIBUTES ALIGN : 32 :: v
+          
      end type YMM8i4_t
 
      !!===========================================!!
@@ -152,7 +152,7 @@ module mod_vectypes
      type, public :: ZMM8i8_t
            SEQUENCE
            integer(kind=i8), dimension(0:7) :: v
-            !DIR$ ATTRIBUTES ALIGN : 64 :: v
+           
      end type ZMM8i8_t
      
      
@@ -163,7 +163,7 @@ module mod_vectypes
      type, public :: ZMM16i4_t
            SEQUENCE
            integer(kind=i4), dimension(0:15) :: v
-            !DIR$ ATTRIBUTES ALIGN : 64 :: v
+           
      end type ZMM16i4_t
      
      !!===========================================!!
@@ -177,7 +177,7 @@ module mod_vectypes
      type, public :: ZMM8r8_t
            SEQUENCE
            real(kind=dp), dimension(0:7) :: v
-            !DIR$ ATTRIBUTES ALIGN : 64 :: v
+           
      end type ZMM8r8_t
      
     !!===========================================!!
@@ -187,7 +187,7 @@ module mod_vectypes
      type, public :: XMM2r4_t
            SEQUENCE
            real(kind=sp), dimension(0:1) :: v
-            !DIR$ ATTRIBUTES ALIGN : 8 :: v
+           
      end type XMM2r4_t
      
     !!===========================================!!
@@ -206,7 +206,7 @@ module mod_vectypes
      type, public :: XMM4r4_t
            SEQUENCE
            real(kind=sp), dimension(0:3) :: v
-            !DIR$ ATTRIBUTES ALIGN : 16 :: v
+          
      end type XMM4r4_t
      
     !!===========================================!!
@@ -216,7 +216,7 @@ module mod_vectypes
      type, public :: YMM8r4_t
            SEQUENCE
            real(kind=sp), dimension(0:7) :: v
-            !DIR$ ATTRIBUTES ALIGN : 32 :: v
+           
      end type YMM8r4_t
      
     !!===========================================!!
@@ -226,7 +226,7 @@ module mod_vectypes
      type, public :: ZMM16r4_t
            SEQUENCE
            real(kind=sp), dimension(0:15) :: v
-            !DIR$ ATTRIBUTES ALIGN : 64 :: v
+           
      end type ZMM16r4_t
      
      !!===============================================!!
@@ -238,8 +238,7 @@ module mod_vectypes
            SEQUENCE
            real(kind=sp), dimension(0:1) :: re
            real(kind=sp), dimension(0:1) :: im
-           !DIR$ ATTRIBUTES ALIGN : 8 :: re
-           !DIR$ ATTRIBUTES ALIGN : 8 :: im
+          
      end type XMM2c4_t
      
      !!===============================================!!
@@ -251,8 +250,7 @@ module mod_vectypes
            SEQUENCE
            real(kind=dp), dimension(0:3) :: re
            real(kind=dp), dimension(0:3) :: im
-            !DIR$ ATTRIBUTES ALIGN : 32 :: re
-            !DIR$ ATTRIBUTES ALIGN : 32 :: im
+           
      end type YMM4c8_t
 
      !!==============================================!!
@@ -263,8 +261,7 @@ module mod_vectypes
           SEQUENCE
           real(kind=sp),  dimension(0:7) :: re
           real(kind=sp),  dimension(0:7) :: im
-           !DIR$ ATTRIBUTES ALIGN : 32 :: re
-           !DIR$ ATTRIBUTES ALIGN : 32 :: im
+          
      end type YMM8c4_t 
         
      !!===============================================!!
@@ -276,8 +273,7 @@ module mod_vectypes
            SEQUENCE
            real(kind=dp), dimension(0:7) :: re
            real(kind=dp), dimension(0:7) :: im
-            !DIR$ ATTRIBUTES ALIGN : 64 :: re
-            !DIR$ ATTRIBUTES ALIGN : 64 :: im
+           
      end type ZMM8c8_t
      
      !!===============================================!!
@@ -289,8 +285,7 @@ module mod_vectypes
            SEQUENCE
            real(kind=sp), dimension(0:15) :: re
            real(kind=sp), dimension(0:15) :: im
-            !DIR$ ATTRIBUTES ALIGN : 64 :: re
-            !DIR$ ATTRIBUTES ALIGN : 64 :: im
+           
      end type ZMM16c4_t
      
      ! For use in planned vectorization of NEC4-1, NEC-2 MoM models
