@@ -60,6 +60,50 @@
 							                     __attribute__((hot))
 									     __attribute__((aligned(32)));
 
+
+		        /* Non-aligned macro-kernel
+                         Quaternion to Orientation Matrix
+                       */
+                      void
+                      q4x16_rm9x16_looped_u_unroll4x_zmm16r4( float * __restrict,
+		                                              float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const int32_t) __attribute__((noinline))
+							                     __attribute__((hot))
+									     __attribute__((aligned(32)));
+                      /*Aligned macro-kernel*/
+                      void
+                      q4x16_rm9x16_looped_a_unroll4x_zmm16r4( float * __restrict,
+		                                              float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const float * __restrict,
+							      const int32_t) __attribute__((noinline))
+							                     __attribute__((hot))
+									     __attribute__((aligned(32)));
+
+
+
+                      
+
 		       
 
 
