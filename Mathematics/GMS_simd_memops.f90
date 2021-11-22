@@ -99,8 +99,8 @@ module simd_memops
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ymm8r4_memcpy_unroll8x
 #endif
-      real(kind=sp), dimension(n), intent(in)  :: src
-      real(kind=sp), dimension(n), intent(out) :: dst
+      real(kind=sp), allocatable, dimension(:), intent(in)  :: src
+      real(kind=sp), allocatable, dimension(:), intent(out) :: dst
       integer(kind=i4),               intent(in)  :: n
 #if defined(__ICC) || defined(__INTEL_COMPILER)
       !DIR$ ASSUME_ALIGNED : 32 :: src
