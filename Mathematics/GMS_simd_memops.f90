@@ -131,6 +131,9 @@ module simd_memops
             end do
          end do
          !Remainder loop
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif
          do j = i, n
             dst(j) = src(j)
          end do
@@ -143,7 +146,10 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
-          !Remainder loop
+         !Remainder loop
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif         
          do j = i, n
             dst(j) = src(j)
          end do
@@ -156,7 +162,10 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
-          !Remainder loop
+         !Remainder loop
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif         
          do j = i, n
             dst(j) = src(j)
          end do
@@ -171,7 +180,10 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
-           !Remainder loop
+         !Remainder loop
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif         
          do j = i, n
             dst(j) = src(j)
          end do
@@ -200,6 +212,9 @@ module simd_memops
                dst(i+56+ii) =  ymm7.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i, n
             dst(j) = src(j)
          end do
@@ -258,6 +273,9 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i,n
             dst(j) = src(j)
          end do
@@ -270,6 +288,9 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i,n
             dst(j) = src(j)
          end do
@@ -282,6 +303,9 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i,n
             dst(j) = src(j)
          end do
@@ -296,6 +320,9 @@ module simd_memops
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i,n
             dst(j) = src(j)
          end do
@@ -340,6 +367,9 @@ module simd_memops
                dst(i+120+ii)=  ymm15.v(ii)
             end do
          end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=8, MIN=1, AVG=4
+#endif            
          do j = i, n
             dst(j) = src(j)
          end do
