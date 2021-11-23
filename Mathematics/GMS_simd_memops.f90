@@ -38,7 +38,7 @@ module simd_memops
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds,   only : i4,i8,sp,dp
+     use mod_kinds,   only : i4,sp,dp
      use mod_vectypes
      use omp_lib
 
@@ -120,37 +120,49 @@ module simd_memops
 #endif
       integer(kind=i4), automatic :: i,ii,j
       !Executable code!!
-      if(n < MEMMOVE_1ELEM) then
+      if(n <= MEMMOVE_1ELEM) then
          return
       else if(n <= MEMMOVE_16ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1, iand(n,inot(YMM_LEN-1)), YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+         !Remainder loop
+         do j = i, n
+            dst(j) = src(j)
+         end do
          return
       else if(n <= MEMMOVE_32ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1,iand(n,inot(YMM_LEN-1)), YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1 
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
+         end do
+          !Remainder loop
+         do j = i, n
+            dst(j) = src(j)
          end do
          return
       else if(n <= MEMMOVE_64ELEMS) then
-          do i = 1, n, YMM_LEN
+          do i = 1,iand(n,inot(YMM_LEN-1)), YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1 
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+          !Remainder loop
+         do j = i, n
+            dst(j) = src(j)
+         end do
          return
       else if(n <= MEMMOVE_128ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1,iand(n,inot(YMM_LEN-1)), YMM_LEN
             call mm_prefetch(src(i+YMM_LEN*4),FOR_K_PREFETCH_T1)
             call mm_prefetch(dst(i+YMM_LEN*4),FOR_K_PREFETCH_T1)
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
@@ -158,6 +170,10 @@ module simd_memops
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
+         end do
+           !Remainder loop
+         do j = i, n
+            dst(j) = src(j)
          end do
          return
       else if(n > MEMMOVE_128ELEMS) then
@@ -232,37 +248,46 @@ module simd_memops
 #endif
       integer(kind=i4), automatic :: i,ii,j
       !Executable code!!
-      if(n < MEMMOVE_1ELEM) then
+      if(n <= MEMMOVE_1ELEM) then
          return
       else if(n <= MEMMOVE_16ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1, iand(n,inot(YMM_LEN-1)), YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+         do j = i,n
+            dst(j) = src(j)
+         end do
          return
       else if(n <= MEMMOVE_32ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1, iand(n,inot(YMM_LEN-1)), YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1 
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
+         end do
+         do j = i,n
+            dst(j) = src(j)
          end do
          return
       else if(n <= MEMMOVE_64ELEMS) then
-          do i = 1, n, YMM_LEN
+          do i = 1,iand(n,inot(YMM_LEN-1)) , YMM_LEN
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
             do ii = 0, YMM_LEN-1 
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
          end do
+         do j = i,n
+            dst(j) = src(j)
+         end do
          return
       else if(n <= MEMMOVE_128ELEMS) then
-         do i = 1, n, YMM_LEN
+         do i = 1,iand(n,inot(YMM_LEN-1)) , YMM_LEN
             call mm_prefetch(src(i+YMM_LEN*4),FOR_K_PREFETCH_T1)
             call mm_prefetch(dst(i+YMM_LEN*4),FOR_K_PREFETCH_T1)
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
@@ -270,6 +295,9 @@ module simd_memops
                ymm0.v(ii)  = src(i+ii)
                dst(i+ii)   = ymm0.v(ii)
             end do
+         end do
+         do j = i,n
+            dst(j) = src(j)
          end do
          return
       else if(n > MEMMOVE_128ELEMS) then
