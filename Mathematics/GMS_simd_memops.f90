@@ -190,8 +190,8 @@ module simd_memops
          return
       else if(n > MEMMOVE_128ELEMS) then
          do i = 1, iand(n,inot(YMM_LEN-1)), YMM_LEN*8
-              call mm_prefetch(src(i+YMM_LEN*2),FOR_K_PREFETCH_T1)
-              call mm_prefetch(dst(i+YMM_LEN*2),FOR_K_PREFETCH_T1)
+              call mm_prefetch(src(i+YMM_LEN*16),FOR_K_PREFETCH_T1)
+              call mm_prefetch(dst(i+YMM_LEN*16),FOR_K_PREFETCH_T1)
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)              
             do ii = 0, YMM_LEN-1
                ymm0.v(ii)   =  src(i+0+ii)
@@ -224,7 +224,7 @@ module simd_memops
     end subroutine ymm8r4_memcpy_unroll8x
 
 
-    #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
     subroutine ymm8r4_memcpy_unroll16x(src,dst,n) !GCC$ ATTRIBUTES aligned(32) ::  ymm8r4_memcpy_unroll16x !GCC$ ATTRIBUTES hot ::  ymm8r4_memcpy_unroll16x 
 #elif defined(__ICC) || defined(__INTEL_COMPILER)
     subroutine ymm8r4_memcpy_unroll16x(src,dst,n)
@@ -329,8 +329,8 @@ module simd_memops
          return
       else if(n > MEMMOVE_128ELEMS) then
          do i = 1, iand(n,inot(YMM_LEN-1)), YMM_LEN*16
-              call mm_prefetch(src(i+YMM_LEN*2),FOR_K_PREFETCH_T1)
-              call mm_prefetch(dst(i+YMM_LEN*2),FOR_K_PREFETCH_T1)
+              call mm_prefetch(src(i+YMM_LEN*32),FOR_K_PREFETCH_T1)
+              call mm_prefetch(dst(i+YMM_LEN*32),FOR_K_PREFETCH_T1)
 !$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)              
             do ii = 0, YMM_LEN-1
                ymm0.v(ii)   =  src(i+0+ii)
@@ -392,20 +392,20 @@ module simd_memops
       real(kind=sp), allocatable, dimension(:), intent(out) :: dst
       integer(kind=i4),               intent(in)  :: n
 #if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ASSUME_ALIGNED : 32 :: src
-      !DIR$ ASSUME_ALIGNED : 32 :: dst
+      !DIR$ ASSUME_ALIGNED : 64 :: src
+      !DIR$ ASSUME_ALIGNED : 64 :: dst
 #endif
-      type(YMM8r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,zmm4, &
+      type(ZMM16r_t), automatic :: zmm0,zmm1,zmm2,zmm3,zmm4, &
                                    zmm5,zmm6,zmm7
 #if defined(__ICC) || defined(__INTEL_COMPILER)
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm0
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm1
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm2
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm3
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm4
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm5
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm6
-      !DIR$ ATTRIBUTES ALIGN : 32 :: zmm7
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm4
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm5
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm6
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm7
 #endif
       integer(kind=i4), automatic :: i,ii,j
       !Executable code!!
@@ -413,7 +413,7 @@ module simd_memops
          return
       else if(n <= MEMMOVE_16ELEMS) then
          do i = 1, iand(n,inot(ZMM_LEN-1)), ZMM_LEN
-!$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
             do ii = 0, ZMM_LEN-1
                zmm0.v(ii)  = src(i+ii)
                dst(i+ii)   = zmm0.v(ii)
@@ -429,7 +429,7 @@ module simd_memops
          return
       else if(n <= MEMMOVE_32ELEMS) then
          do i = 1,iand(n,inot(ZMM_LEN-1)), ZMM_LEN
-!$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
             do ii = 0, ZMM_LEN-1 
                zmm0.v(ii)  = src(i+ii)
                dst(i+ii)   = zmm0.v(ii)
@@ -445,7 +445,7 @@ module simd_memops
          return
       else if(n <= MEMMOVE_64ELEMS) then
           do i = 1,iand(n,inot(ZMM_LEN-1)), ZMM_LEN
-!$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
             do ii = 0, ZMM_LEN-1 
                zmm0.v(ii)  = src(i+ii)
                dst(i+ii)   = zmm0.v(ii)
@@ -463,7 +463,7 @@ module simd_memops
          do i = 1,iand(n,inot(ZMM_LEN-1)), ZMM_LEN
             call mm_prefetch(src(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
             call mm_prefetch(dst(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
-!$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
             do ii = 0, ZMM_LEN-1 
                zmm0.v(ii)  = src(i+ii)
                dst(i+ii)   = zmm0.v(ii)
@@ -479,9 +479,9 @@ module simd_memops
          return
       else if(n > MEMMOVE_128ELEMS) then
          do i = 1, iand(n,inot(ZMM_LEN-1)), ZMM_LEN*8
-              call mm_prefetch(src(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
-              call mm_prefetch(dst(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
-!$omp simd aligned(src:32) aligned(dst:32) linear(ii:1)              
+              call mm_prefetch(src(i+ZMM_LEN*8),FOR_K_PREFETCH_T1)
+              call mm_prefetch(dst(i+ZMM_LEN*8),FOR_K_PREFETCH_T1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)              
             do ii = 0, ZMM_LEN-1
                zmm0.v(ii)   =  src(i+0+ii)
                dst(i+0+ii)  =  zmm0.v(ii)
@@ -513,7 +513,159 @@ module simd_memops
     end subroutine zmm16r4_memcpy_unroll8x
 
 
-
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+    subroutine zmm16r4_memcpy_unroll16x(src,dst,n) !GCC$ ATTRIBUTES aligned(32) ::  zmm16r4_memcpy_unroll16x !GCC$ ATTRIBUTES hot ::  zmm16r4_memcpy_unroll16x 
+#elif defined(__ICC) || defined(__INTEL_COMPILER)
+    subroutine zmm16r4_memcpy_unroll16x(src,dst,n)
+        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: zmm16r4_memcpy_unroll16x
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zmm16r4_memcpy_unroll16x
+#endif
+      real(kind=sp), allocatable, dimension(:), intent(in)  :: src
+      real(kind=sp), allocatable, dimension(:), intent(out) :: dst
+      integer(kind=i4),               intent(in)  :: n
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+      !DIR$ ASSUME_ALIGNED : 64 :: src
+      !DIR$ ASSUME_ALIGNED : 64 :: dst
+#endif
+      type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,zmm4, &
+                                    zmm5,zmm6,zmm7
+      type(ZMM16r4_t), automatic :: zmm8,zmm9,zmm10,zmm11,    &
+                                   zmm12,zmm13,zmm14,zmm15
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm1
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm2
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm3
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm4
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm5
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm6
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm7
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm8
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm9
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm10
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm11
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm12
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm13
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm14
+      !DIR$ ATTRIBUTES ALIGN : 64 :: zmm15
+#endif
+      integer(kind=i4), automatic :: i,ii,j
+      !Executable code!!
+      if(n <= MEMMOVE_1ELEM) then
+         return
+      else if(n <= MEMMOVE_16ELEMS) then
+         do i = 1, iand(n,inot(ZMM_LEN-1)), ZMM_LEN
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
+            do ii = 0, ZMM_LEN-1
+               zmm0.v(ii)  = src(i+ii)
+               dst(i+ii)   = zmm0.v(ii)
+            end do
+         end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+         do j = i,n
+            dst(j) = src(j)
+         end do
+         return
+      else if(n <= MEMMOVE_32ELEMS) then
+         do i = 1, iand(n,inot(ZMM_LEN-1)), ZMM_LEN
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
+            do ii = 0, ZMM_LEN-1 
+               zmm0.v(ii)  = src(i+ii)
+               dst(i+ii)   = zmm0.v(ii)
+            end do
+         end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+         do j = i,n
+            dst(j) = src(j)
+         end do
+         return
+      else if(n <= MEMMOVE_64ELEMS) then
+          do i = 1,iand(n,inot(ZMM_LEN-1)) , ZMM_LEN
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
+            do ii = 0, ZMM_LEN-1 
+               zmm0.v(ii)  = src(i+ii)
+               dst(i+ii)   = zmm0.v(ii)
+            end do
+         end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+         do j = i,n
+            dst(j) = src(j)
+         end do
+         return
+      else if(n <= MEMMOVE_128ELEMS) then
+         do i = 1,iand(n,inot(ZMM_LEN-1)) , ZMM_LEN
+            call mm_prefetch(src(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
+            call mm_prefetch(dst(i+ZMM_LEN*2),FOR_K_PREFETCH_T1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)
+            do ii = 0, ZMM_LEN-1 
+               zmm0.v(ii)  = src(i+ii)
+               dst(i+ii)   = zmm0.v(ii)
+            end do
+         end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+         do j = i,n
+            dst(j) = src(j)
+         end do
+         return
+      else if(n > MEMMOVE_128ELEMS) then
+         do i = 1, iand(n,inot(ZMM_LEN-1)), ZMM_LEN*16
+              call mm_prefetch(src(i+ZMM_LEN*16),FOR_K_PREFETCH_T1)
+              call mm_prefetch(dst(i+ZMM_LEN*16),FOR_K_PREFETCH_T1)
+!$omp simd aligned(src:64) aligned(dst:64) linear(ii:1)              
+            do ii = 0, ZMM_LEN-1
+               zmm0.v(ii)   =  src(i+0+ii)
+               dst(i+0+ii)  =  zmm0.v(ii)
+               zmm1.v(ii)   =  src(i+16+ii)
+               dst(i+16+ii) =  zmm1.v(ii)
+               zmm2.v(ii)   =  src(i+32+ii)
+               dst(i+32+ii) =  zmm2.v(ii)
+               zmm3.v(ii)   =  src(i+48+ii)
+               dst(i+48+ii) =  zmm3.v(ii)
+               zmm4.v(ii)   =  src(i+64+ii)
+               dst(i+64+ii) =  zmm4.v(ii)
+               zmm5.v(ii)   =  src(i+80+ii)
+               dst(i+80+ii) =  zmm5.v(ii)
+               zmm6.v(ii)   =  src(i+96+ii)
+               dst(i+96+ii) =  zmm6.v(ii)
+               zmm7.v(ii)   =  src(i+112+ii)
+               dst(i+112+ii)=  zmm7.v(ii)
+               zmm8.v(ii)   =  src(i+128+ii)
+               dst(i+128+ii)=  zmm8.v(ii)
+               zmm9.v(ii)   =  src(i+144+ii)
+               dst(i+144+ii)=  zmm9.v(ii)
+               zmm10.v(ii)  =  src(i+160+ii)
+               dst(i+160+ii)=  zmm10.v(ii)
+               zmm11.v(ii)  =  src(i+176+ii)
+               dst(i+176+ii)=  zmm11.v(ii)
+               zmm12.v(ii)  =  src(i+192+ii)
+               dst(i+192+ii)=  zmm12.v(ii)
+               zmm13.v(ii)  =  src(i+208+ii)
+               dst(i+208+ii)=  zmm13.v(ii)
+               zmm14.v(ii)  =  src(i+224+ii)
+               dst(i+224+ii)=  zmm14.v(ii)
+               zmm15.v(ii)  =  src(i+240+ii)
+               dst(i+240+ii)=  zmm15.v(ii)
+            end do
+         end do
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+         !DIR$ LOOP COUNT MAX=16, MIN=1, AVG=8
+#endif            
+         do j = i, n
+            dst(j) = src(j)
+         end do
+         return
+      end if
+      
+    end subroutine zmm16r4_memcpy_unroll16x
 
 
 
