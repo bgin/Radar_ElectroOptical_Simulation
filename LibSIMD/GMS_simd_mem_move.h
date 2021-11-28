@@ -17,30 +17,30 @@
 #include <stdint.h>
 
 
-            void ymm8r4_cached_u_memmove(float * __restrict,
-	                                 const float * __restrict,
+            void ymm8r4_cached_u_memmove(void * __restrict,
+	                                 const void * __restrict,
 					 const int32_t)   __attribute__((noinline))
 					                  __attribute__((hot))
 							  __attribute__((aligned(32)));
 
 
-	    void ymm8r4_uncached_memove(float * __restrict,
-	                                const float * __restrict,
+	    void ymm8r4_uncached_memove(void * __restrict,
+	                                const void * __restrict,
 					const int32_t)    __attribute__((noinline))
 					                  __attribute__((hot))
 							  __attribute__((aligned(32)));
 	    
 
 
-            void zmm16r4_cached_u_memmove(float * __restrict,
-	                                  const float * __restrict,
+            void zmm16r4_cached_u_memmove(void * __restrict,
+	                                  const void * __restrict,
 					  const int32_t)   __attribute__((noinline))
 					                   __attribute__((hot))
 							   __attribute__((aligned(32)));
 
 
-	    void zmm16r4_uncached_memmove(float * __restrict,
-	                                  const float * __restrict,
+	    void zmm16r4_uncached_memmove(void * __restrict,
+	                                  const void * __restrict,
 					  const int32_t)   __attribute__((noinline))
 					                   __attribute__((hot))
 							   __attribute__((aligned(32)));
