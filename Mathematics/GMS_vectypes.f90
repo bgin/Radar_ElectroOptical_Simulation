@@ -42,7 +42,7 @@ module mod_vectypes
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
      
-     use mod_kinds, only : i4, i8, sp, dp, ep
+     use mod_kinds, only : i1, i4, i8, sp, dp, ep
      implicit none
      
      public 
@@ -342,7 +342,7 @@ module mod_vectypes
      
      type, public :: Mask2_t
            SEQUENCE
-           logical(kind=i4), dimension(0:1) :: m
+           logical(kind=i1), dimension(0:1) :: m
            !DIR$ ATTRIBUTES ALIGN : 8 :: m
      end type Mask2_t
      
@@ -352,7 +352,7 @@ module mod_vectypes
      
      type, public :: Mask3_t
            SEQUENCE
-           logical(kind=int4), dimension(0:2) :: m
+           logical(kind=i1), dimension(0:2) :: m
      end type Mask3_t
          
      !!===============================================!!
@@ -361,7 +361,7 @@ module mod_vectypes
      
      type, public :: Mask4_t
            SEQUENCE
-           logical(kind=i4), dimension(0:3) :: m
+           logical(kind=i1), dimension(0:3) :: m
      end type Mask4_t
      
      !!===============================================!!
@@ -370,7 +370,7 @@ module mod_vectypes
      
      type, public :: Mask8_t
            SEQUENCE
-           logical(kind=i4), dimension(0:7) :: m
+           logical(kind=i1), dimension(0:7) :: m
            !DIR$ ATTRIBUTES ALIGN : 32 :: m
      end type Mask8_t
      
@@ -380,7 +380,7 @@ module mod_vectypes
      
      type, public :: Mask16_t
            SEQUENCE
-           logical(kind=i4),  dimension(0:15) :: m
+           logical(kind=i1),  dimension(0:15) :: m
            !DIR$ ATTRIBUTES ALIGN : 64 :: m
      end type Mask16_t
      
