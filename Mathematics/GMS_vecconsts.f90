@@ -161,11 +161,11 @@ module mod_vecconsts
     
     !type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
     
-    type(ZMM8r8_t), parameter, public  :: v8r8_invpi      = ZMM8r8_t(v1_over_pi)
+    type(ZMM8r8_t), parameter, public  :: v8_invpi      = ZMM8r8_t(v1_over_pi)
     
-    type(ZMM8r8_t), parameter, public  :: v8r8_pi         = ZMM8r8_t(pi_const)
+    type(ZMM8r8_t), parameter, public  :: v8_pi         = ZMM8r8_t(3.1415926535897932384626_dp)
     
-    type(ZMM8r8_t), parameter, public  :: v8r8_n0         = ZMM8r8_t(0.0E+00_dp)
+    type(ZMM8r8_t), parameter, public  :: v8_0         = ZMM8r8_t(0.0E+00_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8r8_n1         = ZMM8r8_t(1.0E+00_dp)
     
@@ -195,7 +195,11 @@ module mod_vecconsts
     
     type(ZMM8r8_t), parameter, public  :: v8r8_1over3     = ZMM8r8_t(0.33333333333333333333333333333333E+00_dp)
     
-    type(ZMM8r8_t), parameter, public  :: v8r8_n2         = ZMM8r8_t(2.0E+00_dp)
+    type(ZMM8r8_t), parameter, public  :: v8_2            = ZMM8r8_t(2.0E+00_dp)
+
+    type(ZMM8r8_t), parameter, public  :: v8_n2           = ZMM8r8_t(-2.0E+00_dp)
+
+    type(ZMM8r8_t), parameter, public  :: v8_1            = ZMM8r8_t(1.0_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8r8_1over8     = ZMM8r8_t(0.125E+00_dp)
     
@@ -204,6 +208,8 @@ module mod_vecconsts
     type(ZMM8r8_t), parameter, public  :: v8r8_sqrt2pi    = ZMM8r8_t(2.506628274631000502415765284811E+00_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8r8_sqrt4pi    = ZMM8r8_t( 3.5449077018110320545963349666823E+00_dp)
+
+    type(ZMM8r8_t), parameter, public  :: v8_2pi          = ZMM8r8_t(6.2831853071795864769253_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8r8_isqrt2pi   = ZMM8r8_t( 0.39894228040143267793994605993439E+00_dp)
     
@@ -215,7 +221,7 @@ module mod_vecconsts
     
    ! type(ZMM8r8_t), parameter, public  :: v8_pinf       = ZMM8r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
 
-    type(ZMM16r4_t), parameter, public  :: v16r4_n0        = ZMM16r4_t(0.0_sp)
+    type(ZMM16r4_t), parameter, public  :: v16_0        = ZMM16r4_t(0.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_quart     = ZMM16r4_t(0.25_sp)
 
@@ -226,6 +232,10 @@ module mod_vecconsts
     type(ZMM16r4_t), parameter, public  :: v16r4_n4        = ZMM16r4_t(4.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16_2           = ZMM16r4_t(2.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16_n2          = ZMM16r4_t(-2.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16_1           = ZMM16r4_t(1.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_n5        = ZMM16r4_t(5.0_sp)
 
@@ -238,6 +248,10 @@ module mod_vecconsts
     type(ZMM16r4_t), parameter, public  :: v16r4_n9        = ZMM16r4_t(9.0_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_n16       = ZMM16r4_t(16.0_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16_2pi         = ZMM16r4_t(6.2831853071795864769253_sp)
+
+    type(ZMM16r4_t), parameter, public  :: v16_pi          = ZMM16r4_t(3.1415926535897932384626_sp)
 
     type(ZMM16r4_t), parameter, public  :: v16r4_sqrtpi     = ZMM16r4_t(1.7724538509055160272981674833411E+00_sp)
     
