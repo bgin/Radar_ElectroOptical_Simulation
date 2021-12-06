@@ -16,7 +16,7 @@ module avx512_rotations
  !          History:
  !                        
  !                        Date: 28-11-2021
- !                        Time: 17:556 GMT+2
+ !                        Time: 17:56 GMT+2
  !          Version:
  !
  !                      Major: 1
@@ -353,6 +353,7 @@ module avx512_rotations
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
     subroutine q4x16_to_ea3x16_zmm16r4(Q,EA)  !GCC$ ATTRIBUTES hot :: q4x16_to_ea3x16_zmm16r4 !GCC$ ATTRIBUTES inline :: q4x16_to_ea3x16_zmm16r4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
+    subroutine q4x16_to_ea3x16_zmm16r4(Q,EA)
         !DIR$ ATTRIBUTES INLINE :: q4x16_to_ea3x16_zmm16r4
         !DIR$ ATTRIBUTES VECTOR :: q4x16_to_ea3x16_zmm16r4
         !DIR$ OPTIMIZE : 3
@@ -407,6 +408,68 @@ module avx512_rotations
         where(EA.alpha.v<v16_0.v) EA.alpha.v = mod(EA.alpha.v+v16_2pi.v,v16_2pi.v)
         where(EA.beta.v<v16_0.v)  EA.beta.v  = mod(EA.beta.v+v16_2pi.v,v16_pi)
         where(EA.gamma.v<v16_0.v) EA.gamma.v = mod(EA.gamma.v+v16_2pi.v,v16_2pi.v)
+    end subroutine q4x16_to_ea3x16_zmm16r4
+
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+    subroutine q4x8_to_ea3x8_zmm8r8(Q,EA)  !GCC$ ATTRIBUTES hot :: q4x8_to_ea3x8_zmm8r8 !GCC$ ATTRIBUTES inline :: q4x8_to_ea3x8_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+    subroutine q4x8_to_ea3x8_zmm8r8(Q,EA)
+        !DIR$ ATTRIBUTES INLINE :: q4x8_to_ea3x8_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: q4x8_to_ea3x8_zmm8r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_ea3x8_zmm8r8
+#endif
+        use rotation_types, only : Q4x8v8,EA3x8v8
+        use mod_vectypes,   only : Mask8_t
+        use mod_vecconsts,  only : v8_n1,v8_2,v8_2pi,v8_pi
+        type(Q4x8v8),  intent(in)  :: Q
+        type(EA3x8v8), intent(out) :: EA
+        ! Locals
+        type(ZMM8r8_t), automatic :: qxw,qyz,chi
+        type(ZMM8r8_t), automatic :: t0,c0,t1,c1,c2
+        type(ZMM8r8_t), automatic :: tmp0,tmp1,tmp2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ATTRIBUTES ALIGN : 64 :: qxw,qyz,chi
+        !DIR$ ATTRIBUTES ALIGN : 64 :: t0,c0,t1,c1,c2
+        !DIR$ ATTRIBUTES ALIGN : 64 :: tmp0,tmp1,tmp2
+#endif
+        type(Mask8_t), automatic :: k1,k2
+        qxw.v = Q.qx.v*Q.qx.v+Q.qw.v*Q.qw.v
+        qyz.v = Q.qy.v*Q.qy.v+Q.qz.v*Q.qz.v
+        chi.v = sqrt(qxw.v*qyz.v)
+        k1.m  = qyz.v==v8_0.v
+        k2.m  = qxw.v==v8_0.v
+        if(all(k1.m)) then
+           t0.v = v8_n2.v*Q.qx.v*Q.qw.v
+           t1.v = Q.qx.v*Q.qx.v-Q.qw.v*Q.qw.v
+           EA.alpha.v = atan2(t0.v,t1.v)
+           EA.beta.v  = v8_0.v
+           EA.gamma.v = v8_0.v
+        else if(all(k2.m)) then
+           t0.v = v8_2.v*Q.qy.v*Q.qz.v
+           t1.v = Q.qy.v*Q.qy.v-Q.qz.v*Q.qz.v
+           EA.alpha.v = atan2(t0.v,t1.v)
+           EA.beta.v  = v8_pi.v
+           EA.gamma.v = v8_0.v
+        else
+           t0.v = Q.qy.v*Q.qw.v
+           c0.v = Q.qx.v*Q.qz.v+t0.v
+           t1.v = Q.qz.v*Q.qw.v
+           c1.v = Q.qx.v*Q.qy.v-t1.v
+           tmp1.v = chi.v*c0.v*v8_n1.v
+           tmp2.v = chi.v*c1.v*v8_n1.v
+           EA.alpha.v  = atan2(tmp1.v,tmp2.v)
+           EA.beta.v  = atan2(v16_2.v*chi,v,qxw.v*qyz.v)
+           c2.v = Q.qx.v*Q.qy.v+t1.v
+           tmp1.v = chi.v*c0.v*v8_1.v
+           tmp2.v = chi.v*c2.v*v8_n1.v
+           EA.gamma.v  = atan2(tmp1.v,tmp2.v)
+        endif
+        where(EA.alpha.v<v8_0.v) EA.alpha.v = mod(EA.alpha.v+v8_2pi.v,v8_2pi.v)
+        where(EA.beta.v<v8_0.v)  EA.beta.v  = mod(EA.beta.v+v8_2pi.v,v8_pi)
+        where(EA.gamma.v<v8_0.v) EA.gamma.v = mod(EA.gamma.v+v8_2pi.v,v8_2pi.v)
     end subroutine q4x16_to_ea3x16_zmm16r4
     
 
