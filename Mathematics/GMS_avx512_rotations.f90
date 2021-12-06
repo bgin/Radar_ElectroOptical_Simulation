@@ -461,7 +461,7 @@ module avx512_rotations
            tmp1.v = chi.v*c0.v*v8_n1.v
            tmp2.v = chi.v*c1.v*v8_n1.v
            EA.alpha.v  = atan2(tmp1.v,tmp2.v)
-           EA.beta.v  = atan2(v16_2.v*chi,v,qxw.v*qyz.v)
+           EA.beta.v  = atan2(v8_2.v*chi,v,qxw.v*qyz.v)
            c2.v = Q.qx.v*Q.qy.v+t1.v
            tmp1.v = chi.v*c0.v*v8_1.v
            tmp2.v = chi.v*c2.v*v8_n1.v
