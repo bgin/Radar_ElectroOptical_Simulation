@@ -148,6 +148,24 @@ module rotation_types
        type(YMM4r8_t) :: row8
        type(YMM4r8_t) :: row9
     end type RMat9x4v4
+    
+    !// Quaternion single precision
+    type, bind(c), public :: Qu4x8v8
+         sequence
+         type(YMM8r4_t) :: qx
+         type(YMM8r4_t) :: qy
+         type(YMM8r4_t) :: qz
+         type(YMM8r4_t) :: qw
+    end type Qu4x8v8
+    
+    !// Quaternion double precision
+    type, bind(c), public :: Qu4x4v4
+         sequence
+         type(YMM4r8_t) :: qx
+         type(YMM4r8_t) :: qy
+         type(YMM4r8_t) :: qz
+         type(YMM4r8_t) :: qw
+    end type Qu4x4v4
 
     !// Euler Angles single precision
     type, bind(c), public :: EAng3x8v8
