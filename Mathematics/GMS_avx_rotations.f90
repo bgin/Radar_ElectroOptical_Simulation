@@ -95,7 +95,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_rmat9x8_ymm8r4
 #endif
         use rotation_types, only : Qu4x8v8, RMat9x8v8
-        use mod_vecconsts,  only : v8_2
+       
         type(Qu4x8v8),    intent(in)  :: Q
         type(RMat9x8v8),  intent(out) :: M
         !Locals
@@ -139,7 +139,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x4_to_rmat9x4_ymm4r8
 #endif
         use rotation_types, only : Qu4x4v4, RMat9x4v4
-        use mod_vecconsts,  only : v4_2
+       
         type(Qu4x4v4),    intent(in)  :: Q
         type(RMat9x4v4),  intent(out) :: M
         !Locals
@@ -182,7 +182,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rand_sphere_rm9x8_ymm8r4
 #endif
         use rotation_types, only : RMat9x8v8
-        use mod_vecconsts,  only : v8_2pi,v8_2,v8_1
+      
         type(YMM8r4_t),   intent(in) :: vr1
         type(YMM8r4_t),   intent(in) :: vr2
         type(YMM8r4_t),   intent(in) :: vr3
@@ -230,7 +230,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rand_sphere_rm9x4_ymm4r8
 #endif
         use rotation_types, only : RMat9x4v4
-        use mod_vecconsts,  only : v4_2pi,v4_2,v4_1
+      
         type(YMM4r8_t),   intent(in) :: vr1
         type(YMM4r8_t),   intent(in) :: vr2
         type(YMM4r8_t),   intent(in) :: vr3
@@ -266,6 +266,58 @@ module avx_rotations
         M.row4.v = vy.v*sx.v+st.v
         M.row5.v = vy.v*sy.v-ct.v
     end subroutine rand_sphere_rm9x4_ymm4r8
+
+     !  
+    !                           /*  This algorithm generates a gaussian deviate for each coordinate, so
+    !                            *  the total effect is to generate a symmetric 4-D gaussian distribution,
+    !                            *  by separability. Projecting onto the surface of the hypersphere gives
+    !                            *  a uniform distribution.
+    !                               Based on  Ken Shoemake, September 1991 implementation.
+    !                               Manually vectorized.
+    !                           */
+    ! 
+    
+    
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))    
+    subroutine urand_q4x8_ymm8r4(vrx,vry,vrz,vrw,Q) !GCC$ ATTRIBUTES hot :: urand_q4x8_ymm8r4 !GCC$ ATTRIBUTES inline :: urand_q4x8_ymm8r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+    subroutine urand_q4x8_ymm8r4(vrx,vry,vrz,vrw,Q)
+        !DIR$ ATTRIBUTES INLINE :: urand_q4x8_ymm8r4
+        !DIR$ ATTRIBUTES VECTOR :: urand_q4x8_ymm8r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: urand_q4x8_ymm8r4
+#endif
+       use rotation_types, only : Qu4x8v8
+    
+       type(YMM8r4_t),  intent(in)  :: vrx
+       type(YMM8r4_t),  intent(in)  :: vry
+       type(YMM8r4_t),  intent(in)  :: vrz
+       type(YMM8r4_t),  intent(in)  :: vrw
+       type(Qu4x8v8),   intent(out) :: Q
+       ! Locals
+       type(YMM8r4_t), automatic :: s1,num1,s2,num2,t0
+       type(YMM8r4_t), automatic :: r,invr,root1,root2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES ALIGN : 64 :: s1,num1,s2,num2,t0
+       !DIR$ ATTRIBUTES ALIGN : 64 :: r,invr,root1,root2
+#endif
+       ! Executable code
+       s1.v     = vrx.v*vrx.v+vry.v*vry.v
+       num1.v   = v8_n2.v*log(s1.v)
+       s2.v     = vrz.v*vrz.v+vrw.v*vrw.v
+       num2.v   = v8_n2.v*log(s2.v)
+       r.v      = num1.v+num2.v
+       invr     = v8_1.v/r.v
+       t0.v     = num1.v/s1.v
+       root1.v  = sqrt(invr.v*t0.v)
+       Q.qx.v   = vrx.v*root1.v
+       Q.qy.v   = vry.v*root1.v
+       t0.v     = num2.v/s2.v
+       root2.v  = sqrt(invr.v*t0.v)
+       Q.qz.v   = vrz.v*root2.v
+       Q.qw.v   = vrw.v*root2.v
+    end subroutine urand_q4x8_ymm8r4
+      
  
 
       
