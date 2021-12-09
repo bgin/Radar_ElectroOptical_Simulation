@@ -298,8 +298,8 @@ module avx_rotations
        type(YMM8r4_t), automatic :: s1,num1,s2,num2,t0
        type(YMM8r4_t), automatic :: r,invr,root1,root2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-       !DIR$ ATTRIBUTES ALIGN : 64 :: s1,num1,s2,num2,t0
-       !DIR$ ATTRIBUTES ALIGN : 64 :: r,invr,root1,root2
+       !DIR$ ATTRIBUTES ALIGN : 32 :: s1,num1,s2,num2,t0
+       !DIR$ ATTRIBUTES ALIGN : 32 :: r,invr,root1,root2
 #endif
        ! Executable code
        s1.v     = vrx.v*vrx.v+vry.v*vry.v
@@ -317,6 +317,109 @@ module avx_rotations
        Q.qz.v   = vrz.v*root2.v
        Q.qw.v   = vrw.v*root2.v
     end subroutine urand_q4x8_ymm8r4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))    
+    subroutine urand_q4x4_ymm4r8(vrx,vry,vrz,vrw,Q) !GCC$ ATTRIBUTES hot :: urand_q4x4_ymm8r8 !GCC$ ATTRIBUTES inline :: urand_q4x4_ymm4r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+    subroutine urand_q4x4_ymm4r8(vrx,vry,vrz,vrw,Q)
+        !DIR$ ATTRIBUTES INLINE :: urand_q4x4_ymm4r8
+        !DIR$ ATTRIBUTES VECTOR :: urand_q4x4_ymm4r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: urand_q4x4_ymm4r8
+#endif
+       use rotation_types, only : Qu4x4v4
+    
+       type(YMM4r8_t),  intent(in)  :: vrx
+       type(YMM4r8_t),  intent(in)  :: vry
+       type(YMM4r8_t),  intent(in)  :: vrz
+       type(YMM4r8_t),  intent(in)  :: vrw
+       type(Qu4x4v4),   intent(out) :: Q
+       ! Locals
+       type(YMM4r8_t), automatic :: s1,num1,s2,num2,t0
+       type(YMM4r8_t), automatic :: r,invr,root1,root2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES ALIGN : 32 :: s1,num1,s2,num2,t0
+       !DIR$ ATTRIBUTES ALIGN : 32 :: r,invr,root1,root2
+#endif
+       ! Executable code
+       s1.v     = vrx.v*vrx.v+vry.v*vry.v
+       num1.v   = v4_n2.v*log(s1.v)
+       s2.v     = vrz.v*vrz.v+vrw.v*vrw.v
+       num2.v   = v4_n2.v*log(s2.v)
+       r.v      = num1.v+num2.v
+       invr     = v4_1.v/r.v
+       t0.v     = num1.v/s1.v
+       root1.v  = sqrt(invr.v*t0.v)
+       Q.qx.v   = vrx.v*root1.v
+       Q.qy.v   = vry.v*root1.v
+       t0.v     = num2.v/s2.v
+       root2.v  = sqrt(invr.v*t0.v)
+       Q.qz.v   = vrz.v*root2.v
+       Q.qw.v   = vrw.v*root2.v
+    end subroutine urand_q4x4_ymm4r8
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+    subroutine q4x8_to_ea3x8_ymm8r4(Q,EA)  !GCC$ ATTRIBUTES hot :: q4x8_to_ea3x8_ymm8r4 !GCC$ ATTRIBUTES inline :: q4x8_to_ea3x8_ymm8r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+    subroutine q4x8_to_ea3x8_ymm8r4(Q,EA)
+        !DIR$ ATTRIBUTES INLINE :: q4x8_to_ea3x8_zmm8r4
+        !DIR$ ATTRIBUTES VECTOR :: q4x8_to_ea3x8_zmm8r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_ea3x8_ymm8r4
+#endif
+        use rotation_types, only : Qu4x8v8,EAng3x8v8
+        use mod_vectypes,   only : Mask8_t
+       
+        type(Qu4x8v8),   intent(in)  :: Q
+        type(EAng3x8v8), intent(out) :: EA
+        ! Locals
+        type(YMM8r4_t), automatic :: qxw,qyz,chi
+        type(YMM8r4_t), automatic :: t0,c0,t1,c1,c2
+        type(YMM8r4_t), automatic :: tmp0,tmp1,tmp2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ATTRIBUTES ALIGN : 32 :: qxw,qyz,chi
+        !DIR$ ATTRIBUTES ALIGN : 32 :: t0,c0,t1,c1,c2
+        !DIR$ ATTRIBUTES ALIGN : 32 :: tmp0,tmp1,tmp2
+#endif
+        type(Mask8_t), automatic :: k1,k2
+        qxw.v = Q.qx.v*Q.qx.v+Q.qw.v*Q.qw.v
+        qyz.v = Q.qy.v*Q.qy.v+Q.qz.v*Q.qz.v
+        chi.v = sqrt(qxw.v*qyz.v)
+        k1.m  = qyz.v==v8_0.v
+        k2.m  = qxw.v==v8_0.v
+        if(all(k1.m)) then
+           t0.v = v8_n2.v*Q.qx.v*Q.qw.v
+           t1.v = Q.qx.v*Q.qx.v-Q.qw.v*Q.qw.v
+           EA.alpha.v = atan2(t0.v,t1.v)
+           EA.beta.v  = v8_0.v
+           EA.gamma.v = v8_0.v
+        else if(all(k2.m)) then
+           t0.v = v8_2.v*Q.qy.v*Q.qz.v
+           t1.v = Q.qy.v*Q.qy.v-Q.qz.v*Q.qz.v
+           EA.alpha.v = atan2(t0.v,t1.v)
+           EA.beta.v  = v8_pi.v
+           EA.gamma.v = v8_0.v
+        else
+           t0.v = Q.qy.v*Q.qw.v
+           c0.v = Q.qx.v*Q.qz.v+t0.v
+           t1.v = Q.qz.v*Q.qw.v
+           c1.v = Q.qx.v*Q.qy.v-t1.v
+           tmp1.v = chi.v*c0.v*v8_n1.v
+           tmp2.v = chi.v*c1.v*v8_n1.v
+           EA.alpha.v  = atan2(tmp1.v,tmp2.v)
+           EA.beta.v  = atan2(v8_2.v*chi,v,qxw.v*qyz.v)
+           c2.v = Q.qx.v*Q.qy.v+t1.v
+           tmp1.v = chi.v*c0.v*v8_1.v
+           tmp2.v = chi.v*c2.v*v8_n1.v
+           EA.gamma.v  = atan2(tmp1.v,tmp2.v)
+        endif
+        where(EA.alpha.v<v8_0.v) EA.alpha.v = mod(EA.alpha.v+v8_2pi.v,v8_2pi.v)
+        where(EA.beta.v<v8_0.v)  EA.beta.v  = mod(EA.beta.v+v8_2pi.v,v8_pi)
+        where(EA.gamma.v<v8_0.v) EA.gamma.v = mod(EA.gamma.v+v8_2pi.v,v8_2pi.v)
+    end subroutine q4x8_to_ea3x8_YMM8r4
+
+     
       
  
 
