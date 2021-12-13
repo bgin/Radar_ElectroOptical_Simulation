@@ -39,11 +39,14 @@ module avx512_rotations
      ! Tab:10,11 col - Type , function and subroutine code blocks.
      use mod_kinds,    only : i4,sp,dp
      use mod_vectypes, only : ZMM16r4_t,ZMM8r8_t
-     use omp_lib
+    
 
      implicit none
      
      public
+
+     private :: norm2_zmm16r4,norm2_zmm8r8, &
+                clip_zmm16r4, clip_zmm8r8
 
 
        ! Major version
@@ -60,7 +63,7 @@ module avx512_rotations
                                              *MOD_AVX512_ROTATIONS_MICRO
     
     ! Module creation date
-    character(*),       parameter, public :: MOD_AVX512_ROTATIONS_CREATE_DATE = "21-11-2021 13:27 +00200 (SUN 21 NOV 2018 GMT+2)"
+    character(*),       parameter, public :: MOD_AVX512_ROTATIONS_CREATE_DATE = "21-11-2021 13:27 +00200 ( 21 NOV 2021 GMT+2)"
     
     ! Module build date
     character(*),       parameter, public :: MOD_AVX512_ROTATIONS_BUILD_DATE = __DATE__":"__TIME__
@@ -73,6 +76,93 @@ module avx512_rotations
 
 
     contains
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     pure function norm2_zmm16r4(y,z,w) result(vn2)  !GCC$ ATTRIBUTES hot :: norm2_zmm16r4 !GCC$ ATTRIBUTES inline :: norm2_zmm16r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     pure function norm2_zmm16r4(y,z,w) result(vn2)
+        !DIR$ ATTRIBUTES INLINE :: norm2_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: norm2_zmm16r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: norm2_zmm16r4
+#endif
+          type(ZMM16r4_t),        intent(in) :: y
+          type(ZMM16r4_t),        intent(in) :: z
+          type(ZMM16r4_t),        intent(in) :: w
+          type(ZMM16r4_t) :: vn2
+          !Locals
+          type(ZMM16r4_t), automatic :: t0,t1,t2,v
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2,v
+#endif
+          t0.v = y.v*y.v
+          t1.v = z.v*z.v
+          t2.v = w.v*w.v
+          v.v  = t0.v+t1.v+t2.v
+          vn2.v = sqrt(v.v)
+      end function norm2_zmm16r4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     pure function norm2_zmm8r8(y,z,w) result(vn2)  !GCC$ ATTRIBUTES hot :: norm2_zmm8r8 !GCC$ ATTRIBUTES inline :: norm2_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     pure function norm2_zmm8r8(y,z,w) result(vn2)
+        !DIR$ ATTRIBUTES INLINE :: norm2_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: norm2_zmm8r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: norm2_zmm8r8
+#endif
+          type(ZMM8r8_t),        intent(in) :: y
+          type(ZMM8r8_t),        intent(in) :: z
+          type(ZMM8r8_t),        intent(in) :: w
+          type(ZMM8r8_t) :: vn2
+          !Locals
+          type(ZMM8r8_t), automatic :: t0,t1,t2,v
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2,v
+#endif
+          t0.v = y.v*y.v
+          t1.v = z.v*z.v
+          t2.v = w.v*w.v
+          v.v  = t0.v+t1.v+t2.v
+          vn2.v = sqrt(v.v)
+      end function norm2_zmm8r8
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))        
+      pure function clip_zmm16r4(x,lo,hi) result(res)  !GCC$ ATTRIBUTES hot :: clip_zmm16r4 !GCC$ ATTRIBUTES inline :: norm2_zmm16r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)        
+      pure function clip_zmm16r4(x,lo,hi) result(res)
+            !DIR$ ATTRIBUTES INLINE :: clip_zmm16r4
+            !DIR$ ATTRIBUTES VECTOR :: clip_zmm16r4
+            !DIR$ OPTIMIZE : 3
+            !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: clip_zmm16r4
+#endif
+          type(ZMM8r8_t),        intent(in) :: x
+          type(ZMM8r8_t),        intent(in) :: lo
+          type(ZMM8r8_t),        intent(in) :: hi
+          type(ZMM8r8_t) :: res
+          res.v = max(lo.v,min(x.v,hi.v))
+       end function clip_zmm16r4
+
+        
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))        
+      pure function clip_zmm8r8(x,lo,hi) result(res)  !GCC$ ATTRIBUTES hot :: clip_zmm8r8 !GCC$ ATTRIBUTES inline :: norm2_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)        
+      pure function clip_zmm8r8(x,lo,hi) result(res)
+            !DIR$ ATTRIBUTES INLINE :: clip_zmm8r8
+            !DIR$ ATTRIBUTES VECTOR :: clip_zmm8r8
+            !DIR$ OPTIMIZE : 3
+            !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: clip_zmm8r8
+#endif
+          type(ZMM8r8_t),        intent(in) :: x
+          type(ZMM8r8_t),        intent(in) :: lo
+          type(ZMM8r8_t),        intent(in) :: hi
+          type(ZMM8r8_t) :: res
+          res.v = max(lo.v,min(x.v,hi.v))
+      end function clip_zmm8r8        
+        
+        
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
     subroutine q4x16_to_rmat9x16_zmm16r4(Q,M)  !GCC$ ATTRIBUTES hot :: q4x16_to_rmat9x16_zmm16r4 !GCC$ ATTRIBUTES inline :: q4x16_to_rmat9x16_zmm16r4
@@ -470,7 +560,125 @@ module avx512_rotations
         where(EA.alpha.v<v8_0.v) EA.alpha.v = mod(EA.alpha.v+v8_2pi.v,v8_2pi.v)
         where(EA.beta.v<v8_0.v)  EA.beta.v  = mod(EA.beta.v+v8_2pi.v,v8_pi)
         where(EA.gamma.v<v8_0.v) EA.gamma.v = mod(EA.gamma.v+v8_2pi.v,v8_2pi.v)
-    end subroutine q4x16_to_ea3x16_zmm16r4
+     end subroutine q4x8_to_ea3x8_zmm8r8
+
+
+     !  /*
+     !       Convert unit quaternion to axis angle pair
+     !  */
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine q4x16_to_ax4x16_zmm16r4(Q,AA) !GCC$ ATTRIBUTES hot :: q4x16_to_ax4x16_zmm16r16 !GCC$ ATTRIBUTES inline :: q4x16_to_ax4x16_zmm16r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine q4x16_to_ax4x16_zmm16r4(Q,AA)
+        !DIR$ ATTRIBUTES INLINE :: q4x16_to_ax4x16_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: q4x16_to_ax4x16_zmm16r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x16_to_ax4x16_zmm16r4
+#endif
+       use rotation_types, only : Q4x16v16, AX4x16v16
+       use mod_vectypes,   only : Mask16_t
+       use mod_vecconsts,  only : v16_0, v16_1, v16_pi, v16_2, v16_n1
+       type(Q4x16v16),    intent(in)   :: Q
+       type(AX4x16v16),   intent(out)  :: AA
+       ! Locals
+       type(ZMM16r4_t), automatic :: t0,t1,t2,v0
+       type(ZMM16r4_t), automatic :: omega,s
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES ALIGNED : 64 :: t0,t1,t2,v0
+       !DIR$ ATTRIBUTES ALIGNED : 64 :: omega,s
+#endif
+       type(Mask16_t), automatic :: k1,k2
+       t0.v = Q.qy.v*Q.qy.v
+       t1.v = Q.qz.v*Q.qz.v
+       t2.v = Q.qw.v*Q.qw.v
+       v0.v = t0.v+t1.v+t2.v
+       k1.m = v0.v==v16_0.v
+       if(all(k1.m)) then
+          AA.ax_1.v=v16_0.v
+          AA.ax_2.v=v16_0.v
+          AA.ax_3.v=v16_0.v
+          AA.ax_4.v=v16_0.v
+          return
+       end if
+       k2.m = Q.qx.v/=v16_0.v
+       if(all(k2.m)) then
+           s.v = sign(v16_1,Q.qx.v)/norm2_zmm16r4(Q.qy.v, &
+                                                 Q.qz.v, &
+                                                 Q.qw.v)
+           AA.ax_1.v = Q.qy.v*s.v
+           AA.ax_2.v = Q.qz.v*s.v
+           AA.ax_3.v = Q.qw.v*s.v
+           omega.v   = v16_2.v*acos(clip_zmm16r4(Q.qx.v,   &
+                                                v16_n1.v, &
+                                                v16_1.v)
+           AA.ax_4.v = omega.v
+           return
+        else
+           AA.ax_1.v = Q.qy.v
+           AA.ax_2.v = Q.qz.v
+           AA.ax_3.v = Q.qw.v
+           AA.ax_4.v = v16_pi.v
+           return
+       end if
+     end subroutine q4x16_to_ax4x16_zmm16r4
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine q4x8_to_ax4x8_zmm8r8(Q,AA) !GCC$ ATTRIBUTES hot :: q4x8_to_ax4x8_zmm8r8 !GCC$ ATTRIBUTES inline :: q4x8_to_ax4x8_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine q4x8_to_ax4x8_zmm8r8(Q,AA)
+        !DIR$ ATTRIBUTES INLINE :: q4x8_to_ax4x8_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: q4x8_to_ax4x8_zmm8r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_ax4x8_zmm8r8
+#endif
+       use rotation_types, only : Q4x8v8, AX4x8v8
+       use mod_vectypes,   only : Mask8_t
+       use mod_vecconsts,  only : v8_0, v8_1, v8_pi, v8_2, v8_n1
+       type(Q4x8v8),    intent(in)   :: Q
+       type(AX4x8v8),   intent(out)  :: AA
+       ! Locals
+       type(ZMM8r8_t), automatic :: t0,t1,t2,v0
+       type(ZMM8r8_t), automatic :: omega,s
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES ALIGNED : 64 :: t0,t1,t2,v0
+       !DIR$ ATTRIBUTES ALIGNED : 64 :: omega,s
+#endif
+       type(Mask8_t), automatic :: k1,k2
+       t0.v = Q.qy.v*Q.qy.v
+       t1.v = Q.qz.v*Q.qz.v
+       t2.v = Q.qw.v*Q.qw.v
+       v0.v = t0.v+t1.v+t2.v
+       k1.m = v0.v==v16_0.v
+       if(all(k1.m)) then
+          AA.ax_1.v=v8_0.v
+          AA.ax_2.v=v8_0.v
+          AA.ax_3.v=v8_0.v
+          AA.ax_4.v=v8_0.v
+          return
+       end if
+       k2.m = Q.qx.v/=v8_0.v
+       if(all(k2.m)) then
+           s.v = sign(v8_1,Q.qx.v)/norm2_zmm8r8(Q.qy.v, &
+                                                 Q.qz.v, &
+                                                 Q.qw.v)
+           AA.ax_1.v = Q.qy.v*s.v
+           AA.ax_2.v = Q.qz.v*s.v
+           AA.ax_3.v = Q.qw.v*s.v
+           omega.v   = v8_2.v*acos(clip_zmm8r8(Q.qx.v,   &
+                                                v8_n1.v, &
+                                                v8_1.v)
+           AA.ax_4.v = omega.v
+           return
+        else
+           AA.ax_1.v = Q.qy.v
+           AA.ax_2.v = Q.qz.v
+           AA.ax_3.v = Q.qw.v
+           AA.ax_4.v = v8_pi.v
+           return
+       end if
+     end subroutine q4x8_to_ax4x8_zmm8r8
+     
     
 
      
