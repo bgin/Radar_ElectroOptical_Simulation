@@ -88,17 +88,18 @@
 
 
 	 void
-	 transpose_u_zmm16r4_16x16_ip_v3(float * __restrict,
-	                                 float * __restrict)   __attribute__((noinline))
-							       __attribute__((hot))
-							       __attribute__((aligned(32)));
+	 transpose_u_zmm16r4_16x16(float * __restrict,
+	                           float * __restrict)   __attribute__((noinline))
+							 __attribute__((hot))
+							 __attribute__((aligned(32)));
 
 
 	 void
-	 transpose_a_zmm16r4_16x16_ip_v3(float * __restrict,
-	                                 float * __restrict)   __attribute__((noinline))
-							       __attribute__((hot))
-							       __attribute__((aligned(32)));
+	 transpose_a_zmm16r4_16x16(float * __restrict,
+	                           float * __restrict)   __attribute__((noinline))
+							 __attribute__((hot))
+							 __attribute__((aligned(32)));
+
 
 
 
