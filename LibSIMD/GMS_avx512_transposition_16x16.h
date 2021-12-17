@@ -100,9 +100,23 @@
 							 __attribute__((hot))
 							 __attribute__((aligned(32)));
 
+        
+#include <stdint.h>
+
+         void
+         transpose_u_zmm16r4_16x16_looped(float * __restrict,
+	                                  float * __restrict,
+					  const int32_t)  __attribute__((noinline))
+							  __attribute__((hot))
+							  __attribute__((aligned(32)));
 
 
-
+	 void
+         transpose_a_zmm16r4_16x16_looped(float * __restrict,
+	                                  float * __restrict,
+					  const int32_t)  __attribute__((noinline))
+							  __attribute__((hot))
+							  __attribute__((aligned(32)));
 
 
 	 
