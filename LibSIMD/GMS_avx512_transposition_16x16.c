@@ -540,8 +540,8 @@
 
 
 		   void
-	           transpose_u_zmm16r4_16x16_ip_v3(float * __restrict x,
-	                                           float * __restrict y) {
+	           transpose_u_zmm16r4_16x16(float * __restrict x,
+	                                     float * __restrict y) {
 
                           register __m512 y00,y01,y02,y03;
 			   register __m512 y04,y05,y06,y07;
@@ -639,8 +639,8 @@
 
 
 	        void
-	        transpose_a_zmm16r4_16x16_ip_v3(float * __restrict __attribute__((aligned(64))) x,
-	                                        float * __restrict __attribute__((aligned(64))) y) {
+	        transpose_a_zmm16r4_16x16(float * __restrict __attribute__((aligned(64))) x,
+	                                  float * __restrict __attribute__((aligned(64))) y) {
 
                           register __m512 y00,y01,y02,y03;
 			   register __m512 y04,y05,y06,y07;
