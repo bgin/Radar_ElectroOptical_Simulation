@@ -390,9 +390,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_add_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_add_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = real(lhs,kind=dp)+rhs.re
        iq.im = aimag(lhs,kind=dp)+rhs.im
      end function c2_add_c8
@@ -403,9 +403,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_add_c8
        !DIR$ ATTRIBUTES VECTOR :: v8_add_c8
        type(ZMM8r8_t),      intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.v+rhs.re
        iq.im = v8_n0.v
      end function v8_add_c8
@@ -416,9 +416,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_add_c8
        !DIR$ ATTRIBUTES VECTOR :: s1_add_c8
        real(kind=dp),       intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.m_re = lhs+rhs.m_re
        iq.m_im = v8_n0.v
      end function s1_add_c8
@@ -427,10 +427,10 @@ module mod_avx512c8f64
      pure elemental function c8_sub_c8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_sub_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_sub_c8
-       type(AVX512c8f64_t),    intent(in) :: lhs
-       type(AVX512c8f64_t),    intent(in) :: rhs
+       type(ZMM8c8),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re-rhs.re
        iq.im = lhs.im-rhs.im
      end function c8_sub_c8
@@ -439,10 +439,10 @@ module mod_avx512c8f64
      pure elemental function c8_sub_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_sub_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_sub_c2
-       type(AVX512c8f64_t),     intent(in) :: lhs
+       type(ZMM8c8),     intent(in) :: lhs
        complex(kind=dp),        intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re-real(rhs,kind=dp)
        iq.im = lhs.im-aimag(rhs,kind=dp)
      end function c8_sub_c2
@@ -452,10 +452,10 @@ module mod_avx512c8f64
        use mod_vecconsts, only v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_sub_v8
        !DIR$ ATTRIBUTES VECTOR :: c8_sub_v8
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        type(ZMM8r8_t),         intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re-rhs.v
        iq.im = v8_n0.v
      end function c8_sub_v8
@@ -464,10 +464,10 @@ module mod_avx512c8f64
      pure elemental function c8_sub_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_sub_s1
        !DIR$ ATTRTIBUTES VECTOR :: c8_sub_s1
-       type(AVX512c8f64_t),     intent(in) :: lhs
+       type(ZMM8c8),     intent(in) :: lhs
        real(kind=dp),           intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re-rhs
        iq.im = 0.0_dp
      end function c8_sub_s1
@@ -477,9 +477,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_sub_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_sub_c8
        complex(kind=dp),      intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = real(lhs,kind=dp)-rhs.re
        iq.im = aimag(lhs,kind=dp)-rhs.im
      end function c2_sub_c8
@@ -490,9 +490,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_sub_c8
        !DIR$ ATTRIBUTES VECTOR :: v8_sub_c8
        type(ZMM8r8_t),      intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.v-rhs.re
        iq.im = v8_n0.v
      end function v8_sub_c8
@@ -502,9 +502,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_sub_c8
        !DIR$ ATTRIBUTES VECTOR :: s1_sub_c8
        real(kind=dp),       intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs-rhs.re
        iq.im = 0.0_dp
      end function s1_sub_c8
@@ -513,10 +513,10 @@ module mod_avx512c8f64
      pure elemental function c8_mul_c8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_mul_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_mul_c8
-       type(AVX512c8f64_t),    intent(in) :: lhs
-       type(AVX512c8f64_t),    intent(in) :: rhs
+       type(ZMM8c8),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
        type(ZMM8r8_t) :: zmm0,zmm41,zmm2,zmm3
        zmm0.v = lhs.re*rhs.re
@@ -531,10 +531,10 @@ module mod_avx512c8f64
      pure elemental function c8_mul_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_mul_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_mul_c2
-       type(AVX512c8f64_t),     intent(in) :: lhs
+       type(ZMM8c8),     intent(in) :: lhs
        complex(kind=dp),        intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
        type(ZMM8r8_t) :: zmm0,zmm1,zmm2,zmm3
        zmm0.v = lhs.re*real(rhs,kind=dp)
@@ -549,10 +549,10 @@ module mod_avx512c8f64
      pure elemental function c8_mul_v8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_mul_v8
        !DIR$ ATTRIBUTES VECTOR :: c8_mul_v8
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        type(ZMM8r8_t),         intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re*rhs.v
        iq.im = lhs.im*rhs.v
      end function c8_mul_v8
@@ -561,10 +561,10 @@ module mod_avx512c8f64
      pure elemental function c8_mul_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_mul_s1
        !DIR$ ATTRIBUTES VECTOR :: c8_mul_s1
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        real(kind=dp),          intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re*rhs
        iq.im = lhs.im*rhs
      end function c8_mul_s1
@@ -574,9 +574,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_mul_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_mul_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
        type(ZMM8r8_t) :: zmm0,zmm1,zmm2,zmm3
        zmm0.v = real(lhs,kind=dp)*rhs.re
@@ -592,9 +592,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_mul_c8
        !DIR$ ATTRIBUTES VECTOR :: v8_mul_c8
        type(ZMM8r8_t),        intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: v8_mul_c8
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.v*rhs.re
        iq.im = lhs.v*rhs.im
      end function v8_mul_c8
@@ -604,9 +604,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_mul_c8
        !DIR$ ATTRIBUTES VECTOR :: s1_mul_c8
        real(kind=dp),       intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs*rhs.re
        iq.im = lhs*rhs.im
      end function s1_mul_c8
@@ -615,10 +615,10 @@ module mod_avx512c8f64
      pure elemental function c8_div_c8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_div_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_div_c8
-       type(AVX512c8f64_t),    intent(in) :: lhs
-       type(AVX512c8f64_t),    intent(in) :: rhs
+       type(ZMM8c8),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
        type(ZMM8r8_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
 #if (USE_SAFE_COMPLEX_DIVISION) == 1
@@ -638,12 +638,12 @@ module mod_avx512c8f64
      pure elemental function c8_div_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c8_div_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_div_c2
-       type(AVX512c8f64_t),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: lhs
        complex(kind=dp),      intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
-       type(AVX512c8f64_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+       type(ZMM8c8), automatic :: zmm0,zmm1,zmm2,zmm3,den
        zmm0.v = lhs.re*real(rhs,kind=dp)
        zmm1.v = lhs.im*aimag(rhs,kind=dp)
        zmm2.v = lhs.im*real(rhs,kind=dp)
@@ -658,7 +658,7 @@ module mod_avx512c8f64
      pure elemental function c8_div_v8(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_div_v8
        !DIR$ ATTRIBUTES VECTOR :: c8_div_v8
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        type(ZMM8r8_t),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
        type(AVX512c8f64_t) :: iq
@@ -670,10 +670,10 @@ module mod_avx512c8f64
      pure elemental function c8_div_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_div_s1
        !DIR$ ATTRIBUTES VECTOR :: c8_div_s1
-       type(AVX512c8f64_t),     intent(in) :: lhs
+       type(ZMM8c8),     intent(in) :: lhs
        real(kind=dp),           intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.re/rhs
        iq.im = lhs.im/rhs
      end function c8_div_s1
@@ -683,11 +683,11 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_div_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_div_c8
        complex(kind=dp),       intent(in) :: lhs
-       type(AVX512c8f64),      intent(in) :: rhs
+       type(ZMM8c8),      intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
-       type(AVX512c8f64_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
+       type(ZMM8c8), automatic :: zmm0,zmm1,zmm2,zmm3,den
        real(kind=dp), automatic :: r,i
        r = real(lhs,kind=dp)
        i = aimag(lhs,kind=dp)
@@ -705,9 +705,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v8_div_c8
        !DIR$ ATTRIBUTES VECTOR :: v8_div_c8
        type(ZMM8r8_t),      intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs.v/rhs.re
        iq.im = lhs.v/rhs.im
      end function v8_div_c8
@@ -717,9 +717,9 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_c8
        !DIR$ ATTRIBUTES VECTOR :: s1_div_c8
        real(kind=dp),       intent(in) :: lhs
-       type(AVX512c8f64_t), intent(in) :: rhs
+       type(ZMM8c8), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = lhs/rhs.re
        iq.im = lhs/rhs.im
      end function s1_div_c8
@@ -729,9 +729,9 @@ module mod_avx512c8f64
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: conjugate
        !DIR$ ATTRIBUTES VECTOR :: conjugate
-       type(AVX512c8f64_t),  intent(in) :: x
+       type(ZMM8c8),  intent(in) :: x
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        iq.re = v8_n0.v-x.re
        iq.im = x.im
      end function conjugate
@@ -743,8 +743,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -762,7 +762,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_eq_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -782,7 +782,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_eq_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_eq_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -800,8 +800,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -819,7 +819,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_neq_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -839,7 +839,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_neq_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_neq_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -857,8 +857,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -876,7 +876,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_gt_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -896,7 +896,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_gt_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_gt_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -914,8 +914,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -933,7 +933,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_lt_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -953,7 +953,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_lt_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_lt_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -971,8 +971,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -990,7 +990,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_ge_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -1010,7 +1010,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_ge_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_ge_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -1028,8 +1028,8 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
-       type(AVX512c8f64_t),   intent(in) :: lhs
-       type(AVX512c8f64_t),   intent(in) :: rhs
+       type(ZMM8c8),   intent(in) :: lhs
+       type(ZMM8c8),   intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -1047,7 +1047,7 @@ module mod_avx512c8f64
        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_le_c2
-       type(AVX512c8f64_t),  intent(in) :: lhs
+       type(ZMM8c8),  intent(in) :: lhs
        complex(kind=dp),     intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
@@ -1067,7 +1067,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_le_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_le_c8
        complex(kind=dp),     intent(in) :: lhs
-       type(AVX512c8f64_t),  intent(in) :: rhs
+       type(ZMM8c8),  intent(in) :: rhs
        integer(c_char), dimension(0:1) :: mmask8
        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
        type(v8f64), automatic :: lre,lim,rre,rim
@@ -1084,8 +1084,8 @@ module mod_avx512c8f64
      pure elemental function c8_eq_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1102,7 +1102,7 @@ module mod_avx512c8f64
      pure elemental function c8_eq_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_eq_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1121,7 +1121,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_eq_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_eq_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1138,8 +1138,8 @@ module mod_avx512c8f64
      pure elemental function c8_neq_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1156,7 +1156,7 @@ module mod_avx512c8f64
      pure elemental function c8_neq_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_neq_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1175,7 +1175,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_neq_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_neq_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1192,8 +1192,8 @@ module mod_avx512c8f64
      pure elemental function c8_gt_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1210,7 +1210,7 @@ module mod_avx512c8f64
      pure elemental function c8_gt_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_gt_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1229,7 +1229,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_gt_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_gt_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1246,8 +1246,8 @@ module mod_avx512c8f64
      pure elemental function c8_lt_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_lt_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1264,7 +1264,7 @@ module mod_avx512c8f64
      pure elemental function c8_lt_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_lt_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1283,7 +1283,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_lt_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_lt_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1300,8 +1300,8 @@ module mod_avx512c8f64
      pure elemental function c8_ge_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1318,7 +1318,7 @@ module mod_avx512c8f64
      pure elemental function c8_ge_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_ge_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1337,7 +1337,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_ge_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_ge_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1354,8 +1354,8 @@ module mod_avx512c8f64
      pure elemental function c8_le_c8(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
        !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
-       type(AVX512c8f64_t),       intent(in) :: lhs
-       type(AVX512c8f64_t),       intent(in) :: rhs
+       type(ZMM8c8),       intent(in) :: lhs
+       type(ZMM8c8),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1372,7 +1372,7 @@ module mod_avx512c8f64
      pure elemental function c8_le_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c2
        !DIR$ ATTRIBUTES VECTOR :: c8_le_c2
-       type(AVX512c8f64_t),    intent(in) :: lhs
+       type(ZMM8c8),    intent(in) :: lhs
        complex(kind=dp),       intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
@@ -1391,7 +1391,7 @@ module mod_avx512c8f64
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_le_c8
        !DIR$ ATTRIBUTES VECTOR :: c2_le_c8
        complex(kind=dp),        intent(in) :: lhs
-       type(AVX512c8f64_t),     intent(in) :: rhs
+       type(ZMM8c8),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: mre,mim
        logical(kind=int4), dimension(0:7) :: mre,mim
        logical(kind=int1), dimension(0:1) :: bres
@@ -1413,7 +1413,7 @@ module mod_avx512c8f64
        type(ZMM8r8_t), intent(in) :: rho
        type(ZMM8r8_t), intent(in) :: theta
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        ! EXec code ....
        iq.re = rho.v*cos(theta.v)
        iq.im = rho.v*sin(theta.v) 
@@ -1422,7 +1422,7 @@ module mod_avx512c8f64
      pure elemental function carg_zmm8c8(c8) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_zmm8c8
        !DIR$ ATTRIBUTES VECTOR :: carg_zmm8c8
-       type(AVX512c8f64_t),   intent(in) :: c8
+       type(ZMM8c8),   intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 64 :: arg
        type(ZMM8r8_t) :: arg
        ! EXec code ....
@@ -1446,9 +1446,9 @@ module mod_avx512c8f64
      pure elemental function csin_zmm8c8(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_zmm8c8
        !DIR$ ATTRIBUTES VECTOR :: csin_zmm8c8
-       type(AVX512c8f64_t),  intent(in) :: c8
+       type(ZMM8c8),  intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim
        type(ZMM8r8_t) :: tre
        type(ZMM8r8_t) :: tim
@@ -1466,7 +1466,7 @@ module mod_avx512c8f64
        type(ZMM8r8_t),   intent(in) :: re
        type(ZMM8r8_t),   intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        ! Exec code ...
        iq.re = sin(re.v)*cosh(im.v)
        iq.im = cos(re.v)*sinh(im.v)
@@ -1476,9 +1476,9 @@ module mod_avx512c8f64
      pure elemental function csinh_zmm8c8(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_zmm8c8
        !DIR$ ATTRIBUTES VECTOR :: csinh_zmm8c8
-       type(AVX512c8f64_t),   intent(in) :: c8
+       type(ZMM8c8),   intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim
        type(ZMM8r8_t) :: tre
        type(ZMM8r8_t) :: tim
@@ -1496,7 +1496,7 @@ module mod_avx512c8f64
        type(ZMM8r8_t), intent(in) :: re
        type(ZMM8r8_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        ! EXec code ....
        iq.re = sinh(re.v)*cos(im.v)
        iq.im = cosh(re.v)*sin(im.v
@@ -1506,9 +1506,9 @@ module mod_avx512c8f64
      pure elemental function ccos_zmm8c8(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_zmm8c8
        !DIR$ ATTRIBUTES VECTOR :: ccos_zmm8c8
-       type(AVX512c8f64_t),   intent(in) :: c8
+       type(ZMM8c8),   intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim
        type(ZMM8r8_t) :: tre
        type(ZMM8r8_t) :: tim
@@ -1526,7 +1526,7 @@ module mod_avx512c8f64
        type(ZMM8r8_t), intent(in) :: re
        type(ZMM8r8_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        ! EXec code .....
        iq.re = cos(re.v)*cosh(im.v)
        iq.im = sin(re.v)*sinh(im.v)
@@ -1536,9 +1536,9 @@ module mod_avx512c8f64
      pure elemental function ccosh_zmm8c8(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_zmm8c8
        !DIR$ ATTRIBUTES VECTOR :: ccosh_zmm8c8
-       type(AVX512c8f64_t),    intent(in) :: c8
+       type(ZMM8c8),    intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-       type(AVX512c8f64_t) :: iq
+       type(ZMM8c8) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim
        type(ZMM8r8_t) :: tre
        type(ZMM8r8_t) :: tim
