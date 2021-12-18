@@ -158,8 +158,14 @@ module mod_vecconsts
     type(YMM8r4_t), parameter, public  :: v8r4_tiny     = YMM8r4_t(TINY(1.0_sp))
 
     type(YMM8r4_t), parameter, public  :: v8r4_huge     = YMM8r4_t(HUGE(1.0_sp))
+
+    real(kind=dp),  parameter, private :: PINF64       = IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF)
+
+    real(kind=sp),  parameter, private :: PINF32       = IEEE_VALUE(1.0E+00_SP,IEEE_POSITIVE_INF)
     
-    !type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
+    type(YMM4r8_t), parameter, public  :: v4_pinf       = YMM4r8_t( PIN64F)
+
+    
     
     type(ZMM8r8_t), parameter, public  :: v8_invpi      = ZMM8r8_t(v1_over_pi)
     
@@ -218,6 +224,8 @@ module mod_vecconsts
     type(ZMM8r8_t), parameter, public  :: v8r8_ln2        = ZMM8r8_t( 0.69314718055994530941723212145818E+00_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8r8_ln4        = ZMM8r8_t( 1.3862943611198906188344642429164E+00_dp)
+
+    type(ZMM8r4_t), parameter, public  :: v8r8_pinf       = ZMM8r4_t(PINF32)
     
    ! type(ZMM8r8_t), parameter, public  :: v8_pinf       = ZMM8r8_t( IEEE_VALUE(1.0E+00_dp,IEEE_POSITIVE_INF))
 
@@ -270,4 +278,7 @@ module mod_vecconsts
     type(ZMM16r4_t), parameter, public  :: v16r4_tiny       = ZMM16r4_t(TINY(1.0_sp))
 
     type(ZMM16r4_t), parameter, public  :: v16r4_huge       = ZMM16r4_t(HUGE(1.0_sp))
+
+    type(ZMM16r4_t), parameter, public  :: v16_pinf         = ZMM16r4_t(PINF32)
+    
 end module mod_vecconsts
