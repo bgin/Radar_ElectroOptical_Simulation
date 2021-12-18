@@ -678,6 +678,196 @@ module avx512_rotations
            return
        end if
      end subroutine q4x8_to_ax4x8_zmm8r8
+
+
+     !/*
+     !                   Convert unit quaternion to Rodrigues vector
+     !                */
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine q4x16_to_rv4x16_zmm16r4(Q,RV) !GCC$ ATTRIBUTES hot :: q4x16_to_rv4x16_zmm16r4 !GCC$ ATTRIBUTES inline :: q4x16_to_rv4x16_zmm16r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine q4x16_to_rv4x16_zmm16r4(Q,RV)
+        !DIR$ ATTRIBUTES INLINE :: q4x16_to_rv4x16_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: q4x16_to_rv4x16_zmm16r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x16_to_rv4x16_zmm16r4
+#endif
+         use rotation_types, only : Q4x16v16, RV4x16v16
+         use mod_vectypes,   only : Mask16_t
+         use mod_vecconsts,  only : v16_pinf,v16_0,v16_n1,v16_1
+         type(Q4x16v16),   intent(in)  :: Q
+         type(RV4x16v16),  intent(out) :: RV
+         ! Locals
+         type(ZMM16r4_t), automatic :: t0,s
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: t0,s
+#endif
+         type(ZMM16r4_t), parameter :: thr = ZMM16r4_t(1.0e-8_sp)
+         type(Mask16_t), automatic  :: k1,k2
+         ! Exec code..
+         k1.m = abs(Q.qx.v)<thr.v
+         if(all(k1.m)) then
+            RV.rx.v = Q.qx.v
+            RV.ry.v = Q.qy.v
+            RV.rz.v = Q.qz.v
+            RV.rw.v = Q.qw.v
+            return
+         else
+            s.v = norm2_zmm16r4(Q.qx.v, &
+                                Q.qz.v, &
+                                Q.qw.v)
+            k2.m = s.v<thr.v
+            t0.v = acos(clip_zmm16r4(Q.qx.v,   &
+                                     v16_n1.v, &
+                                     v16_1.v))
+            RV.rx.v = merge(v16_0.v,Q.qy.v/s.v,k.m)
+            RV.ry.v = merge(v16_0.v,Q.qz.v/s.v,k.m)
+            RV.rz.v = merge(v16_n1.v,Q.qw.v/s.v,k.m)
+            RV.rw.v = merge(v16_0.v,tan(t0.v),k.m)
+            return
+         endif
+          
+     end subroutine q4x16_to_rv4x16_zmm16r4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine q4x8_to_rv4x8_zmm16r4(Q,RV) !GCC$ ATTRIBUTES hot :: q4x8_to_rv4x8_zmm8r8 !GCC$ ATTRIBUTES inline :: q4x8_to_rv4x8_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine q4x8_to_rv4x8_zmm8r8(Q,RV)
+        !DIR$ ATTRIBUTES INLINE :: q4x8_to_rv4x8_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: q4x8_to_rv4x8_zmm8r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_rv4x8_zmm8r8
+#endif
+         use rotation_types, only : Q4x8v8, RV4x8v8
+         use mod_vectypes,   only : Mask8_t
+         use mod_vecconsts,  only : v8r8_pinf,v8_0,v8_n1,v8_1
+         type(Q4x8v8),   intent(in)  :: Q
+         type(RV4x8v8),  intent(out) :: RV
+         ! Locals
+         type(ZMM8r8_t), automatic :: t0,s
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: t0,s
+#endif
+         type(ZMM8r8_t), parameter :: thr = ZMM8r8_t(1.0e-8_dp)
+         type(Mask8_t), automatic  :: k1,k2
+         ! Exec code..
+         k1.m = abs(Q.qx.v)<thr.v
+         if(all(k1.m)) then
+            RV.rx.v = Q.qx.v
+            RV.ry.v = Q.qy.v
+            RV.rz.v = Q.qz.v
+            RV.rw.v = Q.qw.v
+            return
+         else
+            s.v = norm2_zmm8r8(Q.qx.v, &
+                                Q.qz.v, &
+                                Q.qw.v)
+            k2.m = s.v<thr.v
+            t0.v = acos(clip_zmm8r8(Q.qx.v,   &
+                                     v16_n1.v, &
+                                     v16_1.v))
+            RV.rx.v = merge(v8_0.v,Q.qy.v/s.v,k.m)
+            RV.ry.v = merge(v8_0.v,Q.qz.v/s.v,k.m)
+            RV.rz.v = merge(v8_n1.v,Q.qw.v/s.v,k.m)
+            RV.rw.v = merge(v8_0.v,tan(t0.v),k.m)
+            return
+         endif
+          
+     end subroutine q4x8_to_rv4x8_zmm8r8
+
+
+       
+     !/*
+     !                      Orientation i.e. (Direct Cosine Matrix)  matrix to Euler angles.
+     !                  */
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine rmat9x16_to_ea3x16_zmm16r4(RM,EA) !GCC$ ATTRIBUTES hot :: rmat4x16_to_ea3x16_zmm16r4 !GCC$ ATTRIBUTES inline :: rmat4x16_to_ea3x16_zmm16r4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine rmat9x16_to_ea3x16_zmm16r4(RM,EA)
+        !DIR$ ATTRIBUTES INLINE :: rmat4x16_to_ea3x16_zmm16r4
+        !DIR$ ATTRIBUTES VECTOR :: rmat4x16_to_ea3x16_zmm16r4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rmat4x16_to_ea3x16_zmm16r4
+#endif
+         use mod_rotations, only : RotM9x16v16,EA3x16v16
+         use mod_types,     only : Mask16_t
+         use mod_vecconsts, only : v16_1,v16_0,v16_2pi,v16_pi,v16_half
+         type(RotM9x16v16),    intent(in)  :: RM
+         type(EA3x16v16),      intent(out) :: EA
+         ! LOcals
+         type(ZMM16r4_t), automatic :: zeta,t0,t1,t2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zeta,t0,t1,t2
+#endif
+         type(ZMM16r4_t), parameter :: thr = ZMM16r4_t(1.0e-8_sp)
+         type(Mask16_t), automatic :: k1,k2,k3
+         ! Exec code ....
+         k1.m = RM.row9.v/=v16_1.v
+         t0.v = RM.row9.v*RM.row9.v
+         zeta.v = v16_1.v/sqrt(v16_1.v-t0.v)
+         t1.v = atan2(RM.row7.v*zeta.v, &
+                      t0.v*zeta.v)
+         EA.alpha.v = merge(t1.v,atan2(RM.row2.v,RM.row1.v,k1.m))
+         t2.v = v16_half.v*v16_pi.v*(v16_1.v-RM.row9.v)
+         EA.beta.v  = merge(acos(RM.row9.v),t2.v,k1.m)
+         t0.v = atan2(RM.row3.v*zeta.v,RM.row6.v*zeta.v)
+         EA.gamma.v = merge(t0.v,v16_0.v,k1.m)
+         where(abs(EA.alpha.v)<thr.v) EA.alpha.v = v16_0.v
+         where(EA.alpha.v<thr.v)      EA.alpha.v = mod(EA.alpha.v+v16_2pi.v,v16_2pi.v)
+         where(abs(EA.beta.v)<thr.v)  EA.beta.v  = v16_0.v
+         where(EA.beta.v<thr.v)       EA.beta.v  = mod(EA.beta.v+v16_2pi.v,v16_pi.v)
+         where(abs(EA.gamma.v)<thr.v) EA.gamma.v = v16_0.v
+         where(EA.gamma.v<thr.v)      EA.gamma.v = mod(EA.gamma.v+v16_2pi,v16_2pi.v)
+      end subroutine rmat9x16_to_ea3x16_zmm16r4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine rmat9x8_to_ea3x8_zmm8r8(RM,EA) !GCC$ ATTRIBUTES hot :: rmat4x8_to_ea3x8_zmm8r8 !GCC$ ATTRIBUTES inline :: rmat4x8_to_ea3x8_zmm8r8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine rmat9x8_to_ea3x8_zmm8r8(RM,EA)
+        !DIR$ ATTRIBUTES INLINE :: rmat4x8_to_ea3x8_zmm8r8
+        !DIR$ ATTRIBUTES VECTOR :: rmat4x8_to_ea3x8_zmm8r8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rmat4x8_to_ea3x8_zmm8r8
+#endif
+         use mod_rotations, only : RotM9x8v8,EA3x8v8
+         use mod_types,     only : Mask8_t
+         use mod_vecconsts, only : v8_1,v8_0,v8_2pi,v8_pi,v8_half
+         type(RotM9x8v8),    intent(in)  :: RM
+         type(EA3x8v8),      intent(out) :: EA
+         ! LOcals
+         type(ZMM8r8_t), automatic :: zeta,t0,t1,t2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: zeta,t0,t1,t2
+#endif
+         type(ZMM8r8_t), parameter :: thr = ZMM8r4_t(1.0e-8_dp)
+         type(Mask8_t), automatic :: k1
+         ! Exec code ....
+         k1.m = RM.row9.v/=v8_1.v
+         t0.v = RM.row9.v*RM.row9.v
+         zeta.v = v8_1.v/sqrt(v8_1.v-t0.v)
+         t1.v = atan2(RM.row7.v*zeta.v, &
+                      t0.v*zeta.v)
+         EA.alpha.v = merge(t1.v,atan2(RM.row2.v,RM.row1.v,k1.m))
+         t2.v = v8_half.v*v8_pi.v*(v8_1.v-RM.row9.v)
+         EA.beta.v  = merge(acos(RM.row9.v),t2.v,k1.m)
+         t0.v = atan2(RM.row3.v*zeta.v,RM.row6.v*zeta.v)
+         EA.gamma.v = merge(t0.v,v8_0.v,k1.m)
+         where(abs(EA.alpha.v)<thr.v) EA.alpha.v = v8_0.v
+         where(EA.alpha.v<thr.v)      EA.alpha.v = mod(EA.alpha.v+v8_2pi.v,v8_2pi.v)
+         where(abs(EA.beta.v)<thr.v)  EA.beta.v  = v8_0.v
+         where(EA.beta.v<thr.v)       EA.beta.v  = mod(EA.beta.v+v8_2pi.v,v8_pi.v)
+         where(abs(EA.gamma.v)<thr.v) EA.gamma.v = v16_0.v
+         where(EA.gamma.v<thr.v)      EA.gamma.v = mod(EA.gamma.v+v8_2pi,v8_2pi.v)
+     end subroutine rmat9x8_to_ea3x8_zmm8r8       
+     
+     
+       
+
      
     
 
