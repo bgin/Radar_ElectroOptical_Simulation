@@ -46,6 +46,7 @@ module  mod_avx512c16f32
      use mod_vectypes, only : ZMM16r4_t
      use, intrinsic :: ISO_C_BINDING
      implicit none
+     public
      !=====================================================59
      !  File and module information:
      !  version,creation and build date, author,description
