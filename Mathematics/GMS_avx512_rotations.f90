@@ -804,7 +804,7 @@ module avx512_rotations
          !DIR$ ATTRIBUTES ALIGN : 64 :: zeta,t0,t1,t2
 #endif
          type(ZMM16r4_t), parameter :: thr = ZMM16r4_t(1.0e-8_sp)
-         type(Mask16_t), automatic :: k1,k2,k3
+         type(Mask16_t), automatic :: k1
          ! Exec code ....
          k1.m = RM.row9.v/=v16_1.v
          t0.v = RM.row9.v*RM.row9.v
