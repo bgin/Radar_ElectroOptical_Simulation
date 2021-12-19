@@ -42,24 +42,23 @@ module  mod_avx512c16f32
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : i1,i4,sp
+     use mod_kinds, only : int1,int4,sp
      use mod_vectypes, only : ZMM16r4_t
      use, intrinsic :: ISO_C_BINDING
      implicit none
-     public
      !=====================================================59
      !  File and module information:
      !  version,creation and build date, author,description
      !=====================================================59
 
      ! Major version
-     integer(kind=i4), parameter :: MOD_AVX512C16F32_MAJOR = 1
+     integer(kind=int4), parameter :: MOD_AVX512C16F32_MAJOR = 1
      ! Minor version
-     integer(kind=i4), parameter :: MOD_AVX512C16F32_MINOR = 0
+     integer(kind=int4), parameter :: MOD_AVX512C16F32_MINOR = 0
      ! Micro version
-     integer(kind=i4), parameter :: MOD_AVX512C16F32_MICRO = 0
+     integer(kind=int4), parameter :: MOD_AVX512C16F32_MICRO = 1
      ! Full version
-     integer(kind=i4), parameter :: MOD_AVX512C16F32_FULLVER = &
+     integer(kind=int4), parameter :: MOD_AVX512C16F32_FULLVER = &
           1000*MOD_AVX512C16F32_MAJOR+100*MOD_AVX512C16F32_MINOR+10*MOD_AVX512C16F32_MICRO
      ! Module creation date
      character(*),       parameter :: MOD_AVX512C16F32_CREATION_DATE = "03-02-2020 11:57 +00200 (MON 03 FEB 2020 GMT+2)"
@@ -70,12 +69,12 @@ module  mod_avx512c16f32
      ! Short description
      character(*),       parameter :: MOD_AVX512C16F32_SYNOPSIS      = "Packed complex vector of 16 elements (single precision)"
 
-     type, public :: AVX512c16f32_t
+     type, public :: ZMM16c4
         public
         sequence
         real(kind=sp), dimension(0:15) :: re
         real(kind=sp), dimension(0:15) :: im
-     end type AVX512c16f32_t
+     end type ZMM16c4
 
      interface operator (+)
          module procedure c16_add_c16
@@ -231,9 +230,9 @@ module  mod_avx512c16f32
         use mod_vecconsts, only : v16_n0
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = v16_n0
         iq.im = v16_n0
@@ -251,9 +250,9 @@ module  mod_avx512c16f32
         real(kind=sp), dimension(0:15), intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = re
         iq.im = im
@@ -270,9 +269,9 @@ module  mod_avx512c16f32
         complex(kind=sp),     intent(in) :: c
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = real(c,kind=sp)
         iq.im = aimag(c,kind=sp)
@@ -289,9 +288,9 @@ module  mod_avx512c16f32
         complex(kind=sp), dimension(0:15),  intent(in) :: c
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = real(c,kind=sp)
         iq.im = aimag(c,kind=sp)
@@ -309,9 +308,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),    intent(in) :: v2
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = v1
         iq.im = v2
@@ -328,9 +327,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),    intent(in) :: v
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = v
         iq.im = v16_n0
@@ -346,9 +345,9 @@ module  mod_avx512c16f32
         real(kind=sp),    intent(in) :: s
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = s
         iq.im = v16_n0
@@ -362,12 +361,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: copy_init
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: copy_init
 #endif
-        type(AVX512c16f32_t),    intent(in) :: rhs
+        type(ZMM16c4),    intent(in) :: rhs
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
          iq = rhs
       end function copy_init
@@ -380,13 +379,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_add_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_add_c16
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
-        type(AVX512c16f32_t),    intent(in) :: y
+        type(ZMM16c4),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re+y.re
         iq.im = x.im+y.im
@@ -400,13 +399,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_add_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_add_c1
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         complex(kind=sp),        intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re+real(y,kind=sp)
         iq.im = x.im+aimag(y,kind=sp)
@@ -421,13 +420,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_add_v16
 #endif
         use mod_vecconsts, only : v16_n0
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         type(ZMM16r4_t),         intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re+y.v
         iq.im = v16_n0
@@ -442,13 +441,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_add_s1
 #endif
         use mod_veccconts, only : v16_n0
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         real(kind=sp),           intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re+y
         iq.im = v16_n0
@@ -463,12 +462,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_add_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = real(x,kind=sp)+y.re
         iq.im = aimag(x,kind=sp)+y.im
@@ -484,12 +483,12 @@ module  mod_avx512c16f32
 #endif
         use mod_vecconsts, only : v16_n0
         type(ZMM16r4_t),      intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.v+y.re
         iq.im = v16_n0
@@ -505,12 +504,12 @@ module  mod_avx512c16f32
 #endif
          use mod_vecconsts, only : v16_n0
         real(kind=sp),         intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = s1
         iq.im = v16_n0
@@ -524,13 +523,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_sub_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_sub_c16
 #endif
-        type(AVX512c16f32_t),     intent(in) :: x
-        type(AVX512c16f32_t),     intent(in) :: y
+        type(ZMM16c4),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re-y.re
         iq.im = x.im-y.im
@@ -544,13 +543,13 @@ module  mod_avx512c16f32
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_sub_c1
          !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_sub_c1
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         complex(kind=sp),        intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re-real(y,kind=sp)
         iq.im = x.im-aimag(y,kind=sp)
@@ -565,13 +564,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_sub_v16
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_sub_v16
 #endif
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         type(ZMM16r4_t),          intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re-y.v
         iq.im = v16_n0
@@ -586,13 +585,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_sub_s1
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_sub_s1
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         real(kind=sp),           intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re-s1
         iq.im = v16_n0
@@ -607,12 +606,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_sub_c16  
 #endif
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = real(x,kind=sp)-y.re
         iq.im = aimag(x,kind=sp)-y.im
@@ -628,12 +627,12 @@ module  mod_avx512c16f32
 #endif
           use mod_vecconsts, only : v16_n0
           type(ZMM16r4_t),      intent(in) :: x
-          type(AVX512c16f32_t), intent(in) :: y
+          type(ZMM16c4), intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.v-y.re
         iq.im = v16_n0
@@ -650,12 +649,12 @@ module  mod_avx512c16f32
 #endif
          use mod_vecconsts, only : v16_n0
         real(kind=sp),           intent(in) :: x
-        type(AVX512c16f32_t),    intent(in) :: y
+        type(ZMM16c4),    intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x-y.re
         iq.im = v16_n0
@@ -669,15 +668,15 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -699,15 +698,15 @@ module  mod_avx512c16f32
        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_c1
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_mul_c1
 #endif
-       type(AVX512c16f32_t),     intent(in) :: x
+       type(ZMM16c4),     intent(in) :: x
        complex(kind=sp),         intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -729,13 +728,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_v16
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_mul_v16
 #endif
-       type(AVX512c16f32_t),     intent(in) :: x
+       type(ZMM16c4),     intent(in) :: x
        type(ZMM16r4_t),          intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re*y.v
         iq.im = x.im*y.v
@@ -749,13 +748,13 @@ module  mod_avx512c16f32
        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_mul_s1
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_mul_s1
 #endif
-       type(AVX512c16f32_t), intent(in) :: x
+       type(ZMM16c4), intent(in) :: x
        real(kind=sp),        intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re*y
         iq.im = x.im*y
@@ -770,14 +769,14 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_mul_c16
 #endif
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -800,12 +799,12 @@ module  mod_avx512c16f32
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v16_mul_c16
 #endif
        type(ZMM16r4_t),       intent(in) :: x
-       type(AVX512c16f32_t),  intent(in) :: y
+       type(ZMM16c4),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.v*y.re
         iq.im = x.v*y.im
@@ -820,12 +819,12 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_mul_c16
 #endif
           real(kind=sp),        intent(in) :: x
-          type(AVX512c16f32_t), intent(in) :: y
+          type(ZMM16c4), intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x*y.re
         iq.im = x*y.im
@@ -839,15 +838,15 @@ module  mod_avx512c16f32
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_div_c16
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
-        type(AVX512c16f32_t),    intent(in) :: y
+        type(ZMM16c4),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -875,15 +874,15 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_c1
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_div_c1
 #endif
-       type(AVX512c16f32_t),    intent(in) :: x
+       type(ZMM16c4),    intent(in) :: x
        complex(kind=sp),        intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -908,13 +907,13 @@ module  mod_avx512c16f32
        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_v16
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_div_v16
 #endif
-       type(AVX512c16f32_t),     intent(in) :: x
+       type(ZMM16c4),     intent(in) :: x
        type(ZMM16r4_t),          intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re/y.v
         iq.im = x.im/y.v
@@ -928,13 +927,13 @@ module  mod_avx512c16f32
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_div_s1
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_div_s1
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         real(kind=sp),             intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x.re/y
         iq.im = x.im/y
@@ -952,11 +951,11 @@ module  mod_avx512c16f32
         type(AVX512c16f32_t),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: zmm0,zmm1,zmm2,zmm3,den
         type(ZMM16r4_t), automatic :: zmm0,zmm1,zmm2,zmm3,den
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: zmm0 !GCC$ ATTRIBUTES aligned(64) :: zmm0
         type(ZMM16r4_t), automatic :: zmm1 !GCC$ ATTRIBUTES aligned(64) :: zmm1
         type(ZMM16r4_t), automatic :: zmm2 !GCC$ ATTRIBUTES aligned(64) :: zmm2
@@ -984,12 +983,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v16_div_c16
 #endif
         type(ZMM16r4_t),       intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x/y.re
         iq.im = x/y.im
@@ -1004,12 +1003,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_c16
 #endif
           real(kind=sp),         intent(in) :: x
-          type(AVX512c16f32_t),  intent(in) :: y
+          type(ZMM16c4),  intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = x/y.re
         iq.im = x/y.im
@@ -1024,12 +1023,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: conjugate
 #endif
         use mod_vecconsts, only : v16_n0
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = v16_n0-x.re
         iq.im = x.im
@@ -1045,8 +1044,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::c16_eq_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1078,7 +1077,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1112,7 +1111,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1143,8 +1142,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1176,7 +1175,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1210,7 +1209,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1241,8 +1240,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1274,7 +1273,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1308,7 +1307,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1339,8 +1338,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1372,7 +1371,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1406,7 +1405,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1437,8 +1436,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1470,7 +1469,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1504,7 +1503,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1535,8 +1534,8 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c16
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
-        type(AVX512c16f32_t),      intent(in) :: y
+        type(ZMM16c4),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1568,7 +1567,7 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c1
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
         complex(kind=sp),         intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
@@ -1602,7 +1601,7 @@ module  mod_avx512c16f32
 #endif
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
         complex(kind=sp),     intent(in) :: x
-        type(AVX512c16f32_t), intent(in) :: y
+        type(ZMM16c4), intent(in) :: y
         integer(c_short), dimension(0:1) :: mmask16
 #if defined __INTEL_COMPILER 
         
@@ -1636,14 +1635,14 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
         logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
@@ -1663,14 +1662,14 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_eq_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_eq_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
         logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
@@ -1691,13 +1690,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_eq_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1716,16 +1715,16 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re /= y.re)
         mim = .false.
@@ -1743,16 +1742,16 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_neq_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_neq_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1771,13 +1770,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_neq_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1797,16 +1796,16 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re > y.re)
         mim = .false.
@@ -1824,16 +1823,16 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_gt_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_gt_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1852,13 +1851,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_gt_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
         logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1877,16 +1876,16 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re < y.re)
         mim = .false.
@@ -1904,16 +1903,16 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_lt_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_lt_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -1932,13 +1931,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_lt_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -1958,16 +1957,16 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re >= y.re)
         mim = .false.
@@ -1985,16 +1984,16 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_ge_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_ge_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -2013,13 +2012,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_ge_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -2038,16 +2037,16 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre = .false.
         mre = (x.re <= y.re)
         mim = .false.
@@ -2065,16 +2064,16 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_le_c1
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c16_le_c1  
 #endif
-        type(AVX512c16f32_t),      intent(in) :: x
+        type(ZMM16c4),      intent(in) :: x
         complex(kind=sp),          intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
-        logical(kind=i1), dimension(0:1) :: bres
+        logical(kind=int1), dimension(0:1) :: bres
         mre  = .false.
         mim  = .false.
         bres = .false.
@@ -2093,13 +2092,13 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_le_c16
 #endif
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 #if defined __ICC || defined __INTEL_COMPILER
         !DIR$ ATTRIBUTES ALIGN : 64 :: mre,mim
-        logical(kind=i4), dimension(0:15) :: mre,mim
+        logical(kind=int4), dimension(0:15) :: mre,mim
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        logical(kind=i4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
-        logical(kind=i4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
+        logical(kind=int4), dimension(0:15) :: mre !GCC$ ATTRIBUTES aligned(64) :: mre
+        logical(kind=int4), dimension(0:15) :: mim !GCC$ ATTRIBUTES aligned(64) :: mim
 #endif
        mre  = .false.
        mim  = .false.
@@ -2130,9 +2129,9 @@ module  mod_avx512c16f32
          type(ZMM16r4_t),     intent(in) :: theta
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t) :: iq
+        type(ZMM16c4) :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4) :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = rho*cos(theta.v)
         iq.im = rho*sin(theta.v)
@@ -2146,7 +2145,7 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: carg_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: carg_c16
 #endif
-        type(AVX512c16f32_t),  intent(in) :: x
+        type(ZMM16c4),  intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: arg
         type(ZMM16r4_t) :: arg
@@ -2183,12 +2182,12 @@ module  mod_avx512c16f32
            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csin_c16
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_c16
 #endif
-          type(AVX512c16f32_t),    intent(in) :: x
+          type(ZMM16c4),    intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = sin(x.re)*cosh(x.im)
         iq.im = cos(x.re)*sinh(x.im)
@@ -2206,9 +2205,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),    intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = sin(re.v)*cosh(im.v)
         iq.im = cos(re.v)*sinh(im.v)
@@ -2222,12 +2221,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: csinh_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_c16
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = sinh(x.re)*cos(x.im)
         iq.im = cosh(x.re)*sin(x.im)
@@ -2245,9 +2244,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),     intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = sinh(re.v)*cos(im.v)
         iq.im = cosh(re.v)*sin(im.v)
@@ -2261,12 +2260,12 @@ module  mod_avx512c16f32
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccos_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_c16
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = cos(x.re)*cosh(x.im)
         iq.im = sin(x.re)*sinh(x.im)
@@ -2284,9 +2283,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),    intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = cos(re)*cosh(im)
         iq.im = sin(re)*sinh(im)
@@ -2300,12 +2299,12 @@ module  mod_avx512c16f32
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ccosh_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_c16
 #endif
-        type(AVX512c16f32_t),     intent(in) :: x
+        type(ZMM16c4),     intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = cosh(x.re)*cos(x.im)
         iq.im = sinh(x.re)*sin(x.im)
@@ -2323,9 +2322,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),    intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = cosh(re.v)*cos(im.v)
         iq.im = sinh(re.v)*sin(im.v)
@@ -2339,12 +2338,12 @@ module  mod_avx512c16f32
             !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cexp_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_c16
 #endif
-          type(AVX512c16f32_t),   intent(in) :: x
+          type(ZMM16c4),   intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = exp(x.re)*cos(x.im)
         iq.im = exp(x.re)*cos(x.im)
@@ -2358,12 +2357,12 @@ module  mod_avx512c16f32
               !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ctan_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_c16
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq = csin_c16(x)/ccos_c16(x)
       end function ctan_c16
@@ -2380,9 +2379,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),     intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq = csin_2xv16(re,im)/ccos_2xv16(re,im)
       end function ctan_2xv16
@@ -2396,12 +2395,12 @@ module  mod_avx512c16f32
              !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: ctanh_c16
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctanh_c16
 #endif
-          type(AVX512c16f32_t),     intent(in) :: x
+          type(ZMM16c4),     intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq = csinh_c16(x)/ccosh_c16(x)
       end function ctanh_c16
@@ -2417,9 +2416,9 @@ module  mod_avx512c16f32
         type(ZMM16r4_t),     intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
 #endif
         iq.re = exp(re.v)*cos(im.v)
         iq.im = exp(re.v)*sin(im.v)
@@ -2470,15 +2469,15 @@ module  mod_avx512c16f32
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cpow_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cpow_c16
 #endif
-        type(AVX512c16f32_t),    intent(in) :: x
+        type(ZMM16c4),    intent(in) :: x
         real(kind=sp),           intent(in) :: n
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: r,theta,pow,trig
         type(ZMM16r4_t), automatic :: r,theta,pow,trig
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: r !GCC$ ATTRIBUTES aligned(64) :: r
         type(ZMM16r4_t), automatic :: theta !GCC$ ATTRIBUTES aligned(64) :: theta
         type(ZMM16r4_t), automatic :: pow !GCC$ ATTRIBUTES aligned(64) :: pow
@@ -2505,11 +2504,11 @@ module  mod_avx512c16f32
           real(kind=sp),     intent(in) :: n
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: r,theta,pow,trig
         type(ZMM16r4_t), automatic :: r,theta,pow,trig
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: r !GCC$ ATTRIBUTES aligned(64) :: r
         type(ZMM16r4_t), automatic :: theta !GCC$ ATTRIBUTES aligned(64) :: theta
         type(ZMM16r4_t), automatic :: pow !GCC$ ATTRIBUTES aligned(64) :: pow
@@ -2531,14 +2530,14 @@ module  mod_avx512c16f32
     !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: clog_c16
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_c16
 #endif
-          type(AVX512c16f32_t),  intent(in) :: x
+          type(ZMM16c4),  intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: t0
         type(ZMM16r4_t), automatic :: t0
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
        
 #endif
@@ -2559,11 +2558,11 @@ module  mod_avx512c16f32
          type(ZMM16r4_t),  intent(in)  :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: t0
         type(ZMM16r4_t), automatic :: t0
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
        
 #endif
@@ -2581,14 +2580,14 @@ module  mod_avx512c16f32
           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_c16
 #endif
           use mod_vecconsts, only : v16_1over2
-          type(AVX512c16f32_t),     intent(in) :: x
+          type(ZMM16c4),     intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
         type(ZMM16r4_t), automatic :: t0,t1,t2
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
         type(ZMM16r4_t), automatic :: t1 !GCC$ ATTRIBUTES aligned(64) :: t1
         type(ZMM16r4_t), automatic :: t2 !GCC$ ATTRIBUTES aligned(64) :: t2
@@ -2614,11 +2613,11 @@ module  mod_avx512c16f32
           type(ZMM16r4_t),  intent(in) :: im
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
         type(ZMM16r4_t), automatic :: t0,t1,t2
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: t0 !GCC$ ATTRIBUTES aligned(64) :: t0
         type(ZMM16r4_t), automatic :: t1 !GCC$ ATTRIBUTES aligned(64) :: t1
         type(ZMM16r4_t), automatic :: t2 !GCC$ ATTRIBUTES aligned(64) :: t2
@@ -2642,15 +2641,15 @@ module  mod_avx512c16f32
         use, intrinsic :: ISO_C_BINDING
         use mod_avx512_bindings, only : v16f32, v16f32_cmp_ps_mask
 #endif
-        type(AVX512c16f32_t),   intent(in) :: x
-        type(AVX512c16f32_t),   intent(in) :: y
+        type(ZMM16c4),   intent(in) :: x
+        type(ZMM16c4),   intent(in) :: y
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-        type(AVX512c16f32_t)  :: iq
+        type(ZMM16c4)  :: iq
         !DIR$ ATTRIBUTES ALIGN : 64 :: ratio,denom
         type(ZMM16r4_t), automatic :: ratio,denom
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
-        type(AVX512c16f32_t)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
+        type(ZMM16c4)  :: iq !GCC$ ATTRIBUTES aligned(64) :: iq
         type(ZMM16r4_t), automatic :: ratio !GCC$ ATTRIBUTES aligned(64) :: ratio
         type(ZMM16r4_t), automatic :: denom !GCC$ ATTRIBUTES aligned(64) :: denom
        
