@@ -154,8 +154,56 @@ module  ElectroMagnetics
 #endif
          t0 = v1*v2
          res = complex(sum(t0.re),sum(t0.im))
-      end function zdotv_zmm8c8       
+     end function zdotv_zmm8c8
 
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine  scrossc_zmm16c4(vc1,vc2,res)  !GCC$ ATTRIBUTES aligned(32) :: scrossc_zmm16c4 !GCC$ ATTRIBUTES inline :: scrossc_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: scrossc_zmm16r4 
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine scrossc_zmm16c4(vc1,vc2,res) 
+        !DIR$ ATTRIBUTES INLINE :: scrossc_zmm16c4
+        !DIR$ ATTRIBUTES VECTOR :: scrossc_zmm16c4
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: scrossc_zmm16c4
+#endif
+         type(ZMM16c4), dimension(0:2), intent(in)  :: vc1
+         type(ZMM16c4), dimension(0:2), intent(in)  :: vc2
+         type(ZMM16c4), dimension(0:2), intent(out) :: res
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED vc1 : 64
+         !DIR$ ASSUME_ALIGNED vc2 : 64
+         !DIR$ ASSUME_ALIGNED res : 64
+#endif         
+         !Exec code ...
+         res(0) = vc1(1)*vc2(2)-vc1(2)*vc2(1)
+         res(1) = vc1(2)*vc2(0)-vc1(0)*vc2(2)
+         res(3) = vc1(0)*vc2(1)-vc1(1)*vc2(1)
+     end subroutine  scrossc_zmm16c4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine  dcrossc_zmm8c8(vc1,vc2,res)  !GCC$ ATTRIBUTES aligned(32) :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES inline :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: dcrossc_zmm8c8 
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine dcrossc_zmm8c8(vc1,vc2,res) 
+        !DIR$ ATTRIBUTES INLINE :: dcrossc_zmm8c8
+        !DIR$ ATTRIBUTES VECTOR :: dcrossc_zmm8c8
+        !DIR$ OPTIMIZE : 3
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: dcrossc_zmm8c8
+#endif
+         type(ZMM8c8), dimension(0:2), intent(in)  :: vc1
+         type(ZMM8c8), dimension(0:2), intent(in)  :: vc2
+         type(ZMM8c8), dimension(0:2), intent(out) :: res
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED vc1 : 64
+         !DIR$ ASSUME_ALIGNED vc2 : 64
+         !DIR$ ASSUME_ALIGNED res : 64
+#endif         
+         !Exec code ...
+         res(0) = vc1(1)*vc2(2)-vc1(2)*vc2(1)
+         res(1) = vc1(2)*vc2(0)-vc1(0)*vc2(2)
+         res(3) = vc1(0)*vc2(1)-vc1(1)*vc2(1)
+     end subroutine  dcrossc_zmm8c8       
+       
        
        
        
@@ -231,8 +279,10 @@ module  ElectroMagnetics
         vc(0).v = v1(1).v*v2(2).v-v1(2).v*v2(1).v
         vc(1).v = v1(2).v*v2(0).v-v1(0).v*v2(2).v
         vc(2).v = v1(0).v*v2(1).v-v1(1).v*v2(0).v
-     end subroutine dcrossv_zmm8r8
+    end subroutine dcrossv_zmm8r8
 
+      
+    
 
       
       
