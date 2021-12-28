@@ -70,10 +70,490 @@ module  ElectroMagnetics
 
      type(ZMM16c4),   parameter, private :: jc4    = ZMM16c4((0.0_sp,1.0_sp))
      type(ZMM8c8),    parameter, private :: jc8    = ZMM8c8((0.0_dp,1.0_dp))
-     type(ZMM16r4_t), parameter, private :: mu0r16 = ZMM16r4_t(0,0000012566370614359173_sp)
-     type(ZMM8r4_t),  parameter, private :: mu0r8  = ZMM8r4_t(0,0000012566370614359173_dp)
+     type(ZMM16r4_t), parameter, private :: mu0r16 = ZMM16r4_t(0.0000012566370614359173_sp)
+     type(ZMM8r4_t),  parameter, private :: mu0r8  = ZMM8r4_t(0.0000012566370614359173_dp)
+     type(ZMM16r4_t), parameter, private :: cr4    = ZMM16r4_t(299792458.0_sp)
+     type(ZMM8r4_t),  parameter, private :: cr8    = ZMM8r8_t(299792458.0_dp)
+
+     !!===========================================================!!
+     !         Data types for possible MoM usage                   !
+     !=============================================================!
+
      
-   contains
+     ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
+     type, public :: H_X_C16
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+#endif   
+      end type H_X_C16
+
+     ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
+      type, public :: H_XY_C16
+           public
+           !integer(kind=i4) :: n_cells  ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: H_x
+           type(ZMM16c4), allocatable, dimension(:) :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM16c4), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+#endif    
+       end type H_XY_C16
+
+     
+
+     ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
+     type, public :: H_XYZ_C16
+           public
+           !integer(kind=i4) :: n_cell  ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: H_x
+           type(ZMM16c4), allocatable, dimension(:) :: H_y
+           type(Zmm16c4), allocatable, dimension(:) :: H_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM16c4), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+           type(Zmm16c4), allocatable, dimension(:) :: H_z !GCC$ ATTRIBUTES aligned(64) :: H_z
+#endif
+
+      end type H_XYZ_C16
+
+      ! Real Electric Field 3D (Packed-AoS) data type decomposed.
+      type, public :: H_XYZ_R16
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_y
+           type(Zmm16r4_t), allocatable, dimension(:) :: H_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+           type(Zmm16r4_t), allocatable, dimension(:) :: H_z !GCC$ ATTRIBUTES aligned(64) :: H_z
+#endif
+
+       end type H_XYZ_R16
+
+
+      ! Real Electric Field 2D (Packed-AoS) data type decomposed.
+      type, public :: H_XY_R16
+            public
+           !integer(kind=i4) :: n_cells 
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+        
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+          
+#endif
+
+      end type H_XY_R16
+
+        
+      ! Real Electric Field 1D (Packed-AoS) data type decomposed.
+      type, public :: H_X_R16
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+#endif  
+     
+      end type H_X_R16
+
+     ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
+     type, public :: B_X_C16
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: B_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+#endif             
+
+     end type B_X_C16
+
+
+       ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
+      type, public :: B_XY_C16
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: B_x
+           type(ZMM16c4), allocatable, dimension(:) :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM16c4), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+#endif    
+       end type B_XY_C16
+     
+
+     ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
+     type, public :: B_XYZ_C16
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: B_x
+           type(ZMM16c4), allocatable, dimension(:) :: B_y
+           type(Zmm16c4), allocatable, dimension(:) :: B_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM16c4), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+           type(Zmm16c4), allocatable, dimension(:) :: B_z !GCC$ ATTRIBUTES aligned(64) :: B_z
+#endif
+
+      end type B_XYZ_C16
+
+
+      ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
+      type, public :: B_XYZ_R16
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_y
+           type(Zmm16r4_t), allocatable, dimension(:) :: B_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+           type(Zmm16r4_t), allocatable, dimension(:) :: B_z !GCC$ ATTRIBUTES aligned(64) :: B_z
+#endif
+
+      end type B_XYZ_R16
+
+      
+      ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
+      type, public :: B_XY_R16
+            public
+            !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+            
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+        
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+          
+#endif
+
+       end type B_XY_R16
+
+
+      ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
+      type, public :: B_X_R16
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16r4_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+#endif  
+     
+      end type B_X_R16 
+      
+        
+      ! Complex Surface currents 3D (Packed-AoS) data type.
+      type, public :: Js_XYZ_C16
+            public
+            !integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM16c4), allocatable, dimension(:) :: Js_x
+           type(ZMM16c4), allocatable, dimension(:) :: Js_y
+           type(ZMM16c4), allocatable, dimension(:) :: Js_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM16c4), allocatable, dimension(:) :: Js_x !GCC$ ATTRIBUTES aligned(64) :: Js_x
+           type(ZMM16c4), allocatable, dimension(:) :: Js_y !GCC$ ATTRIBUTES aligned(64) :: Js_y
+           type(ZMM16c4), allocatable, dimension(:) :: Js_z !GCC$ ATTRIBUTES aligned(64) :: Js_z
+#endif         
+            
+      end type Js_XYZ_C16
+
+      !=======================================================================================!
+      !!               Packed AoS double precision data types definitions
+      !=======================================================================================!
+      
+         ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
+     type, public :: H_X_C8
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches for MoM code.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+#endif   
+      end type H_X_C8
+
+     ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
+      type, public :: H_XY_C8
+           public
+           !integer(kind=i4) :: n_cells  ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: H_x
+           type(ZMM8c8), allocatable, dimension(:) :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM8c8), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+#endif    
+       end type H_XY_C8
+
+     
+
+     ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
+     type, public :: H_XYZ_C8
+           public
+           !integer(kind=i4) :: n_cell  ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: H_x
+           type(ZMM8c8), allocatable, dimension(:) :: H_y
+           type(Zmm8c8), allocatable, dimension(:) :: H_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM8c8), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+           type(Zmm8c8), allocatable, dimension(:) :: H_z !GCC$ ATTRIBUTES aligned(64) :: H_z
+#endif
+
+      end type H_XYZ_C8
+
+      ! Real Electric Field 3D (Packed-AoS) data type decomposed.
+      type, public :: H_XYZ_R8
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_y
+           type(Zmm8r8_t), allocatable, dimension(:) :: H_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+           type(Zmm8r8_t), allocatable, dimension(:) :: H_z !GCC$ ATTRIBUTES aligned(64) :: H_z
+#endif
+
+       end type H_XYZ_R8
+
+
+      ! Real Electric Field 2D (Packed-AoS) data type decomposed.
+      type, public :: H_XY_R8
+            public
+           !integer(kind=i4) :: n_cells 
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+        
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_y !GCC$ ATTRIBUTES aligned(64) :: H_y
+          
+#endif
+
+      end type H_XY_R8
+
+        
+      ! Real Electric Field 1D (Packed-AoS) data type decomposed.
+      type, public :: H_X_R8
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: H_x !GCC$ ATTRIBUTES aligned(64) :: H_x
+#endif  
+     
+      end type H_X_R8
+
+     ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
+     type, public :: B_X_C8
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: B_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+#endif             
+
+     end type B_X_C8
+
+
+       ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
+      type, public :: B_XY_C8
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: B_x
+           type(ZMM8c8), allocatable, dimension(:) :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM8c8), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+#endif    
+       end type B_XY_C8
+     
+
+     ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
+     type, public :: B_XYZ_C8
+           public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: B_x
+           type(ZMM8c8), allocatable, dimension(:) :: B_y
+           type(Zmm8c8), allocatable, dimension(:) :: B_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM8c8), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+           type(Zmm8c8), allocatable, dimension(:) :: B_z !GCC$ ATTRIBUTES aligned(64) :: B_z
+#endif
+
+      end type B_XYZ_C8
+
+
+      ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
+      type, public :: B_XYZ_R8
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_y
+           type(Zmm8r8_t), allocatable, dimension(:) :: B_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+           type(Zmm8r8_t), allocatable, dimension(:) :: B_z !GCC$ ATTRIBUTES aligned(64) :: B_z
+#endif
+
+      end type B_XYZ_R8
+
+      
+      ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
+      type, public :: B_XY_R8
+            public
+            !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+            
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: B_y
+        
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_y !GCC$ ATTRIBUTES aligned(64) :: B_y
+          
+#endif
+
+       end type B_XY_R8
+
+
+      ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
+      type, public :: B_X_R8
+            public
+           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x
+            !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
+         
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8r8_t), allocatable, dimension(:) :: B_x !GCC$ ATTRIBUTES aligned(64) :: B_x
+#endif  
+     
+      end type B_X_R8
+      
+        
+      ! Complex Surface currents 3D (Packed-AoS) data type.
+      type, public :: Js_XYZ_C8
+            public
+            !integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
+                                        ! simultaneously.
+#if defined(__INTEL_COMPILER) || defined(__ICC)        
+           type(ZMM8c8), allocatable, dimension(:) :: Js_x
+           type(ZMM8c8), allocatable, dimension(:) :: Js_y
+           type(ZMM8c8), allocatable, dimension(:) :: Js_z
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_x
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_y
+           !DIR$ ATTRIBUTES ALIGN : 64 :: Js_z
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           type(ZMM8c8), allocatable, dimension(:) :: Js_x !GCC$ ATTRIBUTES aligned(64) :: Js_x
+           type(ZMM8c8), allocatable, dimension(:) :: Js_y !GCC$ ATTRIBUTES aligned(64) :: Js_y
+           type(ZMM8c8), allocatable, dimension(:) :: Js_z !GCC$ ATTRIBUTES aligned(64) :: Js_z
+#endif         
+            
+      end type Js_XYZ_C8
+
+     
+        
+     
+    contains
+
+      
+
+    
+      
+      
 
 
      ! Helper functions
@@ -132,6 +612,49 @@ module  ElectroMagnetics
          t0 = v1*v2
          res = complex(sum(t0.re),sum(t0.im))
       end function cdotv_zmm16c4
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      pure function cnorm_zmm16c4(v) result(s) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm16c4 !GCC$ ATTRIBUTES inline :: cnorm_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm16c4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+      pure function cnorm_zmm16c4(v) result(s)
+           !DIR$ ATTRIBUTES INLINE :: cnorm_zmm16c4
+           !DIR$ ATTRIBUTES VECTOR :: cnorm_zmm16c4
+           !DIR$ OPTIMIZE : 3
+           !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cnorm_zmm16c4
+#endif
+           type(ZMM16c4),   intent(in) :: v
+           real(kind=sp) :: s
+           ! Local
+           type(ZMM16c4), automatic :: c
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ATTRIBUTES ALIGN : 64 :: c
+#endif
+           c = conjugate(v)
+           s = sqrt(real(cdotv_zmm16c4(v,c),kind=sp))
+       end function cnorm_zmm16c4
+
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+      pure function cnorm_zmm8c8(v) result(s) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm8c8 !GCC$ ATTRIBUTES inline :: cnorm_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm8c8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+      pure function cnorm_zmm8c8(v) result(s)
+           !DIR$ ATTRIBUTES INLINE :: cnorm_zmm8c8
+           !DIR$ ATTRIBUTES VECTOR :: cnorm_zmm8c8
+           !DIR$ OPTIMIZE : 3
+           !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cnorm_zmm8c8
+#endif
+           type(ZMM8c8),   intent(in) :: v
+           real(kind=dp) :: s
+           ! Local
+           type(ZMM8c8), automatic :: c
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ATTRIBUTES ALIGN : 64 :: c
+#endif
+           c = conjugate(v)
+           s = sqrt(real(cdotv_zmm8c8(v,c),kind=dp))
+      end function cnorm_zmm8c8         
+        
+
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
      pure function zdotv_zmm8c8(v1,v2) result(res)  !GCC$ ATTRIBUTES aligned(32) :: zdotv_zmm8c8 !GCC$ ATTRIBUTES inline :: zdotv_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: zdotv_zmm8c8 
@@ -482,7 +1005,7 @@ module  ElectroMagnetics
      end subroutine EF3Dvp_zmm16c4
 
 
-    ! Vectorized Electric-field at 8 points 'R'
+    ! Vectorized (SIMD data-types)  Electric-field at 8 points 'R'
      ! vpol -- vector of vertical polarization at point 'R'
      ! vdir -- direction vector
      ! vr   -- vector radius r
@@ -522,7 +1045,8 @@ module  ElectroMagnetics
      end subroutine EF3Dvp_zmm8c8
 
 
-      
+     ! Magnetic Field (SIMD data-types) [plane-wave], polarization 'vpol' of
+     !  wave-vector argument:  vdir*k at sixteen points 'r'.
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
      subroutine MF3Dvp_zmm16c4(vpol,vdir,k,omega,vr,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: MF3Dvp_zmm16c4 !GCC$ ATTRIBUTES inline :: MF3Dvp_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
@@ -565,7 +1089,8 @@ module  ElectroMagnetics
          Bxyz(3) = t0*cp(3)
        end subroutine MF3Dvp_zmm16c4
 
-
+     ! Magnetic Field (SIMD data-types) [plane-wave], polarization 'vpol' of
+     !  wave-vector argument:  vdir*k at eight points 'r'.
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
      subroutine MF3Dvp_zmm8c8(vpol,vdir,k,omega,vr,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: MF3Dvp_zmm8c8 !GCC$ ATTRIBUTES inline :: MF3Dvp_zmm8c8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
@@ -609,8 +1134,93 @@ module  ElectroMagnetics
       end subroutine MF3Dvp_zmm8c8
 
 
+       
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine EMF3Dp_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: EMF3Dp_zmm16c4 !GCC$ ATTRIBUTES inline :: EMF3Dp_zmm16c4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine EMF3Dp_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
+         !DIR$ ATTRIBUTES INLINE :: EMF3Dp_zmm16c4
+         !DIR$ ATTRIBUTES VECTOR :: EMF3Dp_zmm16c4
+         !DIR$ OPTIMIZE : 3
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EMF3Dp_zmm16c4
+#endif
+         type(ZMM16r4_t),               intent(in) :: theta
+         type(ZMM16r4_t),               intent(in) :: phi
+         type(ZMM16r4_t),               intent(in) :: psi
+         type(ZMM16r4_t),               intent(in) :: omega
+         type(ZMM16c4),                 intent(in) :: r
+         type(ZMM16r4_t), dimension(3), intent(in) :: p
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED p:64
+#endif
+         type(ZMM16c4),   dimension(3), intent(inout) :: Hxyz
+         type(ZMM16c4),   dimension(3), intent(inout) :: Bxyz
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED Hxyz:64
+         !DIR$ ASSUME_ALIGNED Bxyz:64
+#endif
+         ! Locals
+         type(ZMM16r4_t), automatic, dimension(3) :: vpol
+         type(ZMM16r4_t), automatic, dimension(3) :: vdir
+         type(ZMM16c4),   automatic               :: k
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir
+         !DIR$ ATTRIBUTES ALIGN : 64 :: k
+#endif
+         
+         call dir_vector_zmm16r4(theta,phi,vdir)
+         k = r*omega.v/cr4.v
+         call pol_vector_zmm16r4(theta,phi,psi,vpol)
+         call EF3Dvp_zmm16c4(vpol,vdir,k,p,Hxyz)
+         call MF3Dvp_zmm16c4(vpol,vdir,k,omega,p,Bxyz)
+     end subroutine EMF3Dp_zmm16c4
+       
       
-     
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine EMF3Dp_zmm8c8(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: EMF3Dp_zmm8c8 !GCC$ ATTRIBUTES inline :: EMF3Dp_zmm8c8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine EMF3Dp_zmm8c8(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
+         !DIR$ ATTRIBUTES INLINE :: EMF3Dp_zmm8c8
+         !DIR$ ATTRIBUTES VECTOR :: EMF3Dp_zmm8c8
+         !DIR$ OPTIMIZE : 3
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EMF3Dp_zmm8c8
+#endif
+         type(ZMM8r8_t),               intent(in) :: theta
+         type(ZMM8r8_t),               intent(in) :: phi
+         type(ZMM8r8_t),               intent(in) :: psi
+         type(ZMM8r8_t),               intent(in) :: omega
+         type(ZMM8c8),                 intent(in) :: r
+         type(ZMM8r8_t), dimension(3), intent(in) :: p
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED p:64
+#endif
+         type(ZMM8c8),   dimension(3), intent(inout) :: Hxyz
+         type(ZMM8c8),   dimension(3), intent(inout) :: Bxyz
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED Hxyz:64
+         !DIR$ ASSUME_ALIGNED Bxyz:64
+#endif
+         ! Locals
+         type(ZMM8r8_t), automatic, dimension(3) :: vpol
+         type(ZMM8r8_t), automatic, dimension(3) :: vdir
+         type(ZMM8c8),   automatic               :: k
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir
+         !DIR$ ATTRIBUTES ALIGN : 64 :: k
+#endif
+         
+         call dir_vector_zmm8r8(theta,phi,vdir)
+         k = r*omega.v/cr8.v
+         call pol_vector_zmm8r8(theta,phi,psi,vpol)
+         call EF3Dvp_zmm8c8(vpol,vdir,k,p,Hxyz)
+         call MF3Dvp_zmm8c8(vpol,vdir,k,omega,p,Bxyz)
+      end subroutine EMF3Dp_zmm8c8
+
+
+       
+            
 
       
      
