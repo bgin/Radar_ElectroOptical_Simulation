@@ -1081,21 +1081,23 @@ module  ElectroMagnetics
      ! Helper functions
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     pure function sdotv_zmm16r4(v1,v2) result(res) !GCC$ ATTRIBUTES aligned(32) :: sdotv_zmm16r4 !GCC$ ATTRIBUTES inline :: sdotv_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: sdotv_zmm16r4 
+     pure function sdotv_zmm16r4(v1x,v1y,v1z, &
+                                 v2x,v2y,v2z) result(res) !GCC$ ATTRIBUTES aligned(32) :: sdotv_zmm16r4 !GCC$ ATTRIBUTES inline :: sdotv_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: sdotv_zmm16r4 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     pure function sdotv_zmm16r4(v1,v2) result(res)
+     pure function sdotv_zmm16r4(v1x,v1y,v1z, &
+                                 v2x,v2y,v2z) result(res)
         !DIR$ ATTRIBUTES INLINE :: sdotv_zmm16r4
         !DIR$ ATTRIBUTES VECTOR :: sdotv_zmm16r4
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: sdotv_zmm16r4
 #endif
         
-         type(ZMM16r4_t),  dimension(3), intent(in) :: v1
-         type(ZMM16r4_t),  dimension(3), intent(in) :: v2
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-#endif
+         type(ZMM16r4_t),   intent(in) :: v1x
+         type(ZMM16r4_t),   intent(in) :: v1y
+         type(ZMM16r4_t),   intent(in) :: v1z
+         type(ZMM16r4_t),   intent(in) :: v2x
+         type(ZMM16r4_t),   intent(in) :: v2y
+         type(ZMM16r4_t),   intent(in) :: v2z
          type(ZMM16r4_t) :: res
 #if defined(__INTEL_COMPILER) || defined(__ICC)
          !DIR$ ATTRIBUTES ALIGN : 64 :: res
@@ -1105,9 +1107,10 @@ module  ElectroMagnetics
 #if defined(__INTEL_COMPILER) || defined(__ICC)
          !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
 #endif
-         t0.v  = v1(1).v*v2(1).v !x0...x15
-         t1.v  = v1(2).v*v2(2).v !y0...y15
-         t2.v  = v1(3).v*v2(3).v !z0...z15
+         
+         t0.v   = v1x.v*v2x.v
+         t1.v   = v1y.v*v2y.v
+         t2.v   = v1z.v*v2z.v
          res.v = t0.v+t1.v+t2.v
      end function sdotv_zmm16r4
 
@@ -1204,50 +1207,64 @@ module  ElectroMagnetics
 
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine  scrossc_zmm16c4(vc1,vc2,res)  !GCC$ ATTRIBUTES aligned(32) :: scrossc_zmm16c4 !GCC$ ATTRIBUTES inline :: scrossc_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: scrossc_zmm16r4 
+     subroutine  scrossc_zmm16c4(vc1x,vc1y,vc1z, &
+                                 vc2x,vc2y,vc2z, &
+                                 resx,resy,resz)  !GCC$ ATTRIBUTES aligned(32) :: scrossc_zmm16c4 !GCC$ ATTRIBUTES inline :: scrossc_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: scrossc_zmm16r4 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine scrossc_zmm16c4(vc1,vc2,res) 
+     subroutine scrossc_zmm16c4(vc1x,vc1y,vc1z, &
+                                 vc2x,vc2y,vc2z,&
+                                 resx,resy,resz) 
         !DIR$ ATTRIBUTES INLINE :: scrossc_zmm16c4
         !DIR$ ATTRIBUTES VECTOR :: scrossc_zmm16c4
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: scrossc_zmm16c4
 #endif
-         type(ZMM16c4), dimension(3), intent(in)  :: vc1
-         type(ZMM16c4), dimension(3), intent(in)  :: vc2
-         type(ZMM16c4), dimension(3), intent(out) :: res
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED vc1 : 64
-         !DIR$ ASSUME_ALIGNED vc2 : 64
-         !DIR$ ASSUME_ALIGNED res : 64
-#endif         
+         type(ZMM16c4), intent(in)  :: vc1x
+         type(ZMM16c4), intent(in)  :: vc1y
+         type(ZMM16c4), intent(in)  :: vc1z
+         type(ZMM16c4), intent(in)  :: vc2x
+         type(ZMM16c4), intent(in)  :: vc2y
+         type(ZMM16c4), intent(in)  :: vc2z
+         type(ZMM16c4), intent(out) :: resx
+         type(ZMM16c4), intent(out) :: resy
+         type(ZMM16c4), intent(out) :: resz
+       
          !Exec code ...
-         res(0) = vc1(2)*vc2(3)-vc1(3)*vc2(2)
-         res(1) = vc1(3)*vc2(1)-vc1(1)*vc2(3)
-         res(3) = vc1(1)*vc2(2)-vc1(2)*vc2(1)
+         !resx = vc1(2)*vc2(3)-vc1(3)*vc2(2)
+         !resy = vc1(3)*vc2(1)-vc1(1)*vc2(3)
+         !resz = vc1(1)*vc2(2)-vc1(2)*vc2(1)
+         resx = vc1y*vc2z-vc1z*vc2y  
+         resy = vc1z*vc2x-vc1x*vc2z
+         resz = vc1x*vc2y-vc1y*vc2x
      end subroutine  scrossc_zmm16c4
 
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine  dcrossc_zmm8c8(vc1,vc2,res)  !GCC$ ATTRIBUTES aligned(32) :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES inline :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: dcrossc_zmm8c8 
+     subroutine  dcrossc_zmm8c8(vc1x,vc1y,vc1z, &
+                                vc2x,vc2y,vc2z, &
+                                resx,resy,resz)  !GCC$ ATTRIBUTES aligned(32) :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES inline :: dcrossc_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: dcrossc_zmm8c8 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine dcrossc_zmm8c8(vc1,vc2,res) 
+     subroutine dcrossc_zmm8c8(vc1x,vc1y,vc1z, &
+                               vc2x,vc2y,vc2z, &
+                               resx,resy,resz) 
         !DIR$ ATTRIBUTES INLINE :: dcrossc_zmm8c8
         !DIR$ ATTRIBUTES VECTOR :: dcrossc_zmm8c8
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: dcrossc_zmm8c8
 #endif
-         type(ZMM8c8), dimension(3), intent(in)  :: vc1
-         type(ZMM8c8), dimension(3), intent(in)  :: vc2
-         type(ZMM8c8), dimension(3), intent(out) :: res
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED vc1 : 64
-         !DIR$ ASSUME_ALIGNED vc2 : 64
-         !DIR$ ASSUME_ALIGNED res : 64
-#endif         
+         type(ZMM8c8), intent(in)  :: vc1x
+         type(ZMM8c8), intent(in)  :: vc1y
+         type(ZMM8c8), intent(in)  :: vc1z
+         type(ZMM8c8), intent(in)  :: vc2x
+         type(ZMM8c8), intent(in)  :: vc2y
+         type(ZMM8c8), intent(in)  :: vc2z
+         type(ZMM8c8), intent(out) :: resx
+         type(ZMM8c8), intent(out) :: resy
+         type(ZMM8c8), intent(out) :: resz
          !Exec code ...
-         res(0) = vc1(2)*vc2(3)-vc1(3)*vc2(2)
-         res(1) = vc1(3)*vc2(1)-vc1(1)*vc2(3)
-         res(3) = vc1(1)*vc2(2)-vc1(2)*vc2(1)
+         resx = vc1y*vc2z-vc1z*vc2y  
+         resy = vc1z*vc2x-vc1x*vc2z
+         resz = vc1x*vc2y-vc1y*vc2x
      end subroutine  dcrossc_zmm8c8       
        
        
@@ -1256,7 +1273,8 @@ module  ElectroMagnetics
 
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     pure function ddotv_zmm8r8(v1,v2) result(res) !GCC$ ATTRIBUTES aligned(32) :: ddotv_zmm8r8 !GCC$ ATTRIBUTES inline :: ddotv_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: ddotv_zmm8r8 
+     pure function ddotv_zmm8r8(v1x,v1y,v1z, &
+                                v2x,v2y,v2z) result(res) !GCC$ ATTRIBUTES aligned(32) :: ddotv_zmm8r8 !GCC$ ATTRIBUTES inline :: ddotv_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: ddotv_zmm8r8 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
      pure function ddotv_zmm8r8(v1,v2) result(res)
         !DIR$ ATTRIBUTES INLINE :: ddotv_zmm8r8
@@ -1265,12 +1283,13 @@ module  ElectroMagnetics
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: ddotv_zmm8r8
 #endif
          
-         type(ZMM8r8_t),  dimension(3), intent(in) :: v1
-         type(ZMM8r8_t),  dimension(3), intent(in) :: v2
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-#endif
+         type(ZMM8r8_t),  intent(in) :: v1x
+         type(ZMM8r8_t),  intent(in) :: v1y
+         type(ZMM8r8_t),  intent(in) :: v1z
+         type(ZMM8r8_t),  intent(in) :: v2x
+         type(ZMM8r8_t),  intent(in) :: v2y
+         type(ZMM8r8_t),  intent(in) :: v2z
+         
          type(ZMM8r8_t) :: res
 #if defined(__INTEL_COMPILER) || defined(__ICC)
          !DIR$ ATTRIBUTES ALIGN : 64 :: res
@@ -1280,63 +1299,81 @@ module  ElectroMagnetics
 #if defined(__INTEL_COMPILER) || defined(__ICC)
          !DIR$ ATTRIBUTES ALIGN : 64 :: t0,t1,t2
 #endif
-         t0.v  = v1(1).v*v2(1).v !x0...x7
-         t1.v  = v1(2).v*v2(2).v !y0...y7
-         t2.v  = v1(3).v*v2(3).v !z0...z7
+         !t0.v  = v1(1).v*v2(1).v !x0...x7
+         !t1.v  = v1(2).v*v2(2).v !y0...y7
+         !t2.v  = v1(3).v*v2(3).v !z0...z7
+         t0.v  = v1x.v*v2x.v
+         t1.v  = v1y.v*v2y.v
+         t2.v  = v1z.v*v2z.v
          res.v = t0.v+t1.v+t2.v
       end function ddotv_zmm8r8
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-      subroutine scrossv_zmm16r4(v1,v2,vc) !GCC$ ATTRIBUTES aligned(32) :: scrossv_zmm16r4 !GCC$ ATTRIBUTES inline :: scrossv_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: scrossv_zmm16r4 
+      subroutine scrossv_zmm16r4(v1x,v1y,v1z,&
+                                 v2x,v2y,v2z, &
+                                 vcx,vcy,vcz) !GCC$ ATTRIBUTES aligned(32) :: scrossv_zmm16r4 !GCC$ ATTRIBUTES inline :: scrossv_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: scrossv_zmm16r4 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-      subroutine scrossv_zmm16r4(v1,v2,vc)
+      subroutine scrossv_zmm16r4(v1x,v1y,v1z,&
+                                 v2x,v2y,v2z,&
+                                 vcx,vcy,vcz)
         !DIR$ ATTRIBUTES INLINE :: scrossv_zmm16r4
         !DIR$ ATTRIBUTES VECTOR :: scrossv_zmm16r4
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: scrossv_zmm16r4
 #endif
-        type(ZMM16r4_t),  dimension(3), intent(in)  :: v1
-        type(ZMM16r4_t),  dimension(3), intent(in)  :: v2
-        type(ZMM16r4_t),  dimension(3), intent(out) :: vc
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-         !DIR$ ASSUME_ALIGNED vc : 64
-#endif        
+        type(ZMM16r4_t),  intent(in)  :: v1x
+        type(ZMM16r4_t),  intent(in)  :: v1y
+        type(ZMM16r4_t),  intent(in)  :: v1z
+        type(ZMM16r4_t),  intent(in)  :: v2x
+        type(ZMM16r4_t),  intent(in)  :: v2y
+        type(ZMM16r4_t),  intent(in)  :: v2z
+        type(ZMM16r4_t),  intent(out) :: vcx
+        type(ZMM16r4_t),  intent(out) :: vcy
+        type(ZMM16r4_t),  intent(out) :: vcz
+        
         ! Exec code ....
-        vc(0).v = v1(2).v*v2(3).v-v1(3).v*v2(2).v
-        vc(1).v = v1(3).v*v2(1).v-v1(1).v*v2(3).v
-        vc(2).v = v1(1).v*v2(2).v-v1(2).v*v2(1).v
+        !vcx.v = v1(2).v*v2(3).v-v1(3).v*v2(2).v
+        !vcy.v = v1(3).v*v2(1).v-v1(1).v*v2(3).v
+        !vcz.v = v1(1).v*v2(2).v-v1(2).v*v2(1).v
+        vcx.v = v1y.v*v2z.v-v1x.v-v2y.v
+        vcy.v = v1z.v*v2x.v-v1x.v*v2z.v
+        vcz.v = v1x.v*v2y.v-v1y.v*v2x.v
       end subroutine scrossv_zmm16r4
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-      subroutine dcrossv_zmm8r8(v1,v2,vc) !GCC$ ATTRIBUTES aligned(32) :: dcrossv_zmm8r8 !GCC$ ATTRIBUTES inline :: dcrossv_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: dcrossv_zmm8r8 
+      subroutine dcrossv_zmm8r8(v1x,v1y,v1z,&
+                                v2x,v2y,v2z,&
+                                vcx,vcy,vcz) !GCC$ ATTRIBUTES aligned(32) :: dcrossv_zmm8r8 !GCC$ ATTRIBUTES inline :: dcrossv_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: dcrossv_zmm8r8 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-      subroutine dcrossv_zmm8r8(v1,v2,vc)
+      subroutine dcrossv_zmm8r8(v1x,v1y,v1z,&
+                                v2x,v2y,v2z,&
+                                vcx,vcy,vcz)
         !DIR$ ATTRIBUTES INLINE :: dcrossv_zmm8r8
         !DIR$ ATTRIBUTES VECTOR :: dcrossv_zmm8r8
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: dcrossv_zmm8r8
 #endif
-        type(ZMM8r8_t),  dimension(3), intent(in)  :: v1
-        type(ZMM8r8_t),  dimension(3), intent(in)  :: v2
-        type(ZMM8r8_t),  dimension(3), intent(out) :: vc
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-         !DIR$ ASSUME_ALIGNED vc : 64
-#endif           
+        type(ZMM8r8_t),  intent(in)  :: v1x
+        type(ZMM8r8_t),  intent(in)  :: v1y
+        type(ZMM8r8_t),  intent(in)  :: v1z
+        type(ZMM8r8_t),  intent(in)  :: v2x
+        type(ZMM8r8_t),  intent(in)  :: v2y
+        type(ZMM8r8_t),  intent(in)  :: v2z
+        type(ZMM8r8_t),  intent(out) :: vcx
+        type(ZMM8r8_t),  intent(out) :: vcy
+        type(ZMM8r8_t),  intent(out) :: vcz
+           
         ! Exec code ....
-        vc(0).v = v1(2).v*v2(3).v-v1(3).v*v2(2).v
-        vc(1).v = v1(3).v*v2(1).v-v1(1).v*v2(3).v
-        vc(2).v = v1(1).v*v2(2).v-v1(2).v*v2(1).v
+        vcx.v = v1y.v*v2z.v-v1x.v-v2y.v
+        vcy.v = v1z.v*v2x.v-v1x.v*v2z.v
+        vcz.v = v1x.v*v2y.v-v1y.v*v2x.v
     end subroutine dcrossv_zmm8r8
 
       ! Direction Vector spherical [theta,phi] (SIMD data-types)
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))   
-    subroutine dir_vector_zmm16r4(theta,phi,dv) !GCC$ ATTRIBUTES aligned(32) :: dir_vector_zmm16r !GCC$ ATTRIBUTES inline :: dir_vector_zmm16r !GCC$ ATTRIBUTES vectorcall :: dir_vector_zmm16r
+    subroutine dir_vector_zmm16r4(theta,phi,dvx,dvy,dvz) !GCC$ ATTRIBUTES aligned(32) :: dir_vector_zmm16r !GCC$ ATTRIBUTES inline :: dir_vector_zmm16r !GCC$ ATTRIBUTES vectorcall :: dir_vector_zmm16r
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-    subroutine dir_vector_zmm16r4(theta,phi,dv)
+    subroutine dir_vector_zmm16r4(theta,phi,dvx,dvy,dvz)
         !DIR$ ATTRIBUTES INLINE :: dir_vector_zmm16r4
         !DIR$ ATTRIBUTES VECTOR :: dir_vector_zmm16r4
         !DIR$ OPTIMIZE : 3
@@ -1344,10 +1381,10 @@ module  ElectroMagnetics
 #endif
          type(ZMM16r4_t),               intent(in)  :: theta
          type(ZMM16r4_t),               intent(in)  :: phi
-         type(ZMM16r4_t), dimension(3), intent(out) :: dv
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED dv : 64
-#endif
+         type(ZMM16r4_t),               intent(out) :: dvx
+         type(ZMM16r4_t),               intent(out) :: dvy
+         type(ZMM16r4_t),               intent(out) :: dvz
+
          ! Locals
          type(ZMM16r4_t), automatic :: sth
 #if defined(__INTEL_COMPILER) || defined(__ICC)
@@ -1355,17 +1392,17 @@ module  ElectroMagnetics
 #endif         
          ! Exec code ...
          sth.v = sin(theta.v)
-         dv(1).v = sth.v*cos(phi.v)
-         dv(2).v = sth.v*sin(phi.v)
-         dv(3).v = cos(theta.v)
+         dvx.v = sth.v*cos(phi.v)
+         dvy.v = sth.v*sin(phi.v)
+         dvz.v = cos(theta.v)
      end subroutine dir_vector_zmm16r4
 
 
       ! Direction Vector spherical [theta,phi] (SIMD data-types)
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))   
-    subroutine dir_vector_zmm8r8(theta,phi,dv) !GCC$ ATTRIBUTES aligned(32) :: dir_vector_zmm8r8 !GCC$ ATTRIBUTES inline :: dir_vector_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: dir_vector_zmm8r8
+    subroutine dir_vector_zmm8r8(theta,phi,dvx,dvy,dvz) !GCC$ ATTRIBUTES aligned(32) :: dir_vector_zmm8r8 !GCC$ ATTRIBUTES inline :: dir_vector_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: dir_vector_zmm8r8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-    subroutine dir_vector_zmm8r8(theta,phi,dv)
+    subroutine dir_vector_zmm8r8(theta,phi,dvx,dvy,dvz)
         !DIR$ ATTRIBUTES INLINE :: dir_vector_zmm8r8
         !DIR$ ATTRIBUTES VECTOR :: dir_vector_zmm8r8
         !DIR$ OPTIMIZE : 3
@@ -1373,29 +1410,28 @@ module  ElectroMagnetics
 #endif
          type(ZMM8r8_t),               intent(in)  :: theta
          type(ZMM8r8_t),               intent(in)  :: phi
-         type(ZMM8r8_t), dimension(3), intent(out) :: dv
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED dv : 64
-#endif
+         type(ZMM8r8_t),               intent(out) :: dvx
+         type(ZMM8r8_t),               intent(out) :: dvy
+         type(ZMM8r8_t),               intent(out) :: dvz
+   
          ! Locals
-         
          type(ZMM8r8_t), automatic :: sth
 #if defined(__INTEL_COMPILER) || defined(__ICC)
            !DIR$ ATTRIBUTES ALIGN : 64 :: sth
 #endif
          ! Exec code ...
          sth.v = sin(theta.v)
-         dv(1).v = sth.v*cos(phi.v)
-         dv(2).v = sth.v*sin(phi.v)
-         dv(3).v = cos(theta.v)
+         dvx.v = sth.v*cos(phi.v)
+         dvy.v = sth.v*sin(phi.v)
+         dvz.v = cos(theta.v)
     end subroutine dir_vector_zmm8r8     
       
     ! Polarization Vector of plane-wave propagating into direction computed by
     ! dir_vector_xmmxrx (SIMD data-types)
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-    subroutine pol_vector_zmm16r4(theta,phi,psi,pv) !GCC$ ATTRIBUTES aligned(32) :: pol_vector_zmm16r4 !GCC$ ATTRIBUTES inline :: pol_vector_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: pol_vector_zmm16r4
+    subroutine pol_vector_zmm16r4(theta,phi,psi,pvx,pvy,pvz) !GCC$ ATTRIBUTES aligned(32) :: pol_vector_zmm16r4 !GCC$ ATTRIBUTES inline :: pol_vector_zmm16r4 !GCC$ ATTRIBUTES vectorcall :: pol_vector_zmm16r4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-    subroutine pol_vector_zmm16r4(theta,phi,psi,pv)
+    subroutine pol_vector_zmm16r4(theta,phi,psi,pvx,pvy,pvz)
         !DIR$ ATTRIBUTES INLINE :: pol_vector_zmm16r4
         !DIR$ ATTRIBUTES VECTOR :: pol_vector_zmm16r4
         !DIR$ OPTIMIZE : 3
@@ -1404,7 +1440,9 @@ module  ElectroMagnetics
         type(ZMM16r4_t),                  intent(in)  :: theta
         type(ZMM16r4_t),                  intent(in)  :: phi
         type(ZMM16r4_t),                  intent(in)  :: psi
-        type(ZMM16r4_t),    dimension(3), intent(out) :: pv
+        type(ZMM16r4_t),                  intent(out) :: pvx
+        type(ZMM16r4_t),                  intent(out) :: pvy
+        type(ZMM16r4_t),                  intent(out) :: pvz
 #if defined(__INTEL_COMPILER) || defined(__ICC)
          !DIR$ ASSUME_ALIGNED pv : 64
 #endif
@@ -1430,18 +1468,18 @@ module  ElectroMagnetics
         spsi.v  = sin(psi.v)
         sphi.v  = sin(phi.v)
         t0.v    = spsi.v*cos(theta.v)
-        pv(1).v = cpsi.v*sphi.v-t0.v*cphi.v
-        pv(2).v = -cpsi.v*cphi-t0.v*sphi.v
-        pv(3).v = spsi.v*sin(theta.v)
+        pvx.v = cpsi.v*sphi.v-t0.v*cphi.v
+        pvy.v = -cpsi.v*cphi-t0.v*sphi.v
+        pvz.v = spsi.v*sin(theta.v)
     end subroutine pol_vector_zmm16r4
     
 
   ! Polarization Vector of plane-wave propagating into direction computed by
     ! dir_vector_xmmxrx (SIMD data-types)
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-    subroutine pol_vector_zmm8r8(theta,phi,psi,pv) !GCC$ ATTRIBUTES aligned(32) :: pol_vector_zmm8r8 !GCC$ ATTRIBUTES inline :: pol_vector_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: pol_vector_zmm8r8
+  subroutine pol_vector_zmm8r8(theta,phi,psi,pvx,pvy,pvz) !GCC$ ATTRIBUTES aligned(32) :: pol_vector_zmm8r8 !GCC$ ATTRIBUTES inline :: pol_vector_zmm8r8 !GCC$ ATTRIBUTES vectorcall :: pol_vector_zmm8r8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-    subroutine pol_vector_zmm8r8(theta,phi,psi,pv)
+  subroutine pol_vector_zmm8r8(theta,phi,psi,pvx,pvy,pvz)
         !DIR$ ATTRIBUTES INLINE :: pol_vector_zmm8r8
         !DIR$ ATTRIBUTES VECTOR :: pol_vector_zmm8r8
         !DIR$ OPTIMIZE : 3
@@ -1450,10 +1488,10 @@ module  ElectroMagnetics
         type(ZMM8r8_t),                  intent(in)  :: theta
         type(ZMM8r8_t),                  intent(in)  :: phi
         type(ZMM8r8_t),                  intent(in)  :: psi
-        type(ZMM8r8_t),    dimension(3), intent(out) :: pv
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED pv : 64
-#endif
+        type(ZMM8r8_t),                  intent(out) :: pvx
+        type(ZMM8r8_t),                  intent(out) :: pvy
+        type(ZMM8r8_t),                  intent(out) :: pvz
+
         ! Locals
         type(ZMM8r8_t), automatic :: cpsi
         type(ZMM8r8_t), automatic :: cphi
@@ -1476,9 +1514,9 @@ module  ElectroMagnetics
         spsi.v  = sin(psi.v)
         sphi.v  = sin(phi.v)
         t0.v    = spsi.v*cos(theta.v)
-        pv(1).v = cpsi.v*sphi.v-t0.v*cphi.v
-        pv(2).v = -cpsi.v*cphi-t0.v*sphi.v
-        pv(3).v = spsi.v*sin(theta.v)
+        pvx.v = cpsi.v*sphi.v-t0.v*cphi.v
+        pvy.v = -cpsi.v*cphi-t0.v*sphi.v
+        pvz.v = spsi.v*sin(theta.v)
     end subroutine pol_vector_zmm8r8
     
           
@@ -1493,25 +1531,35 @@ module  ElectroMagnetics
      ! vr   -- vector radius r
      ! Exyz -- resulting electrical field (3D) at sixteen points 'R', i.e. R(xyz), x0-x15,y0-y15,z0-z15
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine EF3Dvp_zmm16c4(vpol,vdir,vr,k,Exyz) !GCC$ ATTRIBUTES aligned(32) :: EF3Dvp_zmm16c4 !GCC$ ATTRIBUTES inline :: EF3Dvp_zmm16c4 
+    subroutine H_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                              vdirx,vdiry,vdirz, &
+                              vrx,vry,vrz,k,     &
+                              H_x,H_y,H_z) !GCC$ ATTRIBUTES aligned(32) :: H_XYZ_VP_zmm16c4 !GCC$ ATTRIBUTES inline :: H_XYZ_VP_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine EF3Dvp_zmm16c4(vpol,vdir,vr,k,Exyz)
-         !DIR$ ATTRIBUTES INLINE :: EF3Dvp_zmm16c4
-         !DIR$ ATTRIBUTES VECTOR :: EF3Dvp_zmm16c4
+     subroutine H_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                               vdirx,vdiry,vdirz, &
+                               vrx,vry,vrz,k,     &
+                               H_x,H_y,H_z )
+         !DIR$ ATTRIBUTES INLINE :: H_XYZ_VP_zmm16c4
+         !DIR$ ATTRIBUTES VECTOR :: H_XYZ_VP_zmm16c4
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EF3Dvp_zmm16c4
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: H_XYZ_VP_zmm16c4
 #endif
-        type(ZMM16r4_t), dimension(3),  intent(in)  :: vpol
-        type(ZMM16r4_t), dimension(3),  intent(in)  :: vdir
-        type(ZMM16r4_t), dimension(3),  intent(in)  :: vr
-        type(ZMM16c4),                  intent(in)  :: k
-        type(ZMM16c4),   dimension(3),  intent(out) :: Exyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-        !DIR$ ASSUME_ALIGNED vpol : 64
-        !DIR$ ASSUME_ALIGNED vdir : 64
-        !DIR$ ASSUME_ALIGNED vr   : 64
-        !DIR$ ASSUME_ALIGNED Exyz : 64
-#endif
+        type(ZMM16r4_t),       intent(in)  :: vpolx
+        type(ZMM16r4_t),       intent(in)  :: vpoly
+        type(ZMM16r4_t),       intent(in)  :: vpolz
+        type(ZMM16r4_t),       intent(in)  :: vdirx
+        type(ZMM16r4_t),       intent(in)  :: vdiry
+        type(ZMM16r4_t),       intent(in)  :: vdirz
+        type(ZMM16r4_t),       intent(in)  :: vrx
+        type(ZMM16r4_t),       intent(in)  :: vry
+        type(ZMM16r4_t),       intent(in)  :: vrz
+        type(ZMM16c4),         intent(in)  :: k
+        type(ZMM16c4),         intent(out) :: H_x
+        type(ZMM16c4),         intent(out) :: H_y
+        type(ZMM16c4),         intent(out) :: H_z
+        
+
         type(ZMM16c4),   automatic :: carg
         type(ZMM16r4_t), automatic :: dp
 #if defined(__INTEL_COMPILER) || defined(__ICC)
@@ -1519,12 +1567,13 @@ module  ElectroMagnetics
         !DIR$ ATTRIBUTES ALIGN : 64 :: carg
 #endif
         ! Exec code ...
-        dp.v    = sdotv_zmm16r4(vdir,vr)
+        dp.v    = sdotv_zmm16r4(vdirx,cdiry,vdirz, &
+                                vrx,vry,vrz)
         carg    = cexp_c16(jc4*k*dp)
-        Exyz(1) = vpol(1).v*carg
-        Exyz(2) = vpol(2).v*carg
-        Exyz(3) = vpol(3).v*carg
-     end subroutine EF3Dvp_zmm16c4
+        H_x     = vpolx.v*carg
+        H_y     = vpoly.v*carg
+        H_z     = vpolz.v*carg
+     end subroutine H_XYZ_VP_zmm16c4
 
 
     ! Vectorized (SIMD data-types)  Electric-field at 8 points 'R'
@@ -1533,25 +1582,33 @@ module  ElectroMagnetics
      ! vr   -- vector radius r
      ! Exyz -- resulting electrical field (3D) at sixteen points 'R', i.e. R(xyz), x0-x7,y0-y7,z0-z7
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine EF3Dvp_zmm8c8(vpol,vdir,vr,k,Exyz) !GCC$ ATTRIBUTES aligned(32) :: EF3Dvp_zmm8c8 !GCC$ ATTRIBUTES inline :: EF3Dvp_zmm8c8
+     subroutine H_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz, &
+                              vdirx,vdiry,vdirz, &
+                              vrx,vry,vrz,k,     &
+                              H_x,H_y,H_z) !GCC$ ATTRIBUTES aligned(32) :: H_XYZ_VP_zmm8c8 !GCC$ ATTRIBUTES inline :: H_XYZ_VP_zmm8c8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine EF3Dvp_zmm8c8(vpol,vdir,vr,k,Exyz)
-         !DIR$ ATTRIBUTES INLINE :: EF3Dvp_zmm8c8
-         !DIR$ ATTRIBUTES VECTOR :: EF3Dvp_zmm8c8
+     subroutine H_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz, &
+                              vdirx,vdiry,vdirz, &
+                              vrx,vry,vrz,k,     &
+                              H_x,H_y,H_z)
+         !DIR$ ATTRIBUTES INLINE :: H_XYZ_VP_zmm8c8
+         !DIR$ ATTRIBUTES VECTOR :: H_XYZ_VP_zmm8c8
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EF3Dvp_zmm8c8
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: H_XYZ_VP_zmm8c8
 #endif
-        type(ZMM8r8_t), dimension(3),  intent(in)  :: vpol
-        type(ZMM8r8_t), dimension(3),  intent(in)  :: vdir
-        type(ZMM8r8_t), dimension(3),  intent(in)  :: vr
-        type(ZMM8c8),                  intent(in)  :: k
-        type(ZMM8c8),   dimension(3),  intent(out) :: Exyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-        !DIR$ ASSUME_ALIGNED vpol : 64
-        !DIR$ ASSUME_ALIGNED vdir : 64
-        !DIR$ ASSUME_ALIGNED vr   : 64
-        !DIR$ ASSUME_ALIGNED Exyz : 64
-#endif
+        type(ZMM8r8_t),       intent(in)  :: vpolx
+        type(ZMM8r8_t),       intent(in)  :: vpoly
+        type(ZMM8r8_t),       intent(in)  :: vpolz
+        type(ZMM8r8_t),       intent(in)  :: vdirx
+        type(ZMM8r8_t),       intent(in)  :: vdiry
+        type(ZMM8r8_t),       intent(in)  :: vdirz
+        type(ZMM8r8_t),       intent(in)  :: vrx
+        type(ZMM8r8_t),       intent(in)  :: vry
+        type(ZMM8r8_t),       intent(in)  :: vrz
+        type(ZMM8c8),         intent(in)  :: k
+        type(ZMM8c8),         intent(out) :: H_x
+        type(ZMM8c8),         intent(out) :: H_y
+        type(ZMM8c8),         intent(out) :: H_z
         type(ZMM8c8),   automatic :: carg
         type(ZMM8r8_t), automatic :: dp
 #if defined(__INTEL_COMPILER) || defined(__ICC)
@@ -1559,144 +1616,218 @@ module  ElectroMagnetics
         !DIR$ ATTRIBUTES ALIGN : 64 :: carg
 #endif
         ! Exec code ...
-        dp.v    = ddotv_zmm8r8(vdir,vr)
+        dp.v    = ddotv_zmm8r8(vdirx,vdiry,vdirz, &
+                               vrx,vry,vrz)
         carg    = cexp_c8(jc8*k*dp)
-        Exyz(1) = vpol(1).v*carg
-        Exyz(2) = vpol(2).v*carg
-        Exyz(3) = vpol(3).v*carg
-     end subroutine EF3Dvp_zmm8c8
+        H_x     = vpolx.v*carg
+        H_y     = vpoly.v*carg
+        H_z     = vpolz.v*carg
+     end subroutine H_XYZ_VP_zmm8c8
 
 
      ! Magnetic Field (SIMD data-types) [plane-wave], polarization 'vpol' of
      !  wave-vector argument:  vdir*k at sixteen points 'r'.
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine MF3Dvp_zmm16c4(vpol,vdir,k,omega,vr,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: MF3Dvp_zmm16c4 !GCC$ ATTRIBUTES inline :: MF3Dvp_zmm16c4
+     subroutine B_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                                 vdirx,vdiry,vdirz, &
+                                 k,omega,           &
+                                 vrx,vry,vrz,       &
+                                 B_x,B_y,B_z) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_VP_zmm16c4 !GCC$ ATTRIBUTES inline :: B_XYZ_VP_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine MF3Dvp_zmm16c4(vpol,vdir,k,omega,vr,Bxyz)
-         !DIR$ ATTRIBUTES INLINE :: MF3Dvp_zmm16c4
-         !DIR$ ATTRIBUTES VECTOR :: MF3Dvp_zmm16c4
+     subroutine B_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                                 vdirx,vdiry,vdirz, &
+                                 k,omega,           &
+                                 vrx,vry,vrz,       &
+                                 B_x,B_y,B_z)
+         !DIR$ ATTRIBUTES INLINE :: B_XYZ_VP_zmm16c4
+         !DIR$ ATTRIBUTES VECTOR :: B_XYZ_VP_zmm16c4
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: MF3Dvp_zmm16c4
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_VP_zmm16c4
 #endif
-         type(ZMM16r4_t),  dimension(3),  intent(in)  :: vpol
-         type(ZMM16r4_t),  dimension(3),  intent(in)  :: vdir
-         type(ZMM16c4),                   intent(in)  :: k
-         type(ZMM16r4_t),                 intent(in)  :: omega
-         type(ZMM16r4_t),  dimension(3),  intent(in)  :: vr
-         type(ZMM16c4),    dimension(3),  intent(out) :: Bxyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-        !DIR$ ASSUME_ALIGNED vpol : 64
-        !DIR$ ASSUME_ALIGNED vdir : 64
-        !DIR$ ASSUME_ALIGNED vr   : 64
-        !DIR$ ASSUME_ALIGNED Bxyz : 64
-#endif
-         type(ZMM16c4), automatic, dimension(3) :: cdir
-         type(ZMM16c4), automatic, dimension(3) :: Exyz
-         type(ZMM16c4), automatic, dimension(3) :: cp
+         type(ZMM16r4_t),   intent(in)  :: vpolx
+         type(ZMM16r4_t),   intent(in)  :: vpoly
+         type(ZMM16r4_t),   intent(in)  :: vpolz
+         type(ZMM16r4_t),   intent(in)  :: vdirx
+         type(ZMM16r4_t),   intent(in)  :: vdiry
+         type(ZMM16r4_t),   intent(in)  :: vdirz
+         type(ZMM16c4),     intent(in)  :: k
+         type(ZMM16r4_t),   intent(in)  :: omega
+         type(ZMM16r4_t),   intent(in)  :: vrx
+         type(ZMM16r4_t),   intent(in)  :: vry
+         type(ZMM16r4_t),   intent(in)  :: vrz
+         type(ZMM16c4),     intent(out) :: B_x
+         type(ZMM16c4),     intent(out) :: B_y
+         type(ZMM16c4),     intent(out) :: B_z
+         ! Locals
+         !type(ZMM16c4), automatic, dimension(3) :: cdir
+         !type(ZMM16c4), automatic, dimension(3) :: Exyz
+         !type(ZMM16c4), automatic, dimension(3) :: cp
+         type(ZMM16c4), automatic :: cdirx
+         type(ZMM16c4), automatic :: cdiry
+         type(ZMM16c4), automatic :: cdirz
+         type(ZMM16c4), automatic :: H_x
+         type(ZMM16c4), automatic :: H_y
+         type(ZMM16c4), automatic :: H_z
+         type(ZMM16c4), automatic :: cpx
+         type(ZMM16c4), automatic :: cpy
+         type(ZMM16c4), automatic :: cpz
          type(ZMM16c4), automatic :: t0
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: cdir
-         !DIR$ ATTRIBUTES ALIGN : 64 :: Exyz
-         !DIR$ ATTRIBUTES ALIGN : 64 :: cp
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdirx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdiry
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdirz
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpy
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpz
          !DIR$ ATTRIBUTES ALIGN : 64 :: t0
 #endif
-         call EF3Dvp_zmm16c4(vpol,vdir,vr,k,Exyz)
-         cdir(1) = zmm16r41x_init(vdir(1))
-         cdir(2) = zmm16r41x_init(vdir(2))
-         cdir(3) = zmm16r41x_init(vdir(3))
+         call H_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                               vdirx,vdiry,vdirz,  &
+                               vrx,vry,vrz,k,      &
+                               H_x,H_y,H_z)
+         cdirx = zmm16r41x_init(vdirx)
+         cdiry = zmm16r41x_init(vdiry)
+         cdirz = zmm16r41x_init(vdirz)
          t0 = k/(omega.v*mu0r16.v)
-         call scrossc_zmm16c4(cdir,Exyz,cp)
-         Bxyz(1) = t0*cp(1)
-         Bxyz(2) = t0*cp(2)
-         Bxyz(3) = t0*cp(3)
-       end subroutine MF3Dvp_zmm16c4
+         call scrossc_zmm16c4(cdirx,cdiry,cdirz, &
+                              H_x,H_y,H_z,       &
+                              cpx,cpy,cpz)
+         B_x = t0*cpx
+         B_y = t0*cpy
+         B_z = t0*cpz
+       end subroutine B_XYZ_VP_zmm16c4
 
      ! Magnetic Field (SIMD data-types) [plane-wave], polarization 'vpol' of
      !  wave-vector argument:  vdir*k at eight points 'r'.
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine MF3Dvp_zmm8c8(vpol,vdir,k,omega,vr,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: MF3Dvp_zmm8c8 !GCC$ ATTRIBUTES inline :: MF3Dvp_zmm8c8
+     subroutine B_XYZ_VP_zmm8c8( vpolx,vpoly,vpolz, &
+                                 vdirx,vdiry,vdirz, &
+                                 k,omega,           &
+                                 vrx,vry,vrz,       &
+                                 B_x,B_y,B_z) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_VP_zmm8c8 !GCC$ ATTRIBUTES inline :: B_XYZ_VP_zmm8c8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine MF3Dvp_zmm8c8(vpol,vdir,k,omega,vr,Bxyz)
-         !DIR$ ATTRIBUTES INLINE :: MF3Dvp_zmm8c8
-         !DIR$ ATTRIBUTES VECTOR :: MF3Dvp_zmm8c8
+     subroutine B_XYZ_VP_zmm8c8( vpolx,vpoly,vpolz, &
+                                 vdirx,vdiry,vdirz, &
+                                 k,omega,           &
+                                 vrx,vry,vrz,       &
+                                 B_x,B_y,B_z)
+         !DIR$ ATTRIBUTES INLINE :: B_XYZ_VP_zmm8c8
+         !DIR$ ATTRIBUTES VECTOR :: B_XYZ_VP_zmm8c8
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: MF3Dvp_zmm8c8
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_VP_zmm8c8
 #endif
-         type(ZMM8r8_t),  dimension(3),  intent(in)  :: vpol
-         type(ZMM8r8_t),  dimension(3),  intent(in)  :: vdir
-         type(ZMM8c8),                   intent(in)  :: k
-         type(ZMM8r8_t),                 intent(in)  :: omega
-         type(ZMM8r8_t),  dimension(3),  intent(in)  :: vr
-         type(ZMM8c8),    dimension(3),  intent(out) :: Bxyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-        !DIR$ ASSUME_ALIGNED vpol : 64
-        !DIR$ ASSUME_ALIGNED vdir : 64
-        !DIR$ ASSUME_ALIGNED vr   : 64
-        !DIR$ ASSUME_ALIGNED Bxyz : 64
-#endif
-         type(ZMM8c8), automatic, dimension(3) :: cdir
-         type(ZMM8c8), automatic, dimension(3) :: Exyz
-         type(ZMM8c8), automatic, dimension(3) :: cp
+         type(ZMM8r8_t),   intent(in)  :: vpolx
+         type(ZMM8r8_t),   intent(in)  :: vpoly
+         type(ZMM8r8_t),   intent(in)  :: vpolz
+         type(ZMM8r8_t),   intent(in)  :: vdirx
+         type(ZMM8r8_t),   intent(in)  :: vdiry
+         type(ZMM8r8_t),   intent(in)  :: vdirz
+         type(ZMM8c8),     intent(in)  :: k
+         type(ZMM8r8_t),   intent(in)  :: omega
+         type(ZMM8r8_t),   intent(in)  :: vrx
+         type(ZMM8r8_t),   intent(in)  :: vry
+         type(ZMM8r8_t),   intent(in)  :: vrz
+         type(ZMM8c8),     intent(out) :: B_x
+         type(ZMM8c8),     intent(out) :: B_y
+         type(ZMM8c8),     intent(out) :: B_z
+         type(ZMM8c8), automatic :: cdirx
+         type(ZMM8c8), automatic :: cdiry
+         type(ZMM8c8), automatic :: cdirz
+         type(ZMM8c8), automatic :: H_x
+         type(ZMM8c8), automatic :: H_y
+         type(ZMM8c8), automatic :: H_z
+         type(ZMM8c8), automatic :: cpx
+         type(ZMM8c8), automatic :: cpy
+         type(ZMM8c8), automatic :: cpz
          type(ZMM8c8), automatic :: t0
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: cdir
-         !DIR$ ATTRIBUTES ALIGN : 64 :: Exyz
-         !DIR$ ATTRIBUTES ALIGN : 64 :: cp
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdirx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdiry
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cdirz
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_y
+         !DIR$ ATTRIBUTES ALIGN : 64 :: H_z
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpy
+         !DIR$ ATTRIBUTES ALIGN : 64 :: cpz
          !DIR$ ATTRIBUTES ALIGN : 64 :: t0
 #endif
-         call EF3Dvp_zmm8c8(vpol,vdir,vr,k,Exyz)
-         cdir(1) = zmm8r81x_init(vdir(1))
-         cdir(2) = zmm8r81x_init(vdir(2))
-         cdir(3) = zmm8841x_init(vdir(3))
+         call H_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz, &
+                              vdirx,vdiry,vdirz, &
+                              vrx,vry,vrz,       &
+                              k,H_x,H_y,H_z)
+         cdirx = zmm8r81x_init(vdirx)
+         cdiry = zmm8r81x_init(vdiry)
+         cdirz = zmm8841x_init(vdirz)
          t0 = k/(omega.v*mu0r16.v)
-         call dcrossc_zmm8c8(cdir,Exyz,cp)
-         Bxyz(1) = t0*cp(1)
-         Bxyz(2) = t0*cp(2)
-         Bxyz(3) = t0*cp(3)
-      end subroutine MF3Dvp_zmm8c8
+         call dcrossc_zmm8c8(cdirx,cdiry,cdirz, &
+                             H_x,H_y,H_z,       &
+                             cpx,cpy,cpz)
+         B_x = t0*cpx
+         B_y = t0*cpy
+         B_z = t0*cpz
+      end subroutine B_XYZ_VP_zmm8c8
 
 
        
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine EMF3Dp_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: EMF3Dp_zmm16c4 !GCC$ ATTRIBUTES inline :: EMF3Dp_zmm16c4
+     subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_P_zmm16c4 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_P_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine EMF3Dp_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
-         !DIR$ ATTRIBUTES INLINE :: EMF3Dp_zmm16c4
-         !DIR$ ATTRIBUTES VECTOR :: EMF3Dp_zmm16c4
+     subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
+         !DIR$ ATTRIBUTES INLINE :: B_XYZ_H_XYZ_P_zmm16c4
+         !DIR$ ATTRIBUTES VECTOR :: B_XYZ_H_XYZ_P_zmm16c4
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EMF3Dp_zmm16c4
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_H_XYZ_P_zmm16c4
 #endif
-         type(ZMM16r4_t),               intent(in) :: theta
-         type(ZMM16r4_t),               intent(in) :: phi
-         type(ZMM16r4_t),               intent(in) :: psi
-         type(ZMM16r4_t),               intent(in) :: omega
-         type(ZMM16c4),                 intent(in) :: r
-         type(ZMM16r4_t), dimension(3), intent(in) :: p
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED p:64
-#endif
-         type(ZMM16c4),   dimension(3), intent(inout) :: Hxyz
-         type(ZMM16c4),   dimension(3), intent(inout) :: Bxyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED Hxyz:64
-         !DIR$ ASSUME_ALIGNED Bxyz:64
-#endif
+         type(ZMM16r4_t),               intent(in)    :: theta
+         type(ZMM16r4_t),               intent(in)    :: phi
+         type(ZMM16r4_t),               intent(in)    :: psi
+         type(ZMM16r4_t),               intent(in)    :: omega
+         type(ZMM16c4),                 intent(in)    :: r
+         type(ZMM16r4_t),               intent(in)    :: px
+         type(ZMM16r4_t),               intent(in)    :: py
+         type(ZMM16r4_t),               intent(in)    :: pz
+         type(ZMM16c4),                 intent(inout) :: H_x
+         type(ZMM16c4),                 intent(inout) :: H_y
+         type(ZMM16c4),                 intent(inout) :: H_z
+         type(ZMM16c4),                 intent(inout) :: B_x
+         type(ZMM16c4),                 intent(inout) :: B_y
+         type(ZMM16c4),                 intent(inout) :: B_z
+         
          ! Locals
-         type(ZMM16r4_t), automatic, dimension(3) :: vpol
-         type(ZMM16r4_t), automatic, dimension(3) :: vdir
-         type(ZMM16c4),   automatic               :: k
+         type(ZMM16r4_t), automatic :: vpolx
+         type(ZMM16r4_t), automatic :: vpoly
+         type(ZMM16r4_t), automatic :: vpolz
+         type(ZMM16r4_t), automatic :: vdirx
+         type(ZMM16r4_t), automatic :: vdiry
+         type(ZMM16r4_t), automatic :: vdirz
+         type(ZMM16c4),   automatic :: k
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpolx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpoly
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpolz
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdirx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdiry
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdirz
          !DIR$ ATTRIBUTES ALIGN : 64 :: k
 #endif
          
-         call dir_vector_zmm16r4(theta,phi,vdir)
+         call dir_vector_zmm16r4(theta,phi, &
+                                 vdirx,vdiry,vdirz)
          k = r*omega.v/cr4.v
-         call pol_vector_zmm16r4(theta,phi,psi,vpol)
-         call EF3Dvp_zmm16c4(vpol,vdir,k,p,Hxyz)
-         call MF3Dvp_zmm16c4(vpol,vdir,k,omega,p,Bxyz)
-     end subroutine EMF3Dp_zmm16c4
+         call pol_vector_zmm16r4(theta,phi,psi, &
+                                 vpolx,vpoly,vpolz)
+         call H_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz,    &
+                               vdirx,vdiry,vdirz,k,  &
+                               px,py,pz,H_x,H_y,H_z)
+         call B_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz,    &
+                               vdirx,vdiry,vdirz,    &
+                               k,omega,px,py,pz      &
+                               B_x,B_y,B_z)
+     end subroutine B_XYZ_H_XYZ_P_zmm16c4
        
       
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
@@ -1724,12 +1855,22 @@ module  ElectroMagnetics
          !DIR$ ASSUME_ALIGNED Bxyz:64
 #endif
          ! Locals
-         type(ZMM8r8_t), automatic, dimension(3) :: vpol
-         type(ZMM8r8_t), automatic, dimension(3) :: vdir
+         !type(ZMM8r8_t), automatic, dimension(3) :: vpol
+         !type(ZMM8r8_t), automatic, dimension(3) :: vdir
+         type(ZMM8r8_t), automatic :: vpol_x
+         type(ZMM8r8_t), automatic :: vpol_y
+         type(ZMM8r8_t), automatic :: vpol_z
+         type(ZMM8r8_t), automatic :: vdir_x
+         type(ZMM8r8_t), automatic :: vdir_y
+         type(ZMM8r8_t), automatic :: vdir_z
          type(ZMM8c8),   automatic               :: k
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_x
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_y
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_z
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_x
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_y
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_z
          !DIR$ ATTRIBUTES ALIGN : 64 :: k
 #endif
          
