@@ -83,7 +83,7 @@ module  ElectroMagnetics
      ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
      type, public :: H_X_C16
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
            !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
@@ -95,7 +95,7 @@ module  ElectroMagnetics
      ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_C16
            public
-           !integer(kind=i4) :: n_cells  ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
            type(ZMM16c4), allocatable, dimension(:) :: H_y
@@ -112,7 +112,7 @@ module  ElectroMagnetics
      ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
      type, public :: H_XYZ_C16
            public
-           !integer(kind=i4) :: n_cell  ! number of cells i.e. patches
+           integer(kind=i4) :: n_cell  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
            type(ZMM16c4), allocatable, dimension(:) :: H_y
@@ -131,7 +131,7 @@ module  ElectroMagnetics
       ! Real Electric Field 3D (Packed-AoS) data type decomposed.
       type, public :: H_XYZ_R16
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
            type(ZMM16r4_t), allocatable, dimension(:) :: H_y
@@ -151,7 +151,7 @@ module  ElectroMagnetics
       ! Real Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_R16
             public
-           !integer(kind=i4) :: n_cells 
+           integer(kind=i4) :: n_cells 
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
            type(ZMM16r4_t), allocatable, dimension(:) :: H_y
@@ -170,7 +170,7 @@ module  ElectroMagnetics
       ! Real Electric Field 1D (Packed-AoS) data type decomposed.
       type, public :: H_X_R16
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
             !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
@@ -184,7 +184,7 @@ module  ElectroMagnetics
      ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
      type, public :: B_X_C16
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
             !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
@@ -199,7 +199,7 @@ module  ElectroMagnetics
        ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_C16
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
            type(ZMM16c4), allocatable, dimension(:) :: B_y
@@ -215,7 +215,7 @@ module  ElectroMagnetics
      ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
      type, public :: B_XYZ_C16
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
            type(ZMM16c4), allocatable, dimension(:) :: B_y
@@ -235,7 +235,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
       type, public :: B_XYZ_R16
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: B_x
@@ -256,7 +256,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_R16
             public
-            !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
             
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -277,7 +277,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
       type, public :: B_X_R16
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: B_x
@@ -293,7 +293,7 @@ module  ElectroMagnetics
       ! Complex Surface currents 3D (Packed-AoS) data type.
       type, public :: Js_XYZ_C16
             public
-            !integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
+            integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: Js_x
@@ -317,7 +317,7 @@ module  ElectroMagnetics
          ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
      type, public :: H_X_C8
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches for MoM code.
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches for MoM code.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
            !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
@@ -329,7 +329,7 @@ module  ElectroMagnetics
      ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_C8
            public
-           !integer(kind=i4) :: n_cells  ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
            type(ZMM8c8), allocatable, dimension(:) :: H_y
@@ -346,7 +346,7 @@ module  ElectroMagnetics
      ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
      type, public :: H_XYZ_C8
            public
-           !integer(kind=i4) :: n_cell  ! number of cells i.e. patches
+           integer(kind=i4) :: n_cell  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
            type(ZMM8c8), allocatable, dimension(:) :: H_y
@@ -365,7 +365,7 @@ module  ElectroMagnetics
       ! Real Electric Field 3D (Packed-AoS) data type decomposed.
       type, public :: H_XYZ_R8
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
            type(ZMM8r8_t), allocatable, dimension(:) :: H_y
@@ -385,7 +385,7 @@ module  ElectroMagnetics
       ! Real Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_R8
             public
-           !integer(kind=i4) :: n_cells 
+           integer(kind=i4) :: n_cells 
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
            type(ZMM8r8_t), allocatable, dimension(:) :: H_y
@@ -404,7 +404,7 @@ module  ElectroMagnetics
       ! Real Electric Field 1D (Packed-AoS) data type decomposed.
       type, public :: H_X_R8
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
             !DIR$ ATTRIBUTES ALIGN : 64 :: H_x
@@ -418,7 +418,7 @@ module  ElectroMagnetics
      ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
      type, public :: B_X_C8
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
             !DIR$ ATTRIBUTES ALIGN : 64 :: B_x
@@ -433,7 +433,7 @@ module  ElectroMagnetics
        ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_C8
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
            type(ZMM8c8), allocatable, dimension(:) :: B_y
@@ -449,7 +449,7 @@ module  ElectroMagnetics
      ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
      type, public :: B_XYZ_C8
            public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
            type(ZMM8c8), allocatable, dimension(:) :: B_y
@@ -469,7 +469,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
       type, public :: B_XYZ_R8
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: B_x
@@ -490,7 +490,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_R8
             public
-            !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
             
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -511,7 +511,7 @@ module  ElectroMagnetics
       ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
       type, public :: B_X_R8
             public
-           !integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
+           integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: B_x
@@ -527,7 +527,7 @@ module  ElectroMagnetics
       ! Complex Surface currents 3D (Packed-AoS) data type.
       type, public :: Js_XYZ_C8
             public
-            !integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
+            integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: Js_x
@@ -550,9 +550,531 @@ module  ElectroMagnetics
     contains
 
       
-
-    
+   subroutine init_H_X_XY_XYZ_C16(HX,HXY,HXYZ,n_pts1,     &
+                                  n_pts2,n_pts3,error,    &
+                                  iounit,verbose,logging, &
+                                  filename,append) !GCC$ ATTRIBUTES cold :: init_H_X_XY_XYZ_C16  !GCC$ ATTRIBUTES aligned(32) :: init_H_X_XY_XYZ_C16
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_H_X_XY_XYZ_C16
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(H_X_C16),       intent(in)       :: HX
+         type(H_XY_C16),      intent(in)       :: HXY
+         type(H_XYZ_C16),     intent(in)       :: HXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,16)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,16)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,16)
+         if(rem) n_pts3 = n_pts3-rem
+         HX.n_cells   = n_pts1
+         HXY.n_cells  = n_pts2
+         HXYZ.n_cells = n_pts3
+         allocate(HX.H_x(HX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXY.H_x(HXY.n_cells),
+                  HXY.H_y(HXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXYZ.H_x(HXYZ.n_cells),
+                  HXYZ.H_y(HXYZ.n_cells),
+                  HXYZ.H_z(HXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_H_X_XY_XYZ_C16", &
+               emsg,__LINE__)
+     end subroutine init_H_X_XY_XYZ_C16    
+   
       
+    
+     subroutine init_H_X_XY_XYZ_R16(HX,HXY,HXYZ,n_pts1,     &
+                                    n_pts2,n_pts3,error,    &
+                                    iounit,verbose,logging, &
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_H_X_XY_XYZ_R16  !GCC$ ATTRIBUTES aligned(32) :: init_H_X_XY_XYZ_R16
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_H_X_XY_XYZ_R16
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(H_X_R16),       intent(in)       :: HX
+         type(H_XY_R16),      intent(in)       :: HXY
+         type(H_XYZ_R16),     intent(in)       :: HXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,16)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,16)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,16)
+         if(rem) n_pts3 = n_pts3-rem
+         HX.n_cells   = n_pts1
+         HXY.n_cells  = n_pts2
+         HXYZ.n_cells = n_pts3
+         allocate(HX.H_x(HX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXY.H_x(HXY.n_cells),
+                  HXY.H_y(HXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXYZ.H_x(HXYZ.n_cells),
+                  HXYZ.H_y(HXYZ.n_cells),
+                  HXYZ.H_z(HXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_H_X_XY_XYZ_R16", &
+               emsg,__LINE__)
+     end subroutine init_H_X_XY_XYZ_R16
+
+       
+     subroutine init_B_X_XY_XYZ_C16(BX,BXY,BXYZ,n_pts1,     &
+                                    n_pts2,n_pts3,error,    &
+                                    iounit,verbose,logging, &
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_C16  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_C16
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_B_X_XY_XYZ_C16
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(B_X_C16),       intent(in)       :: BX
+         type(B_XY_C16),      intent(in)       :: BXY
+         type(B_XYZ_C16),     intent(in)       :: BXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,16)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,16)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,16)
+         if(rem) n_pts3 = n_pts3-rem
+         BX.n_cells   = n_pts1
+         BXY.n_cells  = n_pts2
+         BXYZ.n_cells = n_pts3
+         allocate(BX.B_x(BX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXY.B_x(BXY.n_cells),
+                  BXY.B_y(BXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXYZ.B_x(BXYZ.n_cells),
+                  BXYZ.B_y(BXYZ.n_cells),
+                  BXYZ.B_z(BXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_B_X_XY_XYZ_C16", &
+               emsg,__LINE__)
+     end subroutine init_B_X_XY_XYZ_C16
+
+
+     subroutine init_B_X_XY_XYZ_R16(BX,BXY,BXYZ,n_pts1,     &
+                                    n_pts2,n_pts3,error,    &
+                                    iounit,verbose,logging, &
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_C16  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_C16
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_B_X_XY_XYZ_R16
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(B_X_R16),       intent(in)       :: BX
+         type(B_XY_R16),      intent(in)       :: BXY
+         type(B_XYZ_R16),     intent(in)       :: BXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,16)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,16)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,16)
+         if(rem) n_pts3 = n_pts3-rem
+         BX.n_cells   = n_pts1
+         BXY.n_cells  = n_pts2
+         BXYZ.n_cells = n_pts3
+         allocate(BX.B_x(BX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXY.B_x(BXY.n_cells),
+                  BXY.B_y(BXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXYZ.B_x(BXYZ.n_cells),
+                  BXYZ.B_y(BXYZ.n_cells),
+                  BXYZ.B_z(BXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_B_X_XY_XYZ_R16", &
+               emsg,__LINE__)
+     end subroutine init_B_X_XY_XYZ_R16
+  
+     
+     subroutine init_Js_XYZ_C16(JsXYZ,n_pts1,     &
+                                iounit,verbose,logging, &
+                                filename,append) !GCC$ ATTRIBUTES cold :: init_Js_XYZ_C16  !GCC$ ATTRIBUTES aligned(32) :: init_Js_XYZ_C16
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_Js_XYZ_C16
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         
+         type(Js_XYZ_C16),    intent(in)       :: JsXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,16)
+         if(rem) n_pts1 = n_pts1-rem
+         JsXYZ.n_cells = n_pts1
+         allocate(JsXYZ.Js_x(JsXYZ.n_cells),
+                  JsXYZ.Js_y(JsXYZ.n_cells),
+                  JsXYZ.Js_z(JsXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_Js_XYZ_C16", &
+               emsg,__LINE__)
+     end subroutine init_Js_XYZ_C16
+
+       
+     subroutine init_H_X_XY_XYZ_C8(HX,HXY,HXYZ,n_pts1,     &
+                                  n_pts2,n_pts3,error,    &
+                                  iounit,verbose,logging, &
+                                  filename,append) !GCC$ ATTRIBUTES cold :: init_H_X_XY_XYZ_C8  !GCC$ ATTRIBUTES aligned(32) :: init_H_X_XY_XYZ_C8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_H_X_XY_XYZ_C8
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(H_X_C8),       intent(in)       :: HX
+         type(H_XY_C8),      intent(in)       :: HXY
+         type(H_XYZ_C8),     intent(in)       :: HXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 8 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,8)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,8)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,8)
+         if(rem) n_pts3 = n_pts3-rem
+         HX.n_cells   = n_pts1
+         HXY.n_cells  = n_pts2
+         HXYZ.n_cells = n_pts3
+         allocate(HX.H_x(HX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXY.H_x(HXY.n_cells),
+                  HXY.H_y(HXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXYZ.H_x(HXYZ.n_cells),
+                  HXYZ.H_y(HXYZ.n_cells),
+                  HXYZ.H_z(HXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_H_X_XY_XYZ_C8", &
+               emsg,__LINE__)
+     end subroutine init_H_X_XY_XYZ_C8
+
+
+     subroutine init_H_X_XY_XYZ_R8(HX,HXY,HXYZ,n_pts1,     &
+                                  n_pts2,n_pts3,error,    &
+                                  iounit,verbose,logging, &
+                                  filename,append) !GCC$ ATTRIBUTES cold :: init_H_X_XY_XYZ_R8  !GCC$ ATTRIBUTES aligned(32) :: init_H_X_XY_XYZ_R8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_H_X_XY_XYZ_R8
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(H_X_R8),       intent(in)       :: HX
+         type(H_XY_R8),      intent(in)       :: HXY
+         type(H_XYZ_R8),     intent(in)       :: HXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 8 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,8)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,8)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,8)
+         if(rem) n_pts3 = n_pts3-rem
+         HX.n_cells   = n_pts1
+         HXY.n_cells  = n_pts2
+         HXYZ.n_cells = n_pts3
+         allocate(HX.H_x(HX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXY.H_x(HXY.n_cells),
+                  HXY.H_y(HXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(HXYZ.H_x(HXYZ.n_cells),
+                  HXYZ.H_y(HXYZ.n_cells),
+                  HXYZ.H_z(HXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_H_X_XY_XYZ_R8", &
+               emsg,__LINE__)
+     end subroutine init_H_X_XY_XYZ_R8
+
+
+     subroutine init_B_X_XY_XYZ_C8(BX,BXY,BXYZ,n_pts1,     &
+                                    n_pts2,n_pts3,error,    &
+                                    iounit,verbose,logging, &
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_C8  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_C8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_B_X_XY_XYZ_C8
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(B_X_C8),       intent(in)       :: BX
+         type(B_XY_C8),      intent(in)       :: BXY
+         type(B_XYZ_C8),     intent(in)       :: BXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,8)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,8)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,8)
+         if(rem) n_pts3 = n_pts3-rem
+         BX.n_cells   = n_pts1
+         BXY.n_cells  = n_pts2
+         BXYZ.n_cells = n_pts3
+         allocate(BX.B_x(BX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXY.B_x(BXY.n_cells),
+                  BXY.B_y(BXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXYZ.B_x(BXYZ.n_cells),
+                  BXYZ.B_y(BXYZ.n_cells),
+                  BXYZ.B_z(BXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_B_X_XY_XYZ_C8", &
+               emsg,__LINE__)
+     end subroutine init_B_X_XY_XYZ_C8
+
+
+     subroutine init_B_X_XY_XYZ_R8(BX,BXY,BXYZ,n_pts1,     &
+                                    n_pts2,n_pts3,error,    &
+                                    iounit,verbose,logging, &
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_R8  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_R8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_B_X_XY_XYZ_R8
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         type(B_X_R8),       intent(in)       :: BX
+         type(B_XY_R8),      intent(in)       :: BXY
+         type(B_XYZ_R8),     intent(in)       :: BXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: n_pts2
+         integer(kind=i4),    intent(inout)    :: n_pts3
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,8)
+         if(rem) n_pts1 = n_pts1-rem
+         rem = MOD(n_pts2,8)
+         if(rem) n_pts2 = n_pts2-rem
+         rem = MOD(n_pts3,8)
+         if(rem) n_pts3 = n_pts3-rem
+         BX.n_cells   = n_pts1
+         BXY.n_cells  = n_pts2
+         BXYZ.n_cells = n_pts3
+         allocate(BX.B_x(BX.n_cells),STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXY.B_x(BXY.n_cells),
+                  BXY.B_y(BXY.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         allocate(BXYZ.B_x(BXYZ.n_cells),
+                  BXYZ.B_y(BXYZ.n_cells),
+                  BXYZ.B_z(BXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_B_X_XY_XYZ_R8", &
+               emsg,__LINE__)
+     end subroutine init_B_X_XY_XYZ_R8
+  
+
+     subroutine init_Js_XYZ_C8(JsXYZ,n_pts1,     &
+                                iounit,verbose,logging, &
+                                filename,append) !GCC$ ATTRIBUTES cold :: init_Js_XYZ_C8  !GCC$ ATTRIBUTES aligned(32) :: init_Js_XYZ_C8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+       !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_Js_XYZ_C8
+       !DIR$ OPTIMIZE : 3
+#endif
+         use mod_print_error, only : handle_fatal_memory_error
+         
+         type(Js_XYZ_C8),    intent(in)       :: JsXYZ
+         integer(kind=i4),    intent(inout)    :: n_pts1
+         integer(kind=i4),    intent(inout)    :: error
+         integer(kind=i4),    intent(in)       :: iounit
+         logical(kind=i4),    intent(in)       :: verbose
+         logical(kind=i4),    intent(in)       :: logging
+         character(len=*),    intent(in)       :: filename
+         logical(kind=i4),    intent(in)       :: append
+         ! LOcals
+         character(len=256), automatic :: emsg
+         integer(kind=i4),   automatic :: rem
+         ! EXec code ....
+         ! Allow only multiplicity of 16 i.e. the value of arguments: n_ptsx
+         rem = 0
+         rem = MOD(n_pts1,8)
+         if(rem) n_pts1 = n_pts1-rem
+         JsXYZ.n_cells = n_pts1
+         allocate(JsXYZ.Js_x(JsXYZ.n_cells),
+                  JsXYZ.Js_y(JsXYZ.n_cells),
+                  JsXYZ.Js_z(JsXYZ.n_cells),
+                  STAT=error,ERRMSG=emsg)
+         if(error/=0) goto 9999
+         error = 0
+         return
+9999     call handle_fatal_memory_error(iounit,logging,verbose,append,fname, &
+              "logger: "//__FILE__// "module: ElectroMagnetics, prog unit: init_Js_XYZ_C8", &
+               emsg,__LINE__)
+     end subroutine init_Js_XYZ_C8
+
+       
+       
+
+       
+
+
+       
       
 
 
