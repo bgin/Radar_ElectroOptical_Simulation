@@ -1115,94 +1115,144 @@ module  ElectroMagnetics
      end function sdotv_zmm16r4
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     pure function cdotv_zmm16c4(v1,v2) result(res)  !GCC$ ATTRIBUTES aligned(32) :: cdotv_zmm16c4 !GCC$ ATTRIBUTES inline :: cdotv_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: cdotv_zmm16c4 
+     pure function cdotv_zmm16c4(v1x,v1y,v1z, &
+                                 v2x,v2y,v2z) result(res)  !GCC$ ATTRIBUTES aligned(32) :: cdotv_zmm16c4 !GCC$ ATTRIBUTES inline :: cdotv_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: cdotv_zmm16c4 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     pure function cdotv_zmm16c4(v1,v2) result(res)
+     pure function cdotv_zmm16c4(v1x,v1y,v1z, &
+                                 v2x,v2y,v2z) result(res)
         !DIR$ ATTRIBUTES INLINE :: cdotv_zmm16c4
         !DIR$ ATTRIBUTES VECTOR :: cdotv_zmm16c4
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cdotv_zmm16c4
 #endif
-         type(ZMM16c4),   intent(in) :: v1
-         type(ZMM16c4),   intent(in) :: v2
+         type(ZMM16c4),   intent(in) :: v1x
+         type(ZMM16c4),   intent(in) :: v1y
+         type(ZMM16c4),   intent(in) :: v1z
+         type(ZMM16c4),   intent(in) :: v2x
+         type(ZMM16c4),   intent(in) :: v2y
+         type(ZMM16c4),   intent(in) :: v2z
+         
+         !complex(kind=sp) :: res
+         type(ZMM16c4) :: res
+         type(ZMM16c4), automatic :: tx,ty,tz
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-#endif         
-         complex(kind=sp) :: res
-         type(ZMM16c4), automatic :: t0
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: t0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: tx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: ty
+         !DIR$ ATTRIBUTES ALIGN : 64 :: tz
 #endif
-         t0 = v1*v2
-         res = complex(sum(t0.re),sum(t0.im))
+         !t0 = v1*v2
+         !res = complex(sum(t0.re),sum(t0.im))
+         tx = v1x*v2x
+         ty = v1y*v2y
+         tz = v1z*v2z
+         !tx.re(0)+ty.re(0)+tz.re(0)
+         res.re = tx.re+ty.re+tz.re
+         res.im = tx.im+ty.im+tz.im
       end function cdotv_zmm16c4
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-      pure function cnorm_zmm16c4(v) result(s) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm16c4 !GCC$ ATTRIBUTES inline :: cnorm_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm16c4
+      pure function cnorm_zmm16c4(vx,vy,vz) result(vs) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm16c4 !GCC$ ATTRIBUTES inline :: cnorm_zmm16c4 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-      pure function cnorm_zmm16c4(v) result(s)
+      pure function cnorm_zmm16c4(vx,vy,vz) result(vs)
            !DIR$ ATTRIBUTES INLINE :: cnorm_zmm16c4
            !DIR$ ATTRIBUTES VECTOR :: cnorm_zmm16c4
            !DIR$ OPTIMIZE : 3
            !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cnorm_zmm16c4
 #endif
-           type(ZMM16c4),   intent(in) :: v
-           real(kind=sp) :: s
+           type(ZMM16c4),   intent(in) :: vx
+           type(ZMM16c4),   intent(in) :: vy
+           type(ZMM16c4),   intent(in) :: vz
+           
+           type(ZMM16r4_t) :: vs
            ! Local
-           type(ZMM16c4), automatic :: c
+           type(ZMM16c4), automatic :: cx,cy,cz
+           type(ZMM16c4), automatic :: t
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-           !DIR$ ATTRIBUTES ALIGN : 64 :: c
+           !DIR$ ATTRIBUTES ALIGN : 64 :: vs
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cx
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cy
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cz
 #endif
-           c = conjugate(v)
-           s = sqrt(real(cdotv_zmm16c4(v,c),kind=sp))
+           cx = conjugate(vx)
+           cy = conjugate(vy)
+           cz = conjugate(vz)
+           !s = sqrt(real(cdotv_zmm16c4(v,c),kind=sp))
+           t = cdotv_zmm16c4(vx,vy,vz, &
+                             cx,cy,cz)
+           vs.v = sqrt(t.re)
        end function cnorm_zmm16c4
 
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-      pure function cnorm_zmm8c8(v) result(s) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm8c8 !GCC$ ATTRIBUTES inline :: cnorm_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm8c8
+      pure function cnorm_zmm8c8(vx,vy,vz) result(vs) !GCC$ ATTRIBUTES aligned(32) :: cnorm_zmm8c8 !GCC$ ATTRIBUTES inline :: cnorm_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: cnorm_zmm8c8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-      pure function cnorm_zmm8c8(v) result(s)
+      pure function cnorm_zmm8c8(vx,vy,vz) result(vs)
            !DIR$ ATTRIBUTES INLINE :: cnorm_zmm8c8
            !DIR$ ATTRIBUTES VECTOR :: cnorm_zmm8c8
            !DIR$ OPTIMIZE : 3
            !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: cnorm_zmm8c8
 #endif
-           type(ZMM8c8),   intent(in) :: v
-           real(kind=dp) :: s
+           type(ZMM8c8),   intent(in) :: vx
+           type(ZMM8c8),   intent(in) :: vy
+           type(ZMM8c8),   intent(in) :: vz
+           
+           type(ZMM8r8_t)  :: vs
            ! Local
-           type(ZMM8c8), automatic :: c
+           type(ZMM8c8), automatic :: cx,cy,cz
+           type(ZMM8c8), automatic :: t
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-           !DIR$ ATTRIBUTES ALIGN : 64 :: c
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cx
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cy
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cz
+           
 #endif
-           c = conjugate(v)
-           s = sqrt(real(cdotv_zmm8c8(v,c),kind=dp))
+           !c = conjugate(v)
+           !s = sqrt(real(cdotv_zmm8c8(v,c),kind=dp))
+           cx = conjugate(vx)
+           cy = conjugate(vy)
+           cz = conjugate(vz)
+           t = zdotv_zmm8c8(vx,vy,vz, &
+                             cx,cy,cz)
+           vs.v = sqrt(t.re)
       end function cnorm_zmm8c8         
         
 
 
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     pure function zdotv_zmm8c8(v1,v2) result(res)  !GCC$ ATTRIBUTES aligned(32) :: zdotv_zmm8c8 !GCC$ ATTRIBUTES inline :: zdotv_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: zdotv_zmm8c8 
+     pure function zdotv_zmm8c8(v1x,v1y,v1z, &
+                                v2x,v2y,v2z) result(res)  !GCC$ ATTRIBUTES aligned(32) :: zdotv_zmm8c8 !GCC$ ATTRIBUTES inline :: zdotv_zmm8c8 !GCC$ ATTRIBUTES vectorcall :: zdotv_zmm8c8 
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     pure function zdotv_zmm8c8(v1,v2) result(res)
+     pure function zdotv_zmm8c8(v1x,v1y,v1z, &
+                                v2x,v2y,v2z) result(res)
         !DIR$ ATTRIBUTES INLINE :: zdotv_zmm8c8
         !DIR$ ATTRIBUTES VECTOR :: zdotv_zmm8c8
         !DIR$ OPTIMIZE : 3
         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: zdotv_zmm8c8
 #endif
-         type(ZMM8c8),   intent(in) :: v1
-         type(ZMM8c8),   intent(in) :: v2
+         type(ZMM8c8),   intent(in) :: v1x
+         type(ZMM8c8),   intent(in) :: v1y
+         type(ZMM8c8),   intent(in) :: v1z
+         type(ZMM8c8),   intent(in) :: v2x
+         type(ZMM8c8),   intent(in) :: v2y
+         type(ZMM8c8),   intent(in) :: v2z
+         
+         !complex(kind=dp) :: res
+         type(ZMM8c8) :: res
+         type(ZMM8c8), automatic :: tx,ty,tz
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED v1 : 64
-         !DIR$ ASSUME_ALIGNED v2 : 64
-#endif         
-         complex(kind=dp) :: res
-         type(ZMM8c8), automatic :: t0
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: t0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: res
+         !DIR$ ATTRIBUTES ALIGN : 64 :: tx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: ty
+         !DIR$ ATTRIBUTES ALIGN : 64 :: tz
 #endif
-         t0 = v1*v2
-         res = complex(sum(t0.re),sum(t0.im))
+         !t0 = v1*v2
+         !res = complex(sum(t0.re),sum(t0.im))
+         tx = v1x*v2x
+         ty = v1y*v2y
+         tz = v1z*v2z
+         !tx.re(0)+ty.re(0)+tz.re(0)
+         res.re = tx.re+ty.re+tz.re
+         res.im = tx.im+ty.im+tz.im
      end function zdotv_zmm8c8
 
 
@@ -1774,9 +1824,15 @@ module  ElectroMagnetics
 
        
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_P_zmm16c4 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_P_zmm16c4
+      subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r, &
+                                       px,py,pz,              &
+                                       H_x,H_y,H_z,           &
+                                       B_x,B_y,B_z) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_P_zmm16c4 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_P_zmm16c4
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
+     subroutine B_XYZ_H_XYZ_P_zmm16c4(theta,phi,psi,omega,r, &
+                                       px,py,pz,              &
+                                       H_x,H_y,H_z,           &
+                                       B_x,B_y,B_z)
          !DIR$ ATTRIBUTES INLINE :: B_XYZ_H_XYZ_P_zmm16c4
          !DIR$ ATTRIBUTES VECTOR :: B_XYZ_H_XYZ_P_zmm16c4
          !DIR$ OPTIMIZE : 3
@@ -1827,61 +1883,174 @@ module  ElectroMagnetics
                                vdirx,vdiry,vdirz,    &
                                k,omega,px,py,pz      &
                                B_x,B_y,B_z)
-     end subroutine B_XYZ_H_XYZ_P_zmm16c4
-       
-      
+    end subroutine B_XYZ_H_XYZ_P_zmm16c4
+
+
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-     subroutine EMF3Dp_zmm8c8(theta,phi,psi,omega,r,p,Hxyz,Bxyz) !GCC$ ATTRIBUTES aligned(32) :: EMF3Dp_zmm8c8 !GCC$ ATTRIBUTES inline :: EMF3Dp_zmm8c8
+     subroutine B_XYZ_H_XYZ_P_zmm8c8(theta,phi,psi,omega,r, &
+                                       px,py,pz,              &
+                                       H_x,H_y,H_z,           &
+                                       B_x,B_y,B_z) !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_P_zmm8c8 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_P_zmm8c8
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
-     subroutine EMF3Dp_zmm8c8(theta,phi,psi,omega,r,p,Hxyz,Bxyz)
-         !DIR$ ATTRIBUTES INLINE :: EMF3Dp_zmm8c8
-         !DIR$ ATTRIBUTES VECTOR :: EMF3Dp_zmm8c8
+     subroutine B_XYZ_H_XYZ_P_zmm8c8(theta,phi,psi,omega,r, &
+                                       px,py,pz,              &
+                                       H_x,H_y,H_z,           &
+                                       B_x,B_y,B_z)
+         !DIR$ ATTRIBUTES INLINE :: B_XYZ_H_XYZ_P_zmm8c8
+         !DIR$ ATTRIBUTES VECTOR :: B_XYZ_H_XYZ_P_zmm8c8
          !DIR$ OPTIMIZE : 3
-         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: EMF3Dp_zmm8c8
+         !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_H_XYZ_P_zmm8c8
 #endif
-         type(ZMM8r8_t),               intent(in) :: theta
-         type(ZMM8r8_t),               intent(in) :: phi
-         type(ZMM8r8_t),               intent(in) :: psi
-         type(ZMM8r8_t),               intent(in) :: omega
-         type(ZMM8c8),                 intent(in) :: r
-         type(ZMM8r8_t), dimension(3), intent(in) :: p
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED p:64
-#endif
-         type(ZMM8c8),   dimension(3), intent(inout) :: Hxyz
-         type(ZMM8c8),   dimension(3), intent(inout) :: Bxyz
-#if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ASSUME_ALIGNED Hxyz:64
-         !DIR$ ASSUME_ALIGNED Bxyz:64
-#endif
+         type(ZMM8r8_t),               intent(in)    :: theta
+         type(ZMM8r8_t),               intent(in)    :: phi
+         type(ZMM8r8_t),               intent(in)    :: psi
+         type(ZMM8r8_t),               intent(in)    :: omega
+         type(ZMM8c8),                 intent(in)    :: r
+         type(ZMM8r8_t),               intent(in)    :: px
+         type(ZMM8r8_t),               intent(in)    :: py
+         type(ZMM8r8_t),               intent(in)    :: pz
+         type(ZMM8c8),                 intent(inout) :: H_x
+         type(ZMM8c8),                 intent(inout) :: H_y
+         type(ZMM8c8),                 intent(inout) :: H_z
+         type(ZMM8c8),                 intent(inout) :: B_x
+         type(ZMM8c8),                 intent(inout) :: B_y
+         type(ZMM8c8),                 intent(inout) :: B_z
+         
          ! Locals
-         !type(ZMM8r8_t), automatic, dimension(3) :: vpol
-         !type(ZMM8r8_t), automatic, dimension(3) :: vdir
-         type(ZMM8r8_t), automatic :: vpol_x
-         type(ZMM8r8_t), automatic :: vpol_y
-         type(ZMM8r8_t), automatic :: vpol_z
-         type(ZMM8r8_t), automatic :: vdir_x
-         type(ZMM8r8_t), automatic :: vdir_y
-         type(ZMM8r8_t), automatic :: vdir_z
-         type(ZMM8c8),   automatic               :: k
+         type(ZMM8r8_t), automatic :: vpolx
+         type(ZMM8r8_t), automatic :: vpoly
+         type(ZMM8r8_t), automatic :: vpolz
+         type(ZMM8r8_t), automatic :: vdirx
+         type(ZMM8r8_t), automatic :: vdiry
+         type(ZMM8r8_t), automatic :: vdirz
+         type(ZMM8c8),   automatic :: k
 #if defined(__INTEL_COMPILER) || defined(__ICC)
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_x
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_y
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vpol_z
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_x
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_y
-         !DIR$ ATTRIBUTES ALIGN : 64 :: vdir_z
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpolx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpoly
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vpolz
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdirx
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdiry
+         !DIR$ ATTRIBUTES ALIGN : 64 :: vdirz
          !DIR$ ATTRIBUTES ALIGN : 64 :: k
 #endif
          
-         call dir_vector_zmm8r8(theta,phi,vdir)
-         k = r*omega.v/cr8.v
-         call pol_vector_zmm8r8(theta,phi,psi,vpol)
-         call EF3Dvp_zmm8c8(vpol,vdir,k,p,Hxyz)
-         call MF3Dvp_zmm8c8(vpol,vdir,k,omega,p,Bxyz)
-      end subroutine EMF3Dp_zmm8c8
-
-
+         call dir_vector_zmm8r8(theta,phi, &
+                                 vdirx,vdiry,vdirz)
+         k = r*omega.v/cr4.v
+         call pol_vector_zmm8r8(theta,phi,psi, &
+                                 vpolx,vpoly,vpolz)
+         call H_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz,     &
+                               vdirx,vdiry,vdirz,k,  &
+                               px,py,pz,H_x,H_y,H_z)
+         call B_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz,     &
+                               vdirx,vdiry,vdirz,    &
+                               k,omega,px,py,pz      &
+                               B_x,B_y,B_z)
+     end subroutine B_XYZ_H_XYZ_P_zmm8c8    
+       
+      
+     ! Electric and Magnetic Fields elliptically polarized
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine B_XYZ_H_XYZ_EP_zmm16c4(theta,phi,omega,phase,refi, &
+                                       px,py,pz,H_x,H_y,H_z,       &
+                                       B_x,B_y,B_z)  !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_EP_zmm16c4 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_EP_zmm16c4
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine B_XYZ_H_XYZ_EP_zmm16c4(theta,phi,omega,phase,refi, &
+                                       px,py,pz,H_x,H_y,H_z,       &
+                                       B_x,B_y,B_z)
+              !DIR$ ATTRIBUTES INLINE :: B_XYZ_H_XYZ_EP_zmm16c4
+              !DIR$ ATTRIBUTES VECTOR :: B_XYZ_H_XYZ_EP_zmm16c4
+              !DIR$ OPTIMIZE : 3
+              !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_H_XYZ_EP_zmm16c4
+#endif
+              type(ZMM16r4_t),        intent(in)    :: theta
+              type(ZMM16r4_t),        intent(in)    :: phi
+              type(ZMM16r4_t),        intent(in)    :: omega
+              type(ZMM16c4),          intent(in)    :: phase
+              type(ZMM16c4),          intent(in)    :: refi
+              type(ZMM16c4),          intent(in)    :: px
+              type(ZMM16c4),          intent(in)    :: py
+              type(ZMM16c4),          intent(in)    :: pz
+              type(ZMM16c4),          intent(inout) :: H_x
+              type(ZMM16c4),          intent(inout) :: H_y
+              type(ZMM16c4),          intent(inout) :: H_z
+              type(ZMM16c4),          intent(inout) :: B_x
+              type(ZMM16c4),          intent(inout) :: B_y
+              type(ZMM16c4),          intent(inout) :: B_z
+              ! Locals
+              type(ZMM16r4_t), parameter :: psi_0 = ZMM16r4_t(0.0_sp)
+              type(ZMM16c4),   automatic :: H_x_1
+              type(ZMM16c4),   automatic :: H_y_1
+              type(ZMM16c4),   automatic :: H_z_1
+              type(ZMM16c4),   automatic :: H_x_2
+              type(ZMM16c4),   automatic :: H_y_2
+              type(ZMM16c4),   automatic :: H_z_2
+              type(ZMM16c4),   automatic :: k
+              type(ZMM16c4),   automatic :: t0
+              type(ZMM16c4),   automatic :: cdirx
+              type(ZMM16c4),   automatic :: cdiry
+              type(ZMM16c4),   automatic :: cdirz
+              type(ZMM16r4_t), automatic :: vpolx
+              type(ZMM16r4_t), automatic :: vpoly
+              type(ZMM16r4_t), automatic :: vpolz
+              type(ZMM16r4_t), automatic :: vdirx
+              type(ZMM16r4_t), automatic :: vdiry
+              type(ZMM16r4_t), automatic :: vdirz
+              type(ZMM16r4_t), automatic :: cn
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_x_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_y_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_z_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_x_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_y_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_z_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: k
+              !DIR$ ATTRIBUTES ALIGN : 64 :: t0
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpolx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpoly
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpolz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdirx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdiry
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdirz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdirx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdiry
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdirz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cn
+#endif
+              ! Exec code ...
+              
+              call dir_vector_zmm16r4(theta,phi, &
+                                      vdirx,vdiry,vdirz)
+              cdirx = zmm16r41x_init(vdirx)
+              k = refi.v*omega.v/cr4
+              cdiry = zmm16r41x(vdiry)
+              call pol_vector_zmm16r4(theta,phi,psi_0, &
+                   vpolx,vpoly,vpolz)
+              cdirz = zmm16r41x(vdirz)
+              call H_XYZ_VP_zmm16c4(vpolx,vpoly,vpolz, &
+                                    vdirx,vdiry,vdirz, &
+                                    px,py,pz,k,        &
+                                    H_x_1,H_y_1,H_z_1)
+              call scrossc_zmm16c4(cdirx,cdiry,cdirz, &
+                                   H_x_1,H_y_1,H_z_1, &
+                                   H_x_2,H_y_2,H_z_2)
+              H_x = H_x_1+phase*H_x_2
+              H_y = H_y_1+phase*H_y_2
+              H_z = H_z_1+phase*H_z_2
+              cn  = cnorm_zmm16c4(H_x,H_y,H_z)
+              H_x = H_x/cn
+              H_y = H_y/cn
+              H_z = H_z/cn
+              t0  = k/(omega.v*mu0r16.v)
+              call scrossc_zmm16c4(cdirx,cdiry,cdirz, &
+                                   H_x,H_y,H_z,       &
+                                   H_x_2,H_y_2,H_z_2)
+              B_x = t0*H_x_2
+              B_y = t0*H_y_2
+              B_z = t0*H_z_2
+      end subroutine B_XYZ_H_XYZ_EP_zmm16c4
+      
+        
        
             
 
