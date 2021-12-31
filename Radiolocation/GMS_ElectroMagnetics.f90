@@ -79,6 +79,79 @@ module  ElectroMagnetics
      !         Data types for possible MoM usage                   !
      !=============================================================!
 
+     ! Input data for MM Direct Volume Integral code
+     type, public :: MM_DVI_Input
+           public
+           integer(kind=i4), dimension(3) :: ndiv ! Number of division (x,y,x) for each rectangular volume cell
+           complex(kind=dp) :: inc_eth  ! Complex value of E (incident theta)
+           complex(kind=dp) :: inc_eph  ! Complex value of E (incident phi)
+           real(kind=dp)    :: freq     ! [Mhz]
+           real(kind=dp)    :: inc_th   ! [Deg], theta of incident wave angle
+           real(kind=dp)    :: inc_ph   ! [Deg], phi   of incident wave angle
+           real(kind=dp)    :: sc_th    ! [Deg]  initial scattered theta angle
+           real(kind=dp)    :: sc_ph    ! [Deg]  initial scattered phi angle
+           integer(kind=i4) :: nth      ! Number of theta angle increments
+           integer(kind=i4) :: nph      ! Number of phi angle increments
+           integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
+           logical(kind=i1) :: accuracy !if .false.  no numerical integration, if .true. numerical integration will be
+           !                                       computed
+#if defined(__INTEL_COMPILER) || defined(__ICC)   
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cx ! X-coordinate of n-th cell centre
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cy ! Y-coordinate of n-th cell centre
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cz ! Z-coordinate of n-th cell centre
+           real(kind=dp),    allocatable, dimension(:)    :: cell_vl ! Volume of n-th cell
+           complex(kind=dp), allocatable, dimension(:)    :: cell_ee ! Complex relative permittivity of n-th cell
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dx ! X-dimension of  n-th cell
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dy ! Y-dimension of  n-th cell
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dz ! Z-dimension of  n-th cell
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_cx
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_cy
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_cz
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_czj8u7
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_ee
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dx
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dy
+           !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dz
+           
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cx !GCC$ ATTRIBUTES aligned(64) :: cell_cx
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cy !GCC$ ATTRIBUTES aligned(64) :: cell_cy
+           real(kind=dp),    allocatable, dimension(:)    :: cell_cz !GCC$ ATTRIBUTES aligned(64) :: cell_cz
+           real(kind=dp),    allocatable, dimension(:)    :: cell_vl !GCC$ ATTRIBUTES aligned(64) :: cell_vl
+           complex(kind=dp), allocatable, dimension(:)    :: cell_ee !GCC$ ATTRIBUTES aligned(64) :: cell_ee
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dx !GCC$ ATTRIBUTES aligned(64) :: cell_dx
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dy !GCC$ ATTRIBUTES aligned(64) :: cell_dy
+           real(kind=dp),    allocatable, dimension(:)    :: cell_dz !GCC$ ATTRIBUTES aligned(64) :: cell_dz
+#endif
+     end type MM_DVI_Input
+
+     ! Output data for MM Direct Volume Integral code
+     type, public :: MM_DVI_Output
+           public
+           integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
+#if defined(__INTEL_COMPILER) || defined(__ICC)             
+           complex(kind=dp), allocatable, dimension(:) :: EEx !Complex magnitude x-component [V/m]
+           complex(kind=dp), allocatable, dimension(:) :: EEy !Complex magnitude y-component [V/m]
+           complex(kind=dp), allocatable, dimension(:) :: EEz !Complex magnitude z-component [V/m]
+           real(kind=dp),    allocatable, dimension(:) :: EEt !Total Electric Field amplitude [V/m]
+           real(kind=dp),    allocatable, dimension(:) :: PEd !Power dissipation [V/m^3]
+           real(kind=dp),    allocatable, dimension(:) :: PEs !Energy density
+           !DIR$ ATTRIBUTES ALIGN : 64 :: EEx
+           !DIR$ ATTRIBUTES ALIGN : 64 :: EEy
+           !DIR$ ATTRIBUTES ALIGN : 64 :: EEz
+           !DIR$ ATTRIBUTES ALIGN : 64 :: EEt
+           !DIR$ ATTRIBUTES ALIGN : 64 :: PEd
+           !DIR$ ATTRIBUTES ALIGN : 64 :: PEs
+#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+           complex(kind=dp), allocatable, dimension(:) :: EEx !GCC$ ATTRIBUTES aligned(64) :: EEx
+           complex(kind=dp), allocatable, dimension(:) :: EEy !GCC$ ATTRIBUTES aligned(64) :: EEy
+           complex(kind=dp), allocatable, dimension(:) :: EEz !GCC$ ATTRIBUTES aligned(64) :: EEz
+           real(kind=dp),    allocatable, dimension(:) :: EEt !GCC$ ATTRIBUTES aligned(64) :: EEt
+           real(kind=dp),    allocatable, dimension(:) :: PEd !GCC$ ATTRIBUTES aligned(64) :: PEd
+           real(kind=dp),    allocatable, dimension(:) :: PEs !GCC$ ATTRIBUTES aligned(64) :: PEs
+#endif
+     end type MM_DVI_Output
      
      ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
      type, public :: H_X_C16
@@ -2049,6 +2122,108 @@ module  ElectroMagnetics
               B_y = t0*H_y_2
               B_z = t0*H_z_2
       end subroutine B_XYZ_H_XYZ_EP_zmm16c4
+      
+
+      ! Electric and Magnetic Fields elliptically polarized
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
+     subroutine B_XYZ_H_XYZ_EP_zmm8c8(theta,phi,omega,phase,refi, &
+                                       px,py,pz,H_x,H_y,H_z,       &
+                                       B_x,B_y,B_z)  !GCC$ ATTRIBUTES aligned(32) :: B_XYZ_H_XYZ_EP_zmm8c8 !GCC$ ATTRIBUTES inline :: B_XYZ_H_XYZ_EP_zmm8c8
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine B_XYZ_H_XYZ_EP_zmm8c8(theta,phi,omega,phase,refi, &
+                                       px,py,pz,H_x,H_y,H_z,       &
+                                       B_x,B_y,B_z)
+              !DIR$ ATTRIBUTES INLINE :: B_XYZ_H_XYZ_EP_zmm8c8
+              !DIR$ ATTRIBUTES VECTOR :: B_XYZ_H_XYZ_EP_zmm8c8
+              !DIR$ OPTIMIZE : 3
+              !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: B_XYZ_H_XYZ_EP_zmm8c8
+#endif
+              type(ZMM8r8_t),        intent(in)    :: theta
+              type(ZMM8r8_t),        intent(in)    :: phi
+              type(ZMM8r8_t),        intent(in)    :: omega
+              type(ZMM8c8),          intent(in)    :: phase
+              type(ZMM8c8),          intent(in)    :: refi
+              type(ZMM8c8),          intent(in)    :: px
+              type(ZMM8c8),          intent(in)    :: py
+              type(ZMM8c8),          intent(in)    :: pz
+              type(ZMM8c8),          intent(inout) :: H_x
+              type(ZMM8c8),          intent(inout) :: H_y
+              type(ZMM8c8),          intent(inout) :: H_z
+              type(ZMM8c8),          intent(inout) :: B_x
+              type(ZMM8c8),          intent(inout) :: B_y
+              type(ZMM8c8),          intent(inout) :: B_z
+              ! Locals
+              type(ZMM8r8_t), parameter :: psi_0 = ZMM8r8_t(0.0_dp)
+              type(ZMM18c8),   automatic :: H_x_1
+              type(ZMM8c8),   automatic :: H_y_1
+              type(ZMM8c8),   automatic :: H_z_1
+              type(ZMM8c8),   automatic :: H_x_2
+              type(ZMM8c8),   automatic :: H_y_2
+              type(ZMM8c8),   automatic :: H_z_2
+              type(ZMM8c8),   automatic :: k
+              type(ZMM8c8),   automatic :: t0
+              type(ZMM8c8),   automatic :: cdirx
+              type(ZMM8c8),   automatic :: cdiry
+              type(ZMM8c8),   automatic :: cdirz
+              type(ZMM8r8_t), automatic :: vpolx
+              type(ZMM8r8_t), automatic :: vpoly
+              type(ZMM8r8_t), automatic :: vpolz
+              type(ZMM8r8_t), automatic :: vdirx
+              type(ZMM8r8_t), automatic :: vdiry
+              type(ZMM8r8_t), automatic :: vdirz
+              type(ZMM8r8_t), automatic :: cn
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_x_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_y_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_z_1
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_x_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_y_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: H_z_2
+              !DIR$ ATTRIBUTES ALIGN : 64 :: k
+              !DIR$ ATTRIBUTES ALIGN : 64 :: t0
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpolx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpoly
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vpolz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdirx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdiry
+              !DIR$ ATTRIBUTES ALIGN : 64 :: vdirz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdirx
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdiry
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cdirz
+              !DIR$ ATTRIBUTES ALIGN : 64 :: cn
+#endif
+              ! Exec code ...
+              
+              call dir_vector_zmm8r8(theta,phi, &
+                                      vdirx,vdiry,vdirz)
+              cdirx = zmm8r81x_init(vdirx)
+              k = refi.v*omega.v/cr4
+              cdiry = zmm8r81x(vdiry)
+              call pol_vector_zmm8r8(theta,phi,psi_0, &
+                   vpolx,vpoly,vpolz)
+              cdirz = zmm8r81x(vdirz)
+              call H_XYZ_VP_zmm8c8(vpolx,vpoly,vpolz, &
+                                    vdirx,vdiry,vdirz, &
+                                    px,py,pz,k,        &
+                                    H_x_1,H_y_1,H_z_1)
+              call scrossc_zmm8c8(cdirx,cdiry,cdirz, &
+                                   H_x_1,H_y_1,H_z_1, &
+                                   H_x_2,H_y_2,H_z_2)
+              H_x = H_x_1+phase*H_x_2
+              H_y = H_y_1+phase*H_y_2
+              H_z = H_z_1+phase*H_z_2
+              cn  = cnorm_zmm8c8(H_x,H_y,H_z)
+              H_x = H_x/cn
+              H_y = H_y/cn
+              H_z = H_z/cn
+              t0  = k/(omega.v*mu0r8.v)
+              call scrossc_zmm8c8(cdirx,cdiry,cdirz, &
+                                   H_x,H_y,H_z,       &
+                                   H_x_2,H_y_2,H_z_2)
+              B_x = t0*H_x_2
+              B_y = t0*H_y_2
+              B_z = t0*H_z_2
+      end subroutine B_XYZ_H_XYZ_EP_zmm8c8
       
         
        
