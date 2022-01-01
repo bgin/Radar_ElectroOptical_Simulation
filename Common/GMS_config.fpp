@@ -304,8 +304,17 @@ Compiler optimization settings.
 #endif
     
 
-    
+#if !defined(USE_STL_MESH)
+    #define USE_STL_MESH 1
+#endif    
 
+#if !defined(USE_OBJ_MESH)
+    #define USE_OBJ_MESH 0
+#endif
+
+#if !defined(USE_DEFAULT_MESH)
+    #define USE_DEFAULT_MESH 0
+#endif
     
 #ifndef CACHE_LINE_SIZE
    #define CACHE_LINE_SIZE 64
