@@ -43,7 +43,7 @@ module cylindrical_scattering
  !=================================================================================
      ! Tab:5 col - Type and etc.. definitions
      ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds,    only : i4,sp
+     use mod_kinds,    only : i4,sp,dp
      use omp_lib
      implicit none
      public
