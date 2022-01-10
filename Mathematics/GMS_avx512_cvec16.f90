@@ -42,7 +42,7 @@ module  avx512_cvec16
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-     use mod_kinds, only : int1,int4,sp
+     use mod_kinds, only : i1,i4,sp
      use mod_vectypes, only : ZMM16r4_t
      use, intrinsic :: ISO_C_BINDING
      implicit none
@@ -52,13 +52,13 @@ module  avx512_cvec16
      !=====================================================59
 
      ! Major version
-     integer(kind=int4), parameter :: MOD_AVX512_CVEC16_MAJOR = 1
+     integer(kind=i4), parameter :: MOD_AVX512_CVEC16_MAJOR = 1
      ! Minor version
-     integer(kind=int4), parameter :: MOD_AVX512_CVEC16_MINOR = 0
+     integer(kind=i4), parameter :: MOD_AVX512_CVEC16_MINOR = 0
      ! Micro version
-     integer(kind=int4), parameter :: MOD_AVX512_CVEC16_MICRO = 1
+     integer(kind=i4), parameter :: MOD_AVX512_CVEC16_MICRO = 1
      ! Full version
-     integer(kind=int4), parameter :: MOD_AVX512_CVEC16_FULLVER = &
+     integer(kind=i4), parameter :: MOD_AVX512_CVEC16_FULLVER = &
           1000*MOD_AVX512_CVEC16_MAJOR+100*MOD_AVX512_CVEC16_MINOR+10*MOD_AVX512_CVEC16_MICRO
      ! Module creation date
      character(*),       parameter :: MOD_AVX512_CVEC16_CREATION_DATE = "03-02-2020 11:57 +00200 (MON 03 FEB 2020 GMT+2)"
@@ -70,7 +70,7 @@ module  avx512_cvec16
      character(*),       parameter :: MOD_AVX512_CVEC16_SYNOPSIS      = "Packed complex vector of 16 elements (single precision)"
 
      type, public :: ZMM16c4
-        public
+        
         sequence
         real(kind=sp), dimension(0:15) :: re
         real(kind=sp), dimension(0:15) :: im
