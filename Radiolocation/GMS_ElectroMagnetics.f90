@@ -79,7 +79,7 @@ module  ElectroMagnetics
      
      ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
      type, public :: H_X_C16
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
@@ -91,7 +91,7 @@ module  ElectroMagnetics
 
      ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_C16
-           public
+           
            integer(kind=i4) :: n_cells  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
@@ -108,7 +108,7 @@ module  ElectroMagnetics
 
      ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
      type, public :: H_XYZ_C16
-           public
+          
            integer(kind=i4) :: n_cell  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: H_x
@@ -127,7 +127,7 @@ module  ElectroMagnetics
 
       ! Real Electric Field 3D (Packed-AoS) data type decomposed.
       type, public :: H_XYZ_R16
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
@@ -147,7 +147,7 @@ module  ElectroMagnetics
 
       ! Real Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_R16
-            public
+            
            integer(kind=i4) :: n_cells 
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
@@ -166,7 +166,7 @@ module  ElectroMagnetics
         
       ! Real Electric Field 1D (Packed-AoS) data type decomposed.
       type, public :: H_X_R16
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16r4_t), allocatable, dimension(:) :: H_x
@@ -180,7 +180,7 @@ module  ElectroMagnetics
 
      ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
      type, public :: B_X_C16
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
@@ -195,7 +195,7 @@ module  ElectroMagnetics
 
        ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_C16
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
@@ -211,7 +211,7 @@ module  ElectroMagnetics
 
      ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
      type, public :: B_XYZ_C16
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM16c4), allocatable, dimension(:) :: B_x
@@ -231,7 +231,7 @@ module  ElectroMagnetics
 
       ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
       type, public :: B_XYZ_R16
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -252,7 +252,7 @@ module  ElectroMagnetics
       
       ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_R16
-            public
+            
             integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
             
@@ -273,7 +273,7 @@ module  ElectroMagnetics
 
       ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
       type, public :: B_X_R16
-            public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -289,7 +289,7 @@ module  ElectroMagnetics
         
       ! Complex Surface currents 3D (Packed-AoS) data type.
       type, public :: Js_XYZ_C16
-            public
+           
             integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -313,7 +313,7 @@ module  ElectroMagnetics
       
          ! Complex Electric Field 1D (Packed-AoS) data type decomposed.
      type, public :: H_X_C8
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches for MoM code.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
@@ -325,7 +325,7 @@ module  ElectroMagnetics
 
      ! Complex Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_C8
-           public
+          
            integer(kind=i4) :: n_cells  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
@@ -342,7 +342,7 @@ module  ElectroMagnetics
 
      ! Complex Electric Field 3D (Packed-AoS) data type decomposed.
      type, public :: H_XYZ_C8
-           public
+          
            integer(kind=i4) :: n_cell  ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: H_x
@@ -361,7 +361,7 @@ module  ElectroMagnetics
 
       ! Real Electric Field 3D (Packed-AoS) data type decomposed.
       type, public :: H_XYZ_R8
-            public
+            
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
@@ -381,7 +381,7 @@ module  ElectroMagnetics
 
       ! Real Electric Field 2D (Packed-AoS) data type decomposed.
       type, public :: H_XY_R8
-            public
+          
            integer(kind=i4) :: n_cells 
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
@@ -400,7 +400,7 @@ module  ElectroMagnetics
         
       ! Real Electric Field 1D (Packed-AoS) data type decomposed.
       type, public :: H_X_R8
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8r8_t), allocatable, dimension(:) :: H_x
@@ -414,7 +414,7 @@ module  ElectroMagnetics
 
      ! Complex Magnetic Field 1D (Packed-AoS) data type decomposed.  
      type, public :: B_X_C8
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
@@ -429,7 +429,7 @@ module  ElectroMagnetics
 
        ! Complex Magnetic  Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_C8
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
@@ -445,7 +445,7 @@ module  ElectroMagnetics
 
      ! Complex Magnetic Field 3D (Packed-AoS) data type decomposed.
      type, public :: B_XYZ_C8
-           public
+          
            integer(kind=i4) :: n_cells ! number of cells i.e. patches
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
            type(ZMM8c8), allocatable, dimension(:) :: B_x
@@ -465,7 +465,7 @@ module  ElectroMagnetics
 
       ! Real Magnetic Field 3D (Packed-AoS) data type decomposed.
       type, public :: B_XYZ_R8
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -486,7 +486,7 @@ module  ElectroMagnetics
       
       ! Real Magnetic Field 2D (Packed-AoS) data type decomposed.
       type, public :: B_XY_R8
-            public
+            
             integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
             
@@ -507,7 +507,7 @@ module  ElectroMagnetics
 
       ! Real Magnetic Field 1D (Packed-AoS) data type decomposed.
       type, public :: B_X_R8
-            public
+           
            integer(kind=i4) :: n_cells ! number of cells i.e. patches each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
@@ -523,7 +523,7 @@ module  ElectroMagnetics
         
       ! Complex Surface currents 3D (Packed-AoS) data type.
       type, public :: Js_XYZ_C8
-            public
+           
             integer(kind=i4) :: n_cells ! number of cells i.e. patches, each Packed-AoS operates on 16 cells
                                         ! simultaneously.
 #if defined(__INTEL_COMPILER) || defined(__ICC)        
