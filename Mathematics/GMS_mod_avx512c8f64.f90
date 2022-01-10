@@ -1,6 +1,6 @@
 
 
-module mod_avx512c8f64
+module mod_avx512_cvec8
 
  !===================================================================================85
  !---------------------------- DESCRIPTION ------------------------------------------85
@@ -8,7 +8,7 @@ module mod_avx512c8f64
  !
  !
  !          Module  name:
- !                         'mod_avx512c8f64
+ !                         'mod_avx512_cvec8
  !          
  !          Purpose:
  !                      This module contains a decomposed to real and imaginary
@@ -1882,4 +1882,4 @@ module mod_avx512c8f64
 
       
      
-end module mod_avx512c8f64
+end module mod_avx512_cvec8
