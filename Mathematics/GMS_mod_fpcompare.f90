@@ -826,7 +826,7 @@ CONTAINS
 !============================================================================================!
 
 !DIR$ ATTRIBUTES INLINE :: xmm2r8_equalto_xmm2r8
-  pure elemental function xmm2r8_equalto_xmm2r8(x,y) result(compare)
+  pure  function xmm2r8_equalto_xmm2r8(x,y) result(compare)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_equalto_xmm2r8
 !DIR$ ATTRIBUTES VECTOR        :: xmm2r8_equalto_xmm2r8
     type(XMM2r8_t),      intent(in) :: x
@@ -838,7 +838,7 @@ CONTAINS
   end function xmm2r8_equalto_xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: xmm4r4_equalto_xmm4r4   
-  pure elemental function xmm4r4_equalto_xmm4r4(x,y) result(compare)
+  pure  function xmm4r4_equalto_xmm4r4(x,y) result(compare)
 !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_equalto_xmm4r4
 !DIR$ ATTRIBUTES VECTOR        :: xmm4r4_equalto_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
@@ -851,7 +851,7 @@ CONTAINS
   end function xmm4r4_equalto_xmm4r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm4r8_equalto_ymm4r8
-  pure elemental function ymm4r8_equalto_ymm4r8(x,y) result(compare)
+  pure  function ymm4r8_equalto_ymm4r8(x,y) result(compare)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_equalto_ymm4r8
     !DIR$ ATTRIBUTES VECTOR :: ymm4r8_equalto_ymm4r8
     type(YMM4r8_t),        intent(in) :: x
@@ -862,7 +862,7 @@ CONTAINS
   end function ymm4r8_equalto_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_equalto_ymm8r4
-  pure elemental function ymm8r4_equalto_ymm8r4(x,y) result(compare)
+  pure  function ymm8r4_equalto_ymm8r4(x,y) result(compare)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_equalto_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: ymm8r4_equalto_ymm8r4
     type(YMM8r4_t),        intent(in) :: x
@@ -874,7 +874,7 @@ CONTAINS
   end function ymm8r4_equalto_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_equalto_zmm16r4
-  pure elemental function zmm16r4_equalto_zmm16r4(x,y) result(compare)
+  pure function zmm16r4_equalto_zmm16r4(x,y) result(compare)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_equalto_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: zmm16r4_equalto_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
@@ -886,7 +886,7 @@ CONTAINS
   end function zmm16r4_equalto_zmm16r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_equalto_zmm8r8
-  pure elemental function zmm8r8_equalto_zmm8r8(x,y) result(compare)
+  pure function zmm8r8_equalto_zmm8r8(x,y) result(compare)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_equalto_zmm8r8
     !DIR$ ATTRIBUTES VECTOR :: zmm8r8_equalto_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
@@ -897,7 +897,7 @@ CONTAINS
   end function zmm8r8_equalto_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_rgt_xmm2r8
-  pure elemental function xmm2r8_rgt_xmm2r8(x,y) result(gt)
+  pure  function xmm2r8_rgt_xmm2r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_rgt_xmm2r8
     !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rgt_xmm2r8
     type(XMM2r8_t),      intent(in) :: x
@@ -916,7 +916,7 @@ CONTAINS
   end function xmm2r8_rgt_xmm2r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_rgt_xmm4r4
-  pure elemental function xmm4r4_rgt_xmm4r4(x,y) result(gt)
+  pure  function xmm4r4_rgt_xmm4r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_rgt_xmm4r4
     !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rgt_xmm4r4
     type(XMM4r4_t),     intent(in) :: x
@@ -935,7 +935,7 @@ CONTAINS
   end function xmm4r4_rgt_xmm4r4
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_rgt_ymm4r8
-  pure elemental function ymm4r8_rgt_ymm4r8(x,y) result(gt)
+  pure  function ymm4r8_rgt_ymm4r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_rgt_ymm4r8
     !DIR$ ATTRIBUTES VECTOR  :: ymm4r8_rgt_ymm4r8
     type(YMM4r8_t),          intent(in) :: x
@@ -954,7 +954,7 @@ CONTAINS
   end function ymm4r8_rgt_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_rgt_ymm8r4
-  pure elemental function ymm8r4_rgt_ymm8r4(x,y) result(gt)
+  pure  function ymm8r4_rgt_ymm8r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_rgt_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rgt_ymm8r4
     type(YMM8r4_t),       intent(in) :: x
@@ -974,7 +974,7 @@ CONTAINS
   end function ymm8r4_rgt_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_rgt_zmm16r4
-  pure elemental function zmm16r4_rgt_zmm16r4(x,y) result(gt)
+  pure  function zmm16r4_rgt_zmm16r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_rgt_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rgt_zmm16r4
     type(ZMM16r4_t),   intent(in) :: x
@@ -994,7 +994,7 @@ CONTAINS
   end function zmm16r4_rgt_zmm16r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_rgt_zmm8r8
-  pure elemental function zmm8r8_rgt_zmm8r8(x,y) result(gt)
+  pure  function zmm8r8_rgt_zmm8r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_rgt_zmm8r8
     !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rgt_zmm8r8
     type(ZMM8r8_t),      intent(in) :: x
@@ -1014,7 +1014,7 @@ CONTAINS
   end function zmm8r8_rgt_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_rlt_xmm2r8
-  pure elemental function xmm2r8_rlt_xmm2r8(x,y) result(gt)
+  pure  function xmm2r8_rlt_xmm2r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_rlt_xmm2r8
     !DIR$ ATTRIBUTES VECTOR :: xmm2r8_rlt_xmm2r8
     type(XMM2r8_t),        intent(in) :: x
@@ -1032,7 +1032,7 @@ CONTAINS
   end function xmm2r8_rlt_xmm2r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_rlt_xmm4r4
-  pure elemental function xmm4r4_rlt_xmm4r4(x,y) result(gt)
+  pure function xmm4r4_rlt_xmm4r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_rlt_xmm4r4
     !DIR$ ATTRIBUTES VECTOR :: xmm4r4_rlt_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
@@ -1052,7 +1052,7 @@ CONTAINS
   end function xmm4r4_rlt_xmm4r4
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_rlt_ymm4r8
-  pure elemental function ymm4r8_rlt_ymm4r8(x,y) result(gt)
+  pure  function ymm4r8_rlt_ymm4r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_rlt_ymm4r8
     !DIR$ ATTRIBUTES VECTOR :: ymm4r8_rlt_ymm4r8
     type(YMM4r8_t),       intent(in) :: x
@@ -1073,7 +1073,7 @@ CONTAINS
   end function ymm4r8_rlt_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_rlt_ymm8r4
-  pure elemental function ymm8r4_rlt_ymm8r4(x,y) result(gt)
+  pure function ymm8r4_rlt_ymm8r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_rlt_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: ymm8r4_rlt_ymm8r4
     type(YMM8r4_t),      intent(in) :: x
@@ -1093,7 +1093,7 @@ CONTAINS
   end function ymm8r4_rlt_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_rlt_zmm8r8
-  pure elemental function zmm8r8_rlt_zmm8r8(x,y) result(gt)
+  pure  function zmm8r8_rlt_zmm8r8(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_rlt_zmm8r8
     !DIR$ ATTRIBUTES VECTOR :: zmm8r8_rlt_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
@@ -1113,7 +1113,7 @@ CONTAINS
   end function zmm8r8_rlt_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_rlt_zmm16r4
-  pure elemental function zmm16r4_rlt_zmm16r4(x,y) result(gt)
+  pure  function zmm16r4_rlt_zmm16r4(x,y) result(gt)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_rlt_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: zmm16r4_rlt_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
@@ -1133,7 +1133,7 @@ CONTAINS
   end function zmm16r4_rlt_zmm16r4
 
   !DIR$ ATTRIBUTES INLINE :: xmm2r8_tol_xmm2r8
-  pure elemental function xmm2r8_tol_xmm2r8(x,n) result(tol)
+  pure  function xmm2r8_tol_xmm2r8(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_tol_xmm2r8
     !DIR$ ATTRIBUTES VECTOR :: xmm2r8_tol_xmm2r8
     type(XMM2r8_t),     intent(in) :: x
@@ -1155,7 +1155,7 @@ CONTAINS
   end function xmm2r8_tol_xmm2r8
 
   !DIR$ ATTRIBUTES INLINE :: xmm4r4_tol_xmm4r4
-  pure elemental function xmm4r4_tol_xmm4r4(x,n) result(tol)
+  pure function xmm4r4_tol_xmm4r4(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_tol_xmm4r4
     !DIR$ ATTRIBUTES VECTOR :: xmm4r4_tol_xmm4r4
     type(XMM4r4_t),     intent(in) :: x
@@ -1177,7 +1177,7 @@ CONTAINS
   end function xmm4r4_tol_xmm4r4
 
   !DIR$ ATTRIBUTES INLINE :: ymm4r8_tol_ymm4r8
-  pure elemental function ymm4r8_tol_ymm4r8(x,n) result(tol)
+  pure  function ymm4r8_tol_ymm4r8(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_tol_ymm4r8
     !DIR$ ATTRIBUTES VECTOR :: ymm4r8_tol_ymm4r8
     type(YMM4r8_t),      intent(in) :: x
@@ -1199,7 +1199,7 @@ CONTAINS
   end function ymm4r8_tol_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE ::  ymm8r4_tol_ymm8r4
-  pure elemental function ymm8r4_tol_ymm8r4(x,n) result(tol)
+  pure  function ymm8r4_tol_ymm8r4(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_tol_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: ymm8r4_tol_ymm8r4
     type(YMM8r4_t),                     intent(in) :: x
@@ -1221,7 +1221,7 @@ CONTAINS
   end function ymm8r4_tol_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_tol_zmm16r4
-  pure elemental function zmm16r4_tol_zmm16r4(x,n) result(tol)
+  pure  function zmm16r4_tol_zmm16r4(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_tol_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: zmm16r4_tol_zmm16r4
     type(ZMM16r4_t),                     intent(in) :: x
@@ -1247,7 +1247,7 @@ CONTAINS
   end function zmm16r4_tol_zmm16r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_tol_zmm8r8
-  pure elemental function zmm8r8_tol_zmm8r8(x,n) result(tol)
+  pure  function zmm8r8_tol_zmm8r8(x,n) result(tol)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_tol_zmm8r8
     !DIR$ ATTRIBUTES VECTOR :: zmm8r8_tol_zmm8r8
     type(ZMM8r8_t),                     intent(in) :: x
@@ -1272,7 +1272,7 @@ CONTAINS
   end function zmm8r8_tol_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE ::  xmm2r8_cwt_xmm2r8
-  pure elemental function xmm2r8_cwt_xmm2r8(x,y,n,cutoff) result(isc)
+  pure function xmm2r8_cwt_xmm2r8(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm2r8_cwt_xmm2r8
     !DIR$ ATTRIBUTES VECTOR :: xmm2r8_cwt_xmm2r8
     type(XMM2r8_t),        intent(in) :: x
@@ -1303,7 +1303,7 @@ CONTAINS
   end function xmm2r8_cwt_xmm2r8
 
 !DIR$ ATTRIBUTES INLINE :: xmm4r4_cwt_xmm4r4
-  pure elemental function xmm4r4_cwt_xmm4r4(x,y,n,cutoff) result(isc)
+  pure  function xmm4r4_cwt_xmm4r4(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: xmm4r4_cwt_xmm4r4
     !DIR$ ATTRIBUTES VECTOR :: xmm4r4_cwt_xmm4r4
     type(XMM4r4_t),       intent(in) :: x
@@ -1333,7 +1333,7 @@ CONTAINS
   end function xmm4r4_cwt_xmm4r4
 
  !DIR$ ATTRIBUTES INLINE :: ymm4r8_cwt_ymm4r8
-  pure elemental function ymm4r8_cwt_ymm4r8(x,y,n,cutoff) result(isc)
+  pure  function ymm4r8_cwt_ymm4r8(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm4r8_cwt_ymm4r8
     !DIR$ ATTRIBUTES VECTOR :: ymm4r8_cwt_ymm4r8
     type(YMM4r8_t),      intent(in) :: x
@@ -1364,7 +1364,7 @@ CONTAINS
   end function ymm4r8_cwt_ymm4r8
 
   !DIR$ ATTRIBUTES INLINE :: ymm8r4_cwt_ymm8r4
-  pure elemental function ymm8r4_cwt_ymm8r4(x,y,n,cutoff) result(isc)
+  pure  function ymm8r4_cwt_ymm8r4(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: ymm8r4_cwt_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: ymm8r4_cwt_ymm8r4
     type(YMM8r4_t),       intent(in) :: x
@@ -1395,7 +1395,7 @@ CONTAINS
   end function ymm8r4_cwt_ymm8r4
 
   !DIR$ ATTRIBUTES INLINE :: zmm8r8_cwt_zmm8r8
-  pure elemental function zmm8r8_cwt_zmm8r8(x,y,n,cutoff) result(isc)
+  pure  function zmm8r8_cwt_zmm8r8(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm8r8_cwt_zmm8r8
     !DIR$ ATTRIBUTES VECTOR :: zmm8r8_cwt_zmm8r8
     type(ZMM8r8_t),        intent(in) :: x
@@ -1426,7 +1426,7 @@ CONTAINS
   end function zmm8r8_cwt_zmm8r8
 
   !DIR$ ATTRIBUTES INLINE :: zmm16r4_cwt_zmm16r4
-  pure elemental function zmm16r4_cwt_zmm16r4(x,y,n,cutoff) result(isc)
+  pure function zmm16r4_cwt_zmm16r4(x,y,n,cutoff) result(isc)
     !DIR$ ATTRIBUTES CODE_ALIGN:32 :: zmm16r4_cwt_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: zmm16r4_cwt_zmm16r4
     type(ZMM16r4_t),       intent(in) :: x
