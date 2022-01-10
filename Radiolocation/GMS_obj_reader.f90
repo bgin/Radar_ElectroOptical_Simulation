@@ -45,7 +45,7 @@ module OBJ_Reader
      !!=============================================!
 
      type, public :: OBJ_Mesh
-           public
+          
            char(len=128)    :: input_fname
            integer(kind=i4) :: node_num          !NODE_NUM, the number of points.
            integer(kind=i4) :: face_num          !FACE_NUM, the number of faces.
