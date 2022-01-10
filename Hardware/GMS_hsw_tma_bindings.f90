@@ -38,7 +38,7 @@ module mod_hsw_tma_bindings
 
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds, only : int4
+     use mod_kinds, only : i4
      use, intrinsic :: ISO_C_BINDING
      implicit none
      public
@@ -49,10 +49,10 @@ module mod_hsw_tma_bindings
     !=====================================================59
     
    
-    integer(kind=int4),   parameter :: MOD_HSW_TMA_BINDINGS_MAJOR = 1
-    integer(kind=int4),   parameter :: MOD_HSW_TMA_BINDINGS_MINOR = 0
-    integer(kind=int4),   parameter :: MOD_HSW_TMA_BINDINGS_MICRO = 0
-    integer(kind=int4),   parameter :: MOD_HSW_TMA_BINDINGS_FULLVER =
+    integer(kind=i4),   parameter :: MOD_HSW_TMA_BINDINGS_MAJOR = 1
+    integer(kind=i4),   parameter :: MOD_HSW_TMA_BINDINGS_MINOR = 0
+    integer(kind=i4),   parameter :: MOD_HSW_TMA_BINDINGS_MICRO = 0
+    integer(kind=i4),   parameter :: MOD_HSW_TMA_BINDINGS_FULLVER =
         1000*MOD_HSW_TMA_BINDINGS_MAJOR+100*MOD_HSW_TMA_BINDINGS_MINOR+ &
                  10*MOD_HSW_TMA_BINDINGS_MICRO
     character(*),         parameter :: MOD_HSW_TMA_BINDINGS_CREATE_DATE = "26-05-2020 16:53 +00200 (TUE 26 MAY 2020 GMT+2)"
