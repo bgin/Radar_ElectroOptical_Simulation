@@ -49,7 +49,7 @@ module STLA_Reader
      !!=============================================!
 
      type, public :: STLA_Mesh
-           public
+           
            character(len=128) :: input_fname 
            integer(kind=i4)   :: node_num   ! NODE_NUM, the number of vertices defined.
            integer(kind=i4)   :: face_num   ! FACE_NUM, the number of faces defined.
