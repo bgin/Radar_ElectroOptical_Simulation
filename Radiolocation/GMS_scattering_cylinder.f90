@@ -48,22 +48,22 @@ module cylindrical_scattering
      implicit none
      public
 
-     integer(kind=i4), private :: isize  = 40000
-     integer(kind=i4), private :: nsize  = 512     !rounded to multiplicity of 16
-     integer(kind=i4), private :: iff    = 1024    !rounded to multiplicity of 16
-     integer(kind=i4), private :: igg    = 1024    !rounded to multiplicity of 16
-     real(kind=sp),    private :: PI     = 3.1415926535897932384626_sp
-     real(kind=sp),    private :: PI2    = 1,5707963267948966192313_sp
-     real(kind=sp),    private :: PI180  = 0.0174532925199432957692_sp
-     real(kind=sp),    private :: _2PI   = 6.2831853071795864769253_sp
-     complex(kind=sp), private :: CCC   = complex(0.0_sp,1.0_sp)
-
-     
+     integer(kind=i4), parameter,private :: isize  = 40000
+     integer(kind=i4), parameter,private :: nsize  = 512     !rounded to multiplicity of 16
+     integer(kind=i4), parameter,private :: iff    = 1024    !rounded to multiplicity of 16
+     integer(kind=i4), parameter,private :: igg    = 1024    !rounded to multiplicity of 16
+     real(kind=sp),    parameter,private :: PI     = 3.1415926535897932384626_sp
+     real(kind=sp),    parameter,private :: PI2    = 1.5707963267948966192313_sp
+     real(kind=sp),    parameter,private :: PI180  = 0.0174532925199432957692_sp
+     real(kind=sp),    parameter,private :: TWOPI   = 6.2831853071795864769253_sp
+     complex(kind=sp), parameter,private :: CCC    = cmplx(0.0_sp,1.0_sp)
+     real(kind=sp),    parameter,private :: NaN    = Z'7FC00000'
+     complex(kind=sp), parameter,private :: CNaN   = cmplx(NaN,NaN)
       
    
 
      type, public :: cyl_scatterer_soa
-           public
+          
            
            complex(kind=sp), dimension(-isize:isize)   :: am     ! TM polarization scattering coeffs
            complex(kind=sp), dimension(-isize:isize)   :: bm     ! As above
@@ -109,8 +109,60 @@ module cylindrical_scattering
      end type cyl_scatterers_grid_asoa
 
 
-      contains
+   contains
 
+
+#if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))          
+     subroutine alloc_cyl_scatterers_grid(scatt_grid,nscatt,error,zinit) !GCC$ ATTRIBUTES aligned(32) :: alloc_cyl_scatterers_grid !GCC$ ATTRIBUTES cold :: alloc_cyl_scatterers_grid
+#elif defined(__INTEL_COMPILER) || defined(__ICC)
+     subroutine alloc_cyl_scatterers_grid(scatt_grid,nscatt,error,zinit)
+           !DIR$ OPTIMIZE : 3
+           !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: alloc_cyl_scatterers_grid
+#endif
+          type(cyl_scatterers_grid_asoa),        intent(inout) :: scatt_grid
+          integer(kind=i4),                      intent(in)    :: nscatt
+          integer(kind=i4),                      intent(inout) :: error
+          logical(kind=i1),                      intent(in)    :: zinit
+          ! Locals
+          integer(kind=i4), automatic :: i,j
+          ! Exec code ....
+          scatt_grid.n_scattereres=nscatt
+          allocate(scatt_grid.scatteres_grid(scatt_grid.n_scattereres),STAT=error)
+          if(error/=0) return
+          if(zinit) then
+             do i=1,nscatt
+                !$OMP SIMD
+                do j=-isize,isize
+                   scatt_grid.scatterers_grid(i).am(j)=CNaN
+                   scatt_grid.scatterers_grid(i).bm(j)=CNaN
+                   scatt_grid.scatterers_grid(i).cm(j)=CNaN
+                   scatt_grid.scatterers_grid(i).dm(j)=CNaN
+                end do
+                !$OMP SIMD
+                do j=0,nsize
+                   scatt_grid.scatterers_grid(i).i1(j)=NaN
+                   scatt_grid.scatterers_grid(i).i2(j)=NaN
+                   scatt_grid.scatterers_grid(i).i3(j)=NaN
+                   scatt_grid.scatterers_grid(i).i4(j)=NaN
+                   scatt_grid.scatterers_grid(i).s11(j)=NaN
+                end do
+                !$OMP SIMD
+                do j=0,127
+                   scatt_grid.scatterers_grid(i).s12(j)=NaN
+                   scatt_grid.scatterers_grid(i).s13(j)=NaN
+                   scatt_grid.scatterers_grid(i).s14(j)=NaN
+                   scatt_grid.scatterers_grid(i).s22(j)=NaN
+                   scatt_grid.scatterers_grid(i).s23(j)=NaN
+                   scatt_grid.scatterers_grid(i).s24(j)=NaN
+                   scatt_grid.scatterers_grid(i).s33(j)=NaN
+                   scatt_grid.scatterers_grid(i).s34(j)=NaN
+                   scatt_grid.scatterers_grid(i).s44(j)=NaN
+                end do
+             end do
+          end if
+          
+     end subroutine alloc_cyl_scatterers_grid
+       
         
      
 #if defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))     
