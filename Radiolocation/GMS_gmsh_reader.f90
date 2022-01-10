@@ -47,7 +47,7 @@ module GMSH_Reader
      !!=============================================!
 
      type, public :: GMSH_Mesh
-           public
+        
            character(len=128) :: input_fname
            integer(kind=i4)   :: node_dim !NODE_DIM, the spatial dimension.
            integer(kind=i4)   :: node_num !NODE_NUM, the number of nodes.
