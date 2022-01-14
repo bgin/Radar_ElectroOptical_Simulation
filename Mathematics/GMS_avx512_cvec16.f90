@@ -2444,7 +2444,7 @@ module  avx512_cvec16
            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cabs_c16
           !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: cabs_c16
 #endif
-          type(AVX512c16f32_t),  intent(in) :: x
+          type(ZMM16c4),  intent(in) :: x
 #if defined __INTEL_COMPILER 
         !DIR$ ATTRIBUTES ALIGN : 64 :: val
         type(ZMM16r4_t)  :: val
