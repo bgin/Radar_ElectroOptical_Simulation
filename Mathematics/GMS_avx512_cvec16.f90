@@ -2173,6 +2173,18 @@ module  avx512_cvec16
 #endif
         arg.v = atan2(re,im)
       end function carg_2xv16
+      
+ #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
+       pure function cnorm(x) result(cn) !GCC$ ATTRIBUTES hot :: cnorm !GCC$ ATTRIBUTES vectorcall :: cnorm !GCC$ ATTRIBUTES inline :: cnorm
+#elif defined __ICC || defined __INTEL_COMPILER
+           !DIR$ ATTRIBUTES INLINE :: cnorm
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cnorm
+           !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: cnorm
+#endif
+            type(ZMM16c4),  intent(in) :: x
+            type(ZMM16r4_t) :: cn
+            cn.v = sqrt(x.re*x.re+x.im*x.im)
+       end function cnorm
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
       pure function csin_c16(x) result(iq) !GCC$ ATTRIBUTES hot :: csin_c16 !GCC$ ATTRIBUTES vectorcall :: csin_c16 !GCC$ ATTRIBUTES inline :: csin_c16
