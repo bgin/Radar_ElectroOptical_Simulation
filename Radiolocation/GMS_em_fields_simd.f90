@@ -14,7 +14,8 @@ module  em_fields_simd
  !          
  !          Purpose:
   !                     This module contains various implementations of
- !                      Computational ElectroMagnetics related routines.
+  !                      Computational ElectroMagnetics related routines.
+  !                     This module operates on SIMD PAoS data types.
  !          History:
  !                        
  !                        Date: 18-12-2021
@@ -80,7 +81,7 @@ module  em_fields_simd
      type(ZMM16c4),   parameter, private :: jc4    = ZMM16c4((0.0_sp,1.0_sp))
      type(ZMM8c8),    parameter, private :: jc8    = ZMM8c8((0.0_dp,1.0_dp))
      type(ZMM16r4_t), parameter, private :: mu0r16 = ZMM16r4_t(0.0000012566370614359173_sp)
-     type(ZMM8r4_t),  parameter, private :: mu0r8  = ZMM8r4_t(0.0000012566370614359173_dp)
+     type(ZMM8r8_t),  parameter, private :: mu0r8  = ZMM8r8_t(0.0000012566370614359173_dp)
      type(ZMM16r4_t), parameter, private :: cr4    = ZMM16r4_t(299792458.0_sp)
      type(ZMM8r4_t),  parameter, private :: cr8    = ZMM8r8_t(299792458.0_dp)
 
