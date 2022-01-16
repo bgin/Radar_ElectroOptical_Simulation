@@ -269,7 +269,7 @@ module  em_fields_simd
      subroutine init_B_X_XY_XYZ_R16(BX,BXY,BXYZ,n_pts1,     &
                                     n_pts2,n_pts3,error,    &
                                     iounit,verbose,logging, &
-                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_C16  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_C16
+                                    filename,append) !GCC$ ATTRIBUTES cold :: init_B_X_XY_XYZ_R16  !GCC$ ATTRIBUTES aligned(32) :: init_B_X_XY_XYZ_R16
 #elif defined(__INTEL_COMPILER) || defined(__ICC)
        !DIR$ ATTRIBUTES CODE_ALIGN:32 :: init_B_X_XY_XYZ_R16
        !DIR$ OPTIMIZE : 3
