@@ -356,7 +356,7 @@ module mueller_calculus_avx512
            type(JVec2x16c16),   intent(in) :: jv
            type(ZMM16r4_t) :: v
            ! LOcals
-    type(ZMM16r4_t), automatic :: v1,v2
+           type(ZMM16r4_t), automatic :: v1,v2
 #if defined(__INTEL_COMPILER) || defined(__ICC)
           !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
 #endif
@@ -365,8 +365,328 @@ module mueller_calculus_avx512
           v2.v = cabs_c16(jv.s)
           v.v  = atan(v1.v/v2.v)
        end function JVec2x16c16_psi
+
+        
+       pure function JVec2x16c16_delta(jv) result(v)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x16c16_delta
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x16c16_delta
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x16c16_delta
+#endif
+          type(JVec2x16c16), intent(in) :: jv
+          type(ZMM16r4_t) :: v
+          ! Locals
+          type(ZMM16r4_t), automatic :: v1,v2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+#endif
+          ! Exec code ....
+          v1.v = carg_c16(jv.p)
+          v2.v = carg_c16(jv.s)
+          v.v  = v1.v-v2.v
+       end function JVec2x16c16_delta
        
+       !==============================================
+       !  Double precision 8-tuple complex vector.
+       !==============================================
+        
+       
+      pure function JVec2x8c8_set_1() result(cvec)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_set_1
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_set_1
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c18_set_1
+#endif
+       type(JVec2x8c8) :: cvec
+      ! EXEC CODE ....
+       cvec.p = ZMM8c8()
+       cvec.s = ZMM8c8()
+    end function JVec2x8c8_set_1
+    
+
+    pure function JVec2x8c8_set_2(c1,c2) result(cvec)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_set_2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_set_2
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_set_2
+#endif
+        complex(kind=dp),    intent(in) :: c1
+        complex(kind=dp),    intent(in) :: c2
+        type(JVec2x8c8) :: cvec
+        !Exec code ....
+        cvec.p = complex1x_init(c1)
+        cvec.s = complex1x_init(c2)
+    end function JVec2x8c8_set_2
+
+   
+    pure function JVec2x8c8_set_3(c1,c2) result(cvec)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_set_3
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_set_3
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_set_3
+#endif
+        complex(kind=dp), dimension(0:7), intent(in) :: c1
+        complex(kind=dp), dimension(0:7), intent(in) :: c2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED c1:64
+        !DIR$ ASSUME_ALIGNED c2:64
+#endif
+        type(JVec2x8c8) :: cvec
+        ! Exec code ....
+        cvec.p = complex2x8_init(c1)
+        cvec.s = complex2x8_init(c2)
+    end function JVec2x8c8_set_3
+
+
+    pure function JVec2x8c8_set_4(v1,v2,v3,v4) result(cvec)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_set_4
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_set_4
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_set_4
+#endif
+        type(ZMM8r8_t),    intent(in) :: v1
+        type(ZMM8r8_t),    intent(in) :: v2
+        type(ZMM8r8_t),    intent(in) :: v3
+        type(ZMM8r8_t),    intent(in) :: v4
+        type(JVec2x8c8) :: cvec
+        ! Exec code ....
+        cvec.p = zmm8r82x_init(v1,v2)
+        cvec.s = zmm8r82x_init(v3,v4)
+    end function JVec2x8c8_set_4
+
+
+    pure function JVec2x8c8_set_5(v1,v2) result(cvec)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_set_5
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_set_5
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_set_5
+#endif
+        type(ZMM8r8_t),    intent(in) :: v1
+        type(ZMM8r8_t),    intent(in) :: v2
+        type(JVec2x8c8) :: cvec
+        ! Exec code ...
+        cvec.p = zmm8r81x_init(v1)
+        cvec.s = zmm8r81x_init(v2)
+    end function JVec2x8c8_set_5
+    
+
+    pure function JVec2x8c8_copy(other) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_copy
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_copy
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_copy
+#endif
+       type(JVec2x8c8),   intent(in) :: other
+       type(JVec2x8c8) :: this
+       ! Exec code ....
+       this.p = copy_init(other.p)
+       this.s = copy_init(other.s)
+    end function JVec2x8c8_copy
+
+
+    pure function JVec2x8c8_mul_JVec2x8c8(jv1,jv2) result(cv)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_mul_JVec2x8c8
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_mul_JVec2x8c8
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_mul_JVec2x8c8
+#endif
+         type(JVec2x8c8),   intent(in) :: jv1
+         type(JVec2x8c8),   intent(in) :: jv2
+         type(ZMM8c8) :: cv
+         ! Exec code ....
+         cv = jv1.p*jv2.p+jv1.s*jv2.s
+    end function JVec2x8c8_mul_JVec2x8c8
+    
+
+
+    pure function JVec2x8c8_mul_ZMM8c8(jv,c) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_mul_ZMM8c8
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_mul_ZMM8c8
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_mul_ZMM8c8
+#endif
+        type(JVec2x8c8),   intent(in) :: jv
+        type(ZMM8c8),       intent(in) :: c
+        type(JVec2x8c8) :: this
+        ! Exec code ...
+        this.p = jv.p*c
+        this.s = jv.s*c
+     end function JVec2x8c8_mul_ZMM8c8
+
       
+     subroutine JVec2x8c8_mul_ZMM8c8_v2(jv,c)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_mul_ZMM8c8_v2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_mul_ZMM8c8_v2
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_mul_ZMM8c8_v2
+#endif
+         type(JVec2x8c8),   intent(inout) :: jv
+         type(ZMM8c8),       intent(in)    :: c
+         ! Exec code ....
+         jv.p = jv.p*c
+         jv.s = jv.s*c
+     end subroutine JVec2x8c8_mul_ZMM8c8_v2
+
+
+     pure function JVec2x8c8_div_ZMM8c8(jv,c) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_div_ZMM8c8
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_div_ZMM8c8
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_div_ZMM8c8
+#endif
+         type(JVec2x8c8),     intent(in) :: jv
+         type(ZMM8c8),         intent(in) :: c
+         type(JVec2x8c8) :: this
+         ! Exec code ....
+         this.p = jv.p/c
+         this.s = jv.s/c
+      end function JVec2x8c8_div_ZMM8c8
+
+
+      subroutine JVec2x8c8_div_ZMM8c8_v2(jv,c)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_div_ZMM8c8_v2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_div_ZMM8c8_v2
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_div_ZMM8c8_v2
+#endif
+         type(JVec2x8c8),   intent(inout) :: jv
+         type(ZMM8c8),       intent(in)    :: c
+         ! Exec code ....
+         jv.p = jv.p/c
+         jv.s = jv.s/c
+     end subroutine JVec2x8c8_div_ZMM8c8_v2 
+     
+       
+     pure function JVec2x8c8_conjugate(jv) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_conjugate
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_conjugate
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_conjugate
+#endif
+          type(JVec2x8c8),   intent(in) :: jv
+          type(JVec2x8c8) :: this
+          ! Exec code ....
+          this.p = conjugate(jv.p)
+          this.s = conjugate(jv.s)
+      end function JVec2x8c8_conjugate
+
+
+      pure function JVec2x8c8_add_JVec2x8c8(jv1,jv2) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_add_JVec2x8c8
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_add_JVec2x8c8
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_add_JVec2x8c8
+#endif
+          type(JVec2x8c8),    intent(in) :: jv1
+          type(JVec2x8c8),    intent(in) :: jv2
+          type(JVec2x8c8) :: this
+          ! Exec code ....
+          this.p = jv1.p+jv2.p
+          this.s = jv1.s+jv2.s
+      end function JVec2x8c8_add_JVec2x8c8
+
+
+      subroutine JVec2x8c8_add_Jvec2x8c8_v2(jv,jv1)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x16c16_add_JVec2x8c8_v2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_add_JVec2x8c8_v2
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_add_JVec2x8c8_v2
+#endif
+          type(JVec2x8c8),    intent(inout) :: jv
+          type(JVec2x8c8),    intent(in)    :: jv1
+          ! Exec code ....
+          jv.p = jv.p+jv1.p
+          jv.s = jv.s+jv1.s
+      end subroutine JVec2x8c8_add_Jvec2x8c8_v2
+      
+      
+      pure function JVec2x8c8_sub_JVec2x8c8(jv1,jv2) result(this)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_sub_JVec2x8c8
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_sub_JVec2x8c8
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_sub_JVec2x8c8
+#endif
+          type(JVec2x8c8),    intent(in) :: jv1
+          type(JVec2x8c8),    intent(in) :: jv2
+          type(JVec2x8c8) :: this
+          ! Exec code ....
+          this.p = jv1.p-jv2.p
+          this.s = jv1.s-jv2.s
+      end function JVec2x8c8_sub_JVec2x8c8
+
+
+      subroutine JVec2x8c8_sub_Jvec2x8c8_v2(jv,jv1)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_sub_JVec2x8c8_v2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_sub_JVec2x8c8_v2
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_sub_JVec2x8c8_v2
+#endif
+          type(JVec2x8c8),    intent(inout) :: jv
+          type(JVec2x8c8),    intent(in)    :: jv1
+          ! Exec code ....
+          jv.p = jv.p-jv1.p
+          jv.s = jv.s-jv1.s
+      end subroutine JVec2x8c8_sub_Jvec2x8c8_v2
+
+
+      pure function JVec2x8c8_norm(jv) result(norm)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_norm
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_norm
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_norm
+#endif
+          type(JVec2x8c8),   intent(in) :: jv
+          type(ZMM8r8_t) :: norm
+          ! Locals
+          type(ZMM8r8_t), automatic :: v1,v2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+#endif
+          ! Exec code ....
+          v1 = cnorm(jv.p)
+          v2 = cnorm(jv.s)
+          cn.v = v1.v+v2.v
+       end function JVec2x8c8_norm
+
+
+       pure function JVec2x8c8_psi(jv) result(v)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_psi
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_psi
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_psi
+#endif
+           type(JVec2x8c8),   intent(in) :: jv
+           type(ZMM8r8_t) :: v
+           ! LOcals
+           type(ZMM8r8_t), automatic :: v1,v2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+#endif
+          ! Exec code ....
+          v1.v = cabs_zmm8c8(jv.p)
+          v2.v = cabs_zmm8c8(jv.s)
+          v.v  = atan(v1.v/v2.v)
+       end function JVec2x8c8_psi
+
+        
+       pure function JVec2x8c8_delta(jv) result(v)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES INLINE :: JVec2x8c8_delta
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x8c8_delta
+       !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x8c8_delta
+#endif
+          type(JVec2x8c8), intent(in) :: jv
+          type(ZMM8r8_t) :: v
+          ! Locals
+          type(ZMM8r8_t), automatic :: v1,v2
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ATTRIBUTES ALIGN : 64 :: v1,v2
+#endif
+          ! Exec code ....
+          v1.v = carg_zmm8c8(jv.p)
+          v2.v = carg_zmm8c8(jv.s)
+          v.v  = v1.v-v2.v
+       end function JVec2x8c8_delta
       
 
 
