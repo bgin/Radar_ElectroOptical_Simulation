@@ -1418,6 +1418,19 @@ module mod_avx512_cvec8
        iq.re = rho.v*cos(theta.v)
        iq.im = rho.v*sin(theta.v) 
      end function polar
+     
+
+       pure function cnorm(x) result(cn) 
+#elif defined __ICC || defined __INTEL_COMPILER
+           !DIR$ ATTRIBUTES INLINE :: cnorm
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cnorm
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cnorm
+#endif
+            type(ZMM8c8),  intent(in) :: x
+            type(ZMM8r8_t) :: cn
+            cn.v = sqrt(x.re*x.re+x.im*x.im)
+       end function cnorm
+       
 !DIR$ ATTRIBUTES INLINE :: carg_zmm8c8
      pure elemental function carg_zmm8c8(c8) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_zmm8c8
