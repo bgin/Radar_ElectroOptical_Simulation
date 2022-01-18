@@ -1099,7 +1099,7 @@ module avx2_cvec4
      end function carg_ymm4c8
 
 !DIR$ ATTRIBUTES INLINE :: carg_2xymm4r8     
-     pure function carg_2xzmm8r8(re,im) result(arg)
+     pure function carg_2xymm4r8(re,im) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_2xymm4r8
        !DIR$ ATTRIBUTES VECTOR :: carg_2xymm4r8
        type(YMM4r8_t),  intent(in) :: re
@@ -1108,7 +1108,7 @@ module avx2_cvec4
        type(YMM4r8_t) :: arg
        ! EXec code ....
        arg.v = atan2(im.v,re.v)
-     end function carg_2xzmm4r8
+     end function carg_2xymm4r8
 
 !DIR$ ATTRIBUTES INLINE :: csin_ymm4c8
      pure function csin_ymm4c8(c8) result(iq)
