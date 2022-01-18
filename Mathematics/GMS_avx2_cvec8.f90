@@ -333,7 +333,7 @@ module avx2_cvec8
      end function copy_init
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_add_ymm8c4
-     pure elemental function ymm8c4_add_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8c4_add_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_add_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_add_ymm8c4
        type(YMM8c4),  intent(in) :: lhs
@@ -346,7 +346,7 @@ module avx2_cvec8
      end function ymm8c4_add_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_add_c2
-     pure elemental function ymm8c4_add_c2(lhs,rhs) result(iq)
+     pure function ymm8c4_add_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_add_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_add_c2
        type(YMM8c4),  intent(in) :: lhs
@@ -359,7 +359,7 @@ module avx2_cvec8
      end function ymm8c4_add_c2
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_add_ymm8r4
-     pure elemental function ymm8c4_add_ymm8r4(lhs,rhs) result(iq)
+     pure function ymm8c4_add_ymm8r4(lhs,rhs) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_add_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_add_ymm8r4
@@ -373,7 +373,7 @@ module avx2_cvec8
      end function c8_add_v8
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_add_s1
-     pure elemental function ymm8c4_add_s1(lhs,rhs) result(iq)
+     pure function ymm8c4_add_s1(lhs,rhs) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_add_s1
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_add_s1
@@ -386,7 +386,7 @@ module avx2_cvec8
      end function ymm8c4_add_s1
 
 !DIR$ ATTRIBUTES INLINE :: c2_add_ymm8c4     
-     pure elemental function c2_add_ymm8c4(lhs,rhs) result(iq)
+     pure function c2_add_ymm8c4(lhs,rhs) result(iq)
        !
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_add_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_add_ymm8c4
@@ -399,7 +399,7 @@ module avx2_cvec8
      end function c2_add_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE ymm8r4_add_ymm8c4
-     pure elemental function ymm8r4_add_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8r4_add_ymm8c4(lhs,rhs) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8r4_add_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  ymm8r4_add_ymm8c4
@@ -412,7 +412,7 @@ module avx2_cvec8
      end function  ymm8r4_add_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_add_ymm8c4
-     pure elemental function s1_add_ymm8c4(lhs,rhs) result(iq)
+     pure function s1_add_ymm8c4(lhs,rhs) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_add_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: s1_add_ymm8c4
@@ -425,7 +425,7 @@ module avx2_cvec8
      end function s1_add_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_sub_ymm8c4
-     pure elemental function ymm8c4_sub_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8c4_sub_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_sub_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_sub_ymm8c4
        type(YMM8c4),    intent(in) :: lhs
@@ -437,7 +437,7 @@ module avx2_cvec8
      end function  ymm8c4_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_sub_c2
-     pure elemental function ymm8c4_sub_c2(lhs,rhs) result(iq)
+     pure function ymm8c4_sub_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_sub_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_sub_c2
        type(YMM8c4),     intent(in) :: lhs
@@ -449,7 +449,7 @@ module avx2_cvec8
      end function ymm8c4_sub_c2
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_sub_ymm8r4
-     pure elemental function ymm8c4_sub_ymm8r4(lhs,rhs) result(iq)
+     pure function ymm8c4_sub_ymm8r4(lhs,rhs) result(iq)
        use mod_vecconsts, only v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_sub_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_sub_ymm8r4
@@ -462,7 +462,7 @@ module avx2_cvec8
      end function ymm8c4_sub_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_sub_s1
-     pure elemental function ymm8c4_sub_s1(lhs,rhs) result(iq)
+     pure function ymm8c4_sub_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_sub_s1
        !DIR$ ATTRTIBUTES VECTOR :: ymm8c4_sub_s1
        type(YMM8c4),     intent(in) :: lhs
@@ -474,7 +474,7 @@ module avx2_cvec8
      end function ymm8c4_sub_s1
 
 !DIR$ ATTRIBUTES INLINE :: c2_sub_ymm8c4
-     pure elemental function c2_sub_ymm8c4(lhs,rhs) result(iq)
+     pure function c2_sub_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_sub_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_sub_ymm8c4
        complex(kind=sp),      intent(in) :: lhs
@@ -486,7 +486,7 @@ module avx2_cvec8
      end function c2_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8r4_sub_ymm8c4
-     pure elemental function ymm8r4_sub_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8r4_sub_ymm8c4(lhs,rhs) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8r4_sub_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8r4_sub_ymm8c4
@@ -499,7 +499,7 @@ module avx2_cvec8
      end function ymm8r4_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_sub_ymm8c4
-     pure elemental function  s1_sub_ymm8c4(lhs,rhs) result(iq)
+     pure function  s1_sub_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  s1_sub_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  s1_sub_ymm8c4
        real(kind=sp),       intent(in) :: lhs
@@ -511,7 +511,7 @@ module avx2_cvec8
      end function  s1_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_ymm8c4
-     pure elemental function ymm8c4_mul_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8c4_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_mul_ymm8c4
        type(YMM8c4),    intent(in) :: lhs
@@ -529,7 +529,7 @@ module avx2_cvec8
      end function ymm8c4_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_c2
-     pure elemental function  ymm8c4_mul_c2(lhs,rhs) result(iq)
+     pure function  ymm8c4_mul_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_mul_c2
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_mul_c2
        type(YMM8c4),     intent(in) :: lhs
@@ -547,7 +547,7 @@ module avx2_cvec8
      end function  ymm8c4_mul_c2
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_ymm8r4
-     pure elemental function ymm8c4_mul_ymm8r4(lhs,rhs) result(iq)
+     pure function ymm8c4_mul_ymm8r4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_mul_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_mul_ymm8r4
        type(YMM8c4),    intent(in) :: lhs
@@ -559,7 +559,7 @@ module avx2_cvec8
      end function ymm8c4_mul_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_s1
-     pure elemental function  ymm8c4_mul_s1(lhs,rhs) result(iq)
+     pure function  ymm8c4_mul_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_mul_s1
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_mul_s1
        type(YMM8c4),    intent(in) :: lhs
@@ -571,7 +571,7 @@ module avx2_cvec8
      end function  ymm8c4_mul_s1
 
 !DIR$ ATTRIBUTES INLINE :: c2_mul_ymm8c4
-     pure elemental function c2_mul_ymm8c4(lhs,rhs) result(iq)
+     pure function c2_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_mul_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -589,7 +589,7 @@ module avx2_cvec8
      end function c2_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8r4_mul_ymm8c4
-     pure elemental function  ymm8r4_mul_ymm8c4(lhs,rhs) result(iq)
+     pure function  ymm8r4_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8r4_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  ymm8r4_mul_ymm8c4
        type(YMM8r4_t),        intent(in) :: lhs
@@ -601,7 +601,7 @@ module avx2_cvec8
      end function  ymm8r4_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_mul_ymm8c4
-     pure elemental function s1_mul_ymm8c4(lhs,rhs) result(iq)
+     pure function s1_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: s1_mul_ymm8c4
        real(kind=sp),       intent(in) :: lhs
@@ -613,7 +613,7 @@ module avx2_cvec8
      end function s1_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_ymm8c4    
-     pure elemental function ymm8c4_div_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8c4_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_div_ymm8c4   
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_div_ymm8c4   
        type(YMM8c4),    intent(in) :: lhs
@@ -636,7 +636,7 @@ module avx2_cvec8
      end function  ymm8c4_div_ymm8c4   
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_c2
-     pure elemental function ymm8c4_div_c2(lhs,rhs) result(iq)
+     pure function ymm8c4_div_c2(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_c2
        type(YMM8c4),   intent(in) :: lhs
@@ -656,7 +656,7 @@ module avx2_cvec8
      end function ymm8c4_div_c2
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_ymm8r4
-     pure elemental function ymm8c4_div_ymm8r4(lhs,rhs) result(iq)
+     pure function ymm8c4_div_ymm8r4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_ymm8r4
        type(YMM8c4),  intent(in) :: lhs
@@ -668,7 +668,7 @@ module avx2_cvec8
      end function ymm8c4_div_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_s1
-     pure elemental function ymm8c4_div_s1(lhs,rhs) result(iq)
+     pure function ymm8c4_div_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_s1
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_s1
        type(YMM8c4),     intent(in) :: lhs
@@ -680,7 +680,7 @@ module avx2_cvec8
      end function ymm8c4_div_s1
 
 !DIR$ ATTRIBUTES INLINE :: c2_div_ymm8c4
-     pure elemental function c2_div_ymm8c4(lhs,rhs) result(iq)
+     pure function c2_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_div_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_div_ymm8c4
        complex(kind=sp),       intent(in) :: lhs
@@ -702,7 +702,7 @@ module avx2_cvec8
      end function c2_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8r4_div_ymm8c4
-     pure elemental function ymm8r4_div_ymm8c4(lhs,rhs) result(iq)
+     pure function ymm8r4_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8r4_div_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8r4_div_ymm8c4
        type(YMM8r4_t),      intent(in) :: lhs
@@ -714,7 +714,7 @@ module avx2_cvec8
      end function ymm8r4_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_div_ymm8c4
-     pure elemental function s1_div_ymm8c4(lhs,rhs) result(iq)
+     pure function s1_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_div_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: s1_div_ymm8c4
        real(kind=sp),       intent(in) :: lhs
@@ -726,7 +726,7 @@ module avx2_cvec8
      end function s1_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: conjugate
-     pure elemental function conjugate(x) result(iq)
+     pure function conjugate(x) result(iq)
        use mod_vecconsts, only : v8_n0
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: conjugate
        !DIR$ ATTRIBUTES VECTOR :: conjugate
@@ -740,7 +740,7 @@ module avx2_cvec8
 !#if (USE_INTRINSIC_VECTOR_COMPARE) == 0
      
 !!DIR$ ATTRIBUTES INLINE :: c8_eq_c8     
-!     pure elemental function c8_eq_c8(lhs,rhs) result(mmask8)
+!     pure function c8_eq_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
@@ -759,7 +759,7 @@ module avx2_cvec8
 !     end function c8_eq_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_eq_c2
-!     pure elemental function c8_eq_c2(lhs,rhs) result(mmask8)
+!     pure function c8_eq_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c2
@@ -778,7 +778,7 @@ module avx2_cvec8
 !     end function c8_eq_c2
 
 !!DIR$ ATTRIBUTES INLINE :: c2_eq_c8
-!     pure elemental function c2_eq_c8(lhs,rhs) result(mmask8)
+!     pure function c2_eq_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_eq_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_eq_c8
@@ -797,7 +797,7 @@ module avx2_cvec8
 !     end function c2_eq_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_neq_c8     
-!     pure elemental function c8_neq_c8(lhs,rhs) result(mmask8)
+!     pure function c8_neq_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
@@ -816,7 +816,7 @@ module avx2_cvec8
 !     end function c8_neq_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_neq_c2
-!     pure elemental function c8_neq_c2(lhs,rhs) result(mmask8)
+!     pure function c8_neq_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c2
@@ -835,7 +835,7 @@ module avx2_cvec8
 !     end function c8_neq_c2
 
 !!DIR$ ATTRIBUTES INLINE :: c2_neq_c8
-!     pure elemental function c2_neq_c8(lhs,rhs) result(mmask8)
+!     pure function c2_neq_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_neq_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_neq_c8
@@ -854,7 +854,7 @@ module avx2_cvec8
 !     end function c2_neq_c8
      
 !!DIR$ ATTRIBUTES INLINE :: c8_gt_c8     
-!     pure elemental function c8_gt_c8(lhs,rhs) result(mmask8)
+!     pure function c8_gt_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
@@ -873,7 +873,7 @@ module avx2_cvec8
 !     end function c8_gt_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_gt_c2
-!     pure elemental function c8_gt_c2(lhs,rhs) result(mmask8)
+!     pure function c8_gt_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c2
@@ -892,7 +892,7 @@ module avx2_cvec8
 !     end function c8_gt_c2
 
 !!DIR$ ATTRIBUTES INLINE :: c2_gt_c8
-!     pure elemental function c2_eq_c8(lhs,rhs) result(mmask8)
+!     pure function c2_eq_c8(lhs,rhs) result(mmask8)
 !!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_gt_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_gt_c8
@@ -911,7 +911,7 @@ module avx2_cvec8
 !     end function c2_gt_c8
      
 !!DIR$ ATTRIBUTES INLINE :: c8_lt_c8     
-!     pure elemental function c8_lt_c8(lhs,rhs) result(mmask8)
+!     pure function c8_lt_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
@@ -930,7 +930,7 @@ module avx2_cvec8
 !     end function c8_lt_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_lt_c2
-!     pure elemental function c8_lt_c2(lhs,rhs) result(mmask8)
+!     pure function c8_lt_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_lt_c2
@@ -949,7 +949,7 @@ module avx2_cvec8
 !     end function c8_lt_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_lt_c8
-!     pure elemental function c2_lt_c8(lhs,rhs) result(mmask8)
+!     pure function c2_lt_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_lt_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_lt_c8
@@ -968,7 +968,7 @@ module avx2_cvec8
 !     end function c2_lt_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_ge_c8     
-!     pure elemental function c8_ge_c8(lhs,rhs) result(mmask8)
+!     pure function c8_ge_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
@@ -987,7 +987,7 @@ module avx2_cvec8
 !     end function c8_ge_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_ge_c2
-!     pure elemental function c8_ge_c2(lhs,rhs) result(mmask8)
+!     pure function c8_ge_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c2
@@ -1006,7 +1006,7 @@ module avx2_cvec8
 !     end function c8_ge_c2
 
 !!DIR$ ATTRIBUTES INLINE :: c2_ge_c8
-!     pure elemental function c2_ge_c8(lhs,rhs) result(mmask8)
+!     pure function c2_ge_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_ge_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_ge_c8
@@ -1025,7 +1025,7 @@ module avx2_cvec8
 !     end function c2_ge_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_le_c8     
-!     pure elemental function c8_le_c8(lhs,rhs) result(mmask8)
+!     pure function c8_le_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
@@ -1044,7 +1044,7 @@ module avx2_cvec8
 !     end function c8_le_c8
 
 !!DIR$ ATTRIBUTES INLINE :: c8_le_c2
-!     pure elemental function c8_le_c2(lhs,rhs) result(mmask8)
+!     pure function c8_le_c2(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c2
 !       !DIR$ ATTRIBUTES VECTOR :: c8_le_c2
@@ -1063,7 +1063,7 @@ module avx2_cvec8
 !     end function c8_le_c2
 
 !!DIR$ ATTRIBUTES INLINE :: c2_le_c8
-!     pure elemental function c2_le_c8(lhs,rhs) result(mmask8)
+!     pure function c2_le_c8(lhs,rhs) result(mmask8)
 !       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
 !       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c2_le_c8
 !       !DIR$ ATTRIBUTES VECTOR :: c2_le_c8
@@ -1082,7 +1082,7 @@ module avx2_cvec8
 !     end function c2_le_c8
      
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_eq_ymm8c4
-     pure elemental function ymm8c4_eq_ymm8c4(lhs,rhs) result(bres)
+     pure function ymm8c4_eq_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_eq_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_eq_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1100,7 +1100,7 @@ module avx2_cvec8
      end function ymm8c4_eq_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_eq_c2
-     pure elemental function ymm8c4_eq_c2(lhs,rhs) result(bres)
+     pure function ymm8c4_eq_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_eq_c2
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_eq_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1118,7 +1118,7 @@ module avx2_cvec8
      end function  ymm8c4_eq_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_eq_ymm8c4
-     pure elemental function  c2_eq_ymm8c4(lhs,rhs) result(bres)
+     pure function  c2_eq_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  c2_eq_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  c2_eq_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1136,7 +1136,7 @@ module avx2_cvec8
      end function  c2_eq_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_neq_ymm8c4
-     pure elemental function ymm8c4_neq_ymm8c4(lhs,rhs) result(bres)
+     pure function ymm8c4_neq_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: ymm8c4_neq_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_neq_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1154,7 +1154,7 @@ module avx2_cvec8
      end function ymm8c4_neq_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_neq_c2
-     pure elemental function ymm8c4_neq_c2(lhs,rhs) result(bres)
+     pure function ymm8c4_neq_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_neq_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_neq_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1172,7 +1172,7 @@ module avx2_cvec8
      end function ymm8c4_neq_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_neq_ymm8c4
-     pure elemental function c2_neq_ymm8c4(lhs,rhs) result(bres)
+     pure function c2_neq_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_neq_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_neq_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1190,7 +1190,7 @@ module avx2_cvec8
      end function c2_neq_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_gt_ymm8c4
-     pure elemental function  ymm8c4_gt_ymm8c4(lhs,rhs) result(bres)
+     pure function  ymm8c4_gt_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_gt_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_gt_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1208,7 +1208,7 @@ module avx2_cvec8
      end function  ymm8c4_gt_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_gt_c2
-     pure elemental function ymm8c4_gt_c2(lhs,rhs) result(bres)
+     pure function ymm8c4_gt_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: ymm8c4_gt_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_gt_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1226,7 +1226,7 @@ module avx2_cvec8
      end function ymm8c4_gt_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_gt_ymm8c4
-     pure elemental function  c2_gt_ymm8c4(lhs,rhs) result(bres)
+     pure function  c2_gt_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  c2_gt_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  c2_gt_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1244,7 +1244,7 @@ module avx2_cvec8
      end function  c2_gt_ymm8c4
      
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_lt_ymm8c4
-     pure elemental function ymm8c4_lt_ymm8c4(lhs,rhs) result(bres)
+     pure function ymm8c4_lt_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_lt_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_lt_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1262,7 +1262,7 @@ module avx2_cvec8
      end function ymm8c4_lt_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_lt_c2
-     pure elemental function ymm8c4_lt_c2(lhs,rhs) result(bres)
+     pure function ymm8c4_lt_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_lt_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_lt_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1280,7 +1280,7 @@ module avx2_cvec8
      end function ymm8c4_lt_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_lt_ymm8c4
-     pure elemental function c2_lt_ymm8c4(lhs,rhs) result(bres)
+     pure function c2_lt_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_lt_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_lt_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1298,7 +1298,7 @@ module avx2_cvec8
      end function c2_lt_ymm8c4
      
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_ge_ymm8c4
-     pure elemental function ymm8c4_ge_ymm8c4(lhs,rhs) result(bres)
+     pure function ymm8c4_ge_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_ge_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_ge_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1316,7 +1316,7 @@ module avx2_cvec8
      end function ymm8c4_ge_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_ge_c2
-     pure elemental function ymm8c4_ge_c2(lhs,rhs) result(bres)
+     pure function ymm8c4_ge_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_ge_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_ge_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1334,7 +1334,7 @@ module avx2_cvec8
      end function ymm8c4_ge_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_ge_ymm8c4
-     pure elemental function c2_ge_ymm8c4(lhs,rhs) result(bres)
+     pure function c2_ge_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_ge_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_ge_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1352,7 +1352,7 @@ module avx2_cvec8
      end function c2_ge_ymm8c4
      
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_le_ymm8c4
-     pure elemental function ymm8c4_le_ymm8c4(lhs,rhs) result(bres)
+     pure function ymm8c4_le_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_le_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_le_ymm8c4
        type(YMM8c4),       intent(in) :: lhs
@@ -1370,7 +1370,7 @@ module avx2_cvec8
      end function ymm8c4_le_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_le_c2
-     pure elemental function c8_le_c2(lhs,rhs) result(bres)
+     pure function c8_le_c2(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: ymm8c4_le_c2
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_le_c2
        type(YMM8c4),    intent(in) :: lhs
@@ -1388,7 +1388,7 @@ module avx2_cvec8
      end function ymm8c4_le_c2
 
 !DIR$ ATTRIBUTES INLINE :: c2_le_ymm8c4
-     pure elemental function c2_le_ymm8c4(lhs,rhs) result(bres)
+     pure function c2_le_ymm8c4(lhs,rhs) result(bres)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c2_le_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c2_le_ymm8c4
        complex(kind=sp),        intent(in) :: lhs
@@ -1408,7 +1408,7 @@ module avx2_cvec8
      
 !#endif
 !DIR$ ATTRIBUTES INLINE :: polar
-     pure elemental function polar(rho,theta) result (iq)
+     pure function polar(rho,theta) result (iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: polar
        !DIR$ ATTRIBUTES VECTOR :: polar
        type(YMM8r4_t), intent(in) :: rho
@@ -1421,7 +1421,7 @@ module avx2_cvec8
      end function polar
      
 !DIR$ ATTRIBUTES INLINE :: carg_ymm8c4
-     pure elemental function carg_ymm8c4(c8) result(arg)
+     pure function carg_ymm8c4(c8) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: carg_ymm8c4
        type(YMM8c4),   intent(in) :: c8
@@ -1433,7 +1433,7 @@ module avx2_cvec8
      end function carg_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: carg_2xymm8r4     
-     pure elemental function carg_2xymm8r4(re,im) result(arg)
+     pure function carg_2xymm8r4(re,im) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_2xymm8r8
        !DIR$ ATTRIBUTES VECTOR :: carg_2xymm8r8
        type(YMM8r4_t),  intent(in) :: re
@@ -1445,7 +1445,7 @@ module avx2_cvec8
      end function carg_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: csin_ymm8c4
-     pure elemental function csin_ymm8c4(c8) result(iq)
+     pure function csin_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: csin_ymm8c4
        type(YMM8c4),  intent(in) :: c8
@@ -1462,7 +1462,7 @@ module avx2_cvec8
      end function csin_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: csin_ymm8r4
-     pure elemental function csin_ymm8r4(re,im) result(iq)
+     pure function csin_ymm8r4(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csin_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: csin_ymm8r4
        type(YMM8r4_t),   intent(in) :: re
@@ -1475,7 +1475,7 @@ module avx2_cvec8
      end function csin_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: csinh_ymm8c4
-     pure elemental function csinh_ymm8c4(c8) result(iq)
+     pure function csinh_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: csinh_ymm8c4
        type(YMM8c4),   intent(in) :: c8
@@ -1492,11 +1492,11 @@ module avx2_cvec8
      end function csinh_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: csinh_ymm8r4
-     pure elemental function csinh_zmm8r8(re,im) result(iq)
+     pure function csinh_ymm8r4(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csinh_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: csinh_ymm8r4
-       type(ZMM8r8_t), intent(in) :: re
-       type(ZMM8r8_t), intent(in) :: im
+       type(YMM8r4_t), intent(in) :: re
+       type(YMM8r4_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
        type(ZMM8c8) :: iq
        ! EXec code ....
@@ -1505,7 +1505,7 @@ module avx2_cvec8
      end function csinh_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ccos_ymm8c4
-     pure elemental function ccos_ymm8c4(c8) result(iq)
+     pure function ccos_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ccos_ymm8c4
        type(YMM8c4),   intent(in) :: c8
@@ -1522,7 +1522,7 @@ module avx2_cvec8
      end function ccos_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ccos_ymm8r4
-     pure elemental function ccos_ymm8r4(re,im) result(iq)
+     pure function ccos_ymm8r4(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccos_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ccos_ymm8r4
        type(YMM8r4_t), intent(in) :: re
@@ -1535,7 +1535,7 @@ module avx2_cvec8
      end function ccos_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_ymm8c4
-     pure elemental function ccosh_ymm8c4(c8) result(iq)
+     pure function ccosh_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ccosh_ymm8c4
        type(YMM8c4),    intent(in) :: c8
@@ -1552,7 +1552,7 @@ module avx2_cvec8
      end function ccosh_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_ymm8r4
-     pure elemental function ccosh_ymm8r4(re,im) result(iq)
+     pure function ccosh_ymm8r4(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ccosh_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ccosh_ymm8r4
        type(YMM8r4_t),   intent(in) :: re
@@ -1565,7 +1565,7 @@ module avx2_cvec8
      end function ccosh_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cexp_ymm8c4
-     pure elemental function cexp_ymm8c4(c8) result(iq)
+     pure function cexp_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: cexp_ymm8c4
        type(YMM8c4),  intent(in) :: c8
@@ -1582,7 +1582,7 @@ module avx2_cvec8
      end function cexp_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ctan_ymm8c4
-     pure elemental function ctan_ymm8c4(x) result(iq)
+     pure function ctan_ymm8c4(x) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctan_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ctan_ymm8c4
        type(YMM8c4),  intent(in) :: x
@@ -1592,7 +1592,7 @@ module avx2_cvec8
      end function ctan_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ctanh_ymm8c4
-     pure elemental function ctanh_ymm8c4(x) result(iq)
+     pure function ctanh_ymm8c4(x) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ctanh_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ctanh_ymm8c4
        type(YMM8c4),  intent(in) :: x
@@ -1602,7 +1602,7 @@ module avx2_cvec8
      end function ctanh_ymm8c4
      
 !DIR$ ATTRIBUTES INLINE :: cexp_ymm8r4
-     pure elemental function cexp_ymm8r4(re,im) result(iq)
+     pure function cexp_ymm8r4(re,im) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: cexp_ymm8r4
        type(YMM8r4_t),  intent(in) :: re
@@ -1615,7 +1615,7 @@ module avx2_cvec8
      end function cexp_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cabs_ymm8c4
-     pure elemental function  cabs_ymm8c4(c8) result(val)
+     pure function  cabs_ymm8c4(c8) result(val)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  cabs_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  cabs_ymm8c4
        type(YMM8c4), intent(in) :: c8
@@ -1630,7 +1630,7 @@ module avx2_cvec8
      end function  cabs_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: cabs_2xymm8r4
-     pure elemental function cabs_2xymm8r4(re,im) result(val)
+     pure function cabs_2xymm8r4(re,im) result(val)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cabs_2xymm8r4
        !DIR$ ATTRIBUTES VECTOR :: cabs_2xymm8r4
        type(YMM8r4_t),  intent(in) :: re
@@ -1642,7 +1642,7 @@ module avx2_cvec8
      end function cabs_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cpow_ymm8c4
-     pure elemental function cpow_ymm8c4(c8,n) result(iq)
+     pure function cpow_ymm8c4(c8,n) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cpow_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: cpow_ymm8c4
        type(YMM8c4), intent(in) :: c8
@@ -1666,7 +1666,7 @@ module avx2_cvec8
      end function cpow_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: cpow_2xymm8r4
-     pure elemental function cpow_2xymm8r4(re,im,n) result(iq)
+     pure function cpow_2xymm8r4(re,im,n) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cpow_2xymm8r4
        !DIR$ ATTRIBUTES VECTOR :: cpow_2xymm8r4
        type(YMM8r4_t),   intent(in) :: re
@@ -1689,7 +1689,7 @@ module avx2_cvec8
      end function cpow_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: clog_ymm8c4    
-     pure elemental function clog_ymm8c4(c8) result(iq)
+     pure function clog_ymm8c4(c8) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_ymm8c4    
        !DIR$ ATTRIBUTES VECTOR :: clog_ymm8c4    
        type(YMM8c4),   intent(in) :: c8
@@ -1705,7 +1705,7 @@ module avx2_cvec8
       end function clog_ymm8c4    
     
 !DIR$ ATTRIBUTES INLINE :: clog_2xymm8r4
-      pure elemental function clog_2xymm8r4(re,im) result(iq)
+      pure function clog_2xymm8r4(re,im) result(iq)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: clog_2xymm8r4
         !DIR$ ATTRIBUTES VECTOR :: clog_2xymm8r4
         type(YMM8r4_t),  intent(in), value :: re
@@ -1721,7 +1721,7 @@ module avx2_cvec8
       end function clog_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: csqrt_ymm8c4
-      pure elemental function csqrt_ymm8c4(c8) result(iq)
+      pure function csqrt_ymm8c4(c8) result(iq)
         use mod_vecconsts, only : v8_1over2
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_ymm8c4
         !DIR$ ATTRIBUTES VECTOR :: csqrt_ymm8c4
@@ -1742,7 +1742,7 @@ module avx2_cvec8
      
 
 !DIR$ ATTRIBUTES INLINE :: csqrt_2xymm8r4
-      pure elemental function csqrt_2xymm8r4(re,im) result(iq)
+      pure function csqrt_2xymm8r4(re,im) result(iq)
         use mod_vecconsts, only : v8_1over2
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: csqrt_2xymm8r4
         !DIR$ ATTRIBUTES VECTOR :: csqrt_2xymm8r4
@@ -1762,7 +1762,7 @@ module avx2_cvec8
       end function csqrt_2xymm8r4
 
 !!DIR$ ATTRIBUTES INLINE :: select_zmm8c8
-!      pure elemental function select_zmm8c8(lhs,rhs,mask) result(iq)
+!      pure function select_zmm8c8(lhs,rhs,mask) result(iq)
 !        use, intrinsic :: ISO_C_BINDING
 !        use mod_avx512_bindings, only : v8f64, v8f64_mask_blend_pd
 !        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: select_zmm8c8
@@ -1788,7 +1788,7 @@ module avx2_cvec8
        
 
 !!DIR$ ATTRIBUTES INLINE :: permute_zmm8c8
-!      pure elemental function permute_zmm8c8(c8,k,imm) result(iq)
+!      pure function permute_zmm8c8(c8,k,imm) result(iq)
 !        use, intrinsic :: ISO_C_BINDING
 !        use mod_avx512_bindings, only : v8f64, v8f64_mask_permute_pd
 !        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: permute_zmm8c8
@@ -1810,7 +1810,7 @@ module avx2_cvec8
 !      end function permute_zmm8c8
 
 !!DIR$ ATTRIBUTES INLINE :: expand_zmm8c8
-!      pure elemental function maskz_expand_zmm8c8(c8,k) result(iq)
+!      pure function maskz_expand_zmm8c8(c8,k) result(iq)
 !        use, intrinsic :: ISO_C_BINDING
 !        use mod_avx512_bindings, only : v8f64, v8f64_maskz_expand_pd
 !        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: maskz_expand_zmm8c8
@@ -1831,7 +1831,7 @@ module avx2_cvec8
 !      end function maskz_expand_zmm8c8
 
 !DIR$ ATTRIBUTES INLINE :: cdiv_smith
-      pure elemental function cdiv_smith(lhs,rhs) result(iq)
+      pure function cdiv_smith(lhs,rhs) result(iq)
 !#if  (USE_INTRINSIC_VECTOR_COMPARE) == 1
 !        use, intrinsic :: ISO_C_BINDING
 !        use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
