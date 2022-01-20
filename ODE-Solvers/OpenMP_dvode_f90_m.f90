@@ -1,4 +1,5 @@
   MODULE DVODE_F90_M
+   use mod_kind, only : i4,dp
 ! This version is the December 2005 release.
 ! Last change: 01/01/08
 !
@@ -10,7 +11,7 @@
   IMPLICIT NONE
 ! Define the working precision for DVODE_F90. Change D0 to E0 in the
 ! next statement to convert to single precision.
-  INTEGER, PARAMETER, PRIVATE :: WP = KIND(1.0D0)
+  !INTEGER(kind=i4), PARAMETER, PRIVATE :: WP = KIND(1.0D0)
 ! ______________________________________________________________________
 ! Overview
 
@@ -1641,7 +1642,7 @@
 ! CONTAINS
 !     SUBROUTINE FEX(NEQ, T, Y, YDOT)
 !     IMPLICIT NONE
-!     INTEGER NEQ
+!     INTEGER(kind=i4) NEQ
 !     DOUBLE PRECISION T, Y, YDOT
 !     DIMENSION Y(NEQ), YDOT(NEQ)
 !     YDOT(1) = -.04D0*Y(1) + 1.D4*Y(2)*Y(3)
@@ -1651,7 +1652,7 @@
 !     END SUBROUTINE FEX
 !     SUBROUTINE JEX(NEQ, T, Y, ML, MU, PD, NRPD)
 !     IMPLICIT NONE
-!     INTEGER NEQ,ML,MU,NRPD
+!     INTEGER(kind=i4) NEQ,ML,MU,NRPD
 !     DOUBLE PRECISION PD, T, Y
 !     DIMENSION Y(NEQ), PD(NRPD,NEQ)
 !     PD(1,1) = -.04D0
@@ -1671,7 +1672,7 @@
 !     USE example1
 !     IMPLICIT NONE
 !     DOUBLE PRECISION ATOL, RTOL, T, TOUT, Y, RSTATS
-!     INTEGER NEQ, ITASK, ISTATE, ISTATS, IOUT, IERROR, I
+!     INTEGER(kind=i4) NEQ, ITASK, ISTATE, ISTATS, IOUT, IERROR, I
 !     DIMENSION Y(3), ATOL(3), RSTATS(22), ISTATS(31)
 !     TYPE(VODE_OPTS) :: OPTIONS
 !     OPEN(UNIT=6, FILE = 'example1.dat')
@@ -1747,7 +1748,7 @@
 ! CONTAINS
 !     SUBROUTINE FEX (NEQ, T, Y, YDOT)
 !     IMPLICIT NONE
-!     INTEGER NEQ
+!     INTEGER(kind=i4) NEQ
 !     DOUBLE PRECISION T, Y, YDOT
 !     DIMENSION Y(3), YDOT(3)
 !     YDOT(1) = -0.04D0*Y(1) + 1.0D4*Y(2)*Y(3)
@@ -1757,7 +1758,7 @@
 !     END SUBROUTINE FEX
 !     SUBROUTINE GEX (NEQ, T, Y, NG, GOUT)
 !     IMPLICIT NONE
-!     INTEGER NEQ, NG
+!     INTEGER(kind=i4) NEQ, NG
 !     DOUBLE PRECISION T, Y, GOUT
 !     DIMENSION Y(3), GOUT(2)
 !     GOUT(1) = Y(1) - 1.0D-4
@@ -1770,7 +1771,7 @@
 !     USE DVODE_F90_M
 !     USE example2
 !     IMPLICIT NONE
-!     INTEGER ITASK, ISTATE, NG, NEQ, IOUT, JROOT, ISTATS, &
+!     INTEGER(kind=i4) ITASK, ISTATE, NG, NEQ, IOUT, JROOT, ISTATS, &
 !     IERROR, I
 !     DOUBLE PRECISION ATOL, RTOL, RSTATS, T, TOUT, Y
 !     DIMENSION Y(3), ATOL(3), RSTATS(22), ISTATS(31), JROOT(2)
@@ -1829,12 +1830,27 @@
 !_______________________________________________________________________
 ! JACSPDB arrays and parameters.
   LOGICAL, PRIVATE :: USE_JACSP, LIKE_ORIGINAL_VODE
-  INTEGER, PRIVATE :: INFODS, LIWADS, MAXGRPDS, MINGRPDS, NRFJACDS,    &
+  INTEGER(kind=i4), PRIVATE :: INFODS, LIWADS, MAXGRPDS, MINGRPDS, NRFJACDS,    &
     NCFJACDS, LWKDS, LIWKDS
-  INTEGER, ALLOCATABLE, PRIVATE :: INDROWDS(:), INDCOLDS(:),           &
+  INTEGER(kind=i4), ALLOCATABLE, PRIVATE :: INDROWDS(:), INDCOLDS(:),           &
     NGRPDS(:), IPNTRDS(:), JPNTRDS(:), IWADS(:), IWKDS(:), IOPTDS(:)
-  REAL (WP), ALLOCATABLE, PRIVATE :: YSCALEDS(:), WKDS(:), FACDS(:)
-  REAL (WP), PRIVATE :: U125, U325
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES ALIGN : 64 :: INDROWDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: INDCOLDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: NGRPDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: IPNTRDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: JPNTRDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: IWADS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: IWKDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: IOPTDS
+#endif
+  REAL(kind=dp), ALLOCATABLE, PRIVATE :: YSCALEDS(:), WKDS(:), FACDS(:)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+      !DIR$ ATTRIBUTES ALIGN : 64 :: YSCALEDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: WKDS
+      !DIR$ ATTRIBUTES ALIGN : 64 :: FACDS
+#endif
+  REAL(kind=dp), PRIVATE :: U125, U325
   
   !$OMP THREADPRIVATE(USE_JACSP, LIKE_ORIGINAL_VODE, INFODS, LIWADS, MAXGRPDS, MINGRPDS, &
   !$OMP& NRFJACDS, NCFJACDS, LWKDS, LIWKDS)
@@ -1871,8 +1887,8 @@
 !     MXHNLO     - maximum number of T+H=T messages
 !     MXSTP0     - maximum number of integration steps
 !     L*****     - lengths and pointers for some internal arrays
-!     INTEGER, PARAMETER, PRIVATE :: KFC = -3, KFH = -7, LENIV1 = 33,    &
-      INTEGER, PARAMETER, PRIVATE :: IPCUTH_MAX = 100, KFC = -3,         &
+!     INTEGER(kind=i4), PARAMETER, PRIVATE :: KFC = -3, KFH = -7, LENIV1 = 33,    &
+      INTEGER(kind=i4), PARAMETER, PRIVATE :: IPCUTH_MAX = 100, KFC = -3,         &
         KFH = -15, LENIV1 = 33,                                          &
         LENIV2 = 8, LENRV1 = 48, LENRV2 = 1, LIWUSER = 30, LRWUSER = 22, &
         MAXCOR = 3, MAX_ARRAY_SIZE = 900000000, MSBP = 20, MXHNL0 = 10,  &
@@ -1881,36 +1897,36 @@
 ! *****LAPACK build change point. Use .TRUE. for LAPACK.
 !     LOGICAL, PARAMETER, PRIVATE :: USE_LAPACK = .TRUE.
 !_______________________________________________________________________
-      REAL (WP), PARAMETER, PRIVATE :: ADDON = 1.0E-6_WP
-      REAL (WP), PARAMETER, PRIVATE :: BIAS1 = 6.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: BIAS2 = 6.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: BIAS3 = 10.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: CCMAX = 0.3_WP
-      REAL (WP), PARAMETER, PRIVATE :: CORTES = 0.1_WP
-      REAL (WP), PARAMETER, PRIVATE :: CRDOWN = 0.3_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETACF = 0.25_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETAMIN = 0.1_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETAMX1 = 1.0E4_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETAMX2 = 10.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETAMX3 = 10.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: ETAMXF = 0.2_WP
-      REAL (WP), PARAMETER, PRIVATE :: FIVE = 5.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: FOUR = 4.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: HALF = 0.5_WP
-      REAL (WP), PARAMETER, PRIVATE :: HUN = 100.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: HUNDRETH = 0.01_WP
-      REAL (WP), PARAMETER, PRIVATE :: ONE = 1.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: ONEPSM = 1.00001_WP
-      REAL (WP), PARAMETER, PRIVATE :: PT1 = 0.1_WP
-      REAL (WP), PARAMETER, PRIVATE :: PT2 = 0.2_WP
-      REAL (WP), PARAMETER, PRIVATE :: RDIV = 2.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: SIX = 6.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: TEN = 10.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: TENTH = 0.1_WP
-      REAL (WP), PARAMETER, PRIVATE :: THOU = 1000.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: THRESH = 1.5_WP
-      REAL (WP), PARAMETER, PRIVATE :: TWO = 2.0_WP
-      REAL (WP), PARAMETER, PRIVATE :: ZERO = 0.0_WP
+      REAL(kind=dp), PARAMETER, PRIVATE :: ADDON = 1.0E-6_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: BIAS1 = 6.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: BIAS2 = 6.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: BIAS3 = 10.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: CCMAX = 0.3_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: CORTES = 0.1_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: CRDOWN = 0.3_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETACF = 0.25_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETAMIN = 0.1_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETAMX1 = 1.0E4_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETAMX2 = 10.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETAMX3 = 10.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ETAMXF = 0.2_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: FIVE = 5.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: FOUR = 4.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: HALF = 0.5_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: HUN = 100.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: HUNDRETH = 0.01_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ONE = 1.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ONEPSM = 1.00001_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: PT1 = 0.1_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: PT2 = 0.2_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: RDIV = 2.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: SIX = 6.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: TEN = 10.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: TENTH = 0.1_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: THOU = 1000.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: THRESH = 1.5_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: TWO = 2.0_dp
+      REAL(kind=dp), PARAMETER, PRIVATE :: ZERO = 0.0_dp
 
 ! Beginning of DVODE_F90 interface.
 ! ..
@@ -1953,8 +1969,12 @@
 ! ..
 ! .. Derived Type Declarations ..
       TYPE, PUBLIC :: VODE_OPTS
-        REAL (WP), DIMENSION (:), POINTER :: ATOL, RTOL
-        INTEGER :: MF, METH, MITER, MOSS, ITOL, IOPT, NG
+        REAL(kind=dp), DIMENSION (:), POINTER :: ATOL, RTOL
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+             !DIR$ ATTRIBUTES ALIGN : 64 :: ATOL
+             !DIR$ ATTRIBUTES ALIGN : 64 :: RTOL
+#endif
+        INTEGER(kind=i4) :: MF, METH, MITER, MOSS, ITOL, IOPT, NG
         LOGICAL :: DENSE, BANDED, SPARSE
       END TYPE VODE_OPTS
 ! ..
@@ -1962,14 +1982,14 @@
 !_______________________________________________________________________
 ! *****MA48 build change point. Insert these statements.
 !     For communication with subroutine ma48_control_array:
-!     REAL (WP), PUBLIC :: COPY_OF_U_PIVOT
+!     REAL(kind=dp), PUBLIC :: COPY_OF_U_PIVOT
 !_______________________________________________________________________
-      REAL (WP), PRIVATE :: ACNRM, ALPHA, BIG, BIG1, CCMXJ, CGCE, CONP, CRATE,  &
+      REAL(kind=dp), PRIVATE :: ACNRM, ALPHA, BIG, BIG1, CCMXJ, CGCE, CONP, CRATE,  &
         DRC, DRES, DXMAX, EPS, ERRMAX, ETA, ETAMAX, FRACINT, FRACSUB, H, HMIN,  &
         HMXI, HNEW, HSCAL, HU, MEPS, MRESID, MRMIN, PRL1, RC, RESID, RL1,       &
         RMIN, SETH, T0ST, THEMAX, TLAST, TN, TOL, TOL1, TOUTC, UMAX, UROUND,    &
         U_PIVOT, X2, WM1, WM2
-      INTEGER, PRIVATE :: ADDTOJA, ADDTONNZ, CONSECUTIVE_CFAILS,                &
+      INTEGER(kind=i4), PRIVATE :: ADDTOJA, ADDTONNZ, CONSECUTIVE_CFAILS,                &
         CONSECUTIVE_EFAILS, ELBOW_ROOM, IADIM, IANPIV, IAVPIV,                  &
         ICF, ICNCP, IFAIL, IMAX, IMIN, INEWJ, INIT, IPUP, IRANK, IRFND, IRNCP,  &
         ISTART, ISTATC, ITASKC, JADIM, JCUR, JMIN, JSTART, JSV, KFLAG, KOUNTL,  &
@@ -1991,17 +2011,66 @@
         SCALE_MATRIX, SPARSE, USE_FAST_FACTOR, YMAXWARN  
 ! ..
 ! .. Local Arrays ..
-      REAL (WP), ALLOCATABLE, PRIVATE :: ACOR(:), CSCALEX(:), EWT(:),           &
+      REAL(kind=dp), ALLOCATABLE, PRIVATE :: ACOR(:), CSCALEX(:), EWT(:),           &
         FPTEMP(:), FTEMP(:), FTEMP1(:), G0(:), G1(:), GX(:), JMAT(:),           &
         LB(:), PMAT(:), RSCALEX(:), RWORK(:), SAVF(:), UB(:), WM(:),            &
         WMTEMP(:), WSCALEX(:,:), YHNQP2(:), YHTEMP(:), YMAX(:), YNNEG(:),       &
         YTEMP(:), DTEMP(:)
-      REAL (WP), PRIVATE :: EL(13), RUSER(22), TAU(13), TQ(5)
-      INTEGER, ALLOCATABLE, PRIVATE :: BIGP(:), BJGP(:), IA(:), IAB(:), IAN(:), &
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: ACOR
+         !DIR$ ATTRIBUTES ALIGN : 64 :: CSCALEX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: EWT
+         !DIR$ ATTRIBUTES ALIGN : 64 :: FPTEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: FTEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: FTEMP1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: G0
+         !DIR$ ATTRIBUTES ALIGN : 64 :: G1
+         !DIR$ ATTRIBUTES ALIGN : 64 :: GX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JMAT
+         !DIR$ ATTRIBUTES ALIGN : 64 :: LB
+         !DIR$ ATTRIBUTES ALIGN : 64 :: PMAT
+         !DIR$ ATTRIBUTES ALIGN : 64 :: RSCALEX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: RWORK
+         !DIR$ ATTRIBUTES ALIGN : 64 :: SAVF
+         !DIR$ ATTRIBUTES ALIGN : 64 :: UB
+         !DIR$ ATTRIBUTES ALIGN : 64 :: WM
+         !DIR$ ATTRIBUTES ALIGN : 64 :: WMTEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: WSCALEX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: YHNQP2
+         !DIR$ ATTRIBUTES ALIGN : 64 :: YHTEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: YMAX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: YNNEG
+         !DIR$ ATTRIBUTES ALIGN : 64 :: YTEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: DTEMP
+#endif 
+      REAL(kind=dp), PRIVATE :: EL(13), RUSER(22), TAU(13), TQ(5)
+      INTEGER(kind=i4), ALLOCATABLE, PRIVATE :: BIGP(:), BJGP(:), IA(:), IAB(:), IAN(:), &
         ICN(:), IDX(:), IGP(:), IKEEP28(:,:), IW28(:,:), IWORK(:), JA(:),       &
         JAB(:), JAN(:), JATEMP(:), JGP(:), JROOT(:), JVECT(:), SUBDS(:), SUPDS(:)
-      INTEGER, PRIVATE :: IDISP(2), IUSER(30), LNPIV(10), LPIV(10)
-      INTEGER, PRIVATE :: MORD(2) = (/ 12, 5 /)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ATTRIBUTES ALIGN : 64 :: BIGP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: NJGP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IA
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IAB
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IAN
+         !DIR$ ATTRIBUTES ALIGN : 64 :: ICN
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IDX
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IGP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IKEEP28
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IW28
+         !DIR$ ATTRIBUTES ALIGN : 64 :: IWORK
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JA
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JAB
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JAN
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JATEMP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JGP
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JROOT
+         !DIR$ ATTRIBUTES ALIGN : 64 :: JVECT
+         !DIR$ ATTRIBUTES ALIGN : 64 :: SUBDS
+         !DIR$ ATTRIBUTES ALIGN : 64 :: SUPDS
+#endif
+      INTEGER(kind=i4), PRIVATE :: IDISP(2), IUSER(30), LNPIV(10), LPIV(10)
+      INTEGER(kind=i4), PRIVATE :: MORD(2) = (/ 12, 5 /)
       
       !$OMP THREADPRIVATE (ACNRM, ALPHA, BIG, BIG1, CCMXJ, CGCE, CONP, CRATE, &
       !$OMP& DRC, DRES, DXMAX, EPS, ERRMAX, ETA, ETAMAX, FRACINT, FRACSUB, H, HMIN, &
@@ -2071,7 +2140,7 @@
       DATA OPTS_CALLED/ .FALSE./
       DATA MP/6/, NLP/6/, MLP/6/, NSRCH/32768/, ISTART/0/, MAXIT/16/, &
         LBIG/ .FALSE./, LBLOCK/ .TRUE./, GROW/ .TRUE./,               &
-        TOL/0.0_WP/, CGCE/0.5_WP/, BIG/0.0_WP/, ABORT1/ .TRUE./,      &
+        TOL/0.0_dp/, CGCE/0.5_dp/, BIG/0.0_dp/, ABORT1/ .TRUE./,      &
         ABORT2/ .TRUE./, ABORT3/ .FALSE./, ABORT/ .FALSE./, MIRN/0/,  &
         MICN/0/, MIRNCP/0/, MICNCP/0/, MIRANK/0/, NDROP1/0/,          &
         MRMIN/0.0D0/, MRESID/0/, OK_TO_CALL_MA28/.FALSE./
@@ -2092,12 +2161,12 @@
         TYPE (VODE_OPTS) :: OPTS
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (INOUT) :: T, TOUT
-        INTEGER, INTENT (INOUT) :: ISTATE
-        INTEGER, INTENT (IN) :: ITASK, NEQ
+        REAL(kind=dp), INTENT (INOUT) :: T, TOUT
+        INTEGER(kind=i4), INTENT (INOUT) :: ISTATE
+        INTEGER(kind=i4), INTENT (IN) :: ITASK, NEQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: Y(*)
+        REAL(kind=dp), INTENT (INOUT) :: Y(*)
 ! ..
 ! .. Subroutine Arguments ..
         OPTIONAL :: G_FCN, J_FCN
@@ -2106,8 +2175,8 @@
 ! .. Subroutine Interfaces ..
      INTERFACE
        SUBROUTINE F(NEQ,T,Y,YDOT)
-         INTEGER, PARAMETER :: WP = KIND(1.0D0)
-         INTEGER NEQ
+         !INTEGER(kind=i4), PARAMETER :: WP = KIND(1.0D0)
+         INTEGER(kind=i4) NEQ
          REAL(WP) T
          REAL(WP), DIMENSION(NEQ) :: Y, YDOT
          INTENT(IN)  :: NEQ, T, Y
@@ -2117,8 +2186,8 @@
 
      INTERFACE
        SUBROUTINE G_FCN(NEQ,T,Y,NG,GROOT)
-         INTEGER, PARAMETER :: WP = KIND(1.0D0)
-         INTEGER NEQ, NG
+         !INTEGER(kind=i4), PARAMETER :: WP = KIND(1.0D0)
+         INTEGER(kind=i4) NEQ, NG
          REAL(WP) T
          REAL(WP), DIMENSION(NEQ) :: Y
          REAL(WP), DIMENSION(NG) :: GROOT(NG)
@@ -2134,8 +2203,8 @@
 !    would suffuce for a banded or dense problem.
 !    INTERFACE
 !      SUBROUTINE J_FCN(NEQ,T,Y,ML,MU,PD,NROWPD)
-!        INTEGER, PARAMETER :: WP = KIND(1.0D0)
-!        INTEGER NEQ, ML, MU, NROWPD
+!        INTEGER(kind=i4), PARAMETER :: WP = KIND(1.0D0)
+!        INTEGER(kind=i4) NEQ, ML, MU, NROWPD
 !        REAL(WP) T
 !        REAL(WP), DIMENSION(NEQ) :: Y
 !        REAL(WP), DIMENSION(NEQ) :: PD(NROWPD,NEQ)
@@ -2146,18 +2215,18 @@
 !    The following would suffice for a sparse problem.
 !    INTERFACE
 !      SUBROUTINE J_FCN(NEQ,T,Y,IA,JA,NZ,P)
-!        INTEGER, PARAMETER :: WP = KIND(1.0D0)
-!        INTEGER NEQ, NZ
+!        INTEGER(kind=i4), PARAMETER :: WP = KIND(1.0D0)
+!        INTEGER(kind=i4) NEQ, NZ
 !        REAL(WP) T
 !        REAL(WP), DIMENSION Y(*), P(*)
-!        INTEGER, DIMENSION IA(*), JA(*)
+!        INTEGER(kind=i4), DIMENSION IA(*), JA(*)
 !        INTENT(IN) :: NEQ, T, Y
 !        INTENT(INOUT) IA, JA, NZ, P
 !      END SUBROUTINE J_FCN
 !    END INTERFACE
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: HOWCALL, METH, MFA, MITER, MOSS, NG
+        INTEGER(kind=i4) :: HOWCALL, METH, MFA, MITER, MOSS, NG
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -2252,12 +2321,12 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: T
-        INTEGER :: ML, MU, NEQ, NROWPD, I
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: ML, MU, NEQ, NROWPD, I
         LOGICAL DUMMY
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: PD(NROWPD,*), Y(*)
+        REAL(kind=dp) :: PD(NROWPD,*), Y(*)
 ! ..
       INTENT(IN) T, Y, ML, MU, NROWPD
       INTENT(INOUT) PD
@@ -2287,12 +2356,12 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: T
-        INTEGER :: NEQ, NG, I
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: NEQ, NG, I
         LOGICAL DUMMY
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: GOUT(*), Y(*)
+        REAL(kind=dp) :: GOUT(*), Y(*)
 ! ..
       INTENT(IN) NEQ, T, Y, NG
       INTENT(OUT) GOUT
@@ -2326,8 +2395,8 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: HMAX, HMIN
-        INTEGER, OPTIONAL, INTENT (IN) :: MXSTEP
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: HMAX, HMIN
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: MXSTEP
 ! ..
 ! .. Local Scalars ..
         CHARACTER (80) :: MSG
@@ -2366,6 +2435,11 @@
   FUNCTION SET_NORMAL_OPTS(DENSE_J, BANDED_J, SPARSE_J,                &
     USER_SUPPLIED_JACOBIAN, LOWER_BANDWIDTH, UPPER_BANDWIDTH,          &
     RELERR, ABSERR, ABSERR_VECTOR, NEVENTS) RESULT(OPTS)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SET_NORMAL_OPTS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SET_NORMAL_OPTS
+#endif
 
 ! FUNCTION SET_NORMAL_OPTS:
 !    Jacobian type:
@@ -2494,17 +2568,20 @@
         TYPE (VODE_OPTS) :: OPTS
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR,RELERR
-        INTEGER, OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH,   &
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR,RELERR
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH,   &
           NEVENTS,UPPER_BANDWIDTH
         LOGICAL, OPTIONAL, INTENT (IN) :: BANDED_J, DENSE_J, &
           SPARSE_J, USER_SUPPLIED_JACOBIAN
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:)
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED ABSERR_VECTOR:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: IER,IOPT,METH,MF,MFA,MFSIGN,MITER,ML,MOSS, &
+        INTEGER(kind=i4) :: IER,IOPT,METH,MF,MFA,MFSIGN,MITER,ML,MOSS, &
           MU,NAE,NG,NRE
         LOGICAL :: BANDED,DENSE,SPARSE
         CHARACTER (80) :: MSG
@@ -2553,10 +2630,10 @@
         END IF
         IF (WPD==WP) THEN
 !       Working precision is double.
-          UMAX = 0.999999999_WP
+          UMAX = 0.999999999_dp
         ELSE
 !       Working precision is single.
-          UMAX = 0.9999_WP
+          UMAX = 0.9999_dp
         END IF
 
         MA28AD_CALLS = 0
@@ -2709,7 +2786,7 @@
 !         Set the MA28 pivot sequence frequency flag.
           REDO_PIVOT_SEQUENCE = .FALSE.
 !         Set the MA28 singularity threshold.
-          EPS = 1.0E-4_WP
+          EPS = 1.0E-4_dp
 !         Use scaling of the iteration matrix.
           SCALE_MATRIX = .TRUE.
 !         Define the elbow room factor for the MA28 sparse work arrays.
@@ -2776,7 +2853,7 @@
           OPTS%RTOL = RELERR
         ELSE
           IF (ALLOW_DEFAULT_TOLS) THEN
-             OPTS%RTOL = 1.0E-4_WP
+             OPTS%RTOL = 1.0E-4_dp
              MSG = 'By not specifying RELERR, you have elected to use a default'
              CALL XERRDV(MSG,190,1,0,0,0,0,ZERO,ZERO)
              MSG = 'relative error tolerance equal to 1.0D-4. Please be aware a'
@@ -2856,6 +2933,11 @@
     NZSWAG, USER_SUPPLIED_SPARSITY, MA28_RPS,                          &
     NEVENTS, CONSTRAINED, CLOWER, CUPPER, CHANGE_ONLY_f77_OPTIONS)     &
   RESULT(OPTS)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SET_INTERMEDIATE_OPTS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SET_INTERMEDIATE_OPTS
+#endif
 
 ! FUNCTION SET_INTERMEDIATE_OPTS:
 !    Jacobian type:
@@ -3320,21 +3402,27 @@
         TYPE (VODE_OPTS) :: OPTS
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR, H0, HMAX, HMIN,         &
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR, H0, HMAX, HMIN,         &
         RELERR, TCRIT
-        INTEGER, OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH, MAXORD,          &
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH, MAXORD,          &
           MXHNIL, MXSTEP, NEVENTS, NZSWAG, UPPER_BANDWIDTH
         LOGICAL, OPTIONAL, INTENT (IN) :: BANDED_J, CHANGE_ONLY_f77_OPTIONS,&
           DENSE_J, MA28_RPS, SPARSE_J, USER_SUPPLIED_JACOBIAN,              &
           USER_SUPPLIED_SPARSITY
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:)
-        REAL (WP), OPTIONAL :: CLOWER(:), CUPPER(:)
-        INTEGER, OPTIONAL, INTENT (IN) :: CONSTRAINED(:)
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:)
+        REAL(kind=dp), OPTIONAL :: CLOWER(:), CUPPER(:)
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: CONSTRAINED(:)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED ABSERR_VECTOR:64
+        !DIR$ ASSUME_ALIGNED CLOWER:64
+        !DIR$ ASSUME_ALIGNED CUPPER:64
+        !DIR$ ASSUME_ALIGNED CONSTRAINED:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        INTEGER ::  IER, IOPT, METH, MF, MFA, MFSIGN, MITER, ML, MOSS, MU,  &
+        INTEGER(kind=i4) ::  IER, IOPT, METH, MF, MFA, MFSIGN, MITER, ML, MOSS, MU,  &
           NAE, NG, NRE
         LOGICAL :: BANDED, DENSE, SPARSE
         CHARACTER (80) :: MSG
@@ -3428,17 +3516,17 @@
         END IF
         IF (WPD==WP) THEN
 !       Working precision is double.
-          UMAX = 0.999999999_WP
+          UMAX = 0.999999999_dp
         ELSE
 !       Working precision is single.
-          UMAX = 0.9999_WP
+          UMAX = 0.9999_dp
         END IF
 
 !       Set the MA28 message flag.
         LP = 0
 
 !       Set the MA28 singularity threshold.
-        EPS = 1.0E-4_WP
+        EPS = 1.0E-4_dp
 
 !       Set the MA28 pivot sequence frequency flag.
         IF (PRESENT(MA28_RPS)) THEN
@@ -3745,7 +3833,7 @@
           OPTS%RTOL = RELERR
         ELSE
           IF (ALLOW_DEFAULT_TOLS) THEN
-             OPTS%RTOL = 1.0E-4_WP
+             OPTS%RTOL = 1.0E-4_dp
              MSG = 'By not specifying RELERR, you have elected to use a default'
              CALL XERRDV(MSG,450,1,0,0,0,0,ZERO,ZERO)
              MSG = 'relative error tolerance equal to 1.0D-4. Please be aware a'
@@ -3828,6 +3916,11 @@
     MA28_ELBOW_ROOM, MC19_SCALING, MA28_MESSAGES, MA28_EPS,            &
     MA28_RPS, CHANGE_ONLY_f77_OPTIONS,JACOBIAN_BY_JACSP)               &
   RESULT(OPTS)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SET_OPTS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SET_OPTS
+#endif
 
 ! FUNCTION SET_OPTS:
 !    VODE.f77 method flag:
@@ -4502,9 +4595,9 @@
         TYPE (VODE_OPTS) :: OPTS
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR, H0, HMAX, HMIN,         &
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR, H0, HMAX, HMIN,         &
         MA28_EPS, RELERR, SETH, TCRIT, UPIVOT
-        INTEGER, OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH, MAXORD,          &
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: LOWER_BANDWIDTH, MAXORD,          &
           MA28_ELBOW_ROOM, METHOD_FLAG, MXHNIL, MXSTEP, NEVENTS, NZSWAG,    &
           UPPER_BANDWIDTH
         LOGICAL, OPTIONAL, INTENT (IN) :: BANDED_J, CHANGE_ONLY_f77_OPTIONS,&
@@ -4513,13 +4606,13 @@
           USER_SUPPLIED_JACOBIAN, USER_SUPPLIED_SPARSITY, YMAGWARN
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:), RELERR_VECTOR(:)
-        REAL (WP), OPTIONAL :: CLOWER(:), CUPPER(:)
-        INTEGER, OPTIONAL, INTENT (IN) :: CONSTRAINED(:), SUB_DIAGONALS(:), &
+        REAL(kind=dp), OPTIONAL, INTENT (IN) :: ABSERR_VECTOR(:), RELERR_VECTOR(:)
+        REAL(kind=dp), OPTIONAL :: CLOWER(:), CUPPER(:)
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: CONSTRAINED(:), SUB_DIAGONALS(:), &
         SUP_DIAGONALS(:)
 ! ..
 ! .. Local Scalars ..
-        INTEGER ::  IER, IOPT, METH, MF, MFA, MFSIGN, MITER, ML, MOSS, MU,  &
+        INTEGER(kind=i4) ::  IER, IOPT, METH, MF, MFA, MFSIGN, MITER, ML, MOSS, MU,  &
           NAE, NG, NRE
         LOGICAL :: BANDED, DENSE, SPARSE
         CHARACTER (80) :: MSG
@@ -4616,10 +4709,10 @@
     END IF
     IF (WPD==WP) THEN
 !   Working precision is double.
-      UMAX = 0.999999999_WP
+      UMAX = 0.999999999_dp
     ELSE
 !     Working precision is single.
-      UMAX = 0.9999_WP
+      UMAX = 0.9999_dp
     END IF
 
 !   Set the MA28 message flag.
@@ -4635,10 +4728,10 @@
        IF (MA28_EPS > ZERO) THEN
           EPS = MA28_EPS
        ELSE
-          EPS = 1.0E-4_WP
+          EPS = 1.0E-4_dp
        END IF
      ELSE
-       EPS = 1.0E-4_WP
+       EPS = 1.0E-4_dp
      END IF
 
 !   Set the MA28 pivot sequence frequency flag.
@@ -5143,7 +5236,7 @@
           OPTS%RTOL = RELERR
         ELSE
           IF (ALLOW_DEFAULT_TOLS) THEN
-             OPTS%RTOL = 1.0E-4_WP
+             OPTS%RTOL = 1.0E-4_dp
              MSG = 'By not specifying RELERR, you have elected to use a default'
              CALL XERRDV(MSG,770,1,0,0,0,0,ZERO,ZERO)
              MSG = 'relative error tolerance equal to 1.0D-4. Please be aware a'
@@ -5226,6 +5319,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE GET_STATS(RSTATS,ISTATS,NUMEVENTS,JROOTS)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: GET_STATS
+    !DIR$ OPTIMIZE : 3
+    
+#endif
 ! ..
 ! Return the user portions of the DVODE RUSER and IUSER arrays;
 ! and if root finding is being done, return the JROOT vector
@@ -5283,12 +5381,12 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, OPTIONAL, INTENT (IN) :: NUMEVENTS
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: NUMEVENTS
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: RSTATS(22)
-        INTEGER, INTENT (INOUT) :: ISTATS(31)
-        INTEGER, OPTIONAL, INTENT (INOUT) :: JROOTS(:)
+        REAL(kind=dp), INTENT (INOUT) :: RSTATS(22)
+        INTEGER(kind=i4), INTENT (INOUT) :: ISTATS(31)
+        INTEGER(kind=i4), OPTIONAL, INTENT (INOUT) :: JROOTS(:)
 ! ..
 ! .. Local Scalars ..
         CHARACTER (80) :: MSG
@@ -5371,6 +5469,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE USERSETS_IAJA(IAUSER,NIAUSER,JAUSER,NJAUSER)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: USERSETS_IAJA
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: USERSETS_IAJA
+#endif
 ! ..
 ! Approximate or allow the user to supply the sparse Jacobian
 ! structure pointer arrays IA and JA directly for DVODE_F90
@@ -5396,13 +5499,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: NIAUSER, NJAUSER
+        INTEGER(kind=i4), INTENT (IN) :: NIAUSER, NJAUSER
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (IN) :: IAUSER(NIAUSER), JAUSER(NJAUSER)
+        INTEGER(kind=i4), INTENT (IN) :: IAUSER(NIAUSER), JAUSER(NJAUSER)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: JER
+        INTEGER(kind=i4) :: JER
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -5446,6 +5549,11 @@
 
       SUBROUTINE SET_IAJA(DFN,NEQ,T,Y,FMIN,NTURB,DTURB,IAUSER,NIAUSER, &
         JAUSER,NJAUSER)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SET_IAJA
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SET_IAJA
+#endif
 ! ..
 !     Approximate or allow the user to supply the sparse Jacobian
 !     structure pointer arrays IA and JA for DVODE_F90 (not called
@@ -5495,20 +5603,20 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: FMIN, T
-        INTEGER, INTENT (IN) :: NEQ, NTURB
-        INTEGER, OPTIONAL, INTENT (IN) :: NIAUSER, NJAUSER
+        REAL(kind=dp), INTENT (IN) :: FMIN, T
+        INTEGER(kind=i4), INTENT (IN) :: NEQ, NTURB
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: NIAUSER, NJAUSER
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: DTURB(*), Y(NEQ)
-        INTEGER, OPTIONAL, INTENT (IN) :: IAUSER(:), JAUSER(:)
+        REAL(kind=dp), INTENT (INOUT) :: DTURB(*), Y(NEQ)
+        INTEGER(kind=i4), OPTIONAL, INTENT (IN) :: IAUSER(:), JAUSER(:)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL DFN
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AIJ, DTRB, EMIN, RJ, YJ, YJSAVE, YPJ
-        INTEGER :: I, J, JER, JP1, K, MTURB
+        REAL(kind=dp) :: AIJ, DTRB, EMIN, RJ, YJ, YJSAVE, YPJ
+        INTEGER(kind=i4) :: I, J, JER, JP1, K, MTURB
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -5652,6 +5760,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVODE(F,NEQ,Y,T,TOUT,ITASK,ISTATE,OPTS,JAC,GFUN)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVODE
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVODE
+#endif
 ! ..
 ! This is the core driver (modified original DVODE.F driver).
 ! ..
@@ -5663,20 +5776,23 @@
         TYPE (VODE_OPTS) :: OPTS
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (INOUT) :: T, TOUT
-        INTEGER, INTENT (INOUT) :: ISTATE
-        INTEGER, INTENT (IN) :: ITASK, NEQ
+        REAL(kind=dp), INTENT (INOUT) :: T, TOUT
+        INTEGER(kind=i4), INTENT (INOUT) :: ISTATE
+        INTEGER(kind=i4), INTENT (IN) :: ITASK, NEQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: Y(*)
+        REAL(kind=dp), INTENT (INOUT) :: Y(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED Y:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, GFUN, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ATOLI, BIG, EWTI, H0, HMAX, HMX, RH, RTOLI, SIZEST, &
+        REAL(kind=dp) :: ATOLI, BIG, EWTI, H0, HMAX, HMX, RH, RTOLI, SIZEST, &
           TCRIT, TNEXT, TOLSF, TP
-        INTEGER :: I, IER, IFLAG, IMXER, IOPT, IPCUTH, IRFP, IRT, ITOL, JCO, &
+        INTEGER(kind=i4) :: I, IER, IFLAG, IMXER, IOPT, IPCUTH, IRFP, IRT, ITOL, JCO, &
           JER, KGO, LENIW, LENJ, LENP, LENRW, LENWM, LF0, MBAND, MF, MFA, ML, &
           MU, NG, NITER, NSLAST
         LOGICAL :: IHIT
@@ -6214,8 +6330,8 @@
 ! The error weights in EWT are inverted after being loaded.
 
 100     UROUND = EPSILON(ONE)
-        U125 = UROUND ** 0.125_WP
-        U325 = UROUND ** 0.325_WP
+        U125 = UROUND ** 0.125_dp
+        U325 = UROUND ** 0.325_dp
 !       ISTATC controls the determination of the sparsity arrays if
 !       the sparse solution option is used.
         ISTATC = ISTATE
@@ -6767,6 +6883,11 @@
 
       SUBROUTINE DVHIN(N,T0,Y0,YDOT,F,TOUT,EWT,ITOL,ATOL,Y,TEMP,H0, &
         NITER,IER)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVINH
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVINH
+#endif
 ! ..
 ! Calculate the initial step size.
 ! ..
@@ -6798,23 +6919,31 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (INOUT) :: H0
-        REAL (WP), INTENT (IN) :: T0, TOUT
-        INTEGER :: IER
-        INTEGER, INTENT (IN) :: ITOL, N
-        INTEGER, INTENT (INOUT) :: NITER
+        REAL(kind=dp), INTENT (INOUT) :: H0
+        REAL(kind=dp), INTENT (IN) :: T0, TOUT
+        INTEGER(kind=i4) :: IER
+        INTEGER(kind=i4), INTENT (IN) :: ITOL, N
+        INTEGER(kind=i4), INTENT (INOUT) :: NITER
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: ATOL(*), EWT(*), Y0(*)
-        REAL (WP), INTENT (INOUT) :: TEMP(*), Y(*), YDOT(*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*), EWT(*), Y0(*)
+        REAL(kind=dp), INTENT (INOUT) :: TEMP(*), Y(*), YDOT(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED ATOL:64
+        !DIR$ ASSUME_ALIGNED EWT:64
+        !DIR$ ASSUME_ALIGNED Y0:64
+        !DIR$ ASSUME_ALIGNED TEMP:64
+        !DIR$ ASSUME_ALIGNED Y:64
+        !DIR$ ASSUME_ALIGNED YDOT:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AFI, ATOLI, DELYI, H, HG, HLB, HNEW, HRAT, HUB, T1, &
+        REAL(kind=dp) :: AFI, ATOLI, DELYI, H, HG, HLB, HNEW, HRAT, HUB, T1, &
           TDIST, TROUND, YDDNRM
-        INTEGER :: I, ITER
+        INTEGER(kind=i4) :: I, ITER
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX, SIGN, SQRT
@@ -6899,6 +7028,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVINDY_CORE(T,K,YH,LDYH,DKY,IFLAG)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVINDY_CORE
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVINDY_CORE
+#endif
 ! ..
 ! Interpolate the solution and derivative.
 ! ..
@@ -6925,16 +7059,20 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: T
-        INTEGER, INTENT (INOUT) :: IFLAG
-        INTEGER, INTENT (IN) :: K, LDYH
+        REAL(kind=dp), INTENT (IN) :: T
+        INTEGER(kind=i4), INTENT (INOUT) :: IFLAG
+        INTEGER(kind=i4), INTENT (IN) :: K, LDYH
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: DKY(*), YH(LDYH,*)
+        REAL(kind=dp), INTENT (INOUT) :: DKY(*), YH(LDYH,*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED DKY:64
+        !DIR$ ASSUME_ALIGNED YH:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: C, R, S, TFUZZ, TN1, TP
-        INTEGER :: IC, J, JB, JB2, JJ, JJ1, JP1
+        REAL(kind=dp) :: C, R, S, TFUZZ, TN1, TP
+        INTEGER(kind=i4) :: IC, J, JB, JB2, JJ, JJ1, JP1
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -6990,6 +7128,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVINDY_BNDS(T,K,YH,LDYH,DKY,IFLAG)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVINDY_BNDS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVINDY_BNDS
+#endif
 ! ..
 ! Interpolate the solution and derivative and enforce nonnegativity
 ! (used only if user calls DVINDY and the BOUNDS option is in
@@ -7022,16 +7165,20 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: T
-        INTEGER, INTENT (INOUT) :: IFLAG
-        INTEGER, INTENT (IN) :: K, LDYH
+        REAL(kind=dp), INTENT (IN) :: T
+        INTEGER(kind=i4), INTENT (INOUT) :: IFLAG
+        INTEGER(kind=i4), INTENT (IN) :: K, LDYH
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: DKY(*), YH(LDYH,*)
+        REAL(kind=dp), INTENT (INOUT) :: DKY(*), YH(LDYH,*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED DKY:64
+        !DIR$ ASSUME_ALIGNED YH:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: C, R, S, TFUZZ, TN1, TP
-        INTEGER :: I, IC, J, JB, JB2, JJ, JJ1, JP1
+        REAL(kind=dp) :: C, R, S, TFUZZ, TN1, TP
+        INTEGER(kind=i4) :: I, IC, J, JB, JB2, JJ, JJ1, JP1
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -7104,6 +7251,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVINDY(T,K,DKY,IFLAG)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVINDY
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVINDY
+#endif
 ! ..
 ! This is a dummy interface to allow the user to interpolate the
 ! solution and the derivative (not called by DVODE_F90).
@@ -7124,15 +7276,18 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: T
-        INTEGER, INTENT (INOUT) :: IFLAG
-        INTEGER, INTENT (IN) :: K
+        REAL(kind=dp), INTENT (IN) :: T
+        INTEGER(kind=i4), INTENT (INOUT) :: IFLAG
+        INTEGER(kind=i4), INTENT (IN) :: K
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: DKY(*)
+        REAL(kind=dp), INTENT (INOUT) :: DKY(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED DKY:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IER
+        INTEGER(kind=i4) :: I, IER
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ALLOCATED, SIZE
@@ -7179,6 +7334,12 @@
 
       SUBROUTINE DVSTEP(Y,YH,LDYH,YH1,EWT,SAVF,ACOR,WM,IWM,F,JAC, &
         VNLS,ATOL,ITOL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVSTEP
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVSTEP
+#endif 
+        use omp_lib
 ! ..
 ! This is the core step integrator for nonstiff and for dense, banded,
 ! and sparse solutions.
@@ -7223,21 +7384,32 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: LDYH, ITOL
+        INTEGER(kind=i4), INTENT (IN) :: LDYH, ITOL
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
+        REAL(kind=dp), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
           WM(*), Y(*), YH(LDYH,*), YH1(*)
-        REAL (WP), INTENT (IN) :: ATOL(*)
-        INTEGER, INTENT (INOUT) :: IWM(*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IWM(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED ACOR:64
+        !DIR$ ASSUME_ALIGNED EWT:64
+        !DIR$ ASSUME_ALIGNED SAVF:64
+        !DIR$ ASSUME_ALIGNED WM:64
+        !DIR$ ASSUME_ALIGNED Y:64
+        !DIR$ ASSUME_ALIGNED YH:64
+        !DIR$ ASSUME_ALIGNED YH1:64
+        !DIR$ ASSUME_ALIGNED ATOL:64
+        !DIR$ ASSUME_ALIGNED IWM:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC, VNLS
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: CNQUOT, DDN, DSM, DUP, ETAQ, ETAQM1, ETAQP1, FLOTL, R, &
+        REAL(kind=dp) :: CNQUOT, DDN, DSM, DUP, ETAQ, ETAQM1, ETAQP1, FLOTL, R, &
           TOLD
-        INTEGER :: I, I1, I2, IBACK, J, JB, NCF, NFLAG
+        INTEGER(kind=i4) :: I, I1, I2, IBACK, J, JB, NCF, NFLAG
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX, MIN, REAL
@@ -7366,6 +7538,7 @@
         I1 = NQNYH + 1
         DO JB = 1, NQ
           I1 = I1 - LDYH
+          !$OMP SIMD LINEAR(I:1)
           DO I = I1, NQNYH
             YH1(I) = YH1(I) + YH1(I+LDYH)
           END DO
@@ -7394,6 +7567,7 @@
         I1 = NQNYH + 1
         DO JB = 1, NQ
           I1 = I1 - LDYH
+          !$OMP SIMD LINEAR(I:1)
           DO I = I1, NQNYH
             YH1(I) = YH1(I) - YH1(I+LDYH)
           END DO
@@ -7487,6 +7661,7 @@
         I1 = NQNYH + 1
         DO JB = 1, NQ
           I1 = I1 - LDYH
+          !DIR$ SIMD LINEAR(I:1)
           DO I = I1, NQNYH
             YH1(I) = YH1(I) - YH1(I+LDYH)
           END DO
@@ -7614,6 +7789,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVSET
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVSET
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVSET
+#endif
+    use omp_lib
 ! ..
 ! Set the integration coefficients for DVSTEP.
 ! ..
@@ -7652,12 +7833,12 @@
      IMPLICIT NONE
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AHATN0, ALPH0, CNQM1, CSUM, ELP, EM0, FLOTI, FLOTL, &
+        REAL(kind=dp) :: AHATN0, ALPH0, CNQM1, CSUM, ELP, EM0, FLOTI, FLOTL, &
           FLOTNQ, HSUM, RXI, RXIS, S, T1, T2, T3, T4, T5, T6, XI
-        INTEGER :: I, IBACK, J, JP1, NQM1, NQM2
+        INTEGER(kind=i4) :: I, IBACK, J, JP1, NQM1, NQM2
 ! ..
 ! .. Local Arrays ..
-        REAL (WP) :: EM(13)
+        REAL(kind=dp) :: EM(13)
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, REAL
@@ -7686,12 +7867,14 @@
           IF ((J/=NQM1) .OR. (NQWAIT/=1)) GOTO 30
           S = ONE
           CSUM = ZERO
+          !$OMP SIMD REDUCTION(+:CSUM)
           DO I = 1, NQM1
             CSUM = CSUM + S*EM(I)/REAL(I+1)
             S = -S
           END DO
           TQ(1) = EM(NQM1)/(FLOTNQ*CSUM)
 30        RXI = H/HSUM
+          !$OMP SIMD REDUCTION(+:EM)
           DO IBACK = 1, J
             I = (J+2) - IBACK
             EM(I) = EM(I) + EM(I-1)*RXI
@@ -7702,6 +7885,7 @@
         S = ONE
         EM0 = ZERO
         CSUM = ZERO
+        !$OMP SIMD REDUCTION(+:EM0) REDUCTION(+:CSUM)
         DO I = 1, NQ
           FLOTI = REAL(I)
           EM0 = EM0 + S*EM(I)/FLOTI
@@ -7721,6 +7905,7 @@
 !       For higher order control constant, multiply polynomial by
 !       1+x/xi(q).
         RXI = ONE/XI
+        !$OMP SIMD REDUCTION(+:EM)
         DO IBACK = 1, NQ
           I = (L+1) - IBACK
           EM(I) = EM(I) + EM(I-1)*RXI
@@ -7728,6 +7913,7 @@
 !       Compute integral of polynomial.
         S = ONE
         CSUM = ZERO
+        !$OMP SIMD REDUCTION(+:CSUM)
         DO I = 1, L
           CSUM = CSUM + S*EM(I)/REAL(I+1)
           S = -S
@@ -7751,6 +7937,7 @@
           RXI = H/HSUM
           JP1 = J + 1
           ALPH0 = ALPH0 - ONE/REAL(JP1)
+          !$OMP SIMD REDUCTION(+:EL)
           DO IBACK = 1, JP1
             I = (J+3) - IBACK
             EL(I) = EL(I) + EL(I-1)*RXI
@@ -7761,6 +7948,7 @@
         HSUM = HSUM + TAU(NQM1)
         RXI = H/HSUM
         AHATN0 = -EL(2) - RXI
+        !$OMP SIMD REDUCTION(+:EL)
         DO IBACK = 1, NQ
           I = (NQ+2) - IBACK
           EL(I) = EL(I) + EL(I-1)*RXIS
@@ -7788,6 +7976,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVJUST(YH,LDYH,IORD)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVJUST
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVJUST
+#endif
+    use omp_lib
 ! ..
 ! Adjust the Nordsieck array.
 ! ..
@@ -7803,14 +7997,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: IORD, LDYH
+        INTEGER(kind=i4), INTENT (IN) :: IORD, LDYH
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: YH(LDYH,*)
+        REAL(kind=dp), INTENT (INOUT) :: YH(LDYH,*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED YH:64
+#endif
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ALPH0, ALPH1, HSUM, PROD, T1, XI, XIOLD
-        INTEGER :: I, IBACK, J, JP1, LP1, NQM1, NQM2, NQP1
+        REAL(kind=dp) :: ALPH0, ALPH1, HSUM, PROD, T1, XI, XIOLD
+        INTEGER(kind=i4) :: I, IBACK, J, JP1, LP1, NQM1, NQM2, NQP1
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC REAL
@@ -7836,6 +8033,7 @@
           HSUM = HSUM + TAU(J)
           XI = HSUM/HSCAL
           JP1 = J + 1
+          !$OMP SIMD REDUCTION(+:EL)
           DO IBACK = 1, JP1
             I = (J+3) - IBACK
             EL(I) = EL(I)*XI + EL(I-1)
@@ -7847,6 +8045,7 @@
         END DO
 !       Subtract correction terms from YH array.
         DO J = 3, NQ
+          !DIR$ SIMD REDUCTION(-:YH)
           DO I = 1, N
             YH(I,J) = YH(I,J) - YH(I,L)*EL(J)
           END DO
@@ -7925,6 +8124,12 @@
 
       SUBROUTINE DVNLSD(Y,YH,LDYH,SAVF,EWT,ACOR,IWM,WM,F,JAC,NFLAG,&
         ATOL,ITOL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNLSD
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNLSD
+#endif
+    use omp_lib
 ! ..
 ! This is the nonlinear system solver for dense and banded solutions.
 ! ..
@@ -7969,26 +8174,26 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: ITOL, LDYH
-        INTEGER, INTENT (INOUT) :: NFLAG
+        INTEGER(kind=i4), INTENT (IN) :: ITOL, LDYH
+        INTEGER(kind=i4), INTENT (INOUT) :: NFLAG
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
+        REAL(kind=dp), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
           WM(*), Y(*), YH(LDYH,*)
-        REAL (WP), INTENT (IN) :: ATOL(*)
-        INTEGER, INTENT (INOUT) :: IWM(*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IWM(*)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ACNRMNEW, CSCALE, DCON, DEL, DELP
-        INTEGER :: I, IERPJ, IERSL, M
+        REAL(kind=dp) :: ACNRMNEW, CSCALE, DCON, DEL, DELP
+        INTEGER(kind=i4) :: I, IERPJ, IERSL, M
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX, MIN
         
-        INTEGER OMP_GET_THREAD_NUM
+        INTEGER(kind=i4) OMP_GET_THREAD_NUM
         
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVNLSD
@@ -8181,6 +8386,12 @@
 
       SUBROUTINE DVJAC(Y,YH,LDYH,EWT,FTEM,SAVF,WM,IWM,F,JAC,IERPJ, &
         ATOL,ITOL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVJAC
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVJAC
+#endif
+    use omp_lib
 ! ..
 ! Compute and process the matrix P = I - h*rl1*J, where J is an
 ! approximation to the Jacobian for dense and banded solutions.
@@ -8228,21 +8439,29 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IERPJ
-        INTEGER, INTENT (IN) :: LDYH, ITOL
+        INTEGER(kind=i4), INTENT (INOUT) :: IERPJ
+        INTEGER(kind=i4), INTENT (IN) :: LDYH, ITOL
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: EWT(*), FTEM(*), SAVF(*), WM(*), &
+        REAL(kind=dp), INTENT (INOUT) :: EWT(*), FTEM(*), SAVF(*), WM(*), &
           Y(*),YH(LDYH,*)
-        REAL (WP), INTENT (IN) :: ATOL(*)
-        INTEGER, INTENT (INOUT) :: IWM(*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IWM(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED EWT:64
+        !DIR$ ASSUME_ALIGNED FTEM:64
+        !DIR$ ASSUME_ALIGNED SAVF:64
+        !DIR$ ASSUME_ALIGNED WM:64
+        !DIR$ ASSUME_ALIGNED Y:64
+        !DIR$ ASSUME_ALIGNED YH:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: CON, DI, FAC, HRL1, R, R0, SRUR, YI, YJ, YJJ
-        INTEGER :: I, I1, I2, IER, II, J, J1, JJ, JJ1, JJ2, JOK, K,   &
+        REAL(kind=dp) :: CON, DI, FAC, HRL1, R, R0, SRUR, YI, YJ, YJJ
+        INTEGER(kind=i4) :: I, I1, I2, IER, II, J, J1, JJ, JJ1, JJ2, JOK, K,   &
           K1, K2, LENP, MBA, MBAND, MEB1, MEBAND, ML, ML1, MU, NG, NP1
 !         K1, K2, LENP, MBA, MBAND, MEB1, MEBAND, ML, ML3, MU, NG, NP1
 ! ..
@@ -8305,6 +8524,7 @@
                  R0 = THOU*ABS(H)*REAL(N)*FAC
                  IF (ABS(R0)<=ZERO) R0 = ONE
                  SRUR = WM1
+                 !$OMP SIMD LINEAR(J:1)
                  DO J = 1, N
 !                   JACSPDB multiplies YSCALEDS(*) BY UROUND**0.825:
 !                   R = MAX(ABS(Y(J)),R0/EWT(J))
@@ -8313,10 +8533,12 @@
                  END DO
               ELSE
                  IF (ITOL == 1 .OR. ITOL == 3) THEN
+                    !$OMP SIMD LINEAR(J:1)
                     DO J = 1, N
                        YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(1),UROUND)
                     END DO
                  ELSE
+                    !$OMP SIMD LINEAR(J:1)
                     DO J = 1, N
                        YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(J),UROUND)
                     END DO
@@ -8344,6 +8566,7 @@
                  Y(J) = Y(J) + R
                  FAC = ONE/R
                  CALL F(N,TN,Y,FTEM)
+                 !$OMP SIMD LINEAR(I:1)
                  DO I = 1, N
                    WM(I+J1) = (FTEM(I)-SAVF(I))*FAC
                  END DO
@@ -8375,6 +8598,7 @@
 !         J = 3
           J = 1
           NP1 = N + 1
+          !$OMP SIMD REDUCTION(+:WM)
           DO I = 1, N
             WM(J) = WM(J) + ONE
             J = J + NP1
@@ -8488,6 +8712,7 @@
                 R0 = THOU*ABS(H)*REAL(N)*FAC
                 IF (ABS(R0)<=ZERO) R0 = ONE
                 SRUR = WM1
+                !$OMP SIMD LINEAR(J:1)
                 DO J = 1, N
 !                  JACSPDB multiplies YSCALEDS(*) BY UROUND**0.825:
 !                  R = MAX(ABS(Y(J)),R0/EWT(J))
@@ -8496,10 +8721,12 @@
                 END DO
              ELSE
                 IF (ITOL == 1 .OR. ITOL == 3) THEN
+                   !$OMP SIMD LINEAR(J:1)
                    DO J = 1, N
                       YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(1),UROUND)
                    END DO
                 ELSE
+                   !$OMP SIMD LINEAR(J:1)
                    DO J = 1, N
                       YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(J),UROUND)
                    END DO
@@ -8520,6 +8747,7 @@
              R0 = THOU*ABS(H)*UROUND*REAL(N)*FAC
              IF (ABS(R0)<=ZERO) R0 = ONE
              DO J = 1, MBA
+               !$OMP SIMD REDUCTION(+:Y)
                DO I = J, N, MBAND
                  YI = Y(I)
                  R = MAX(SRUR*ABS(YI),R0/EWT(I))
@@ -8565,6 +8793,7 @@
              JJ1 = BIGP(NG)
              JJ2 = BIGP(NG+1) - 1
 !            For each column in this group...
+             !$OMP SIMD REDUCTION(+:Y)
              DO JJ = JJ1, JJ2
                 J = BJGP(JJ)
                 R = MAX(SRUR*ABS(Y(J)),R0/EWT(J))
@@ -8642,6 +8871,7 @@
         CALL DSCAL_F90(LENP,CON,WM(1),1)
 !       II = MBAND + 2
         II = MBAND
+        !$OMP SIMD REDUCTION(+:WM)
         DO I = 1, N
           WM(II) = WM(II) + ONE
           II = II + MEBAND
@@ -8670,20 +8900,26 @@
 !_______________________________________________________________________
 
       SUBROUTINE DACOPY(NROW,NCOL,A,NROWA,B,NROWB)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DACOPY
+    !DIR$ ATTRIBUTES INLINE :: DACOPY
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DACOPY
+#endif
 ! ..
 ! Copy one array to another.
 ! ..
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: NCOL, NROW, NROWA, NROWB
+        INTEGER(kind=i4), INTENT (IN) :: NCOL, NROW, NROWA, NROWB
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: A(NROWA,NCOL)
-        REAL (WP), INTENT (INOUT) :: B(NROWB,NCOL)
+        REAL(kind=dp), INTENT (IN) :: A(NROWA,NCOL)
+        REAL(kind=dp), INTENT (INOUT) :: B(NROWB,NCOL)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: IC
+        INTEGER(kind=i4) :: IC
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DACOPY
 ! ..
@@ -8696,6 +8932,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVSOL(WM,IWM,X,IERSL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVSOL
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVSOL
+#endif
 ! ..
 ! Manage the solution of the linear system arising from a chord
 ! iteration for dense and banded solutions.
@@ -8724,15 +8965,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IERSL
+        INTEGER(kind=i4), INTENT (INOUT) :: IERSL
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: WM(*), X(*)
-        INTEGER, INTENT (INOUT) :: IWM(*)
+        REAL(kind=dp), INTENT (INOUT) :: WM(*), X(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IWM(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: DI, HRL1, PHRL1, R
-        INTEGER :: I, MEBAND, ML, MU
+        REAL(kind=dp) :: DI, HRL1, PHRL1, R
+        INTEGER(kind=i4) :: I, MEBAND, ML, MU
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS
@@ -8740,7 +8981,7 @@
 ! ______________________________________________________________________
 
 ! *****LAPACK build change point. Insert this statement.
-!       INTEGER INFO
+!       INTEGER(kind=i4) INFO
 !       CHARACTER*1 TRANS
 ! ______________________________________________________________________
 
@@ -8820,6 +9061,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVSRCO(RSAV,ISAV,JOB)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVSRC0
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES INLINE :: DVSRCO
+#endif
 ! ..
 ! Save or restore (depending on JOB) the contents of the PRIVATE
 ! variable blocks, which are used internally by DVODE (not called
@@ -8838,11 +9084,11 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: JOB
+        INTEGER(kind=i4), INTENT (IN) :: JOB
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: RSAV(*)
-        INTEGER, INTENT (INOUT) :: ISAV(*)
+        REAL(kind=dp), INTENT (INOUT) :: RSAV(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: ISAV(*)
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVSRCO
 ! ..
@@ -8979,6 +9225,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DEWSET(N,ITOL,RTOL,ATOL,YCUR,EWT)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DEWSET
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DEWSET
+#endif
 ! ..
 ! Set the error weight vector.
 ! ..
@@ -8990,11 +9241,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: ITOL, N
+        INTEGER(kind=i4), INTENT (IN) :: ITOL, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: ATOL(*), RTOL(*), YCUR(N)
-        REAL (WP), INTENT (OUT) :: EWT(N)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*), RTOL(*), YCUR(N)
+        REAL(kind=dp), INTENT (OUT) :: EWT(N)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED ATOL:64
+        !DIR$ ASSUME_ALIGNED RTOL:64
+        !DIR$ ASSUME_ALIGNED YCUR:64
+        !DIR$ ASSUME_ALIGNED EWT:64
+#endif
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS
@@ -9019,6 +9276,12 @@
 !_______________________________________________________________________
 
       FUNCTION DVNORM(N,V,W)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNORM
+    
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNORM
+#endif
 ! ..
 ! Calculate weighted root-mean-square (rms) vector norm.
 ! ..
@@ -9030,17 +9293,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Function Return Value ..
-        REAL (WP) :: DVNORM
+        REAL(kind=dp) :: DVNORM
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N
+        INTEGER(kind=i4), INTENT (IN) :: N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: V(N), W(N)
+        REAL(kind=dp), INTENT (IN) :: V(N), W(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: SUM
-        INTEGER :: I
+        REAL(kind=dp) :: SUM
+        INTEGER(kind=i4) :: I
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC SQRT
@@ -9096,13 +9359,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: R1, R2
-        INTEGER :: I1, I2, LEVEL, NERR, NI, NR
+        REAL(kind=dp) :: R1, R2
+        INTEGER(kind=i4) :: I1, I2, LEVEL, NERR, NI, NR
         CHARACTER (*) :: MSG
         LOGICAL PRINT_NERR
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: LUNIT, MESFLG
+        INTEGER(kind=i4) :: LUNIT, MESFLG
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT XERRDV
 ! ..
@@ -9142,10 +9405,10 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: MFLAG
+        INTEGER(kind=i4), INTENT (IN) :: MFLAG
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: JUNK
+        INTEGER(kind=i4) :: JUNK
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT XSETF
 ! ..
@@ -9166,10 +9429,10 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LUN
+        INTEGER(kind=i4) :: LUN
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: JUNK
+        INTEGER(kind=i4) :: JUNK
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT XSETUN
 ! ..
@@ -9208,14 +9471,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Function Return Value ..
-        INTEGER :: IXSAV
+        INTEGER(kind=i4) :: IXSAV
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: IPAR, IVALUE
+        INTEGER(kind=i4), INTENT (IN) :: IPAR, IVALUE
         LOGICAL, INTENT (IN) :: ISET
 ! ..
 ! .. Local Scalars ..
-        INTEGER, SAVE :: LUNIT, MESFLG
+        INTEGER(kind=i4), SAVE :: LUNIT, MESFLG
         !$OMP THREADPRIVATE (LUNIT, MESFLG)
 ! ..
 ! .. Data Statements ..
@@ -9244,7 +9507,7 @@
 ! ..
 !     Provide the standard output unit number.
 ! ..
-!     INTEGER LOUT, IUMACH
+!     INTEGER(kind=i4) LOUT, IUMACH
 !     LOUT = IUMACH()
 !     Function Return Values:
 !     LOUT: the standard logical unit for Fortran output.
@@ -9253,7 +9516,7 @@
 !     of Fortran systems. This may be machine-dependent.
 ! ..
 ! .. Function Return Value ..
-        INTEGER :: IUMACH
+        INTEGER(kind=i4) :: IUMACH
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT IUMACH
 ! ..
@@ -9272,10 +9535,10 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: CALLED_FROM_WHERE, IER
+        INTEGER(kind=i4), INTENT (IN) :: CALLED_FROM_WHERE, IER
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I1
+        INTEGER(kind=i4) :: I1
         CHARACTER (80) :: MSG
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT CHECK_STAT
@@ -9300,19 +9563,19 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: LDYH, NEQ
+        INTEGER(kind=i4), INTENT (IN) :: LDYH, NEQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: EWT(*), Y(*)
-        REAL (WP) :: SAVF(*)
-        REAL (WP), INTENT (IN) :: YH(LDYH,*)
+        REAL(kind=dp), INTENT (INOUT) :: EWT(*), Y(*)
+        REAL(kind=dp) :: SAVF(*)
+        REAL(kind=dp), INTENT (IN) :: YH(LDYH,*)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: DQ, DYJ, ERWT, FAC, YJ
-        INTEGER :: I, IER, J, JFOUND, K, KMAX, KMIN, KNEW, NP1, NZ
+        REAL(kind=dp) :: DQ, DYJ, ERWT, FAC, YJ
+        INTEGER(kind=i4) :: I, IER, J, JFOUND, K, KMAX, KMIN, KNEW, NP1, NZ
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -9607,17 +9870,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: NEQ
+        INTEGER(kind=i4), INTENT (IN) :: NEQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: EWT(*), SAVF(*), Y(*)
+        REAL(kind=dp), INTENT (INOUT) :: EWT(*), SAVF(*), Y(*)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: DQ, DYJ, ERWT, FAC, YJ
-        INTEGER :: ADDTONZ, I, IER, J, K, KVAL, NP1
+        REAL(kind=dp) :: DQ, DYJ, ERWT, FAC, YJ
+        INTEGER(kind=i4) :: ADDTONZ, I, IER, J, K, KVAL, NP1
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -9818,15 +10081,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IER, NGRP
-        INTEGER, INTENT (IN) :: MAXG, N
+        INTEGER(kind=i4), INTENT (INOUT) :: IER, NGRP
+        INTEGER(kind=i4), INTENT (IN) :: MAXG, N
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (IN) :: IA(*), JA(*)
-        INTEGER, INTENT (INOUT) :: IGP(*), INCL(*), JDONE(*), JGP(*)
+        INTEGER(kind=i4), INTENT (IN) :: IA(*), JA(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IGP(*), INCL(*), JDONE(*), JGP(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, J, K, KMAX, KMIN, NCOL, NG
+        INTEGER(kind=i4) :: I, J, K, KMAX, KMIN, NCOL, NG
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DGROUP
 ! ..
@@ -9909,7 +10172,7 @@
 !
 !    Note:
 !    The three arrays BJA, BINCL, and BDONE are REAL to avoid the
-!    necessity to allocate three new INTEGER arrays. BGROUP can
+!    necessity to allocate three new INTEGER(kind=i4) arrays. BGROUP can
 !    be called only at an integration start or restart because
 !    DVODE_F90 work arrays are used for these arrays.
 !
@@ -9928,15 +10191,15 @@
         IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N, ML, MU
+        INTEGER(kind=i4), INTENT (IN) :: N, ML, MU
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: BINCL(*), BJA(*), BDONE(*)
+        REAL(kind=dp), INTENT (INOUT) :: BINCL(*), BJA(*), BDONE(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IBDONE, IBINCL, IER, J, K, KBEGIN, KFINI, &
+        INTEGER(kind=i4) :: I, IBDONE, IBINCL, IER, J, K, KBEGIN, KFINI, &
           KI, KJ, MAXG, NCOL, NG
-        REAL (WP) :: FUDGE, ONE_PLUS_FUDGE
+        REAL(kind=dp) :: FUDGE, ONE_PLUS_FUDGE
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -9952,8 +10215,8 @@
         ALLOCATE (BIGP(N+1),BJGP(N),STAT=IER)
         CALL CHECK_STAT(IER,770)
 
-        FUDGE = 0.4_WP
-        ONE_PLUS_FUDGE = 1.0_WP + FUDGE
+        FUDGE = 0.4_dp
+        ONE_PLUS_FUDGE = 1.0_dp + FUDGE
         MAXG = N + 1
 !       BDONE(1:N) = 0 ...
         BDONE(1:N) = FUDGE
@@ -10095,10 +10358,10 @@
         IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N, ML, MU
+        INTEGER(kind=i4), INTENT (IN) :: N, ML, MU
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IER, J, K, KBEGIN, KFINI, KI, KJ, &
+        INTEGER(kind=i4) :: I, IER, J, K, KBEGIN, KFINI, KI, KJ, &
           NP1, NZBB
         CHARACTER (80) :: MSG
 ! ..
@@ -10256,14 +10519,14 @@
         IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N, ML, MU, JCOL
-        INTEGER, INTENT (OUT) :: NZJ
+        INTEGER(kind=i4), INTENT (IN) :: N, ML, MU, JCOL
+        INTEGER(kind=i4), INTENT (OUT) :: NZJ
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (OUT) :: JNZ(*)
+        INTEGER(kind=i4), INTENT (OUT) :: JNZ(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, J, K, KBEGIN, KFINI, KI, KJ
+        INTEGER(kind=i4) :: I, J, K, KBEGIN, KFINI, KI, KJ
 ! ..
 ! .. Intrinsic Functions ..
      INTRINSIC MAX, MIN
@@ -10365,22 +10628,22 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: ITOL, LDYH
-        INTEGER, INTENT (INOUT) :: NFLAG
+        INTEGER(kind=i4), INTENT (IN) :: ITOL, LDYH
+        INTEGER(kind=i4), INTENT (INOUT) :: NFLAG
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
+        REAL(kind=dp), INTENT (INOUT) :: ACOR(*), EWT(*), SAVF(*), &
           WM(*), Y(*), YH(LDYH,*)
-        REAL (WP), INTENT (IN) :: ATOL(*)
-        INTEGER IWM(*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*)
+        INTEGER(kind=i4) IWM(*)
         LOGICAL DUMMY
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ACNRMNEW, CSCALE, DCON, DEL, DELP
-        INTEGER :: I, IERPJ, IERSL, M
+        REAL(kind=dp) :: ACNRMNEW, CSCALE, DCON, DEL, DELP
+        INTEGER(kind=i4) :: I, IERPJ, IERSL, M
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX, MIN
@@ -10596,13 +10859,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IERSL
+        INTEGER(kind=i4), INTENT (INOUT) :: IERSL
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: TEM(*), X(*)
+        REAL(kind=dp), INTENT (INOUT) :: TEM(*), X(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I
+        INTEGER(kind=i4) :: I
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVSOLS28
 ! ..
@@ -10633,19 +10896,19 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IERPJ
-        INTEGER, INTENT (IN) :: LDYH, N, ITOL
+        INTEGER(kind=i4), INTENT (INOUT) :: IERPJ
+        INTEGER(kind=i4), INTENT (IN) :: LDYH, N, ITOL
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: EWT(*), FTEMP1(*), SAVF(*), Y(*), YH(LDYH,*)
-        REAL (WP), INTENT (IN) :: ATOL(*)
+        REAL(kind=dp), INTENT (INOUT) :: EWT(*), FTEMP1(*), SAVF(*), Y(*), YH(LDYH,*)
+        REAL(kind=dp), INTENT (IN) :: ATOL(*)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: CON, FAC, HRL1, R, R0, SRUR
-        INTEGER :: I, IER, J, JER, JJ, JJ1, JJ2, K, K1, K2, MA28,       &
+        REAL(kind=dp) :: CON, FAC, HRL1, R, R0, SRUR
+        INTEGER(kind=i4) :: I, IER, J, JER, JJ, JJ1, JJ2, K, K1, K2, MA28,       &
           MA28SAVE, MB28SAVE, NG, NZ
         CHARACTER (80) :: MSG
 ! ..
@@ -11069,14 +11332,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N
+        INTEGER(kind=i4), INTENT (IN) :: N
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (IN) :: IA(*)
-        INTEGER, INTENT (INOUT) :: ICN(*)
+        INTEGER(kind=i4), INTENT (IN) :: IA(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: ICN(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: J, KMAX, KMIN
+        INTEGER(kind=i4) :: J, KMAX, KMIN
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT SET_ICN
 ! ..
@@ -11098,13 +11361,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N
+        INTEGER(kind=i4), INTENT (IN) :: N
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (IN) :: IA(*), ICN(*), JA(*)
+        INTEGER(kind=i4), INTENT (IN) :: IA(*), ICN(*), JA(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: J, K, KMAX, KMIN
+        INTEGER(kind=i4) :: J, K, KMAX, KMIN
         CHARACTER (80) :: MSG
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT CHECK_DIAG
@@ -11135,18 +11398,18 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: IRT
-        INTEGER, INTENT (IN) :: JOB, NEQ, NYH
+        INTEGER(kind=i4), INTENT (INOUT) :: IRT
+        INTEGER(kind=i4), INTENT (IN) :: JOB, NEQ, NYH
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: G0(*), G1(*), GX(*), Y(*), YH(NYH,*)
+        REAL(kind=dp), INTENT (INOUT) :: G0(*), G1(*), GX(*), Y(*), YH(NYH,*)
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL G
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: HMING, T1, TEMP1, TEMP2, X
-        INTEGER :: I, IFLAG, JFLAG
+        REAL(kind=dp) :: HMING, T1, TEMP1, TEMP2, X
+        INTEGER(kind=i4) :: I, IFLAG, JFLAG
         LOGICAL :: ZROOT
 ! ..
 ! .. Intrinsic Functions ..
@@ -11331,17 +11594,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: HMIN
-        REAL (WP), INTENT (INOUT) :: X, X0, X1
-        INTEGER, INTENT (INOUT) :: JFLAG
-        INTEGER, INTENT (IN) :: NG
+        REAL(kind=dp), INTENT (IN) :: HMIN
+        REAL(kind=dp), INTENT (INOUT) :: X, X0, X1
+        INTEGER(kind=i4), INTENT (INOUT) :: JFLAG
+        INTEGER(kind=i4), INTENT (IN) :: NG
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: G0(NG), G1(NG), GX(NG)
+        REAL(kind=dp), INTENT (INOUT) :: G0(NG), G1(NG), GX(NG)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: T2, TMAX
-        INTEGER :: I, IMXOLD, NXLAST
+        REAL(kind=dp) :: T2, TMAX
+        INTEGER(kind=i4) :: I, IMXOLD, NXLAST
         LOGICAL :: SGNCHG, XROOT, ZROOT
 ! ..
 ! .. Intrinsic Functions ..
@@ -11566,13 +11829,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: IYDIM, NEQN, NQ
+        INTEGER(kind=i4) :: IYDIM, NEQN, NQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: Y(*)
+        REAL(kind=dp) :: Y(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, J, J1, J2
+        INTEGER(kind=i4) :: I, J, J1, J2
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVNRDP
 ! ..
@@ -11598,13 +11861,13 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: IYDIM, NEQN, NQ
+        INTEGER(kind=i4) :: IYDIM, NEQN, NQ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: Y(*)
+        REAL(kind=dp) :: Y(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, J, J1, J2
+        INTEGER(kind=i4) :: I, J, J1, J2
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVNRDN
 ! ..
@@ -11630,15 +11893,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: RH
-        INTEGER :: IYDIM, L, NEQN
+        REAL(kind=dp) :: RH
+        INTEGER(kind=i4) :: IYDIM, L, NEQN
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: Y(*)
+        REAL(kind=dp) :: Y(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: R1
-        INTEGER :: I, J
+        REAL(kind=dp) :: R1
+        INTEGER(kind=i4) :: I, J
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DVNRDS
 ! ..
@@ -11664,7 +11927,7 @@
      IMPLICIT NONE
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: IER, II, IR
+        INTEGER(kind=i4) :: IER, II, IR
         CHARACTER (80) :: MSG
 ! ..
 ! .. Intrinsic Functions ..
@@ -11672,8 +11935,8 @@
 ! ..
 !_______________________________________________________________________
 ! *****MA48 build change point. Insert these statements.
-!     INTEGER INFO
-!     INTEGER ISIZE
+!     INTEGER(kind=i4) INFO
+!     INTEGER(kind=i4) ISIZE
 !     COMMON /MA48SIZE/ ISIZE
 !_______________________________________________________________________
 ! ..
@@ -11967,7 +12230,7 @@
 !       Print the amount of storage used.
         MSG = 'I1 = Total length of REAL arrays used.'
         CALL XERRDV(MSG,1760,1,1,IR,0,0,ZERO,ZERO)
-        MSG = 'I1 = Total length of INTEGER arrays used.'
+        MSG = 'I1 = Total length of INTEGER(kind=i4) arrays used.'
         CALL XERRDV(MSG,1760,1,1,II,0,0,ZERO,ZERO)
 
 !       In case DVODE_F90 is subsequently called:
@@ -11990,9 +12253,9 @@
 !     On Entry
 !        A       REAL(KIND=WP)(LDA, N)
 !                the matrix to be factored.
-!        LDA     INTEGER
+!        LDA     INTEGER(kind=i4)
 !                the leading dimension of the array A.
-!        N       INTEGER
+!        N       INTEGER(kind=i4)
 !                the order of the matrix A.
 !     On Return
 !        A       an upper triangular matrix and the multipliers
@@ -12000,9 +12263,9 @@
 !                The factorization can be written A = L*U where
 !                L is a product of permutation and unit lower
 !                triangular matrices and U is upper triangular.
-!        IPVT    INTEGER(N)
+!        IPVT    INTEGER(kind=i4)(N)
 !                an integer vector of pivot indices.
-!        INFO    INTEGER
+!        INFO    INTEGER(kind=i4)
 !                = 0  normal value.
 !                = K  if U(K,K) == 0.0. This is not an error
 !                     condition for this subroutine, but it does
@@ -12013,16 +12276,16 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: INFO
-        INTEGER, INTENT (IN) :: LDA, N
+        INTEGER(kind=i4), INTENT (INOUT) :: INFO
+        INTEGER(kind=i4), INTENT (IN) :: LDA, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: A(LDA,*)
-        INTEGER, INTENT (INOUT) :: IPVT(*)
+        REAL(kind=dp), INTENT (INOUT) :: A(LDA,*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: T
-        INTEGER :: J, K, KP1, L, NM1
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: J, K, KP1, L, NM1
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS
@@ -12099,15 +12362,15 @@
 !     On Entry
 !        A       REAL(KIND=WP)(LDA, N)
 !                the output from DGECO or DGEFA_F90.
-!        LDA     INTEGER
+!        LDA     INTEGER(kind=i4)
 !                the leading dimension of the array A.
-!        N       INTEGER
+!        N       INTEGER(kind=i4)
 !                the order of the matrix A.
-!        IPVT    INTEGER(N)
+!        IPVT    INTEGER(kind=i4)(N)
 !                the pivot vector from DGECO or DGEFA_F90.
 !        B       REAL(KIND=WP)(N)
 !                the right hand side vector.
-!        JOB     INTEGER
+!        JOB     INTEGER(kind=i4)
 !                = 0         to solve A*X = B,
 !                = nonzero   to solve TRANS(A)*X = B where
 !                            TRANS(A)is the transpose.
@@ -12131,15 +12394,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: JOB, LDA, N
+        INTEGER(kind=i4), INTENT (IN) :: JOB, LDA, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: A(LDA,*), B(*)
-        INTEGER, INTENT (INOUT) :: IPVT(*)
+        REAL(kind=dp), INTENT (INOUT) :: A(LDA,*), B(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: T
-        INTEGER :: K, KB, L, NM1
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: K, KB, L, NM1
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DGESL_F90
 ! ..
@@ -12218,15 +12481,15 @@
 !                the diagonals of the matrix are stored in rows
 !                ML+1 through 2*ML+MU+1 of ABD.
 !                See the comments below for details.
-!        LDA     INTEGER
+!        LDA     INTEGER(kind=i4)
 !                the leading dimension of the array ABD.
 !                LDA must be >= 2*ML + MU + 1.
-!        N       INTEGER
+!        N       INTEGER(kind=i4)
 !                the order of the original matrix.
-!        ML      INTEGER
+!        ML      INTEGER(kind=i4)
 !                number of diagonals below the main diagonal.
 !                0 <= ML < N.
-!        MU      INTEGER
+!        MU      INTEGER(kind=i4)
 !                number of diagonals above the main diagonal.
 !                0 <= MU < N.
 !                More efficient if ML <= MU.
@@ -12236,9 +12499,9 @@
 !                The factorization can be written A = L*U where
 !                L is a product of permutation and unit lower
 !                triangular matrices and U is upper triangular.
-!        IPVT    INTEGER(N)
+!        IPVT    INTEGER(kind=i4)(N)
 !                an integer vector of pivot indices.
-!        INFO    INTEGER
+!        INFO    INTEGER(kind=i4)
 !                = 0  normal value.
 !                = K  if U(K,K) == 0.0. This is not an error
 !                     condition for this subroutine, but it does
@@ -12269,16 +12532,16 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (INOUT) :: INFO
-        INTEGER, INTENT (IN) :: LDA, ML, MU, N
+        INTEGER(kind=i4), INTENT (INOUT) :: INFO
+        INTEGER(kind=i4), INTENT (IN) :: LDA, ML, MU, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: ABD(LDA,*)
-        INTEGER, INTENT (INOUT) :: IPVT(*)
+        REAL(kind=dp), INTENT (INOUT) :: ABD(LDA,*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: T
-        INTEGER :: I0, J, J0, J1, JU, JZ, K, KP1, L, LM, M, MM, NM1
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: I0, J, J0, J1, JU, JZ, K, KP1, L, LM, M, MM, NM1
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX, MIN
@@ -12388,19 +12651,19 @@
 !     On Entry
 !        ABD     REAL(KIND=WP)(LDA, N)
 !                the output from DGBCO or DGBFA_F90.
-!        LDA     INTEGER
+!        LDA     INTEGER(kind=i4)
 !                the leading dimension of the array ABD.
-!        N       INTEGER
+!        N       INTEGER(kind=i4)
 !                the order of the original matrix.
-!        ML      INTEGER
+!        ML      INTEGER(kind=i4)
 !                number of diagonals below the main diagonal.
-!        MU      INTEGER
+!        MU      INTEGER(kind=i4)
 !                number of diagonals above the main diagonal.
-!        IPVT    INTEGER(N)
+!        IPVT    INTEGER(kind=i4)(N)
 !                the pivot vector from DGBCO or DGBFA_F90.
 !        B       REAL(KIND=WP)(N)
 !                the right hand side vector.
-!        JOB     INTEGER
+!        JOB     INTEGER(kind=i4)
 !                = 0         to solve A*X = B,
 !                = nonzero   to solve TRANS(A)*X = B, where
 !                            TRANS(A) is the transpose.
@@ -12424,15 +12687,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: JOB, LDA, ML, MU, N
+        INTEGER(kind=i4), INTENT (IN) :: JOB, LDA, ML, MU, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: ABD(LDA,*), B(*)
-        INTEGER, INTENT (INOUT) :: IPVT(*)
+        REAL(kind=dp), INTENT (INOUT) :: ABD(LDA,*), B(*)
+        INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: T
-        INTEGER :: K, KB, L, LA, LB, LM, M, NM1
+        REAL(kind=dp) :: T
+        INTEGER(kind=i4) :: K, KB, L, LA, LB, LM, M, NM1
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC MIN
@@ -12538,15 +12801,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: DA
-        INTEGER, INTENT (IN) :: INCX, INCY, N
+        REAL(kind=dp), INTENT (IN) :: DA
+        INTEGER(kind=i4), INTENT (IN) :: INCX, INCY, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: DX(*)
-        REAL (WP), INTENT (INOUT) :: DY(*)
+        REAL(kind=dp), INTENT (IN) :: DX(*)
+        REAL(kind=dp), INTENT (INOUT) :: DY(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IX, IY, M, MP1, NS
+        INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MOD
@@ -12628,14 +12891,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: INCX, INCY, N
+        INTEGER(kind=i4), INTENT (IN) :: INCX, INCY, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: DX(*)
-        REAL (WP), INTENT (INOUT) :: DY(*)
+        REAL(kind=dp), INTENT (IN) :: DX(*)
+        REAL(kind=dp), INTENT (INOUT) :: DY(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IX, IY, M, MP1, NS
+        INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC MOD
@@ -12721,16 +12984,16 @@
      IMPLICIT NONE
 ! ..
 ! .. Function Return Value ..
-        REAL (WP) :: DDOT_F90
+        REAL(kind=dp) :: DDOT_F90
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: INCX, INCY, N
+        INTEGER(kind=i4), INTENT (IN) :: INCX, INCY, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: DX(*), DY(*)
+        REAL(kind=dp), INTENT (IN) :: DX(*), DY(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IX, IY, M, MP1, NS
+        INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC MOD
@@ -12810,14 +13073,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP), INTENT (IN) :: DA
-        INTEGER, INTENT (IN) :: INCX, N
+        REAL(kind=dp), INTENT (IN) :: DA
+        INTEGER(kind=i4), INTENT (IN) :: INCX, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (INOUT) :: DX(*)
+        REAL(kind=dp), INTENT (INOUT) :: DX(*)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, IX, M, MP1
+        INTEGER(kind=i4) :: I, IX, M, MP1
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC MOD
@@ -12878,17 +13141,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Function Return Value ..
-        INTEGER :: IDAMAX_F90
+        INTEGER(kind=i4) :: IDAMAX_F90
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: INCX, N
+        INTEGER(kind=i4), INTENT (IN) :: INCX, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP), INTENT (IN) :: DX(*)
+        REAL(kind=dp), INTENT (IN) :: DX(*)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: DMAX, XMAG
-        INTEGER :: I, IX
+        REAL(kind=dp) :: DMAX, XMAG
+        INTEGER(kind=i4) :: I, IX
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS
@@ -13049,7 +13312,7 @@
 ! Private Variable Information.
 ! LP, MP Default value 6 (line printer). Unit number for error
 !     messages and duplicate element warning, respectively.
-! NLP, MLP INTEGER. Unit number for messages from MA30AD and
+! NLP, MLP INTEGER(kind=i4). Unit number for messages from MA30AD and
 !     MC23AD. Set by MA28AD to the value of LP.
 ! LBLOCK Logical variable with default value .TRUE. If .TRUE.,
 !     MC23AD is used to first permute the matrix to block lower
@@ -13058,12 +13321,12 @@
 !     an estimate of the increase in size of matrix elements during
 !     LU decomposition is given by MC24AD.
 ! EPS, RMIN, RESID. Variables not referenced by MA28AD.
-! IRNCP, ICNCP INTEGER. Set to number of compresses on arrays IRN
+! IRNCP, ICNCP INTEGER(kind=i4). Set to number of compresses on arrays IRN
 !     and ICN/A, respectively.
-! MINIRN, MINICN INTEGER. Minimum length of arrays IRN and ICN/A,
+! MINIRN, MINICN INTEGER(kind=i4). Minimum length of arrays IRN and ICN/A,
 !     respectively, for success on future runs.
-! IRANK INTEGER. Estimated rank of matrix.
-! MIRNCP, MICNCP, MIRANK, MIRN, MICN INTEGER. Variables used to
+! IRANK INTEGER(kind=i4). Estimated rank of matrix.
+! MIRNCP, MICNCP, MIRANK, MIRN, MICN INTEGER(kind=i4). Variables used to
 !     communicate between MA30FD and MA28FD values of
 !     abovenamed variables with somewhat similar names.
 ! ABORT1, ABORT2 LOGICAL. Variables with default value .TRUE.
@@ -13088,16 +13351,16 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: U
-        INTEGER :: IFLAG, LICN, LIRN, N, NZ
+        REAL(kind=dp) :: U
+        INTEGER(kind=i4) :: IFLAG, LICN, LIRN, N, NZ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), W(N)
-        INTEGER :: ICN(LICN), IKEEP(N,5), IRN(LIRN), IW(N,8)
+        REAL(kind=dp) :: A(LICN), W(N)
+        INTEGER(kind=i4) :: ICN(LICN), IKEEP(N,5), IRN(LIRN), IW(N,8)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: UPRIV
-        INTEGER :: I, I1, IEND, II, J, J1, J2, JAY, JJ, KNUM, LENGTH, MOVE, &
+        REAL(kind=dp) :: UPRIV
+        INTEGER(kind=i4) :: I, I1, IEND, II, J, J1, J2, JAY, JJ, KNUM, LENGTH, MOVE, &
           NEWJ1, NEWPOS
         CHARACTER (80) :: MSG
 ! ..
@@ -13416,14 +13679,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: IFLAG, LICN, N, NZ
+        INTEGER(kind=i4) :: IFLAG, LICN, N, NZ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), W(N)
-        INTEGER :: ICN(LICN), IKEEP(N,5), IVECT(NZ), IW(N,5), JVECT(NZ)
+        REAL(kind=dp) :: A(LICN), W(N)
+        INTEGER(kind=i4) :: ICN(LICN), IKEEP(N,5), IVECT(NZ), IW(N,5), JVECT(NZ)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I1, IDUP, IEND
+        INTEGER(kind=i4) :: I1, IDUP, IEND
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA28BD
 ! ..
@@ -13506,17 +13769,17 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: W1
-        INTEGER :: IFLAG, LICN, N, NZ
+        REAL(kind=dp) :: W1
+        INTEGER(kind=i4) :: IFLAG, LICN, N, NZ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN)
-        INTEGER :: ICN(LICN), IP(N), IQ(N), IVECT(NZ), IW(N,2), IW1(N,3), &
+        REAL(kind=dp) :: A(LICN)
+        INTEGER(kind=i4) :: ICN(LICN), IP(N), IQ(N), IVECT(NZ), IW(N,2), IW1(N,3), &
           JVECT(NZ), LENOFF(N), LENR(N), LENRL(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AA
-        INTEGER :: I, IBLOCK, IDISP2, IDUMMY, II, INEW, IOLD, J1, J2, JCOMP, &
+        REAL(kind=dp) :: AA
+        INTEGER(kind=i4) :: I, IBLOCK, IDISP2, IDUMMY, II, INEW, IOLD, J1, J2, JCOMP, &
           JDUMMY, JJ, JNEW, JOLD, MIDPT
         LOGICAL :: BLOCKL
 ! ..
@@ -13647,6 +13910,10 @@
 !_______________________________________________________________________
 
       SUBROUTINE MA28CD(N,A,LICN,ICN,IKEEP,RHS,W,MTYPE)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MA28CD
+    !DIR$ OPTIMIZE : 3
+#endif
 ! ..
 ! This subroutine uses the factors from MA28AD or MA28BD to solve a
 ! system of equations without iterative refinement.
@@ -13679,11 +13946,12 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, MTYPE, N
+        INTEGER(kind=i4) :: LICN, MTYPE, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), RHS(N), W(N)
-        INTEGER :: ICN(LICN), IKEEP(N,5)
+        REAL(kind=dp) :: A(LICN), RHS(N), W(N)
+        INTEGER(kind=i4) :: ICN(LICN), IKEEP(N,5)
+
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA28CD
 ! ..
@@ -13699,6 +13967,12 @@
 
       SUBROUTINE MA28ID(N,NZ,AORG,IRNORG,ICNORG,LICN,A,ICN,IKEEP,RHS, &
         X,R,W,MTYPE,PREC,IFLAG)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: MA28ID
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: MA28ID
+#endif
+       use omp_lib
 ! ..
 ! This subroutine uses the factors from an earlier call to MA28AD or
 ! MA28BD to solve the system of equations with iterative refinement.
@@ -13752,16 +14026,28 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: PREC
-        INTEGER :: IFLAG, LICN, MTYPE, N, NZ
+        REAL(kind=dp) :: PREC
+        INTEGER(kind=i4) :: IFLAG, LICN, MTYPE, N, NZ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), AORG(NZ), R(N), RHS(N), W(N), X(N)
-        INTEGER :: ICN(LICN), ICNORG(NZ), IKEEP(N,5), IRNORG(NZ)
+        REAL(kind=dp) :: A(LICN), AORG(NZ), R(N), RHS(N), W(N), X(N)
+        INTEGER(kind=i4) :: ICN(LICN), ICNORG(NZ), IKEEP(N,5), IRNORG(NZ)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED A:64
+         !DIR$ ASSUME_ALIGNED AORG:64
+         !DIR$ ASSUME_ALIGNED R:64
+         !DIR$ ASSUME_ALIGNED RHS:64
+         !DIR$ ASSUME_ALIGNED W:64
+         !DIR$ ASSUME_ALIGNED X:64
+         !DIR$ ASSUME_ALIGNED ICN:64
+         !DIR$ ASSUME_ALIGNED ICNORG
+         !DIR$ ASSUME_ALIGNED IKEEP:64
+         !DIR$ ASSUME_ALIGNED IRNORG
+#endif
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: CONVER, D, DD
-        INTEGER :: I, ITERAT, NCOL, NROW
+        REAL(kind=dp) :: CONVER, D, DD
+        INTEGER(kind=i4) :: I, ITERAT, NCOL, NROW
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX
@@ -13791,7 +14077,7 @@
 
 !       Calculate the max-norm of the first solution.
 
-        DD = 0.0
+        DD = 0.0_dp
         DO I = 1, N
           DD = MAX(DD,ABS(X(I)))
         END DO
@@ -13818,7 +14104,7 @@
             NCOL = ICNORG(I)
             R(NROW) = R(NROW) - AORG(I)*X(NCOL)
           END DO
-80        DRES = 0.0
+80        DRES = 0.0_dp
 
 !         Find the max-norm of the residual vector.
 
@@ -13839,7 +14125,7 @@
 
 !         Find the max-norm of the correction vector.
 
-          DD = 0.0
+          DD = 0.0_dp
           DO I = 1, N
             DD = MAX(DD,ABS(R(I)))
           END DO
@@ -13851,7 +14137,8 @@
 
 !         Attempt to improve the solution.
 
-          DXMAX = 0.0
+          DXMAX = 0.0_dp
+          !$OMP SIMD REDUCTION(+:X)
           DO I = 1, N
             X(I) = X(I) + R(I)
             DXMAX = MAX(DXMAX,ABS(X(I)))
@@ -14156,18 +14443,18 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        REAL (WP) :: U
-        INTEGER :: IFLAG, LICN, LIRN, NN
+        REAL(kind=dp) :: U
+        INTEGER(kind=i4) :: IFLAG, LICN, LIRN, NN
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN)
-        INTEGER :: ICN(LICN), IDISP(2), IFIRST(NN), IP(NN), IPC(NN), &
+        REAL(kind=dp) :: A(LICN)
+        INTEGER(kind=i4) :: ICN(LICN), IDISP(2), IFIRST(NN), IP(NN), IPC(NN), &
           IPTR(NN), IQ(NN), IRN(LIRN), LASTC(NN), LASTR(NN),         &
           LENC(NN), LENR(NN), LENRL(NN), NEXTC(NN), NEXTR(NN)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AANEW, AMAX, ANEW, AU, PIVR, PIVRAT, SCALE
-        INTEGER :: COLUPD, DISPC, I, I1, I2, IACTIV, IBEG, IDISPC,   &
+        REAL(kind=dp) :: AANEW, AMAX, ANEW, AU, PIVR, PIVRAT, SCALE
+        INTEGER(kind=i4) :: COLUPD, DISPC, I, I1, I2, IACTIV, IBEG, IDISPC,   &
           IDROP, IDUMMY, IEND, IFILL, IFIR, II, III, IJFIR, IJP1,    &
           IJPOS, ILAST, INDROW, IOP, IPIV, IPOS, IROWS, ISING, ISRCH,&
           ISTART, ISW, ISW1, ITOP, J, J1, J2, JBEG, JCOST, JCOUNT,   &
@@ -15122,15 +15409,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: IACTIV, ITOP, N
+        INTEGER(kind=i4) :: IACTIV, ITOP, N
         LOGICAL :: REALS
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(ITOP)
-        INTEGER :: ICN(ITOP), IPTR(N)
+        REAL(kind=dp) :: A(ITOP)
+        INTEGER(kind=i4) :: ICN(ITOP), IPTR(N)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: J, JPOS, K, KL, KN
+        INTEGER(kind=i4) :: J, JPOS, K, KL, KN
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA30DD
 ! ..
@@ -15214,15 +15501,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: IFLAG, LICN, N
+        INTEGER(kind=i4) :: IFLAG, LICN, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), W(N)
-        INTEGER :: ICN(LICN), IDISP(2), IP(N), IQ(N), IW(N), LENR(N), LENRL(N)
+        REAL(kind=dp) :: A(LICN), W(N)
+        INTEGER(kind=i4) :: ICN(LICN), IDISP(2), IP(N), IQ(N), IW(N), LENR(N), LENRL(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AU, ROWMAX
-        INTEGER :: I, IFIN, ILEND, IPIVJ, ISING, ISTART, J, JAY, JAYJAY, JFIN, &
+        REAL(kind=dp) :: AU, ROWMAX
+        INTEGER(kind=i4) :: I, IFIN, ILEND, IPIVJ, ISING, ISTART, J, JAY, JAYJAY, JFIN, &
           JJ, PIVPOS
         LOGICAL :: STAB
 ! ..
@@ -15404,16 +15691,16 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, MTYPE, N
+        INTEGER(kind=i4) :: LICN, MTYPE, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), W(N), X(N)
-        INTEGER :: ICN(LICN), IDISP(2), IP(N), IQ(N), LENOFF(N), LENR(N), &
+        REAL(kind=dp) :: A(LICN), W(N), X(N)
+        INTEGER(kind=i4) :: ICN(LICN), IDISP(2), IP(N), IQ(N), LENOFF(N), LENR(N), &
           LENRL(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: WI, WII
-        INTEGER :: I, IB, IBACK, IBLEND, IBLOCK, IEND, IFIRST, II, III,   &
+        REAL(kind=dp) :: WI, WII
+        INTEGER(kind=i4) :: I, IB, IBACK, IBLEND, IBLOCK, IEND, IFIRST, II, III,   &
           ILAST, J, J1, J2, J3, JJ, JPIV, JPIVP1, K, LJ1, LJ2, LT, LTEND, &
           NUMBLK
         LOGICAL :: NEG, NOBLOC
@@ -15793,10 +16080,10 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, N, NUM
+        INTEGER(kind=i4) :: LICN, N, NUM
 ! ..
 ! .. Array Arguments ..
-        INTEGER :: IB(N), ICN(LICN), IOR(N), IP(N), IW(N,3), LENR(N)
+        INTEGER(kind=i4) :: IB(N), ICN(LICN), IOR(N), IP(N), IW(N,3), LENR(N)
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA13D
 ! ..
@@ -15828,14 +16115,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, N, NUM
+        INTEGER(kind=i4) :: LICN, N, NUM
 ! ..
 ! .. Array Arguments ..
-        INTEGER :: ARP(N), IB(N), ICN(LICN), IP(N), LENR(N), LOWL(N),  &
+        INTEGER(kind=i4) :: ARP(N), IB(N), ICN(LICN), IP(N), LENR(N), LOWL(N),  &
           NUMB(N), PREV(N)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: DUMMY, I, I1, I2, ICNT, II, ISN, IST, IST1, IV, IW, &
+        INTEGER(kind=i4) :: DUMMY, I, I1, I2, ICNT, II, ISN, IST, IST1, IV, IW, &
           J, K, LCNT, NNM1, STP
 ! ..
 ! .. Intrinsic Functions ..
@@ -15948,15 +16235,15 @@
 ! ..
 ! .. Scalar Arguments ..
 ! ..
-        INTEGER :: JDISP, MAXA, NC
+        INTEGER(kind=i4) :: JDISP, MAXA, NC
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(MAXA)
-        INTEGER :: INUM(MAXA), JNUM(MAXA), JPTR(NC)
+        REAL(kind=dp) :: A(MAXA)
+        INTEGER(kind=i4) :: INUM(MAXA), JNUM(MAXA), JPTR(NC)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ACE, ACEP
-        INTEGER :: I, ICE, ICEP, J, JA, JB, JCE, JCEP, K, KR, LOC, MYNULL
+        REAL(kind=dp) :: ACE, ACEP
+        INTEGER(kind=i4) :: I, ICE, ICEP, J, JA, JB, JCE, JCEP, K, KR, LOC, MYNULL
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA20AD
 ! ..
@@ -16026,15 +16313,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: MAXA, NC
+        INTEGER(kind=i4) :: MAXA, NC
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(MAXA)
-        INTEGER :: INUM(MAXA), JPTR(NC)
+        REAL(kind=dp) :: A(MAXA)
+        INTEGER(kind=i4) :: INUM(MAXA), JPTR(NC)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: ACE
-        INTEGER :: ICE, IK, J, JJ, K, KDUMMY, KLO, KMAX, KOR
+        REAL(kind=dp) :: ACE
+        INTEGER(kind=i4) :: ICE, IK, J, JJ, K, KDUMMY, KLO, KMAX, KOR
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC IABS
@@ -16075,10 +16362,10 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, N, NUMNZ
+        INTEGER(kind=i4) :: LICN, N, NUMNZ
 ! ..
 ! .. Array Arguments ..
-        INTEGER :: ICN(LICN), IP(N), IPERM(N), IW(N,4), LENR(N)
+        INTEGER(kind=i4) :: ICN(LICN), IP(N), IPERM(N), IW(N,4), LENR(N)
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA21A
 ! ..
@@ -16095,14 +16382,14 @@
 ! ..
 ! .. Scalar Arguments ..
 ! ..
-        INTEGER :: LICN, N, NUMNZ
+        INTEGER(kind=i4) :: LICN, N, NUMNZ
 ! ..
 ! .. Array Arguments ..
-        INTEGER :: ARP(N), CV(N), ICN(LICN), IP(N), IPERM(N), LENR(N), &
+        INTEGER(kind=i4) :: ARP(N), CV(N), ICN(LICN), IP(N), IPERM(N), LENR(N), &
           OUT(N), PR(N)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, II, IN1, IN2, IOUTK, J, J1, JORD, K, KK
+        INTEGER(kind=i4) :: I, II, IN1, IN2, IOUTK, J, J1, JORD, K, KK
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT MA21B
 ! ..
@@ -16219,15 +16506,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: N, NZ
+        INTEGER(kind=i4) :: N, NZ
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(NZ)
-        INTEGER :: ICN(NZ), IP(N), IQ(N), IW(N,2), IW1(NZ), LENROW(N)
+        REAL(kind=dp) :: A(NZ)
+        INTEGER(kind=i4) :: ICN(NZ), IP(N), IQ(N), IW(N,2), IW1(NZ), LENROW(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AVAL
-        INTEGER :: I, ICHAIN, IOLD, IPOS, J, J2, JJ, JNUM, JVAL, LENGTH, &
+        REAL(kind=dp) :: AVAL
+        INTEGER(kind=i4) :: I, ICHAIN, IOLD, IPOS, J, J2, JJ, JNUM, JVAL, LENGTH, &
           NEWPOS
 ! ..
 ! .. Intrinsic Functions ..
@@ -16315,15 +16602,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, N
+        INTEGER(kind=i4) :: LICN, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN)
-        INTEGER :: ICN(LICN), IDISP(2), IP(N), IQ(N), IW(N,5), IW1(N,2), &
+        REAL(kind=dp) :: A(LICN)
+        INTEGER(kind=i4) :: ICN(LICN), IDISP(2), IP(N), IQ(N), IW(N,5), IW1(N,2), &
           LENOFF(N), LENR(N)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: I, I1, I2, IBEG, IBLOCK, IEND, II, ILEND, INEW, IOLD, &
+        INTEGER(kind=i4) :: I, I1, I2, IBEG, IBLOCK, IEND, II, ILEND, INEW, IOLD, &
           IROWB, IROWE, J, JJ, JNEW, JNPOS, JOLD, K, LENI, NZ
 ! ..
 ! .. Intrinsic Functions ..
@@ -16529,15 +16816,15 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: LICN, N
+        INTEGER(kind=i4) :: LICN, N
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(LICN), W(N)
-        INTEGER :: ICN(LICN), LENR(N), LENRL(N)
+        REAL(kind=dp) :: A(LICN), W(N)
+        INTEGER(kind=i4) :: ICN(LICN), LENR(N), LENRL(N)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: AMAXL, AMAXU, WROWL
-        INTEGER :: I, J, J0, J1, J2, JJ
+        REAL(kind=dp) :: AMAXL, AMAXU, WROWL
+        INTEGER(kind=i4) :: I, J, J0, J1, J2, JJ
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, MAX
@@ -16591,22 +16878,22 @@
 !     W(J,3) holds - COL J LOG during execution.
 !     W(J,4) holds 2-iteration change in W(J,3).
 !     W(I,5) is used to save average element log for row I.
-!     INTEGER*2 IRN(NA), ICN(NA)
+!     INTEGER(kind=i4)*2 IRN(NA), ICN(NA)
 !     IRN(K) gives row number of element in A(K).
 !     ICN(K) gives col number of element in A(K).
 ! ..
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER :: N, NA
+        INTEGER(kind=i4) :: N, NA
 ! ..
 ! .. Array Arguments ..
-        REAL (WP) :: A(NA), C(N), R(N), W(N,5)
-        INTEGER :: ICN(NA), IRN(NA)
+        REAL(kind=dp) :: A(NA), C(N), R(N), W(N,5)
+        INTEGER(kind=i4) :: ICN(NA), IRN(NA)
 ! ..
 ! .. Local Scalars ..
-        REAL (WP) :: E, E1, EM, Q, Q1, QM, S, S1, SM, SMIN, U, V
-        INTEGER :: I, I1, I2, ITER, J, K, MAXIT
+        REAL(kind=dp) :: E, E1, EM, Q, Q1, QM, S, S1, SM, SMIN, U, V
+        INTEGER(kind=i4) :: I, I1, I2, ITER, J, K, MAXIT
 ! ..
 ! .. Intrinsic Functions ..
         INTRINSIC ABS, LOG, REAL
@@ -16900,7 +17187,7 @@
 !     FOR FURTHER DETAILS ON FACMIN AND FACMAX SEE
 !     THE REPORT(REF.3).
 
-!  IOPT(*)....AN INTEGER ARRAY OF LENGTH 5 FOR USER SELECTED OPTIONS.
+!  IOPT(*)....AN INTEGER(kind=i4) ARRAY OF LENGTH 5 FOR USER SELECTED OPTIONS.
 
 !          IOPT(1) CONTROLS THE STORAGE FORMAT.
 
@@ -16950,9 +17237,9 @@
 
 !  WK(*)......A WORK ARRAY OF DIMENSION AT LEAST 3*N
 !  LWK........THE LENGTH OF THE WORK ARRAY. LWK IS AT LEAST 3*N.
-!  IWK(*)...AN INTEGER ARRAY OF LENGTH LIWK = 50 + N WHICH GIVES
+!  IWK(*)...AN INTEGER(kind=i4) ARRAY OF LENGTH LIWK = 50 + N WHICH GIVES
 !      DIAGNOSTIC INFORMATION IN POSITIONS 1 THROUGH 50. POSITIONS 51
-!      THROUGH 50 + N ARE USED AS INTEGER WORKSPACE.
+!      THROUGH 50 + N ARE USED AS INTEGER(kind=i4) WORKSPACE.
 
 !      IWK(1) GIVES THE NUMBER OF TIMES THE INCREMENT FOR DIFFERENCING
 !      (DEL) WAS COMPUTED AND HAD TO BE INCREASED BECAUSE (Y(JCOL)+DEL)
@@ -17057,7 +17344,7 @@
 ! EVALUATE THE JACOBIAN. THE FOLLOWING ARE THE IMPORTANT VARIABLES IN
 ! THE DSM CALLING SEQUENCE.
 ! SUBROUTINE DVDSM(...,INDROW,INDCOL,NGRP,MAXGRP,..,JPNTR,...)
-! ON INPUT, THE USER MUST PROVIDE DSM WITH THE INTEGER ARRAYS INDROW AND
+! ON INPUT, THE USER MUST PROVIDE DSM WITH THE INTEGER(kind=i4) ARRAYS INDROW AND
 ! INDCOL. THE PAIR
 !                  (INDROW(I),INDCOL(I))
 ! PROVIDES THE INDEX OF A NONZERO ELEMENT OF THE JACOBIAN. THE LENGTH OF
@@ -17090,25 +17377,25 @@
      IMPLICIT NONE
 
 ! .. Parameters ..
-      INTEGER, PARAMETER :: WP = KIND(0.0D0)
+      INTEGER(kind=i4), PARAMETER :: WP = KIND(0.0D0)
 ! ..
 ! .. Scalar Arguments ..
-      REAL (WP) :: T
-      INTEGER :: LIWK, LWK, MAXGRP, N, NRFJAC
+      REAL(kind=dp) :: T
+      INTEGER(kind=i4) :: LIWK, LWK, MAXGRP, N, NRFJAC
 ! ..
 ! .. Array Arguments ..
-      REAL (WP) :: F(N), FAC(N), FJAC(NRFJAC,*), WK(LWK), Y(N), YSCALE(*)
-      INTEGER :: INDROW(*), IOPT(5), IWK(LIWK), JPNTR(*), NGRP(N)
+      REAL(kind=dp) :: F(N), FAC(N), FJAC(NRFJAC,*), WK(LWK), Y(N), YSCALE(*)
+      INTEGER(kind=i4) :: INDROW(*), IOPT(5), IWK(LIWK), JPNTR(*), NGRP(N)
 ! ..
 ! .. Subroutine Arguments ..
       EXTERNAL FCN
 ! ..
 ! .. Local Scalars ..
-      REAL (WP) :: ADIFF, AY, DEL, DELM, DFMJ, DIFF, DMAX, EXPFMN, FACMAX, &
+      REAL(kind=dp) :: ADIFF, AY, DEL, DELM, DFMJ, DIFF, DMAX, EXPFMN, FACMAX, &
         FACMIN, FJACL, FMJ, ONE, P125, P25, P75, P875, PERT, RDEL, RMNFDF, &
         RMXFDF, SDF, SF, SGN, T1, T2, U, U3QRT, U7EGT, UEGT, UMEGT, UQRT, &
         USQT, ZERO
-      INTEGER :: IDXL, IDXU, IFLAG1, IFLAG2, IRCMP, IRDEL, IROW, IROWB, &
+      INTEGER(kind=i4) :: IDXL, IDXU, IFLAG1, IFLAG2, IRCMP, IRDEL, IROW, IROWB, &
         IROWMX, ITRY, J, JCOL, KT1, KT2, KT3, KT4, KT5, L, NID1, NID2, NID3, &
         NID4, NID5, NID6, NIFAC, NT2, NUMGRP
 ! ..
@@ -17117,9 +17404,9 @@
       INTRINSIC ABS, EPSILON, MAX, MIN, SIGN, SQRT
 ! ..
 ! .. Data Statements ..
-      DATA PERT/2.0E+0_WP/, FACMAX/1.E-1_WP/, EXPFMN/.75E+0_WP/
-      DATA ONE/1.0E0_WP/, ZERO/0.0E0_WP/
-      DATA P125/.125E+0_WP/, P25/.25E+0_WP/, P75/.75E+0_WP/, P875/.875E+0_WP/
+      DATA PERT/2.0E+0_dp/, FACMAX/1.E-1_dp/, EXPFMN/.75E+0_dp/
+      DATA ONE/1.0E0_dp/, ZERO/0.0E0_dp/
+      DATA P125/.125E+0_dp/, P25/.25E+0_dp/, P75/.75E+0_dp/, P875/.875E+0_dp/
       DATA NIFAC/3/, NID1/10/, NID2/20/, NID3/30/, NID4/40/, NID5/50/
 ! ..
 !     COMPUTE ALGORITHM AND MACHINE CONSTANTS.
@@ -17380,41 +17667,41 @@
 !     THE SUBROUTINE STATEMENT IS
 !       SUBROUTINE DEGR(N,INDROW,JPNTR,INDCOL,IPNTR,NDEG,IWA)
 !     WHERE
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       INDROW IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       INDROW IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       JPNTR IS AN INTEGER INPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       INDCOL IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE
+!       INDCOL IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE
 !         COLUMN INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       IPNTR IS AN INTEGER INPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(M+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       NDEG IS AN INTEGER OUTPUT ARRAY OF LENGTH N WHICH
+!       NDEG IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N WHICH
 !         SPECIFIES THE DEGREE SEQUENCE. THE DEGREE OF THE
 !         J-TH COLUMN OF A IS NDEG(J).
-!       IWA IS AN INTEGER WORK ARRAY OF LENGTH N.
+!       IWA IS AN INTEGER(kind=i4) WORK ARRAY OF LENGTH N.
 !     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JULY 1983.
 !     THOMAS F. COLEMAN, BURTON S. GARBOW, JORGE J. MORE'
 
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: N
+      INTEGER(kind=i4) :: N
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(*), INDROW(*), IPNTR(*), IWA(N), JPNTR(N+1), NDEG(N)
+      INTEGER(kind=i4) :: INDCOL(*), INDROW(*), IPNTR(*), IWA(N), JPNTR(N+1), NDEG(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IC, IP, IR, JCOL, JP
+      INTEGER(kind=i4) :: IC, IP, IR, JCOL, JP
 ! ..
 ! ..  FIRST EXECUTABLE STATEMENT DEGR
 ! ..
@@ -17471,35 +17758,35 @@
 !       SUBROUTINE IDO(M,N,INDROW,JPNTR,INDCOL,IPNTR,NDEG,LIST,
 !                      MAXCLQ,IWA1,IWA2,IWA3,IWA4)
 !     WHERE
-!       M IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       M IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF ROWS OF A.
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       INDROW IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       INDROW IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       JPNTR IS AN INTEGER INPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       INDCOL IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE
+!       INDCOL IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE
 !         COLUMN INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       IPNTR IS AN INTEGER INPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(M+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       NDEG IS AN INTEGER INPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       NDEG IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE DEGREE SEQUENCE. THE DEGREE OF THE J-TH COLUMN
 !         OF A IS NDEG(J).
-!       LIST IS AN INTEGER OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       LIST IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE INCIDENCE-DEGREE ORDERING OF THE COLUMNS OF A. THE J-TH
 !         COLUMN IN THIS ORDER IS LIST(J).
-!       MAXCLQ IS AN INTEGER OUTPUT VARIABLE SET TO THE SIZE
+!       MAXCLQ IS AN INTEGER(kind=i4) OUTPUT VARIABLE SET TO THE SIZE
 !         OF THE LARGEST CLIQUE FOUND DURING THE ORDERING.
-!       IWA1,IWA2,IWA3, AND IWA4 ARE INTEGER WORK ARRAYS OF LENGTH N.
+!       IWA1,IWA2,IWA3, AND IWA4 ARE INTEGER(kind=i4) WORK ARRAYS OF LENGTH N.
 !     SUBPROGRAMS CALLED
 !       MINPACK-SUPPLIED ... NUMSRT
 !       INTRINSIC ... MAX
@@ -17509,14 +17796,14 @@
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: M, MAXCLQ, N
+      INTEGER(kind=i4) :: M, MAXCLQ, N
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(*), INDROW(*), IPNTR(M+1), IWA1(0:N-1), IWA2(N), &
+      INTEGER(kind=i4) :: INDCOL(*), INDROW(*), IPNTR(M+1), IWA1(0:N-1), IWA2(N), &
         IWA3(N), IWA4(N), JPNTR(N+1), LIST(N), NDEG(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IC, IP, IR, JCOL, JP, MAXINC, MAXLST, NCOMP, NUMINC, NUMLST, &
+      INTEGER(kind=i4) :: IC, IP, IR, JCOL, JP, MAXINC, MAXLST, NCOMP, NUMINC, NUMLST, &
         NUMORD, NUMWGT
 ! ..
 ! .. External Subroutines ..
@@ -17668,11 +17955,11 @@
 
     SUBROUTINE NUMSRT(N,NMAX,NUM,MODE,INDEX,LAST,NEXT)
 
-!     GIVEN A SEQUENCE OF INTEGERS, THIS SUBROUTINE GROUPS TOGETHER THOSE
+!     GIVEN A SEQUENCE OF INTEGER(kind=i4)S, THIS SUBROUTINE GROUPS TOGETHER THOSE
 !     INDICES WITH THE SAME SEQUENCE VALUE AND, OPTIONALLY, SORTS THE
 !     SEQUENCE INTO EITHER ASCENDING OR DESCENDING ORDER. THE SEQUENCE
-!     OF INTEGERS IS DEFINED BY THE ARRAY NUM, AND IT IS ASSUMED THAT THE
-!     INTEGERS ARE EACH FROM THE SET 0,1,...,NMAX. ON OUTPUT THE INDICES
+!     OF INTEGER(kind=i4)S IS DEFINED BY THE ARRAY NUM, AND IT IS ASSUMED THAT THE
+!     INTEGER(kind=i4)S ARE EACH FROM THE SET 0,1,...,NMAX. ON OUTPUT THE INDICES
 !     K SUCH THAT NUM(K) = L FOR ANY L = 0,1,...,NMAX CAN BE OBTAINED
 !     FROM THE ARRAYS LAST AND NEXT AS FOLLOWS.
 !           K = LAST(L)
@@ -17682,26 +17969,26 @@
 !     THE SUBROUTINE STATEMENT IS
 !       SUBROUTINE NUMSRT(N,NMAX,NUM,MODE,INDEX,LAST,NEXT)
 !     WHERE
-!       N IS A POSITIVE INTEGER INPUT VARIABLE.
-!       NMAX IS A POSITIVE INTEGER INPUT VARIABLE.
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE.
+!       NMAX IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE.
 !       NUM IS AN INPUT ARRAY OF LENGTH N WHICH CONTAINS THE
-!         SEQUENCE OF INTEGERS TO BE GROUPED AND SORTED. IT
-!         IS ASSUMED THAT THE INTEGERS ARE EACH FROM THE SET
+!         SEQUENCE OF INTEGER(kind=i4)S TO BE GROUPED AND SORTED. IT
+!         IS ASSUMED THAT THE INTEGER(kind=i4)S ARE EACH FROM THE SET
 !         0,1,...,NMAX.
-!       MODE IS AN INTEGER INPUT VARIABLE. THE SEQUENCE NUM IS
+!       MODE IS AN INTEGER(kind=i4) INPUT VARIABLE. THE SEQUENCE NUM IS
 !         SORTED IN ASCENDING ORDER IF MODE IS POSITIVE AND IN
 !         DESCENDING ORDER IF MODE IS NEGATIVE. IF MODE IS 0,
 !         NO SORTING IS DONE.
-!       INDEX IS AN INTEGER OUTPUT ARRAY OF LENGTH N SET SO
+!       INDEX IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N SET SO
 !         THAT THE SEQUENCE
 !               NUM(INDEX(I)), I = 1,2,...,N
 !         IS SORTED ACCORDING TO THE SETTING OF MODE. IF MODE
 !         IS 0, INDEX IS NOT REFERENCED.
-!       LAST IS AN INTEGER OUTPUT ARRAY OF LENGTH NMAX + 1. THE
+!       LAST IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH NMAX + 1. THE
 !         INDEX OF NUM FOR THE LAST OCCURRENCE OF L IS LAST(L)
 !         FOR ANY L = 0,1,...,NMAX UNLESS LAST(L) = 0. IN
 !         THIS CASE L DOES NOT APPEAR IN NUM.
-!       NEXT IS AN INTEGER OUTPUT ARRAY OF LENGTH N. IF
+!       NEXT IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N. IF
 !         NUM(K) = L, THEN THE INDEX OF NUM FOR THE PREVIOUS
 !         OCCURRENCE OF L IS NEXT(K) FOR ANY L = 0,1,...,NMAX
 !         UNLESS NEXT(K) = 0. IN THIS CASE THERE IS NO PREVIOUS
@@ -17712,13 +17999,13 @@
       IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: MODE, N, NMAX
+      INTEGER(kind=i4) :: MODE, N, NMAX
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDEX(N), LAST(0:NMAX), NEXT(N), NUM(N)
+      INTEGER(kind=i4) :: INDEX(N), LAST(0:NMAX), NEXT(N), NUM(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: I, J, JINC, JL, JU, K, L
+      INTEGER(kind=i4) :: I, J, JINC, JL, JU, K, L
 ! ..
 ! ..  FIRST EXECUTABLE STATEMENT NUMSRT
 ! ..
@@ -17778,47 +18065,47 @@
 !     THE SUBROUTINE STATEMENT IS
 !     SUBROUTINE SEQ(N,INDROW,JPNTR,INDCOL,IPNTR,LIST,NGRP,MAXGRP,IWA)
 !     WHERE
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       INDROW IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       INDROW IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       JPNTR IS AN INTEGER INPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       INDCOL IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE
+!       INDCOL IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE
 !         COLUMN INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       IPNTR IS AN INTEGER INPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(M+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       LIST IS AN INTEGER INPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       LIST IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE ORDER TO BE USED BY THE SEQUENTIAL ALGORITHM.
 !         THE J-TH COLUMN IN THIS ORDER IS LIST(J).
-!       NGRP IS AN INTEGER OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       NGRP IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE PARTITION OF THE COLUMNS OF A. COLUMN JCOL BELONGS
 !         TO GROUP NGRP(JCOL).
-!       MAXGRP IS AN INTEGER OUTPUT VARIABLE WHICH SPECIFIES THE
+!       MAXGRP IS AN INTEGER(kind=i4) OUTPUT VARIABLE WHICH SPECIFIES THE
 !         NUMBER OF GROUPS IN THE PARTITION OF THE COLUMNS OF A.
-!       IWA IS AN INTEGER WORK ARRAY OF LENGTH N.
+!       IWA IS AN INTEGER(kind=i4) WORK ARRAY OF LENGTH N.
 !     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JULY 1983.
 !     THOMAS F. COLEMAN, BURTON S. GARBOW, JORGE J. MORE'
 
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: MAXGRP, N
+      INTEGER(kind=i4) :: MAXGRP, N
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(*), INDROW(*), IPNTR(*), IWA(N), JPNTR(N+1), &
+      INTEGER(kind=i4) :: INDCOL(*), INDROW(*), IPNTR(*), IWA(N), JPNTR(N+1), &
         LIST(N), NGRP(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IC, IP, IR, J, JCOL, JP
+      INTEGER(kind=i4) :: IC, IP, IR, J, JCOL, JP
 ! ..
 ! ..  FIRST EXECUTABLE STATEMENT SEQ
 ! ..
@@ -17872,40 +18159,40 @@
 !     THE SUBROUTINE STATEMENT IS
 !       SUBROUTINE SETR(M,N,INDROW,JPNTR,INDCOL,IPNTR,IWA)
 !     WHERE
-!       M IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       M IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF ROWS OF A.
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       INDROW IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       INDROW IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       JPNTR IS AN INTEGER INPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       INDCOL IS AN INTEGER OUTPUT ARRAY WHICH CONTAINS THE
+!       INDCOL IS AN INTEGER(kind=i4) OUTPUT ARRAY WHICH CONTAINS THE
 !         COLUMN INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       IPNTR IS AN INTEGER OUTPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(1) IS SET TO 1 AND THAT IPNTR(M+1)-1 IS
 !         THEN THE NUMBER OF NON-ZERO ELEMENTS OF THE MATRIX A.
-!       IWA IS AN INTEGER WORK ARRAY OF LENGTH M.
+!       IWA IS AN INTEGER(kind=i4) WORK ARRAY OF LENGTH M.
 !     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JULY 1983.
 !     THOMAS F. COLEMAN, BURTON S. GARBOW, JORGE J. MORE'
 
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: M, N
+      INTEGER(kind=i4) :: M, N
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(*), INDROW(*), IPNTR(M+1), IWA(M), JPNTR(N+1)
+      INTEGER(kind=i4) :: INDCOL(*), INDROW(*), IPNTR(M+1), IWA(M), JPNTR(N+1)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IR, JCOL, JP
+      INTEGER(kind=i4) :: IR, JCOL, JP
 ! ..
 ! ..  FIRST EXECUTABLE STATEMENT SETR
 ! ..
@@ -17954,33 +18241,33 @@
 !     SUBROUTINE SLO(N,INDROW,JPNTR,INDCOL,IPNTR,NDEG,LIST, &
 !                    MAXCLQ,IWA1,IWA2,IWA3,IWA4)
 !     WHERE
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       INDROW IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       INDROW IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       JPNTR IS AN INTEGER INPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       INDCOL IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE
+!       INDCOL IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE
 !         COLUMN INDICES FOR THE NON-ZEROES IN THE MATRIX A.
-!       IPNTR IS AN INTEGER INPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(M+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       NDEG IS AN INTEGER INPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       NDEG IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE DEGREE SEQUENCE. THE DEGREE OF THE J-TH COLUMN
 !         OF A IS NDEG(J).
-!       LIST IS AN INTEGER OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       LIST IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE SMALLEST-LAST ORDERING OF THE COLUMNS OF A. THE J-TH
 !         COLUMN IN THIS ORDER IS LIST(J).
-!       MAXCLQ IS AN INTEGER OUTPUT VARIABLE SET TO THE SIZE
+!       MAXCLQ IS AN INTEGER(kind=i4) OUTPUT VARIABLE SET TO THE SIZE
 !         OF THE LARGEST CLIQUE FOUND DURING THE ORDERING.
-!       IWA1,IWA2,IWA3, AND IWA4 ARE INTEGER WORK ARRAYS OF LENGTH N.
+!       IWA1,IWA2,IWA3, AND IWA4 ARE INTEGER(kind=i4) WORK ARRAYS OF LENGTH N.
 !     SUBPROGRAMS CALLED
 !       INTRINSIC ... MIN
 !     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JULY 1983.
@@ -17989,14 +18276,14 @@
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: MAXCLQ, N
+      INTEGER(kind=i4) :: MAXCLQ, N
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(*), INDROW(*), IPNTR(*), IWA1(0:N-1), IWA2(N), &
+      INTEGER(kind=i4) :: INDCOL(*), INDROW(*), IPNTR(*), IWA1(0:N-1), IWA2(N), &
         IWA3(N), IWA4(N), JPNTR(N+1), LIST(N), NDEG(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IC, IP, IR, JCOL, JP, MINDEG, NUMDEG, NUMORD
+      INTEGER(kind=i4) :: IC, IP, IR, JCOL, JP, MINDEG, NUMDEG, NUMORD
 ! ..
 ! .. Intrinsic Functions ..
       INTRINSIC MIN
@@ -18137,25 +18424,25 @@
 !     THE SUBROUTINE STATEMENT IS
 !       SUBROUTINE SRTDAT(N,NNZ,INDROW,INDCOL,JPNTR,IWA)
 !     WHERE
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       NNZ IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       NNZ IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF NON-ZERO ELEMENTS OF A.
-!       INDROW IS AN INTEGER ARRAY OF LENGTH NNZ. ON INPUT INDROW
+!       INDROW IS AN INTEGER(kind=i4) ARRAY OF LENGTH NNZ. ON INPUT INDROW
 !         MUST CONTAIN THE ROW INDICES OF THE NON-ZERO ELEMENTS OF A.
 !         ON OUTPUT INDROW IS PERMUTED SO THAT THE CORRESPONDING
 !         COLUMN INDICES OF INDCOL ARE IN NON-DECREASING ORDER.
-!       INDCOL IS AN INTEGER ARRAY OF LENGTH NNZ. ON INPUT INDCOL
+!       INDCOL IS AN INTEGER(kind=i4) ARRAY OF LENGTH NNZ. ON INPUT INDCOL
 !         MUST CONTAIN THE COLUMN INDICES OF THE NON-ZERO ELEMENTS
 !         OF A. ON OUTPUT INDCOL IS PERMUTED SO THAT THESE INDICES
 !         ARE IN NON-DECREASING ORDER.
-!       JPNTR IS AN INTEGER OUTPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN THE OUTPUT
 !         INDROW. THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(1) IS SET TO 1 AND THAT JPNTR(N+1)-1
 !         IS THEN NNZ.
-!       IWA IS AN INTEGER WORK ARRAY OF LENGTH N.
+!       IWA IS AN INTEGER(kind=i4) WORK ARRAY OF LENGTH N.
 !     SUBPROGRAMS CALLED - NONE
 !     INTRINSIC - MAX
 !     ARGONNE NATIONAL LABORATORY. MINPACK PROJECT. JULY 1983.
@@ -18164,13 +18451,13 @@
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: N, NNZ
+      INTEGER(kind=i4) :: N, NNZ
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(NNZ), INDROW(NNZ), IWA(N), JPNTR(N+1)
+      INTEGER(kind=i4) :: INDCOL(NNZ), INDROW(NNZ), IWA(N), JPNTR(N+1)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: I, J, K, L
+      INTEGER(kind=i4) :: I, J, K, L
 ! ..
 ! .. Intrinsic Functions ..
       INTRINSIC MAX
@@ -18248,19 +18535,19 @@
 !     THE SUBROUTINE STATEMENT IS
 !       SUBROUTINE FDJS(M,N,COL,IND,NPNTR,NGRP,NUMGRP,D,FJACD,FJAC)
 !     WHERE
-!       M IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       M IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF ROWS OF THE JACOBIAN MATRIX.
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF THE JACOBIAN MATRIX.
 !       COL IS A LOGICAL INPUT VARIABLE. IF COL IS SET TRUE, THEN THE
 !         JACOBIAN APPROXIMATIONS ARE STORED INTO A COLUMN-ORIENTED
 !         PATTERN. IF COL IS SET FALSE, THEN THE JACOBIAN
 !         APPROXIMATIONS ARE STORED INTO A ROW-ORIENTED PATTERN.
-!       IND IS AN INTEGER INPUT ARRAY WHICH CONTAINS THE ROW
+!       IND IS AN INTEGER(kind=i4) INPUT ARRAY WHICH CONTAINS THE ROW
 !         INDICES FOR THE NON-ZEROES IN THE JACOBIAN MATRIX
 !         IF COL IS TRUE, AND CONTAINS THE COLUMN INDICES FOR
 !         THE NON-ZEROES IN THE JACOBIAN MATRIX IF COL IS FALSE.
-!       NPNTR IS AN INTEGER INPUT ARRAY WHICH SPECIFIES THE
+!       NPNTR IS AN INTEGER(kind=i4) INPUT ARRAY WHICH SPECIFIES THE
 !         LOCATIONS OF THE ROW INDICES IN IND IF COL IS TRUE, AND
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN IND IF
 !         COL IS FALSE. IF COL IS TRUE, THE INDICES FOR COLUMN J ARE
@@ -18270,10 +18557,10 @@
 !         NOTE THAT NPNTR(N+1)-1 IF COL IS TRUE, OR NPNTR(M+1)-1
 !         IF COL IS FALSE, IS THEN THE NUMBER OF NON-ZERO ELEMENTS
 !         OF THE JACOBIAN MATRIX.
-!       NGRP IS AN INTEGER INPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       NGRP IS AN INTEGER(kind=i4) INPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE PARTITION OF THE COLUMNS OF THE JACOBIAN MATRIX.
 !         COLUMN JCOL BELONGS TO GROUP NGRP(JCOL).
-!       NUMGRP IS A POSITIVE INTEGER INPUT VARIABLE SET TO A GROUP
+!       NUMGRP IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO A GROUP
 !         NUMBER IN THE PARTITION. THE COLUMNS OF THE JACOBIAN
 !         MATRIX IN THIS GROUP ARE TO BE ESTIMATED ON THIS CALL.
 !       D IS AN INPUT ARRAY OF LENGTH N WHICH CONTAINS THE
@@ -18293,18 +18580,18 @@
      IMPLICIT NONE
 
 ! .. Parameters ..
-      INTEGER, PARAMETER :: WP = KIND(0.0D0)
+      INTEGER(kind=i4), PARAMETER :: WP = KIND(0.0D0)
 ! ..
 ! .. Scalar Arguments ..
-      INTEGER :: M, N, NUMGRP
+      INTEGER(kind=i4) :: M, N, NUMGRP
       LOGICAL :: COL
 ! ..
 ! .. Array Arguments ..
-      REAL (WP) :: D(N), FJAC(*), FJACD(M)
-      INTEGER :: IND(*), NGRP(N), NPNTR(*)
+      REAL(kind=dp) :: D(N), FJAC(*), FJACD(M)
+      INTEGER(kind=i4) :: IND(*), NGRP(N), NPNTR(*)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: IP, IROW, JCOL, JP
+      INTEGER(kind=i4) :: IP, IROW, JCOL, JP
 ! ..
 ! .. Intrinsic Functions ..
 !     INTRINSIC KIND
@@ -18366,51 +18653,51 @@
 !       SUBROUTINE DVDSM(M,N,NPAIRS,INDROW,INDCOL,NGRP,MAXGRP,MINGRP,
 !                      INFO,IPNTR,JPNTR,IWA,LIWA)
 !     WHERE
-!       M IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       M IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF ROWS OF A.
-!       N IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE NUMBER
+!       N IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE NUMBER
 !         OF COLUMNS OF A.
-!       NPAIRS IS A POSITIVE INTEGER INPUT VARIABLE SET TO THE
+!       NPAIRS IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE SET TO THE
 !         NUMBER OF (INDROW,INDCOL) PAIRS USED TO DESCRIBE THE
 !         SPARSITY PATTERN OF A.
-!       INDROW IS AN INTEGER ARRAY OF LENGTH NPAIRS. ON INPUT INDROW
+!       INDROW IS AN INTEGER(kind=i4) ARRAY OF LENGTH NPAIRS. ON INPUT INDROW
 !         MUST CONTAIN THE ROW INDICES OF THE NON-ZERO ELEMENTS OF A.
 !         ON OUTPUT INDROW IS PERMUTED SO THAT THE CORRESPONDING
 !         COLUMN INDICES ARE IN NON-DECREASING ORDER. THE COLUMN
 !         INDICES CAN BE RECOVERED FROM THE ARRAY JPNTR.
-!       INDCOL IS AN INTEGER ARRAY OF LENGTH NPAIRS. ON INPUT INDCOL
+!       INDCOL IS AN INTEGER(kind=i4) ARRAY OF LENGTH NPAIRS. ON INPUT INDCOL
 !         MUST CONTAIN THE COLUMN INDICES OF THE NON-ZERO ELEMENTS OF
 !         A. ON OUTPUT INDCOL IS PERMUTED SO THAT THE CORRESPONDING
 !         ROW INDICES ARE IN NON-DECREASING ORDER. THE ROW INDICES
 !         CAN BE RECOVERED FROM THE ARRAY IPNTR.
-!       NGRP IS AN INTEGER OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
+!       NGRP IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N WHICH SPECIFIES
 !         THE PARTITION OF THE COLUMNS OF A. COLUMN JCOL BELONGS
 !         TO GROUP NGRP(JCOL).
-!       MAXGRP IS AN INTEGER OUTPUT VARIABLE WHICH SPECIFIES THE
+!       MAXGRP IS AN INTEGER(kind=i4) OUTPUT VARIABLE WHICH SPECIFIES THE
 !         NUMBER OF GROUPS IN THE PARTITION OF THE COLUMNS OF A.
-!       MINGRP IS AN INTEGER OUTPUT VARIABLE WHICH SPECIFIES A LOWER
+!       MINGRP IS AN INTEGER(kind=i4) OUTPUT VARIABLE WHICH SPECIFIES A LOWER
 !         BOUND FOR THE NUMBER OF GROUPS IN ANY CONSISTENT PARTITION
 !         OF THE COLUMNS OF A.
-!       INFO IS AN INTEGER OUTPUT VARIABLE SET AS FOLLOWS. FOR
+!       INFO IS AN INTEGER(kind=i4) OUTPUT VARIABLE SET AS FOLLOWS. FOR
 !         NORMAL TERMINATION INFO = 1. IF M, N, OR NPAIRS IS NOT
 !         POSITIVE OR LIWA IS LESS THAN MAX(M,6*N), THEN INFO = 0.
-!         IF THE K-TH ELEMENT OF INDROW IS NOT AN INTEGER BETWEEN
-!         1 AND M OR THE K-TH ELEMENT OF INDCOL IS NOT AN INTEGER
+!         IF THE K-TH ELEMENT OF INDROW IS NOT AN INTEGER(kind=i4) BETWEEN
+!         1 AND M OR THE K-TH ELEMENT OF INDCOL IS NOT AN INTEGER(kind=i4)
 !         BETWEEN 1 AND N, THEN INFO = -K.
-!       IPNTR IS AN INTEGER OUTPUT ARRAY OF LENGTH M + 1 WHICH
+!       IPNTR IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH M + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE COLUMN INDICES IN INDCOL.
 !         THE COLUMN INDICES FOR ROW I ARE
 !               INDCOL(K), K = IPNTR(I),...,IPNTR(I+1)-1.
 !         NOTE THAT IPNTR(M+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       JPNTR IS AN INTEGER OUTPUT ARRAY OF LENGTH N + 1 WHICH
+!       JPNTR IS AN INTEGER(kind=i4) OUTPUT ARRAY OF LENGTH N + 1 WHICH
 !         SPECIFIES THE LOCATIONS OF THE ROW INDICES IN INDROW.
 !         THE ROW INDICES FOR COLUMN J ARE
 !               INDROW(K), K = JPNTR(J),...,JPNTR(J+1)-1.
 !         NOTE THAT JPNTR(N+1)-1 IS THEN THE NUMBER OF NON-ZERO
 !         ELEMENTS OF THE MATRIX A.
-!       IWA IS AN INTEGER WORK ARRAY OF LENGTH LIWA.
-!       LIWA IS A POSITIVE INTEGER INPUT VARIABLE NOT LESS THAN
+!       IWA IS AN INTEGER(kind=i4) WORK ARRAY OF LENGTH LIWA.
+!       LIWA IS A POSITIVE INTEGER(kind=i4) INPUT VARIABLE NOT LESS THAN
 !         MAX(M,6*N).
 !       MINPACK-SUPPLIED ... DEGR,IDO,NUMSRT,SEQ,SETR,SLO,SRTDAT
 !       INTRINSIC - MAX
@@ -18420,14 +18707,14 @@
      IMPLICIT NONE
 
 ! .. Scalar Arguments ..
-      INTEGER :: INFO, LIWA, M, MAXGRP, MINGRP, N, NPAIRS
+      INTEGER(kind=i4) :: INFO, LIWA, M, MAXGRP, MINGRP, N, NPAIRS
 ! ..
 ! .. Array Arguments ..
-      INTEGER :: INDCOL(NPAIRS), INDROW(NPAIRS), IPNTR(M+1), IWA(LIWA), &
+      INTEGER(kind=i4) :: INDCOL(NPAIRS), INDROW(NPAIRS), IPNTR(M+1), IWA(LIWA), &
         JPNTR(N+1), NGRP(N)
 ! ..
 ! .. Local Scalars ..
-      INTEGER :: I, IR, J, JP, K, MAXCLQ, NNZ, NUMGRP
+      INTEGER(kind=i4) :: I, IR, J, JP, K, MAXCLQ, NNZ, NUMGRP
 ! ..
 ! .. External Subroutines ..
 !     EXTERNAL DEGR, IDO, NUMSRT, SEQ, SETR, SLO, SRTDAT
@@ -18543,14 +18830,14 @@
      IMPLICIT NONE
 ! ..
 ! .. Scalar Arguments ..
-        INTEGER, INTENT (IN) :: N, MAXGRPDS
+        INTEGER(kind=i4), INTENT (IN) :: N, MAXGRPDS
 ! ..
 ! .. Array Arguments ..
-        INTEGER, INTENT (IN) :: NGRPDS(MAXGRPDS)
-        INTEGER, INTENT (OUT) :: IGP(MAXGRPDS+1), JGP(N)
+        INTEGER(kind=i4), INTENT (IN) :: NGRPDS(MAXGRPDS)
+        INTEGER(kind=i4), INTENT (OUT) :: IGP(MAXGRPDS+1), JGP(N)
 ! ..
 ! .. Local Scalars ..
-        INTEGER :: IGRP, INDEX, JCOL
+        INTEGER(kind=i4) :: IGRP, INDEX, JCOL
 ! ..
 ! .. FIRST EXECUTABLE STATEMENT DGROUPDS
 ! ..
@@ -18573,6 +18860,11 @@
 
     SUBROUTINE JACSPDB(FCN,N,T,Y,F,FJAC,NRFJAC,YSCALE,FAC,IOPT, &
       WK,LWK,IWK,LIWK,MAXGRP,NGRP,JPNTR,INDROW)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JACSPDB
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: JACSPDB
+#endif
 
 ! This is a modified version of JACSP which does not require the NGRP,
 ! JPNTR and INDROW sparse pointer arrays in the event a dense or a
@@ -18585,25 +18877,25 @@
      IMPLICIT NONE
 
 ! .. Parameters ..
-      INTEGER, PARAMETER :: WP = KIND(0.0D0)
+      !INTEGER(kind=i4), PARAMETER :: WP = KIND(0.0D0)
 ! ..
 ! .. Scalar Arguments ..
-      REAL (WP) :: T
-      INTEGER :: LIWK, LWK, MAXGRP, N, NRFJAC
+      REAL(kind=dp) :: T
+      INTEGER(kind=i4) :: LIWK, LWK, MAXGRP, N, NRFJAC
 ! ..
 ! .. Array Arguments ..
-      REAL (WP) :: F(N), FAC(N), FJAC(NRFJAC,*), WK(LWK), Y(N), YSCALE(*)
-      INTEGER :: INDROW(*), IOPT(5), IWK(LIWK), JPNTR(*), NGRP(N)
+      REAL(kind=dp) :: F(N), FAC(N), FJAC(NRFJAC,*), WK(LWK), Y(N), YSCALE(*)
+      INTEGER(kind=i4) :: INDROW(*), IOPT(5), IWK(LIWK), JPNTR(*), NGRP(N)
 ! ..
 ! .. Subroutine Arguments ..
       EXTERNAL FCN
 ! ..
 ! .. Local Scalars ..
-      REAL (WP) :: ADIFF, AY, DEL, DELM, DFMJ, DIFF, DMAX, EXPFMN, FACMAX, &
+      REAL(kind=dp) :: ADIFF, AY, DEL, DELM, DFMJ, DIFF, DMAX, EXPFMN, FACMAX, &
         FACMIN, FJACL, FMJ, ONE, P125, P25, P75, P875, PERT, RDEL, RMNFDF, &
         RMXFDF, SDF, SF, SGN, T1, T2, U, U3QRT, U7EGT, UEGT, UMEGT, UQRT,  &
         USQT, ZERO
-      INTEGER :: IDXL, IDXU, IFLAG1, IFLAG2, IRCMP, IRDEL, IROW, IROWB,    &
+      INTEGER(kind=i4) :: IDXL, IDXU, IFLAG1, IFLAG2, IRCMP, IRDEL, IROW, IROWB,    &
         IROWMX, ITRY, J, JCOL, JFIRST, JINC, JLAST, KT1, KT2, KT3, KT4,    &
         KT5, L, MBAND, ML, MU, NID1, NID2, NID3, NID4, NID5, NID6,         &
         NIFAC, NT2, NUMGRP
@@ -18616,9 +18908,9 @@
       INTRINSIC ABS, EPSILON, MAX, MIN, SIGN, SQRT
 ! ..
 ! .. Data Statements ..
-      DATA PERT/2.0E+0_WP/, FACMAX/1.E-1_WP/, EXPFMN/.75E+0_WP/
-      DATA ONE/1.0E0_WP/, ZERO/0.0E0_WP/
-      DATA P125/.125E+0_WP/, P25/.25E+0_WP/, P75/.75E+0_WP/, P875/.875E+0_WP/
+      DATA PERT/2.0E+0_dp/, FACMAX/1.E-1_dp/, EXPFMN/.75E+0_dp/
+      DATA ONE/1.0E0_dp/, ZERO/0.0E0_dp/
+      DATA P125/.125E+0_dp/, P25/.25E+0_dp/, P75/.75E+0_dp/, P875/.875E+0_dp/
       DATA NIFAC/3/, NID1/10/, NID2/20/, NID3/30/, NID4/40/, NID5/50/
 ! ..
 !     COMPUTE ALGORITHM AND MACHINE CONSTANTS.
