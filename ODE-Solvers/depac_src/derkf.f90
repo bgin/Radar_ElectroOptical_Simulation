@@ -1,5 +1,6 @@
 !** DERKF
 SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
+  use mod_kinds, only : i4,sp
   !> Solve an initial value problem in ordinary differential
   !  equations using a Runge-Kutta-Fehlberg scheme.
   !***
@@ -112,7 +113,7 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !
   !      INFO(*) -- The basic task of the code is to integrate the
   !             differential equations from T to TOUT and return an
-  !             answer at TOUT.  INFO(*) is an INTEGER array which is used
+  !             answer at TOUT.  INFO(*) is an INTEGER(i4) array which is used
   !             to communicate exactly how you want this task to be
   !             carried out.
   !
@@ -122,17 +123,17 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !             choose them to be both scalars or else both vectors.
   !
   !      IDID -- This scalar quantity is an indicator reporting what
-  !             the code did.  You must monitor this INTEGER variable to
+  !             the code did.  You must monitor this INTEGER(i4) variable to
   !             decide what action to take next.
   !
   !      RWORK(*), LRW -- RWORK(*) is a REAL work array of length LRW
   !             which provides the code with needed storage space.
   !
-  !      IWORK(*), LIW -- IWORK(*) is an INTEGER work array of length LIW
+  !      IWORK(*), LIW -- IWORK(*) is an INTEGER(i4) work array of length LIW
   !             which provides the code with needed storage space and an
   !             across call flag.
   !
-  !      RPAR, IPAR -- These are REAL and INTEGER parameter arrays which
+  !      RPAR, IPAR -- These are REAL and INTEGER(i4) parameter arrays which
   !             you can use for communication between your calling
   !             program and the F subroutine.
   !
@@ -169,7 +170,7 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !             the name F in an external statement in your program that
   !             calls DERKF.  You must dimension U and UPRIME in F.
   !
-  !             RPAR and IPAR are REAL and INTEGER parameter arrays which
+  !             RPAR and IPAR are REAL and INTEGER(i4) parameter arrays which
   !             you can use for communication between your calling program
   !             and subroutine F.  They are not used or altered by DERKF.
   !             If you do not need RPAR or IPAR, ignore these parameters
@@ -329,13 +330,13 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !      LRW -- Set it to the declared length of the RWORK array.
   !             You must have  LRW >= 33+7*NEQ
   !
-  !      IWORK(*) -- Dimension this INTEGER work array of length LIW in
+  !      IWORK(*) -- Dimension this INTEGER(i4) work array of length LIW in
   !             your calling program.
   !
   !      LIW -- Set it to the declared length of the IWORK array.
   !             You must have  LIW >= 34
   !
-  !      RPAR, IPAR -- These are parameter arrays, of REAL and INTEGER
+  !      RPAR, IPAR -- These are parameter arrays, of REAL and INTEGER(i4)
   !             type, respectively.  You can use them for communication
   !             between your program that calls DERKF and the  F
   !             subroutine.  They are not used or altered by DERKF.  If
@@ -603,20 +604,21 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
 
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
   END INTERFACE
-  INTEGER, INTENT(IN) :: Liw, Lrw, Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Info(15), Iwork(Liw)
-  REAL(SP), INTENT(IN) :: Tout
-  REAL(SP), INTENT(INOUT) :: T
-  REAL(SP), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+  INTEGER(i4), INTENT(IN) :: Liw, Lrw, Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Info(15), Iwork(Liw)
+  REAL(sp), INTENT(IN) :: Tout
+  REAL(sp), INTENT(INOUT) :: T
+  REAL(sp), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+    !DIR$ ASSUME_ALIGNED Atol:64, Rtol:64, Rwork:64
   !
-  INTEGER :: kdi, kf1, kf2, kf3, kf4, kf5, kh, krer, ktf, kto, ktstar, ku, kyp, kys
+  INTEGER(i4) :: kdi, kf1, kf2, kf3, kf4, kf5, kh, krer, ktf, kto, ktstar, ku, kyp, kys
   LOGICAL :: stiff, nonstf
   CHARACTER(8) :: xern1
   CHARACTER(16) :: xern3
@@ -651,7 +653,7 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
     Idid = -33
   END IF
   !
-  !     COMPUTE INDICES FOR THE SPLITTING OF THE RWORK ARRAY
+  !     COMPUTE INDICES FOR THE spLITTING OF THE RWORK ARRAY
   !
   kh = 11
   ktf = 12
@@ -670,7 +672,7 @@ SUBROUTINE DERKF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !
   !- *********************************************************************
   !     THIS INTERFACING ROUTINE MERELY RELIEVES THE USER OF A LONG
-  !     CALLING LIST VIA THE SPLITTING APART OF TWO WORKING STORAGE
+  !     CALLING LIST VIA THE spLITTING APART OF TWO WORKING STORAGE
   !     ARRAYS. IF THIS IS NOT COMPATIBLE WITH THE USERS COMPILER,
   !     S/HE MUST USE DERKFS DIRECTLY.
   !- *********************************************************************

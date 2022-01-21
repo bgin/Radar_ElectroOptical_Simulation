@@ -3,6 +3,7 @@ SUBROUTINE DES(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     Alpha,Beta,Psi,V,W,Sig,G,Gi,H,Eps,X,Xold,Hold,Told,Delsgn,&
     Tstop,Twou,Fouru,Start,Phase1,Nornd,Stiff,Intout,Ns,Kord,&
     Kold,Init,Ksteps,Kle4,Iquit,Kprev,Ivc,Iv,Kgi)
+      use mod_kinds, only : i4,sp
   !> Subsidiary to DEABM
   !***
   ! **Library:**   SLATEC

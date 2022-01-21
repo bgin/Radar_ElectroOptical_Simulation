@@ -3,6 +3,8 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     Alpha,Beta,Psi,V,W,Sig,G,Gi,H,Eps,X,Xold,Hold,Told,Delsgn,&
     Tstop,Twou,Fouru,Start,Phase1,Nornd,Stiff,Intout,Ns,Kord,&
     Kold,Init,Ksteps,Kle4,Iquit,Kprev,Ivc,Iv,Kgi)
+       use mod_kinds, only : i4, dp
+       use omp_lib
   !> Subsidiary to DDEABM
   !***
   ! **Library:**   SLATEC
@@ -34,25 +36,26 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq
-  INTEGER, INTENT(INOUT) :: Idid, Init, Iquit, Ivc, Kgi, Kle4, Kold, Kord, &
+  INTEGER(i4), INTENT(IN) :: Neq
+  INTEGER(i4), INTENT(INOUT) :: Idid, Init, Iquit, Ivc, Kgi, Kle4, Kold, Kord, &
     Kprev, Ksteps, Ns
-  INTEGER, INTENT(INOUT) :: Iv(10), Info(15)
-  REAL(DP), INTENT(IN) :: Tout, Tstop
-  REAL(DP), INTENT(INOUT) :: Delsgn, Eps, Fouru, H, Hold, Twou, T, Told, X, Xold
-  REAL(DP), INTENT(INOUT) :: Alpha(12), Atol(:), Beta(12), G(13), Gi(11), P(Neq), &
+  INTEGER(i4), INTENT(INOUT) :: Iv(10), Info(15)
+  REAL(dp), INTENT(IN) :: Tout, Tstop
+  REAL(dp), INTENT(INOUT) :: Delsgn, Eps, Fouru, H, Hold, Twou, T, Told, X, Xold
+  REAL(dp), INTENT(INOUT) :: Alpha(12), Atol(:), Beta(12), G(13), Gi(11), P(Neq), &
     Phi(Neq,16), Psi(12), Rtol(:), Sig(13), V(12), W(12), Wt(Neq), Y(Neq), Yp(Neq), &
     Ypout(Neq), Yy(Neq)
+      
   LOGICAL, INTENT(INOUT) :: Stiff, Start, Phase1, Nornd, Intout
   !
-  INTEGER :: k, l, ltol, natolp, nrtolp
-  REAL(DP) :: a, absdel, del, dt, ha, u
+  INTEGER(i4) :: k, l, ltol, natolp, nrtolp
+  REAL(dp) :: a, absdel, del, dt, ha, u
   LOGICAL :: crash
   CHARACTER(8) :: xern1
   CHARACTER(16) :: xern3, xern4
@@ -64,7 +67,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   !  IS RESET TO ZERO AND THE USER IS INFORMED ABOUT POSSIBLE EXCESSIVE
   !  WORK.
   !
-  INTEGER, PARAMETER :: maxnum = 500
+  INTEGER(i4), PARAMETER :: maxnum = 500
   !
   !.......................................................................
   !
@@ -78,8 +81,8 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     !
     u = eps_dp
     !                       -- SET ASSOCIATED MACHINE DEPENDENT PARAMETERS
-    Twou = 2._DP*u
-    Fouru = 4._DP*u
+    Twou = 2._dp*u
+    Fouru = 4._dp*u
     !                       -- SET TERMINATION FLAG
     Iquit = 0
     !                       -- SET INITIALIZATION INDICATOR
@@ -136,14 +139,14 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   IF( Neq<1 ) THEN
     WRITE (xern1,'(I8)') Neq
     ERROR STOP 'DDES : IN DDEABM,  THE NUMBER OF EQUATIONS NEQ&
-      & MUST BE A POSITIVE INTEGER.'
+      & MUST BE A POSITIVE INTEGER(i4).'
     Idid = -33
   END IF
   !
   nrtolp = 0
   natolp = 0
   DO k = 1, Neq
-    IF( nrtolp==0 .AND. Rtol(k)<0._DP ) THEN
+    IF( nrtolp==0 .AND. Rtol(k)<0._dp ) THEN
       WRITE (xern1,'(I8)') k
       WRITE (xern3,'(1PE15.6)') Rtol(k)
       ERROR STOP 'DDES : IN DDEABM, THE RELATIVE ERROR TOLERANCES RTOL&
@@ -153,7 +156,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
       nrtolp = 1
     END IF
     !
-    IF( natolp==0 .AND. Atol(k)<0._DP ) THEN
+    IF( natolp==0 .AND. Atol(k)<0._dp ) THEN
       WRITE (xern1,'(I8)') k
       WRITE (xern3,'(1PE15.6)') Atol(k)
       ERROR STOP 'DDES : IN DDEABM, THE ABSOLUTE ERROR TOLERANCES ATOL MUST BE&
@@ -168,7 +171,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   END DO
   !
   IF( Info(4)==1 ) THEN
-    IF( SIGN(1._DP,Tout-T)/=SIGN(1._DP,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
+    IF( SIGN(1._dp,Tout-T)/=SIGN(1._dp,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
       WRITE (xern3,'(1PE15.6)') Tout
       WRITE (xern4,'(1PE15.6)') Tstop
       ERROR STOP 'DDES : IN DDEABM, INVALID VALUE OF TOUT BUT YOU HAVE ALSO&
@@ -197,7 +200,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     END IF
     !
     IF( Init/=1 ) THEN
-      IF( Delsgn*(Tout-T)<0._DP ) THEN
+      IF( Delsgn*(Tout-T)<0._dp ) THEN
         WRITE (xern3,'(1PE15.6)') Tout
         ERROR STOP 'DDES : IN DDEABM, BY CALLING THE CODE WITH THAT VALUE OF TOUT&
           & YOU ARE ATTEMPTING TO CHANGE THE DIRECTION OF INTEGRATION.&
@@ -229,7 +232,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   !     FOURU WHICH IS LIKELY TO BE REASONABLE FOR THIS METHOD AND MACHINE
   !
   DO k = 1, Neq
-    IF( Rtol(k)+Atol(k)<=0._DP ) THEN
+    IF( Rtol(k)+Atol(k)<=0._dp ) THEN
       Rtol(k) = Fouru
       Idid = -2
     END IF
@@ -256,6 +259,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
       CALL DF(a,Y,Yp)
       IF( T==Tout ) THEN
         Idid = 2
+        !$OMP SIMD IF(Neq>=16)
         DO l = 1, Neq
           Ypout(l) = Yp(l)
         END DO
@@ -273,10 +277,11 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     !
     Init = 2
     X = T
+    !$OMP SIMD IF(Neq>=16)
     DO l = 1, Neq
       Yy(l) = Y(l)
     END DO
-    Delsgn = SIGN(1._DP,Tout-T)
+    Delsgn = SIGN(1._dp,Tout-T)
     H = SIGN(MAX(Fouru*ABS(X),ABS(Tout-X)),Tout-X)
   ELSE
     !                       RTOL=ATOL=0 ON INPUT, SO RTOL IS CHANGED TO A
@@ -305,6 +310,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
     IF( Info(4)==1 ) THEN
       IF( ABS(Tstop-X)<Fouru*ABS(X) ) THEN
         dt = Tout - X
+        !$OMP SIMD IF(Neq>=16)
         DO l = 1, Neq
           Y(l) = Yy(l) + dt*Yp(l)
         END DO
@@ -321,6 +327,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
       !   INTERMEDIATE-OUTPUT MODE
       !
       Idid = 1
+      !$OMP SIMD IF(Neq>=16)
       DO l = 1, Neq
         Y(l) = Yy(l)
         Ypout(l) = Yp(l)
@@ -343,12 +350,12 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
       ha = ABS(H)
       IF( Info(4)==1 ) ha = MIN(ha,ABS(Tstop-X))
       H = SIGN(ha,H)
-      Eps = 1._DP
+      Eps = 1._dp
       ltol = 1
       DO l = 1, Neq
         IF( Info(2)==1 ) ltol = l
         Wt(l) = Rtol(ltol)*ABS(Yy(l)) + Atol(ltol)
-        IF( Wt(l)<=0._DP ) GOTO 120
+        IF( Wt(l)<=0._dp ) GOTO 120
       END DO
       !
       CALL DSTEPS(DF,Neq,Yy,X,H,Eps,Wt,Start,Hold,Kord,Kold,crash,Phi,P,Yp,&
@@ -374,6 +381,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
         Rtol(1) = Eps*Rtol(1)
         Atol(1) = Eps*Atol(1)
         IF( Info(2)/=0 ) THEN
+          !$OMP SIMD IF(Neq>=16)
           DO l = 2, Neq
             Rtol(l) = Eps*Rtol(l)
             Atol(l) = Eps*Atol(l)
@@ -384,6 +392,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
       !
       !                       RELATIVE ERROR CRITERION INAPPROPRIATE
       120  Idid = -3
+        !$OMP SIMD IF(Neq>=16)
       DO l = 1, Neq
         Y(l) = Yy(l)
         Ypout(l) = Yp(l)
@@ -406,6 +415,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
         Kle4 = 0
       END IF
       !
+        !$OMP SIMD IF(Neq>=16)
       DO l = 1, Neq
         Y(l) = Yy(l)
         Ypout(l) = Yp(l)
@@ -427,6 +437,7 @@ SUBROUTINE DDES(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Ypout,Yp,Yy,Wt,P,Phi,&
   Told = T
   RETURN
   200 CONTINUE
+    !$OMP SIMD IF(Neq>=16)
   DO l = 1, Neq
     Y(l) = Yy(l)
     Ypout(l) = Yp(l)

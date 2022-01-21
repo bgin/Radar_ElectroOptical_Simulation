@@ -1,5 +1,6 @@
 !** DEBDF
 SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
+    use mod_kinds, only : i4,sp
   !> Solve an initial value problem in ordinary differential equations using
   !  backward differentiation formulas.  It is intended primarily for stiff problems.
   !***
@@ -108,7 +109,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !
   !      INFO(*) -- The basic task of the code is to integrate the
   !             differential equations from T to TOUT and return an
-  !             answer at TOUT.  INFO(*) is an INTEGER array which is used
+  !             answer at TOUT.  INFO(*) is an INTEGER(i4) array which is used
   !             to communicate exactly how you want this task to be
   !             carried out.
   !
@@ -119,18 +120,18 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !             or else both vectors.
   !
   !      IDID -- This scalar quantity is an indicator reporting what
-  !             the code did.  You must monitor this INTEGER variable to
+  !             the code did.  You must monitor this INTEGER(i4) variable to
   !             decide what action to take next.
   !
   !      RWORK(*), LRW -- RWORK(*) is a REAL work array of
   !             length LRW which provides the code with needed storage
   !             space.
   !
-  !      IWORK(*), LIW -- IWORK(*) is an INTEGER work array of length LIW
+  !      IWORK(*), LIW -- IWORK(*) is an INTEGER(i4) work array of length LIW
   !             which provides the code with needed storage space and an
   !             across call flag.
   !
-  !      RPAR, IPAR -- These are REAL and INTEGER parameter
+  !      RPAR, IPAR -- These are REAL and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and the F subroutine (and the JAC
   !             subroutine).
@@ -173,7 +174,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !             the name F in an external statement in your program that
   !             calls DEBDF.  You must dimension U and UPRIME in F.
   !
-  !             RPAR and IPAR are REAL and INTEGER parameter arrays which
+  !             RPAR and IPAR are REAL and INTEGER(i4) parameter arrays which
   !             you can use for communication between your calling program
   !             and subroutine F.  They are not used or altered by DEBDF.
   !             If you do not need RPAR or IPAR, ignore these parameters
@@ -418,7 +419,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !                  LRW >= 250+10*NEQ+(2*ML+MU+1)*NEQ
   !             for the banded Jacobian case (when INFO(6)=1).
   !
-  !      IWORK(*) -- Dimension this INTEGER work array of length LIW in
+  !      IWORK(*) -- Dimension this INTEGER(i4) work array of length LIW in
   !             your calling program.
   !
   !      IWORK(1), IWORK(2) -- If you have set INFO(6)=0, you can ignore
@@ -433,7 +434,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !      LIW -- Set it to the declared length of the IWORK array.
   !             You must have LIW >= 56+NEQ.
   !
-  !      RPAR, IPAR -- These are parameter arrays, of REAL and INTEGER
+  !      RPAR, IPAR -- These are parameter arrays, of REAL and INTEGER(i4)
   !             type, respectively.  You can use them for communication
   !             between your program that calls DEBDF and the  F
   !             subroutine (and the JAC subroutine).  They are not used or
@@ -485,7 +486,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !                                IROW = I - J + ML + MU + 1
   !                                PD(IROW,J) = * DF(I)/DU(J) *
   !
-  !             RPAR and IPAR are REAL and INTEGER parameter
+  !             RPAR and IPAR are REAL and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and your Jacobian subroutine JAC.  They
   !             are not altered by DEBDF.  If you do not need RPAR or
@@ -744,27 +745,28 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   !
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
     PURE SUBROUTINE JAC(X,U,Pd,Nrowpd)
-      IMPORT SP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Pd(:,:)
+      IMPORT sp
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE JAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Liw, Lrw, Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Info(15), Iwork(Liw)
-  REAL(SP), INTENT(IN) :: Tout
-  REAL(SP), INTENT(INOUT) :: T
-  REAL(SP), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+  INTEGER(i4), INTENT(IN) :: Liw, Lrw, Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Info(15), Iwork(Liw)
+  REAL(sp), INTENT(IN) :: Tout
+  REAL(sp), INTENT(INOUT) :: T
+  REAL(sp), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+     !DIR$ ASSUME_ALIGNED Atol:64, Rtol:64, Rwork:64
   !
-  INTEGER :: icomi, icomr, idelsn, iinout, ilrw, itstar, iypout, ml, mu
+  INTEGER(i4) :: icomi, icomr, idelsn, iinout, ilrw, itstar, iypout, ml, mu
   LOGICAL :: intout
   CHARACTER(8) :: xern1, xern2
   CHARACTER(16) :: xern3
@@ -800,14 +802,14 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
   IF( Info(2)/=0 .AND. Info(2)/=1 ) THEN
     WRITE (xern1,'(I8)') Info(2)
     ERROR STOP 'DEBDF : INFO(2) MUST BE 0 OR 1 INDICATING SCALAR&
-      & AND VECTOR ERROR TOLERANCES, RESPECTIVELY.'
+      & AND VECTOR ERROR TOLERANCES, REspECTIVELY.'
     Idid = -33
   END IF
   !
   IF( Info(3)/=0 .AND. Info(3)/=1 ) THEN
     WRITE (xern1,'(I8)') Info(3)
     ERROR STOP 'DEBDF : INFO(3) MUST BE 0 OR 1 INDICATING THE INTERVAL&
-      & OR INTERMEDIATE-OUTPUT MODE OF INTEGRATION, RESPECTIVELY.'
+      & OR INTERMEDIATE-OUTPUT MODE OF INTEGRATION, REspECTIVELY.'
     Idid = -33
   END IF
   !
@@ -830,7 +832,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
     WRITE (xern1,'(I8)') Info(6)
     ERROR STOP 'DEBDF : INFO(6) MUST BE 0 OR 1 INDICATING WHETHER&
       & THE CODE IS TOLD TO TREAT THE JACOBIAN AS A FULL (DENSE) MATRIX OR AS&
-      & HAVING A SPECIAL BANDED STRUCTURE.'
+      & HAVING A spECIAL BANDED STRUCTURE.'
     Idid = -33
   END IF
   !
@@ -847,7 +849,7 @@ SUBROUTINE DEBDF(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,JAC)
       WRITE (xern1,'(I8)') ml
       WRITE (xern2,'(I8)') mu
       ERROR STOP 'DEBDF : YOU HAVE SET INFO(6) = 1, TELLING THE CODE&
-        & THAT THE JACOBIAN MATRIX HAS A SPECIAL BANDED STRUCTURE.  HOWEVER,&
+        & THAT THE JACOBIAN MATRIX HAS A spECIAL BANDED STRUCTURE.  HOWEVER,&
         & THE LOWER (UPPER) BANDWIDTHS  ML (MU) VIOLATE THE CONSTRAINTS&
         & ML,MU >= 0 AND  ML,MU < NEQ.'
       Idid = -33

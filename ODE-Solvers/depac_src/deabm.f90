@@ -1,5 +1,6 @@
 !** DEABM
 SUBROUTINE DEABM(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
+    use mod_kinds, only : i4,sp
   !> Solve an initial value problem in ordinary differential
   !  equations using an Adams-Bashforth method.
   !***
@@ -572,20 +573,21 @@ SUBROUTINE DEABM(F,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
 
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
   END INTERFACE
-  INTEGER, INTENT(IN) :: Liw, Lrw, Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Info(15), Iwork(Liw)
-  REAL(SP), INTENT(IN) :: Tout
-  REAL(SP), INTENT(INOUT) :: T
-  REAL(SP), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+  INTEGER(i4), INTENT(IN) :: Liw, Lrw, Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Info(15), Iwork(Liw)
+  REAL(sp), INTENT(IN) :: Tout
+  REAL(sp), INTENT(INOUT) :: T
+  REAL(sp), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+      !DIR$ ASSUME_ALIGNED Atol:64, Rtol:64, Rwork:64
   !
-  INTEGER :: ialpha, ibeta, idelsn, ifouru, ig, igi, ihold, ip, iphi, ipsi, isig, &
+  INTEGER(i4) :: ialpha, ibeta, idelsn, ifouru, ig, igi, ihold, ip, iphi, ipsi, isig, &
     itold, itstar, itwou, iv, iw, iwt, ixold, iyp, iypout, iyy
   LOGICAL :: start, phase1, nornd, stiff, intout
   CHARACTER(8) :: xern1
