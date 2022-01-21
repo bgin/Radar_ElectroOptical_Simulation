@@ -9278,10 +9278,11 @@
       FUNCTION DVNORM(N,V,W)
 #if defined(__INTEL_COMPILER) || defined(__ICC)
     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNORM
-    
+    !DIR$ ATTRIBUTES FORCEINLINE :: DVNORM
     !DIR$ OPTIMIZE : 3
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNORM
 #endif
+     use omp_lib
 ! ..
 ! Calculate weighted root-mean-square (rms) vector norm.
 ! ..
@@ -9300,6 +9301,10 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (IN) :: V(N), W(N)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED V:64
+        !DIR$ ASSUME_ALIGNED W:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: SUM
@@ -9311,6 +9316,7 @@
 ! .. FIRST EXECUTABLE STATEMENT DVNORM
 ! ..
         SUM = ZERO
+        !$OMP SIMD REDUCTION(+:SUM) LINEAR(I:1) 
         DO I = 1, N
           SUM = SUM + (V(I)*W(I))**2
         END DO
@@ -9556,6 +9562,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVPREPS(NEQ,Y,YH,LDYH,SAVF,EWT,F,JAC)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVPREPS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVPREPS
+#endif
+       use omp_lib
 ! ..
 ! Determine the sparsity structure and allocate the necessary arrays
 ! for MA28 based sparse solutions.
@@ -9569,6 +9581,12 @@
         REAL(kind=dp), INTENT (INOUT) :: EWT(*), Y(*)
         REAL(kind=dp) :: SAVF(*)
         REAL(kind=dp), INTENT (IN) :: YH(LDYH,*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED EWT:64
+        !DIR$ ASSUME_ALIGNED Y:64
+        !DIR$ ASSUME_ALIGNED SAVF:64
+        !DIR$ ASSUME_ALIGNED YH:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
@@ -9622,6 +9640,7 @@
 !       ISTATE = 1 and MOSS /= 0.
 
 !       Perturb Y for structure determination:
+        !$OMP SIMD REDUCTION(+:Y) LINEAR(I:1)
         DO I = 1, N
           ERWT = ONE/EWT(I)
           FAC = ONE + ONE/(I+ONE)
@@ -9718,6 +9737,7 @@
 !       Compute structure from results of N+1 calls to F.
 70      K = 1
         IAN(1) = 1
+        !$OMP SIMD REDUCTION(+:Y) LINEAR(I:1)
         DO I = 1, N
           ERWT = ONE/EWT(I)
           FAC = ONE + ONE/(I+ONE)
@@ -9862,6 +9882,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVRENEW(NEQ,Y,SAVF,EWT,F)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVRENEW
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVRENEW
+#endif
+         use omp_lib
 ! ..
 ! In the event MA28BD encounters a zero pivot in the LU factorization
 ! of the iteration matrix due to an out-of-date MA28AD pivot sequence,
@@ -9874,6 +9900,11 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: EWT(*), SAVF(*), Y(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+        !DIR$ ASSUME_ALIGNED EWT:64
+        !DIR$ ASSUME_ALIGNED SAVF:64
+        !DIR$ ASSUME_ALIGNED Y:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F
@@ -9964,6 +9995,7 @@
    20   CONTINUE
 
 !       Perturb Y for structure determination:
+        !$OMP SIMD REDUCTION(+:Y) LINEAR(I:1)
         DO I = 1, N
           ERWT = ONE/EWT(I)
           FAC = ONE + ONE/(I+ONE)
@@ -9973,6 +10005,7 @@
 !       Compute structure from results of N+1 calls to F.
         K = 1
         IAN(1) = 1
+        !$OMP SIMD REDUCTION(+:Y) LINEAR(I:1)
         DO I = 1, N
           ERWT = ONE/EWT(I)
           FAC = ONE + ONE/(I+ONE)
@@ -10059,6 +10092,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DGROUP(N,IA,JA,MAXG,NGRP,IGP,JGP,INCL,JDONE,IER)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGROUP
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGROUP
+#endif
 ! ..
 ! Construct groupings of the column indices of the Jacobian matrix,
 ! used in the numerical evaluation of the Jacobian by finite
@@ -10134,6 +10172,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE BGROUP(N,BJA,BINCL,BDONE,ML,MU)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BGROUP
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: BGROUP
+#endif
 ! ..
 ! Construct groupings of the column indices of the Jacobian
 ! matrix, used in the numerical evaluation of the Jacobian
@@ -10328,6 +10371,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE BANDED_IAJA(N,ML,MU)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BANDED_IAJA
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: BANDED_IAJA
+#endif
 ! ..
 ! Build the sparse structure descriptor arrays for a banded
 ! matrix if the nonzero diagonals are known.
@@ -10490,6 +10538,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE BANDED_GET_BJNZ(N,ML,MU,JCOL,JNZ,NZJ)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BANDED_GET_BJNZ
+    !DIR$ ATTRIBUTES INLINE :: BANDED_GET_BJNZ
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: BANDED_GET_BJNZ
+#endif
 ! ..
 ! Locate the nonzeros in a given column of a sparse banded matrix
 ! with known diagonals. This is a version of BANDED_IAJA modified
@@ -10584,6 +10638,11 @@
 
       SUBROUTINE DVNLSS28(Y,YH,LDYH,SAVF,EWT,ACOR,IWM,WM,F,JAC, &
         NFLAG,ATOL,ITOL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNLSS28
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNLSS28
+#endif
 ! ..
 ! This is the nonlinear system solver for MA28 based sparse solutions.
 ! ..
@@ -10844,6 +10903,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVSOLS28(X,TEM,IERSL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVSOLS28
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVSOLS28
+#endif
+      use omp_lib
 ! ..
 ! Manage the solution of the MA28 based sparse linear system arising
 ! from a chord iteration.
@@ -10863,6 +10928,9 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: TEM(*), X(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ASSUME_ALIGNED TEM:64, X:64
+#endif
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I
@@ -10870,6 +10938,7 @@
 ! .. FIRST EXECUTABLE STATEMENT DVSOLS28
 ! ..
         IF (SCALE_MATRIX) THEN
+           !$OMP SIMD REDUCTION(+:X) LINEAR(I:1)
            DO I = 1, N
               X(I) = X(I) * RSCALEX(I)
            END DO
@@ -10878,6 +10947,7 @@
         CALL MA28CD(N,PMAT,LICN_ALL,ICN,IKEEP28,X,TEM,1)
         MA28CD_CALLS = MA28CD_CALLS + 1
         IF (SCALE_MATRIX) THEN
+           !$OMP SIMD REDUCTION(+:X) LINEAR(I:1)
            DO I = 1, N
               X(I) = X(I) * CSCALEX(I)
            END DO
@@ -10889,6 +10959,12 @@
 
       SUBROUTINE DVJACS28(Y,YH,LDYH,EWT,FTEMP1,SAVF,F,JAC,IERPJ,N, &
         ATOL,ITOL)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVJACS28
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVJACS28
+#endif
+       use omp_lib
 ! ..
 ! Compute and process P = I - H*RL1*J, where J is an approximation to
 ! the MA28 based sparse Jacobian.
@@ -10902,6 +10978,10 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: EWT(*), FTEMP1(*), SAVF(*), Y(*), YH(LDYH,*)
         REAL(kind=dp), INTENT (IN) :: ATOL(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ASSUME_ALIGNED EWT:64, FTEMP1:64, SAVF:64
+           !DIR$ ASSUME_ALIGNED Y:64, YH:64, ATOL:64
+#endif
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL F, JAC
@@ -11053,6 +11133,7 @@
                      R0 = THOU*ABS(H)*REAL(N)*FAC
                      IF (ABS(R0)<=ZERO) R0 = ONE
 !                    SRUR = WM1
+                     !$OMP SIMD LINEAR(J:1)
                      DO J = 1, N
 !                       JACSPDB multiplies YSCALEDS(*) BY UROUND**0.825:
 !                       R = MAX(ABS(Y(J)),R0/EWT(J))
@@ -11061,10 +11142,12 @@
                      END DO
                   ELSE
                      IF (ITOL == 1 .OR. ITOL == 3) THEN
+                         !$OMP SIMD LINEAR(J:1)
                         DO J = 1, N
                            YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(1),UROUND)
                         END DO
                      ELSE
+                         !$OMP SIMD LINEAR(J:1)
                         DO J = 1, N
                           YSCALEDS(J) = MAX(ABS(Y(J)),ATOL(J),UROUND)
                         END DO
@@ -11184,6 +11267,7 @@
 !          MA19AD computes scaling factors for the iteration matrix.
            CALL MC19AD(N,NZ,PMAT,JAN,ICN,RSCALEX,CSCALEX,WSCALEX)
            MC19AD_CALLS = MC19AD_CALLS + 1
+            !$OMP SIMD LINEAR(I:1)
            DO I =1, N
               RSCALEX(I) = EXP(RSCALEX(I))
               CSCALEX(I) = EXP(CSCALEX(I))
@@ -11325,6 +11409,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE SET_ICN(N,IA,ICN)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SET_ICN
+    !DIR$ ATTRIBUTES FORCEINLINE :: SET_ICN
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: SET_ICN
+#endif
 ! ..
 ! Define the column locations of nonzero elements for a sparse
 ! matrix.
@@ -11354,6 +11444,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE CHECK_DIAG(N,IA,JA,ICN)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: CHECK_DIAG
+    !DIR$ ATTRIBUTES FORCEINLINE :: CHECK_DIAG
+    !DIR$ OPTIMIZE : 3
+    
+#endif
 ! ..
 ! Check that the diagonal is included in the sparse matrix
 ! description arrays.
@@ -11388,6 +11484,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVCHECK(JOB,G,NEQ,Y,YH,NYH,G0,G1,GX,IRT)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVCHECK
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVCHECK
+#endif
+       
 ! ..
 ! Check for the presence of a root in the vicinity of the current T,
 ! in a manner depending on the input flag JOB, and call DVROOTS to
@@ -11403,6 +11505,10 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: G0(*), G1(*), GX(*), Y(*), YH(NYH,*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED G0:64,G1:64,GX:64,Y:64,YH:64
+#endif
+
 ! ..
 ! .. Subroutine Arguments ..
         EXTERNAL G
@@ -11586,6 +11692,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVROOTS(NG,HMIN,JFLAG,X0,X1,G0,G1,GX,X)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVROOTS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVROOTS
+#endif
 ! ..
 ! Perform root finding for DVODE_F90.
 ! ..
@@ -11601,6 +11712,9 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: G0(NG), G1(NG), GX(NG)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ASSUME_ALIGNED G0:64,G1:64,GX:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: T2, TMAX
@@ -11823,6 +11937,13 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVNRDP(Y,IYDIM,NEQN,NQ)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNRDP
+    !DIR$ ATTRIBUTES FORCEINLINE :: DVNRDP
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNRDP
+#endif
+      use omp_lib
 ! ..
 ! Retract the Nordsieck array (undo prediction).
 ! ..
@@ -11833,6 +11954,9 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp) :: Y(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED Y:64
+#endif
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I, J, J1, J2
@@ -11842,6 +11966,7 @@
         DO J1 = 1, NQ
           DO J2 = J1, NQ
             J = (NQ+J1) - J2
+            !$OMP SIMD LINEAR(I:1)
             DO I = 1, NEQN
 ! Original:
 !             Y(I,J) = Y(I,J) + Y(I,J+1)
@@ -11855,6 +11980,13 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVNRDN(Y,IYDIM,NEQN,NQ)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNRDN
+    !DIR$ ATTRIBUTES FORCEINLINE :: DVNRDN
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNRDN
+#endif
+      use omp_lib
 ! ..
 ! Apply the Nordsieck array (predict).
 ! ..
@@ -11865,6 +11997,9 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp) :: Y(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED Y:64
+#endif
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I, J, J1, J2
@@ -11874,6 +12009,7 @@
         DO J1 = 1, NQ
           DO J2 = J1, NQ
             J = (NQ+J1) - J2
+             !$OMP SIMD LINEAR(I:1)
             DO I = 1, NEQN
 ! Original:
 !             Y(I,J) = Y(I,J) - Y(I,J+1)
@@ -11887,6 +12023,13 @@
 !_______________________________________________________________________
 
       SUBROUTINE DVNRDS(Y,IYDIM,NEQN,L,RH)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DVNRDS
+    !DIR$ ATTRIBUTES FORCEINLINE :: DVNRDS
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DVNRDS
+#endif
+       use omp_lib
 ! ..
 ! Scale the Nordsieck array.
 ! ..
@@ -11898,6 +12041,9 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp) :: Y(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED Y:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: R1
@@ -11908,6 +12054,7 @@
         R1 = ONE
         DO J = 2, L
           R1 = R1*RH
+          !$OMP SIMD LINEAR(I:1)
           DO I = 1, NEQN
 ! Original:
 !           Y(I,J) = Y(I,J)*R1
@@ -12243,6 +12390,11 @@
 
 ! Beginning of LINPACK and BLAS subroutines
       SUBROUTINE DGEFA_F90(A,LDA,N,IPVT,INFO)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEFA
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGEFA
+#endif
 ! ..
 ! Factor a matrix using Gaussian elimination.
 ! ..
@@ -12282,6 +12434,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: A(LDA,*)
         INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ASSUME_ALIGNED A:64,IPVT:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: T
@@ -12352,6 +12507,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DGESL_F90(A,LDA,N,IPVT,B,JOB)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGESL_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGESL_F90
+#endif
+        use omp_lib
 ! ..
 ! Solve the real system A*X=B or TRANS(A)*X=B using the factors
 ! computed by DGECO or DGEFA_F90.
@@ -12399,6 +12560,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: A(LDA,*), B(*)
         INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+           !DIR$ ASSUME_ALIGNED A:64,IPVT:64,B:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: T
@@ -12427,7 +12591,7 @@
 20      CONTINUE
 
 !       Now solve U*X = Y.
-
+        !$OMP SIMD REDUCTION(/:B)
         DO KB = 1, N
           K = N + 1 - KB
           B(K) = B(K)/A(K,K)
@@ -12441,7 +12605,7 @@
 
 !       JOB /= 0, solve TRANS(A)*X = B.
 !       First solve TRANS(U)*Y = B.
-
+        !$OMP SIMD LINEAR(K:1)
         DO K = 1, N
           T = DDOT_F90(K-1,A(1,K),1,B(1),1)
           B(K) = (B(K)-T)/A(K,K)
@@ -12468,6 +12632,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DGBFA_F90(ABD,LDA,N,ML,MU,IPVT,INFO)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGBFA_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGESL
+#endif
 ! ..
 ! Factor a banded matrix using Gaussian elimination.
 ! ..
@@ -12538,6 +12707,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: ABD(LDA,*)
         INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED ABD:64,IPVT:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: T
@@ -12641,6 +12813,11 @@
 !_______________________________________________________________________
 
       SUBROUTINE DGBSL_F90(ABD,LDA,N,ML,MU,IPVT,B,JOB)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGBSL_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DGBSL_F90
+#endif
 ! ..
 ! Solve the real band system A*X=B or TRANS(A)*X=B using the factors
 ! computed by DGBCO or DGBFA_F90.
@@ -12692,6 +12869,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (INOUT) :: ABD(LDA,*), B(*)
         INTEGER(kind=i4), INTENT (INOUT) :: IPVT(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED ABD:64,B:64,IPVT:64
+#endif
 ! ..
 ! .. Local Scalars ..
         REAL(kind=dp) :: T
@@ -12779,6 +12959,12 @@
 !_______________________________________________________________________
 
       SUBROUTINE DAXPY_F90(N,DA,DX,INCX,DY,INCY)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DAXPY_F90
+    !DIR$ ATTRIBUTES FORCEINLINE :: DAXPY_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DAXPY_F90
+#endif
 ! ..
 ! Compute a constant times a vector plus a vector.
 ! ..
@@ -12807,6 +12993,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (IN) :: DX(*)
         REAL(kind=dp), INTENT (INOUT) :: DY(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+         !DIR$ ASSUME_ALIGNED DX:64,DY:64
+#endif
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
@@ -12835,6 +13024,7 @@
         IY = 1
         IF (INCX<0) IX = (-N+1)*INCX + 1
         IF (INCY<0) IY = (-N+1)*INCY + 1
+        !$OMP SIMD REDUCTION(+:DY) LINEAR(I:1)
         DO I = 1, N
           DY(IY) = DY(IY) + DA*DX(IX)
           IX = IX + INCX
@@ -12851,6 +13041,7 @@
         DY(1:M) = DY(1:M) + DA*DX(1:M)
         IF (N<4) RETURN
 30      MP1 = M + 1
+        !$OMP SIMD REDUCTION(+:DY) LINEAR(I:4)
         DO I = MP1, N, 4
           DY(I) = DY(I) + DA*DX(I)
           DY(I+1) = DY(I+1) + DA*DX(I+1)
@@ -12871,6 +13062,13 @@
 !_______________________________________________________________________
 
       SUBROUTINE DCOPY_F90(N,DX,INCX,DY,INCY)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DCOPY_F90
+    !DIR$ ATTRIBUTES FORCEINLINE :: DCOPY_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DCOPY_F90
+#endif
+       use omp_lib
 ! ..
 ! Copy a vector to another vector.
 ! ..
@@ -12896,6 +13094,9 @@
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (IN) :: DX(*)
         REAL(kind=dp), INTENT (INOUT) :: DY(*)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+          !DIR$ ASSUME_ALIGNED DX:64,DY:64
+#endif
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
@@ -12923,6 +13124,7 @@
         IY = 1
         IF (INCX<0) IX = (-N+1)*INCX + 1
         IF (INCY<0) IY = (-N+1)*INCY + 1
+        !$OMP SIMD 
         DO I = 1, N
           DY(IY) = DX(IX)
           IX = IX + INCX
@@ -12941,6 +13143,7 @@
         END DO
         IF (N<7) RETURN
 30      MP1 = M + 1
+        !$OMP SIMD LINEAR(I:7)
         DO I = MP1, N, 7
           DY(I) = DX(I)
           DY(I+1) = DX(I+1)
@@ -12964,6 +13167,13 @@
 !_______________________________________________________________________
 
       FUNCTION DDOT_F90(N,DX,INCX,DY,INCY)
+#if defined(__INTEL_COMPILER) || defined(__ICC)
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DDOT_F90
+    !DIR$ ATTRIBUTES FORCEINLINE :: DDOT_F90
+    !DIR$ OPTIMIZE : 3
+    !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: DDOT_F90
+#endif
+      use omp_lib
 ! ..
 ! Compute the inner product of two vectors.
 ! ..
@@ -12991,6 +13201,7 @@
 ! ..
 ! .. Array Arguments ..
         REAL(kind=dp), INTENT (IN) :: DX(*), DY(*)
+        !DIR$ ASSUME_ALIGNED DX:64,DY:64
 ! ..
 ! .. Local Scalars ..
         INTEGER(kind=i4) :: I, IX, IY, M, MP1, NS
@@ -13019,6 +13230,7 @@
         IY = 1
         IF (INCX<0) IX = (-N+1)*INCX + 1
         IF (INCY<0) IY = (-N+1)*INCY + 1
+        !$OMP SIMD 
         DO I = 1, N
           DDOT_F90 = DDOT_F90 + DX(IX)*DY(IY)
           IX = IX + INCX
@@ -13032,11 +13244,13 @@
 
 20      M = MOD(N,5)
         IF (M==0) GOTO 30
+        !$OMP SIMD
         DO I = 1, M
           DDOT_F90 = DDOT_F90 + DX(I)*DY(I)
         END DO
         IF (N<5) RETURN
 30      MP1 = M + 1
+        !$OMP SIMD
         DO I = MP1, N, 5
           DDOT_F90 = DDOT_F90 + DX(I)*DY(I) + DX(I+1)*DY(I+1) + &
             DX(I+2)*DY(I+2) + DX(I+3)*DY(I+3) + DX(I+4)*DY(I+4)
