@@ -1,5 +1,6 @@
 !** DDEBDF
 SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
+     use mod_kinds, only : i4,dp
   !> Solve an initial value problem in ordinary differential equations using
   !  backward differentiation formulas.  It is intended primarily for stiff problems.
   !***
@@ -111,7 +112,7 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !
   !      INFO(*) -- The basic task of the code is to integrate the
   !             differential equations from T to TOUT and return an
-  !             answer at TOUT.  INFO(*) is an INTEGER array which is used
+  !             answer at TOUT.  INFO(*) is an INTEGER(i4) array which is used
   !             to communicate exactly how you want this task to be
   !             carried out.
   !
@@ -122,18 +123,18 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !             or else both vectors.
   !
   !      IDID -- This scalar quantity is an indicator reporting what
-  !             the code did.  You must monitor this INTEGER variable to
+  !             the code did.  You must monitor this INTEGER(i4) variable to
   !             decide what action to take next.
   !
   !      RWORK(*), LRW -- RWORK(*) is a DOUBLE PRECISION work array of
   !             length LRW which provides the code with needed storage
   !             space.
   !
-  !      IWORK(*), LIW -- IWORK(*) is an INTEGER work array of length LIW
+  !      IWORK(*), LIW -- IWORK(*) is an INTEGER(i4) work array of length LIW
   !             which provides the code with needed storage space and an
   !             across call flag.
   !
-  !      RPAR, IPAR -- These are DOUBLE PRECISION and INTEGER parameter
+  !      RPAR, IPAR -- These are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and the DF subroutine (and the DJAC
   !             subroutine).
@@ -176,7 +177,7 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !             the name DF in an external statement in your program that
   !             calls DDEBDF. You must dimension U and UPRIME in DF.
   !
-  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER parameter
+  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and subroutine DF. They are not used or
   !             altered by DDEBDF.  If you do not need RPAR or IPAR,
@@ -422,7 +423,7 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !                  LRW >= 250+10*NEQ+(2*ML+MU+1)*NEQ
   !             for the banded Jacobian case (when INFO(6)=1).
   !
-  !      IWORK(*) -- Dimension this INTEGER work array of length LIW in
+  !      IWORK(*) -- Dimension this INTEGER(i4) work array of length LIW in
   !             your calling program.
   !
   !      IWORK(1), IWORK(2) -- If you have set INFO(6)=0, you can ignore
@@ -438,7 +439,7 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !             You must have LIW >= 56+NEQ.
   !
   !      RPAR, IPAR -- These are parameter arrays, of DOUBLE PRECISION and
-  !             INTEGER type, respectively. You can use them for
+  !             INTEGER(i4) type, respectively. You can use them for
   !             communication between your program that calls DDEBDF and
   !             the  DF subroutine (and the DJAC subroutine). They are not
   !             used or altered by DDEBDF. If you do not need RPAR or
@@ -489,7 +490,7 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !                                IROW = I - J + ML + MU + 1
   !                                PD(IROW,J) = * DF(I)/DU(J) *
   !
-  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER parameter
+  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and your Jacobian subroutine DJAC. They
   !             are not altered by DDEBDF. If you do not need RPAR or
@@ -748,27 +749,28 @@ SUBROUTINE DDEBDF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw,DJAC)
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
     PURE SUBROUTINE DJAC(X,U,Pd,Nrowpd)
-      IMPORT DP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Pd(:,:)
+      IMPORT dp
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE DJAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Liw, Lrw, Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Info(15), Iwork(Liw)
-  REAL(DP), INTENT(IN) :: Tout
-  REAL(DP), INTENT(INOUT) :: T
-  REAL(DP), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+  INTEGER(i4), INTENT(IN) :: Liw, Lrw, Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Info(15), Iwork(Liw)
+  REAL(dp), INTENT(IN) :: Tout
+  REAL(dp), INTENT(INOUT) :: T
+  REAL(dp), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+      !DIR$ ASSUME_ALIGNED Atol:64, Rtol:64, Rwork:64, Y:64
   !
-  INTEGER :: icomi, icomr, idelsn, iinout, ilrw, itstar, iypout, ml, mu
+  INTEGER(i4) :: icomi, icomr, idelsn, iinout, ilrw, itstar, iypout, ml, mu
   LOGICAL :: intout
   CHARACTER(8) :: xern1, xern2
   CHARACTER(16) :: xern3
