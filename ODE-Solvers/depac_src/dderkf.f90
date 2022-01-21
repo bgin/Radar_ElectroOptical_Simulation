@@ -1,5 +1,6 @@
 !** DDERKF
 SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
+     use mod_kinds, only : i4, dp
   !> Solve an initial value problem in ordinary differential
   !  equations using a Runge-Kutta-Fehlberg scheme.
   !***
@@ -115,7 +116,7 @@ SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !
   !      INFO(*) -- The basic task of the code is to integrate the
   !             differential equations from T to TOUT and return an
-  !             answer at TOUT.  INFO(*) is an INTEGER array which is used
+  !             answer at TOUT.  INFO(*) is an INTEGER(i4) array which is used
   !             to communicate exactly how you want this task to be
   !             carried out.
   !
@@ -126,18 +127,18 @@ SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !             both vectors.
   !
   !      IDID -- This scalar quantity is an indicator reporting what
-  !             the code did.  You must monitor this INTEGER variable to
+  !             the code did.  You must monitor this INTEGER(i4) variable to
   !             decide what action to take next.
   !
   !      RWORK(*), LRW -- RWORK(*) is a DOUBLE PRECISION work array of
   !             length LRW which provides the code with needed storage
   !             space.
   !
-  !      IWORK(*), LIW -- IWORK(*) is an INTEGER work array of length LIW
+  !      IWORK(*), LIW -- IWORK(*) is an INTEGER(i4) work array of length LIW
   !             which provides the code with needed storage space and an
   !             across call flag.
   !
-  !      RPAR, IPAR -- These are DOUBLE PRECISION and INTEGER parameter
+  !      RPAR, IPAR -- These are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and the DF subroutine.
   !
@@ -174,7 +175,7 @@ SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !             the name DF in an external statement in your program that
   !             calls DDERKF. You must dimension U and UPRIME in DF.
   !
-  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER parameter
+  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             calling program and subroutine DF. They are not used or
   !             altered by DDERKF.  If you do not need RPAR or IPAR,
@@ -335,14 +336,14 @@ SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !      LRW -- Set it to the declared length of the RWORK array.
   !             You must have  LRW >= 33+7*NEQ
   !
-  !      IWORK(*) -- Dimension this INTEGER work array of length LIW in
+  !      IWORK(*) -- Dimension this INTEGER(i4) work array of length LIW in
   !             your calling program.
   !
   !      LIW -- Set it to the declared length of the IWORK array.
   !             You must have  LIW >= 34
   !
   !      RPAR, IPAR -- These are parameter arrays, of DOUBLE PRECISION and
-  !             INTEGER type, respectively. You can use them for
+  !             INTEGER(i4) type, respectively. You can use them for
   !             communication between your program that calls DDERKF and
   !             the  DF subroutine. They are not used or altered by
   !             DDERKF. If you do not need RPAR or IPAR, ignore these
@@ -611,20 +612,21 @@ SUBROUTINE DDERKF(DF,Neq,T,Y,Tout,Info,Rtol,Atol,Idid,Rwork,Lrw,Iwork,Liw)
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
   END INTERFACE
-  INTEGER, INTENT(IN) :: Liw, Lrw, Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Info(15), Iwork(Liw)
-  REAL(DP), INTENT(IN) :: Tout
-  REAL(DP), INTENT(INOUT) :: T
-  REAL(DP), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+  INTEGER(i4), INTENT(IN) :: Liw, Lrw, Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Info(15), Iwork(Liw)
+  REAL(dp), INTENT(IN) :: Tout
+  REAL(dp), INTENT(INOUT) :: T
+  REAL(dp), INTENT(INOUT) :: Atol(:), Rtol(:), Rwork(Lrw), Y(Neq)
+      !DIR$ ASSUME_ALIGNED Atol:64, Rtol:64, Rwork:64, Y:64
   !
-  INTEGER ::  kdi, kf1, kf2, kf3, kf4, kf5, kh, krer, ktf, kto, ktstar, ku, kyp, kys
+  INTEGER(i4) ::  kdi, kf1, kf2, kf3, kf4, kf5, kh, krer, ktf, kto, ktstar, ku, kyp, kys
   LOGICAL :: stiff, nonstf
   CHARACTER(8) :: xern1
   CHARACTER(16) :: xern3
