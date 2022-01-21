@@ -1,5 +1,6 @@
 !** CFOD
 PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
+     use mod_kinds, only : i4,sp
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -19,15 +20,16 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
 
   !* REVISION HISTORY  (YYMMDD)
   !   800901  DATE WRITTEN
-  !   890531  Changed all specific intrinsics to generic.  (WRB)
+  !   890531  Changed all kind=specific intrinsics to generic.  (WRB)
   !   891214  Prologue converted to Version 4.0 format.  (BAB)
   !   900328  Added TYPE section.  (WRB)
   !
-  INTEGER, INTENT(IN) :: Meth
-  REAL(SP), INTENT(OUT) :: Elco(13,12), Tesco(3,12)
+  INTEGER(kind=i4), INTENT(IN) :: Meth
+  REAL(kind=sp), INTENT(OUT) :: Elco(13,12), Tesco(3,12)
+      !DIR$ ASSUME_ALIGNED Elco:64,Tesco:64
   !
-  INTEGER :: i, ib, nq, nqm1, nqp1
-  REAL(SP) :: agamq, fnq, fnqm1, pc(12), pint, ragq, rqfac, &
+  INTEGER(kind=i4) :: i, ib, nq, nqm1, nqp1
+  REAL(kind=sp) :: agamq, fnq, fnqm1, pc(12), pint, ragq, rqfac, &
     rq1fac, tsign, xpin
   !-----------------------------------------------------------------------
   ! CFOD  IS CALLED BY THE INTEGRATOR ROUTINE TO SET COEFFICIENTS
@@ -59,8 +61,8 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
   !* FIRST EXECUTABLE STATEMENT  CFOD
   IF( Meth==2 ) THEN
     !
-    pc(1) = 1._SP
-    rq1fac = 1._SP
+    pc(1) = 1._sp
+    rq1fac = 1._sp
     DO nq = 1, 5
       !-----------------------------------------------------------------------
       ! THE PC ARRAY WILL CONTAIN THE COEFFICIENTS OF THE POLYNOMIAL
@@ -70,7 +72,7 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
       fnq = nq
       nqp1 = nq + 1
       ! FORM COEFFICIENTS OF P(X)*(X+NQ). ------------------------------------
-      pc(nqp1) = 0._SP
+      pc(nqp1) = 0._sp
       DO ib = 1, nq
         i = nq + 2 - ib
         pc(i) = pc(i-1) + fnq*pc(i)
@@ -80,7 +82,7 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
       DO i = 1, nqp1
         Elco(i,nq) = pc(i)/pc(2)
       END DO
-      Elco(2,nq) = 1._SP
+      Elco(2,nq) = 1._sp
       Tesco(1,nq) = rq1fac
       Tesco(2,nq) = nqp1/Elco(1,nq)
       Tesco(3,nq) = (nq+2)/Elco(1,nq)
@@ -89,14 +91,14 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
     RETURN
   END IF
   !
-  Elco(1,1) = 1._SP
-  Elco(2,1) = 1._SP
-  Tesco(1,1) = 0._SP
-  Tesco(2,1) = 2._SP
-  Tesco(1,2) = 1._SP
-  Tesco(3,12) = 0._SP
-  pc(1) = 1._SP
-  rqfac = 1._SP
+  Elco(1,1) = 1._sp
+  Elco(2,1) = 1._sp
+  Tesco(1,1) = 0._sp
+  Tesco(2,1) = 2._sp
+  Tesco(1,2) = 1._sp
+  Tesco(3,12) = 0._sp
+  pc(1) = 1._sp
+  rqfac = 1._sp
   DO nq = 2, 12
     !-----------------------------------------------------------------------
     ! THE PC ARRAY WILL CONTAIN THE COEFFICIENTS OF THE POLYNOMIAL
@@ -109,7 +111,7 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
     fnqm1 = nqm1
     nqp1 = nq + 1
     ! FORM COEFFICIENTS OF P(X)*(X+NQ-1). ----------------------------------
-    pc(nq) = 0._SP
+    pc(nq) = 0._sp
     DO ib = 1, nqm1
       i = nqp1 - ib
       pc(i) = pc(i-1) + fnqm1*pc(i)
@@ -117,8 +119,8 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
     pc(1) = fnqm1*pc(1)
     ! COMPUTE INTEGRAL, -1 TO 0, OF P(X) AND X*P(X). -----------------------
     pint = pc(1)
-    xpin = pc(1)/2._SP
-    tsign = 1._SP
+    xpin = pc(1)/2._sp
+    tsign = 1._sp
     DO i = 2, nq
       tsign = -tsign
       pint = pint + tsign*pc(i)/i
@@ -126,12 +128,12 @@ PURE SUBROUTINE CFOD(Meth,Elco,Tesco)
     END DO
     ! STORE COEFFICIENTS IN ELCO AND TESCO. --------------------------------
     Elco(1,nq) = pint*rq1fac
-    Elco(2,nq) = 1._SP
+    Elco(2,nq) = 1._sp
     DO i = 2, nq
       Elco(i+1,nq) = rq1fac*pc(i)/i
     END DO
     agamq = rqfac*xpin
-    ragq = 1._SP/agamq
+    ragq = 1._sp/agamq
     Tesco(2,nq) = ragq
     IF( nq<12 ) Tesco(1,nqp1) = ragq*rqfac/nqp1
     Tesco(3,nqm1) = ragq
