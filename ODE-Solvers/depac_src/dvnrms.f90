@@ -1,5 +1,7 @@
 !** DVNRMS
-REAL(DP) PURE FUNCTION DVNRMS(N,V,W)
+REAL(dp) PURE FUNCTION DVNRMS(N,V,W)
+      !DIR$ ATTRIBUTES FORCEINLINE :: DVNRMS
+     use mod_kinds, only : i4,dp
   !> Subsidiary to DDEBDF
   !***
   ! **Library:**   SLATEC
@@ -26,9 +28,9 @@ REAL(DP) PURE FUNCTION DVNRMS(N,V,W)
   !   891214  Prologue converted to Version 4.0 format.  (BAB)
   !   900328  Added TYPE section.  (WRB)
 
-  INTEGER, INTENT(IN) :: N
-  REAL(DP), INTENT(IN) :: V(N), W(N)
+  INTEGER(i4), INTENT(IN) :: N
+  REAL(dp), INTENT(IN) :: V(N), W(N)
   !* FIRST EXECUTABLE STATEMENT  DVNRMS
-  DVNRMS = NORM2( V/W ) / SQRT(1._DP*N)
+  DVNRMS = NORM2( V/W ) / SQRT(1._dp*N)
   !----------------------- END OF FUNCTION DVNRMS ------------------------
 END FUNCTION DVNRMS

@@ -1,5 +1,7 @@
 !** HSTART
 SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
+   use mod_kinds, only : i4,sp
+   use omp_lib
   !> Subsidiary to DEABM, DEBDF and DERKF
   !***
   ! **Library:**   SLATEC
@@ -107,7 +109,7 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !             choice is to set big to (approximately) the square root of
   !             the largest real number which can be held in the machine.
   !
-  !      SPY(*),PV(*),YP(*),SF(*) -- These are real work arrays of length
+  !      spY(*),PV(*),YP(*),SF(*) -- These are real work arrays of length
   !             NEQ which provide the routine with needed storage space.
   !
   !      RPAR,IPAR -- These are parameter arrays, of real and integer
@@ -122,7 +124,7 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !             differential equation method.
   !
   !           All parameters in the call list remain unchanged except for
-  !           the working arrays SPY(*),PV(*),YP(*) and SF(*).
+  !           the working arrays spY(*),PV(*),YP(*) and SF(*).
   !
   !- *********************************************************************
   !
@@ -142,50 +144,52 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
 
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
   END INTERFACE
-  INTEGER, INTENT(IN) :: Morder, Neq
-  REAL(SP), INTENT(IN) :: A, B, Big, Small
-  REAL(SP), INTENT(OUT) :: H
-  REAL(SP), INTENT(IN) :: Etol(Neq), Y(Neq), Yprime(Neq)
-  REAL(SP), INTENT(OUT) :: Pv(Neq), Sf(Neq), Spy(Neq), Yp(Neq)
+  INTEGER(i4), INTENT(IN) :: Morder, Neq
+  REAL(sp), INTENT(IN) :: A, B, Big, Small
+  REAL(sp), INTENT(OUT) :: H
+  REAL(sp), INTENT(IN) :: Etol(Neq), Y(Neq), Yprime(Neq)
+  REAL(sp), INTENT(OUT) :: Pv(Neq), Sf(Neq), Spy(Neq), Yp(Neq)
   !
-  REAL(SP) :: absdx, da, delf, delx, delxb, dely, dfdub, dfdxb, dx, dy, fbnd, power, &
+  REAL(sp) :: absdx, da, delf, delx, delxb, dely, dfdub, dfdxb, dx, dy, fbnd, power, &
     relper, srydpb, wtj, ydpb, ynorm, ypnorm
-  INTEGER :: icase, j, k, lk
+  INTEGER(i4) :: icase, j, k, lk
   !
   !.......................................................................
   !
   !* FIRST EXECUTABLE STATEMENT  HSTART
   dx = B - A
   absdx = ABS(dx)
-  relper = Small**0.375_SP
+  relper = Small**0.375_sp
   ynorm = HVNRM(Y,Neq)
   !
   !.......................................................................
   !
   !     COMPUTE A WEIGHTED APPROXIMATE BOUND (DFDXB) ON THE PARTIAL
-  !     DERIVATIVE OF THE EQUATION WITH RESPECT TO THE
+  !     DERIVATIVE OF THE EQUATION WITH REspECT TO THE
   !     INDEPENDENT VARIABLE. PROTECT AGAINST AN OVERFLOW. ALSO
   !     COMPUTE A WEIGHTED BOUND (FBND) ON THE FIRST DERIVATIVE LOCALLY.
   !
-  da = SIGN(MAX(MIN(relper*ABS(A),absdx),100._SP*Small*ABS(A)),dx)
+  da = SIGN(MAX(MIN(relper*ABS(A),absdx),100._sp*Small*ABS(A)),dx)
   IF( da==0. ) da = relper*dx
   CALL F(A+da,Y,Sf)
   !
   IF( Morder==1 ) THEN
     !
+    !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
     DO j = 1, Neq
       Spy(j) = Sf(j)/Etol(j)
       Yp(j) = Yprime(j)/Etol(j)
       Pv(j) = Spy(j) - Yp(j)
     END DO
   ELSE
-    power = 2._SP/(Morder+1)
+    power = 2._sp/(Morder+1)
+    !$omp simd linear(j:1) if(Neq>=16)
     DO j = 1, Neq
       wtj = Etol(j)**power
       Spy(j) = Sf(j)/wtj
@@ -222,6 +226,7 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   IF( ypnorm==0. ) THEN
     !                       CANNOT HAVE A NULL PERTURBATION VECTOR
     icase = 2
+    !$omp simd linear(j:1) if(Neq>=16)
     DO j = 1, Neq
       Spy(j) = Yprime(j)
       Yp(j) = Etol(j)
@@ -229,13 +234,14 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   ELSE
     !                       USE INITIAL DERIVATIVES FOR FIRST PERTURBATION
     icase = 1
+    !$omp simd linear(j:1) if(Neq>=16)
     DO j = 1, Neq
       Spy(j) = Yprime(j)
       Yp(j) = Yprime(j)
     END DO
   END IF
   !
-  dfdub = 0._SP
+  dfdub = 0._sp
   lk = MIN(Neq+1,3)
   DO k = 1, lk
     !                       SET YPNORM AND DELX
@@ -252,9 +258,10 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
         IF( ABS(delx*Yp(j))>Etol(j) ) delx = SIGN(Etol(j)/Yp(j),dx)
       END DO
     ELSE
-      delx = SIGN(1._SP,dx)
+      delx = SIGN(1._sp,dx)
     END IF
     !                       DEFINE PERTURBED VECTOR OF INITIAL VALUES
+    !$omp simd linear(j:1) if(Neq>=16)
     DO j = 1, Neq
       Pv(j) = Y(j) + delx*Yp(j)
     END DO
@@ -262,13 +269,15 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
       !                       USE A SHIFTED VALUE OF THE INDEPENDENT VARIABLE
       !                                             IN COMPUTING ONE ESTIMATE
       CALL F(A+da,Pv,Yp)
+      !$omp simd linear(j:1) if(Neq>=16)
       DO j = 1, Neq
         Pv(j) = Yp(j) - Sf(j)
       END DO
     ELSE
       !                       EVALUATE DERIVATIVES ASSOCIATED WITH PERTURBED
-      !                       VECTOR  AND  COMPUTE CORRESPONDING DIFFERENCES
+      !                       VECTOR  AND  COMPUTE CORREspONDING DIFFERENCES
       CALL F(A,Pv,Yp)
+      !$omp simd linear(j:1) if(Neq>=16)
       DO j = 1, Neq
         Pv(j) = Yp(j) - Yprime(j)
       END DO
@@ -276,10 +285,12 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
     !                       CHOOSE LARGEST BOUND ON THE WEIGHTED FIRST
     !                                                   DERIVATIVE
     IF( Morder==1 ) THEN
+      !$omp simd linear(j:1) if(Neq>=16)
       DO j = 1, Neq
         Yp(j) = Yp(j)/Etol(j)
       END DO
     ELSE
+      !$omp simd linear(j:1) if(Neq>=16)
       DO j = 1, Neq
         Yp(j) = Yp(j)/Etol(j)**power
       END DO
@@ -333,12 +344,12 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
     IF( ydpb/=0. ) THEN
       !
       !                       SECOND DERIVATIVE TERM (YDPB) IS NON-ZERO
-      srydpb = SQRT(0.5_SP*ydpb)
-      IF( 1.0<srydpb*absdx ) H = 1._SP/srydpb
+      srydpb = SQRT(0.5_sp*ydpb)
+      IF( 1.0<srydpb*absdx ) H = 1._sp/srydpb
     ELSE
       !
       !                       ONLY SECOND DERIVATIVE TERM (YDPB) IS ZERO
-      IF( 1.0<fbnd*absdx ) H = 1._SP/fbnd
+      IF( 1.0<fbnd*absdx ) H = 1._sp/fbnd
     END IF
     !
     !                       BOTH FIRST DERIVATIVE TERM (FBND) AND SECOND
@@ -347,14 +358,14 @@ SUBROUTINE HSTART(F,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !
   !                       FURTHER RESTRICT THE STEP LENGTH TO BE NOT
   !                                                 BIGGER THAN  1/DFDUB
-  IF( H*dfdub>1. ) H = 1._SP/dfdub
+  IF( H*dfdub>1. ) H = 1._sp/dfdub
   !
   !                       FINALLY, RESTRICT THE STEP LENGTH TO BE NOT
   !                       SMALLER THAN  100*SMALL*ABS(A).  HOWEVER, IF
   !                       A=0. AND THE COMPUTED H UNDERFLOWED TO ZERO,
   !                       THE ALGORITHM RETURNS  SMALL*ABS(B)  FOR THE
   !                                                       STEP LENGTH.
-  H = MAX(H,100._SP*Small*ABS(A))
+  H = MAX(H,100._sp*Small*ABS(A))
   IF( H==0. ) H = Small*ABS(B)
   !
   !                       NOW SET DIRECTION OF INTEGRATION
