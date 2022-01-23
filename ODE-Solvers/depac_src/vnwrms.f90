@@ -1,5 +1,6 @@
 !** VNWRMS
-REAL(SP) PURE FUNCTION VNWRMS(N,V,W)
+REAL(sp) PURE FUNCTION VNWRMS(N,V,W)
+  use mod_kinds, only : i4,sp
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -32,9 +33,9 @@ REAL(SP) PURE FUNCTION VNWRMS(N,V,W)
   ! CONTAINED IN THE ARRAY W OF LENGTH N..
   !   VNWRMS = SQRT( (1/N) * SUM( V(I)/W(I) )**2 )
   !-----------------------------------------------------------------------
-  INTEGER, INTENT(IN) :: N
-  REAL(SP), INTENT(IN) :: V(N), W(N)
+  INTEGER(i4), INTENT(IN) :: N
+  REAL(sp), INTENT(IN) :: V(N), W(N)
   !* FIRST EXECUTABLE STATEMENT  VNWRMS
-  VNWRMS = NORM2( V/W ) / SQRT(1._SP*N)
+  VNWRMS = NORM2( V/W ) / SQRT(1._sp*N)
   !----------------------- END OF FUNCTION VNWRMS ------------------------
 END FUNCTION VNWRMS
