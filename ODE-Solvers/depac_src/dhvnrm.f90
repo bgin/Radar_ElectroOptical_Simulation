@@ -1,5 +1,7 @@
 !** DHVNRM
-REAL(DP) PURE FUNCTION DHVNRM(V,Ncomp)
+REAL(dp) PURE FUNCTION DHVNRM(V,Ncomp)
+    !DIR$ ATTRIBUTES FORCEINLINE :: DHVNRM
+    use mod_kinds, only : i4,dp
   !> Subsidiary to DDEABM, DDEBDF and DDERKF
   !***
   ! **Library:**   SLATEC
@@ -29,8 +31,8 @@ REAL(DP) PURE FUNCTION DHVNRM(V,Ncomp)
   !   910722  Updated AUTHOR section.  (ALS)
 
   !
-  INTEGER, INTENT(IN) :: Ncomp
-  REAL(DP), INTENT(IN) :: V(Ncomp)
+  INTEGER(i4), INTENT(IN) :: Ncomp
+  REAL(dp), INTENT(IN) :: V(Ncomp)
   !* FIRST EXECUTABLE STATEMENT  DHVNRM
   DHVNRM = MAXVAL(ABS(V))
   !

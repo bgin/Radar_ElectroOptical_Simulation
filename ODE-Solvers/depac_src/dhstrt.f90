@@ -1,5 +1,7 @@
 !** DHSTRT
 SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
+    use mod_kinds, only : i4,dp
+    use omp_lib
   !> Subsidiary to DDEABM, DDEBDF and DDERKF
   !***
   ! **Library:**   SLATEC
@@ -49,7 +51,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !             the name DF in an external statement in your program that
   !             calls DHSTRT. You must dimension U and UPRIME in DF.
   !
-  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER parameter
+  !             RPAR and IPAR are DOUBLE PRECISION and INTEGER(i4) parameter
   !             arrays which you can use for communication between your
   !             program and subroutine DF. They are not used or altered by
   !             DHSTRT. If you do not need RPAR or IPAR, ignore these
@@ -115,7 +117,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !             storage space.
   !
   !      RPAR,IPAR -- These are parameter arrays, of DOUBLE PRECISION and
-  !             INTEGER type, respectively, which can be used for
+  !             INTEGER(i4) type, respectively, which can be used for
   !             communication between your program and the DF subroutine.
   !             They are not used or altered by DHSTRT.
   !
@@ -148,20 +150,20 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
   END INTERFACE
-  INTEGER, INTENT(IN) :: Morder, Neq
-  REAL(DP), INTENT(IN) :: A, B, Big, Small
-  REAL(DP), INTENT(OUT) :: H
-  REAL(DP), INTENT(IN) :: Etol(Neq), Y(Neq), Yprime(Neq)
-  REAL(DP), INTENT(OUT) :: Pv(Neq), Sf(Neq), Spy(Neq), Yp(Neq)
+  INTEGER(i4), INTENT(IN) :: Morder, Neq
+  REAL(dp), INTENT(IN) :: A, B, Big, Small
+  REAL(dp), INTENT(OUT) :: H
+  REAL(dp), INTENT(IN) :: Etol(Neq), Y(Neq), Yprime(Neq)
+  REAL(dp), INTENT(OUT) :: Pv(Neq), Sf(Neq), Spy(Neq), Yp(Neq)
   !
-  INTEGER :: j, k, lk
-  REAL(DP) :: absdx, da, delf, dely, dfdub, dfdxb, dx, dy, fbnd, relper, srydpb, &
+  INTEGER(i4) :: j, k, lk
+  REAL(dp) :: absdx, da, delf, dely, dfdub, dfdxb, dx, dy, fbnd, relper, srydpb, &
     tolexp, tolmin, tolp, tolsum, ydpb
   !
   !     ..................................................................
@@ -170,7 +172,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !* FIRST EXECUTABLE STATEMENT  DHSTRT
   dx = B - A
   absdx = ABS(dx)
-  relper = Small**0.375_DP
+  relper = Small**0.375_dp
   !
   !        ...............................................................
   !
@@ -180,9 +182,10 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !             ALSO COMPUTE A BOUND (FBND) ON THE FIRST DERIVATIVE
   !             LOCALLY.
   !
-  da = SIGN(MAX(MIN(relper*ABS(A),absdx),100._DP*Small*ABS(A)),dx)
-  IF( da==0._DP ) da = relper*dx
+  da = SIGN(MAX(MIN(relper*ABS(A),absdx),100._dp*Small*ABS(A)),dx)
+  IF( da==0._dp ) da = relper*dx
   CALL DF(A+da,Y,Sf)
+  !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
   DO j = 1, Neq
     Yp(j) = Sf(j) - Yprime(j)
   END DO
@@ -217,29 +220,32 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !                                       SIZE OF THE VECTOR OF INITIAL
   !                                       VALUES.
   dely = relper*DHVNRM(Y,Neq)
-  IF( dely==0._DP ) dely = relper
+  IF( dely==0._dp ) dely = relper
   dely = SIGN(dely,dx)
   delf = DHVNRM(Yprime,Neq)
   fbnd = MAX(fbnd,delf)
-  IF( delf==0._DP ) THEN
+  IF( delf==0._dp ) THEN
     !           CANNOT HAVE A NULL PERTURBATION VECTOR
+    !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
     DO j = 1, Neq
-      Spy(j) = 0._DP
-      Yp(j) = 1._DP
+      Spy(j) = 0._dp
+      Yp(j) = 1._dp
     END DO
     delf = DHVNRM(Yp,Neq)
   ELSE
     !           USE INITIAL DERIVATIVES FOR FIRST PERTURBATION
+    !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
     DO j = 1, Neq
       Spy(j) = Yprime(j)
       Yp(j) = Yprime(j)
     END DO
   END IF
   !
-  dfdub = 0._DP
+  dfdub = 0._dp
   lk = MIN(Neq+1,3)
   DO k = 1, lk
     !           DEFINE PERTURBED VECTOR OF INITIAL VALUES
+    !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
     DO j = 1, Neq
       Pv(j) = Y(j) + dely*(Yp(j)/delf)
     END DO
@@ -247,6 +253,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
       !              USE A SHIFTED VALUE OF THE INDEPENDENT VARIABLE
       !                                    IN COMPUTING ONE ESTIMATE
       CALL DF(A+da,Pv,Yp)
+      !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
       DO j = 1, Neq
         Pv(j) = Yp(j) - Sf(j)
       END DO
@@ -254,6 +261,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
       !              EVALUATE DERIVATIVES ASSOCIATED WITH PERTURBED
       !              VECTOR  AND  COMPUTE CORRESPONDING DIFFERENCES
       CALL DF(A,Pv,Yp)
+      !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
       DO j = 1, Neq
         Pv(j) = Yp(j) - Yprime(j)
       END DO
@@ -268,17 +276,17 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
     !     ......EXIT
     IF( k==lk ) GOTO 100
     !           CHOOSE NEXT PERTURBATION VECTOR
-    IF( delf==0._DP ) delf = 1._DP
+    IF( delf==0._dp ) delf = 1._dp
     DO j = 1, Neq
       IF( k==2 ) THEN
         dy = Y(j)
-        IF( dy==0._DP ) dy = dely/relper
+        IF( dy==0._dp ) dy = dely/relper
       ELSE
         dy = ABS(Pv(j))
-        IF( dy==0._DP ) dy = delf
+        IF( dy==0._dp ) dy = delf
       END IF
-      IF( Spy(j)==0._DP ) Spy(j) = Yp(j)
-      IF( Spy(j)/=0._DP ) dy = SIGN(dy,Spy(j))
+      IF( Spy(j)==0._dp ) Spy(j) = Yp(j)
+      IF( Spy(j)/=0._dp ) dy = SIGN(dy,Spy(j))
       Yp(j) = dy
     END DO
     delf = DHVNRM(Yp,Neq)
@@ -289,7 +297,7 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !
   !     ..................................................................
   !
-  !          COMPUTE A BOUND (YDPB) ON THE NORM OF THE SECOND DERIVATIVE
+  !          COMPUTE A BOUND (YdpB) ON THE NORM OF THE SECOND DERIVATIVE
   !
   100  ydpb = dfdxb + dfdub*fbnd
   !
@@ -300,13 +308,14 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !          TOLERANCE RANGE IS SELECTED.
   !
   tolmin = Big
-  tolsum = 0._DP
+  tolsum = 0._dp
+  !$OMP SIMD LINEAR(j:1) IF(Neq>=16)
   DO k = 1, Neq
     tolexp = LOG10(Etol(k))
     tolmin = MIN(tolmin,tolexp)
     tolsum = tolsum + tolexp
   END DO
-  tolp = 10._DP**(0.5_DP*(tolsum/Neq+tolmin)/(Morder+1))
+  tolp = 10._dp**(0.5_dp*(tolsum/Neq+tolmin)/(Morder+1))
   !
   !     ..................................................................
   !
@@ -318,34 +327,34 @@ SUBROUTINE DHSTRT(DF,Neq,A,B,Y,Yprime,Etol,Morder,Small,Big,Spy,Pv,Yp,Sf,H)
   !                            TO  A)
   H = absdx
   !
-  IF( ydpb==0._DP .AND. fbnd==0._DP ) THEN
+  IF( ydpb==0._dp .AND. fbnd==0._dp ) THEN
     !
     !        BOTH FIRST DERIVATIVE TERM (FBND) AND SECOND
-    !                     DERIVATIVE TERM (YDPB) ARE ZERO
-    IF( tolp<1._DP ) H = absdx*tolp
+    !                     DERIVATIVE TERM (YdpB) ARE ZERO
+    IF( tolp<1._dp ) H = absdx*tolp
     !
-  ELSEIF( ydpb/=0._DP ) THEN
+  ELSEIF( ydpb/=0._dp ) THEN
     !
-    !        SECOND DERIVATIVE TERM (YDPB) IS NON-ZERO
-    srydpb = SQRT(0.5_DP*ydpb)
+    !        SECOND DERIVATIVE TERM (YdpB) IS NON-ZERO
+    srydpb = SQRT(0.5_dp*ydpb)
     IF( tolp<srydpb*absdx ) H = tolp/srydpb
   ELSE
     !
-    !        ONLY SECOND DERIVATIVE TERM (YDPB) IS ZERO
+    !        ONLY SECOND DERIVATIVE TERM (YdpB) IS ZERO
     IF( tolp<fbnd*absdx ) H = tolp/fbnd
   END IF
   !
   !     FURTHER RESTRICT THE STEP LENGTH TO BE NOT
   !                               BIGGER THAN  1/DFDUB
-  IF( H*dfdub>1._DP ) H = 1._DP/dfdub
+  IF( H*dfdub>1._dp ) H = 1._dp/dfdub
   !
   !     FINALLY, RESTRICT THE STEP LENGTH TO BE NOT
   !     SMALLER THAN  100*SMALL*ABS(A).  HOWEVER, IF
   !     A=0. AND THE COMPUTED H UNDERFLOWED TO ZERO,
   !     THE ALGORITHM RETURNS  SMALL*ABS(B)  FOR THE
   !                                     STEP LENGTH.
-  H = MAX(H,100._DP*Small*ABS(A))
-  IF( H==0._DP ) H = Small*ABS(B)
+  H = MAX(H,100._dp*Small*ABS(A))
+  IF( H==0._dp ) H = Small*ABS(B)
   !
   !     NOW SET DIRECTION OF INTEGRATION
   H = SIGN(H,dx)
