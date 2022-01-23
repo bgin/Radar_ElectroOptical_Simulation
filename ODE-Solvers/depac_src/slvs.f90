@@ -1,5 +1,6 @@
 !** SLVS
 SUBROUTINE SLVS(Wm,Iwm,X)
+  use mod_kinds, only : i4,sp
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -29,11 +30,12 @@ SUBROUTINE SLVS(Wm,Iwm,X)
   USE DEBDF1, ONLY : el0_com, h_com, ier_com, miter_com, n_com
   USE lapack, ONLY : SGBTRS, SGETRS
   !
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(SP), INTENT(INOUT) :: Wm(:), X(n_com)
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(sp), INTENT(INOUT) :: Wm(:), X(n_com)
+  !dir$ assume_aligned Iwm:64,Wm:64
   !
-  INTEGER :: i, meband, ml, mu, info
-  REAL(SP) :: di, hl0, phl0, r
+  INTEGER(i4) :: i, meband, ml, mu, info
+  REAL(sp) :: di, hl0, phl0, r
   !-----------------------------------------------------------------------
   ! THIS ROUTINE MANAGES THE SOLUTION OF THE LINEAR SYSTEM ARISING FROM
   ! A CHORD ITERATION.  IT IS CALLED BY STOD  IF MITER /= 0.
@@ -42,18 +44,18 @@ SUBROUTINE SLVS(Wm,Iwm,X)
   ! MATRIX, AND THEN COMPUTES THE SOLUTION.
   ! IF MITER IS 4 OR 5, IT CALLS SGBSL.
   ! COMMUNICATION WITH SLVS USES THE FOLLOWING VARIABLES..
-  ! WM  = REAL WORK SPACE CONTAINING THE INVERSE DIAGONAL MATRIX IF MITER
+  ! WM  = REAL WORK spACE CONTAINING THE INVERSE DIAGONAL MATRIX IF MITER
   !       IS 3 AND THE LU DECOMPOSITION OF THE MATRIX OTHERWISE.
   !       STORAGE OF MATRIX ELEMENTS STARTS AT WM(3).
   !       WM ALSO CONTAINS THE FOLLOWING MATRIX-RELATED DATA..
   !       WM(1) = SQRT(UROUND) (NOT USED HERE),
   !       WM(2) = HL0, THE PREVIOUS VALUE OF H*EL0, USED IF MITER = 3.
-  ! IWM = INTEGER WORK SPACE CONTAINING PIVOT INFORMATION, STARTING AT
+  ! IWM = INTEGER(i4) WORK spACE CONTAINING PIVOT INFORMATION, STARTING AT
   !       IWM(21), IF MITER IS 1, 2, 4, OR 5.  IWM ALSO CONTAINS THE
   !       BAND PARAMETERS ML = IWM(1) AND MU = IWM(2) IF MITER IS 4 OR 5.
   ! X   = THE RIGHT-HAND SIDE VECTOR ON INPUT, AND THE SOLUTION VECTOR
   !       ON OUTPUT, OF LENGTH N.
-  ! TEM = VECTOR OF WORK SPACE OF LENGTH N, NOT USED IN THIS VERSION.
+  ! TEM = VECTOR OF WORK spACE OF LENGTH N, NOT USED IN THIS VERSION.
   ! IER = OUTPUT FLAG (IN COMMON).  IER = 0 IF NO TROUBLE OCCURRED.
   !       IER = -1 IF A SINGULAR MATRIX AROSE WITH MITER = 3.
   ! THIS ROUTINE ALSO USES THE COMMON VARIABLES EL0, H, MITER, AND N.
@@ -69,9 +71,9 @@ SUBROUTINE SLVS(Wm,Iwm,X)
       IF( hl0/=phl0 ) THEN
         r = hl0/phl0
         DO i = 1, n_com
-          di = 1._SP - r*(1._SP-1._SP/Wm(i+2))
-          IF( ABS(di)==0._SP ) GOTO 100
-          Wm(i+2) = 1._SP/di
+          di = 1._sp - r*(1._sp-1._sp/Wm(i+2))
+          IF( ABS(di)==0._sp ) GOTO 100
+          Wm(i+2) = 1._sp/di
         END DO
       END IF
       DO i = 1, n_com

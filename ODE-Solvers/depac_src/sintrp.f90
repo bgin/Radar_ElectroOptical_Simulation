@@ -1,6 +1,8 @@
 !** SINTRP
 SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
     Og,Ow,Ox,Oy)
+      use mod_kinds, only : i4,sp
+      use omp_lib
   !> Approximate the solution at XOUT by evaluating the polynomial computed
   !  in STEPS at XOUT.  Must be used in conjunction with STEPS.
   !***
@@ -58,13 +60,13 @@ SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
   !   891214  Prologue converted to Version 4.0 format.  (BAB)
   !   920501  Reformatted the REFERENCES section.  (WRB)
 
-  INTEGER, INTENT(IN) :: Ivc, Kgi, Kold, Neqn, Iv(10)
-  REAL(SP), INTENT(IN) :: Ox, X, Xout
-  REAL(SP), INTENT(IN) :: Alpha(12), Gi(11), Og(13), Ow(12), Oy(Neqn), Phi(Neqn,16), Y(Neqn)
-  REAL(SP), INTENT(OUT) :: Yout(Neqn), Ypout(Neqn)
+  INTEGER(i4), INTENT(IN) :: Ivc, Kgi, Kold, Neqn, Iv(10)
+  REAL(sp), INTENT(IN) :: Ox, X, Xout
+  REAL(sp), INTENT(IN) :: Alpha(12), Gi(11), Og(13), Ow(12), Oy(Neqn), Phi(Neqn,16), Y(Neqn)
+  REAL(sp), INTENT(OUT) :: Yout(Neqn), Ypout(Neqn)
   !
-  INTEGER :: i, iq, iw, j, jq, kp1, kp2, l, m
-  REAL(SP) :: alp, c(13), g(13), gama, gdi, gdif, h, hi, hmu, rmu, sigma, temp1, &
+  INTEGER(i4) :: i, iq, iw, j, jq, kp1, kp2, l, m
+  REAL(sp) :: alp, c(13), g(13), gama, gdi, gdif, h, hi, hmu, rmu, sigma, temp1, &
     temp2, temp3, w(13), xi, xim1, xiq
   !
   !* FIRST EXECUTABLE STATEMENT  SINTRP
@@ -74,11 +76,12 @@ SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
   hi = Xout - Ox
   h = X - Ox
   xi = hi/h
-  xim1 = xi - 1._SP
+  xim1 = xi - 1._sp
   !
   !   INITIALIZE W(*) FOR COMPUTING G(*)
   !
   xiq = xi
+  !$omp simd linear(iq:1) if(kp1>=16)
   DO iq = 1, kp1
     xiq = xi*xiq
     temp1 = iq*(iq+1)
@@ -95,7 +98,7 @@ SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
       gdi = Ow(iw)
       m = Kold - iw + 3
     ELSE
-      gdi = 1._SP/temp1
+      gdi = 1._sp/temp1
       m = 2
     END IF
     IF( m<=Kold ) THEN
@@ -108,14 +111,15 @@ SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
   !   COMPUTE G(*) AND C(*)
   !
   g(1) = xi
-  g(2) = 0.5_SP*xi*xi
-  c(1) = 1._SP
+  g(2) = 0.5_sp*xi*xi
+  c(1) = 1._sp
   c(2) = xi
   IF( Kold>=2 ) THEN
     DO i = 2, Kold
       alp = Alpha(i)
-      gama = 1._SP + xim1*alp
+      gama = 1._sp + xim1*alp
       l = kp2 - i
+      !$omp simd linear(jq:1) unroll partial(4)
       DO jq = 1, l
         w(jq) = gama*w(jq) - alp*w(jq+1)
       END DO
@@ -134,21 +138,23 @@ SUBROUTINE SINTRP(X,Y,Xout,Yout,Ypout,Neqn,Kold,Phi,Ivc,Iv,Kgi,Gi,Alpha,&
   !   AND FOR THE DERIVATIVE OF THE SOLUTION -- YPOUT
   !
   DO l = 1, Neqn
-    Yout(l) = 0._SP
-    Ypout(l) = 0._SP
+    Yout(l) = 0._sp
+    Ypout(l) = 0._sp
   END DO
   DO j = 1, Kold
     i = kp2 - j
     gdif = Og(i) - Og(i-1)
     temp2 = (g(i)-g(i-1)) - sigma*gdif
     temp3 = (c(i)-c(i-1)) + rmu*gdif
+    !$omp simd reduction(+:Yout) reduction(+:Ypout) if(Neqn>=16)
     DO l = 1, Neqn
       Yout(l) = Yout(l) + temp2*Phi(l,i)
       Ypout(l) = Ypout(l) + temp3*Phi(l,i)
     END DO
   END DO
+  !$omp simd linear(l:1) if(Neqn>=16)
   DO l = 1, Neqn
-    Yout(l) = ((1._SP-sigma)*Oy(l)+sigma*Y(l))&
+    Yout(l) = ((1._sp-sigma)*Oy(l)+sigma*Y(l))&
       + h*(Yout(l)+(g(1)-sigma*Og(1))*Phi(l,1))
     Ypout(l) = hmu*(Oy(l)-Y(l)) + (Ypout(l)+(c(1)+rmu*Og(1))*Phi(l,1))
   END DO

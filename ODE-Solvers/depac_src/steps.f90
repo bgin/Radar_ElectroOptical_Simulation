@@ -2,6 +2,8 @@
 SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     Alpha,Beta,Sig,V,W,G,Phase1,Ns,Nornd,Ksteps,Twou,Fouru,&
     Xold,Kprev,Ivc,Iv,Kgi,Gi)
+      use mod_kinds, only : i4, sp
+      use omp_lib
   !> Integrate a system of first order ordinary differential
   !            equations one step.
   !***
@@ -182,32 +184,32 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   !
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neqn
-  INTEGER, INTENT(INOUT) :: Ivc, K, Kgi, Kold, Kprev, Ksteps, Ns
-  INTEGER, INTENT(INOUT) :: Iv(10)
-  REAL(SP), INTENT(IN) :: Fouru, Twou
-  REAL(SP), INTENT(INOUT) :: Eps, H, Hold, X, Xold
-  REAL(SP), INTENT(IN) :: Wt(Neqn)
-  REAL(SP), INTENT(INOUT) :: Alpha(12), Beta(12), G(13), Gi(11), P(Neqn), &
+  INTEGER(i4), INTENT(IN) :: Neqn
+  INTEGER(i4), INTENT(INOUT) :: Ivc, K, Kgi, Kold, Kprev, Ksteps, Ns
+  INTEGER(i4), INTENT(INOUT) :: Iv(10)
+  REAL(sp), INTENT(IN) :: Fouru, Twou
+  REAL(sp), INTENT(INOUT) :: Eps, H, Hold, X, Xold
+  REAL(sp), INTENT(IN) :: Wt(Neqn)
+  REAL(sp), INTENT(INOUT) :: Alpha(12), Beta(12), G(13), Gi(11), P(Neqn), &
     Phi(Neqn,16), Psi(12), Sig(13), V(12), W(12), Y(Neqn), Yp(Neqn)
   LOGICAL, INTENT(INOUT) :: Start, Crash, Phase1, Nornd
   !
-  INTEGER :: i, ifail, im1, ip1, iq, j, jv, km1, km2, knew, kp1, kp2, l, limit1, &
+  INTEGER(i4) :: i, ifail, im1, ip1, iq, j, jv, km1, km2, knew, kp1, kp2, l, limit1, &
     limit2, nsm2, nsp1, nsp2
-  REAL(SP) :: absh, big, erk, erkm1, erkm2, erkp1, err, hnew, p5eps, r, reali, realns, &
+  REAL(sp) :: absh, big, erk, erkm1, erkm2, erkp1, err, hnew, p5eps, r, reali, realns, &
     rho, round, tau, temp1, temp2, temp3, temp4, temp5, temp6, u
   !
-  REAL(SP), PARAMETER :: two(13) = [ 2._SP, 4._SP, 8._SP, 16._SP, 32._SP, 64._SP, &
-    128._SP, 256._SP, 512._SP, 1024._SP, 2048._SP, 4096._SP, 8192._SP ]
-  REAL(SP), PARAMETER :: gstr(13) = [ 0.500_SP, 0.0833_SP, 0.0417_SP, 0.0264_SP, &
-    0.0188_SP, 0.0143_SP, 0.0114_SP, 0.00936_SP, 0.00789_SP, 0.00679_SP, 0.00592_SP, &
-    0.00524_SP, 0.00468_SP ]
+  REAL(sp), PARAMETER :: two(13) = [ 2._sp, 4._sp, 8._sp, 16._sp, 32._sp, 64._sp, &
+    128._sp, 256._sp, 512._sp, 1024._sp, 2048._sp, 4096._sp, 8192._sp ]
+  REAL(sp), PARAMETER :: gstr(13) = [ 0.500_sp, 0.0833_sp, 0.0417_sp, 0.0264_sp, &
+    0.0188_sp, 0.0143_sp, 0.0114_sp, 0.00936_sp, 0.00789_sp, 0.00679_sp, 0.00592_sp, &
+    0.00524_sp, 0.00468_sp ]
   !
   !
   !       ***     BEGIN BLOCK 0     ***
@@ -221,20 +223,20 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   !* FIRST EXECUTABLE STATEMENT  STEPS
   Crash = .TRUE.
   IF( ABS(H)>=Fouru*ABS(X) ) THEN
-    p5eps = 0.5_SP*Eps
+    p5eps = 0.5_sp*Eps
     !
     !   IF ERROR TOLERANCE IS TOO SMALL, INCREASE IT TO AN ACCEPTABLE VALUE
     !
-    round = 0._SP
+    round = 0._sp
     DO l = 1, Neqn
       round = round + (Y(l)/Wt(l))**2
     END DO
     round = Twou*SQRT(round)
     IF( p5eps>=round ) THEN
       Crash = .FALSE.
-      G(1) = 1._SP
+      G(1) = 1._sp
       G(2) = 0.5
-      Sig(1) = 1._SP
+      Sig(1) = 1._sp
       IF( Start ) THEN
         !
         !   INITIALIZE.  COMPUTE APPROPRIATE STEP SIZE FOR FIRST STEP
@@ -243,7 +245,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
         !     SUM = 0.0
         DO l = 1, Neqn
           Phi(l,1) = Yp(l)
-          Phi(l,2) = 0._SP
+          Phi(l,2) = 0._sp
         END DO
         !20     SUM = SUM + (YP(L)/WT(L))**2
         !     SUM = SQRT(SUM)
@@ -256,23 +258,23 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
         CALL HSTART(F,Neqn,X,X+H,Y,Yp,Wt,1,u,big,Phi(1,3),Phi(1,4),Phi(1,5),&
           Phi(1,6),H)
         !
-        Hold = 0._SP
+        Hold = 0._sp
         K = 1
         Kold = 0
         Kprev = 0
         Start = .FALSE.
         Phase1 = .TRUE.
         Nornd = .TRUE.
-        IF( p5eps<=100._SP*round ) THEN
+        IF( p5eps<=100._sp*round ) THEN
           Nornd = .FALSE.
           DO l = 1, Neqn
-            Phi(l,15) = 0._SP
+            Phi(l,15) = 0._sp
           END DO
         END IF
       END IF
       ifail = 0
     ELSE
-      Eps = 2._SP*round*(1._SP+Fouru)
+      Eps = 2._sp*round*(1._sp+Fouru)
       RETURN
     END IF
   ELSE
@@ -302,12 +304,13 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     !   COMPUTE THOSE COMPONENTS OF ALPHA(*),BETA(*),PSI(*),SIG(*) WHICH
     !   ARE CHANGED
     !
-    Beta(Ns) = 1._SP
+    Beta(Ns) = 1._sp
     realns = Ns
-    Alpha(Ns) = 1._SP/realns
+    Alpha(Ns) = 1._sp/realns
     temp1 = H*realns
-    Sig(nsp1) = 1._SP
+    Sig(nsp1) = 1._sp
     IF( K>=nsp1 ) THEN
+      !$omp simd linear(i:1)
       DO i = nsp1, K
         im1 = i - 1
         temp2 = Psi(im1)
@@ -333,7 +336,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
         IF( Ivc==0 ) THEN
           jv = 1
           temp4 = K*kp1
-          V(K) = 1._SP/temp4
+          V(K) = 1._sp/temp4
           W(K) = V(K)
           IF( K==2 ) THEN
             Kgi = 1
@@ -344,7 +347,9 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
           Ivc = Ivc - 1
         END IF
         nsm2 = Ns - 2
-        IF( nsm2>=jv ) THEN
+        IF( nsm2>=jv ) THEN 
+          !dir$ ivdep
+          !$omp simd
           DO j = jv, nsm2
             i = K - j
             V(i) = V(i) - Alpha(j+1)*V(i+1)
@@ -376,9 +381,10 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
         Iv(Ivc) = limit1 + 2
       END IF
     ELSE
+      !$omp simd linear(iq:1)
       DO iq = 1, K
         temp3 = iq*(iq+1)
-        V(iq) = 1._SP/temp3
+        V(iq) = 1._sp/temp3
         W(iq) = V(iq)
       END DO
       Ivc = 0
@@ -397,6 +403,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
       DO i = nsp2, kp1
         limit2 = kp2 - i
         temp6 = Alpha(i-1)
+              
         DO iq = 1, limit2
           W(iq) = W(iq) - temp6*W(iq+1)
         END DO
@@ -421,6 +428,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   IF( K>=nsp1 ) THEN
     DO i = nsp1, K
       temp1 = Beta(i)
+      !$omp simd reduction(*:Phi)
       DO l = 1, Neqn
         Phi(l,i) = temp1*Phi(l,i)
       END DO
@@ -431,23 +439,26 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   !
   DO l = 1, Neqn
     Phi(l,kp2) = Phi(l,kp1)
-    Phi(l,kp1) = 0._SP
-    P(l) = 0._SP
+    Phi(l,kp1) = 0._sp
+    P(l) = 0._sp
   END DO
   DO j = 1, K
     i = kp1 - j
     ip1 = i + 1
     temp2 = G(i)
+    !$omp simd reduction(+:P) reduction(+:Phi) if(Neqn>=16)
     DO l = 1, Neqn
       P(l) = P(l) + temp2*Phi(l,i)
       Phi(l,i) = Phi(l,i) + Phi(l,ip1)
     END DO
   END DO
   IF( Nornd ) THEN
+    !$omp simd linear(l:1) if(Neqn>=16)
     DO l = 1, Neqn
       P(l) = Y(l) + H*P(l)
     END DO
   ELSE
+    !$omp simd linear(l:1) if(Neqn>=16)
     DO l = 1, Neqn
       tau = H*P(l) - Phi(l,15)
       P(l) = Y(l) + tau
@@ -461,11 +472,11 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   !
   !   ESTIMATE ERRORS AT ORDERS K,K-1,K-2
   !
-  erkm2 = 0._SP
-  erkm1 = 0._SP
-  erk = 0._SP
+  erkm2 = 0._sp
+  erkm1 = 0._sp
+  erk = 0._sp
   DO l = 1, Neqn
-    temp3 = 1._SP/Wt(l)
+    temp3 = 1._sp/Wt(l)
     temp4 = Yp(l) - Phi(l,1)
     IF( km2<0 ) GOTO 150
     IF( km2/=0 ) erkm2 = erkm2 + ((Phi(l,km1)+temp4)*temp3)**2
@@ -484,7 +495,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
   !
   IF( km2<0 ) THEN
   ELSEIF( km2==0 ) THEN
-    IF( erkm1<=0.5_SP*erk ) knew = km1
+    IF( erkm1<=0.5_sp*erk ) knew = km1
   ELSE
     IF( MAX(erkm1,erkm2)<=erk ) knew = km1
   END IF
@@ -506,12 +517,14 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     !
     temp1 = H*G(kp1)
     IF( Nornd ) THEN
+      !$omp simd linear(l:1) if(Neqn>=16)
       DO l = 1, Neqn
         temp3 = Y(l)
         Y(l) = P(l) + temp1*(Yp(l)-Phi(l,1))
         P(l) = temp3
       END DO
     ELSE
+       !$omp simd linear(l:1) if(Neqn>=16)
       DO l = 1, Neqn
         temp3 = Y(l)
         rho = temp1*(Yp(l)-Phi(l,1)) - Phi(l,16)
@@ -524,11 +537,13 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     !
     !   UPDATE DIFFERENCES FOR NEXT STEP
     !
+     !$omp simd reduction(-:Phi) linear(l:1) if(Neqn>=16)
     DO l = 1, Neqn
       Phi(l,kp1) = Yp(l) - Phi(l,1)
       Phi(l,kp2) = Phi(l,kp1) - Phi(l,kp2)
     END DO
     DO i = 1, K
+      !$omp simd reduction(+:Phi) if(Neqn>=16)
       DO l = 1, Neqn
         Phi(l,i) = Phi(l,i) + Phi(l,kp1)
       END DO
@@ -539,11 +554,12 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     !     ALREADY DECIDED TO LOWER ORDER,
     !     STEP SIZE NOT CONSTANT SO ESTIMATE UNRELIABLE
     !
-    erkp1 = 0._SP
+    erkp1 = 0._sp
     IF( knew==km1 .OR. K==12 ) Phase1 = .FALSE.
     IF( .NOT. (Phase1) ) THEN
       IF( knew==km1 ) GOTO 300
       IF( kp1>Ns ) GOTO 400
+      !$omp simd reduction(+:erkp1) if(Neqn>=16)
       DO l = 1, Neqn
         erkp1 = erkp1 + (Phi(l,kp2)/Wt(l))**2
       END DO
@@ -555,7 +571,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
       IF( K>1 ) THEN
         IF( erkm1<=MIN(erk,erkp1) ) GOTO 300
         IF( erkp1>=erk .OR. K==12 ) GOTO 400
-      ELSEIF( erkp1>=0.5_SP*erk ) THEN
+      ELSEIF( erkp1>=0.5_sp*erk ) THEN
         GOTO 400
       END IF
     END IF
@@ -584,8 +600,9 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     Phase1 = .FALSE.
     X = Xold
     DO i = 1, K
-      temp1 = 1._SP/Beta(i)
+      temp1 = 1._sp/Beta(i)
       ip1 = i + 1
+      !$omp simd linear(l:1) if(Neqn>=16)
       DO l = 1, Neqn
         Phi(l,i) = temp1*(Phi(l,i)-Phi(l,ip1))
       END DO
@@ -603,7 +620,7 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
     temp2 = 0.5
     IF( ifail<3 ) GOTO 250
     IF( ifail/=3 ) THEN
-      IF( p5eps<0.25_SP*erk ) temp2 = SQRT(p5eps/erk)
+      IF( p5eps<0.25_sp*erk ) temp2 = SQRT(p5eps/erk)
     END IF
     knew = 1
     250  H = temp2*H
@@ -629,8 +646,8 @@ SUBROUTINE STEPS(F,Neqn,Y,X,H,Eps,Wt,Start,Hold,K,Kold,Crash,Phi,P,Yp,Psi,&
       hnew = H
       IF( p5eps<erk ) THEN
         temp2 = K + 1
-        r = (p5eps/erk)**(1._SP/temp2)
-        hnew = absh*MAX(0.5_SP,MIN(0.9_SP,r))
+        r = (p5eps/erk)**(1._sp/temp2)
+        hnew = absh*MAX(0.5_sp,MIN(0.9_sp,r))
         hnew = SIGN(MAX(hnew,Fouru*ABS(X)),H)
       END IF
     END IF
