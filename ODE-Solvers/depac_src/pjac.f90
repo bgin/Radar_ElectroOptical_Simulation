@@ -1,5 +1,6 @@
 !** PJAC
 SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
+  use mod_kinds, only : i4,sp
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -33,28 +34,28 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
   !
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp,i4
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
     PURE SUBROUTINE JAC(X,U,Pd,Nrowpd)
-      IMPORT SP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Pd(:,:)
+      IMPORT sp,i4
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE JAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq, Nyh
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(SP), INTENT(IN) :: Yh(Nyh,n_com), Ewt(n_com), Savf(n_com)
-  REAL(SP), INTENT(INOUT) :: Y(Neq), Wm(:)
-  REAL(SP), INTENT(OUT) :: Ftem(n_com)
+  INTEGER(i4), INTENT(IN) :: Neq, Nyh
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(sp), INTENT(IN) :: Yh(Nyh,n_com), Ewt(n_com), Savf(n_com)
+  REAL(sp), INTENT(INOUT) :: Y(Neq), Wm(:)
+  REAL(sp), INTENT(OUT) :: Ftem(n_com)
   !
-  INTEGER :: i, i1, i2, ii, j, j1, jj, mba, mband, meb1, meband, ml, ml3, mu
-  REAL(SP) :: con, di, fac, hl0, r, r0, srur, yi, yj, yjj
-  REAL(SP), ALLOCATABLE :: pd(:,:)
+  INTEGER(i4) :: i, i1, i2, ii, j, j1, jj, mba, mband, meb1, meband, ml, ml3, mu
+  REAL(sp) :: con, di, fac, hl0, r, r0, srur, yi, yj, yjj
+  REAL(sp), ALLOCATABLE :: pd(:,:)
   !-----------------------------------------------------------------------
   ! PJAC IS CALLED BY STOD  TO COMPUTE AND PROCESS THE MATRIX
   ! P = I - H*EL(1)*J, WHERE J IS AN APPROXIMATION TO THE JACOBIAN.
@@ -71,14 +72,14 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
   ! Y    = ARRAY CONTAINING PREDICTED VALUES ON ENTRY.
   ! FTEM = WORK ARRAY OF LENGTH N (ACOR IN STOD ).
   ! SAVF = ARRAY CONTAINING F EVALUATED AT PREDICTED Y.
-  ! WM   = REAL WORK SPACE FOR MATRICES.  ON OUTPUT IT CONTAINS THE
+  ! WM   = REAL WORK spACE FOR MATRICES.  ON OUTPUT IT CONTAINS THE
   !        INVERSE DIAGONAL MATRIX IF MITER = 3 AND THE LU DECOMPOSITION
   !        OF P IF MITER IS 1, 2, 4, OR 5.
   !        STORAGE OF MATRIX ELEMENTS STARTS AT WM(3).
   !        WM ALSO CONTAINS THE FOLLOWING MATRIX-RELATED DATA..
   !        WM(1) = SQRT(UROUND), USED IN NUMERICAL JACOBIAN INCREMENTS.
   !        WM(2) = H*EL0, SAVED FOR LATER USE IF MITER = 3.
-  ! IWM  = INTEGER WORK SPACE CONTAINING PIVOT INFORMATION, STARTING AT
+  ! IWM  = INTEGER(i4) WORK spACE CONTAINING PIVOT INFORMATION, STARTING AT
   !        IWM(21), IF MITER IS 1, 2, 4, OR 5.  IWM ALSO CONTAINS THE
   !        BAND PARAMETERS ML = IWM(1) AND MU = IWM(2) IF MITER IS 4 OR 5.
   ! EL0  = EL(1) (INPUT).
@@ -94,8 +95,8 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
     CASE (2)
       ! IF MITER = 2, MAKE N CALLS TO F TO APPROXIMATE J. --------------------
       fac = VNWRMS(n_com,Savf,Ewt)
-      r0 = 1000._SP*ABS(h_com)*uround_com*n_com*fac
-      IF( r0==0._SP ) r0 = 1._SP
+      r0 = 1000._sp*ABS(h_com)*uround_com*n_com*fac
+      IF( r0==0._sp ) r0 = 1._sp
       srur = Wm(1)
       j1 = 2
       DO j = 1, n_com
@@ -115,7 +116,7 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
       ! IF MITER = 3, CONSTRUCT A DIAGONAL APPROXIMATION TO J AND P. ---------
       Wm(2) = hl0
       ier_com = 0
-      r = el0_com*0.1_SP
+      r = el0_com*0.1_sp
       DO i = 1, n_com
         Y(i) = Y(i) + r*(h_com*Savf(i)-Yh(i,2))
       END DO
@@ -123,11 +124,11 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
       nfe_com = nfe_com + 1
       DO i = 1, n_com
         r0 = h_com*Savf(i) - Yh(i,2)
-        di = 0.1_SP*r0 - h_com*(Wm(i+2)-Savf(i))
-        Wm(i+2) = 1._SP
+        di = 0.1_sp*r0 - h_com*(Wm(i+2)-Savf(i))
+        Wm(i+2) = 1._sp
         IF( ABS(r0)>=uround_com*Ewt(i) ) THEN
-          IF( ABS(di)==0._SP ) GOTO 100
-          Wm(i+2) = 0.1_SP*r0/di
+          IF( ABS(di)==0._sp ) GOTO 100
+          Wm(i+2) = 0.1_sp*r0/di
         END IF
       END DO
       RETURN
@@ -139,7 +140,7 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
       mband = ml + mu + 1
       meband = 2*ml + mu + 1
       ALLOCATE( pd(meband,n_com) )
-      pd = 0._SP
+      pd = 0._sp
       CALL JAC(tn_com,Y,pd,meband)
       con = -hl0
       DO j = 1, n_com
@@ -158,8 +159,8 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
       meb1 = meband - 1
       srur = Wm(1)
       fac = VNWRMS(n_com,Savf,Ewt)
-      r0 = 1000._SP*ABS(h_com)*uround_com*n_com*fac
-      IF( r0==0._SP ) r0 = 1._SP
+      r0 = 1000._sp*ABS(h_com)*uround_com*n_com*fac
+      IF( r0==0._sp ) r0 = 1._sp
       DO j = 1, mba
         DO i = j, n_com, mband
           yi = Y(i)
@@ -185,7 +186,7 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
     CASE DEFAULT
       ! IF MITER = 1, CALL JAC AND MULTIPLY BY SCALAR. -----------------------
       ALLOCATE( pd(n_com,n_com) )
-      pd = 0._SP
+      pd = 0._sp
       CALL JAC(tn_com,Y,pd,n_com)
       con = -hl0
       DO j = 1, n_com
@@ -197,7 +198,7 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
   ! ADD IDENTITY MATRIX. -------------------------------------------------
   j = 3
   DO i = 1, n_com
-    Wm(j) = Wm(j) + 1._SP
+    Wm(j) = Wm(j) + 1._sp
     j = j + (n_com+1)
   END DO
   ! DO LU DECOMPOSITION ON P. --------------------------------------------
@@ -208,7 +209,7 @@ SUBROUTINE PJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,F,JAC)
   ! ADD IDENTITY MATRIX. -------------------------------------------------
   200  ii = mband + 2
   DO i = 1, n_com
-    Wm(ii) = Wm(ii) + 1._SP
+    Wm(ii) = Wm(ii) + 1._sp
     ii = ii + meband
   END DO
   ! DO LU DECOMPOSITION OF P. --------------------------------------------

@@ -1,5 +1,7 @@
 !** INTYD
 PURE SUBROUTINE INTYD(T,K,Yh,Nyh,Dky,Iflag)
+   !DIR$ ATTRIBUTES INLINE :: INTYD
+    use mod_kinds, only : i4,sp
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -49,14 +51,14 @@ PURE SUBROUTINE INTYD(T,K,Yh,Nyh,Dky,Iflag)
   !   910722  Updated AUTHOR section.  (ALS)
   USE DEBDF1, ONLY : h_com, hu_com, tn_com, uround_com, l_com, n_com, nq_com
   !
-  INTEGER, INTENT(IN) :: K, Nyh
-  INTEGER, INTENT(OUT) :: Iflag
-  REAL(SP), INTENT(IN) :: T
-  REAL(SP), INTENT(IN) :: Yh(Nyh,nq_com+1)
-  REAL(SP), INTENT(OUT) :: Dky(Nyh)
+  INTEGER(i4), INTENT(IN) :: K, Nyh
+  INTEGER(i4), INTENT(OUT) :: Iflag
+  REAL(sp), INTENT(IN) :: T
+  REAL(sp), INTENT(IN) :: Yh(Nyh,nq_com+1)
+  REAL(sp), INTENT(OUT) :: Dky(Nyh)
   !
-  INTEGER :: i, ic, j, jb, jb2, jj, jj1, jp1
-  REAL(SP) :: c, r, s, tp
+  INTEGER(i4) :: i, ic, j, jb, jb2, jj, jj1, jp1
+  REAL(sp) :: c, r, s, tp
   !
   !* FIRST EXECUTABLE STATEMENT  INTYD
   Iflag = 0
@@ -65,8 +67,8 @@ PURE SUBROUTINE INTYD(T,K,Yh,Nyh,Dky,Iflag)
     Iflag = -1
     RETURN
   ELSE
-    tp = tn_com - hu_com*(1._SP+100._SP*uround_com)
-    IF( (T-tp)*(T-tn_com)>0._SP ) THEN
+    tp = tn_com - hu_com*(1._sp+100._sp*uround_com)
+    IF( (T-tp)*(T-tn_com)>0._sp ) THEN
       Iflag = -2
       RETURN
     ELSE

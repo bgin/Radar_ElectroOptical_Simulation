@@ -1,5 +1,7 @@
 !** HVNRM
-REAL(SP) PURE FUNCTION HVNRM(V,Ncomp)
+REAL(sp) PURE FUNCTION HVNRM(V,Ncomp)
+   !DIR$ ATTRIBUTES FORCEINLINE :: HVNRM
+     use mod_kinds, only : i4,sp
   !> Subsidiary to DEABM, DEBDF and DERKF
   !***
   ! **Library:**   SLATEC
@@ -27,8 +29,8 @@ REAL(SP) PURE FUNCTION HVNRM(V,Ncomp)
   !   900328  Added TYPE section.  (WRB)
   !   910722  Updated AUTHOR section.  (ALS)
 
-  INTEGER, INTENT(IN) :: Ncomp
-  REAL(SP), INTENT(IN) :: V(Ncomp)
+  INTEGER(i4), INTENT(IN) :: Ncomp
+  REAL(sp), INTENT(IN) :: V(Ncomp)
   !* FIRST EXECUTABLE STATEMENT  HVNRM
   HVNRM = MAXVAL( ABS(V) )
   !

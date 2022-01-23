@@ -1,6 +1,8 @@
 !** LSOD
 SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
     Wm,Iwm,JAC,Intout,Tstop,Tolfac,Delsgn)
+      use mod_kinds, only : i4,sp
+      
   !> Subsidiary to DEBDF
   !***
   ! **Library:**   SLATEC
@@ -37,31 +39,31 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
   !
   INTERFACE
     SUBROUTINE F(X,U,Uprime)
-      IMPORT SP
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Uprime(:)
+      IMPORT sp
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE F
     PURE SUBROUTINE JAC(X,U,Pd,Nrowpd)
-      IMPORT SP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(SP), INTENT(IN) :: X
-      REAL(SP), INTENT(IN) :: U(:)
-      REAL(SP), INTENT(OUT) :: Pd(:,:)
+      IMPORT sp
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(sp), INTENT(IN) :: X
+      REAL(sp), INTENT(IN) :: U(:)
+      REAL(sp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE JAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(SP), INTENT(IN) :: Tout, Tstop
-  REAL(SP), INTENT(INOUT) :: Delsgn, T
-  REAL(SP), INTENT(OUT) :: Tolfac
-  REAL(SP), INTENT(INOUT) :: Acor(Neq), Atol(:), Ewt(Neq), Rtol(:), Savf(Neq), &
+  INTEGER(i4), INTENT(IN) :: Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(sp), INTENT(IN) :: Tout, Tstop
+  REAL(sp), INTENT(INOUT) :: Delsgn, T
+  REAL(sp), INTENT(OUT) :: Tolfac
+  REAL(sp), INTENT(INOUT) :: Acor(Neq), Atol(:), Ewt(Neq), Rtol(:), Savf(Neq), &
     Y(Neq), Yh(Neq,6), Yh1(6*Neq), Ypout(Neq), Wm(:)
   LOGICAL, INTENT(INOUT) :: Intout
   !
-  INTEGER :: ltol, natolp, nrtolp, intflg, k, l
-  REAL(SP) :: absdel, big, del, dt, ha, tol
+  INTEGER(i4) :: ltol, natolp, nrtolp, intflg, k, l
+  REAL(sp) :: absdel, big, del, dt, ha, tol
   CHARACTER(8) :: xern1
   CHARACTER(16) :: xern3, xern4
   !
@@ -72,7 +74,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
   !  IS RESET TO ZERO AND THE USER IS INFORMED ABOUT POSSIBLE EXCESSIVE
   !  WORK.
   !
-  INTEGER, PARAMETER :: maxnum = 500
+  INTEGER(i4), PARAMETER :: maxnum = 500
   !
   !.......................................................................
   !
@@ -112,9 +114,9 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
     n_com = Neq
     nst_com = 0
     nje_com = 0
-    hmxi_com = 0._SP
+    hmxi_com = 0._sp
     nq_com = 1
-    h_com = 1._SP
+    h_com = 1._sp
     !                          -- RESET IBEGIN FOR SUBSEQUENT CALLS
     ibegin_com = 1
   END IF
@@ -125,7 +127,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
   !
   IF( Neq<1 ) THEN
     WRITE (xern1,'(I8)') Neq
-    ERROR STOP 'LSOD : IN DEBDF, THE NUMBER OF EQUATIONS MUST BE A POSITIVE INTEGER.'
+    ERROR STOP 'LSOD : IN DEBDF, THE NUMBER OF EQUATIONS MUST BE A POSITIVE INTEGER(i4).'
     Idid = -33
   END IF
   !
@@ -161,7 +163,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
   END DO
   !
   IF( itstop_com==1 ) THEN
-    IF( SIGN(1._SP,Tout-T)/=SIGN(1._SP,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
+    IF( SIGN(1._sp,Tout-T)/=SIGN(1._sp,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
       WRITE (xern3,'(1PE15.6)') Tout
       WRITE (xern4,'(1PE15.6)') Tstop
       ERROR STOP 'LSOD : IN DEBDF, YOU HAVE CALLED THE CODE WITH THAT VALUE OF TOUT&
@@ -222,7 +224,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
   !
   DO k = 1, Neq
     IF( Rtol(k)+Atol(k)<=0. ) THEN
-      Rtol(k) = 100._SP*uround_com
+      Rtol(k) = 100._sp*uround_com
       Idid = -2
     END IF
     IF( itol_com==0 ) EXIT
@@ -275,7 +277,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
     CALL HSTART(F,Neq,T,Tout,Y,Yh(1,2),Ewt,1,uround_com,big,Yh(1,3),Yh(1,4),Yh(1,5),&
       Yh(1,6),h_com)
     !
-    Delsgn = SIGN(1._SP,Tout-T)
+    Delsgn = SIGN(1._sp,Tout-T)
     tn_com = T
     DO l = 1, Neq
       Yh(l,1) = Y(l)
@@ -307,7 +309,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
     !   EXTRAPOLATE AND RETURN
     !
     IF( itstop_com==1 ) THEN
-      IF( ABS(Tstop-tn_com)<100._SP*uround_com*ABS(tn_com) ) THEN
+      IF( ABS(Tstop-tn_com)<100._sp*uround_com*ABS(tn_com) ) THEN
         dt = Tout - tn_com
         DO l = 1, Neq
           Y(l) = Yh(l,1) + (dt/h_com)*Yh(l,2)
@@ -338,7 +340,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
       !
       !   LIMIT STEP SIZE AND SET WEIGHT VECTOR
       !
-      hmin_com = 100._SP*uround_com*ABS(tn_com)
+      hmin_com = 100._sp*uround_com*ABS(tn_com)
       ha = MAX(ABS(h_com),hmin_com)
       IF( itstop_com==1 ) ha = MIN(ha,ABS(Tstop-tn_com))
       h_com = SIGN(ha,h_com)
@@ -346,7 +348,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
       DO l = 1, Neq
         IF( itol_com==1 ) ltol = l
         Ewt(l) = Rtol(ltol)*ABS(Yh(l,1)) + Atol(ltol)
-        IF( Ewt(l)<=0._SP ) GOTO 200
+        IF( Ewt(l)<=0._sp ) GOTO 200
       END DO
       Tolfac = uround_com*VNWRMS(Neq,Yh,Ewt)
       IF( Tolfac<=1. ) THEN
@@ -380,7 +382,7 @@ SUBROUTINE LSOD(F,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,Acor,&
         !
         !                       TOLERANCES TOO SMALL
         Idid = -2
-        Tolfac = 2._SP*Tolfac
+        Tolfac = 2._sp*Tolfac
         Rtol(1) = Tolfac*Rtol(1)
         Atol(1) = Tolfac*Atol(1)
         IF( itol_com/=0 ) THEN
