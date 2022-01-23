@@ -1,16 +1,18 @@
-!** DPJAC
-SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
+!** dpJAC
+SUBROUTINE dpJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
+    use mod_kinds, only : i4,dp
+    use omp_lib
   !> Subsidiary to DDEBDF
   !***
   ! **Library:**   SLATEC
   !***
-  ! **Type:**      DOUBLE PRECISION (PJAC-S, DPJAC-D)
+  ! **Type:**      DOUBLE PRECISION (PJAC-S, dpJAC-D)
   !***
   ! **Author:**  Watts, H. A., (SNLA)
   !***
   ! **Description:**
   !
-  !   DPJAC sets up the iteration matrix (involving the Jacobian) for the
+  !   dpJAC sets up the iteration matrix (involving the Jacobian) for the
   !   integration package DDEBDF.
   !
   !***
@@ -34,30 +36,30 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
     PURE SUBROUTINE DJAC(X,U,Pd,Nrowpd)
-      IMPORT DP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Pd(:,:)
+      IMPORT dp
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE DJAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq, Nyh
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(DP), INTENT(IN) :: Yh(Nyh,n_com), Ewt(n_com), Savf(n_com)
-  REAL(DP), INTENT(INOUT) :: Y(Neq), Wm(:)
-  REAL(DP), INTENT(OUT) :: Ftem(n_com)
+  INTEGER(i4), INTENT(IN) :: Neq, Nyh
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(dp), INTENT(IN) :: Yh(Nyh,n_com), Ewt(n_com), Savf(n_com)
+  REAL(dp), INTENT(INOUT) :: Y(Neq), Wm(:)
+  REAL(dp), INTENT(OUT) :: Ftem(n_com)
   !
-  INTEGER :: i, i1, i2, ii, j, j1, jj, mba, mband, meb1, meband, ml, ml3, mu
-  REAL(DP) :: con, di, fac, hl0, r, r0, srur, yi, yj, yjj
-  REAL(DP), ALLOCATABLE :: pd(:,:)
+  INTEGER(i4) :: i, i1, i2, ii, j, j1, jj, mba, mband, meb1, meband, ml, ml3, mu
+  REAL(dp) :: con, di, fac, hl0, r, r0, srur, yi, yj, yjj
+  REAL(dp), ALLOCATABLE :: pd(:,:)
   !     ------------------------------------------------------------------
-  !      DPJAC IS CALLED BY DSTOD  TO COMPUTE AND PROCESS THE MATRIX
+  !      dpJAC IS CALLED BY DSTOD  TO COMPUTE AND PROCESS THE MATRIX
   !      P = I - H*EL(1)*J, WHERE J IS AN APPROXIMATION TO THE JACOBIAN.
   !      HERE J IS COMPUTED BY THE USER-SUPPLIED ROUTINE DJAC IF
   !      MITER = 1 OR 4, OR BY FINITE DIFFERENCING IF MITER = 2, 3, OR 5.
@@ -68,7 +70,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !      BY DGEFA IF MITER = 1 OR 2, AND BY DGBFA IF MITER = 4 OR 5.
   !
   !      IN ADDITION TO VARIABLES DESCRIBED PREVIOUSLY, COMMUNICATION
-  !      WITH DPJAC USES THE FOLLOWING..
+  !      WITH dpJAC USES THE FOLLOWING..
   !      Y    = ARRAY CONTAINING PREDICTED VALUES ON ENTRY.
   !      FTEM = WORK ARRAY OF LENGTH N (ACOR IN DSTOD ).
   !      SAVF = ARRAY CONTAINING DF EVALUATED AT PREDICTED Y.
@@ -81,7 +83,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !             WM(1) = SQRT(UROUND), USED IN NUMERICAL JACOBIAN
   !             INCREMENTS.  WM(2) = H*EL0, SAVED FOR LATER USE IF MITER =
   !             3.
-  !      IWM  = INTEGER WORK SPACE CONTAINING PIVOT INFORMATION, STARTING
+  !      IWM  = INTEGER(i4) WORK SPACE CONTAINING PIVOT INFORMATION, STARTING
   !             AT IWM(21), IF MITER IS 1, 2, 4, OR 5.  IWM ALSO CONTAINS
   !             THE BAND PARAMETERS ML = IWM(1) AND MU = IWM(2) IF MITER
   !             IS 4 OR 5.
@@ -95,7 +97,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !        BEGIN BLOCK PERMITTING ...EXITS TO 220
   !           BEGIN BLOCK PERMITTING ...EXITS TO 130
   !              BEGIN BLOCK PERMITTING ...EXITS TO 70
-  !* FIRST EXECUTABLE STATEMENT  DPJAC
+  !* FIRST EXECUTABLE STATEMENT  dpJAC
   nje_com = nje_com + 1
   hl0 = h_com*el0_com
   SELECT CASE (miter_com)
@@ -103,8 +105,8 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       !                 IF MITER = 2, MAKE N CALLS TO DF TO APPROXIMATE J.
       !                 --------------------
       fac = DVNRMS(n_com,Savf,Ewt)
-      r0 = 1000._DP*ABS(h_com)*uround_com*n_com*fac
-      IF( r0==0._DP ) r0 = 1._DP
+      r0 = 1000._dp*ABS(h_com)*uround_com*n_com*fac
+      IF( r0==0._dp ) r0 = 1._dp
       srur = Wm(1)
       j1 = 2
       DO j = 1, n_com
@@ -113,6 +115,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
         Y(j) = Y(j) + r
         fac = -hl0/r
         CALL DF(tn_com,Y,Ftem)
+        !$OMP SIMD LINEAR(i:1) IF(n_com>=16)
         DO i = 1, n_com
           Wm(i+j1) = (Ftem(i)-Savf(i))*fac
         END DO
@@ -124,7 +127,8 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       ! IF MITER = 3, CONSTRUCT A DIAGONAL APPROXIMATION TO J AND P. ---------
       Wm(2) = hl0
       ier_com = 0
-      r = el0_com*0.1_DP
+      r = el0_com*0.1_dp
+     !$OMP SIMD LINEAR(i:1) IF(n_com>=16)
       DO i = 1, n_com
         Y(i) = Y(i) + r*(h_com*Savf(i)-Yh(i,2))
       END DO
@@ -132,12 +136,12 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       nfe_com = nfe_com + 1
       DO i = 1, n_com
         r0 = h_com*Savf(i) - Yh(i,2)
-        di = 0.1_DP*r0 - h_com*(Wm(i+2)-Savf(i))
-        Wm(i+2) = 1._DP
+        di = 0.1_dp*r0 - h_com*(Wm(i+2)-Savf(i))
+        Wm(i+2) = 1._dp
         IF( ABS(r0)>=uround_com*Ewt(i) ) THEN
           !           .........EXIT
-          IF( ABS(di)==0._DP ) GOTO 100
-          Wm(i+2) = 0.1_DP*r0/di
+          IF( ABS(di)==0._dp ) GOTO 100
+          Wm(i+2) = 0.1_dp*r0/di
         END IF
       END DO
       !     .........EXIT
@@ -151,10 +155,11 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       mband = ml + mu + 1
       meband = 2*ml + mu + 1
       ALLOCATE( pd(meband,n_com) )
-      pd = 0._DP
+      pd = 0._dp
       CALL DJAC(tn_com,Y,pd,meband)
       con = -hl0
       DO j = 1, n_com
+        !$OMP SIMD LINEAR(i:1) IF(meband>=16)
         DO i = 1, meband
           Wm( 2+(j-1)*meband+i ) = pd(i,j)*con
         END DO
@@ -171,8 +176,8 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       meb1 = meband - 1
       srur = Wm(1)
       fac = DVNRMS(n_com,Savf,Ewt)
-      r0 = 1000._DP*ABS(h_com)*uround_com*n_com*fac
-      IF( r0==0._DP ) r0 = 1._DP
+      r0 = 1000._dp*ABS(h_com)*uround_com*n_com*fac
+      IF( r0==0._dp ) r0 = 1._dp
       DO j = 1, mba
         DO i = j, n_com, mband
           yi = Y(i)
@@ -188,6 +193,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
           i1 = MAX(jj-mu,1)
           i2 = MIN(jj+ml,n_com)
           ii = jj*meb1 - ml + 2
+          
           DO i = i1, i2
             Wm(ii+i) = (Ftem(i)-Savf(i))*fac
           END DO
@@ -199,10 +205,11 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
       !                 IF MITER = 1, CALL DJAC AND MULTIPLY BY SCALAR.
       !                 -----------------------
       ALLOCATE( pd(n_com,n_com) )
-      pd = 0._DP
+      pd = 0._dp
       CALL DJAC(tn_com,Y,pd,n_com)
       con = -hl0
       DO j = 1, n_com
+        !$OMP SIMD LINEAR(i:1) IF(n_com>=16)
         DO i = 1, n_com
           Wm( 2+(j-1)*n_com+i ) = pd(i,j)*con
         END DO
@@ -212,7 +219,7 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !              -------------------------------------------------
   j = 3
   DO i = 1, n_com
-    Wm(j) = Wm(j) + 1._DP
+    Wm(j) = Wm(j) + 1._dp
     j = j + (n_com+1)
   END DO
   !              DO LU DECOMPOSITION ON P.
@@ -227,12 +234,12 @@ SUBROUTINE DPJAC(Neq,Y,Yh,Nyh,Ewt,Ftem,Savf,Wm,Iwm,DF,DJAC)
   !        -------------------------------------------------
   200  ii = mband + 2
   DO i = 1, n_com
-    Wm(ii) = Wm(ii) + 1._DP
+    Wm(ii) = Wm(ii) + 1._dp
     ii = ii + meband
   END DO
   !        DO LU DECOMPOSITION OF P.
   !        --------------------------------------------
   CALL DGBFA(Wm(3:meband*n_com+2),meband,n_com,ml,mu,Iwm(21:n_com+20),ier_com)
-  !----------------------- END OF SUBROUTINE DPJAC -----------------------
+  !----------------------- END OF SUBROUTINE dpJAC -----------------------
   RETURN
-END SUBROUTINE DPJAC
+END SUBROUTINE dpJAC

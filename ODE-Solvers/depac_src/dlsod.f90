@@ -1,6 +1,7 @@
 !** DLSOD
 SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     Acor,Wm,Iwm,DJAC,Intout,Tstop,Tolfac,Delsgn)
+     use mod_kinds, only : i4,dp
   !> Subsidiary to DDEBDF
   !***
   ! **Library:**   SLATEC
@@ -37,31 +38,31 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
     PURE SUBROUTINE DJAC(X,U,Pd,Nrowpd)
-      IMPORT DP
-      INTEGER, INTENT(IN) :: Nrowpd
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Pd(:,:)
+      IMPORT dp
+      INTEGER(i4), INTENT(IN) :: Nrowpd
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Pd(:,:)
     END SUBROUTINE DJAC
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq
-  INTEGER, INTENT(OUT) :: Idid
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(DP), INTENT(IN) :: Tout, Tstop
-  REAL(DP), INTENT(INOUT) :: Delsgn, T
-  REAL(DP), INTENT(OUT) :: Tolfac
-  REAL(DP), INTENT(INOUT) :: Acor(Neq), Atol(:), Ewt(Neq), Rtol(:), Savf(Neq), &
+  INTEGER(i4), INTENT(IN) :: Neq
+  INTEGER(i4), INTENT(OUT) :: Idid
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(dp), INTENT(IN) :: Tout, Tstop
+  REAL(dp), INTENT(INOUT) :: Delsgn, T
+  REAL(dp), INTENT(OUT) :: Tolfac
+  REAL(dp), INTENT(INOUT) :: Acor(Neq), Atol(:), Ewt(Neq), Rtol(:), Savf(Neq), &
     Y(Neq), Yh(Neq,6), Yh1(6*Neq), Ypout(Neq), Wm(:)
   LOGICAL, INTENT(INOUT) :: Intout
   !
-  INTEGER :: intflg, k, l, ltol, natolp, nrtolp
-  REAL(DP) :: absdel, big, del, dt, ha, tol
+  INTEGER(i4) :: intflg, k, l, ltol, natolp, nrtolp
+  REAL(dp) :: absdel, big, del, dt, ha, tol
 
   CHARACTER(8) :: xern1
   CHARACTER(16) :: xern3, xern4
@@ -72,7 +73,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
   !       NUMBER OF  STEPS ATTEMPTED. WHEN THIS EXCEEDS  MAXNUM, THE
   !       COUNTER IS RESET TO ZERO AND THE USER IS INFORMED ABOUT POSSIBLE
   !       EXCESSIVE WORK.
-  INTEGER, PARAMETER :: maxnum = 500
+  INTEGER(i4), PARAMETER :: maxnum = 500
   !
   !     ..................................................................
   !
@@ -112,9 +113,9 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     n_com = Neq
     nst_com = 0
     nje_com = 0
-    hmxi_com = 0._DP
+    hmxi_com = 0._dp
     nq_com = 1
-    h_com = 1._DP
+    h_com = 1._dp
     !                          -- RESET IBEGIN FOR SUBSEQUENT CALLS
     ibegin_com = 1
   END IF
@@ -125,7 +126,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
   !
   IF( Neq<1 ) THEN
     WRITE (xern1,'(I8)') Neq
-    ERROR STOP 'DLSOD : IN DDEBDF, THE NUMBER OF EQUATIONS MUST BE A POSITIVE INTEGER.'
+    ERROR STOP 'DLSOD : IN DDEBDF, THE NUMBER OF EQUATIONS MUST BE A POSITIVE INTEGER(i4).'
     Idid = -33
   END IF
   !
@@ -161,7 +162,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
   END DO
   !
   IF( itstop_com==1 ) THEN
-    IF( SIGN(1._DP,Tout-T)/=SIGN(1._DP,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
+    IF( SIGN(1._dp,Tout-T)/=SIGN(1._dp,Tstop-T) .OR. ABS(Tout-T)>ABS(Tstop-T) ) THEN
       WRITE (xern3,'(1PE15.6)') Tout
       WRITE (xern4,'(1PE15.6)') Tstop
       ERROR STOP 'DLSOD : IN DDEBDF, YOU HAVE CALLED THE CODE WITH THAT VALUE OF&
@@ -190,7 +191,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     END IF
     !
     IF( init_com/=1 ) THEN
-      IF( Delsgn*(Tout-T)<0._DP ) THEN
+      IF( Delsgn*(Tout-T)<0._dp ) THEN
         WRITE (xern3,'(1PE15.6)') Tout
         ERROR STOP 'DLSOD : IN DDEBDF, BY CALLING THE CODE WITH THAT VALUE OFTOUT&
           & YOU ARE ATTEMPTING TO CHANGE THE DIRECTION OF INTEGRATION.&
@@ -222,8 +223,8 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
   !             THIS METHOD AND MACHINE
   !
   DO k = 1, Neq
-    IF( Rtol(k)+Atol(k)<=0._DP ) THEN
-      Rtol(k) = 100._DP*uround_com
+    IF( Rtol(k)+Atol(k)<=0._dp ) THEN
+      Rtol(k) = 100._dp*uround_com
       Idid = -2
     END IF
     !     ...EXIT
@@ -279,7 +280,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     DO l = 1, Neq
       IF( itol_com==1 ) ltol = l
       tol = Rtol(ltol)*ABS(Y(l)) + Atol(ltol)
-      IF( tol==0._DP ) GOTO 200
+      IF( tol==0._dp ) GOTO 200
       Ewt(l) = tol
     END DO
     !
@@ -287,7 +288,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     CALL DHSTRT(DF,Neq,T,Tout,Y,Yh(1,2),Ewt,1,uround_com,big,Yh(1,3),Yh(1,4),Yh(1,5),&
       Yh(1,6),h_com)
     !
-    Delsgn = SIGN(1._DP,Tout-T)
+    Delsgn = SIGN(1._dp,Tout-T)
     tn_com = T
     DO l = 1, Neq
       Yh(l,1) = Y(l)
@@ -323,7 +324,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
     !                       CLOSE, EXTRAPOLATE AND RETURN
     !
     IF( itstop_com==1 ) THEN
-      IF( ABS(Tstop-tn_com)<100._DP*uround_com*ABS(tn_com) ) THEN
+      IF( ABS(Tstop-tn_com)<100._dp*uround_com*ABS(tn_com) ) THEN
         dt = Tout - tn_com
         DO l = 1, Neq
           Y(l) = Yh(l,1) + (dt/h_com)*Yh(l,2)
@@ -355,7 +356,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
       !
       !                             LIMIT STEP SIZE AND SET WEIGHT VECTOR
       !
-      hmin_com = 100._DP*uround_com*ABS(tn_com)
+      hmin_com = 100._dp*uround_com*ABS(tn_com)
       ha = MAX(ABS(h_com),hmin_com)
       IF( itstop_com==1 ) ha = MIN(ha,ABS(Tstop-tn_com))
       h_com = SIGN(ha,h_com)
@@ -364,11 +365,11 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
         IF( itol_com==1 ) ltol = l
         Ewt(l) = Rtol(ltol)*ABS(Yh(l,1)) + Atol(ltol)
         !                    .........EXIT
-        IF( Ewt(l)<=0._DP ) GOTO 200
+        IF( Ewt(l)<=0._dp ) GOTO 200
       END DO
       Tolfac = uround_com*DVNRMS(Neq,Yh,Ewt)
       !                 .........EXIT
-      IF( Tolfac<=1._DP ) THEN
+      IF( Tolfac<=1._dp ) THEN
         !
         !                 ...................................................
         !
@@ -399,7 +400,7 @@ SUBROUTINE DLSOD(DF,Neq,T,Y,Tout,Rtol,Atol,Idid,Ypout,Yh,Yh1,Ewt,Savf,&
         !
         !                          TOLERANCES TOO SMALL
         Idid = -2
-        Tolfac = 2._DP*Tolfac
+        Tolfac = 2._dp*Tolfac
         Rtol(1) = Tolfac*Rtol(1)
         Atol(1) = Tolfac*Atol(1)
         IF( itol_com/=0 ) THEN
