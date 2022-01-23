@@ -1,5 +1,6 @@
 !** DSLVS
 SUBROUTINE DSLVS(Wm,Iwm,X)
+   use mod_kinds, only : i4,dp
   !> Subsidiary to DDEBDF
   !***
   ! **Library:**   SLATEC
@@ -30,11 +31,11 @@ SUBROUTINE DSLVS(Wm,Iwm,X)
   USE DDEBD1, ONLY : el0_com, h_com, ier_com, miter_com, n_com
   USE lapack, ONLY : DGBTRS, DGETRS
   !
-  INTEGER, INTENT(INOUT) :: Iwm(:)
-  REAL(DP), INTENT(INOUT) :: Wm(:), X(n_com)
+  INTEGER(i4), INTENT(INOUT) :: Iwm(:)
+  REAL(dp), INTENT(INOUT) :: Wm(:), X(n_com)
   !
-  INTEGER :: i, meband, ml, mu, info
-  REAL(DP) :: di, hl0, phl0, r
+  INTEGER(i4) :: i, meband, ml, mu, info
+  REAL(dp) :: di, hl0, phl0, r
   !     ------------------------------------------------------------------
   !      THIS ROUTINE MANAGES THE SOLUTION OF THE LINEAR SYSTEM ARISING
   !      FROM A CHORD ITERATION.  IT IS CALLED BY DSTOD  IF MITER /= 0.
@@ -51,7 +52,7 @@ SUBROUTINE DSLVS(Wm,Iwm,X)
   !            WM(1) = SQRT(UROUND) (NOT USED HERE),
   !            WM(2) = HL0, THE PREVIOUS VALUE OF H*EL0, USED IF MITER =
   !            3.
-  !      IWM = INTEGER WORK SPACE CONTAINING PIVOT INFORMATION, STARTING
+  !      IWM = INTEGER(i4) WORK SPACE CONTAINING PIVOT INFORMATION, STARTING
   !            AT IWM(21), IF MITER IS 1, 2, 4, OR 5.  IWM ALSO CONTAINS
   !            THE BAND PARAMETERS ML = IWM(1) AND MU = IWM(2) IF MITER IS
   !            4 OR 5.
@@ -75,10 +76,10 @@ SUBROUTINE DSLVS(Wm,Iwm,X)
       IF( hl0/=phl0 ) THEN
         r = hl0/phl0
         DO i = 1, n_com
-          di = 1._DP - r*(1._DP-1._DP/Wm(i+2))
+          di = 1._dp - r*(1._dp-1._dp/Wm(i+2))
           !        .........EXIT
-          IF( ABS(di)==0._DP ) GOTO 100
-          Wm(i+2) = 1._DP/di
+          IF( ABS(di)==0._dp ) GOTO 100
+          Wm(i+2) = 1._dp/di
         END DO
       END IF
       DO i = 1, n_com
