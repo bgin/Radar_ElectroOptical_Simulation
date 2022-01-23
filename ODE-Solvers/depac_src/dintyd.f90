@@ -1,5 +1,6 @@
 !** DINTYD
 PURE SUBROUTINE DINTYD(T,K,Yh,Nyh,Dky,Iflag)
+   use mod_kinds, only : i4,dp
   !> Subsidiary to DDEBDF
   !***
   ! **Library:**   SLATEC
@@ -49,14 +50,14 @@ PURE SUBROUTINE DINTYD(T,K,Yh,Nyh,Dky,Iflag)
   !   910722  Updated AUTHOR section.  (ALS)
   USE DDEBD1, ONLY : h_com, hu_com, tn_com, uround_com, l_com, n_com, nq_com
   !
-  INTEGER, INTENT(IN) :: K, Nyh
-  INTEGER, INTENT(OUT) :: Iflag
-  REAL(DP), INTENT(IN) :: T
-  REAL(DP), INTENT(IN) :: Yh(Nyh,nq_com+1)
-  REAL(DP), INTENT(OUT) :: Dky(Nyh)
+  INTEGER(i4), INTENT(IN) :: K, Nyh
+  INTEGER(i4), INTENT(OUT) :: Iflag
+  REAL(dp), INTENT(IN) :: T
+  REAL(dp), INTENT(IN) :: Yh(Nyh,nq_com+1)
+  REAL(dp), INTENT(OUT) :: Dky(Nyh)
   !
-  INTEGER :: i, ic, j, jb, jb2, jj, jj1, jp1
-  REAL(DP) :: c, r, s, tp
+  INTEGER(i4) :: i, ic, j, jb, jb2, jj, jj1, jp1
+  REAL(dp) :: c, r, s, tp
   !
   !     BEGIN BLOCK PERMITTING ...EXITS TO 130
   !* FIRST EXECUTABLE STATEMENT  DINTYD
@@ -65,8 +66,8 @@ PURE SUBROUTINE DINTYD(T,K,Yh,Nyh,Dky,Iflag)
     !
     Iflag = -1
   ELSE
-    tp = tn_com - hu_com*(1.0_DP+100._DP*uround_com)
-    IF( (T-tp)*(T-tn_com)<=0._DP ) THEN
+    tp = tn_com - hu_com*(1.0_dp+100._dp*uround_com)
+    IF( (T-tp)*(T-tn_com)<=0._dp ) THEN
       !
       s = (T-tn_com)/h_com
       ic = 1
