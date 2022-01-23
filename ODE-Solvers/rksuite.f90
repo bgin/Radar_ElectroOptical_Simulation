@@ -1,4 +1,4 @@
-module rksuite_90_prec
+!module rksuite_90_prec
 !
 ! Part of rksuite_90 v1.0 (Aug 1994)
 !         software for initial value problems in ODEs
@@ -7,9 +7,9 @@ module rksuite_90_prec
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-integer, parameter :: wp = selected_real_kind(10,50)
+!integer(i4), parameter :: wp = selected_real_kind(10,50)
 
-end module rksuite_90_prec
+!end module rksuite_90_prec
 
 module rksuite_90
 !
@@ -20,8 +20,8 @@ module rksuite_90
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-use rksuite_90_prec, only:wp
-
+!use rksuite_90_prec, only:wp
+use mod_kinds, only : i4,dp
 implicit none
 
 private
@@ -35,58 +35,67 @@ type rk_comm_real_1d
 
 private
 
-real(kind=wp) :: t, t_old, t_start, t_end, dir                       !indep!
-real(kind=wp) :: h, h_old, h_start, h_average                        !indep!
-real(kind=wp) :: tol
-integer :: f_count, full_f_count, step_count, bad_step_count
+real(kind=dp) :: t, t_old, t_start, t_end, dir                       !indep!
+real(kind=dp) :: h, h_old, h_start, h_average                        !indep!
+real(kind=dp) :: tol
+integer(i4) :: f_count, full_f_count, step_count, bad_step_count
 logical :: at_t_start, at_t_end
 
 
-real(kind=wp), dimension(:), pointer :: thresh, weights, ymax        !shp-dep!
+real(kind=dp), dimension(:), pointer :: thresh, weights, ymax        !shp-dep!
 
-real(kind=wp), dimension(:), pointer :: scratch, y, yp, y_new        !dep!
-real(kind=wp), dimension(:), pointer :: y_old, yp_old, v0, v1        !dep!
-real(kind=wp), dimension(:), pointer :: err_estimates, v2, v3        !dep!
-real(kind=wp), dimension(:), pointer ::  vtemp                       !dep!
-real(kind=wp), dimension(:,:), pointer :: stages                     !dep!
-
-real(kind=wp) :: a(13,13), b(13), c(13), bhat(13), r(11,6), e(7)
-integer :: ptr(13), no_of_stages, rk_method, intrp_degree
+real(kind=dp), dimension(:), pointer :: scratch, y, yp, y_new        !dep!
+real(kind=dp), dimension(:), pointer :: y_old, yp_old, v0, v1        !dep!
+real(kind=dp), dimension(:), pointer :: err_estimates, v2, v3        !dep!
+real(kind=dp), dimension(:), pointer ::  vtemp                       !dep!
+real(kind=dp), dimension(:,:), pointer :: stages                     !dep!
+!dir$ attributes align : 64 :: thresh,weights,ymax
+!dir$ attributes align : 64 :: y_old,yp_old,v0,v1
+!dir$ attributes align : 64 :: err_estimates,v2,v3
+!dir$ attributes align : 64 :: vtemp
+!dir$ attributes align : 64 :: stages
+real(kind=dp) :: a(13,13), b(13), c(13), bhat(13), r(11,6), e(7)
+integer(i4) :: ptr(13), no_of_stages, rk_method, intrp_degree
 logical :: intrp_able, intrp_needs_stages
 
-real(kind=wp) :: toosml, cost, safety, expon, stability_radius, tan_angle, &
+real(kind=dp) :: toosml, cost, safety, expon, stability_radius, tan_angle, &
     rs, rs1, rs2, rs3, rs4
-integer :: order, last_stage, max_stiff_iters, no_of_ge_steps
+integer(i4) :: order, last_stage, max_stiff_iters, no_of_ge_steps
 logical :: fsal
 
-real(kind=wp) :: ge_max_contrib
-real(kind=wp) :: t_ge_max_contrib                                    !indep!
-integer :: ge_f_count
-real(kind=wp), dimension(:), pointer :: ge_assess                    !shp-dep!
+real(kind=dp) :: ge_max_contrib
+real(kind=dp) :: t_ge_max_contrib                                    !indep!
+integer(i4) :: ge_f_count
+real(kind=dp), dimension(:), pointer :: ge_assess                    !shp-dep!
 
-real(kind=wp), dimension(:), pointer :: ge_y, ge_yp, ge_y_new        !dep!
-real(kind=wp), dimension(:), pointer :: ge_err_estimates             !dep!
-real(kind=wp), dimension(:,:), pointer :: ge_stages                  !dep!
-
+real(kind=dp), dimension(:), pointer :: ge_y, ge_yp, ge_y_new        !dep!
+real(kind=dp), dimension(:), pointer :: ge_err_estimates             !dep!
+real(kind=dp), dimension(:,:), pointer :: ge_stages                  !dep!
+!dir$ attributes align : 64 :: ge_assess
+!dir$ attributes align : 64 :: ge_y,ge_yp,ge_y_new
+!dir$ attributes align : 64 :: ge_err_estimates
+!dir$ attributes align : 64 :: ge_stages
 logical :: erason, erasfl
 
-real(kind=wp) :: mcheps, dwarf, round_off, sqrrmc, cubrmc, sqtiny
-integer :: outch
+real(kind=dp) :: mcheps, dwarf, round_off, sqrrmc, cubrmc, sqtiny
+integer(i4) :: outch
 
 logical :: print_message, use_range
 
 character(len=80) :: rec(10)
 
-real(kind=wp) :: tlast, range_t_end                                  !indep!
+real(kind=dp) :: tlast, range_t_end                                  !indep!
 
-real(kind=wp), dimension(:), pointer :: xstage, ytemp                !dep!
-real(kind=wp), dimension(:,:), pointer :: p                          !dep!
+real(kind=dp), dimension(:), pointer :: xstage, ytemp                !dep!
+real(kind=dp), dimension(:,:), pointer :: p                          !dep!
+!dir$ attributes align : 64 :: xstage,ytemp
+!dir$ attributes align : 64 :: p
 
-integer :: stiff_bad_step_count, hit_t_end_count
-real(kind=wp) :: errold
+integer(i4) :: stiff_bad_step_count, hit_t_end_count
+real(kind=dp) :: errold
 logical :: chkeff, phase2
 
-integer, dimension(7) :: save_states
+integer(i4), dimension(7) :: save_states
 
 logical :: stop_on_fatal, saved_fatal_err
 
@@ -134,11 +143,11 @@ subroutine machine_const(round_off,sqrrmc,cubrmc,sqtiny,outch)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(out) :: round_off, sqrrmc, cubrmc, sqtiny
-integer, intent(out) :: outch
+real(kind=dp), intent(out) :: round_off, sqrrmc, cubrmc, sqtiny
+integer(i4), intent(out) :: outch
 !
-real(kind=wp) :: dummy
-real(kind=wp), parameter :: third=1.0_wp/3.0_wp, ten=10.0_wp
+real(kind=dp) :: dummy
+real(kind=dp), parameter :: third=1.0_dp/3.0_dp, ten=10.0_dp
 !
 outch = 6
 !
@@ -162,19 +171,19 @@ subroutine method_const(rk_method, a, b, c, bhat, r, e, ptr, no_of_stages, &
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-integer, intent(in) :: rk_method
-real(kind=wp), intent(out) :: a(13,13), b(13), c(13), bhat(13), r(11,6), e(7)
-integer, intent(out) :: ptr(13), no_of_stages, intrp_degree
+integer(i4), intent(in) :: rk_method
+real(kind=dp), intent(out) :: a(13,13), b(13), c(13), bhat(13), r(11,6), e(7)
+integer(i4), intent(out) :: ptr(13), no_of_stages, intrp_degree
 logical, intent(out) :: intrp_able, intrp_needs_stages
 
-real(kind=wp), intent(out) :: cost, safety, expon, stability_radius, &
+real(kind=dp), intent(out) :: cost, safety, expon, stability_radius, &
     tan_angle, rs, rs1, rs2, rs3, rs4, cdiff
-integer, intent(out) :: order, last_stage, max_stiff_iters, no_of_ge_steps
+integer(i4), intent(out) :: order, last_stage, max_stiff_iters, no_of_ge_steps
 logical, intent(out) :: fsal
 !
-integer :: i
-real(kind=wp), parameter :: fivepc=0.05_wp,  one=1.0_wp, two=2.0_wp, &
-   fifty=50.0_wp
+integer(i4) :: i
+real(kind=dp), parameter :: fivepc=0.05_dp,  one=1.0_dp, two=2.0_dp, &
+   fifty=50.0_dp
 !
 select case (rk_method)
 case(1)
@@ -185,33 +194,33 @@ case(1)
 !    are grateful to P. Bogacki for his assistance in implementing the pair.
 !
    no_of_stages = 4; fsal = .true.; order = 2
-   tan_angle = 8.9_wp; stability_radius = 2.3_wp
-   safety = 0.8_wp; intrp_able = .true.; intrp_degree = 3
+   tan_angle = 8.9_dp; stability_radius = 2.3_dp
+   safety = 0.8_dp; intrp_able = .true.; intrp_degree = 3
    intrp_needs_stages = .false.; no_of_ge_steps = 3
 !
    ptr(1:4) = (/ 0, 1, 2, 3 /)
 !
-   a(2,1) = 1.0_wp/2.0_wp
-   a(3,1) = 0.0_wp
-   a(3,2) = 3.0_wp/4.0_wp
-   a(4,1) = 2.0_wp/9.0_wp
-   a(4,2) = 1.0_wp/3.0_wp
-   a(4,3) = 4.0_wp/9.0_wp
+   a(2,1) = 0.5_dp
+   a(3,1) = 0.0_dp
+   a(3,2) = 0.75_dp
+   a(4,1) = 0.222222222222222222222222222222_dp
+   a(4,2) = 0.333333333333333333333333333333_dp
+   a(4,3) = 0.444444444444444444444444444444_dp
 !
 !  The coefficients BHAT refer to the formula used to advance the
 !  integration, here the one of order 3.  The coefficients B refer
 !  to the other formula, here the one of order 2. For this pair, BHAT
 !  is not needed since FSAL = .TRUE.
 !
-   b(1) = 7.0_wp/24.0_wp
-   b(2) = 1.0_wp/4.0_wp
-   b(3) = 1.0_wp/3.0_wp
-   b(4) = 1.0_wp/8.0_wp
+   b(1) = 0.291666666666666666666666666667_dp
+   b(2) = 0.25_dp
+   b(3) = 0.333333333333333333333333333333_dp
+   b(4) = 0.125_dp
 !
-   c(1) = 0.0_wp
-   c(2) = 1.0_wp/2.0_wp
-   c(3) = 3.0_wp/4.0_wp
-   c(4) = 1.0_wp
+   c(1) = 0.0_dp
+   c(2) = 0.5_dp
+   c(3) = 0.75_dp
+   c(4) = 1.0_dp
 !
 case (2)
 !
@@ -235,173 +244,173 @@ case (2)
 !    estimation.
 !
    no_of_stages = 8; fsal = .true.; order = 4
-   tan_angle = 5.2_wp; stability_radius = 3.9_wp
-   safety = 0.8_wp; intrp_able = .true.
+   tan_angle = 5.2_dp; stability_radius = 3.9_dp
+   safety = 0.8_dp; intrp_able = .true.
    intrp_needs_stages = .true.; intrp_degree = 6
    no_of_ge_steps = 2
 !
    ptr(1:8) = (/ 0, 1, 2, 3, 4, 5, 6, 7 /)
 !
-   a(2,1) = 1.0_wp/6.0_wp
-   a(3,1) = 2.0_wp/27.0_wp
-   a(3,2) = 4.0_wp/27.0_wp
-   a(4,1) = 183.0_wp/1372.0_wp
-   a(4,2) = -162.0_wp/343.0_wp
-   a(4,3) = 1053.0_wp/1372.0_wp
-   a(5,1) = 68.0_wp/297.0_wp
-   a(5,2) = -4.0_wp/11.0_wp
-   a(5,3) = 42.0_wp/143.0_wp
-   a(5,4) = 1960.0_wp/3861.0_wp
-   a(6,1) = 597.0_wp/22528.0_wp
-   a(6,2) = 81.0_wp/352.0_wp
-   a(6,3) = 63099.0_wp/585728.0_wp
-   a(6,4) = 58653.0_wp/366080.0_wp
-   a(6,5) = 4617.0_wp/20480.0_wp
-   a(7,1) = 174197.0_wp/959244.0_wp
-   a(7,2) = -30942.0_wp/79937.0_wp
-   a(7,3) = 8152137.0_wp/19744439.0_wp
-   a(7,4) = 666106.0_wp/1039181.0_wp
-   a(7,5) = -29421.0_wp/29068.0_wp
-   a(7,6) = 482048.0_wp/414219.0_wp
-   a(8,1) = 587.0_wp/8064.0_wp
-   a(8,2) = 0.0_wp
-   a(8,3) = 4440339.0_wp/15491840.0_wp
-   a(8,4) = 24353.0_wp/124800.0_wp
-   a(8,5) = 387.0_wp/44800.0_wp
-   a(8,6) = 2152.0_wp/5985.0_wp
-   a(8,7) = 7267.0_wp/94080.0_wp
+   a(2,1) = 0.166666666666666666666666666667_dp !1.0_dp/6.0_dp
+   a(3,1) = 0.074074074074074074074074074074_dp !2.0_dp/27.0_dp
+   a(3,2) = 0.148148148148148148148148148148_dp !4.0_dp/27.0_dp
+   a(4,1) = 0.133381924198250728862973760933_dp !183.0_dp/1372.0_dp
+   a(4,2) = −0.472303206997084548104956268222_dp !-162.0_dp/343.0_dp
+   a(4,3) = 1053.0_dp/1372.0_dp
+   a(5,1) = 68.0_dp/297.0_dp
+   a(5,2) = -4.0_dp/11.0_dp
+   a(5,3) = 42.0_dp/143.0_dp
+   a(5,4) = 1960.0_dp/3861.0_dp
+   a(6,1) = 597.0_dp/22528.0_dp
+   a(6,2) = 81.0_dp/352.0_dp
+   a(6,3) = 63099.0_dp/585728.0_dp
+   a(6,4) = 58653.0_dp/366080.0_dp
+   a(6,5) = 4617.0_dp/20480.0_dp
+   a(7,1) = 174197.0_dp/959244.0_dp
+   a(7,2) = -30942.0_dp/79937.0_dp
+   a(7,3) = 8152137.0_dp/19744439.0_dp
+   a(7,4) = 666106.0_dp/1039181.0_dp
+   a(7,5) = -29421.0_dp/29068.0_dp
+   a(7,6) = 482048.0_dp/414219.0_dp
+   a(8,1) = 587.0_dp/8064.0_dp
+   a(8,2) = 0.0_dp
+   a(8,3) = 4440339.0_dp/15491840.0_dp
+   a(8,4) = 24353.0_dp/124800.0_dp
+   a(8,5) = 387.0_dp/44800.0_dp
+   a(8,6) = 2152.0_dp/5985.0_dp
+   a(8,7) = 7267.0_dp/94080.0_dp
 !
 !  The coefficients B refer to the formula of order 4.
 !
-   b(1) = 2479.0_wp/34992.0_wp
-   b(2) = 0.0_wp
-   b(3) = 123.0_wp/416.0_wp
-   b(4) = 612941.0_wp/3411720.0_wp
-   b(5) = 43.0_wp/1440.0_wp
-   b(6) = 2272.0_wp/6561.0_wp
-   b(7) = 79937.0_wp/1113912.0_wp
-   b(8) = 3293.0_wp/556956.0_wp
+   b(1) = 2479.0_dp/34992.0_dp
+   b(2) = 0.0_dp
+   b(3) = 123.0_dp/416.0_dp
+   b(4) = 612941.0_dp/3411720.0_dp
+   b(5) = 43.0_dp/1440.0_dp
+   b(6) = 2272.0_dp/6561.0_dp
+   b(7) = 79937.0_dp/1113912.0_dp
+   b(8) = 3293.0_dp/556956.0_dp
 !
 !  The coefficients E refer to an estimate of the local error based on
 !  the first formula of order 4.  It is the difference of the fifth order
 !  result, here located in A(8,:), and the fourth order result.  By
 !  construction both E(2) and E(7) are zero.
 !
-   e(1) = -3.0_wp/1280.0_wp
-   e(2) = 0.0_wp
-   e(3) = 6561.0_wp/632320.0_wp
-   e(4) = -343.0_wp/20800.0_wp
-   e(5) = 243.0_wp/12800.0_wp
-   e(6) = -1.0_wp/95.0_wp
-   e(7) = 0.0_wp
+   e(1) = -3.0_dp/1280.0_dp
+   e(2) = 0.0_dp
+   e(3) = 6561.0_dp/632320.0_dp
+   e(4) = -343.0_dp/20800.0_dp
+   e(5) = 243.0_dp/12800.0_dp
+   e(6) = -1.0_dp/95.0_dp
+   e(7) = 0.0_dp
 !
-   c(1) = 0.0_wp
-   c(2) = 1.0_wp/6.0_wp
-   c(3) = 2.0_wp/9.0_wp
-   c(4) = 3.0_wp/7.0_wp
-   c(5) = 2.0_wp/3.0_wp
-   c(6) = 3.0_wp/4.0_wp
-   c(7) = 1.0_wp
-   c(8) = 1.0_wp
+   c(1) = 0.0_dp
+   c(2) = 1.0_dp/6.0_dp
+   c(3) = 2.0_dp/9.0_dp
+   c(4) = 3.0_dp/7.0_dp
+   c(5) = 2.0_dp/3.0_dp
+   c(6) = 3.0_dp/4.0_dp
+   c(7) = 1.0_dp
+   c(8) = 1.0_dp
 !
 !  To do interpolation with this pair, some extra stages have to be computed.
 !  The following additional A and C coefficients are for this purpose.
 !  In addition there is an array R that plays a role for interpolation
 !  analogous to that of BHAT for the basic step.
 !
-   c(9) = 1.0_wp/2.0_wp
-   c(10) = 5.0_wp/6.0_wp
-   c(11) = 1.0_wp/9.0_wp
+   c(9) = 1.0_dp/2.0_dp
+   c(10) = 5.0_dp/6.0_dp
+   c(11) = 1.0_dp/9.0_dp
 !
-   a(9,1) = 455.0_wp/6144.0_wp
-   a(10,1) = -837888343715.0_wp/13176988637184.0_wp
-   a(11,1) = 98719073263.0_wp/1551965184000.0_wp
-   a(9,2) = 0.0_wp
-   a(10,2) = 30409415.0_wp/52955362.0_wp
-   a(11,2) = 1307.0_wp/123552.0_wp
-   a(9,3) = 10256301.0_wp/35409920.0_wp
-   a(10,3) = -48321525963.0_wp/759168069632.0_wp
-   a(11,3) = 4632066559387.0_wp/70181753241600.0_wp
-   a(9,4) = 2307361.0_wp/17971200.0_wp
-   a(10,4) = 8530738453321.0_wp/197654829557760.0_wp
-   a(11,4) = 7828594302389.0_wp/382182512025600.0_wp
-   a(9,5) = -387.0_wp/102400.0_wp
-   a(10,5) = 1361640523001.0_wp/1626788720640.0_wp
-   a(11,5) = 40763687.0_wp/11070259200.0_wp
-   a(9,6) = 73.0_wp/5130.0_wp
-   a(10,6) = -13143060689.0_wp/38604458898.0_wp
-   a(11,6) = 34872732407.0_wp/224610586200.0_wp
-   a(9,7) = -7267.0_wp/215040.0_wp
-   a(10,7) = 18700221969.0_wp/379584034816.0_wp
-   a(11,7) = -2561897.0_wp/30105600.0_wp
-   a(9,8) = 1.0_wp/32.0_wp
-   a(10,8) = -5831595.0_wp/847285792.0_wp
-   a(11,8) = 1.0_wp/10.0_wp
-   a(10,9) = -5183640.0_wp/26477681.0_wp
-   a(11,9) = -1.0_wp/10.0_wp
-   a(11,10) = -1403317093.0_wp/11371610250.0_wp
+   a(9,1) = 455.0_dp/6144.0_dp
+   a(10,1) = -837888343715.0_dp/13176988637184.0_dp
+   a(11,1) = 98719073263.0_dp/1551965184000.0_dp
+   a(9,2) = 0.0_dp
+   a(10,2) = 30409415.0_dp/52955362.0_dp
+   a(11,2) = 1307.0_dp/123552.0_dp
+   a(9,3) = 10256301.0_dp/35409920.0_dp
+   a(10,3) = -48321525963.0_dp/759168069632.0_dp
+   a(11,3) = 4632066559387.0_dp/70181753241600.0_dp
+   a(9,4) = 2307361.0_dp/17971200.0_dp
+   a(10,4) = 8530738453321.0_dp/197654829557760.0_dp
+   a(11,4) = 7828594302389.0_dp/382182512025600.0_dp
+   a(9,5) = -387.0_dp/102400.0_dp
+   a(10,5) = 1361640523001.0_dp/1626788720640.0_dp
+   a(11,5) = 40763687.0_dp/11070259200.0_dp
+   a(9,6) = 73.0_dp/5130.0_dp
+   a(10,6) = -13143060689.0_dp/38604458898.0_dp
+   a(11,6) = 34872732407.0_dp/224610586200.0_dp
+   a(9,7) = -7267.0_dp/215040.0_dp
+   a(10,7) = 18700221969.0_dp/379584034816.0_dp
+   a(11,7) = -2561897.0_dp/30105600.0_dp
+   a(9,8) = 1.0_dp/32.0_dp
+   a(10,8) = -5831595.0_dp/847285792.0_dp
+   a(11,8) = 1.0_dp/10.0_dp
+   a(10,9) = -5183640.0_dp/26477681.0_dp
+   a(11,9) = -1.0_dp/10.0_dp
+   a(11,10) = -1403317093.0_dp/11371610250.0_dp
 !
-   r(1:11,1) = 0.0_wp; r(2,1:6) = 0.0_wp
-   r(1,6) = -12134338393.0_wp/1050809760.0_wp
-   r(1,5) = -1620741229.0_wp/50038560.0_wp
-   r(1,4) = -2048058893.0_wp/59875200.0_wp
-   r(1,3) = -87098480009.0_wp/5254048800.0_wp
-   r(1,2) = -11513270273.0_wp/3502699200.0_wp
+   r(1:11,1) = 0.0_dp; r(2,1:6) = 0.0_dp
+   r(1,6) = -12134338393.0_dp/1050809760.0_dp
+   r(1,5) = -1620741229.0_dp/50038560.0_dp
+   r(1,4) = -2048058893.0_dp/59875200.0_dp
+   r(1,3) = -87098480009.0_dp/5254048800.0_dp
+   r(1,2) = -11513270273.0_dp/3502699200.0_dp
 !
-   r(3,6) = -33197340367.0_wp/1218433216.0_wp
-   r(3,5) = -539868024987.0_wp/6092166080.0_wp
-   r(3,4) = -39991188681.0_wp/374902528.0_wp
-   r(3,3) = -69509738227.0_wp/1218433216.0_wp
-   r(3,2) = -29327744613.0_wp/2436866432.0_wp
+   r(3,6) = -33197340367.0_dp/1218433216.0_dp
+   r(3,5) = -539868024987.0_dp/6092166080.0_dp
+   r(3,4) = -39991188681.0_dp/374902528.0_dp
+   r(3,3) = -69509738227.0_dp/1218433216.0_dp
+   r(3,2) = -29327744613.0_dp/2436866432.0_dp
 !
-   r(4,6) = -284800997201.0_wp/19905339168.0_wp
-   r(4,5) = -7896875450471.0_wp/165877826400.0_wp
-   r(4,4) = -333945812879.0_wp/5671036800.0_wp
-   r(4,3) = -16209923456237.0_wp/497633479200.0_wp
-   r(4,2) = -2382590741699.0_wp/331755652800.0_wp
+   r(4,6) = -284800997201.0_dp/19905339168.0_dp
+   r(4,5) = -7896875450471.0_dp/165877826400.0_dp
+   r(4,4) = -333945812879.0_dp/5671036800.0_dp
+   r(4,3) = -16209923456237.0_dp/497633479200.0_dp
+   r(4,2) = -2382590741699.0_dp/331755652800.0_dp
 !
-   r(5,6) = -540919.0_wp/741312.0_wp
-   r(5,5) = -103626067.0_wp/43243200.0_wp
-   r(5,4) = -633779.0_wp/211200.0_wp
-   r(5,3) = -32406787.0_wp/18532800.0_wp
-   r(5,2) = -36591193.0_wp/86486400.0_wp
+   r(5,6) = -540919.0_dp/741312.0_dp
+   r(5,5) = -103626067.0_dp/43243200.0_dp
+   r(5,4) = -633779.0_dp/211200.0_dp
+   r(5,3) = -32406787.0_dp/18532800.0_dp
+   r(5,2) = -36591193.0_dp/86486400.0_dp
 !
-   r(6,6) = 7157998304.0_wp/374350977.0_wp
-   r(6,5) = 30405842464.0_wp/623918295.0_wp
-   r(6,4) = 183022264.0_wp/5332635.0_wp
-   r(6,3) = -3357024032.0_wp/1871754885.0_wp
-   r(6,2) = -611586736.0_wp/89131185.0_wp
+   r(6,6) = 7157998304.0_dp/374350977.0_dp
+   r(6,5) = 30405842464.0_dp/623918295.0_dp
+   r(6,4) = 183022264.0_dp/5332635.0_dp
+   r(6,3) = -3357024032.0_dp/1871754885.0_dp
+   r(6,2) = -611586736.0_dp/89131185.0_dp
 !
-   r(7,6) = -138073.0_wp/9408.0_wp
-   r(7,5) = -719433.0_wp/15680.0_wp
-   r(7,4) = -1620541.0_wp/31360.0_wp
-   r(7,3) = -385151.0_wp/15680.0_wp
-   r(7,2) = -65403.0_wp/15680.0_wp
+   r(7,6) = -138073.0_dp/9408.0_dp
+   r(7,5) = -719433.0_dp/15680.0_dp
+   r(7,4) = -1620541.0_dp/31360.0_dp
+   r(7,3) = -385151.0_dp/15680.0_dp
+   r(7,2) = -65403.0_dp/15680.0_dp
 !
-   r(8,6) = 1245.0_wp/64.0_wp
-   r(8,5) = 3991.0_wp/64.0_wp
-   r(8,4) = 4715.0_wp/64.0_wp
-   r(8,3) = 2501.0_wp/64.0_wp
-   r(8,2) = 149.0_wp/16.0_wp
-   r(8,1) = 1.0_wp
+   r(8,6) = 1245.0_dp/64.0_dp
+   r(8,5) = 3991.0_dp/64.0_dp
+   r(8,4) = 4715.0_dp/64.0_dp
+   r(8,3) = 2501.0_dp/64.0_dp
+   r(8,2) = 149.0_dp/16.0_dp
+   r(8,1) = 1.0_dp
 !
-   r(9,6) = 55.0_wp/3.0_wp
-   r(9,5) = 71.0_wp
-   r(9,4) = 103.0_wp
-   r(9,3) = 199.0_wp/3.0_wp
+   r(9,6) = 55.0_dp/3.0_dp
+   r(9,5) = 71.0_dp
+   r(9,4) = 103.0_dp
+   r(9,3) = 199.0_dp/3.0_dp
    r(9,2) = 16.0d0
 !
-   r(10,6) = -1774004627.0_wp/75810735.0_wp
-   r(10,5) = -1774004627.0_wp/25270245.0_wp
-   r(10,4) = -26477681.0_wp/359975.0_wp
-   r(10,3) = -11411880511.0_wp/379053675.0_wp
-   r(10,2) = -423642896.0_wp/126351225.0_wp
+   r(10,6) = -1774004627.0_dp/75810735.0_dp
+   r(10,5) = -1774004627.0_dp/25270245.0_dp
+   r(10,4) = -26477681.0_dp/359975.0_dp
+   r(10,3) = -11411880511.0_dp/379053675.0_dp
+   r(10,2) = -423642896.0_dp/126351225.0_dp
 !
-   r(11,6) = 35.0_wp
-   r(11,5) = 105.0_wp
-   r(11,4) = 117.0_wp
-   r(11,3) = 59.0_wp
-   r(11,2) = 12.0_wp
+   r(11,6) = 35.0_dp
+   r(11,5) = 105.0_dp
+   r(11,4) = 117.0_dp
+   r(11,3) = 59.0_dp
+   r(11,2) = 12.0_dp
 !
 case (3)
 !
@@ -412,136 +421,136 @@ case (3)
 !    implementing the pair.
 !
    no_of_stages = 13; fsal = .false.; order = 7
-   tan_angle = 11.0_wp; stability_radius = 5.2_wp
-   safety = 0.8_wp; intrp_able = .false.
+   tan_angle = 11.0_dp; stability_radius = 5.2_dp
+   safety = 0.8_dp; intrp_able = .false.
    intrp_needs_stages = .false.; intrp_degree = 0
    no_of_ge_steps = 2
 !
    ptr(1:13) = (/ 0, 1, 2, 1, 3, 2, 4, 5, 6, 7, 8, 9, 1 /)
 !
-   a(2,1) = 5.55555555555555555555555555556e-2_wp
-   a(3,1) = 2.08333333333333333333333333333e-2_wp
-   a(3,2) = 6.25e-2_wp
-   a(4,1) = 3.125e-2_wp
-   a(4,2) = 0.0_wp
-   a(4,3) = 9.375e-2_wp
-   a(5,1) = 3.125e-1_wp
-   a(5,2) = 0.0_wp
-   a(5,3) = -1.171875_wp
-   a(5,4) = 1.171875_wp
-   a(6,1) = 3.75e-2_wp
-   a(6,2) = 0.0_wp
-   a(6,3) = 0.0_wp
-   a(6,4) = 1.875e-1_wp
-   a(6,5) = 1.5e-1_wp
-   a(7,1) = 4.79101371111111111111111111111e-2_wp
-   a(7,2) = 0.0_wp
-   a(7,3) = 0.0_wp
-   a(7,4) = 1.12248712777777777777777777778e-1_wp
-   a(7,5) = -2.55056737777777777777777777778e-2_wp
-   a(7,6) = 1.28468238888888888888888888889e-2_wp
-   a(8,1) = 1.6917989787292281181431107136e-2_wp
-   a(8,2) = 0.0_wp
-   a(8,3) = 0.0_wp
-   a(8,4) = 3.87848278486043169526545744159e-1_wp
-   a(8,5) = 3.59773698515003278967008896348e-2_wp
-   a(8,6) = 1.96970214215666060156715256072e-1_wp
-   a(8,7) = -1.72713852340501838761392997002e-1_wp
-   a(9,1) = 6.90957533591923006485645489846e-2_wp
-   a(9,2) = 0.0_wp
-   a(9,3) = 0.0_wp
-   a(9,4) = -6.34247976728854151882807874972e-1_wp
-   a(9,5) = -1.61197575224604080366876923982e-1_wp
-   a(9,6) = 1.38650309458825255419866950133e-1_wp
-   a(9,7) = 9.4092861403575626972423968413e-1_wp
-   a(9,8) = 2.11636326481943981855372117132e-1_wp
-   a(10,1) = 1.83556996839045385489806023537e-1_wp
-   a(10,2) = 0.0_wp
-   a(10,3) = 0.0_wp
-   a(10,4) = -2.46876808431559245274431575997_wp
-   a(10,5) = -2.91286887816300456388002572804e-1_wp
-   a(10,6) = -2.6473020233117375688439799466e-2_wp
-   a(10,7) = 2.84783876419280044916451825422_wp
-   a(10,8) = 2.81387331469849792539403641827e-1_wp
-   a(10,9) = 1.23744899863314657627030212664e-1_wp
-   a(11,1) = -1.21542481739588805916051052503_wp
-   a(11,2) = 0.0_wp
-   a(11,3) = 0.0_wp
-   a(11,4) = 1.66726086659457724322804132886e1_wp
-   a(11,5) = 9.15741828416817960595718650451e-1_wp
-   a(11,6) = -6.05660580435747094755450554309_wp
-   a(11,7) = -1.60035735941561781118417064101e1_wp
-   a(11,8) = 1.4849303086297662557545391898e1_wp
-   a(11,9) = -1.33715757352898493182930413962e1_wp
-   a(11,10) = 5.13418264817963793317325361166_wp
-   a(12,1) = 2.58860916438264283815730932232e-1_wp
-   a(12,2) = 0.0_wp
-   a(12,3) = 0.0_wp
-   a(12,4) = -4.77448578548920511231011750971_wp
-   a(12,5) = -4.3509301377703250944070041181e-1_wp
-   a(12,6) = -3.04948333207224150956051286631_wp
-   a(12,7) = 5.57792003993609911742367663447_wp
-   a(12,8) = 6.15583158986104009733868912669_wp
-   a(12,9) = -5.06210458673693837007740643391_wp
-   a(12,10) = 2.19392617318067906127491429047_wp
-   a(12,11) = 1.34627998659334941535726237887e-1_wp
-   a(13,1) = 8.22427599626507477963168204773e-1_wp
-   a(13,2) = 0.0_wp
-   a(13,3) = 0.0_wp
-   a(13,4) = -1.16586732572776642839765530355e1_wp
-   a(13,5) = -7.57622116690936195881116154088e-1_wp
-   a(13,6) = 7.13973588159581527978269282765e-1_wp
-   a(13,7) = 1.20757749868900567395661704486e1_wp
-   a(13,8) = -2.12765911392040265639082085897_wp
-   a(13,9) = 1.99016620704895541832807169835_wp
-   a(13,10) = -2.34286471544040292660294691857e-1_wp
-   a(13,11) = 1.7589857770794226507310510589e-1_wp
-   a(13,12) = 0.0_wp
+   a(2,1) = 5.55555555555555555555555555556e-2_dp
+   a(3,1) = 2.08333333333333333333333333333e-2_dp
+   a(3,2) = 6.25e-2_dp
+   a(4,1) = 3.125e-2_dp
+   a(4,2) = 0.0_dp
+   a(4,3) = 9.375e-2_dp
+   a(5,1) = 3.125e-1_dp
+   a(5,2) = 0.0_dp
+   a(5,3) = -1.171875_dp
+   a(5,4) = 1.171875_dp
+   a(6,1) = 3.75e-2_dp
+   a(6,2) = 0.0_dp
+   a(6,3) = 0.0_dp
+   a(6,4) = 1.875e-1_dp
+   a(6,5) = 1.5e-1_dp
+   a(7,1) = 4.79101371111111111111111111111e-2_dp
+   a(7,2) = 0.0_dp
+   a(7,3) = 0.0_dp
+   a(7,4) = 1.12248712777777777777777777778e-1_dp
+   a(7,5) = -2.55056737777777777777777777778e-2_dp
+   a(7,6) = 1.28468238888888888888888888889e-2_dp
+   a(8,1) = 1.6917989787292281181431107136e-2_dp
+   a(8,2) = 0.0_dp
+   a(8,3) = 0.0_dp
+   a(8,4) = 3.87848278486043169526545744159e-1_dp
+   a(8,5) = 3.59773698515003278967008896348e-2_dp
+   a(8,6) = 1.96970214215666060156715256072e-1_dp
+   a(8,7) = -1.72713852340501838761392997002e-1_dp
+   a(9,1) = 6.90957533591923006485645489846e-2_dp
+   a(9,2) = 0.0_dp
+   a(9,3) = 0.0_dp
+   a(9,4) = -6.34247976728854151882807874972e-1_dp
+   a(9,5) = -1.61197575224604080366876923982e-1_dp
+   a(9,6) = 1.38650309458825255419866950133e-1_dp
+   a(9,7) = 9.4092861403575626972423968413e-1_dp
+   a(9,8) = 2.11636326481943981855372117132e-1_dp
+   a(10,1) = 1.83556996839045385489806023537e-1_dp
+   a(10,2) = 0.0_dp
+   a(10,3) = 0.0_dp
+   a(10,4) = -2.46876808431559245274431575997_dp
+   a(10,5) = -2.91286887816300456388002572804e-1_dp
+   a(10,6) = -2.6473020233117375688439799466e-2_dp
+   a(10,7) = 2.84783876419280044916451825422_dp
+   a(10,8) = 2.81387331469849792539403641827e-1_dp
+   a(10,9) = 1.23744899863314657627030212664e-1_dp
+   a(11,1) = -1.21542481739588805916051052503_dp
+   a(11,2) = 0.0_dp
+   a(11,3) = 0.0_dp
+   a(11,4) = 1.66726086659457724322804132886e1_dp
+   a(11,5) = 9.15741828416817960595718650451e-1_dp
+   a(11,6) = -6.05660580435747094755450554309_dp
+   a(11,7) = -1.60035735941561781118417064101e1_dp
+   a(11,8) = 1.4849303086297662557545391898e1_dp
+   a(11,9) = -1.33715757352898493182930413962e1_dp
+   a(11,10) = 5.13418264817963793317325361166_dp
+   a(12,1) = 2.58860916438264283815730932232e-1_dp
+   a(12,2) = 0.0_dp
+   a(12,3) = 0.0_dp
+   a(12,4) = -4.77448578548920511231011750971_dp
+   a(12,5) = -4.3509301377703250944070041181e-1_dp
+   a(12,6) = -3.04948333207224150956051286631_dp
+   a(12,7) = 5.57792003993609911742367663447_dp
+   a(12,8) = 6.15583158986104009733868912669_dp
+   a(12,9) = -5.06210458673693837007740643391_dp
+   a(12,10) = 2.19392617318067906127491429047_dp
+   a(12,11) = 1.34627998659334941535726237887e-1_dp
+   a(13,1) = 8.22427599626507477963168204773e-1_dp
+   a(13,2) = 0.0_dp
+   a(13,3) = 0.0_dp
+   a(13,4) = -1.16586732572776642839765530355e1_dp
+   a(13,5) = -7.57622116690936195881116154088e-1_dp
+   a(13,6) = 7.13973588159581527978269282765e-1_dp
+   a(13,7) = 1.20757749868900567395661704486e1_dp
+   a(13,8) = -2.12765911392040265639082085897_dp
+   a(13,9) = 1.99016620704895541832807169835_dp
+   a(13,10) = -2.34286471544040292660294691857e-1_dp
+   a(13,11) = 1.7589857770794226507310510589e-1_dp
+   a(13,12) = 0.0_dp
 !
 !  The coefficients BHAT refer to the formula used to advance the
 !  integration, here the one of order 8.  The coefficients B refer
 !  to the other formula, here the one of order 7.
 !
-   bhat(1) = 4.17474911415302462220859284685e-2_wp
-   bhat(2) = 0.0_wp
-   bhat(3) = 0.0_wp
-   bhat(4) = 0.0_wp
-   bhat(5) = 0.0_wp
-   bhat(6) = -5.54523286112393089615218946547e-2_wp
-   bhat(7) = 2.39312807201180097046747354249e-1_wp
-   bhat(8) = 7.0351066940344302305804641089e-1_wp
-   bhat(9) = -7.59759613814460929884487677085e-1_wp
-   bhat(10) = 6.60563030922286341461378594838e-1_wp
-   bhat(11) = 1.58187482510123335529614838601e-1_wp
-   bhat(12) = -2.38109538752862804471863555306e-1_wp
-   bhat(13) = 2.5e-1_wp
+   bhat(1) = 4.17474911415302462220859284685e-2_dp
+   bhat(2) = 0.0_dp
+   bhat(3) = 0.0_dp
+   bhat(4) = 0.0_dp
+   bhat(5) = 0.0_dp
+   bhat(6) = -5.54523286112393089615218946547e-2_dp
+   bhat(7) = 2.39312807201180097046747354249e-1_dp
+   bhat(8) = 7.0351066940344302305804641089e-1_dp
+   bhat(9) = -7.59759613814460929884487677085e-1_dp
+   bhat(10) = 6.60563030922286341461378594838e-1_dp
+   bhat(11) = 1.58187482510123335529614838601e-1_dp
+   bhat(12) = -2.38109538752862804471863555306e-1_dp
+   bhat(13) = 2.5e-1_dp
 !
-   b(1) = 2.9553213676353496981964883112e-2_wp
-   b(2) = 0.0_wp
-   b(3) = 0.0_wp
-   b(4) = 0.0_wp
-   b(5) = 0.0_wp
-   b(6) = -8.28606276487797039766805612689e-1_wp
-   b(7) = 3.11240900051118327929913751627e-1_wp
-   b(8) = 2.46734519059988698196468570407_wp
-   b(9) = -2.54694165184190873912738007542_wp
-   b(10) = 1.44354858367677524030187495069_wp
-   b(11) = 7.94155958811272872713019541622e-2_wp
-   b(12) = 4.44444444444444444444444444445e-2_wp
-   b(13) = 0.0_wp
+   b(1) = 2.9553213676353496981964883112e-2_dp
+   b(2) = 0.0_dp
+   b(3) = 0.0_dp
+   b(4) = 0.0_dp
+   b(5) = 0.0_dp
+   b(6) = -8.28606276487797039766805612689e-1_dp
+   b(7) = 3.11240900051118327929913751627e-1_dp
+   b(8) = 2.46734519059988698196468570407_dp
+   b(9) = -2.54694165184190873912738007542_dp
+   b(10) = 1.44354858367677524030187495069_dp
+   b(11) = 7.94155958811272872713019541622e-2_dp
+   b(12) = 4.44444444444444444444444444445e-2_dp
+   b(13) = 0.0_dp
 !
-   c(1) = 0.0_wp
-   c(2) = 5.55555555555555555555555555556e-2_wp
-   c(3) = 8.33333333333333333333333333334e-2_wp
-   c(4) = 1.25e-1_wp
-   c(5) = 3.125e-1_wp
-   c(6) = 3.75e-1_wp
-   c(7) = 1.475e-1_wp
-   c(8) = 4.65e-1_wp
-   c(9) = 5.64865451382259575398358501426e-1_wp
-   c(10) = 6.5e-1_wp
-   c(11) = 9.24656277640504446745013574318e-1_wp
-   c(12) = 1.0_wp
+   c(1) = 0.0_dp
+   c(2) = 5.55555555555555555555555555556e-2_dp
+   c(3) = 8.33333333333333333333333333334e-2_dp
+   c(4) = 1.25e-1_dp
+   c(5) = 3.125e-1_dp
+   c(6) = 3.75e-1_dp
+   c(7) = 1.475e-1_dp
+   c(8) = 4.65e-1_dp
+   c(9) = 5.64865451382259575398358501426e-1_dp
+   c(10) = 6.5e-1_dp
+   c(11) = 9.24656277640504446745013574318e-1_dp
+   c(12) = 1.0_dp
    c(13) = c(12)
 !
 end select
@@ -596,26 +605,26 @@ subroutine setup_r1(comm,t_start,y_start,t_end,tolerance,thresholds, &
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(in) :: t_end, t_start                          !indep!
-real(kind=wp), intent(in) :: tolerance
-real(kind=wp), dimension(:), intent(in) :: y_start                   !dep!
-real(kind=wp), dimension(:), intent(in) :: thresholds                !shp-dep!
+real(kind=dp), intent(in) :: t_end, t_start                          !indep!
+real(kind=dp), intent(in) :: tolerance
+real(kind=dp), dimension(:), intent(in) :: y_start                   !dep!
+real(kind=dp), dimension(:), intent(in) :: thresholds                !shp-dep!
 type(rk_comm_real_1d) :: comm
-real(kind=wp), intent(in), optional :: h_start                       !indep!
+real(kind=dp), intent(in), optional :: h_start                       !indep!
 logical, intent(in), optional :: error_assess, message
 character(len=*), intent(in), optional :: task, method
 !
 character(len=*), parameter :: srname="SETUP"
 !
-real(kind=wp) :: hmin                                                !indep!
-real(kind=wp) :: cdiff
-integer :: ier, nrec, tr_dim_of_stages
+real(kind=dp) :: hmin                                                !indep!
+real(kind=dp) :: cdiff
+integer(i4) :: ier, nrec, tr_dim_of_stages
 logical :: legalt
 character(len=1) :: task1, method1
 !
-integer, parameter :: not_ready=-1, fatal=911, just_fine=1
-real(kind=wp), parameter :: zero=0.0_wp, pt01=0.01_wp, fivepc=0.05_wp, &
-   third=1.0_wp/3.0_wp, one=1.0_wp, two=2.0_wp, ten=10.0_wp, fifty=50.0_wp
+integer(i4), parameter :: not_ready=-1, fatal=911, just_fine=1
+real(kind=dp), parameter :: zero=0.0_dp, pt01=0.01_dp, fivepc=0.05_dp, &
+   third=1.0_dp/3.0_dp, one=1.0_dp, two=2.0_dp, ten=10.0_dp, fifty=50.0_dp
 !
 ier = just_fine; nrec = 0
 !
@@ -819,7 +828,7 @@ body: do
 " ** Not enough storage available to create workspace required internally."
          exit body
       else
-         comm%ge_assess = 0.0_wp; comm%ge_y = y_start
+         comm%ge_assess = 0.0_dp; comm%ge_y = y_start
       end if
    end if
    exit body
@@ -831,15 +840,15 @@ contains
 
 subroutine setup_global_stuff
 !
-comm%h_start=0.0_wp; comm%h_old=0.0_wp
+comm%h_start=0.0_dp; comm%h_old=0.0_dp
 comm%f_count=0; comm%full_f_count=0; comm%step_count=0; comm%bad_step_count=0
 comm%at_t_start=.true.;  comm%at_t_end=.false.
 comm%rk_method=2; 
-comm%ge_max_contrib=0.0_wp; comm%ge_f_count=0
+comm%ge_max_contrib=0.0_dp; comm%ge_f_count=0
 comm%erason=.false.;  comm%erasfl=.false.
 comm%print_message=.true.;  comm%use_range=.true.
 comm%stiff_bad_step_count=0;  comm%hit_t_end_count=0
-comm%errold=0.0_wp;  comm%h_average=0.0_wp
+comm%errold=0.0_dp;  comm%h_average=0.0_dp
 comm%chkeff=.false.;  comm%phase2=.true.
 comm%save_states(1:7)=not_ready
 comm%stop_on_fatal=.true.;  comm%saved_fatal_err=.false.
@@ -936,31 +945,31 @@ recursive subroutine range_integrate_r1(comm,f,t_want,t_got,y_got,yderiv_got, &
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(in) :: t_want                                  !indep!
-real(kind=wp), intent(out) :: t_got                                  !indep!
-real(kind=wp), dimension(:), intent(out) :: y_got, yderiv_got        !dep!
-integer, intent(out), optional :: flag
+real(kind=dp), intent(in) :: t_want                                  !indep!
+real(kind=dp), intent(out) :: t_got                                  !indep!
+real(kind=dp), dimension(:), intent(out) :: y_got, yderiv_got        !dep!
+integer(i4), intent(out), optional :: flag
 type(rk_comm_real_1d), intent(inout) :: comm
 !
 interface 
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
 character(len=*), parameter :: srname="RANGE_INTEGRATE"
 !
-real(kind=wp) :: hmin, t_now                                         !indep!
-integer :: step_flag, ier, nrec, state
+real(kind=dp) :: hmin, t_now                                         !indep!
+integer(i4) :: step_flag, ier, nrec, state
 logical :: goback, baderr
 !
-integer, parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
+integer(i4), parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
    just_fine=1
 logical, parameter :: tell=.false., ask=.true.
-real(kind=wp), parameter :: zero=0.0_wp
+real(kind=dp), parameter :: zero=0.0_dp
 !
 ier = just_fine; nrec = 0
 goback = .false.; baderr = .false.
@@ -1173,31 +1182,31 @@ recursive subroutine step_integrate_r1(comm,f,t_now,y_now,yderiv_now,flag)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(out) :: t_now                                  !indep!
-integer, intent(out), optional :: flag
+real(kind=dp), intent(out) :: t_now                                  !indep!
+integer(i4), intent(out), optional :: flag
 type(rk_comm_real_1d), intent(inout) :: comm
-real(kind=wp), dimension(:), intent(out) :: y_now, yderiv_now        !dep!
+real(kind=dp), dimension(:), intent(out) :: y_now, yderiv_now        !dep!
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
 character(len=*), parameter :: srname="STEP_INTEGRATE"
 !
-real(kind=wp) :: hmin, htry                                          !indep!
-real(kind=wp) :: alpha, beta, err, tau, t1, t2, ypnorm, extra_wk
-integer :: ier, nrec, state
+real(kind=dp) :: hmin, htry                                          !indep!
+real(kind=dp) :: alpha, beta, err, tau, t1, t2, ypnorm, extra_wk
+integer(i4) :: ier, nrec, state
 logical :: failed, phase1, phase3, toomch, sure_stiff
 !
-integer, parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
+integer(i4), parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
     max_f_count=5000, just_fine=1
 logical, parameter :: tell=.false., ask=.true.
-real(kind=wp),parameter :: zero=0.0_wp, pt1=0.1_wp, pt9=0.9_wp, one=1.0_wp, &
-   two=2.0_wp, hundrd=100.0_wp
+real(kind=dp),parameter :: zero=0.0_dp, pt1=0.1_dp, pt9=0.9_dp, one=1.0_dp, &
+   two=2.0_dp, hundrd=100.0_dp
 !
 ier = just_fine; nrec = 0
 !
@@ -1568,27 +1577,27 @@ subroutine truerr_r1(comm,f,ier)
 !          see main doc for contact details
 !
 type(rk_comm_real_1d), intent(inout) :: comm
-integer, intent(inout) :: ier
+integer(i4), intent(inout) :: ier
 !
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
-real(kind=wp) :: hmin, hsec                                          !indep!
-real(kind=wp) :: diff, errmax, mxerlc, tsec, ge_err, ge_test1, ge_test2
-integer :: istep, level
+real(kind=dp) :: hmin, hsec                                          !indep!
+real(kind=dp) :: diff, errmax, mxerlc, tsec, ge_err, ge_test1, ge_test2
+integer(i4) :: istep, level
 !
-integer, parameter :: just_fine=1
-real(kind=wp), parameter :: pt1=0.1_wp, ten=10.0_wp
-real(kind=wp), dimension(:,:), pointer :: ge_stages                  !dep!
-real(kind=wp), dimension(:), pointer :: ge_y, ge_yp, ge_y_new        !dep!
-real(kind=wp), dimension(:), pointer :: ge_err_estimates, y          !dep!
-real(kind=wp), dimension(:), pointer :: ge_assess, weights           !shp-dep!
+integer(i4), parameter :: just_fine=1
+real(kind=dp), parameter :: pt1=0.1_dp, ten=10.0_dp
+real(kind=dp), dimension(:,:), pointer :: ge_stages                  !dep!
+real(kind=dp), dimension(:), pointer :: ge_y, ge_yp, ge_y_new        !dep!
+real(kind=dp), dimension(:), pointer :: ge_err_estimates, y          !dep!
+real(kind=dp), dimension(:), pointer :: ge_assess, weights           !shp-dep!
 !
 ge_stages => comm%ge_stages
 ge_y => comm%ge_y
@@ -1700,38 +1709,38 @@ subroutine step_r1(comm,f,tnow,y,yp,stages,tol,htry,y_new,    &
 !          see main doc for contact details
 !
 type(rk_comm_real_1d), intent(inout), target :: comm
-real(kind=wp), intent(out) :: err
-real(kind=wp), intent(inout) :: htry                                 !indep!
-real(kind=wp), intent(in) :: tnow                                    !indep!
-real(kind=wp), intent(in) :: tol
-real(kind=wp), intent(in), optional :: hmin                          !indep!
+real(kind=dp), intent(out) :: err
+real(kind=dp), intent(inout) :: htry                                 !indep!
+real(kind=dp), intent(in) :: tnow                                    !indep!
+real(kind=dp), intent(in) :: tol
+real(kind=dp), intent(in), optional :: hmin                          !indep!
 logical, intent(inout), optional :: phase_2
 !
-real(kind=wp), dimension(:), intent(in) :: y, yp                     !dep!
-real(kind=wp), dimension(:), intent(out) ::  errest, y_new           !dep!
-real(kind=wp), dimension(:,:), intent(out) :: stages                 !dep!
+real(kind=dp), dimension(:), intent(in) :: y, yp                     !dep!
+real(kind=dp), dimension(:), intent(out) ::  errest, y_new           !dep!
+real(kind=dp), dimension(:,:), intent(out) :: stages                 !dep!
 !
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
-real(kind=wp) :: tstg                                                !indep!
-integer :: i, j
+real(kind=dp) :: tstg                                                !indep!
+integer(i4) :: i, j
 logical :: cutbak, main
 !
 intrinsic         abs, max, sign
 !
-real(kind=wp), dimension(:), pointer :: weights, thresh              !shp-dep!
-real(kind=wp), dimension(:,:), pointer :: a                          !real!
-real(kind=wp), dimension(:), pointer :: b, bhat, c                   !real!
-integer, dimension(:), pointer :: ptr                                !integer!
+real(kind=dp), dimension(:), pointer :: weights, thresh              !shp-dep!
+real(kind=dp), dimension(:,:), pointer :: a                          !real!
+real(kind=dp), dimension(:), pointer :: b, bhat, c                   !real!
+integer(i4), dimension(:), pointer :: ptr                                !integer(i4)!
 !
-real(kind=wp), parameter :: zero=0.0_wp, half=0.5_wp, one=1.0_wp
+real(kind=dp), parameter :: zero=0.0_dp, half=0.5_dp, one=1.0_dp
 !
 !  ERREST is used for working storage in this computation.
 !
@@ -1860,11 +1869,11 @@ contains
 !
    subroutine stepa(ypnew,htry,cutbak)
 !
-   real(kind=wp), intent(inout) :: htry                              !indep!
-   real(kind=wp), dimension(:), intent(in) :: ypnew                  !dep!
+   real(kind=dp), intent(inout) :: htry                              !indep!
+   real(kind=dp), dimension(:), intent(in) :: ypnew                  !dep!
    logical, intent(out) :: cutbak
 !
-   real(kind=wp) :: argdif, fdiff, scl, tdiff, twt, ynrm, ystgnm
+   real(kind=dp) :: argdif, fdiff, scl, tdiff, twt, ynrm, ystgnm
 !
 !  Update the weights to account for the current intermediate solution
 !  approximation Y_NEW.  Compute the sizes of Y and Y_NEW in the
@@ -1918,7 +1927,7 @@ contains
 !
    subroutine stepb 
 !
-   real(kind=wp), dimension(:), pointer :: e                         !real!
+   real(kind=dp), dimension(:), pointer :: e                         !real!
 !
    e => comm%e
 !
@@ -1956,28 +1965,28 @@ logical, intent(out) :: sure_stiff
 interface 
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
 logical :: maybe_stiff, lots_of_fails
 !
-real(kind=wp) :: alpha1, alpha2, beta1, beta2                        !dep!
-real(kind=wp) :: rold, v1v0, v2v0, v2v1, v3v1, v3v2                  !dep!
-real(kind=wp) :: dist, res2, scale, v0nrm, v3nrm, ynrm, rho, v0v0, v1v1, &
+real(kind=dp) :: alpha1, alpha2, beta1, beta2                        !dep!
+real(kind=dp) :: rold, v1v0, v2v0, v2v1, v3v1, v3v2                  !dep!
+real(kind=dp) :: dist, res2, scale, v0nrm, v3nrm, ynrm, rho, v0v0, v1v1, &
    v2v2, v3v3, yy, det1, det2
-integer :: ntry
+integer(i4) :: ntry
 complex(kind=wp), dimension(2) :: root_pair, prv_root_pair
-integer, parameter :: bigr=1, smlr=2
-real(kind=wp), dimension(:), pointer :: v0, v1, v2, v3, y, y_old     !dep!
-real(kind=wp), dimension(:), pointer :: weights, thresh              !shp-dep!
+integer(i4), parameter :: bigr=1, smlr=2
+real(kind=dp), dimension(:), pointer :: v0, v1, v2, v3, y, y_old     !dep!
+real(kind=dp), dimension(:), pointer :: weights, thresh              !shp-dep!
 !
-integer, parameter :: max_f_count=5000
-real(kind=wp),parameter :: zero=0.0_wp, pt001=0.001_wp, pt9=0.9_wp, &
-   fifth=0.2_wp, half=0.5_wp, one=1.0_wp, two=2.0_wp, five=5.0_wp, &
-   large=1.0e+10_wp
+integer(i4), parameter :: max_f_count=5000
+real(kind=dp),parameter :: zero=0.0_dp, pt001=0.001_dp, pt9=0.9_dp, &
+   fifth=0.2_dp, half=0.5_dp, one=1.0_dp, two=2.0_dp, five=5.0_dp, &
+   large=1.0e+10_dp
 !
 v0 => comm%v0
 v1 => comm%v1
@@ -2206,20 +2215,20 @@ contains
 
 function approx_jacobian(f,v,vdotv)
 !
-real(kind=wp), intent(in) :: vdotv
-real(kind=wp), dimension(:), intent(in) :: v                         !dep!
-real(kind=wp), dimension(size(v,1)) :: approx_jacobian               !dep!
+real(kind=dp), intent(in) :: vdotv
+real(kind=dp), dimension(:), intent(in) :: v                         !dep!
+real(kind=dp), dimension(size(v,1)) :: approx_jacobian               !dep!
 !
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
-real(kind=wp) :: temp1
+real(kind=dp) :: temp1
 !
 !  Scale V so that it can be used as an increment to Y
 !  for an accurate difference approximation to the Jacobian.
@@ -2241,7 +2250,7 @@ end function approx_jacobian
 
 function quadratic_roots(alpha,beta)
 !
-real(kind=wp), intent(in) :: alpha, beta                             !dep!
+real(kind=dp), intent(in) :: alpha, beta                             !dep!
 complex(kind=wp), dimension(2) :: quadratic_roots
 !
 complex(kind=wp) :: temp, sqdisc, r1, r2
@@ -2271,12 +2280,12 @@ end function quadratic_roots
 
 function dominant_eigenvalue(v1v1,v1v0,v0v0)
 !
-real(kind=wp), intent(in) :: v0v0, v1v1
-real(kind=wp), intent(in) :: v1v0                                    !dep!
+real(kind=dp), intent(in) :: v0v0, v1v1
+real(kind=dp), intent(in) :: v1v0                                    !dep!
 logical :: dominant_eigenvalue
 !
-real(kind=wp) :: ratio                                               !dep!
-real(kind=wp) :: res, det
+real(kind=dp) :: ratio                                               !dep!
+real(kind=dp) :: res, det
 logical :: big
 !
 ratio = v1v0/v0v0; rho = abs(ratio)
@@ -2297,8 +2306,8 @@ end function dominant_eigenvalue
 
 function wt_inner_prod(vec_1,vec_2)
 !
-real(kind=wp), dimension(:), intent(in) :: vec_1, vec_2              !dep!
-real(kind=wp) :: wt_inner_prod                                       !dep!
+real(kind=dp), dimension(:), intent(in) :: vec_1, vec_2              !dep!
+real(kind=dp) :: wt_inner_prod                                       !dep!
 !
 !
 wt_inner_prod = sum ( (vec_1/weights) * (vec_2/weights) )            !spec-ar!
@@ -2307,8 +2316,8 @@ end function wt_inner_prod
 
 function rev_wt_inner_prod(value)
 !
-real(kind=wp), intent(in) :: value                                   !dep!
-real(kind=wp) :: rev_wt_inner_prod                                   !dep!
+real(kind=dp), intent(in) :: value                                   !dep!
+real(kind=dp) :: rev_wt_inner_prod                                   !dep!
 !
 ! given result of inner product value = v1.v0
 ! must return the reverse, ie v0.v1
@@ -2333,19 +2342,19 @@ subroutine statistics_r1(comm,total_f_calls,step_cost,waste,num_succ_steps,&
 !          see main doc for contact details
 !
 type(rk_comm_real_1d), intent(inout) :: comm
-real(kind=wp), optional, intent(out) :: h_next                       !indep!
-real(kind=wp), optional, intent(out) :: waste
-real(kind=wp), dimension(:), optional, intent(out) :: y_maxvals      !shp-dep!
-integer, optional, intent(out) :: step_cost, num_succ_steps, total_f_calls
+real(kind=dp), optional, intent(out) :: h_next                       !indep!
+real(kind=dp), optional, intent(out) :: waste
+real(kind=dp), dimension(:), optional, intent(out) :: y_maxvals      !shp-dep!
+integer(i4), optional, intent(out) :: step_cost, num_succ_steps, total_f_calls
 !
 character(len=*), parameter :: srname="STATISTICS"
 !
-integer :: ier, nrec, state
+integer(i4) :: ier, nrec, state
 !
-integer, parameter :: not_ready=-1, not_reusable=-3, fatal=911, &
+integer(i4), parameter :: not_ready=-1, not_reusable=-3, fatal=911, &
    catastrophe=912, just_fine=1
 logical, parameter :: ask=.true.
-real(kind=wp), parameter :: zero=0.0_wp
+real(kind=dp), parameter :: zero=0.0_dp
 !
 ier = just_fine; nrec = 0
 !
@@ -2424,17 +2433,17 @@ subroutine global_error_r1(comm,rms_error,max_error,t_max_error)
 !          see main doc for contact details
 !
 type(rk_comm_real_1d), intent(inout) :: comm
-real(kind=wp), optional, intent(out) :: max_error
-real(kind=wp), optional, intent(out) :: t_max_error                  !indep!
-real(kind=wp), dimension(:), optional, intent(out) :: rms_error      !shp-dep!
+real(kind=dp), optional, intent(out) :: max_error
+real(kind=dp), optional, intent(out) :: t_max_error                  !indep!
+real(kind=dp), dimension(:), optional, intent(out) :: rms_error      !shp-dep!
 !
 character(len=*), parameter :: srname="GLOBAL_ERROR"
 !
-integer :: ier, nrec, state
+integer(i4) :: ier, nrec, state
 !
 intrinsic         sqrt
 !
-integer, parameter :: not_ready=-1, not_reusable=-3, fatal=911, &
+integer(i4), parameter :: not_ready=-1, not_reusable=-3, fatal=911, &
    catastrophe=912, just_fine=1
 logical, parameter :: ask=.true.
 !
@@ -2526,18 +2535,18 @@ subroutine reset_t_end_r1(comm,t_end_new)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(in) :: t_end_new                               !indep!
+real(kind=dp), intent(in) :: t_end_new                               !indep!
 type(rk_comm_real_1d), intent(inout) :: comm
 !
 character(len=*), parameter :: srname="RESET_T_END"
 !
-real(kind=wp) :: hmin, tdiff                                         !indep!
-integer ::           ier, nrec, state
+real(kind=dp) :: hmin, tdiff                                         !indep!
+integer(i4) ::           ier, nrec, state
 !
-integer, parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
+integer(i4), parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
    just_fine=1
 logical, parameter :: ask=.true.
-real(kind=wp), parameter :: zero=0.0_wp
+real(kind=dp), parameter :: zero=0.0_dp
 !
 ier = just_fine; nrec = 0
 !
@@ -2617,25 +2626,25 @@ subroutine interpolate_r1(comm,f,t_want,y_want,yderiv_want)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-real(kind=wp), intent(in) :: t_want                                  !indep!
+real(kind=dp), intent(in) :: t_want                                  !indep!
 type(rk_comm_real_1d), intent(inout), target :: comm
-real(kind=wp), dimension(:), intent(out), optional :: y_want         !dep!
-real(kind=wp), dimension(:), intent(out), optional :: yderiv_want    !dep!
+real(kind=dp), dimension(:), intent(out), optional :: y_want         !dep!
+real(kind=dp), dimension(:), intent(out), optional :: yderiv_want    !dep!
 !
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
 character(len=*),parameter :: srname="INTERPOLATE"
-integer :: ier, jer, nrec, state, npcls
+integer(i4) :: ier, jer, nrec, state, npcls
 logical :: intrp_initialised
 !
-integer, parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
+integer(i4), parameter :: not_ready=-1, usable=-2, fatal=911, catastrophe=912, &
    just_fine=1
 logical, parameter :: ask=.true.
 !
@@ -2753,21 +2762,21 @@ contains
 !
 subroutine form_intrp(f,p)
 !
-real(kind=wp), intent(out), dimension(:,:) :: p                      !dep!
+real(kind=dp), intent(out), dimension(:,:) :: p                      !dep!
 !
 interface
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
-real(kind=wp), dimension(:,:), pointer :: r                          !real!
-real(kind=wp), dimension(:,:), pointer :: stages                     !dep!
-real(kind=wp), dimension(:), pointer :: y, yp, y_old, yp_old         !dep!
-real(kind=wp), dimension(:), pointer :: xstage                       !dep!
+real(kind=dp), dimension(:,:), pointer :: r                          !real!
+real(kind=dp), dimension(:,:), pointer :: stages                     !dep!
+real(kind=dp), dimension(:), pointer :: y, yp, y_old, yp_old         !dep!
+real(kind=dp), dimension(:), pointer :: xstage                       !dep!
 !
 stages => comm%stages
 r => comm%r
@@ -2845,12 +2854,12 @@ end subroutine form_intrp
 
 subroutine evaluate_intrp(p,y_want,yderiv_want)
 !
-real(kind=wp), dimension(:), optional, intent(out) :: y_want         !dep!
-real(kind=wp), dimension(:), optional, intent(out) :: yderiv_want    !dep!
-real(kind=wp), dimension(:,:), intent(in) :: p                       !dep!
+real(kind=dp), dimension(:), optional, intent(out) :: y_want         !dep!
+real(kind=dp), dimension(:), optional, intent(out) :: yderiv_want    !dep!
+real(kind=dp), dimension(:,:), intent(in) :: p                       !dep!
 !
 real :: sigma
-integer :: i
+integer(i4) :: i
 !
 sigma = (t_want-comm%t)/comm%h_old
 !
@@ -2875,25 +2884,25 @@ end subroutine evaluate_intrp
 
 subroutine extra_stages(f,ytemp,xstage)
 !
-real(kind=wp), dimension(:), intent(out) :: ytemp, xstage            !dep!
+real(kind=dp), dimension(:), intent(out) :: ytemp, xstage            !dep!
 !
 interface 
    function f(t,y)
       use rksuite_90_prec, only:wp
-      real(kind=wp), intent(in) :: t                                 !indep!
-      real(kind=wp), dimension(:), intent(in) :: y                   !dep!
-      real(kind=wp), dimension(size(y,1)) :: f                       !dep!
+      real(kind=dp), intent(in) :: t                                 !indep!
+      real(kind=dp), dimension(:), intent(in) :: y                   !dep!
+      real(kind=dp), dimension(size(y,1)) :: f                       !dep!
    end function f
 end interface
 !
-real(kind=wp), dimension(:,:), pointer :: stages                     !dep!
-real(kind=wp), dimension(:), pointer :: yp, y_old, yp_old            !dep!
+real(kind=dp), dimension(:,:), pointer :: stages                     !dep!
+real(kind=dp), dimension(:), pointer :: yp, y_old, yp_old            !dep!
 !
-real(kind=wp), dimension(:,:), pointer :: a                          !real!
-real(kind=wp), dimension(:), pointer :: c                            !real!
-real(kind=wp), pointer :: h_old, t_old                               !indep!
+real(kind=dp), dimension(:,:), pointer :: a                          !real!
+real(kind=dp), dimension(:), pointer :: c                            !real!
+real(kind=dp), pointer :: h_old, t_old                               !indep!
 !
-integer :: i, j
+integer(i4) :: i, j
 !
 a => comm%a
 stages => comm%stages
@@ -2949,14 +2958,14 @@ subroutine rkmsg_r1(ier,srname,nrec,comm,flag)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-integer, intent(in) :: ier, nrec
-integer, intent(out), optional :: flag
+integer(i4), intent(in) :: ier, nrec
+integer(i4), intent(out), optional :: flag
 character(len=*), intent(in) :: srname
 type(rk_comm_real_1d), intent(inout) :: comm
 !
 logical :: ok, on, range_call
 !
-integer, parameter :: fatal=911, catastrophe=912, just_fine=1
+integer(i4), parameter :: fatal=911, catastrophe=912, just_fine=1
 logical, parameter :: tell=.false.
 !
 !  Check where the call came from - if it is an indirect call from 
@@ -3035,13 +3044,13 @@ subroutine set_saved_state_r1(srname,state,comm)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-integer, intent(in) :: state
+integer(i4), intent(in) :: state
 type(rk_comm_real_1d), intent(inout) :: comm
 character(len=*), intent(in) :: srname
 !
-integer :: name
+integer(i4) :: name
 !
-integer, parameter :: fatal=911
+integer(i4), parameter :: fatal=911
 !
 select case (srname)
    case("SETUP"); name = 1
@@ -3068,13 +3077,13 @@ function get_saved_state_r1(srname,save_states)
 !          I. Gladwell  (Math Dept., SMU, Dallas, TX, USA)
 !          see main doc for contact details
 !
-integer, dimension(7), intent(inout) :: save_states
+integer(i4), dimension(7), intent(inout) :: save_states
 character(len=*), intent(in) :: srname
-integer :: get_saved_state_r1
+integer(i4) :: get_saved_state_r1
 !
-integer :: name
+integer(i4) :: name
 !
-integer, parameter :: fatal=911
+integer(i4), parameter :: fatal=911
 !
 select case (srname)
    case("SETUP"); name = 1
