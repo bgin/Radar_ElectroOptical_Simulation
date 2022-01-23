@@ -1,5 +1,7 @@
 !** DFEHL
 SUBROUTINE DFEHL(DF,Neq,T,Y,H,Yp,F1,F2,F3,F4,F5,Ys)
+     use mod_kinds, i4,dp
+     use omp_lib
   !> Subsidiary to DDERKF
   !***
   ! **Library:**   SLATEC
@@ -53,59 +55,65 @@ SUBROUTINE DFEHL(DF,Neq,T,Y,H,Yp,F1,F2,F3,F4,F5,Ys)
   !
   INTERFACE
     SUBROUTINE DF(X,U,Uprime)
-      IMPORT DP
-      REAL(DP), INTENT(IN) :: X
-      REAL(DP), INTENT(IN) :: U(:)
-      REAL(DP), INTENT(OUT) :: Uprime(:)
+      IMPORT dp
+      REAL(dp), INTENT(IN) :: X
+      REAL(dp), INTENT(IN) :: U(:)
+      REAL(dp), INTENT(OUT) :: Uprime(:)
     END SUBROUTINE DF
   END INTERFACE
-  INTEGER, INTENT(IN) :: Neq
-  REAL(DP), INTENT(IN) :: H, T
-  REAL(DP), INTENT(IN) :: Y(Neq), Yp(Neq)
-  REAL(DP), INTENT(OUT) :: F1(Neq), F2(Neq), F3(Neq), F4(Neq), F5(Neq), Ys(Neq)
+  INTEGER(i4), INTENT(IN) :: Neq
+  REAL(dp), INTENT(IN) :: H, T
+  REAL(dp), INTENT(IN) :: Y(Neq), Yp(Neq)
+  REAL(dp), INTENT(OUT) :: F1(Neq), F2(Neq), F3(Neq), F4(Neq), F5(Neq), Ys(Neq)
   !
-  INTEGER :: k
-  REAL(DP) :: ch
+  INTEGER(i4) :: k
+  REAL(dp) :: ch
   !
   !* FIRST EXECUTABLE STATEMENT  DFEHL
-  ch = H/4._DP
+  ch = H*0.25_dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
     Ys(k) = Y(k) + ch*Yp(k)
   END DO
   CALL DF(T+ch,Ys,F1)
   !
-  ch = 3._DP*H/32._DP
+  ch = 3._dp*H/32._dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
-    Ys(k) = Y(k) + ch*(Yp(k)+3._DP*F1(k))
+    Ys(k) = Y(k) + ch*(Yp(k)+3._dp*F1(k))
   END DO
-  CALL DF(T+3._DP*H/8._DP,Ys,F2)
+  CALL DF(T+3._dp*H*0.125_dp,Ys,F2)
   !
-  ch = H/2197._DP
+  ch = H/2197._dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
-    Ys(k) = Y(k) + ch*(1932._DP*Yp(k)+(7296._DP*F2(k)-7200._DP*F1(k)))
+    Ys(k) = Y(k) + ch*(1932._dp*Yp(k)+(7296._dp*F2(k)-7200._dp*F1(k)))
   END DO
-  CALL DF(T+12._DP*H/13._DP,Ys,F3)
+  CALL DF(T+12._dp*H/13._dp,Ys,F3)
   !
-  ch = H/4104._DP
+  ch = H/4104._dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
-    Ys(k) = Y(k) + ch*((8341._DP*Yp(k)-845._DP*F3(k))+(29440._DP*F2(k)-32832._DP*F1(k)))
+    Ys(k) = Y(k) + ch*((8341._dp*Yp(k)-845._dp*F3(k))+(29440._dp*F2(k)-32832._dp*F1(k)))
   END DO
   CALL DF(T+H,Ys,F4)
   !
-  ch = H/20520._DP
+  ch = H/20520._dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
-    Ys(k) = Y(k) + ch*((-6080._DP*Yp(k)+(9295._DP*F3(k)-5643._DP*F4(k)))&
-      +(41040._DP*F1(k)-28352._DP*F2(k)))
+    Ys(k) = Y(k) + ch*((-6080._dp*Yp(k)+(9295._dp*F3(k)-5643._dp*F4(k)))&
+      +(41040._dp*F1(k)-28352._dp*F2(k)))
   END DO
-  CALL DF(T+H/2._DP,Ys,F5)
+  CALL DF(T+H*0.5_dp,Ys,F5)
   !
   !     COMPUTE APPROXIMATE SOLUTION AT T+H
   !
-  ch = H/7618050._DP
+  ch = H/7618050._dp
+  !$OMP SIMD LINEAR(k:1) IF(Neq>=16)
   DO k = 1, Neq
     Ys(k) = Y(k)&
-      + ch*((902880._DP*Yp(k)+(3855735._DP*F3(k)-1371249._DP*F4(k)))&
-      +(3953664._DP*F2(k)+277020._DP*F5(k)))
+      + ch*((902880._dp*Yp(k)+(3855735._dp*F3(k)-1371249._dp*F4(k)))&
+      +(3953664._dp*F2(k)+277020._dp*F5(k)))
   END DO
   !
 END SUBROUTINE DFEHL
