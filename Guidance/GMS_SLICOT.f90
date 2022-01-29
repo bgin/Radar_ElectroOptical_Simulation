@@ -5,7 +5,7 @@
 
 
 #if !defined(GMS_SLICOT_USE_MKL_LAPACK)
-#define GMS_SLICOT_USE_MKL_LAPACK 0
+#define GMS_SLICOT_USE_MKL_LAPACK 1
 #endif
 
 
@@ -986,9 +986,9 @@ C
 C    ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
-
+#endif
       implicit none
 !C     .. Parameters ..
       INTEGER            IMAX, IMIN
@@ -1403,7 +1403,9 @@ C
 !C    ******************************************************************
 !C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
       
       INTEGER            IMAX, IMIN
@@ -2956,8 +2958,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE, TWO
@@ -7312,8 +7315,9 @@ C
 C  *********************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
          use omp_lib
+#endif
          implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
@@ -8389,8 +8393,9 @@ C
 C    ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
@@ -8900,8 +8905,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
      use omp_lib
+#endif
      implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -10671,7 +10677,10 @@ C
 C     ******************************************************************
 C
 #endif
+
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !1C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -12458,8 +12467,9 @@ C     ******************************************************************
 C
 C     .. Scalar Arguments ..
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
        use omp_lib
+#endif
       implicit none
       CHARACTER          JOB
       INTEGER            LDA, LDB, M, N
@@ -16127,8 +16137,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
        use omp_lib
+#endif
        implicit none
       DOUBLE PRECISION  ZERO, ONE
       PARAMETER         ( ZERO = 0.0D0, ONE = 1.0D0 )
@@ -18652,7 +18663,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
        use omp_lib
+#endif
        implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE, TWO, THREE
@@ -19230,8 +19243,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO
@@ -19499,8 +19513,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
        use omp_lib
+#endif
        implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -19966,8 +19981,9 @@ C
 C     ******************************************************************
 C
 #endif
-
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE, HALF
@@ -20913,7 +20929,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ONE, ZERO
@@ -21507,7 +21525,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Scalar Arguments ..
       INTEGER           INFO, LDH, N, NB, NC
@@ -21995,7 +22015,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -26758,7 +26780,9 @@ C
 C    ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Scalar Arguments ..
       CHARACTER          JOBS
@@ -27131,8 +27155,9 @@ C
 C     ******************************************************************
 C
 #endif
-     
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0     
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
@@ -27715,7 +27740,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE, FOUR, HALF
@@ -28454,7 +28481,9 @@ C
 C     ******************************************************************
 C
 #endif
+#if (GMS_SLICOT_USE_MKL_LAPACK) == 0
       use omp_lib
+#endif
       implicit none
 !C     .. Parameters ..
       DOUBLE PRECISION  ZERO, ONE
