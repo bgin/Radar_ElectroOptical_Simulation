@@ -10,7 +10,7 @@ module  platform_info
  !
  !
  !          Module  name:
- !                         patform_stats
+ !                         patform_info
  !          
  !          Purpose:
   !                         Linux and platform (HW) statistics
@@ -50,22 +50,22 @@ module  platform_info
     !=====================================================59
     
     ! Major version
-    integer(kind=i4),  parameter :: MOD_PLATFORM_STATS_MAJOR = 1 
+    integer(kind=i4),  parameter :: PLATFORM_INFO_MAJOR = 1 
     ! Minor version
-    integer(kind=i4),  parameter :: MOD_PLATFORM_STATS_MINOR = 0
+    integer(kind=i4),  parameter :: PLATFORM_INFO_MINOR = 0
     ! Micro version
-    integer(kind=i4),  parameter :: MOD_PLATFORM_STATS_MICRO = 0
+    integer(kind=i4),  parameter :: PLATFORM_INFO_MICRO = 0
     ! Module full version
-    integer(kind=i4),  parameter :: MOD_PLATFORM_STATS_FULLVER = &
-         1000*MOD_PLATFORM_STATS_MAJOR+100*MOD_PLATFORM_STATS_MINOR+10*MOD_PLATFORM_STATS_MINOR
+    integer(kind=i4),  parameter :: PLATFORM_INFO_FULLVER = &
+         1000*PLATFORM_INFO_MAJOR+100*PLATFORM_INFO_MINOR+10*PLATFORM_INFO_MINOR
     ! Module creation date
-    character(*),        parameter :: MOD_PLATFORM_STATS_CREATION_DATE = "20-12-2019 10:20 +00200 (FRI 20 DEC 2019 GMT+2)"
+    character(*),        parameter :: PLATFORM_INFO_CREATION_DATE = "20-12-2019 10:20 +00200 (FRI 20 DEC 2019 GMT+2)"
     ! Module build date
-    character(*),        parameter :: MOD_PLATFORM_STATS_BUILD_DATE    = __DATE__ " " __TIME__
+    character(*),        parameter :: PLATFORM_INFO_BUILD_DATE    = __DATE__ " " __TIME__
     ! Module author info
-    character(*),        parameter :: MOD_PLATFORM_STATS_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+    character(*),        parameter :: PLATFORM_INFO_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
     ! Module short info
-    character(*),        parameter :: MOD_PLATFORM_STATS_SYNOPSIS      = "Linux and platform Hardware statistic."
+    character(*),        parameter :: PLATFORM_INFO_SYNOPSIS      = "Linux and platform Hardware information /proc directory."
 
   contains
 
