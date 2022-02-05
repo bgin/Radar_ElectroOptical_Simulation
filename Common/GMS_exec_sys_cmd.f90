@@ -7,7 +7,7 @@ module exec_sys_cmd
  !
  !
  !          Module  name:
- !                         'mod_linux_api_wrappers'
+ !                         'exec_sys_cmd'
  !          
  !          Purpose:
   !                         Calling Linux command line programms from Fortran
@@ -48,16 +48,16 @@ module exec_sys_cmd
     !  File and module information:
     !  version,creation and build date, author,description
     !=====================================================59
-     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MAJOR = 1
-     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MINOR = 1
-     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_MICRO = 0
-     integer(kind=i4), parameter, public :: MOD_LINUX_API_WRAPPERS_FULLVER = 1000*MOD_LINUX_API_WRAPPERS_MAJOR + &
-                                                                               100*MOD_LINUX_API_WRAPPERS_MINOR  + &
-                                                                               10*MOD_LINUX_API_WRAPPERS_MICRO
-     character(*),       parameter, public :: MOD_LINUX_API_WRAPPERS_CREATE_DATE = "21-09-2019 13:21 +00200 (SAT 21 SEP 2019 GMT+2)"
-     character(*),       parameter, public :: MOD_LINUX_API_WRAPPERS_BUILD_DATE  = __DATE__ ":" __TIME__
-     character(*),       parameter, public :: MOD_LINUX_API_WRAPPERS_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
-     character(*),       parameter, public :: MOD_LINUX_API_WRAPPERS_SYNOPSIS    = "Calling Linux command line programms from Fortran environment"
+     integer(kind=i4), parameter, public ::  EXEC_SYS_CMD_MAJOR = 1
+     integer(kind=i4), parameter, public ::  EXEC_SYS_CMD_MINOR = 1
+     integer(kind=i4), parameter, public ::  EXEC_SYS_CMD_MICRO = 0
+     integer(kind=i4), parameter, public ::  EXEC_SYS_CMD_FULLVER = 1000*EXEC_SYS_CMD_MAJOR + &
+                                                                               100*EXEC_SYS_CMD_MINOR  + &
+                                                                               10*EXEC_SYS_CMD_MICRO
+     character(*),       parameter, public ::  EXEC_SYS_CMD_CREATE_DATE = "21-09-2019 13:21 +00200 (SAT 21 SEP 2019 GMT+2)"
+     character(*),       parameter, public ::  EXEC_SYS_CMD_BUILD_DATE  = __DATE__ ":" __TIME__
+     character(*),       parameter, public ::  EXEC_SYS_CMD_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),       parameter, public ::  EXEC_SYS_CMD_SYNOPSIS    = "Calling Linux command line programms from Fortran environment"
 
      contains
 
