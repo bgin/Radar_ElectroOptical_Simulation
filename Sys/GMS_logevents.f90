@@ -100,9 +100,8 @@ module mod_logevents
                createFPSingularEvent,      &
                destroyFPSingularEvent,     &
                createFPDomErrEvent,      &
-               destroyFPDomErrorEvent,     &
-               createWinErrorEvent,        &
-               destroyWinErrorEvent
+               destroyFPDomErrorEvent
+              
      
                
     !============================================50
