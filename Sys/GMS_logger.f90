@@ -50,7 +50,7 @@ module mod_logger
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use mod_kinds,       only : int4,dp
+    use mod_kinds,       only : i4,dp
     use mod_logevents
     use ISO_FORTRAN_ENV, only : ERROR_UNIT
     implicit none
@@ -62,17 +62,17 @@ module mod_logger
     !============================================50
     
     ! File version major
-    integer(kind=int4), parameter, public :: mod_logger_major = 1_int4
+    integer(kind=i4), parameter, public :: mod_logger_major = 1
     
     ! File version minor
-    integer(kind=int4), parameter, public :: mod_logger_minor = 0_int4
+    integer(kind=i4), parameter, public :: mod_logger_minor = 1
     
     ! File version micro(patch)
-    integer(kind=int4), parameter, public :: mod_logger_micro = 0_int4
+    integer(kind=i4), parameter, public :: mod_logger_micro = 0
     
     ! File full version
-    integer(kind=int4), parameter, public :: mod_logger_version = 1000_int4*mod_logger_major+100_int4*mod_logger_minor + &
-                                                                  10_int4*mod_logger_micro
+    integer(kind=i4), parameter, public :: mod_logger_version = 1000*mod_logger_major+100*mod_logger_minor + &
+                                                                  10*mod_logger_micro
     
     ! Creation date
     character(*), parameter,  public :: mod_logger_creation_date="15-06-2017 11:56 +00200 (Thr 15 Jun 2017 GMT+2)"
@@ -145,8 +145,7 @@ module mod_logger
     
     type, private :: LoggerErrorEvent_t
         
-        SEQUENCE
-        private
+       
         
         ! Event name
         character(len=18)       :: m_event_name
@@ -160,23 +159,13 @@ module mod_logger
         ! Module name  declared as a parameter
         character(len=14)       :: m_modname=mod_name
         
-        ! Current Win Process(top execution container) returned as a  handle
-        integer(HANDLE)         :: m_phandle
-        
-        ! Current Win Process(top execution container) ID
-        integer(DWORD)          :: m_pid
-        
-        ! Current Win Thread(executing failed procedure) returned as a handle
-        integer(HANDLE)         :: m_thandle
-        
-        ! Current Win Thread(executing failed procedure) ID
-        integer(DWORD)          :: m_tid
+      
         
         ! Function name in this case is a top layer wrapper.
         character(len=40)       :: m_proc_name
         
          ! Line of code (start,end) (bottom of event hierarchy)
-        integer(kind=int4)           :: m_line_st,m_line_ed
+        integer(kind=i4)           :: m_line_st,m_line_ed
         
         ! Date of event as returned by date_and_time
         character(len=40)       :: m_date
@@ -191,7 +180,7 @@ module mod_logger
         ! 4) Abort
         ! 5) Fault
         ! 6) Do not care (DC)
-        integer(kind=int4)     :: m_severity
+        integer(kind=i4)     :: m_severity
         
     end type
     
@@ -221,7 +210,7 @@ module mod_logger
         module procedure to_fileFPPoleEvent
         module procedure to_fileFPSingularEvent
         module procedure to_fileFPDomErrEvent
-        module procedure to_fileWinError
+       
     end interface
     
     !============================================50
@@ -250,7 +239,7 @@ module mod_logger
         module procedure to_screenFPPoleEvent
         module procedure to_screenFPSingularEvent
         module procedure to_screenFPDomErrEvent
-        module procedure to_screenWinError
+        
     end interface
     
     !============================================50
@@ -279,7 +268,7 @@ module mod_logger
         module procedure log_FPPoleEvent
         module procedure log_FPSingularEvent
         module procedure log_FPDomErrEvent
-        module procedure log_WinError
+      
     end interface
     
     !============================================50
@@ -313,7 +302,7 @@ module mod_logger
     pure function get_module_logger_version_major() result(ver_major)
           
           ! Locals/return
-          integer(kind=int4) :: ver_major
+          integer(kind=i4) :: ver_major
           ver_major = mod_logger_major
     end function
     
@@ -326,7 +315,7 @@ module mod_logger
     pure function get_module_logger_version_minor() result(ver_minor)
          
           ! Locals/return
-          integer(kind=int4) :: ver_minor
+          integer(kind=i4) :: ver_minor
           ver_minor = mod_logger_minor
     end function
     
@@ -339,7 +328,7 @@ module mod_logger
     pure function get_module_logger_version_micro() result(ver_micro)
          
           ! Locals/return
-          integer(kind=int4) :: ver_micro
+          integer(kind=i4) :: ver_micro
           ver_micro = mod_logger_micro
     end function
     
@@ -352,7 +341,7 @@ module mod_logger
     pure function get_module_logger_full_version() result(ver_full)
          
          ! Locals/return
-         integer(kind=int4) :: ver_full
+         integer(kind=i4) :: ver_full
          ver_full = mod_logger_version
     end function
     
@@ -436,11 +425,11 @@ module mod_logger
           
           implicit none
           character(len=*),       intent(in)           :: log_file
-          logical(kind=int4),     intent(in), optional :: append
+          logical(kind=i4),     intent(in), optional :: append
           ! Locals
-          logical(kind=int4)                           :: append_real
+          logical(kind=i4)                           :: append_real
           character(len=256)                           :: emsg1,emsg2
-          integer(kind=int4)                           :: ioerr
+          integer(kind=i4)                           :: ioerr
           ! Start of executable statements
           if(present(append)) then
               append_real = append
@@ -486,12 +475,12 @@ module mod_logger
     subroutine to_fileUsrMsg(unit,msg)
         
          
-          integer(kind=int4),    intent(in) :: unit
+          integer(kind=i4),    intent(in) :: unit
           character(len=*),      intent(in) :: msg
           ! Locals
           character(len=500)                :: filename
           character(len=256)                :: errmsg
-          integer(kind=int4)                :: ioerr
+          integer(kind=i4)                :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
              write(ERROR_UNIT,*) "to_fileUsrMsg: Invalid unit value:", unit
@@ -523,7 +512,7 @@ module mod_logger
     !============================================50
     subroutine to_filePerfTimerEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(PerfTimerEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)           :: filename
@@ -564,11 +553,11 @@ module mod_logger
     !============================================50
     subroutine to_fileInvArgEvent(unit,event)
          
-          integer(kind=int4),       intent(in) :: unit
+          integer(kind=i4),       intent(in) :: unit
           type(InvArgEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                   :: filename
-          integer(kind=int4)                   :: ioerr
+          integer(kind=i4)                   :: ioerr
           character(len=256)                   :: errmsg
           ! Start of executable statements
           if(unit .EQ. -1) then
@@ -605,12 +594,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFailAllocEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FailAllocEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                      :: filename
           character(len=256)                      :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
              write(ERROR_UNIT,*) "to_fileFailAllocEvent: Invalid unit value: ", unit
@@ -646,12 +635,12 @@ module mod_logger
     !============================================50
      subroutine to_fileIndexOutBoundsEvent(unit,event)
          
-          integer(kind=int4),               intent(in) :: unit
+          integer(kind=i4),               intent(in) :: unit
           type(IndexOutBoundsEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                           :: filename
           character(len=256)                           :: errmsg
-          integer(kind=int4)                           :: ioerr
+          integer(kind=i4)                           :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileIndexOutBoundsEvent: Invalid unit value: ", unit
@@ -687,12 +676,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFailDeallocEvent(unit,event)
           
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FailDeallocEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                        :: filename
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFailDeallocEvent: Invalid unit value: ", unit
@@ -728,12 +717,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFileIOEvent(unit,event)
          
-          integer(kind=int4),        intent(in) :: unit
+          integer(kind=i4),        intent(in) :: unit
           type(FileIOEvent_t),       intent(in) :: event
           ! Locals
           character(len=500)                    :: filename
           character(len=256)                    :: errmsg
-          integer(kind=int4)                    :: ioerr
+          integer(kind=i4)                    :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFileIOEvent: Invalid unit value: ",  unit
@@ -769,12 +758,12 @@ module mod_logger
     !============================================50
     subroutine to_fileDissasocPtrEvent(unit,event)
           
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(DisassocPtrEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                        :: filename
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileDisassocPtrEvent: ", unit
@@ -809,12 +798,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPTrapUndEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapUndEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                 :: filename
           character(len=256)                 :: errmsg
-          integer(kind=int4)                 :: ioerr
+          integer(kind=i4)                 :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
              write(ERROR_UNIT,*) "to_fileFPTrapUndEvent: Invalid unit value: ", unit
@@ -849,12 +838,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPTrapOvfEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapOvfEvent_t), intent(in) :: event
           ! Locals
           character(len=500)                 :: filename
           character(len=256)                 :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPTrapOvfEvent: Invalid unit value: ", unit
@@ -890,12 +879,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPTrapDiv0Event(unit,event)
          
-          integer(kind=int4),           intent(in) :: unit
+          integer(kind=i4),           intent(in) :: unit
           type(FPTrapDiv0Event_t), intent(in) :: event
           ! Locals
           character(len=500)                  :: filename
           character(len=256)                  :: errmsg
-          integer(kind=int4)                       :: ioerr
+          integer(kind=i4)                       :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPTrapDiv0Event: Invalid unit value: ", unit
@@ -931,12 +920,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPTrapInvEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapInvEvent_t), intent(in) :: event
           ! Locals
           character(len=500)                 :: filename
           character(len=256)                 :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPTrapInvEvent: Invalid unit value: ", unit
@@ -972,12 +961,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPAbruptUndEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptUndEvent_t), intent(in) :: event
           ! Locals
           character(len=500)                   :: filename
           character(len=256)                   :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPAbruptUndEvent: Invalid unit value: ", unit
@@ -1013,12 +1002,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPAbruptOvfEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptUndEvent_t), intent(in) :: event
           ! Locals
           character(len=500)                   :: filename
           character(len=256)                   :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPAbruptUndEvent: Invalid unit value: ", unit
@@ -1054,12 +1043,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPAbruptDiv0Event(unit,event)
          
-          integer(kind=int4),             intent(in) :: unit
+          integer(kind=i4),             intent(in) :: unit
           type(FPAbruptDiv0Event_t),      intent(in) :: event
           ! Locals
           character(len=500)                         :: filename
           character(len=256)                         :: errmsg
-          integer(kind=int4)                         :: ioerr
+          integer(kind=i4)                         :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPAbruptDiv0Event: Invalid unit value: ", unit
@@ -1095,12 +1084,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPAbruptInvEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptInvEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                        :: filename
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPAbruptInvEvent: Invalid unit value: ", unit
@@ -1136,12 +1125,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPAbruptDmzEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptDmzEvent_t),      intent(in) :: event
           !Locals
           character(len=500)                        :: filename
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPAbruptDmzEvent: Invalid unit value: ", unit
@@ -1178,12 +1167,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPPoleEvent(unit,event)
         
-          integer(kind=int4),        intent(in) :: unit
+          integer(kind=i4),        intent(in) :: unit
           type(FPPoleEvent_t),       intent(in) :: event
           ! Locals
           character(len=500)                    :: filename
           character(len=256)                    :: errmsg
-          integer(kind=int4)                    :: ioerr
+          integer(kind=i4)                    :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPPoleEvent: Invalid unit value: ", unit
@@ -1221,12 +1210,12 @@ module mod_logger
     subroutine to_fileFPSingularEvent(unit,event)
           use ISO_FORTRAN_ENV, only : ERROR_UNIT
           implicit none
-          integer(kind=int4),           intent(in) :: unit
+          integer(kind=i4),           intent(in) :: unit
           type(FPSingularEvent_t), intent(in) :: event
           ! Locals
           character(len=500)                  :: filename
           character(len=256)                  :: errmsg
-          integer(kind=int4)                       :: ioerr
+          integer(kind=i4)                       :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPSingularEvent: Invalid unit value: ", unit
@@ -1262,12 +1251,12 @@ module mod_logger
     !============================================50
     subroutine to_fileFPDomErrEvent(unit,event)
          
-          integer(kind=int4),         intent(in) :: unit
+          integer(kind=i4),         intent(in) :: unit
           type(FPDomErrEvent_t),      intent(in) :: event
           ! Locals
           character(len=500)                     :: filename
           character(len=256)                     :: errmsg
-          integer(kind=int4)                     :: ioerr
+          integer(kind=i4)                     :: ioerr
           ! Start of executable statements
           if(unit .EQ. -1) then
               write(ERROR_UNIT,*) "to_fileFPDomErrEvent: Invalid unit value: ", unit
@@ -1293,46 +1282,7 @@ module mod_logger
     end subroutine
     
     
-    !============================================50
-    ! subroutine:
-    !             to_fileWinError
-    !  Purpose:
-    !             Writes to connected file
-    !             the content of logger event
-    !             of type: WinError_t
-    !             Unformatted I/O list write is in use.
-    !============================================50
-    subroutine to_fileWinError(unit,event)
-         
-          integer(kind=int4),    intent(in) :: unit
-          type(WinError_t), intent(in) :: event
-          ! Locals
-          character(len=500)           :: filename
-          character(len=256)           :: errmsg
-          integer(kind=int4)                :: ioerr
-          ! Start of executable statements
-          if(unit .EQ. -1) then
-             write(ERROR_UNIT,*) "to_fileWinError: Invalid unit value:", unit
-             return
-          end if
-          write(unit,*,IOSTAT=ioerr,IOMSG=errmsg) event
-          if(ioerr > 0) then
-             call log_error(errmsg,"procedure: to_fileWinError", &
-                            1345,1349,ioerr)
-          end if
-          inquire(unit, NAME=filename)
-          close(unit,IOSTAT=ioerr,IOMSG=errmsg)
-          if(ioerr > 0) then
-              call log_error(errmsg,"procedure: to_fileWinErr", &
-                             1351,1355,ioerr)
-          end if
-          open(unit,FILE=filename,IOMSG=errmsg,IOSTAT=ioerr, &
-               ACTION='WRITE',STATUS='UNKNOWN',POSITION='APPEND')
-          if(ioerr > 0) then
-              call log_error(errmsg,"procedure: to_fileWinError", &
-                             1357,1361,ioerr)
-          end if
-    end subroutine
+   
     !============================================50
     ! subroutine: 
     !             to_screenUsrMsg
@@ -1367,7 +1317,7 @@ module mod_logger
           type(PerfTimeEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                :: errmsg
-          integer(kind=int4)                     :: ioerr
+          integer(kind=i4)                     :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1390,7 +1340,7 @@ module mod_logger
           type(InvArgEvent_t), intent(in) :: event
           ! Locals
           character(len=256)              :: errmsg
-          integer(kind=int4)                   :: ioerr
+          integer(kind=i4)                   :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1413,7 +1363,7 @@ module mod_logger
           type(FailAllocEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                 :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1436,7 +1386,7 @@ module mod_logger
           type(IndexOutBoundsEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                      :: errmsg
-          integer(kind=int4)                           :: ioerr
+          integer(kind=i4)                           :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1459,7 +1409,7 @@ module mod_logger
           type(FailDeallocEvent_t), intent(in)      :: event
           ! Locals
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1483,7 +1433,7 @@ module mod_logger
           type(FileIOEvent_t), intent(in) :: event
           ! Locals
           character(len=256)              :: errmsg
-          integer(kind=int4)                   :: ioerr
+          integer(kind=i4)                   :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
           if(ioerr > 0) then
@@ -1507,7 +1457,7 @@ module mod_logger
           type(DisassocPtrEvent_t), intent(in)     :: event
           ! Locals
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$  IF (PRINT_CALLSTACK .EQ. 1)
@@ -1534,7 +1484,7 @@ module mod_logger
           type(FPTrapUndEvent_t),     intent(in) :: event
           ! Locals
           character(len=256)                      :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1 )
@@ -1561,7 +1511,7 @@ module mod_logger
           type(FPTrapOvfEvent_t),      intent(in) :: event
           ! Locals
           character(len=256)                      :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF  (PRINT_CALLSTACK .EQ. 1)
@@ -1589,7 +1539,7 @@ module mod_logger
           type(FPTrapDiv0Event_t),     intent(in) :: event
           ! Locals
           character(len=256)                       :: errmsg
-          integer(kind=int4)                       :: ioerr
+          integer(kind=i4)                       :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF  (PRINT_CALLSTACK  .EQ. 1)
@@ -1616,7 +1566,7 @@ module mod_logger
           type(FPTrapInvEvent_t),      intent(in) :: event
           ! Locals
           character(len=256)                      :: errmsg
-          integer(kind=int4)                      :: ioerr
+          integer(kind=i4)                      :: ioerr
           ! Start of executable ststements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF  (PRINT_CALLSTACK .EQ. 1 )
@@ -1643,7 +1593,7 @@ module mod_logger
           type(FPAbruptUndEvent_t),      intent(in) :: event
           ! Locals
           character(len=256)                        :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF  (PRINT_CALLSTACK .EQ. 1 )
@@ -1697,7 +1647,7 @@ module mod_logger
           type(FPAbruptDiv0Event_t),      intent(in) :: event
           ! Locals
           character(len=256)                         :: errmsg
-          integer(kind=int4)                         :: ioerr
+          integer(kind=i4)                         :: ioerr
           ! Start of executable
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1 )
@@ -1724,7 +1674,7 @@ module mod_logger
           type(FPAbruptInvEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                   :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1)
@@ -1751,7 +1701,7 @@ module mod_logger
           type(FPAbruptDmzEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                   :: errmsg
-          integer(kind=int4)                        :: ioerr
+          integer(kind=i4)                        :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1)
@@ -1778,7 +1728,7 @@ module mod_logger
           type(FPPoleEvent_t), intent(in) :: event
           ! Locals
           character(len=256)              :: errmsg
-          integer(kind=int4)                   :: ioerr
+          integer(kind=i4)                   :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1)
@@ -1805,7 +1755,7 @@ module mod_logger
           type(FPSingularEvent_t), intent(in) :: event
           ! Locals
           character(len=256)                  :: errmsg
-          integer(kind=int4)                       :: ioerr
+          integer(kind=i4)                       :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1  )
@@ -1832,7 +1782,7 @@ module mod_logger
           type(FPDomErrEvent_t),      intent(in) :: event
           ! Locals
           character(len=256)                     :: errmsg
-          integer(kind=int4)                     :: ioerr
+          integer(kind=i4)                     :: ioerr
           ! Start of executable statements
           write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
 !DIR$ IF (PRINT_CALLSTACK .EQ. 1 )
@@ -1844,32 +1794,7 @@ module mod_logger
           end if
     end subroutine
     
-    !============================================50
-    ! subroutine:
-    !             to_screenWinError
-    !  Purpose:
-    !             Writes to screen(std_out)
-    !             the content of logger event
-    !             of type: WinError_t
-    !             Unformatted write is in use.
-    !============================================50
-    subroutine to_screenWinError(event)
-          use ifcore, only : TRACEBACKQQ
-        
-          type(WinError_t), intent(in)      :: event
-          ! Locals
-          character(len=256)                :: errmsg
-          integer(kind=int4)                :: ioerr
-          ! Start of executable statements
-          write(log_stdout,*,IOSTAT=ioerr,IOMSG=errmsg) event
-!DIR$ IF (PRINT_CALLSTACK .EQ. 1 )
-           call TRACEBACKQQ(event%m_msg,-1)
-!DIR$ ENDIF
-          if(ioerr > 0) then
-              call log_error(errmsg,"procedure: to_screenWinError", &
-                             1838,1842,ioerr)
-          end if
-    end subroutine
+ 
     !============================================50
     ! subroutine:
     !             log_UsrMsg
@@ -1909,7 +1834,7 @@ module mod_logger
     !============================================50
     subroutine log_PerfTimerEvent(unit,event)
        
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(PerfTimerEvent_t),      intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -1935,7 +1860,7 @@ module mod_logger
     !============================================50
     subroutine log_InvArgEvent(unit,event)
          
-          integer(kind=int4),       intent(in) :: unit
+          integer(kind=i4),       intent(in) :: unit
           type(InvArgEvent_t),      intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -1961,7 +1886,7 @@ module mod_logger
     !============================================50
     subroutine log_FailAllocEvent(unit,event)
         
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FailAllocEvent_t),      intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -1988,7 +1913,7 @@ module mod_logger
     !============================================50
     subroutine log_IndexOutBoundsEvent(unit,event)
          
-          integer(kind=int4),               intent(in) :: unit
+          integer(kind=i4),               intent(in) :: unit
           type(IndexOutBoundsEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2014,7 +1939,7 @@ module mod_logger
     !============================================50
     subroutine log_FailDeallocEvent(unit,event)
         
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FailDeallocEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2040,7 +1965,7 @@ module mod_logger
     !============================================50
     subroutine log_FileIOEvent(unit,event)
           
-          integer(kind=int4),       intent(in) :: unit
+          integer(kind=i4),       intent(in) :: unit
           type(FileIOEvent_t),      intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2066,7 +1991,7 @@ module mod_logger
     !============================================50
     subroutine log_DisassocPtrEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(DisassocPtrEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2092,7 +2017,7 @@ module mod_logger
     !============================================50
     subroutine log_FPTrapUndEvent(unit,event)
           
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapUndEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2118,7 +2043,7 @@ module mod_logger
     !============================================50
     subroutine log_FPTrapOvfEvent(unit,event)
          
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapOvfEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2144,7 +2069,7 @@ module mod_logger
     !============================================50
     subroutine log_FPTrapDiv0Event(unit,event)
           
-          integer(kind=int4),           intent(in) :: unit
+          integer(kind=i4),           intent(in) :: unit
           type(FPTrapDiv0Event_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2170,7 +2095,7 @@ module mod_logger
     !============================================50
     subroutine log_FPTrapInvEvent(unit,event)
           
-          integer(kind=int4),          intent(in) :: unit
+          integer(kind=i4),          intent(in) :: unit
           type(FPTrapInvEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2196,7 +2121,7 @@ module mod_logger
     !============================================50
     subroutine log_FPAbruptUndEvent(unit,event)
          
-          integer(kind=int4), intent(in) :: unit
+          integer(kind=i4), intent(in) :: unit
           type(FPAbruptUndEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2222,7 +2147,7 @@ module mod_logger
     !============================================50
     subroutine log_FPAbruptOvfEvent(unit,event)
          
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptOvfEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2248,7 +2173,7 @@ module mod_logger
     !============================================50
     subroutine log_FPAbruptDiv0Event(unit,event)
           
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptDiv0Event_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2274,7 +2199,7 @@ module mod_logger
     !============================================50
     subroutine log_FPAbruptInvEvent(unit,event)
          
-          integer(kind=int4), intent(in) :: unit
+          integer(kind=i4), intent(in) :: unit
           type(FPAbruptInvEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2300,7 +2225,7 @@ module mod_logger
     !============================================50
     subroutine log_FPAbruptDmzEvent(unit,event)
         
-          integer(kind=int4),            intent(in) :: unit
+          integer(kind=i4),            intent(in) :: unit
           type(FPAbruptDmzEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2326,7 +2251,7 @@ module mod_logger
     !============================================50
     subroutine log_FPPoleEvent(unit,event)
          
-          integer(kind=int4),       intent(in) :: unit
+          integer(kind=i4),       intent(in) :: unit
           type(FPPoleEvent_t), intent(in) :: event
           ! Start of executable
           if(activate_file .EQ. .true.) then
@@ -2352,7 +2277,7 @@ module mod_logger
     !============================================50
     subroutine log_FPSingularEvent(unit,event)
          
-          integer(kind=int4),           intent(in) :: unit
+          integer(kind=i4),           intent(in) :: unit
           type(FPSingularEvent_t), intent(in) :: event
           ! Start of executable
           if(activate_file .EQ. .true.) then
@@ -2378,7 +2303,7 @@ module mod_logger
     !============================================50
     subroutine log_FPDomErrEvent(unit,event)
          
-          integer(kind=int4), intent(in) :: unit
+          integer(kind=i4), intent(in) :: unit
           type(FPDomErrEvent_t), intent(in) :: event
           ! Start of executable statements
           if(activate_file .EQ. .true.) then
@@ -2389,32 +2314,7 @@ module mod_logger
           end if
     end subroutine
     
-     
-    !============================================50
-    ! subroutine:
-    !             log_WinError
-    ! Purpose:
-    !             Top-level wrapper subroutine
-    !             which upon setting of global
-    !             logical variable will either
-    !             write user message to screen
-    !             or to file.
-    ! Calls:
-    !        to_fileWinError, 
-    !        to_screenWinError
-    !============================================50
-    subroutine log_WinError(unit,event)
-         
-          integer(kind=int4),    intent(in) :: unit
-          type(WinError_t), intent(in) :: event
-          ! Start of executable statements
-          if(activate_file .EQ. .true.) then
-              call to_fileWinError(unit,event)
-          end if
-          if(activate_screen .EQ. .true.) then
-              call to_screenWinError(event)
-          end if
-    end subroutine 
+ 
     
     !==================================================================================88
     ! subroutine:
@@ -2439,7 +2339,7 @@ module mod_logger
     subroutine log_configure_logical(option,value)
           
           character(len=*), intent(in) :: option
-          logical(kind=int4),    intent(in) :: value
+          logical(kind=i4),    intent(in) :: value
           ! Start of executable statements
           select case(option)
           case ("writeonstdout")
@@ -2469,7 +2369,7 @@ module mod_logger
     subroutine log_configure_integer(option,value)
           
           character(len=*), intent(in) :: option
-          integer(kind=int4),    intent(in) :: value
+          integer(kind=i4),    intent(in) :: value
           ! Start of executable statements
           select case (option)
           case ("logfileunit")
@@ -2537,7 +2437,7 @@ module mod_logger
     subroutine log_cget_logical(option,value)
           
           character(len=*), intent(in) :: option
-          logical(kind=int4),    intent(out) :: value
+          logical(kind=i4),    intent(out) :: value
           ! Start of executable statements
           select case (option)
           case ("writeonstdout")
@@ -2566,7 +2466,7 @@ module mod_logger
     subroutine log_cget_integer(option,value)
          
           character(len=*), intent(in) :: option
-          integer(kind=int4),    intent(out) :: value
+          integer(kind=i4),    intent(out) :: value
           ! Start of executabl statements
           select case (option)
           case ("logfileunit")
@@ -2625,7 +2525,7 @@ module mod_logger
          
           ! Locals
           character(len=256) :: errmsg
-          integer(kind=int4)      :: ioerr
+          integer(kind=i4)      :: ioerr
           close(log_fileunit,IOMSG=errmsg,IOSTAT=ioerr)
           if(ioerr > 0) then
              call log_error(errmsg,"procedure: log_shutdown", &
@@ -2660,7 +2560,7 @@ module mod_logger
     function log_isinitialized() result(b_res)
          
           ! Locals/return
-          logical(kind=int4) :: b_res
+          logical(kind=i4) :: b_res
           b_res = logger_initialized
     end function
     
@@ -2678,23 +2578,20 @@ module mod_logger
           
           character(len=*), intent(in) :: msg,procname
                                          
-          integer(kind=int4),    intent(in) :: locst,loced, &
+          integer(kind=i4),    intent(in) :: locst,loced, &
                                           severity
           ! Locals
           integer(HANDLE)              :: thand,phand
           integer(DWORD)               :: tid,pid
 !DIR$ IF (SHOW_CALLSTACK .EQ. 1)
-          integer(kind=int4)                :: ret_stat
+          integer(kind=i4)                :: ret_stat
 !DIR$ ENDIF
           character(len=40)            :: date_str,time_str
           type(LoggerErrorEvent_t)     :: errevent_t
           ! Start of executable statements
           call DATE_AND_TIME(date=date_str,time=time_str)
           errevent_t = LoggerErrorEvent_t("LoggerErrorEvent_t",   &
-                                          msg,GetCurrentProcess(),&
-                                          GetCurrentProcessId(),  &
-                                          GetCurrentThread(),     &
-                                          GetCurrentThreadId(),   &
+                                          msg,&
                                           procname,locst,loced,   &
                                           date_str,time_str,      &
                                           severity                )
@@ -2727,7 +2624,7 @@ module mod_logger
     !============================================50
     subroutine log_set_stoponerror(value)
          
-          logical(kind=int4), intent(in) :: value
+          logical(kind=i4), intent(in) :: value
           ! Start of executable sttements
           logger_stoponerror = value
     end subroutine
@@ -2736,13 +2633,13 @@ module mod_logger
     ! function:
     !           Returns a free logical unit.
     !============================================50  
-    integer(kind=int4) function log_get_freeunit()
+    integer(kind=i4) function log_get_freeunit()
          
          
           ! Locals
-          integer(kind=int4)            :: iunit,ios
-          logical(kind=int4)            :: lopen,unit_found
-          logical(kind=int4), parameter :: maxunits = 100
+          integer(kind=i4)            :: iunit,ios
+          logical(kind=i4)            :: lopen,unit_found
+          logical(kind=i4), parameter :: maxunits = 100
           ! Start of executable statements
           iunit = 0
           unit_found = .false.
@@ -2776,10 +2673,10 @@ module mod_logger
     subroutine logger_run(unit,event,filename, &
                           append,option,umsg  )
         
-          integer(kind=int4),    intent(in) :: unit
+          integer(kind=i4),    intent(in) :: unit
           class(*),              intent(in) :: event
           character(len=*),      intent(in) :: filename
-          logical(kind=int4),    intent(in) :: append
+          logical(kind=i4),    intent(in) :: append
           character(len=*),      intent(in) :: option   ! Provide name of event e.g. WinError
           character(len=*),      intent(in) :: umsg
           ! Start of executable statements
