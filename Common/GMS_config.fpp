@@ -75,7 +75,9 @@ Compiler optimization settings.
     #define USE_PROFILING 1
 #endif
 
-
+#if defined USE_PROFILING
+    #define SAMPLE_PMC 1
+#endif
 
 #if defined USE_PROFILING
     #define USE_PREC_CLOCK 1
