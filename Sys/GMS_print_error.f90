@@ -153,30 +153,24 @@ module mod_print_error
     !  Allocation/Deallocation fatal error
     !  handler
     !=====================================
-    subroutine handle_fatal_memory_error(iounit,logging,verbose,lmsg,umsg,emsg)
+    subroutine handle_fatal_memory_error(logging,lmsg)
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
       use IFCORE, only :  TRACEBACKQQ
 #endif
           use M_journal, only : journal
-          integer(kind=i4),    intent(in) :: iounit
-          logical(kind=i4),    intent(in) :: logging, verbose,append
-          character(len=*),      intent(in) :: fname
+        
+          logical(kind=i4),    intent(in) :: logging
+        
           character(len=*),      intent(in) :: lmsg ! message to logger
           
-          character(len=*),      intent(in) :: umsg ! user message 
-          character(len=*),      intent(in) :: emsg ! system message
+       
           
-          ! Locals
-          character(len=10) ::  stime
-          character(len=8)  ::  sdate
+         
           ! Start of executable statements
           if(logging == .true.) then
              call journal('%','%Y-%M-%DT%h:%m:%s.%x%u:%b')
              call journal('t',lmsg)
-          else if (verbose == .true. ) then
-              call print_fatal_error( "========================= FATAL =========================", &
-                                      umsg, emsg, sdate, __LINE__ )
-           end if
+          end if
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
            call TRACEBACKQQ(STRING="MEMORY-ALLOC/DEALLOC-ERROR", USER_EXIT_CODE= -1)
 #elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
@@ -189,29 +183,20 @@ module mod_print_error
     !  File I/O fatal error
     !  handler
     !=====================================                               
-       subroutine handle_fatal_fileio_error(iounit,logging,verbose,lmsg,umsg,emsg)
+       subroutine handle_fatal_fileio_error(logging,lmsg)
 #if defined(__INTEL_COMPILER) || defined(__ICC)   
       use IFCORE, only :  TRACEBACKQQ
 #endif         
          use M_journal, only : journal
-         integer(kind=i4),    intent(in) :: iounit
-         logical(kind=i4),    intent(in) :: logging,verbose,append
-         character(len=*),      intent(in) :: fname ! name file to written (logger)
-         character(len=*),      intent(in) :: filerr ! name of file which failed to be opened
+        
+         logical(kind=i4),    intent(in) :: logging
+        
          character(len=*),      intent(in) :: lmsg ! message to logger
-         character(len=*),      intent(in) :: umsg ! user message 
-         character(len=*),      intent(in) :: emsg ! system message
-         
-         ! Locals
-         character(len=10) ::  stime
-         character(len=8)  ::  sdate
+       
          ! Start of executable statements
          if(logging == .true.) then
              call journal('%','%Y-%M-%DT%h:%m:%s.%x%u:%b')
              call journal('t',lmsg)
-         else if (verbose == .true. ) then
-              call print_fatal_error( "========================= FATAL =========================", &
-                                      umsg, emsg, sdate, __LINE__ )
          end if
 #if defined(__INTEL_COMPILER) || defined(__ICC)              
          call TRACEBACKQQ(STRING="File: " // trim(filerr) // " I/O Error", USER_EXIT_CODE= -1)
