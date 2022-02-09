@@ -149,7 +149,7 @@ module cpuid_x86
   interface
      function support_avx() result(val) &
           bind(c,name='support_avx')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function support_avx
      
@@ -159,7 +159,7 @@ module cpuid_x86
   interface
      function support_avx2() result(val) &
           bind(c,name='support_avx2')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function support_avx2
      
@@ -169,7 +169,7 @@ module cpuid_x86
   interface
      function support_avx512() result(val) &
           bind(c,name='support_avx512')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function support_avx512
      
@@ -179,7 +179,7 @@ module cpuid_x86
   interface
      function support_avx512_bf16() result(val) &
           bind(c,name='support_avx512_bf16')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function support_avx512_bf16
      
@@ -189,7 +189,7 @@ module cpuid_x86
   interface
      function get_vendor() result(val) &
           bind(c,name='get_vendor')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function get_vendor
         
@@ -198,7 +198,7 @@ module cpuid_x86
   interface
      function get_cputype(gettype) result(val) &
           bind(c,name='get_cputype')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int),   intent(in), value :: gettype
           integer(c_int) :: val
      end function get_cputype
@@ -209,7 +209,7 @@ module cpuid_x86
   interface
      function get_cecheinfo(type,cacheinfo) result(val) &
           bind(c,name='getcacheinfo')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int),  intent(in), value :: type
           type(c_ptr),     intent(inout)     :: cacheinfo
           integer(c_int) :: val
@@ -221,7 +221,7 @@ module cpuid_x86
   interface
      function get_cpuname() result(val) &
           bind(c,name='get_cpuname')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function get_cpuname
   
@@ -231,7 +231,7 @@ module cpuid_x86
    interface
      function get_coretype() result(val) &
           bind(c,name='get_coretype')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
           integer(c_int) :: val
      end function get_coretype
   
@@ -241,7 +241,7 @@ module cpuid_x86
   interface
      subroutine get_cpuconfig()  &
           bind(c,name='get_cpuconfig')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
      end subroutine get_cpuconfig
   
   end interface
@@ -250,7 +250,7 @@ module cpuid_x86
   interface
      subroutine get_cpuconfig()  &
           bind(c,name='get_cpuconfig')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
      end subroutine get_cpuconfig
   
   end interface
@@ -259,7 +259,7 @@ module cpuid_x86
   interface
      subroutine get_sse()  &
           bind(c,name='get_sse')
-          use, intrinsic :: ISO_C_BINDINGS
+          use, intrinsic :: ISO_C_BINDING
      end subroutine get_sse
   
   end interface
