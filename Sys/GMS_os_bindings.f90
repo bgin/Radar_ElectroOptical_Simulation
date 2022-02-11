@@ -108,7 +108,7 @@ module os_bindings
                bind(c,name='c_clock_getcpuclockid')
                use, intrinsic :: ISO_C_BINDING
                integer(c_int),     intent(in), value  :: pid
-               type(c_ptr),        intent(out)        :: clockid
+               type(c_ptr),        intent(out),value  :: clockid
                integer(c_int) :: stat
      end function c_clock_getcpuclockid
      
@@ -144,9 +144,50 @@ module os_bindings
      
   end interface
 
+  interface
+     function cmalloc(size)  type(c_ptr) &
+                    bind(c,name='malloc')
+            import c_ptr, c_size_t
+            integer(c_size_t), intent(in), value :: size
+          end function cmalloc
+  end interface
 
+  interface     
+      subroutine cfree(ptr) bind(c,name='free')
+            import c_ptr
+            type(c_ptr), value :: ptr
+      end subroutine cfree
+  end interface
 
+  interface      
+     function crealloc(ptr,new_size)  type(c_ptr)  &
+                             bind(c,name='realloc')
+            import c_ptr, c_size_t
+            type(c_ptr), value :: ptr
+            integer(c_size_t), intent(in), value :: new_size
+          end function crealloc
+  end interface
 
+    interface   
+       function ccalloc(num,size) type(c_ptr) &
+                   bind(c,name='calloc')
+            import c_ptr, c_size_t
+            integer(c_size_t), intent(in), value :: num 
+            integer(c_size_t), intent(in), value :: size 
+        end function
+    end interface
+
+    interface
+        subroutine qsort(base, num, size, compar) bind(c,name='qsort')
+            import c_ptr, c_size_t, c_funptr
+            type(c_ptr), value :: base
+            integer(c_size_t), value :: num, size
+            type(c_funptr), value :: compar
+        end subroutine
+
+    end interface
+
+     
 
 
 
