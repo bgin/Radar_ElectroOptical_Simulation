@@ -97,11 +97,52 @@ module os_bindings
      subroutine c_abort() bind(c,name='c_abort')
                 use, intrinsic :: ISO_C_BINDING
      end subroutine c_abort
-   end interface
+  end interface
+
+  !=====================================================================!
+  ! Interface to C wrapper function calling 'clock_getcpuclockid'       !
+  !=====================================================================!
+
+  interface
+     function c_clock_getcpuclockid(pid,clockid) result(stat) &
+               bind(c,name='c_clock_getcpuclockid')
+               use, intrinsic :: ISO_C_BINDING
+               integer(c_int),     intent(in), value  :: pid
+               type(c_ptr),        intent(out)        :: clockid
+               integer(c_int) :: stat
+     end function c_clock_getcpuclockid
+     
+  end interface
+
+  !=========================================================!
+  ! Interface to C wrapper function calling 'clock_getres'  !
+  !=========================================================!
+
+  interface
+     function c_clock_getres(clock_id,nsec) result(stat) &
+                   bind(c,name='c_clock_getres')
+                use, intrinsic :: ISO_C_BINDING
+                integer(c_int),        intent(in), value :: pid
+                integer(c_long_long),  intent(out)       :: nsec
+                integer(c_int) :: stat
+     end function c_clock_getres
+     
+  end interface
+
+  !=========================================================!
+  ! Interface to C wrapper function calling 'kill'  !
+  !=========================================================!
   
-
-
-
+  interface
+     function c_kill(pid,sig) result(stat) &
+          bind(c,name='c_kill')
+          use, intrinsic :: ISO_C_BINDING
+          integer(c_int),        intent(in), value :: pid
+          integer(c_int),        intent(in), value :: sig
+          integer(c_int) :: stat
+     end function c_kill
+     
+  end interface
 
 
 
