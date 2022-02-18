@@ -73,6 +73,69 @@ cuBLAS_Cgemm3m_iface(cublasOperation_t,
 
 
 
+extern "C"
+void
+cuBLAS_Chemm_iface(cublasSideMode_t,
+                   cublasFillMode_t,
+                   const int32_t,
+                   const int32_t,
+                   const cuComplex,
+                   const cuComplex * __restrict,
+                   const int32_t,
+                   const cuComplex * __restrict,
+                   const int32_t,
+                   const cuComplex,
+                   cuComplex * __restrict,
+                   const int32_t,
+                   cudaError_t * __restrict,
+                   int32_t * __restrict,
+                   uint64_t * __restrict) 
+                                       __attribute__((hot))
+                                       __attribute__((aligned(32)));
+
+
+
+extern "C"
+void
+cuBLAS_Cher2k_iface(cublasOperation_t,
+                    cublasOperation_t,
+                    cublasFillMode_t,
+                    const int32_t,
+                    const int32_t,
+                    const cuComplex,
+                    const cuComplex * __restrict,
+                    const int32_t,
+                    const cuComplex * __restrict,
+                    const int32_t,
+                    const cuComplex,
+                    cuComplex * __restrict,
+                    const int32_t,
+                    cudaError_t * __restrict,
+                    int32_t * __restrict,
+                    uint64_t * __restrict) 
+                                       __attribute__((hot))
+                                       __attribute__((aligned(32)));
+
+
+extern "C"
+void
+cuBLAS_Ssymm_iface(cublasSideMode_t,
+                   cublasFillMode_t,
+                   int32_t,
+                   int32_t,
+                   const float,
+                   const float * __restrict,
+                   const int32_t,
+                   const float * __restrict,
+                   int32_t,
+                   const float,
+                   float * __restrict,
+                   const int32_t,
+                   cudaError_t * __restrict,
+                   int32_t * __restrict,
+                   uint64_t * __restrict) 
+                                       __attribute__((hot))
+                                       __attribute__((aligned(32)));
 
 
 
