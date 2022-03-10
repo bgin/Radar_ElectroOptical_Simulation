@@ -378,7 +378,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                      END IF
                   ELSE
                      DO 110, I = II, II+UISEC-1, 2
-!$OMP SIMD 
+                        !$omp simd linear(L:2) aligned(A:64) 
                         DO 100, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 )  = ALPHA*A( L, I )
                            T1( L-LL+1, I-II+2 ) = ALPHA*A( L, I+1 )
@@ -392,6 +392,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                         END IF
   110                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                            !$omp simd linear(L:1) aligned(A:64)  
                         DO 120, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = ALPHA*A( L, II+ISEC-1 )
   120                   CONTINUE
@@ -404,7 +405,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                   UISEC = ISEC-MOD( ISEC, 4 )
                   DO 170 J = JJ, JJ+UJSEC-1, 4
                      !$omp simd private(F11,21,F12,F22,F13,F23,F14,F24,F31,F41,F32, &
-                     !$omp&             F42,F33,F43,F34,F44) aligned(C:64) linear(J:4) &
+                     !$omp&             F42,F33,F43,F34,F44) aligned(C:64) linear(J:4)
                      DO 140 I = II, II+UISEC-1, 4
                         F11 = DELTA*C( I,J )
                         F21 = DELTA*C( I+1,J )
@@ -470,7 +471,8 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!$omp simd private(TMP0,TMP1,TMP2,TMP3) reduction(+:F11,F12,F13,F14)
+                           !$omp simd private(TMP0,TMP1,TMP2,TMP3) reduction(+:F11,F12,F13,F14) &
+                           !$omp& aligned(B:64)
                            DO 150 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B(L,J)
                               F11 = F11 + TMP0
@@ -499,7 +501,8 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!$OMP SIMD PRIVATE(TMP0,TMP1,TMP2,TMP3) REDUCTION(+:F11,F21,F32,F41)
+                           !$omp simd private(TMP0,TMP1,TMP2,TMP3) reduction(+:F11,F12,F13,F14) &
+                           !$omp& aligned(B:64) linear(L:1)
                            DO 180 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B( L, J )
                               F11  = F11 + TMP0
@@ -604,7 +607,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                      END IF
                   ELSE
                      DO 330, I = II, II+UISEC-1, 2
-!$OMP SIMD
+                        !$omp simd aligned(A:64) linear(L:2) simdlen(8)
                         DO 320, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 ) = A( L, I )
                            T1( L-LL+1, I-II+2 ) = A( L, I+1 )
@@ -617,6 +620,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                         END IF
   330                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !$omp simd aligned(A:64) linear(L:1) simdlen(8) 
                         DO 340, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = A( L, II+ISEC-1 )
   340                   CONTINUE
@@ -645,7 +649,9 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                         F43 = DELTA*C( I+3,J+2 )
                         F34 = DELTA*C( I+2,J+3 )
                         F44 = DELTA*C( I+3,J+3 )
-!$OMP SIMD PRIVATE(C0,C1,C2,C3,C4,C5,C6,C7)  REDUCTION(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44)
+                        !$omp simd private(C0,C1,C2,C3,C4,C5,C6,C7) &
+                        !$omp& reduction(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44) &
+                        !$omp& simdlen(8) linear(L:1)
                         DO 350 L = LL, LL+LSEC-1
                            C0  = T1(L-LL+1,I-II+1)
                            C1  = T2(L-LL+1,J-JJ+1)
@@ -696,7 +702,8 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!$OMP SIMD REDUCTION(+:F11,F12,F13,F14)
+                           !$omp simd reduction(+:F11,F12,F13,F14) &
+                           !$omp& simdlen(8) linear(L:1)
                            DO 370 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -721,7 +728,8 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!$OMP SIMD REDUCTION(+:F11,F21,F31,F41)
+                           !$omp simd reduction(+:F11,F21,F31,F41) simdlen(8) &
+                           !$omp& linear(L:1)
                            DO 400 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -739,6 +747,7 @@ BETA,C,LDC,INFO,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DGEMM !GCC$ ATTRIB
   410                   CONTINUE
                         DO 430 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
+                           !$omp simd reduction(+:F11) simdlen(8) linear(I:1)
                            DO 420 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -769,10 +778,8 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
       INTEGER            MB, NB, NBT, KB 
       DOUBLE PRECISION   ALPHA, BETA
 !*     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
-      !DIR$ ASSUME_ALIGNED A:64
-      !DIR$ ASSUME_ALIGNED B:64
-      !DIR$ ASSUME_ALIGNED C:64
+      !DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: A,B,C
 #if 0
 *     ..
 *
@@ -785,7 +792,7 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 *
 *  where  op( X ) is one of
 *
-*     op( X ) = X   or   op( X ) = X',
+!*     op( X ) = X   or   op( X ) = X',
 *
 *  alpha and beta are scalars, and A, B and C are matrices, with op( A )
 *  an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.
@@ -927,7 +934,7 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !      Moved to subroutine arguments.
      ! PARAMETER        ( MB = 32, NB = 1024, NBT = 96, KB = 32 )
       DOUBLE PRECISION   T1( KB, MB ), T2( KB, NBT )
-      !DIR$ ATTRIBUTES ALIGN : 32 :: T1,T2
+      !DIR$ ATTRIBUTES ALIGN : 64 :: T1,T2
 !*     ..
 !*     .. Executable Statements ..
 !*
@@ -952,11 +959,11 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !*     Test the input parameters.
 !*
       INFO = 0
-      IF( ( .NOT.NOTA ).AND.( .NOT. LSAME( TRANSA,'C' ) )
-     $                          .AND.( .NOT.LSAME( TRANSA, 'T' ) ) )THEN
+      IF( ( .NOT.NOTA ).AND.( .NOT. LSAME( TRANSA,'C' ) ) &
+                               .AND.( .NOT.LSAME( TRANSA, 'T' ) ) )THEN
          INFO = 1
-      ELSE IF( ( .NOT.NOTB ).AND.( .NOT.LSAME( TRANSB, 'C' ) )
-     $                          .AND.( .NOT.LSAME( TRANSB, 'T' ) ) )THEN
+      ELSE IF( ( .NOT.NOTB ).AND.( .NOT.LSAME( TRANSB, 'C' ) ) &
+                              .AND.( .NOT.LSAME( TRANSB, 'T' ) ) )THEN
          INFO = 2
       ELSE IF( M.LT.0 )THEN
          INFO = 3
@@ -988,7 +995,6 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
          IF( BETA.EQ.ZERO )THEN
             UISEC = M-MOD( M, 4 )
             DO 30, J = 1, N
-!DIR$ SIMD VECTORLENGTHFOR(8)
                DO 10, I = 1, UISEC, 4
                   C( I, J ) = ZERO
                   C( I+1, J ) = ZERO
@@ -1002,7 +1008,6 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
          ELSE
             UISEC = M-MOD( M, 4 )
             DO 60, J = 1, N
-!DIR$ SIMD VECTORLENGTHFOR(8)
                DO 40, I = 1, UISEC, 4
                   C( I, J ) = BETA*C( I, J )
                   C( I+1, J ) = BETA*C( I+1, J )
@@ -1071,7 +1076,8 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      END IF
                   ELSE
                      DO 110, I = II, II+UISEC-1, 2
-!DIR$ SIMD VECTORLENGTHFOR(8)
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(4) linear(L:2) aligned(A:64)
                         DO 100, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 )  = ALPHA*A( L, I )
                            T1( L-LL+1, I-II+2 ) = ALPHA*A( L, I+1 )
@@ -1085,6 +1091,8 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         END IF
   110                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(4) linear(L:2) aligned(A:64)    
                         DO 120, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = ALPHA*A( L, II+ISEC-1 )
   120                   CONTINUE
@@ -1096,6 +1104,10 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !*
                   UISEC = ISEC-MOD( ISEC, 4 )
                   DO 170 J = JJ, JJ+UJSEC-1, 4
+                     !dir$ assume_aligned C:64
+                     !$omp simd simdlen(4) private(F11,F21,F12,F22,F13, &
+                     !$omp&                F23,F14,F24,F31,F41,F32,F42, &
+                     !&omp&                F33,F43,F34,F44)
                      DO 140 I = II, II+UISEC-1, 4
                         F11 = DELTA*C( I,J )
                         F21 = DELTA*C( I+1,J )
@@ -1113,7 +1125,11 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         F43 = DELTA*C( I+3,J+2 )
                         F34 = DELTA*C( I+2,J+3 )
                         F44 = DELTA*C( I+3,J+3 )
-
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned B:64
+                        !$omp  simd simdlen(4) linear(L:1) private(TMP0,TMP1,TMP2,TMP3) &
+                        !$omp& reduction(+:F11,F21,F12,F22,F13,F23,F14,F24,F31,F41,F32, &
+                        !$omp&             F42,F33,F43,F34,F44)
                         DO 130 L = LL, LL+LSEC-1
                            call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
                            TMP0 = B(L,J)
@@ -1155,12 +1171,17 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         C( I+3, J+3 ) = F44
   140                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(4) linear(I:1) private(F11,F12,F13,F14)
                         DO 160 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!DIR$ SIMD PRIVATE(TMP0,TMP1,TMP2,TMP3) REDUCTION(+:F11,F12,F13,F14)
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned B:64
+                           !$omp simd simdlen(4) private(TMP0,TMP1,TMP2,TMP3) &
+                           !$omp& reduction(+:F11,F12,F13,F14) aligned(B:64)
                            DO 150 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B(L,J)
                               F11 = F11 + TMP0
@@ -1184,12 +1205,17 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      TMP2 = 0.0D0
                      TMP3 = 0.0D0
                      DO 220 J = JJ+UJSEC, JJ+JSEC-1
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(4) linear(I:4) private(F11,F12,F13,F14)
                         DO 190 I = II, II+UISEC-1, 4
                            F11 = DELTA*C( I,J )
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!DIR$ SIMD PRIVATE(TMP0,TMP1,TMP2,TMP3) REDUCTION(+:F11,F21,F32,F41)
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned B:64
+                           !$omp simd simdlen(4) private(TMP0,TMP1,TMP2,TMP3) &
+                           !$omp& reduction(+:F11,F12,F13,F14) aligned(B:64)
                            DO 180 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B( L, J )
                               F11  = F11 + TMP0
@@ -1207,6 +1233,10 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   190                   CONTINUE
                         DO 210 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned B:64
+                           !$omp simd simdlen(4) &
+                           !$omp& reduction(+:F11) aligned(B:64)
                            DO 200 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
   200                      CONTINUE
@@ -1294,7 +1324,9 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      END IF
                   ELSE
                      DO 330, I = II, II+UISEC-1, 2
-!DIR$ SIMD VECTORLENGTHFOR(8)
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(4) linear(L:2)
                         DO 320, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 ) = A( L, I )
                            T1( L-LL+1, I-II+2 ) = A( L, I+1 )
@@ -1307,6 +1339,9 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         END IF
   330                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(4) linear(L:2) 
                         DO 340, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = A( L, II+ISEC-1 )
   340                   CONTINUE
@@ -1318,6 +1353,10 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !*
                   UISEC = ISEC-MOD( ISEC, 4 )
                   DO 390 J = JJ, JJ+UJSEC-1, 4
+                     !dir$ assume_aligned C:64
+                     !$omp simd simdlen(4) aligned(C:64) linear(I:4) &
+                     !$omp& private(F11,F21,F12,F22,F13,F23,F14,F24, &
+                     !$OMP&         F31,F41,F32,F42,F33,F43,F34,F44)
                      DO 360 I = II, II+UISEC-1, 4
                         F11 = DELTA*C( I,J )
                         F21 = DELTA*C( I+1,J )
@@ -1335,7 +1374,10 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         F43 = DELTA*C( I+3,J+2 )
                         F34 = DELTA*C( I+2,J+3 )
                         F44 = DELTA*C( I+3,J+3 )
-!DIR$ SIMD PRIVATE(C0,C1,C2,C3,C4,C5,C6,C7)  REDUCTION(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44)
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned T2:64
+                        !dir$ simd simdlen(4)  linear(I:1) private(C0,C1,C2,C3,C4,C5,C6,C7) &
+                        !$omp& reduction(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44)
                         DO 350 L = LL, LL+LSEC-1
                            C0  = T1(L-LL+1,I-II+1)
                            C1  = T2(L-LL+1,J-JJ+1)
@@ -1381,12 +1423,16 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         C( I+3, J+3 ) = F44
   360                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(4) linear(I:1) private(F11,F12,F13,F14)
                         DO 380 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!DIR$ SIMD REDUCTION(+:F11,F12,F13,F14)
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned T2:64
+                           !dir$ simd simdlen(4) reduction(+:F11,F12,F13,F14) linear(L:1)
                            DO 370 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -1406,12 +1452,16 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   390             CONTINUE
                   IF( UJSEC.LT.JSEC )THEN
                      DO 440 J = JJ+UJSEC, JJ+JSEC-1
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(4) linear(I:4) private(F11,F12,F13,F14)
                         DO 410 I = II, II+UISEC-1, 4
                            F11 = DELTA*C( I, J )
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!DIR$ SIMD REDUCTION(+:F11,F21,F31,F41)
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned T2:64
+                           !dir$ simd simdlen(4) reduction(+:F11,F12,F13,F14) linear(L:1)
                            DO 400 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -1429,6 +1479,9 @@ SUBROUTINE DGEMM_Haswell_AVX2(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   410                   CONTINUE
                         DO 430 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
+                           !dir$ assume_aligned T1:64
+                           !dir$ assume_aligned T2:64
+                           !dir$ simd simdlen(4) reduction(+:F11) linear(L:1)
                            DO 420 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -1451,17 +1504,15 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !     *     .. Scalar Arguments ..
 !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DGEMM_SKX_AVX512
 !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEMM_SKX_AVX512
-!DIR$ ATTRIBUTES INLINE :: DGEMM_SKX_AVX512
+!DIR$ OPTIMIZE : 3
       implicit none
       CHARACTER*1        TRANSA, TRANSB
       INTEGER            M, N, K, LDA, LDB, LDC, INFO
       INTEGER            MB, NB, NBT, KB 
       DOUBLE PRECISION   ALPHA, BETA
 !*     .. Array Arguments ..
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
-      !DIR$ ASSUME_ALIGNED A:64
-      !DIR$ ASSUME_ALIGNED B:64
-      !DIR$ ASSUME_ALIGNED C:64
+      !DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: A,B,C
 #if 0
 *     ..
 *
@@ -1474,8 +1525,8 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 *
 *  where  op( X ) is one of
 *
-*     op( X ) = X   or   op( X ) = X',
-*
+!*     op( X ) = X   or   op( X ) = X',
+!*
 *  alpha and beta are scalars, and A, B and C are matrices, with op( A )
 *  an m by k matrix,  op( B )  a  k by n matrix and  C an m by n matrix.
 *
@@ -1616,7 +1667,7 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !      Moved to subroutine arguments.
      ! PARAMETER        ( MB = 32, NB = 1024, NBT = 96, KB = 32 )
       DOUBLE PRECISION   T1( KB, MB ), T2( KB, NBT )
-      !DIR$ ATTRIBUTES ALIGN : 32 :: T1,T2
+      !DIR$ ATTRIBUTES ALIGN : 64 :: T1,T2
 !*     ..
 !*     .. Executable Statements ..
 !*
@@ -1677,7 +1728,7 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
          IF( BETA.EQ.ZERO )THEN
             UISEC = M-MOD( M, 4 )
             DO 30, J = 1, N
-!DIR$ SIMD VECTORLENGTHFOR(8)
+
                DO 10, I = 1, UISEC, 4
                   C( I, J ) = ZERO
                   C( I+1, J ) = ZERO
@@ -1691,7 +1742,7 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
          ELSE
             UISEC = M-MOD( M, 4 )
             DO 60, J = 1, N
-!DIR$ SIMD VECTORLENGTHFOR(8)
+
                DO 40, I = 1, UISEC, 4
                   C( I, J ) = BETA*C( I, J )
                   C( I+1, J ) = BETA*C( I+1, J )
@@ -1760,7 +1811,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      END IF
                   ELSE
                      DO 110, I = II, II+UISEC-1, 2
-!DIR$ SIMD VECTORLENGTHFOR(8)
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(8) linear(L:2)
                         DO 100, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 )  = ALPHA*A( L, I )
                            T1( L-LL+1, I-II+2 ) = ALPHA*A( L, I+1 )
@@ -1774,6 +1827,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         END IF
   110                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(8) linear(L:2) 
                         DO 120, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = ALPHA*A( L, II+ISEC-1 )
   120                   CONTINUE
@@ -1785,6 +1841,10 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !*
                   UISEC = ISEC-MOD( ISEC, 4 )
                   DO 170 J = JJ, JJ+UJSEC-1, 4
+                     !dir$ assume_aligned C:64
+                     !$omp simd simdlen(8) linear(I:4) &
+                     !$omp& private(F11,F21,F12,F22,F13,F23,F14,F24, &
+                     !$omp&         F31,F41,F32,F42,F33,F43,F34,F44)
                      DO 140 I = II, II+UISEC-1, 4
                         F11 = DELTA*C( I,J )
                         F21 = DELTA*C( I+1,J )
@@ -1802,7 +1862,11 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         F43 = DELTA*C( I+3,J+2 )
                         F34 = DELTA*C( I+2,J+3 )
                         F44 = DELTA*C( I+3,J+3 )
-
+                        !dir$ assume_aligned B:64
+                        !dir$ assume_aligned T1:64
+                        !$omp simd simdlen(8) linear(L:1) private(TMP0,TMP1,TMP2,TMP3) &
+                        !$omp& reduction(F11,F21,F22,F13,F23,F14,F24,F31, &
+                        !$omp&           F41,F32,F42,F33,F43,F34,F44)
                         DO 130 L = LL, LL+LSEC-1
                            call _mm_prefetch(T1(L+32,I),FOR_K_PREFETCH_T1,.false.)
                            TMP0 = B(L,J)
@@ -1844,12 +1908,16 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         C( I+3, J+3 ) = F44
   140                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(8) linear(I:1) private(F11,F12,F13,F14)
                         DO 160 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!DIR$ SIMD PRIVATE(TMP0,TMP1,TMP2,TMP3) REDUCTION(+:F11,F12,F13,F14)
+                           !dir$ assume_aligned T1:64
+                           !$omp simd private(TMP0,TMP1,TMP2,TMP3) linear(L:1) &
+                           !$omp&     reduction(+:F11,F12,F13,F14)
                            DO 150 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B(L,J)
                               F11 = F11 + TMP0
@@ -1873,12 +1941,16 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      TMP2 = 0.0D0
                      TMP3 = 0.0D0
                      DO 220 J = JJ+UJSEC, JJ+JSEC-1
+                        !dir$ assume_aligned C:64
+                        !$omp simd simdlen(8) linear(I:4) private(F11,F12,F13,F14)
                         DO 190 I = II, II+UISEC-1, 4
                            F11 = DELTA*C( I,J )
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!DIR$ SIMD PRIVATE(TMP0,TMP1,TMP2,TMP3) REDUCTION(+:F11,F21,F32,F41)
+                           !dir$ assume_aligned T1:64
+                           !$omp simd private(TMP0,TMP1,TMP2,TMP3) linear(L:1) &
+                           !$omp&     reduction(+:F11,F12,F13,F14)
                            DO 180 L = LL, LL+LSEC-1
                               TMP0 = T1( L-LL+1, I-II+1 )*B( L, J )
                               F11  = F11 + TMP0
@@ -1896,6 +1968,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   190                   CONTINUE
                         DO 210 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
+                            !dir$ assume_aligned T1:64
+                           !$omp simd  linear(L:1) &
+                           !$omp&     reduction(+:F11)
                            DO 200 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )*B( L, J )
   200                      CONTINUE
@@ -1983,7 +2058,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                      END IF
                   ELSE
                      DO 330, I = II, II+UISEC-1, 2
-!DIR$ SIMD VECTORLENGTHFOR(8)
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(8) linear(L:2) aligned(A:64)
                         DO 320, L = LL, LL+ULSEC-1, 2
                            T1( L-LL+1, I-II+1 ) = A( L, I )
                            T1( L-LL+1, I-II+2 ) = A( L, I+1 )
@@ -1996,6 +2073,9 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         END IF
   330                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned A:64
+                        !$omp simd simdlen(8) linear(L:2) aligned(A:64)
                         DO 340, L = LL, LL+LSEC-1
                            T1( L-LL+1, ISEC ) = A( L, II+ISEC-1 )
   340                   CONTINUE
@@ -2007,6 +2087,10 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
 !*
                   UISEC = ISEC-MOD( ISEC, 4 )
                   DO 390 J = JJ, JJ+UJSEC-1, 4
+                     !dir$ assume_aligned C:64
+                     !$omp  simd simdlen(8) linear(I:4) &
+                     !$omp& private(F11,F21,F12,F22,F13,F23,F14, &
+                     !$omp&         F24,F31,F41,F32,F42,F33,F43,F34,F44)
                      DO 360 I = II, II+UISEC-1, 4
                         F11 = DELTA*C( I,J )
                         F21 = DELTA*C( I+1,J )
@@ -2024,7 +2108,10 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         F43 = DELTA*C( I+3,J+2 )
                         F34 = DELTA*C( I+2,J+3 )
                         F44 = DELTA*C( I+3,J+3 )
-!DIR$ SIMD PRIVATE(C0,C1,C2,C3,C4,C5,C6,C7)  REDUCTION(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44)
+                        !dir$ assume_aligned T1:64
+                        !dir$ assume_aligned T2:64
+                        !$omp simd simdlen(8) linear(L:1) private(C0,C1,C2,C3,C4,C5,C6,C7) &
+                        !$omp reduction(+:F11,F21,F22,F13,F23,F14,F24,F31,F41,F32,F42,F33,F43,F34,F44)
                         DO 350 L = LL, LL+LSEC-1
                            C0  = T1(L-LL+1,I-II+1)
                            C1  = T2(L-LL+1,J-JJ+1)
@@ -2070,12 +2157,16 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
                         C( I+3, J+3 ) = F44
   360                CONTINUE
                      IF( UISEC.LT.ISEC )THEN
+                         !dir$ assume_aligned C:64
+                         !dir$ assume_aligned T1:64
+                         !dir$ assume_aligned T2:64 
+                          
                         DO 380 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
                            F12 = DELTA*C( I, J+1 )
                            F13 = DELTA*C( I, J+2 )
                            F14 = DELTA*C( I, J+3 )
-!DIR$ SIMD REDUCTION(+:F11,F12,F13,F14)
+                           !$omp simd simdlen(8) reduction(+:F11,F12,F13,F14)
                            DO 370 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -2095,12 +2186,15 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   390             CONTINUE
                   IF( UJSEC.LT.JSEC )THEN
                      DO 440 J = JJ+UJSEC, JJ+JSEC-1
+                         !dir$ assume_aligned C:64
+                         !dir$ assume_aligned T1:64
+                         !dir$ assume_aligned T2:64 
                         DO 410 I = II, II+UISEC-1, 4
                            F11 = DELTA*C( I, J )
                            F21 = DELTA*C( I+1, J )
                            F31 = DELTA*C( I+2, J )
                            F41 = DELTA*C( I+3, J )
-!DIR$ SIMD REDUCTION(+:F11,F21,F31,F41)
+                           !$omp simd simdlen(8) reduction(+:F11,F12,F13,F14)
                            DO 400 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -2118,6 +2212,7 @@ SUBROUTINE DGEMM_SKX_AVX512(TRANSA,TRANSB,M,N,K,ALPHA,A,LDA,B,LDB,&
   410                   CONTINUE
                         DO 430 I = II+UISEC, II+ISEC-1
                            F11 = DELTA*C( I, J )
+                              !$omp simd simdlen(8) reduction(+:F11)
                            DO 420 L = LL, LL+LSEC-1
                               F11 = F11 + T1( L-LL+1, I-II+1 )* &
                                                    T2( L-LL+1, J-JJ+1 )
@@ -3271,9 +3366,7 @@ SUBROUTINE DSYMM_Haswell_AVX2(SIDE,UPLO M,N,ALPHA,A,LDA,B,LDB, &
       DOUBLE PRECISION   ALPHA, BETA
 
       DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
-      !DIR$ ASSUME_ALIGNED A:64
-      !DIR$ ASSUME_ALIGNED B:64
-      !DIR$ ASSUME_ALIGNED C:64
+     
 #if 0
 *     ..
 *
@@ -3833,7 +3926,8 @@ BETA,C,LDC,RCB,MB,NB,NBT,KB) !GCC$ ATTRIBUTES aligned(32) :: DSYR2K !GCC$ ATTRIB
       INTEGER            MB,NB,NBT,KB
       DOUBLE PRECISION   ALPHA, BETA
 
-      DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      !DOUBLE PRECISION   A( LDA, * ), B( LDB, * ), C( LDC, * )
+      DOUBLE PRECISION, ALLOCATABLE, DIMENSION(:,:) :: A,B,C
 #if 0
 *     ..
 *
