@@ -1819,9 +1819,9 @@ module Time_Series_Procedures
 !
     subroutine comp_stlez_rm( y, np, ns, isdeg, itdeg, robust, season, trend, ni, nt, nl, &
                               ildeg, nsjump, ntjump, nljump, maxiter, rw, no, ok )
-       !dir$ attributes code_align : 32 :: comp_stlez_rv
+       !dir$ attributes code_align : 32 :: comp_stlez_rm
        !dir$ optimize: 3
-       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: comp_stlez_rv
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: comp_stlez_rm
 !
 ! Purpose
 ! _______
@@ -2345,6 +2345,10 @@ module Time_Series_Procedures
 !
     subroutine comp_stl_rv( y, np, ni, no, isdeg, itdeg, ildeg, nsjump, ntjump, nljump, &
                             ns, nt, nl, rw, season, trend )
+       !dir$ attributes code_align : 32 :: comp_stl_rv
+       !dir$ attributes forceinline :: comp_stl_rv
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: comp_stl_rv
 !
 ! Purpose
 ! _______
@@ -2510,6 +2514,7 @@ module Time_Series_Procedures
 ! ____________________________
 !
     real(stnd), dimension(size(y)+2*max(np,1_i4b),3) :: work
+    !dir$ attributes align : 64 :: work
 !
     integer(i4b) :: n, k, j
 !
@@ -2579,6 +2584,11 @@ module Time_Series_Procedures
 !
 !   OUTER LOOP.
 !
+    !dir$ assume_aligned work:64
+    !dir$ assume_aligned y:64
+    !dir$ assume_aligned trend:64
+    !dir$ assume_aligned rw:64
+    !dir$ assume_aligned season:64
     do k = 0_i4b, no
 !
 !       call onestp( y, np, ns, nt, nl, isdeg, itdeg, ildeg, nsjump,     &
@@ -2645,6 +2655,10 @@ module Time_Series_Procedures
 !
     subroutine comp_stl_rm( y, np, ni, no, isdeg, itdeg, ildeg, nsjump, ntjump, nljump, &
                             ns, nt, nl, rw, season, trend )
+       !dir$ attributes code_align : 32 :: comp_stl_rm
+       !dir$ attributes forceinline :: comp_stl_rm
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: comp_stl_rm
 !
 ! Purpose
 ! _______
@@ -2810,6 +2824,7 @@ module Time_Series_Procedures
 ! ____________________________
 !
     real(stnd), dimension(size(y)+2*max(np,1_i4b),3) :: work
+    !dir$ attributes align : 64 :: work
 !
     integer(i4b) :: m, n, k, j, i
 !
@@ -2894,6 +2909,11 @@ module Time_Series_Procedures
                k>1_i4b                         .and.      &
                m>1_i4b
 #endif
+    !dir$ assume_aligned work:64
+    !dir$ assume_aligned y:64
+    !dir$ assume_aligned trend:64
+    !dir$ assume_aligned rw:64
+    !dir$ assume_aligned season:64
 !
 !$OMP PARALLEL DO IF(test_par)                &
 !$OMP            ,PRIVATE(i,j,k,userw,work)   &
@@ -2969,6 +2989,10 @@ module Time_Series_Procedures
 ! ===========================================================================================
 !
     subroutine ma( x, len, ave)
+       !dir$ attributes code_align : 32 :: ma
+       !dir$ attributes forceinline :: ma
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: ma
 !
 ! Purpose
 ! _______
@@ -3050,6 +3074,9 @@ module Time_Series_Procedures
     k = len
     m = 0_i4b
 !
+    !dir$ assume_aligned x:64
+    !dir$ assume_aligned ave:64
+    !$omp simd simdlen(8) reduction(-:v)
     do j=2_i4b, newn
 !
         k = k + 1_i4b
@@ -3075,6 +3102,10 @@ module Time_Series_Procedures
 !
 !
     subroutine detrend_rv( vec, trend, orig, slope )
+       !dir$ attributes code_align : 32 :: detrend_rv
+       !dir$ attributes forceinline :: detrend_rv
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: detrend_rv
 !
 ! Purpose
 ! _______
@@ -3174,10 +3205,11 @@ module Time_Series_Procedures
 !
     select case( abs(trend) )
 !
-        case( 1_i4b )
+       case( 1_i4b )
 !
 !           REMOVE MEAN.
 !
+            !dir$ assume_aligned vec:64
             orig2    = sum( vec(:m) )/real( m, stnd )
             vec(:m) = vec(:m) - orig2
 !
@@ -3185,6 +3217,7 @@ module Time_Series_Procedures
 !
 !           REMOVE DRIFT.
 !
+            !dir$ assume_aligned vec:64
             slope2 = (vec(m) - vec(1_i4b))/real( m-1_i4b, stnd )
             vec(:m) = vec(:m) - slope2*arth( zero, one, m )           
 !
@@ -3192,6 +3225,8 @@ module Time_Series_Procedures
 !
 !           REMOVE LINEAR LEAST SQUARES LINE.
 !
+             !dir$ assume_aligned vec:64
+             !$omp simd simdlen(8) reduction(+:orig2)
             do k = 1_i4b, m
                 slope2 = real( k, stnd )*vec(k) - orig2 + slope2
                 orig2 = orig2 + vec(k)
@@ -3220,6 +3255,10 @@ module Time_Series_Procedures
 ! =========================================================================================
 !
     subroutine detrend_rm( mat, trend, orig, slope )
+       !dir$ attributes code_align : 32 :: detrend_rm
+       !dir$ attributes forceinline :: detrend_rm
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: detrend_rm
 !
 ! Purpose
 ! _______
@@ -3295,6 +3334,7 @@ module Time_Series_Procedures
 !
     real(stnd)                         :: c
     real(stnd), dimension(size(mat,1)) :: orig2, slope2
+    !dir$ attributes align : 64 :: orig2,slope2
 !
     logical(lgl) :: out_orig, out_slope
 !
@@ -3356,8 +3396,11 @@ module Time_Series_Procedures
 !
 !           REMOVE MEANS.
 !
+             !dir$ assume_aligned orig2:64
+             !dir$ assume_aligned mat:64
             orig2(:n)    = sum( mat(:n,:m),dim=2 )*( one/real( m, stnd ) )
 !
+            !$omp simd simdlen(8) reduction(-:mat)
             do k = 1_i4b, m
                 mat(:n,k) = mat(:n,k) - orig2(:n)
             end do
@@ -3366,8 +3409,11 @@ module Time_Series_Procedures
 !
 !           REMOVE DRIFTS.
 !
+            !dir$ assume_aligned slope2:64
+            !dir$ assume_aligned mat:64
             slope2(:n) = (mat(:n,m) - mat(:n,1_i4b))*( one/real( m-1_i4b, stnd ) )
 !
+            !$omp simd simdlen(8) reduction(-:mat)
             do k = 1_i4b, m
                 c         = real( k, stnd ) - one
                 mat(:n,k) = mat(:n,k) - c*slope2(:n)           
@@ -3377,6 +3423,9 @@ module Time_Series_Procedures
 !
 !           REMOVE LINEAR LEAST SQUARES LINES.
 !
+            !dir$ assume_aligned slope2:64
+            !dir$ assume_aligned mat:64
+            !dir$ assume_aligned orig2:64
             do k = 1_i4b, m
                 slope2(:n) = real( k, stnd )*mat(:n,k) - orig2(:n) + slope2(:n)
                 orig2(:n)  = orig2(:n) + mat(:n,k)
@@ -3385,6 +3434,7 @@ module Time_Series_Procedures
             orig2(:n)  = ( orig2(:n) - (three/real(m+1_i4b,stnd))*slope2(:n) )*( one/real(m,stnd) )
             slope2(:n) = slope2(:n)*( one/(real( m*(m-1_i4b)*(m+1_i4b), stnd)/six) )
 !
+             !$omp simd simdlen(8) reduction(-:mat)
             do k = 1_i4b, m
                 c         = real( k, stnd ) - one
                 mat(:n,k) = mat(:n,k) - ( c*slope2(:n) + orig2(:n) )         
@@ -3413,6 +3463,9 @@ module Time_Series_Procedures
 !
 !
     subroutine hwfilter_rv( vec, pl, ph, initfft, trend, win )
+       !dir$ attributes code_align : 32 :: hwfilter_rv
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: hwfilter_rv
 !
 ! Purpose
 ! _______
@@ -3537,8 +3590,11 @@ module Time_Series_Procedures
     real(stnd)   :: comp, win2, hwin, orig, slope, a, b, d
     real(stnd), dimension((size(vec)/2)+1) :: h2
     real(stnd), dimension(size(vec))       :: h
+    !dir$ attributes align : 64 :: h2
+    !dir$ attributes align : 64 :: h
 !
     complex(stnd), dimension(size(vec)) :: vect
+    !dir$ attributes align : 64 ::  vect
 !
     logical(lgl) :: odd, initfft2
 !
@@ -3631,6 +3687,7 @@ module Time_Series_Procedures
 !
 !   CONVOLVE WITH WINDOW TRANSFORM TO GET FILTER FREQUENCY RESPONSE IF NEEDED.
 !
+    
     if ( win2/=one ) then
 !
         hwin = (one-win2)*half
@@ -3642,6 +3699,8 @@ module Time_Series_Procedures
             b = h(km)
         end if
 !
+         !dir$ assume_aligned h:64
+         !$omp simd simdlen(8) linear(k:1)
         do k = 1_i4b, km
             d    = h(k)
             h(k) = win2*d + hwin*( a+h(k+1_i4b) )
@@ -3700,12 +3759,14 @@ module Time_Series_Procedures
 !
 !           ADD MEAN.
 !
+            !dir$ assume_aligned vec:64
             vec(:m) = vec(:m) + orig
 !
         case( -2_i4b )
 !
 !           ADD DRIFT.
 !
+            !dir$ assume_aligned vec:64
             vec(:m) = vec(:m) + slope*arth( zero, one, m )           
 !
 !            do k = 1_i4b, m
@@ -3717,6 +3778,7 @@ module Time_Series_Procedures
 !
 !           ADD LINEAR LEAST SQUARES LINE.
 !         
+            !dir$ assume_aligned vec:64
             vec(:m) = vec(:m) + ( orig + slope*arth( zero, one, m ) )       
 !         
 !            do k = 1_i4b, m
@@ -3735,6 +3797,9 @@ module Time_Series_Procedures
 ! =========================================================================================
 !
     subroutine hwfilter_rm( mat, pl, ph, initfft, trend, win, max_alloc )
+       !dir$ attributes code_align : 32 :: hwfilter_rm
+       !dir$ optimize: 3
+       !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: hwfilter_rm
 !
 ! Purpose
 ! _______
@@ -3867,10 +3932,15 @@ module Time_Series_Procedures
 !
     real(stnd)                                      :: comp, win2, hwin, c, d, e
     real(stnd), dimension(size(mat,1))              :: orig, slope
+    !dir$ attributes align : 64 :: orig
+    !dir$ attributes align : 64 :: slope
     real(stnd), dimension((size(mat,2)/2)+1)        :: h2
+    !dir$ attributes align : 64 :: h2
     real(stnd), dimension(size(mat,2))              :: h
+    !dir$ attributes align : 64 :: h
 !
     complex(stnd), dimension(:,:), allocatable  :: matt
+    !dir$ attributes align : 64 :: matt
 !
     logical(lgl) :: odd, initfft2
 !
@@ -4013,6 +4083,8 @@ module Time_Series_Procedures
             e = h(km)
         end if
 !
+        !dir$ assume_aligned h:64
+        !$omp simd simdlen(8) linear(k:1)
         do k = 1_i4b, km
 !
             d    = h(k)
@@ -4025,6 +4097,8 @@ module Time_Series_Procedures
 !
     end if
 !
+    !dir$ assume_aligned h2:64
+    !dir$ assume_aligned h:64
     h2(2_i4b:kodd)       = h(2_i4b:kodd)
     h(m:km+2_i4b:-1_i4b) = h2(2_i4b:kodd)
 !
@@ -4038,6 +4112,7 @@ module Time_Series_Procedures
 !
     i2 = 0_i4b
 !
+     !dir$ assume_aligned matt:64
     do i=1_i4b, imax
 !
         i1 = i2 + 1_i4b
@@ -4052,6 +4127,8 @@ module Time_Series_Procedures
 !       NOW, FILTER THE TIME SERIES.
 !       COMPUTE FILTERED FOURIER TRANSFORM OF THE SERIES.
 !
+        !dir$ assume_aligned h:64
+        !$omp simd simdlen(8) reduction(*:matt)
         do k=1_i4b,m
             matt(:p,k) = h(k)*matt(:p,k)
         end do
@@ -4080,6 +4157,9 @@ module Time_Series_Procedures
 !
 !           ADD MEANS.
 !
+            !dir$ assume_aligned mat:64
+            !dir$ assume_aligned orig:64
+            !$omp simd simdlen(8) reduction(+:mat) linear(k:1)
             do k = 1_i4b, m
                 mat(:n,k) = mat(:n,k) + orig(:n)
             end do
@@ -4088,6 +4168,9 @@ module Time_Series_Procedures
 !
 !           ADD DRIFTS.
 !
+            !dir$ assume_aligned mat:64
+            !dir$ assume_aligned slope:64
+            !$omp simd simdlen(8) reduction(+:mat) linear(k:1) 
             do k = 1_i4b, m
                 c         = real( k, stnd ) - one
                 mat(:n,k) = mat(:n,k) + c*slope(:n)           
@@ -4097,6 +4180,10 @@ module Time_Series_Procedures
 !
 !           ADD LINEAR LEAST SQUARES LINES.
 !         
+            !dir$ assume_aligned mat:64
+            !dir$ assume_aligned slope:64 
+            !dir$ assume_aligned orig:64
+            !$omp simd simdlen(8) reduction(+:mat) linear(k:1)
             do k = 1_i4b, m
                 c         = real( k, stnd ) - one
                 mat(:n,k) = mat(:n,k) + c*slope(:n) + orig(:n)      
