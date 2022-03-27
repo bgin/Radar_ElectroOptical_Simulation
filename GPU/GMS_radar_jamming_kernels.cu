@@ -3,7 +3,7 @@
 
 
 #include "GMS_radar_jamming_kernels.cuh"
-#include "GMS_jamming_common.cuh"
+#include "GMS_radar_jamming_common.cuh"
 
 
 
