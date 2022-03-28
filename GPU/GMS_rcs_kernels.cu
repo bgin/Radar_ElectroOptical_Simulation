@@ -35,7 +35,7 @@ void empirical_K_kernel1(const float * __restrict rcs, //// m^2, RCS monostatic 
 
 
 __global__
-void empirical_K_kernel2const float * __restrict rcs, //// m^2, RCS monostatic target
+void empirical_K_kernel2(const float * __restrict rcs, //// m^2, RCS monostatic target
                         const float * __restrict A,   //   m^2, Area of target projected to the normal radar beam 
                         const float              gam, //   m,   wavelength
                         float *       __restrict K,   //   Empirical K factor
