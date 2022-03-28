@@ -1,6 +1,5 @@
 
-#include <cuda_runtime.h>
-#include <cuda.h>
+
 #include "GMS_cpu_config.cuh"
 #include "GMS_rcs_kernels.cuh"
 
