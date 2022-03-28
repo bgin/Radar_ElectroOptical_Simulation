@@ -49,7 +49,7 @@ module fast_pmc_access
       interface
          function rdtsc() result(val) &
                      bind(c,name='rdtsc')
-             use, intrinsic :: ISO_C_BINDINGS
+             use, intrinsic :: ISO_C_BINDING
              integer(c_long_long) :: val
            end function rdtsc
            
@@ -59,7 +59,7 @@ module fast_pmc_access
       interface
          function rdtscp() result(val) &
                      bind(c,name='rdtscp')
-             use, intrinsic :: ISO_C_BINDINGS
+             use, intrinsic :: ISO_C_BINDING
              integer(c_long_long) :: val
            end function rdtscp
            
@@ -69,7 +69,7 @@ module fast_pmc_access
       interface
          function full_rdtscp(chip,core) result(val) &
                       bind(c,name='full_rdtscp')
-             use, intrinsic :: ISO_C_BINDINGS
+             use, intrinsic :: ISO_C_BINDING
              integer(c_int), intent(inout) :: chip
              integer(c_int), intent(inout) :: core
              integer(c_long_long) :: val
@@ -81,7 +81,7 @@ module fast_pmc_access
       interface
          function get_core_number() result(val) &
                   bind(c,name='get_core_number')
-              use, intrinsic :: ISO_C_BINDINGS
+              use, intrinsic :: ISO_C_BINDING
               integer(c_int) :: val
             end function get_core_number
             
@@ -91,7 +91,7 @@ module fast_pmc_access
       interface
           function get_socket_number() result(val) &
                    bind(c,name='get_socket_number')
-              use, intrinsic :: ISO_C_BINDINGS
+              use, intrinsic :: ISO_C_BINDING
               integer(c_int) :: val
             end function get_socket_number
             
@@ -101,7 +101,7 @@ module fast_pmc_access
       interface
           function rdpmc_instructions() result(val) &
                    bind(c,name='rdpmc_instructions')
-                use, intrinsic :: ISO_C_BINDINGS
+                use, intrinsic :: ISO_C_BINDING
                 integer(c_long_long) :: val
               end function rdpmc_instructions
               
@@ -111,7 +111,7 @@ module fast_pmc_access
       interface
           function rdpmc_actual_cycles() result(val) &
                    bind(c,name='rdpmc_actual_cycles')
-                use, intrinsic :: ISO_C_BINDINGS
+                use, intrinsic :: ISO_C_BINDING
                 integer(c_long_long) :: val
               end function rdpmc_actual_cycles
               
@@ -121,7 +121,7 @@ module fast_pmc_access
       interface
           function rdpmc_reference_cycles() result(val) &
                    bind(c,name='rdpmc_reference_cycles')
-                use, intrinsic :: ISO_C_BINDINGS
+                use, intrinsic :: ISO_C_BINDING
                 integer(c_long_long) :: val
               end function rdpmc_reference_cycles
               
@@ -131,7 +131,7 @@ module fast_pmc_access
       interface
           function rdpmc(c) result(val) &
                bind(c,name='rdpmc')
-            use, intrinsic :: ISO_C_BINDINGS
+            use, intrinsic :: ISO_C_BINDING
             integer(c_int),  intent(in) :: c
             integer(c_long_long) :: val
           end function rdpmc
@@ -142,7 +142,7 @@ module fast_pmc_access
      interface
           function get_core_counter_width() result(val) &
                    bind(c,name='get_core_counter_width')
-                use, intrinsic :: ISO_C_BINDINGS
+                use, intrinsic :: ISO_C_BINDING
                 integer(c_int) :: val
               end function get_core_counter_width
               
@@ -152,7 +152,7 @@ module fast_pmc_access
      interface
           function get_fixed_counter_width() result(val) &
                    bind(c,name='get_fixed_counter_width')
-                use, intrinsic :: ISO_C_BINDINGS
+                use, intrinsic :: ISO_C_BINDING
                 integer(c_int) :: val
               end function get_fixed_counter_width
               
@@ -162,7 +162,7 @@ module fast_pmc_access
      interface
         function corrected_pmc_delta(end,start,pmc_width) result(val) &
                  bind(c,name='corrected_pmc_delta')
-             use, intrinsic :: ISO_C_BINDINGS
+             use, intrinsic :: ISO_C_BINDING
              integer(c_long_long), intent(in), value :: end
              integer(c_long_long), intent(in), value :: start
              integer(c_int),       intent(in), value :: pmc_width
@@ -174,7 +174,7 @@ module fast_pmc_access
      interface
         function get_TSC_frequency() result(val) &
                    bind(c,name='get_TSC_frequency')
-              use, intrinsic :: ISO_C_BINDINGS
+              use, intrinsic :: ISO_C_BINDING
               real(c_float) :: val
         end function get_TSC_frequency
     
