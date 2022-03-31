@@ -306,6 +306,45 @@ interface
    
 end interface
 
+#if 0
+
+void straight_edge_rcs_cudat float * __restrict__ Ledg,
+                       float * __restrict__ rcs,
+                       const uint32_t n_threads
+
+#endif
+
+interface
+
+   subroutine straight_edge_rcs_cuda(Ledg,tcs,n_threads) &
+                         bind(name='straight_edge_rcs_cuda')
+             use, intrinsic :: ISO_C_BINDING
+             real(c_float), dimension(*),    intent(in)        :: Ledg
+             real(c_float), dimension(*),    intent(out)       :: rcs
+             integer(c_int),                 intent(in), value :: n_threads
+   end subroutine
+   
+end interface
+
+#if 0
+void ellipsoid_rcs_cuda(  const float * __restrict__ a,
+                          const float * __restrict__ b,
+                          float * __restrict__ rcs,
+                          const uint32_t n_threads)
+#endif
+
+interface
+
+   subroutine ellipsoid_rcs_cuda(a,b,rcs,n_threads) &
+                           bind(c,name='ellipsoid_rcs_cuda')
+               use, intrinsic :: ISO_C_BINDING
+               real(c_float), dimension(*),    intent(in)        :: a
+               real(c_float), dimension(*),    intent(in)        :: b
+               real(c_float), dimension(*),    intent(out)       :: rcs
+               integer(c_int),                 intent(in), value :: n_threads
+   end subroutine
+  
+end interface
 
 
 end module rcs_kernels_iface
