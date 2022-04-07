@@ -366,5 +366,203 @@ module radar_types
 	    type(ZMM8r8_t)  ::  Laj  !dB !jammer troposhperic loss
      end type  JammerParamSIMD_R8_8
 
+   
+     !    // Platform dependent errors 
+     !    // Calculates the angle and range measurement errors cause
+     !    // by the errors in position and orientation of radar platform
+     
+     type, public :: PlatformErrAoS_R4_1
+            
+            real(kind=sp) ::  R      !//nm, target range
+	    real(kind=sp) ::  psi    !//deg,target azimuth
+	    real(kind=sp) ::  theta  !//deg,target elevation
+	    real(kind=sp) ::  da1    !//deg, platform error of yaw angle measurement
+	    real(kind=sp) ::  da2    !//deg, platform error of pitch angle measurement
+	    real(kind=sp) ::  da3    !//deg, platform error of roll angle measurement
+	    real(kind=sp) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    real(kind=sp) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    real(kind=sp) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrAoS_R4_1
+
+
+     type, public :: PlatformErrAoS_R8_1
+            
+            real(kind=dp) ::  R      !//nm, target range
+	    real(kind=dp) ::  psi    !//deg,target azimuth
+	    real(kind=dp) ::  theta  !//deg,target elevation
+	    real(kind=dp) ::  da1    !//deg, platform error of yaw angle measurement
+	    real(kind=dp) ::  da2    !//deg, platform error of pitch angle measurement
+	    real(kind=dp) ::  da3    !//deg, platform error of roll angle measurement
+	    real(kind=dp) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    real(kind=dp) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    real(kind=dp) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrAoS_R8_1
+
+
+     type, public :: PlatformErrSIMD_R4_8
+            
+            type(YMM8r4_t) ::  R      !//nm, target range
+	    type(YMM8r4_t) ::  psi    !//deg,target azimuth
+	    type(YMM8r4_t) ::  theta  !//deg,target elevation
+	    type(YMM8r4_t) ::  da1    !//deg, platform error of yaw angle measurement
+	    type(YMM8r4_t) ::  da2    !//deg, platform error of pitch angle measurement
+	    type(YMM8r4_t) ::  da3    !//deg, platform error of roll angle measurement
+	    type(YMM8r4_t) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    type(YMM8r4_t) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    type(YMM8r4_t) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrSIMD_R4_8
+
+
+     type, public :: PlatformErrSIMD_R8_4
+            
+            type(YMM4r8_t) ::  R      !//nm, target range
+	    type(YMM4r8_t) ::  psi    !//deg,target azimuth
+	    type(YMM4r8_t) ::  theta  !//deg,target elevation
+	    type(YMM4r8_t) ::  da1    !//deg, platform error of yaw angle measurement
+	    type(YMM4r8_t) ::  da2    !//deg, platform error of pitch angle measurement
+	    type(YMM4r8_t) ::  da3    !//deg, platform error of roll angle measurement
+	    type(YMM4r8_t) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    type(YMM4r8_t) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    type(YMM4r8_t) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrSIMD_R8_4
+
+
+     type, public :: PlatformErrSIMD_R4_16
+            
+            type(ZMM16r4_t) ::  R      !//nm, target range
+	    type(ZMM16r4_t) ::  psi    !//deg,target azimuth
+	    type(ZMM16r4_t) ::  theta  !//deg,target elevation
+	    type(ZMM16r4_t) ::  da1    !//deg, platform error of yaw angle measurement
+	    type(ZMM16r4_t) ::  da2    !//deg, platform error of pitch angle measurement
+	    type(ZMM16r4_t) ::  da3    !//deg, platform error of roll angle measurement
+	    type(ZMM16r4_t) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    type(ZMM16r4_t) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    type(ZMM16r4_t) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrSIMD_R4_16
+
+
+     type, public :: PlatformErrSIMD_R8_8
+            
+            type(ZMM8r8_t) ::  R      !//nm, target range
+	    type(ZMM8r8_t) ::  psi    !//deg,target azimuth
+	    type(ZMM8r8_t) ::  theta  !//deg,target elevation
+	    type(ZMM8r8_t) ::  da1    !//deg, platform error of yaw angle measurement
+	    type(ZMM8r8_t) ::  da2    !//deg, platform error of pitch angle measurement
+	    type(ZMM8r8_t) ::  da3    !//deg, platform error of roll angle measurement
+	    type(ZMM8r8_t) ::  dx1    !//m,   platform center of gravity error x1-axis
+	    type(ZMM8r8_t) ::  dx2    !//m,   platform center of gravity error x2-axis
+	    type(ZMM8r8_t) ::  dx3    !//m,   platform center of gravity erorr x3-axis
+     end type PlatformErrSIMD_R8_8
+
+
+     !  // Propagation errors aggregating data type
+
+     type, public :: PropagationErrAoS_R4_1
+
+           real(kind=sp) ::  R             !//nm, target range
+	   real(kind=sp) ::  ht            !//m,  target height above surface
+	   real(kind=sp) ::  ha            !//m,  antenna height above surface
+           real(kind=sp) ::  psi0          !//    Fresnel reflection coefficient
+	   real(kind=sp) ::  psis          !//    specular scattering coefficient
+	   real(kind=sp) ::  psiv          !//    vegetation coefficient
+	   real(kind=sp) ::  beta          !//deg,surface slope
+	   real(kind=sp) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   real(kind=sp) ::  thmax         !//deg,beam axis elevation angle
+	   real(kind=sp) ::  kme           !//    tracking error slope in elevation channel
+	   real(kind=sp) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrAoS_R4_1
+
+
+     type, public :: PropagationErrAoS_R8_1
+
+           real(kind=dp) ::  R             !//nm, target range
+	   real(kind=dp) ::  ht            !//m,  target height above surface
+	   real(kind=dp) ::  ha            !//m,  antenna height above surface
+           real(kind=dp) ::  psi0          !//    Fresnel reflection coefficient
+	   real(kind=dp) ::  psis          !//    specular scattering coefficient
+	   real(kind=dp) ::  psiv          !//    vegetation coefficient
+	   real(kind=dp) ::  beta          !//deg,surface slope
+	   real(kind=dp) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   real(kind=dp) ::  thmax         !//deg,beam axis elevation angle
+	   real(kind=dp) ::  kme           !//    tracking error slope in elevation channel
+	   real(kind=dp) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrAoS_R8_1
+
+
+     type, public :: PropagationErrSIMD_R4_8
+
+           type(YMM8r4_t) ::  R             !//nm, target range
+	   type(YMM8r4_t) ::  ht            !//m,  target height above surface
+	   type(YMM8r4_t) ::  ha            !//m,  antenna height above surface
+           type(YMM8r4_t) ::  psi0          !//    Fresnel reflection coefficient
+	   type(YMM8r4_t) ::  psis          !//    specular scattering coefficient
+	   type(YMM8r4_t) ::  psiv          !//    vegetation coefficient
+	   type(YMM8r4_t) ::  beta          !//deg,surface slope
+	   type(YMM8r4_t) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   type(YMM8r4_t) ::  thmax         !//deg,beam axis elevation angle
+	   type(YMM8r4_t) ::  kme           !//    tracking error slope in elevation channel
+	   type(YMM8r4_t) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrSIMD_R4_8
+     
+
+     type, public :: PropagationErrSIMD_R8_4
+
+           type(YMM4r8_t) ::  R             !//nm, target range
+	   type(YMM4r8_t) ::  ht            !//m,  target height above surface
+	   type(YMM4r8_t) ::  ha            !//m,  antenna height above surface
+           type(YMM4r8_t) ::  psi0          !//    Fresnel reflection coefficient
+	   type(YMM4r8_t) ::  psis          !//    specular scattering coefficient
+	   type(YMM4r8_t) ::  psiv          !//    vegetation coefficient
+	   type(YMM4r8_t) ::  beta          !//deg,surface slope
+	   type(YMM4r8_t) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   type(YMM4r8_t) ::  thmax         !//deg,beam axis elevation angle
+	   type(YMM4r8_t) ::  kme           !//    tracking error slope in elevation channel
+	   type(YMM4r8_t) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrSIMD_R8_4
+
+
+     type, public :: PropagationErrSIMD_R4_16
+
+           type(ZMM16r4_t) ::  R             !//nm, target range
+	   type(ZMM16r4_t) ::  ht            !//m,  target height above surface
+	   type(ZMM16r4_t) ::  ha            !//m,  antenna height above surface
+           type(ZMM16r4_t) ::  psi0          !//    Fresnel reflection coefficient
+	   type(ZMM16r4_t) ::  psis          !//    specular scattering coefficient
+	   type(ZMM16r4_t) ::  psiv          !//    vegetation coefficient
+	   type(ZMM16r4_t) ::  beta          !//deg,surface slope
+	   type(ZMM16r4_t) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   type(ZMM16r4_t) ::  thmax         !//deg,beam axis elevation angle
+	   type(ZMM16r4_t) ::  kme           !//    tracking error slope in elevation channel
+	   type(ZMM16r4_t) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrSIMD_R4_16
+
+
+     type, public :: PropagationErrSIMD_R8_8
+
+           type(ZMM8r8_t) ::  R             !//nm, target range
+	   type(ZMM8r8_t) ::  ht            !//m,  target height above surface
+	   type(ZMM8r8_t) ::  ha            !//m,  antenna height above surface
+           type(ZMM8r8_t) ::  psi0          !//    Fresnel reflection coefficient
+	   type(ZMM8r8_t) ::  psis          !//    specular scattering coefficient
+	   type(ZMM8r8_t) ::  psiv          !//    vegetation coefficient
+	   type(ZMM8r8_t) ::  beta          !//deg,surface slope
+	   type(ZMM8r8_t) ::  th3           !//deg,elevation beamwidth (half-power, i.e. 3db)
+	   type(ZMM8r8_t) ::  thmax         !//deg,beam axis elevation angle
+	   type(ZMM8r8_t) ::  kme           !//    tracking error slope in elevation channel
+	   type(ZMM8r8_t) ::  Ns            !//    refractivity at the radar site
+	   integer(kind=i4) :: flucts      !//    fluctuations switch, 1==low fluctuations,2==average fluctuations,3==high fluctuations in the -
+		                           !//    - refractive index
+     end type PropagationErrSIMD_R8_8
+
 
 end module radar_types
