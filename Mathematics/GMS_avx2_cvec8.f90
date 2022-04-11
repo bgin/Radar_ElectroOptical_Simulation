@@ -62,11 +62,11 @@ module avx2_cvec8
      ! Module creation date
      character(*),        parameter :: MOD_AVX2_CVEC8_CREATE_DATE = "20-12-2021 15:54 +00200 (MON 20 DEC 2021 GMT+2)"
      ! Module build date
-     character(*),        parameter :: MOD__AVX2_CVEC8_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: MOD_AVX2_CVEC8_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter :: MOD__AVX2_CVEC8_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: MOD_AVX2_CVEC8_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: MOD__AVX2_CVEC8_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
+     character(*),        parameter :: MOD_AVX2_CVEC8_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
 
      ! public operators
 
