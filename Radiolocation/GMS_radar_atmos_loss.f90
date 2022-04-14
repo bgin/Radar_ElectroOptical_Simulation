@@ -146,7 +146,7 @@ module radar_atmos_loss
 
      
 
-     subroutine blake_atmos_loss_r4_1(h_a,_sp,theta,R_m,K,L1a)
+    subroutine blake_atmos_loss_r4_1(h_a,_sp,theta,R_m,K,L1a)
         !dir$ attributes align : 32 :: blake_atmos_loss_r4_1
         !dir$ optimize : 3 
         !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: blake_atmos_loss_r4_1
@@ -361,7 +361,8 @@ module radar_atmos_loss
 	real(sp), parameter :: czth = R_m*cos(zth)
 	real(sp), parameter :: h_m  = R_m*sin(zth)+((czth*czth)/(2.0_sp*a_e))
 	real(sp), parameter :: h_km = h_m/1000.0_sp
-	real(sp), parameter :: delh = h_km/real(K,kind=sp)
+        real(sp), parameter :: delh = h_km/real(K,kind=sp)
+        integer(i4), parameter :: n45 = 45 ! inner loop iterations
 	real(sp), automatic :: T_k  = 0.0_sp  !//K, atmos temperature
 	real(sp), automatic :: P_k  = 0.0_sp  !//mb, atmos pressure
 	real(sp), automatic :: g_k  = 0.0_sp  !// line breadth constant parameter
@@ -372,20 +373,412 @@ module radar_atmos_loss
 	real(sp), automatic :: m_k  = 0.0_sp   !// refractive index model
         real(sp), automatic :: gamma0  = 0.0_sp
 	real(sp), automatic :: h0   = 0.0_sp
-	real(sp), automatic :: m0   = 0.0_sp
+        real(sp), automatic :: m0   = 0.0_sp
+        !
 	real(sp), volatile  :: u_plus_preload  = u_plus(1)
 	real(sp), volatile  :: u_minus_preload = u_minus(1)
 	real(sp), volatile  :: u_0_preload     = u_0(1)
-	real(sp), volatile  :: ser_n_preload   = ser_n(1)
+        real(sp), volatile  :: ser_n_preload   = ser_n(1)
+        real(sp), automatic :: tK,h_k,h_gm,h_gkm,delfk,F0_k,delfk2, &
+                               Sigma_K,t0,Sig1_plus,Sig2_plus,      &
+                               t1,Sig1_minus,Sig2_minus,F_n_plus,   &
+                               F_n_minus,t2,A1,A2,A3,En,T_k3,n0czth,&
+                               cterm,term1,term12
+        integer(i4) :: i,j
+        
         if(K<=1) then
            L1a = 0.0_sp
            return
         end if
-        
-     end subroutine blake_atmos_loss_r4_1
+
+        do i = 1, K
+             tK    = real(i,kind=sp)
+             h_k   = h_a*0.001_sp+k*delh !//km, current height
+             h_gm  = r_m*h_k*1000.0_sp/(r_m+h_k*1000.0_sp) !//m, geopotential altitude
+             ! Atmosphere temp
+             if(h_gkm<=11.0_sp) then
+                 T_k = 288.16_sp-0.0065_sp*h_k*1000.0_sp
+             else if(h_gkm>11.0_sp .and. h_gkm<25.0_sp) then
+                 T_k = 216.66_sp 
+             else
+                 T_k = 216.66_sp+0.003_sp*(h_k-25.0_sp)*1000.0_sp
+             end if
+
+             if(h_gkm<=11.0_sp) then
+                 P_k = p0*(T_k*0.003470294280955024986118822876_sp)**alf1
+             else if(h_gkm>11.0_sp .and. h_gkm<25.0_sp) then
+                 t0 = 226.32_sp/T_k
+                 P_k = t0*exp(-alf2*(h_k-11.0_sp)*1000.0_sp)
+             else
+                 P_k = 24.886_sp*(216.66_sp/T_k)**alf3
+             end if
+
+             if(h_k<=8.0_sp) then
+                 g_k = 0.640_sp
+             else if(h_k>8.0_sp .and. h_k<=25.0_sp) then
+                 g_k = 0.640_sp+0.04218_sp*(h_k-8.0_sp)
+	     else		           
+                 g_k = 1.357_sp
+             end if
+
+             delfk = g_k*(P_k/p0)*(T0/T_k)  !// line-breadth constant
+	     F0_k  = delfk/((delfk*delfk)+fghz2) !// nonresonant contribution
+             delfk2 = delfk*delfk
+             Sigma_K      = 0.0_sp
+             do j = 1, n45
+                  t0  = f_N_plus(j)
+                  Sig1_plus  = delfk/((t0-f_ghz)*(t0-f_ghz))+delfk2
+                  Sig2_plus  = delfk/((t0+f_ghz)*(t0+f_ghz))+delfk2
+		  t1         = f_N_minus(j)
+		  Sig1_minus = delfk/((t1-f_ghz)*(t1-f_ghz))+delfk2
+		  Sig2_minus = delfk/((t1+f_ghz)*(t1+f_ghz))+delfk2
+		  F_N_plus   = Sig1_plus+Sig2_plus
+		  F_N_minus  = Sig1_minus+Sig2_minus
+		  t2         = u_0(j)
+		  A1         = u_plus(j)*F_N_plus
+		  A2         = u_minus(j)*F_N_minus
+		  En         = 2.06844_sp*ser_n(j)
+		  Sigma_k    = Sigma_k + Z(j)*((A1+A2+t2*F0_k)*exp(-(En/T_k)))
+             end do
+             T_k3   = 1.0_sp/(T_k*T_k*T_k)
+	     if(i==0) then
+                gamma0          = C*P_k*T_k3*fghz2*Sigma_k
+		m0              = 1.0_sp+N*exp(c_e*h_k)
+		h0              = h_a*0.001_sp+k*delh
+	     end if
+	     gamma_k            = C*P_k*T_k3*fghz2*Sigma_k
+	     m_k                = 1.0_sp+N*exp(c_e*h_k)
+	      
+	     n0czth = n0*czth
+	     term1  = n0czth/(m_k*(1.0_sp+h_k/r_km))
+	     term12 = term1*term1
+             S2                 = gamma_k/sqrt(1.0f-term12)
+	     S3                 S3 + S2
+         end do
+         
+	term1 = n0czth/(m0*(1.0_sp+h0/r_km))
+	term12= term1*term1
+	S1 = gamma0/sqrt(1.0_sp-term12)
+        L1a = 2.0_sp*(S1+S2+2.0_sp*S3)*delh*0.5_sp
+    end subroutine blake_atmos_loss_r4_1
      
      
 
+      subroutine blake_atmos_loss_r8_1(h_a,_sp,theta,R_m,K,L1a)
+        !dir$ attributes align : 32 :: blake_atmos_loss_r8_1
+        !dir$ optimize : 3 
+        !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: blake_atmos_loss_r8_1
+        real(dp),                intent(in)  :: h_a   ! m, target heigth
+        real(dp),                intent(in)  :: _sp     ! Mhz, radar _sprequency
+        real(dp),                intent(in)  :: theta ! deg, angle
+        real(dp),                intent(in)  :: R_m   ! m, target range
+        integer(i4),             intent(in)  :: K     ! Number o_sp integration points (steps)
+        real(dp),                intent(out) :: L1a   ! dB, signal strength loss
+        ! Locals
+        real(dp), dimension(48), parameter :: u_plus = [ 2.5_dp,       &
+			                                 4.6666665_dp, &
+	                                                 6.7500000_dp, &
+						         8.8000002_dp, &
+			                                 10.8333330_dp,&
+							 12.8571424_dp,&
+							 14.8750000_dp,&
+							 16.8888893_dp,&
+							 18.8999996_dp,&
+							 20.9090900_dp,&
+							 22.9166660_dp,&
+							 24.9230766_dp,&
+							 26.9285717_dp,&
+							 28.9333324_dp,&
+							 30.9375000_dp,&
+							 32.9411774_dp,&
+							 34.9444427_dp,&
+							 36.9473686_dp,&
+							 38.9500008_dp,&
+							 40.9523811_dp,&
+                                                         42.9545441_dp,&
+                                                         44.9565201_dp,&
+                                                         46.9583321_dp,&
+                                                         48.9599991_dp,&
+                                                         50.9615402_dp,&
+                                                         52.9629631_dp,&
+                                                         54.9642868_dp,&
+                                                         56.9655190_dp,&
+                                                         58.9666672_dp,&
+                                                         60.9677429_dp,&
+                                                         62.9687500_dp,&
+                                                         64.9696960_dp,&
+                                                         66.9705887_dp,&
+                                                         68.9714279_dp,&
+                                                         70.9722214_dp,&
+                                                         72.9729767_dp,&
+                                                         74.9736862_dp,&
+                                                         76.9743576_dp,&
+                                                         78.9749985_dp,&
+                                                         80.9756088_dp,&
+                                                         82.9761887_dp,&
+                                                         84.9767456_dp,&
+                                                         86.9772720_dp,&
+                                                         88.9777756_dp,&
+                                                         90.9782639_dp,&
+                                                         0.0_dp,0.0_dp,0.0_dp]
+         real(dp), dimension(48), parameter :: u_minus = [2.0000000_dp, &
+                                                          4.5000000_dp, &
+                                                          6.6666665_dp, &
+                                                          8.7500000_dp, &
+                                                          10.8000002_dp,&
+                                                          12.8333330_dp,&
+                                                          14.8571424_dp,&
+                                                          16.8750000_dp,&
+                                                          18.8888893_dp,&
+                                                          20.8999996_dp,&
+                                                          22.9090900_dp,&
+                                                          24.9166660_dp,&
+                                                          26.9230766_dp,&
+                                                          28.9285717_dp,&
+                                                          30.9333324_dp,&
+                                                          32.9375000_dp,&
+                                                          34.9411774_dp,&
+                                                          36.9444427_dp,&
+                                                          38.9473686_dp,&
+                                                          40.9500008_dp,&
+                                                          42.9523811_dp,&
+                                                          44.9545441_dp,&
+                                                          46.9565201_dp,&
+                                                          48.9583321_dp,&
+                                                          50.9599991_dp,&
+                                                          52.9615402_dp,&
+                                                          54.9629631_dp,&
+                                                          56.9642868_dp,&
+                                                          58.9655190_dp,&
+                                                          60.9666672_dp,&
+                                                          62.9677429_dp,&
+                                                          64.9687500_dp,&
+                                                          66.9696960_dp,&
+                                                          68.9705887_dp,&
+                                                          70.9714279_dp,&
+                                                          72.9722214_dp,&
+                                                          74.9729767_dp,&
+                                                          76.9736862_dp,&
+                                                          78.9743576_dp,&
+                                                          80.9749985_dp,&
+                                                          82.9756088_dp,&
+                                                          84.9761887_dp,&
+                                                          86.9767456_dp,&
+                                                          88.9772720_dp,&
+                                                          90.9777756_dp,&
+							  0.0_dp,0.0_dp,0.0_dp]
+       real(dp), dimension(48), parameter :: u_0 = [9.0000000_dp, &
+                                                    11.6666670_dp,&
+                                                    15.1666670_dp,&
+                                                    18.8999996_dp,&
+                                                    22.7333336_dp,&
+                                                    26.6190472_dp,&
+                                                    30.5357151_dp,&
+                                                    34.4722214_dp,&
+                                                    38.4222221_dp,&
+                                                    42.3818169_dp,&
+                                                    46.3484840_dp,&
+                                                    50.3205147_dp,&
+                                                    54.2967033_dp,&
+                                                    58.2761917_dp,&
+                                                    62.2583351_dp,&
+                                                    66.2426453_dp,&
+                                                    70.2287598_dp,&
+                                                    74.2163773_dp,&
+                                                    78.2052612_dp,&
+                                                    82.1952362_dp,&
+                                                    86.1861496_dp,&
+                                                    90.1778641_dp,&
+                                                    94.1702881_dp,&
+                                                    98.1633301_dp,&
+                                                    102.1569214_dp,&
+                                                    106.1509933_dp,&
+                                                    110.1455002_dp,&
+                                                    114.1403961_dp,&
+                                                    118.1356354_dp,&
+                                                    122.1311798_dp,&
+                                                    126.1270142_dp,&
+                                                    130.1231079_dp,&
+                                                    134.1194305_dp,&
+                                                    138.1159668_dp,&
+                                                    142.1127014_dp,&
+                                                    146.1096039_dp,&
+                                                    150.1066895_dp,&
+                                                    154.1039124_dp,&
+                                                    158.1012878_dp,&
+                                                    162.0987854_dp,&
+                                                    166.0964050_dp,&
+                                                    170.0941315_dp,&
+                                                    174.0919647_dp,&
+                                                    178.0899048_dp,&
+                                                    182.0879211_dp,&
+                                                    0.0_dp,0.0_dp,0.0_dp]
+        real(dp), dimension(48), parameter :: ser_n = [2.0000000_dp, &
+                                                       6.0000000_dp, &
+                                                       12.0000000_dp,&
+                                                       20.0000000_dp,&
+                                                       30.0000000_dp,&
+                                                       42.0000000_dp,&
+                                                       56.0000000_dp,&
+                                                       72.0000000_dp,&
+                                                       90.0000000_dp,&
+                                                       110.0000000_dp,&
+                                                       132.0000000_dp,&
+                                                       156.0000000_dp,&
+                                                       182.0000000_dp,&
+                                                       210.0000000_dp,&
+                                                       240.0000000_dp,&
+                                                       272.0000000_dp,&
+                                                       306.0000000_dp,&
+                                                       342.0000000_dp,&
+                                                       380.0000000_dp,&
+                                                       420.0000000_dp,&
+                                                       462.0000000_dp,&
+                                                       506.0000000_dp,&
+                                                       552.0000000_dp,&
+                                                       600.0000000_dp,&
+                                                       650.0000000_dp,&
+                                                       702.0000000_dp,&
+                                                       756.0000000_dp,&
+                                                       812.0000000_dp,&
+                                                       870.0000000_dp,&
+                                                       930.0000000_dp,&
+                                                       992.0000000_dp,&
+                                                       1056.0000000_dp,&
+                                                       1122.0000000_dp,&
+                                                       1190.0000000_dp,&
+                                                       1260.0000000_dp,&
+                                                       1332.0000000_dp,&
+                                                       1406.0000000_dp,&
+                                                       1482.0000000_dp,&
+                                                       1560.0000000_dp,&
+                                                       1640.0000000_dp,&
+                                                       1722.0000000_dp,&
+                                                       1806.0000000_dp,&
+                                                       1892.0000000_dp,&
+                                                       1980.0000000_dp,&
+                                                       2070.0000000_dp,&
+                                                       0.0_dp,0.0_dp,0.0_dp]
+        
+        real(dp), parameter :: N    = 0.000313_dp
+        real(dp), parameter :: c_e  = -0.149_dp     !1/km a decay constant
+        real(dp), parameter :: n0   = 1.000313_dp   !refractive index
+        real(dp), parameter :: r_km = 6370.0_dp     !Earth radius
+        real(dp), parameter :: r_m  = 6370000.0_dp  !Earth radius
+        real(dp), parameter :: a_e  = 8493333.0_dp  !Earth effective radius
+	real(dp), parameter :: p0   = 1013.25_dp    !atmospheric pressure constant
+        real(dp), parameter :: alf1 = 5.2561222_dp   !tropospheric model constants
+	real(dp), parameter :: alf2 = 0.034164794_dp  !as above
+	real(dp), parameter :: alf3 = 11.388265_dp    !as above
+	real(dp), parameter :: T0   = 300.0_dp      !standard temperature, K
+	real(dp), parameter :: C    = 2.0058_dp     !absorption coeff const
+	real(dp), parameter :: z    = 0.017453292519943295769236907685_dp !deg-to-rad (PI/180)
+	real(dp), parameter :: zth  = z*theta
+	real(dp), parameter :: f_ghz= f*1000.0_dp
+	real(dp), parameter :: fghz2= f_ghz*f_ghz
+	real(dp), parameter :: czth = R_m*cos(zth)
+	real(dp), parameter :: h_m  = R_m*sin(zth)+((czth*czth)/(2.0_dp*a_e))
+	real(sp), parameter :: h_km = h_m/1000.0_dp
+        real(dp), parameter :: delh = h_km/real(K,kind=dp)
+        integer(i4), parameter :: n45 = 45 ! inner loop iterations
+	real(dp), automatic :: T_k  = 0.0_dp  !//K, atmos temperature
+	real(dp), automatic :: P_k  = 0.0_dp  !//mb, atmos pressure
+	real(dp), automatic :: g_k  = 0.0_dp  !// line breadth constant parameter
+        real(dp), automatic :: gamma_k = 0.0_dp !// dB/km, absorption coefficient
+	real(dp), automatic :: S1   = 0.0_dp  !// absorption loss integral coeff
+	real(dp), automatic :: S2   = 0.0_dp  !// absorption loss integral coeff
+	real(dp), automatic :: S3   = 0.0_dp   !// absorption loss integral coeff
+	real(dp), automatic :: m_k  = 0.0_dp   !// refractive index model
+        real(dp), automatic :: gamma0  = 0.0_dp
+	real(dp), automatic :: h0   = 0.0_dp
+        real(dp), automatic :: m0   = 0.0_dp
+        !
+	real(dp), volatile  :: u_plus_preload  = u_plus(1)
+	real(dp), volatile  :: u_minus_preload = u_minus(1)
+	real(dp), volatile  :: u_0_preload     = u_0(1)
+        real(dp), volatile  :: ser_n_preload   = ser_n(1)
+        real(dp), automatic :: tK,h_k,h_gm,h_gkm,delfk,F0_k,delfk2, &
+                               Sigma_K,t0,Sig1_plus,Sig2_plus,      &
+                               t1,Sig1_minus,Sig2_minus,F_n_plus,   &
+                               F_n_minus,t2,A1,A2,A3,En,T_k3,n0czth,&
+                               cterm,term1,term12
+        integer(i4) :: i,j
+        
+        if(K<=1) then
+           L1a = 0.0_dp
+           return
+        end if
+
+        do i = 1, K
+             tK    = real(i,kind=dp)
+             h_k   = h_a*0.001_dp+k*delh !//km, current height
+             h_gm  = r_m*h_k*1000.0_dp/(r_m+h_k*1000.0_dp) !//m, geopotential altitude
+             ! Atmosphere temp
+             if(h_gkm<=11.0_dp) then
+                 T_k = 288.16_dp-0.0065_dp*h_k*1000.0_dp
+             else if(h_gkm>11.0_dp .and. h_gkm<25.0_dp) then
+                 T_k = 216.66_dp 
+             else
+                 T_k = 216.66_dp+0.003_dp*(h_k-25.0_dp)*1000.0_dp
+             end if
+
+             if(h_gkm<=11.0_dp) then
+                 P_k = p0*(T_k*0.003470294280955024986118822876_dp)**alf1
+             else if(h_gkm>11.0_dp .and. h_gkm<25.0_dp) then
+                 t0 = 226.32_dp/T_k
+                 P_k = t0*exp(-alf2*(h_k-11.0_dp)*1000.0_dp)
+             else
+                 P_k = 24.886_dp*(216.66_dp/T_k)**alf3
+             end if
+
+             if(h_k<=8.0_sp) then
+                 g_k = 0.640_dp
+             else if(h_k>8.0_dp .and. h_k<=25.0_dp) then
+                 g_k = 0.640_dp+0.04218_dp*(h_k-8.0_dp)
+	     else		           
+                 g_k = 1.357_dp
+             end if
+
+             delfk = g_k*(P_k/p0)*(T0/T_k)  !// line-breadth constant
+	     F0_k  = delfk/((delfk*delfk)+fghz2) !// nonresonant contribution
+             delfk2 = delfk*delfk
+             Sigma_K      = 0.0_dp
+             do j = 1, n45
+                  t0  = f_N_plus(j)
+                  Sig1_plus  = delfk/((t0-f_ghz)*(t0-f_ghz))+delfk2
+                  Sig2_plus  = delfk/((t0+f_ghz)*(t0+f_ghz))+delfk2
+		  t1         = f_N_minus(j)
+		  Sig1_minus = delfk/((t1-f_ghz)*(t1-f_ghz))+delfk2
+		  Sig2_minus = delfk/((t1+f_ghz)*(t1+f_ghz))+delfk2
+		  F_N_plus   = Sig1_plus+Sig2_plus
+		  F_N_minus  = Sig1_minus+Sig2_minus
+		  t2         = u_0(j)
+		  A1         = u_plus(j)*F_N_plus
+		  A2         = u_minus(j)*F_N_minus
+		  En         = 2.06844_dp*ser_n(j)
+		  Sigma_k    = Sigma_k + Z(j)*((A1+A2+t2*F0_k)*exp(-(En/T_k)))
+             end do
+             T_k3   = 1.0_dp/(T_k*T_k*T_k)
+	     if(i==0) then
+                gamma0          = C*P_k*T_k3*fghz2*Sigma_k
+		m0              = 1.0_dp+N*exp(c_e*h_k)
+		h0              = h_a*0.001_dp+k*delh
+	     end if
+	     gamma_k            = C*P_k*T_k3*fghz2*Sigma_k
+	     m_k                = 1.0_dp+N*exp(c_e*h_k)
+	      
+	     n0czth = n0*czth
+	     term1  = n0czth/(m_k*(1.0_dp+h_k/r_km))
+	     term12 = term1*term1
+             S2                 = gamma_k/sqrt(1.0f-term12)
+	     S3                 S3 + S2
+         end do
+         
+	term1 = n0czth/(m0*(1.0_dp+h0/r_km))
+	term12= term1*term1
+	S1 = gamma0/sqrt(1.0_sp-term12)
+        L1a = 2.0_dp*(S1+S2+2.0_dp*S3)*delh*0.5_dp
+    end subroutine blake_atmos_loss_r8_1
      
 
 
