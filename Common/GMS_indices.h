@@ -7,18 +7,19 @@
 */
 
 // To be used with CUDA
-#ifndef INDEX2
+/*
+     When used in this for loop configuration -- traversing is column-order
+     for(i ...
+         for(j ....
+     When used in this for loop configuration -- traversing is row-order
+     for(j ...
+        for(i ....
+*/
 #define INDEX2(isize,i,j) i + isize*j
-#endif
-#ifndef INDEX3
 #define INDEX3(isize,jsize,i,j,k) i + isize*(j + jsize*k)
-#endif
-#ifndef INDEX4
 #define INDEX4(isize,jsize,ksize,i,j,k,x) i + isize*(j + jsize*(k + ksize*x))
-#endif
-#ifndef INDEX5
 #define INDEX5(isize,jsize,ksize,xsize,i,j,k,x,y) i + isize*(j + jsize*(k + ksize*(x + xsize*y)))
-#endif
+
 
 /*#define I2D(i,j,dim0)                              i+j*dim0
 #define I3D(i,j,dim0,k,dim1)                       i+j*dim0+k*dim0*dim1
@@ -28,11 +29,19 @@
 */
 
 //More optimized version
-#define I2D(i,j,dim0)                                        i+j*dim0
-#define I3D(i,j,dim0,k,dim01)                                i+j*dim0+k*dim01
-#define I4D(i,j,dim0,k,dim01,l,dim012)                       i+j*dim0+k*dim01+l*dim012
-#define I5D(i,j,dim0,k,dim01,l,dim012,m,dim0123)             i+j*dim0+k*dim01+l*dim012+m*dim0123
-#define I6D(i,j,dim0,k,dim01,l,dim012,m,dim0123,n,dim01234)  i+j*dim0+k*dim01+l*dim012+m*dim0123+n*dim01234
+/*
+     When used in this for loop configuration -- traversing is column-order
+     for(i ...
+         for(j ....
+     When used in this for loop configuration -- traversing is row-order
+     for(j ...
+        for(i ....
+*/
+#define Index2D(i,j,dim0)                                        i+j*dim0
+#define Index3D(i,j,dim0,k,dim01)                                i+j*dim0+k*dim01
+#define Index4D(i,j,dim0,k,dim01,l,dim012)                       i+j*dim0+k*dim01+l*dim012
+#define Index5D(i,j,dim0,k,dim01,l,dim012,m,dim0123)             i+j*dim0+k*dim01+l*dim012+m*dim0123
+#define Index6D(i,j,dim0,k,dim01,l,dim012,m,dim0123,n,dim01234)  i+j*dim0+k*dim01+l*dim012+m*dim0123+n*dim01234
 
 /*
 	@Warning:
@@ -65,9 +74,9 @@
 				
 */
 
-#define Ix2D(i,ny,j) ((i) * (ny) + (j))
+#define Ix2D(i,ny,j) i * ny + j
 
-#define Ix3D(i,ny,j,nz,k) ((i) * (ny) + ((j) * (nz) + (k)))
+#define Ix3D(i,ny,j,nz,k) i * ny + j * nz + k
 
 // Different indexing scheme.
 
