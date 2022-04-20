@@ -2123,35 +2123,74 @@
 !>
 !  Determines convergence in x based on if the reltol or abstol is satisfied.
 
-    function converged(me,a,b)
-
+    function converged_r4(a,b)
+        !dir$ attributes forceinline :: converged_r4
+      !dir$ attributes code_align : 32 :: converged_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: converged_r4
     implicit none
 
-    class(root_solver),intent(inout) :: me
-    real(wp),intent(in) :: a !! old value
-    real(wp),intent(in) :: b !! new value
+    
+    real(sp),intent(in) :: a !! old value
+    real(sp),intent(in) :: b !! new value
     logical :: converged
 
-    real(wp) :: d
+    real(sp) :: d
 
     ! original way:
     ! converged = (abs(b-a) <= abs(b)*me%rtol + me%atol) exit
 
     d = abs(b-a)
 
-    if (d <= me%atol) then
+    if (d <= atol4) then
         ! absolute
         converged = .true.
     else
         ! relative
-        if (a /= 0.0_wp) then
-            converged = d / abs(a) <= me%rtol
+        if (a /= 0.0_sp) then
+            converged = d / abs(a) <= rtol4
         else
             converged = .false.
         end if
     end if
 
-    end function converged
+  end function converged_r4
+
+
+    function converged_r8(a,b)
+        !dir$ attributes forceinline :: converged_r8
+      !dir$ attributes code_align : 32 :: converged_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: converged_r8
+    implicit none
+
+    
+    real(dp),intent(in) :: a !! old value
+    real(dp),intent(in) :: b !! new value
+    logical :: converged
+
+    real(dp) :: d
+
+    ! original way:
+    ! converged = (abs(b-a) <= abs(b)*me%rtol + me%atol) exit
+
+    d = abs(b-a)
+
+    if (d <= atol8) then
+        ! absolute
+        converged = .true.
+    else
+        ! relative
+        if (a /= 0.0_dp) then
+            converged = d / abs(a) <= rtol8
+        else
+            converged = .false.
+        end if
+    end if
+
+  end function converged_r8
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2159,14 +2198,17 @@
 !  Given two points with two function evaluations, choose the best one
 !  (the one closest to the root).
 
-    pure subroutine choose_best(x1,x2,f1,f2,xbest,fbest)
-
+    pure subroutine choose_best_r4(x1,x2,f1,f2,xbest,fbest)
+      !dir$ attributes forceinline :: choose_best_r4
+      !dir$ attributes code_align : 32 :: choose_best_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: choose_best_r4
     implicit none
 
-    real(wp),intent(in) :: x1,x2
-    real(wp),intent(in) :: f1,f2
-    real(wp),intent(out) :: xbest
-    real(wp),intent(out) :: fbest
+    real(sp),intent(in) :: x1,x2
+    real(sp),intent(in) :: f1,f2
+    real(sp),intent(out) :: xbest
+    real(sp),intent(out) :: fbest
 
     if (abs(f1)<abs(f2)) then
         xbest = x1
@@ -2176,23 +2218,62 @@
         fbest = f2
     end if
 
-    end subroutine choose_best
+  end subroutine choose_best_r4
+
+  pure subroutine choose_best_r8(x1,x2,f1,f2,xbest,fbest)
+      !dir$ attributes forceinline :: choose_best_r8
+      !dir$ attributes code_align : 32 :: choose_best_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: choose_best_r8
+    implicit none
+
+    real(sd),intent(in) :: x1,x2
+    real(dp),intent(in) :: f1,f2
+    real(dp),intent(out) :: xbest
+    real(dp),intent(out) :: fbest
+
+    if (abs(f1)<abs(f2)) then
+        xbest = x1
+        fbest = f1
+    else
+        xbest = x2
+        fbest = f2
+    end if
+
+  end subroutine choose_best_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !  Bisection step.
 
-    pure function bisect(x1,x2) result(x3)
-
+    pure function bisect_r4(x1,x2) result(x3)
+         !dir$ attributes forceinline :: bisect_r4
+      !dir$ attributes code_align : 32 :: bisect_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: bisect_r4
     implicit none
 
-    real(wp),intent(in) :: x1,x2
-    real(wp) :: x3 !! point half way between x1 and x2
+    real(sp),intent(in) :: x1,x2
+    real(sp) :: x3 !! point half way between x1 and x2
 
-    x3 = (x1 + x2) / 2.0_wp
+    x3 = (x1 + x2) * 0.5_sp
 
-    end function bisect
+  end function bisect_r4
+
+  pure function bisect_r8(x1,x2) result(x3)
+         !dir$ attributes forceinline :: bisect_r8
+      !dir$ attributes code_align : 32 :: bisect_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: bisect_r8
+    implicit none
+
+    real(dp),intent(in) :: x1,x2
+    real(dp) :: x3 !! point half way between x1 and x2
+
+    x3 = (x1 + x2) * 0.5_dp
+
+    end function bisect_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2203,29 +2284,59 @@
 !   * the computed point is outside the original interval ([ax,bx]).
 !   * f2 == f1
 
-    function regula_falsi_step(x1,x2,f1,f2,ax,bx) result(x3)
-
+    function regula_falsi_step_r4(x1,x2,f1,f2,ax,bx) result(x3)
+      !dir$ attributes forceinline :: regula_falsi_step_r4
+      !dir$ attributes code_align : 32 :: regula_falsi_step_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: regula_falsi_step_r4
     implicit none
 
-    real(wp),intent(in) :: x1,x2,f1,f2
-    real(wp),intent(in) :: ax !! original interval lower bound
-    real(wp),intent(in) :: bx !! original interval upper bound
-    real(wp) :: x3 !! intersection of line connecting x1,x2 with x-axis
+    real(sp),intent(in) :: x1,x2,f1,f2
+    real(sp),intent(in) :: ax !! original interval lower bound
+    real(sp),intent(in) :: bx !! original interval upper bound
+    real(sp) :: x3 !! intersection of line connecting x1,x2 with x-axis
 
-    real(wp) :: delta
+    real(sp) :: delta
 
     delta = f2-f1
 
-    if (delta /= 0.0_wp) then
+    if (delta /= 0.0_sp) then
         ! intersection with x-axis of line connecting the two points:
         x3 = x1 - (f1/delta) * (x2-x1)
         if (x3>ax .and. x3<bx) return ! must be a new point in the range
     end if
 
     ! fall back to bisection for any problem
-    x3 = bisect(x1,x2)
+    x3 = bisect_r4(x1,x2)
 
-    end function regula_falsi_step
+  end function regula_falsi_step_r4
+
+  function regula_falsi_step_r8(x1,x2,f1,f2,ax,bx) result(x3)
+      !dir$ attributes forceinline :: regula_falsi_step_r8
+      !dir$ attributes code_align : 32 :: regula_falsi_step_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: regula_falsi_step_r8
+    implicit none
+
+    real(dp),intent(in) :: x1,x2,f1,f2
+    real(dp),intent(in) :: ax !! original interval lower bound
+    real(dp),intent(in) :: bx !! original interval upper bound
+    real(dp) :: x3 !! intersection of line connecting x1,x2 with x-axis
+    
+    real(dp) :: delta
+
+    delta = f2-f1
+
+    if (delta /= 0.0_dp) then
+        ! intersection with x-axis of line connecting the two points:
+        x3 = x1 - (f1/delta) * (x2-x1)
+        if (x3>ax .and. x3<bx) return ! must be a new point in the range
+    end if
+
+    ! fall back to bisection for any problem
+    x3 = bisect_r8(x1,x2)
+
+    end function regula_falsi_step_r4
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2236,96 +2347,179 @@
 !   * the computed point is outside the original interval ([ax,bx]).
 !   * f2 == f1
 
-    pure function secant(x1,x2,f1,f2,ax,bx) result(x3)
-
+    pure function secant_r4(x1,x2,f1,f2,ax,bx) result(x3)
+      !dir$ attributes forceinline :: secant_r4
+      !dir$ attributes code_align : 32 :: secant_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: secant_r4
     implicit none
 
-    real(wp),intent(in) :: x1,x2,f1,f2
-    real(wp),intent(in) :: ax !! original interval lower bound
-    real(wp),intent(in) :: bx !! original interval upper bound
-    real(wp) :: x3 !! intersection of secant step with x-axis
+    real(sp),intent(in) :: x1,x2,f1,f2
+    real(sp),intent(in) :: ax !! original interval lower bound
+    real(sp),intent(in) :: bx !! original interval upper bound
+    real(sp) :: x3 !! intersection of secant step with x-axis
 
     if (f2==f1) then
-        x3 = bisect(x1,x2)
+        x3 = bisect_r4(x1,x2)
     else
         ! secant step:
         x3 = x2 - f2 / ( (f2 - f1) / (x2 - x1) )
-        if (x3<ax .or. x3>bx) x3 = bisect(x1,x2)
+        if (x3<ax .or. x3>bx) x3 = bisect_r4(x1,x2)
     end if
 
-    end function secant
+  end function secant_r4
+
+  pure function secant_r8(x1,x2,f1,f2,ax,bx) result(x3)
+      !dir$ attributes forceinline :: secant_r8
+      !dir$ attributes code_align : 32 :: secant_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: secant_r8
+    implicit none
+
+    real(dp),intent(in) :: x1,x2,f1,f2
+    real(dp),intent(in) :: ax !! original interval lower bound
+    real(dp),intent(in) :: bx !! original interval upper bound
+    real(dp) :: x3 !! intersection of secant step with x-axis
+
+    if (f2==f1) then
+        x3 = bisect_r8(x1,x2)
+    else
+        ! secant step:
+        x3 = x2 - f2 / ( (f2 - f1) / (x2 - x1) )
+        if (x3<ax .or. x3>bx) x3 = bisect_r8(x1,x2)
+    end if
+
+  end function secant_r8
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !  Swap two real(wp) values.
 
-    pure elemental subroutine swap(a,b)
+    pure elemental subroutine swap_r4(a,b)
+       !dir$ attributes forceinline :: swap_r4
+      !dir$ attributes code_align : 32 :: swap_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: swap_r4
+
 
     implicit none
 
-    real(wp),intent(inout) :: a
-    real(wp),intent(inout) :: b
+    real(sp),intent(inout) :: a
+    real(sp),intent(inout) :: b
 
-    real(wp) :: tmp
+    real(sp) :: tmp
 
     tmp = a
     a   = b
     b   = tmp
 
-    end subroutine swap
+  end subroutine swap_r4
+
+  pure elemental subroutine swap_r8(a,b)
+       !dir$ attributes forceinline :: swap_r8
+      !dir$ attributes code_align : 32 :: swap_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: swap_r8
+
+
+    implicit none
+
+    real(dp),intent(inout) :: a
+    real(dp),intent(inout) :: b
+
+    real(dp) :: tmp
+
+    tmp = a
+    a   = b
+    b   = tmp
+
+  end subroutine swap_r8
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !  lowercase a string.
 
-    pure function lowercase(str) result(s_lower)
+  !  pure function lowercase(str) result(s_lower)
 
-    implicit none
+   ! implicit none
 
-    character(len=*),intent(in) :: str      !! input string
-    character(len=(len(str)))   :: s_lower  !! lowercase version of the string
+  !  character(len=*),intent(in) :: str      !! input string
+  !  character(len=(len(str)))   :: s_lower  !! lowercase version of the string
 
-    integer :: i  !! counter
-    integer :: j  !! index of uppercase character
+  !  integer :: i  !! counter
+  !  integer :: j  !! index of uppercase character
 
-    character(len=*),parameter :: upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' !! uppercase characters
-    character(len=*),parameter :: lower = 'abcdefghijklmnopqrstuvwxyz' !! lowercase characters
+  !  character(len=*),parameter :: upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' !! uppercase characters
+  !  character(len=*),parameter :: lower = 'abcdefghijklmnopqrstuvwxyz' !! lowercase characters
 
-    s_lower = str
+ !   s_lower = str
 
-    do i = 1, len_trim(str)
-        j = index(upper,s_lower(i:i))
-        if (j>0) s_lower(i:i) = lower(j:j)
-    end do
+  !  do i = 1, len_trim(str)
+  !      j = index(upper,s_lower(i:i))
+  !      if (j>0) s_lower(i:i) = lower(j:j)
+  !  end do
 
-    end function lowercase
+  !  end function lowercase
 !*****************************************************************************************
 
 !*****************************************************************************************
 !>
 !  Returns true if this is a solution and sets `xzero` and `fzero`.
 
-    logical function solution(x,f,ftol,xzero,fzero)
+    logical function solution_r4(x,f,ftol,xzero,fzero)
+      !dir$ attributes forceinline :: solution_r4
+      !dir$ attributes code_align : 32 :: solution_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: solution_r4
 
     implicit none
 
-    real(wp),intent(in) :: x
-    real(wp),intent(in) :: f
-    real(wp),intent(in) :: ftol
-    real(wp),intent(inout) :: xzero
-    real(wp),intent(inout) :: fzero
+    real(sp),intent(in) :: x
+    real(sp),intent(in) :: f
+    real(sp),intent(in) :: ftol
+    real(sp),intent(inout) :: xzero
+    real(sp),intent(inout) :: fzero
 
     if (abs(f) <= ftol) then
         xzero = x
         fzero = f
-        solution = .true.
+        solution_r4 = .true.
     else
-        solution = .false.
+        solution_r4 = .false.
     end if
 
-    end function solution
+  end function solution_r4
+
+  logical function solution_r8(x,f,ftol,xzero,fzero)
+      !dir$ attributes forceinline :: solution_r8
+      !dir$ attributes code_align : 32 :: solution_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: solution_r8
+
+    implicit none
+
+    real(dp),intent(in) :: x
+    real(dp),intent(in) :: f
+    real(dp),intent(in) :: ftol
+    real(dp),intent(inout) :: xzero
+    real(dp),intent(inout) :: fzero
+
+    if (abs(f) <= ftol) then
+        xzero = x
+        fzero = f
+        solution_r8 = .true.
+    else
+        solution_r8 = .false.
+    end if
+
+    end function solution_r8
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
