@@ -448,20 +448,23 @@
 !>
 !  Compute the zero of the function f(x) in the interval ax,bx using the regula falsi method.
 
-    subroutine regula_falsi(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine regula_falsi_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: regula_falsi_r4
+      !dir$ attributes code_align : 32 :: regula_false_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: regula_falsi_r4
     implicit none
 
-    class(regula_falsi_solver),intent(inout) :: me
-    real(wp),intent(in)    :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)    :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)    :: fax     !! `f(ax)`
-    real(wp),intent(in)    :: fbx     !! `f(ax)`
-    real(wp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)     :: fx
+    real(sp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)    :: fax     !! `f(ax)`
+    real(sp),intent(in)    :: fbx     !! `f(ax)`
+    real(sp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: x1,x2,x3,f1,f2,f3
+    real(sp) :: x1,x2,x3,f1,f2,f3
     integer :: i !! iteration counter
     logical :: root_found !! convergence in x
 
@@ -473,16 +476,16 @@
     f2    = fbx
 
     ! main loop
-    do i=1,me%maxiter
+    do i=1,maxiter
 
-        x3 = regula_falsi_step(x1,x2,f1,f2,ax,bx)
+        x3 = regula_falsi_step_r4(x1,x2,f1,f2,ax,bx)
 
         ! calculate the new function value:
-        f3 = me%f(x3)
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
         ! determine new inclusion interval:
-        if (f2*f3<0.0_wp) then
+        if (f2*f3<0.0_sp) then
             ! root lies between x2 and x3
             x1 = x3
             x2 = x2
@@ -495,40 +498,34 @@
         end if
 
         ! check for convergence:
-        root_found = me%converged(x1,x2)
-        if (root_found .or. i==me%maxiter) then
-            call choose_best(x1,x2,f1,f2,xzero,fzero)
+        root_found = converged_r4(x1,x2)
+        if (root_found .or. i==maxiter) then
+            call choose_best_r4(x1,x2,f1,f2,xzero,fzero)
             if (.not. root_found) iflag = -2  ! max iterations reached
             exit
         end if
 
     end do
 
-    end subroutine regula_falsi
-!*****************************************************************************************
+  end subroutine regula_falsi_r4
 
-!*****************************************************************************************
-!>
-!  Illinois method.
-!
-!### Reference
-!  * M. Dowell, P. Jarratt, "A modified regula falsi method for computing the root
-!    of an equation', BIT 11 (1971), 168-174.
-
-    subroutine illinois(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+  subroutine regula_falsi_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: regula_falsi_r8
+      !dir$ attributes code_align : 32 :: regula_false_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: regula_falsi_r8
     implicit none
 
-    class(illinois_solver),intent(inout) :: me
-    real(wp),intent(in)    :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)    :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)    :: fax     !! `f(ax)`
-    real(wp),intent(in)    :: fbx     !! `f(ax)`
-    real(wp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r8)     :: fx
+    real(dp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)    :: fax     !! `f(ax)`
+    real(dp),intent(in)    :: fbx     !! `f(ax)`
+    real(dp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: x1,x2,x3,f1,f2,f3,delta,f1tmp
+    real(dp) :: x1,x2,x3,f1,f2,f3
     integer :: i !! iteration counter
     logical :: root_found !! convergence in x
 
@@ -540,16 +537,89 @@
     f2    = fbx
 
     ! main loop
-    do i=1,me%maxiter
+    do i=1,maxiter
 
-        x3 = regula_falsi_step(x1,x2,f1,f2,ax,bx)
+        x3 = regula_falsi_step_r8(x1,x2,f1,f2,ax,bx)
 
         ! calculate the new function value:
-        f3 = me%f(x3)
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        f3 = fx(x3)
+        if (solution_r8(x3,f3,ftol8,xzero,fzero)) return
 
         ! determine new inclusion interval:
-        if (f2*f3<0.0_wp) then
+        if (f2*f3<0.0_dp) then
+            ! root lies between x2 and x3
+            x1 = x3
+            x2 = x2
+            f1 = f3
+            f2 = f2
+        else
+            ! root lies between x1 and x3
+            x2 = x3
+            f2 = f3
+        end if
+
+        ! check for convergence:
+        root_found = converged_r8(x1,x2)
+        if (root_found .or. i==maxiter) then
+            call choose_best_r8(x1,x2,f1,f2,xzero,fzero)
+            if (.not. root_found) iflag = -2  ! max iterations reached
+            exit
+        end if
+
+    end do
+
+  end subroutine regula_falsi_r8
+
+
+  
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Illinois method.
+!
+!### Reference
+!  * M. Dowell, P. Jarratt, "A modified regula falsi method for computing the root
+!    of an equation', BIT 11 (1971), 168-174.
+
+    subroutine illinois_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: illinois_r4
+      !dir$ attributes code_align : 32 :: illinois_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: illinois_r4
+    implicit none
+
+    procedure(func_r4)     :: fx
+    real(sp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)    :: fax     !! `f(ax)`
+    real(sp),intent(in)    :: fbx     !! `f(ax)`
+    real(sp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(sp) :: x1,x2,x3,f1,f2,f3,delta,f1tmp
+    integer :: i !! iteration counter
+    logical :: root_found !! convergence in x
+
+    ! initialize:
+    iflag = 0
+    x1    = ax
+    x2    = bx
+    f1    = fax
+    f2    = fbx
+
+    ! main loop
+    do i=1,maxiter
+
+        x3 = regula_falsi_step_r4(x1,x2,f1,f2,ax,bx)
+
+        ! calculate the new function value:
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
+
+        ! determine new inclusion interval:
+        if (f2*f3<0.0_sp) then
             ! root lies between x2 and x3
             x1 = x2
             x2 = x3
@@ -561,20 +631,88 @@
             x2 = x3
             f2 = f3
             f1tmp = f1 ! actual function eval
-            f1 = 0.5_wp * f1
+            f1 = 0.5_sp * f1
         end if
 
         ! check for convergence:
-        root_found = me%converged(x1,x2)
-        if (root_found .or. i==me%maxiter) then
-            call choose_best(x1,x2,f1tmp,f2,xzero,fzero)
+        root_found = converged_r4(x1,x2)
+        if (root_found .or. i==maxiter) then
+            call choose_best_r4(x1,x2,f1tmp,f2,xzero,fzero)
             if (.not. root_found) iflag = -2  ! max iterations reached
             exit
         end if
 
     end do
 
-    end subroutine illinois
+  end subroutine illinois_r4
+
+
+     subroutine illinois_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: illinois_r8
+      !dir$ attributes code_align : 32 :: illinois_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: illinois_r8
+    implicit none
+
+    procedure(func_r8)     :: fx
+    real(dp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)    :: fax     !! `f(ax)`
+    real(dp),intent(in)    :: fbx     !! `f(ax)`
+    real(dp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: x1,x2,x3,f1,f2,f3,delta,f1tmp
+    integer :: i !! iteration counter
+    logical :: root_found !! convergence in x
+
+    ! initialize:
+    iflag = 0
+    x1    = ax
+    x2    = bx
+    f1    = fax
+    f2    = fbx
+
+    ! main loop
+    do i=1,maxiter
+
+        x3 = regula_falsi_step_r8(x1,x2,f1,f2,ax,bx)
+
+        ! calculate the new function value:
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol8,xzero,fzero)) return
+
+        ! determine new inclusion interval:
+        if (f2*f3<0.0_dp) then
+            ! root lies between x2 and x3
+            x1 = x2
+            x2 = x3
+            f1 = f2
+            f1tmp = f1
+            f2 = f3
+        else
+            ! root lies between x1 and x3
+            x2 = x3
+            f2 = f3
+            f1tmp = f1 ! actual function eval
+            f1 = 0.5_dp * f1
+        end if
+
+        ! check for convergence:
+        root_found = converged_r8(x1,x2)
+        if (root_found .or. i==maxiter) then
+            call choose_best_r8(x1,x2,f1tmp,f2,xzero,fzero)
+            if (.not. root_found) iflag = -2  ! max iterations reached
+            exit
+        end if
+
+    end do
+
+  end subroutine illinois_r8
+
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -585,22 +723,25 @@
 !  * G.E. Mullges & F. Uhlig, "Numerical Algorithms with Fortran",
 !    Springer, 1996. Section 2.8.2, p 36.
 
-    subroutine anderson_bjorck(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine anderson_bjorck_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: anderson_bjorck_r4
+      !dir$ attributes code_align : 32 :: anderson_bjorck_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: anderson_bjorck_r4
     implicit none
 
-    class(anderson_bjorck_solver),intent(inout) :: me
-    real(wp),intent(in)    :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)    :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)    :: fax     !! `f(ax)`
-    real(wp),intent(in)    :: fbx     !! `f(ax)`
-    real(wp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)     :: fx
+    real(sp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)    :: fax     !! `f(ax)`
+    real(sp),intent(in)    :: fbx     !! `f(ax)`
+    real(sp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
     integer :: i !! counter
     logical :: root_found !! convergence in x
-    real(wp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
+    real(sp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
 
     ! initialize:
     iflag = 0
@@ -610,14 +751,14 @@
     f2    = fbx
 
     ! main loop:
-    do i = 1,me%maxiter
+    do i = 1,maxiter
 
-        x3 = secant(x1,x2,f1,f2,ax,bx)
-        f3 = me%f(x3)
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        x3 = secant_r4(x1,x2,f1,f2,ax,bx)
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
         ! determine a new inclusion interval:
-        if (f2*f3<0.0_wp) then
+        if (f2*f3<0.0_sp) then
             ! zero lies between x2 and x3
             x1 = x2
             x2 = x3
@@ -626,8 +767,8 @@
             f1tmp = f1
         else
             ! zero lies between x1 and x3
-            g = 1.0_wp - f3/f2
-            if (g<=0.0_wp) g = 0.5_wp
+            g = 1.0_sp - f3/f2
+            if (g<=0.0_sp) g = 0.5_sp
             x2 = x3
             f1tmp = f1
             f1 = g*f1
@@ -635,16 +776,80 @@
         end if
 
         ! check for convergence:
-        root_found = me%converged(x1,x2)
-        if (root_found .or. i == me%maxiter) then
-            call choose_best(x1,x2,f1tmp,f2,xzero,fzero)
+        root_found = converged_r4(x1,x2)
+        if (root_found .or. i == maxiter) then
+            call choose_best_r4(x1,x2,f1tmp,f2,xzero,fzero)
             if (.not. root_found) iflag = -2  ! max iterations reached
             exit
         end if
 
     end do
 
-    end subroutine anderson_bjorck
+  end subroutine anderson_bjorck_r4
+
+   subroutine anderson_bjorck_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: anderson_bjorck_r8
+      !dir$ attributes code_align : 32 :: anderson_bjorck_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: anderson_bjorck_r8
+    implicit none
+
+    procedure(func_r8)     :: fx
+    real(dp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)    :: fax     !! `f(ax)`
+    real(dp),intent(in)    :: fbx     !! `f(ax)`
+    real(dp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    integer :: i !! counter
+    logical :: root_found !! convergence in x
+    real(dp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
+
+    ! initialize:
+    iflag = 0
+    x1    = ax
+    x2    = bx
+    f1    = fax
+    f2    = fbx
+
+    ! main loop:
+    do i = 1,maxiter
+
+        x3 = secant_r8(x1,x2,f1,f2,ax,bx)
+        f3 = fx(x3)
+        if (solution_r8(x3,f3,ftol8,xzero,fzero)) return
+
+        ! determine a new inclusion interval:
+        if (f2*f3<0.0_dp) then
+            ! zero lies between x2 and x3
+            x1 = x2
+            x2 = x3
+            f1 = f2
+            f2 = f3
+            f1tmp = f1
+        else
+            ! zero lies between x1 and x3
+            g = 1.0_dp - f3/f2
+            if (g<=0.0_dp) g = 0.5_dp
+            x2 = x3
+            f1tmp = f1
+            f1 = g*f1
+            f2 = f3
+        end if
+
+        ! check for convergence:
+        root_found = converged_r8(x1,x2)
+        if (root_found .or. i == maxiter) then
+            call choose_best_r8(x1,x2,f1tmp,f2,xzero,fzero)
+            if (.not. root_found) iflag = -2  ! max iterations reached
+            exit
+        end if
+
+    end do
+
+    end subroutine anderson_bjorck_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -655,21 +860,24 @@
 !  * Ridders, C., "A new algorithm for computing a single root of a real continuous function",
 !    IEEE Trans. on Circuits and Systems, Vol 26, Issue 11, Nov 1979.
 
-    subroutine ridders(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine ridders_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: ridders_r4
+      !dir$ attributes code_align : 32 :: ridders_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: ridders_r4
     implicit none
 
-    class(ridders_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached, `-3`=singularity in the algorithm)
 
     integer  :: i !! counter
-    real(wp) :: fh,fl,fm,fnew,denom,xh,xl,xm,xnew
+    real(sp) :: fh,fl,fm,fnew,denom,xh,xl,xm,xnew
 
     ! initialize:
     iflag = 0
@@ -677,32 +885,32 @@
     fh    = fbx
     xl    = ax
     xh    = bx
-    xzero = huge(1.0_wp)
+    xzero = huge(1.0_sp)
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
-        xm = bisect(xl,xh)
-        fm = me%f(xm)
-        if (solution(xm,fm,me%ftol,xzero,fzero)) return
+        xm = bisect_r4(xl,xh)
+        fm = fx(xm)
+        if (solution_r4(xm,fm,ftol4,xzero,fzero)) return
 
         denom = sqrt(fm**2-fl*fh)
-        if (denom == 0.0_wp) then
+        if (denom == 0.0_sp) then
             xzero = xm
             fzero = fm
             iflag = -3        ! can't proceed: denominator is zero [TODO: add a bisection if this happens]
             exit
         end if
 
-        xnew = xm + (xm-xl)*(sign(1.0_wp,fl-fh)*fm/denom)
-        if (me%converged(xzero,xnew)) then  ! relative convergence in x
+        xnew = xm + (xm-xl)*(sign(1.0_sp,fl-fh)*fm/denom)
+        if (converged_r4(xzero,xnew)) then  ! relative convergence in x
             ! additional check to prevent false convergence
-            if (me%converged(xl,xm) .or. me%converged(xm,xh)) exit
+            if (converged_r4(xl,xm) .or. converged_r4(xm,xh)) exit
         end if
 
         xzero = xnew
-        fnew  = me%f(xzero)
+        fnew  = fx(xzero)
         fzero = fnew
-        if (abs(fnew) <= me%ftol) exit    ! abs convergence in f
+        if (abs(fnew) <= ftol4) exit    ! abs convergence in f
 
         ! to keep the root bracketed:
         if (sign(fm,fnew) /= fm) then
@@ -718,12 +926,86 @@
             fl = fnew
         end if
 
-        if (me%converged(xl,xh)) exit    ! relative convergence in x
-        if (i == me%maxiter) iflag = -2  ! max iterations exceeded
+        if (converged_r4(xl,xh)) exit    ! relative convergence in x
+        if (i == maxiter) iflag = -2  ! max iterations exceeded
 
     end do
 
-    end subroutine ridders
+  end subroutine ridders_r4
+
+
+    subroutine ridders_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: ridders_r8
+      !dir$ attributes code_align : 32 :: ridders_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: ridders_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached, `-3`=singularity in the algorithm)
+
+    integer  :: i !! counter
+    real(dp) :: fh,fl,fm,fnew,denom,xh,xl,xm,xnew
+
+    ! initialize:
+    iflag = 0
+    fl    = fax
+    fh    = fbx
+    xl    = ax
+    xh    = bx
+    xzero = huge(1.0_dp)
+
+    do i = 1, maxiter
+
+        xm = bisect_r8(xl,xh)
+        fm = fx(xm)
+        if (solution_r8(xm,fm,ftol8,xzero,fzero)) return
+
+        denom = sqrt(fm**2-fl*fh)
+        if (denom == 0.0_dp) then
+            xzero = xm
+            fzero = fm
+            iflag = -3        ! can't proceed: denominator is zero [TODO: add a bisection if this happens]
+            exit
+        end if
+
+        xnew = xm + (xm-xl)*(sign(1.0_sp,fl-fh)*fm/denom)
+        if (converged_r8(xzero,xnew)) then  ! relative convergence in x
+            ! additional check to prevent false convergence
+            if (converged_r8(xl,xm) .or. converged_r8(xm,xh)) exit
+        end if
+
+        xzero = xnew
+        fnew  = fx(xzero)
+        fzero = fnew
+        if (abs(fnew) <= ftol8) exit    ! abs convergence in f
+
+        ! to keep the root bracketed:
+        if (sign(fm,fnew) /= fm) then
+            xl = xm
+            fl = fm
+            xh = xzero
+            fh = fnew
+        else if (sign(fl,fnew) /= fl) then
+            xh = xzero
+            fh = fnew
+        else if (sign(fh,fnew) /= fh) then
+            xl = xzero
+            fl = fnew
+        end if
+
+        if (converged_r8(xl,xh)) exit    ! relative convergence in x
+        if (i == maxiter) iflag = -2  ! max iterations exceeded
+
+    end do
+
+    end subroutine ridders_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -734,21 +1016,24 @@
 !  * G.E. Mullges & F. Uhlig, "Numerical Algorithms with Fortran",
 !    Springer, 1996. Section 2.8.2, p 35.
 
-    subroutine pegasus(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine pegasus_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: pegasus_r4
+      !dir$ attributes code_align : 32 :: pegasus_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: pegasus_r4 
     implicit none
 
-    class(pegasus_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
     integer :: i !! counter
-    real(wp) :: x1,x2,x3,f1,f2,f3,f1tmp,denom
+    real(sp) :: x1,x2,x3,f1,f2,f3,f1tmp,denom
 
     ! initialize:
     iflag = 0
@@ -758,23 +1043,23 @@
     f2    = fbx
 
     ! main loop:
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
         ! secant step
-        x3 = secant(x1,x2,f1,f2,ax,bx)
+        x3 = secant_r4(x1,x2,f1,f2,ax,bx)
 
-        f3  = me%f(x3)  ! calculate f3
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        f3  = fx(x3)  ! calculate f3
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
         ! determine a new inclusion interval:
-        if (f2*f3<=0.0_wp) then  ! root on (x2,x3)
+        if (f2*f3<=0.0_sp) then  ! root on (x2,x3)
             x1 = x2
             f1 = f2
             f1tmp = f1
         else  ! root on (x1,x3)
             f1tmp = f1
             denom = f2 + f3
-            if (denom /= 0.0_wp) then
+            if (denom /= 0.0_sp) then
                 ! proceed as normal
                 f1 = f1 * f2 / denom
             else
@@ -786,14 +1071,82 @@
         x2 = x3
         f2 = f3
 
-        call choose_best(x1,x2,f1tmp,f2,xzero,fzero)
+        call choose_best_r4(x1,x2,f1tmp,f2,xzero,fzero)
 
-        if (me%converged(x1,x2)) exit   ! check for convergence
-        if (i == me%maxiter) iflag = -2 ! max iterations exceeded
+        if (converged_r4(x1,x2)) exit   ! check for convergence
+        if (i == maxiter) iflag = -2 ! max iterations exceeded
 
     end do
 
-    end subroutine pegasus
+  end subroutine pegasus_r4
+
+
+    subroutine pegasus_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: pegasus_r8
+      !dir$ attributes code_align : 32 :: pegasus_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: pegasus_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    integer :: i !! counter
+    real(dp) :: x1,x2,x3,f1,f2,f3,f1tmp,denom
+
+    ! initialize:
+    iflag = 0
+    x1    = ax
+    x2    = bx
+    f1    = fax
+    f2    = fbx
+
+    ! main loop:
+    do i = 1, maxiter
+
+        ! secant step
+        x3 = secant_r8(x1,x2,f1,f2,ax,bx)
+
+        f3  = fx(x3)  ! calculate f3
+        if (solution_r8(x3,f3,ftol4,xzero,fzero)) return
+
+        ! determine a new inclusion interval:
+        if (f2*f3<=0.0_dp) then  ! root on (x2,x3)
+            x1 = x2
+            f1 = f2
+            f1tmp = f1
+        else  ! root on (x1,x3)
+            f1tmp = f1
+            denom = f2 + f3
+            if (denom /= 0.0_dp) then
+                ! proceed as normal
+                f1 = f1 * f2 / denom
+            else
+                ! can't proceed, keep as is.
+                ! [need a find a test case where this happens -TODO]
+            end if
+        end if
+
+        x2 = x3
+        f2 = f3
+
+        call choose_best_r8(x1,x2,f1tmp,f2,xzero,fzero)
+
+        if (converged_r8(x1,x2)) exit   ! check for convergence
+        if (i == maxiter) iflag = -2 ! max iterations exceeded
+
+    end do
+
+  end subroutine pegasus_r8
+
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
