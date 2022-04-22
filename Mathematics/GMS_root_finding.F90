@@ -1158,20 +1158,23 @@
 !  * R. G. Gottlieb, B. F. Thompson, "Bisected Direct Quadratic Regula Falsi",
 !    Applied Mathematical Sciences, Vol. 4, 2010, no. 15, 709-718.
 
-    subroutine bdqrf(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine bdqrf_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+         !dir$ attributes forceinline :: bdqrf_r4
+      !dir$ attributes code_align : 32 :: bdqrf_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: bdqrf_r4
     implicit none
 
-    class(bdqrf_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: xdn,ydn,xup,yup,d,xm,ym,a,b,y2
+    real(sp) :: xdn,ydn,xup,yup,d,xm,ym,a,b,y2
     integer :: i !! counter
 
     ! initialize:
@@ -1180,7 +1183,7 @@
     fzero = fax
     y2    = fbx
 
-    if (fzero<0.0_wp) then
+    if (fzero<0.0_sp) then
         xdn = ax
         ydn = fzero
         xup = bx
@@ -1193,49 +1196,134 @@
     end if
 
     ! main loop:
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
-        xm = bisect(xup,xdn)
-        ym = me%f(xm)
-        if (abs(ym)<=me%ftol) then
+        xm = bisect_r4(xup,xdn)
+        ym = fx(xm)
+        if (abs(ym)<=ftol4) then
             xzero = xm
             fzero = ym
             exit ! Convergence
         end if
 
-        d = (xup - xdn) / 2.0_wp
-        a = (yup + ydn - 2.0_wp*ym)/(2.0_wp*d**2)
-        b = (yup - ydn)/(2.0_wp*d)
+        d = (xup - xdn) * 0.5_sp
+        a = (yup + ydn - 2.0_sp*ym)/(2.0_sp*d**2)
+        b = (yup - ydn)/(2.0_sp*d)
 
-        xzero = xm - 2.0_wp*ym / (b * (1.0_wp + sqrt(1.0_wp - 4.0_wp*a*ym/b**2)))
-        fzero = me%f(xzero)
-        if (abs(fzero)<=me%ftol) exit ! Convergence
+        xzero = xm - 2.0_sp*ym / (b * (1.0_sp + sqrt(1.0_sp - 4.0_sp*a*ym/b**2)))
+        fzero = fx(xzero)
+        if (abs(fzero)<=ftol4) exit ! Convergence
 
-        if (fzero>0.0_wp) then
+        if (fzero>0.0_sp) then
             yup = fzero
             xup = xzero
-            if (ym<0.0_wp) then
+            if (ym<0.0_sp) then
                 ydn = ym
                 xdn = xm
             end if
         else
             ydn = fzero
             xdn = xzero
-            if (ym>0.0_wp) then
+            if (ym>0.0_sp) then
                 yup = ym
                 xup = xm
             end if
         end if
 
-        if (me%converged(xdn,xup) .or. i==me%maxiter) then
-            call choose_best(xdn,xup,ydn,yup,xzero,fzero)
-            if (i==me%maxiter) iflag = -2 ! maximum number of iterations
+        if (converged_r4(xdn,xup) .or. i==maxiter) then
+            call choose_best_r4(xdn,xup,ydn,yup,xzero,fzero)
+            if (i==maxiter) iflag = -2 ! maximum number of iterations
             exit
         end if
 
     end do
 
-    end subroutine bdqrf
+  end subroutine bdqrf_r4
+
+    subroutine bdqrf_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+         !dir$ attributes forceinline :: bdqrf_r8
+      !dir$ attributes code_align : 32 :: bdqrf_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: bdqrf_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: xdn,ydn,xup,yup,d,xm,ym,a,b,y2
+    integer :: i !! counter
+
+    ! initialize:
+    iflag = 0
+    xzero = ax
+    fzero = fax
+    y2    = fbx
+
+    if (fzero<0.0_dp) then
+        xdn = ax
+        ydn = fzero
+        xup = bx
+        yup = y2
+    else
+        xup = ax
+        yup = fzero
+        xdn = bx
+        ydn = y2
+    end if
+
+    ! main loop:
+    do i = 1, maxiter
+
+        xm = bisect_r8(xup,xdn)
+        ym = fx(xm)
+        if (abs(ym)<=ftol8) then
+            xzero = xm
+            fzero = ym
+            exit ! Convergence
+        end if
+
+        d = (xup - xdn) * 0.5_dp
+        a = (yup + ydn - 2.0_dp*ym)/(2.0_dp*d**2)
+        b = (yup - ydn)/(2.0_dp*d)
+
+        xzero = xm - 2.0_dp*ym / (b * (1.0_dp + sqrt(1.0_dp - 4.0_dp*a*ym/b**2)))
+        fzero = fx(xzero)
+        if (abs(fzero)<=ftol8) exit ! Convergence
+
+        if (fzero>0.0_dp) then
+            yup = fzero
+            xup = xzero
+            if (ym<0.0_dp) then
+                ydn = ym
+                xdn = xm
+            end if
+        else
+            ydn = fzero
+            xdn = xzero
+            if (ym>0.0_dp) then
+                yup = ym
+                xup = xm
+            end if
+        end if
+
+        if (converged_r8(xdn,xup) .or. i==maxiter) then
+            call choose_best_r8(xdn,xup,ydn,yup,xzero,fzero)
+            if (i==maxiter) iflag = -2 ! maximum number of iterations
+            exit
+        end if
+
+    end do
+
+  end subroutine bdqrf_r8
+
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -1249,48 +1337,51 @@
 !  * Regular Muller here (Julia version):
 !    https://github.com/JuliaMath/Roots.jl/blob/97dbe2e178656e39b7f646cff278e4e985d60116/src/simple.jl
 
-    subroutine muller (me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine muller_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: muller_r4
+      !dir$ attributes code_align : 32 :: muller_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: muller_r4
     implicit none
 
     class(muller_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: a,b,c,cx,fa,fb,fc,fcx,x,q,q2,q1,aa,bb,cc,delta,dp,dm,denon,bprev,fbprev
+    real(sp) :: a,b,c,cx,fa,fb,fc,fcx,x,q,q2,q1,aa,bb,cc,delta,dp,dm,denon,bprev,fbprev
     integer  :: i    !! iteration counter
     logical  :: x_ok !! the new estimate `x` is ok to use
 
     iflag = 0
 
     ! pick a third point in the middle [this could also be an optional input]
-    cx  = bisect(ax,bx)
-    fcx = me%f(cx)
-    if (solution(cx,fcx,me%ftol,xzero,fzero)) return
+    cx  = bisect_r4(ax,bx)
+    fcx = fx(cx)
+    if (solution_r4(cx,fcx,ftol4,xzero,fzero)) return
 
     ! [a,b,c]
     a = ax; fa = fax
     b = cx; fb = fcx
     c = bx; fc = fbx
 
-    bprev = huge(1.0_wp)
-    fbprev = huge(1.0_wp)
+    bprev = huge(1.0_sp)
+    fbprev = huge(1.0_sp)
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
         ! muller step:
         q     = (c - b)/(b - a)
         q2    = q**2
-        q1    = q + 1.0_wp
+        q1    = q + 1.0_sp
         aa    = q*fc - q*q1*fb + q2*fa
         bb    = (q1+q)*fc - q1**2*fb + q2*fa
         cc    = q1*fc
-        delta = sqrt(max(0.0_wp, bb**2 - 4.0_wp * aa*cc)) ! to avoid complex roots
+        delta = sqrt(max(0.0_sp, bb**2 - 4.0_sp * aa*cc)) ! to avoid complex roots
         dp    = bb + delta
         dm    = bb - delta
         if (abs(dp) > abs(dm)) then
@@ -1298,18 +1389,18 @@
         else
             denon = dm
         end if
-        x_ok = denon /= 0.0_wp
-        if (x_ok) x = c - 2.0_wp*(c - b)*cc/denon
+        x_ok = denon /= 0.0_sp
+        if (x_ok) x = c - 2.0_sp*(c - b)*cc/denon
 
         ! make sure that x is ok, in the correct interval, and distinct.
         ! if not, fall back to bisection on that interval
-        if (fa*fb < 0.0_wp) then  ! root in (a,b)
-            if (.not. x_ok .or. x<=a .or. x>=b) x = bisect(a,b)
+        if (fa*fb < 0.0_sp) then  ! root in (a,b)
+            if (.not. x_ok .or. x<=a .or. x>=b) x = bisect_r4(a,b)
             c  = b
             fc = fb
             b  = x
         else  ! root in (b,c)
-            if (.not. x_ok .or. x<=b .or. x>=c) x = bisect(b,c)
+            if (.not. x_ok .or. x<=b .or. x>=c) x = bisect_r4(b,c)
             a  = b
             fa = fb
             b  = x
@@ -1317,12 +1408,12 @@
         ! values are now [a,b,c], with b being the new estimate
 
         ! function evaluation for next estimate:
-        fb = me%f(b)
-        if (abs(fb)<=me%ftol) exit
+        fb = fx(b)
+        if (abs(fb)<=ftol4) exit
 
         ! stopping criterion
-        if (me%converged(a,c) .or. i == me%maxiter) then
-            if ( i == me%maxiter ) iflag = -2 ! max iterations exceeded
+        if (converged_r4(a,c) .or. i == maxiter) then
+            if ( i == maxiter ) iflag = -2 ! max iterations exceeded
             exit
         end if
 
@@ -1331,9 +1422,100 @@
 
     end do
 
-    call choose_best(b,bprev,fb,fbprev,xzero,fzero)
+    call choose_best_r4(b,bprev,fb,fbprev,xzero,fzero)
 
-    end subroutine muller
+  end subroutine muller_r4
+
+   subroutine muller_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: muller_r8
+      !dir$ attributes code_align : 32 :: muller_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: muller_r8
+    implicit none
+
+    procedure(func_r8)   :: fx  
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: a,b,c,cx,fa,fb,fc,fcx,x,q,q2,q1,aa,bb,cc,delta,dp,dm,denon,bprev,fbprev
+    integer  :: i    !! iteration counter
+    logical  :: x_ok !! the new estimate `x` is ok to use
+
+    iflag = 0
+
+    ! pick a third point in the middle [this could also be an optional input]
+    cx  = bisect_r8(ax,bx)
+    fcx = fx(cx)
+    if (solution_r8(cx,fcx,ftol4,xzero,fzero)) return
+
+    ! [a,b,c]
+    a = ax; fa = fax
+    b = cx; fb = fcx
+    c = bx; fc = fbx
+
+    bprev = huge(1.0_dp)
+    fbprev = huge(1.0_dp)
+
+    do i = 1, maxiter
+
+        ! muller step:
+        q     = (c - b)/(b - a)
+        q2    = q**2
+        q1    = q + 1.0_dp
+        aa    = q*fc - q*q1*fb + q2*fa
+        bb    = (q1+q)*fc - q1**2*fb + q2*fa
+        cc    = q1*fc
+        delta = sqrt(max(0.0_dp, bb**2 - 4.0_dp * aa*cc)) ! to avoid complex roots
+        dp    = bb + delta
+        dm    = bb - delta
+        if (abs(dp) > abs(dm)) then
+            denon = dp
+        else
+            denon = dm
+        end if
+        x_ok = denon /= 0.0_dp
+        if (x_ok) x = c - 2.0_dp*(c - b)*cc/denon
+
+        ! make sure that x is ok, in the correct interval, and distinct.
+        ! if not, fall back to bisection on that interval
+        if (fa*fb < 0.0_dp) then  ! root in (a,b)
+            if (.not. x_ok .or. x<=a .or. x>=b) x = bisect_r8(a,b)
+            c  = b
+            fc = fb
+            b  = x
+        else  ! root in (b,c)
+            if (.not. x_ok .or. x<=b .or. x>=c) x = bisect_r8(b,c)
+            a  = b
+            fa = fb
+            b  = x
+        end if
+        ! values are now [a,b,c], with b being the new estimate
+
+        ! function evaluation for next estimate:
+        fb = fx(b)
+        if (abs(fb)<=ftol8) exit
+
+        ! stopping criterion
+        if (converged_r8(a,c) .or. i == maxiter) then
+            if ( i == maxiter ) iflag = -2 ! max iterations exceeded
+            exit
+        end if
+
+        bprev = b
+        fbprev = fb
+
+    end do
+
+    call choose_best_r8(b,bprev,fb,fbprev,xzero,fzero)
+
+  end subroutine muller_r8
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -1347,20 +1529,23 @@
 !### Reference
 !  * SciPy `brenth.c`
 
-    subroutine brenth(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine brenth_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes forceinline :: brenth_r8
+      !dir$ attributes code_align : 32 :: brenth_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: brenth_r8
     implicit none
 
-    class(brenth_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
+    real(sp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
                 scur,sbis,delta,stry,dpre,dblk,xdelta
     integer :: i !! iteration counter
 
@@ -1370,9 +1555,9 @@
     fpre = fax
     fcur = fbx
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
-        if (fpre*fcur < 0.0_wp) then
+        if (fpre*fcur < 0.0_sp) then
             xblk = xpre
             fblk = fpre
             scur = xcur - xpre
@@ -1387,9 +1572,9 @@
             fblk = fpre
         end if
 
-        delta = (me%atol + me%rtol*abs(xcur))/2.0_wp
-        sbis = (xblk - xcur)/2.0_wp
-        if (abs(fcur) <= me%ftol .or. abs(sbis) < delta) exit ! converged
+        delta = (atol4 + rtol4*abs(xcur))*0.5_sp
+        sbis = (xblk - xcur)*0.5_sp
+        if (abs(fcur) <= ftol4 .or. abs(sbis) < delta) exit ! converged
 
         if (abs(spre) > delta .and. abs(fcur) < abs(fpre)) then
             if (xpre == xblk) then
@@ -1402,7 +1587,7 @@
                 stry = -fcur*(fblk - fpre)/(fblk*dpre - fpre*dblk)  ! only difference from brentq
             end if
 
-            if (2.0_wp*abs(stry) < min(abs(spre), 3.0_wp*abs(sbis) - delta)) then
+            if (2.0_sp*abs(stry) < min(abs(spre), 3.0_sp*abs(sbis) - delta)) then
                 ! accept step
                 spre = scur
                 scur = stry
@@ -1422,7 +1607,7 @@
         if (abs(scur) > delta) then
             xcur = xcur + scur
         else
-            if (sbis > 0.0_wp) then
+            if (sbis > 0.0_sp) then
                 xdelta = delta
             else
                 xdelta = -delta
@@ -1430,40 +1615,35 @@
             xcur = xcur + xdelta
         end if
 
-        fcur = me%f(xcur)
-        if (abs(fcur) <= me%ftol) exit ! converged
-        if (i == me%maxiter) iflag = -2 ! max iterations reached
+        fcur = fx(xcur)
+        if (abs(fcur) <= ftol4) exit ! converged
+        if (i == maxiter) iflag = -2 ! max iterations reached
 
     end do
 
     xzero = xcur
     fzero = fcur
 
-    end subroutine brenth
-!*****************************************************************************************
+  end subroutine brenth_r4
 
-!*****************************************************************************************
-!>
-!  Classic Brent's method to find a zero of the function f on the sign
-!  changing interval [ax, bx], but with a different formula for the extrapolation step.
-!
-!### Reference
-!  * SciPy brentq.c
 
-    subroutine brentq(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine brenth_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes forceinline :: brenth_r4
+      !dir$ attributes code_align : 32 :: brenth_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: brenth_r4
     implicit none
 
-    class(brentq_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
+    real(dp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
                 scur,sbis,delta,stry,dpre,dblk,xdelta
     integer :: i !! iteration counter
 
@@ -1473,9 +1653,9 @@
     fpre = fax
     fcur = fbx
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
-        if (fpre*fcur < 0.0_wp) then
+        if (fpre*fcur < 0.0_dp) then
             xblk = xpre
             fblk = fpre
             scur = xcur - xpre
@@ -1490,9 +1670,9 @@
             fblk = fpre
         end if
 
-        delta = (me%atol + me%rtol*abs(xcur))/2.0_wp
-        sbis = (xblk - xcur)/2.0_wp
-        if (abs(fcur) <= me%ftol .or. abs(sbis) < delta) exit ! converged
+        delta = (atol8 + rtol8*abs(xcur))*0.5_dp
+        sbis = (xblk - xcur)*0.5_dp
+        if (abs(fcur) <= ftol4 .or. abs(sbis) < delta) exit ! converged
 
         if (abs(spre) > delta .and. abs(fcur) < abs(fpre)) then
             if (xpre == xblk) then
@@ -1502,10 +1682,10 @@
                 ! extrapolate
                 dpre = (fpre - fcur)/(xpre - xcur)
                 dblk = (fblk - fcur)/(xblk - xcur)
-                stry = -fcur*(fblk*dblk - fpre*dpre)/(dblk*dpre*(fblk - fpre))  ! only difference from brenth
+                stry = -fcur*(fblk - fpre)/(fblk*dpre - fpre*dblk)  ! only difference from brentq
             end if
 
-            if (2.0_wp*abs(stry) < min(abs(spre), 3.0_wp*abs(sbis) - delta)) then
+            if (2.0_dp*abs(stry) < min(abs(spre), 3.0_dp*abs(sbis) - delta)) then
                 ! accept step
                 spre = scur
                 scur = stry
@@ -1525,7 +1705,7 @@
         if (abs(scur) > delta) then
             xcur = xcur + scur
         else
-            if (sbis > 0.0_wp) then
+            if (sbis > 0.0_dp) then
                 xdelta = delta
             else
                 xdelta = -delta
@@ -1533,16 +1713,222 @@
             xcur = xcur + xdelta
         end if
 
-        fcur = me%f(xcur)
-        if (abs(fcur) <= me%ftol) exit ! converged
-        if (i == me%maxiter) iflag = -2 ! max iterations reached
+        fcur = fx(xcur)
+        if (abs(fcur) <= ftol8) exit ! converged
+        if (i == maxiter) iflag = -2 ! max iterations reached
 
     end do
 
     xzero = xcur
     fzero = fcur
 
-    end subroutine brentq
+  end subroutine brenth_r8
+
+  
+!*****************************************************************************************
+
+!*****************************************************************************************
+!>
+!  Classic Brent's method to find a zero of the function f on the sign
+!  changing interval [ax, bx], but with a different formula for the extrapolation step.
+!
+!### Reference
+!  * SciPy brentq.c
+
+    subroutine brentq_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: brentq_r4
+      !dir$ attributes code_align : 32 :: brentq_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: brentq_r4
+    implicit none
+
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(sp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
+                scur,sbis,delta,stry,dpre,dblk,xdelta
+    integer :: i !! iteration counter
+
+    iflag = 0
+    xpre = ax
+    xcur = bx
+    fpre = fax
+    fcur = fbx
+
+    do i = 1, maxiter
+
+        if (fpre*fcur < 0.0_sp) then
+            xblk = xpre
+            fblk = fpre
+            scur = xcur - xpre
+            spre = scur
+        end if
+        if (abs(fblk) < abs(fcur)) then
+            xpre = xcur
+            xcur = xblk
+            xblk = xpre
+            fpre = fcur
+            fcur = fblk
+            fblk = fpre
+        end if
+
+        delta = (atol4 + rtol4*abs(xcur))*0.5_sp
+        sbis = (xblk - xcur)*0.5_sp
+        if (abs(fcur) <= ftol4 .or. abs(sbis) < delta) exit ! converged
+
+        if (abs(spre) > delta .and. abs(fcur) < abs(fpre)) then
+            if (xpre == xblk) then
+                ! interpolate
+                stry = -fcur*(xcur - xpre)/(fcur - fpre)
+            else
+                ! extrapolate
+                dpre = (fpre - fcur)/(xpre - xcur)
+                dblk = (fblk - fcur)/(xblk - xcur)
+                stry = -fcur*(fblk*dblk - fpre*dpre)/(dblk*dpre*(fblk - fpre))  ! only difference from brenth
+            end if
+
+            if (2.0_sp*abs(stry) < min(abs(spre), 3.0_sp*abs(sbis) - delta)) then
+                ! accept step
+                spre = scur
+                scur = stry
+            else
+                ! bisect
+                spre = sbis
+                scur = sbis
+            end if
+        else
+            ! bisect
+            spre = sbis
+            scur = sbis
+        end if
+
+        xpre = xcur
+        fpre = fcur
+        if (abs(scur) > delta) then
+            xcur = xcur + scur
+        else
+            if (sbis > 0.0_sp) then
+                xdelta = delta
+            else
+                xdelta = -delta
+            end if
+            xcur = xcur + xdelta
+        end if
+
+        fcur = fx(xcur)
+        if (abs(fcur) <= ftol4) exit ! converged
+        if (i == maxiter) iflag = -2 ! max iterations reached
+
+    end do
+
+    xzero = xcur
+    fzero = fcur
+
+  end subroutine brentq_r4
+
+
+    subroutine brentq_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: brentq_r8
+      !dir$ attributes code_align : 32 :: brentq_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: brentq_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: xpre,xcur,xblk,fpre,fcur,fblk,spre,&
+                scur,sbis,delta,stry,dpre,dblk,xdelta
+    integer :: i !! iteration counter
+
+    iflag = 0
+    xpre = ax
+    xcur = bx
+    fpre = fax
+    fcur = fbx
+
+    do i = 1, maxiter
+
+        if (fpre*fcur < 0.0_dp) then
+            xblk = xpre
+            fblk = fpre
+            scur = xcur - xpre
+            spre = scur
+        end if
+        if (abs(fblk) < abs(fcur)) then
+            xpre = xcur
+            xcur = xblk
+            xblk = xpre
+            fpre = fcur
+            fcur = fblk
+            fblk = fpre
+        end if
+
+        delta = (atol8 + rtol8*abs(xcur))*0.5_dp
+        sbis = (xblk - xcur)*0.5_dp
+        if (abs(fcur) <= ftol4 .or. abs(sbis) < delta) exit ! converged
+
+        if (abs(spre) > delta .and. abs(fcur) < abs(fpre)) then
+            if (xpre == xblk) then
+                ! interpolate
+                stry = -fcur*(xcur - xpre)/(fcur - fpre)
+            else
+                ! extrapolate
+                dpre = (fpre - fcur)/(xpre - xcur)
+                dblk = (fblk - fcur)/(xblk - xcur)
+                stry = -fcur*(fblk*dblk - fpre*dpre)/(dblk*dpre*(fblk - fpre))  ! only difference from brenth
+            end if
+
+            if (2.0_dp*abs(stry) < min(abs(spre), 3.0_dp*abs(sbis) - delta)) then
+                ! accept step
+                spre = scur
+                scur = stry
+            else
+                ! bisect
+                spre = sbis
+                scur = sbis
+            end if
+        else
+            ! bisect
+            spre = sbis
+            scur = sbis
+        end if
+
+        xpre = xcur
+        fpre = fcur
+        if (abs(scur) > delta) then
+            xcur = xcur + scur
+        else
+            if (sbis > 0.0_dp) then
+                xdelta = delta
+            else
+                xdelta = -delta
+            end if
+            xcur = xcur + xdelta
+        end if
+
+        fcur = fx(xcur)
+        if (abs(fcur) <= ftol8) exit ! converged
+        if (i == maxiter) iflag = -2 ! max iterations reached
+
+    end do
+
+    xzero = xcur
+    fzero = fcur
+
+    end subroutine brentq_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
