@@ -1943,20 +1943,23 @@
 !    Section 6.1.7.3. [this routine was coded from that description]
 !  * Python version: https://www.embeddedrelated.com/showarticle/855.php
 
-    subroutine chandrupatla(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine chandrupatla_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+          !dir$ attributes forceinline :: chandrupatla_r4
+      !dir$ attributes code_align : 32 :: chandrupatla_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: chandrupatla_r4
     implicit none
 
-    class(chandrupatla_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: dx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: a,b,c,fa,fb,fc,t,xt,ft,tol,tl,xi,phi,xm,fm
+    real(sp) :: a,b,c,fa,fb,fc,t,xt,ft,tol,tl,xi,phi,xm,fm
     integer :: i !! iteration counter
 
     ! initialization:
@@ -1967,16 +1970,16 @@
     fa = fbx
     fb = fax
     fc = fb
-    t  = 0.5_wp
+    t  = 0.5_sp
 
     ! main loop:
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
         xt = a + t*(b-a)
-        ft = me%f(xt)
-        if (solution(xt,ft,me%ftol,xzero,fzero)) return
+        ft = fx(xt)
+        if (solution_r4(xt,ft,ftol4,xzero,fzero)) return
 
-        if (ft*fa>0.0_wp) then
+        if (ft*fa>0.0_sp) then
             c = a
             fc = fa
         else
@@ -1996,33 +1999,118 @@
             fm = fa
         end if
 
-        if (i == me%maxiter) then
+        if (i == maxiter) then
             iflag = -2 ! max iterations reached
             exit
         end if
 
-        tol = 2.0_wp*me%rtol*abs(xm) + me%atol
+        tol = 2.0_sp*rtol4*abs(xm) + atol4
         tl = tol/abs(b-c)
-        if (tl > 0.5_wp) exit
-        t = 0.5_wp ! use bisection unless we can use inverse quadratic below
+        if (tl > 0.5_sp) exit
+        t = 0.5_sp ! use bisection unless we can use inverse quadratic below
 
         if (fa/=fb .and. fb/=fc) then
             xi  = (a-b)/(c-b)
             phi = (fa-fb)/(fc-fb)
-            if (1.0_wp - sqrt(1.0_wp - xi) < phi .and. phi < sqrt(xi)) then
+            if (1.0_sp - sqrt(1.0_sp - xi) < phi .and. phi < sqrt(xi)) then
                 ! inverse quadratic interpolation
                 t = (fa/(fb-fa)) * (fc/(fb-fc)) + ((c-a)/(b-a)) * (fa/(fc-fa)) * (fb/(fc-fb))
             end if
         end if
 
-        t = min(1.0_wp-tl, max(tl, t))
+        t = min(1.0_sp-tl, max(tl, t))
 
     end do
 
     xzero = xm
     fzero = fm
 
-    end subroutine chandrupatla
+  end subroutine chandrupatla_r4
+
+  subroutine chandrupatla_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: chandrupatla_r8
+      !dir$ attributes code_align : 32 :: chandrupatla_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: chandrupatla_r8
+    implicit none
+
+    procedure(func_r8)   :: dx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: a,b,c,fa,fb,fc,t,xt,ft,tol,tl,xi,phi,xm,fm
+    integer :: i !! iteration counter
+
+    ! initialization:
+    iflag = 0
+    b  = ax
+    a  = bx
+    c  = bx
+    fa = fbx
+    fb = fax
+    fc = fb
+    t  = 0.5_dp
+
+    ! main loop:
+    do i = 1, maxiter
+
+        xt = a + t*(b-a)
+        ft = fx(xt)
+        if (solution_r8(xt,ft,ftol4,xzero,fzero)) return
+
+        if (ft*fa>0.0_dp) then
+            c = a
+            fc = fa
+        else
+            c = b
+            b = a
+            fc = fb
+            fb = fa
+        end if
+        a = xt
+        fa = ft
+
+        if (abs(fb) < abs(fa)) then
+            xm = b
+            fm = fb
+        else
+            xm = a
+            fm = fa
+        end if
+
+        if (i == maxiter) then
+            iflag = -2 ! max iterations reached
+            exit
+        end if
+
+        tol = 2.0_dp*rtol8*abs(xm) + atol8
+        tl = tol/abs(b-c)
+        if (tl > 0.5_dp) exit
+        t = 0.5_dp ! use bisection unless we can use inverse quadratic below
+
+        if (fa/=fb .and. fb/=fc) then
+            xi  = (a-b)/(c-b)
+            phi = (fa-fb)/(fc-fb)
+            if (1.0_dp - sqrt(1.0_sp - xi) < phi .and. phi < sqrt(xi)) then
+                ! inverse quadratic interpolation
+                t = (fa/(fb-fa)) * (fc/(fb-fc)) + ((c-a)/(b-a)) * (fa/(fc-fa)) * (fb/(fc-fb))
+            end if
+        end if
+
+        t = min(1.0_dp-tl, max(tl, t))
+
+    end do
+
+    xzero = xm
+    fzero = fm
+
+  end subroutine chandrupatla_r8
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2047,22 +2135,25 @@
 !    ACM Transactions on Mathematical Software,
 !    Vol. 21. No. 3. September 1995. Pages 327-344.
 
-    subroutine toms748(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine toms748_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+               
+      !dir$ attributes code_align : 32 :: toms748_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: toms748_r4
     implicit none
 
-    class(toms748_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
     integer  :: itnum
-    real(wp) :: a,b,fa,fb,c,u,fu,a0,b0,tol,d,fd
-    real(wp) :: prof,e,fe,tmpc
+    real(sp) :: a,b,fa,fb,c,u,fu,a0,b0,tol,d,fd
+    real(sp) :: prof,e,fe,tmpc
 
     a = ax
     b = bx
@@ -2071,12 +2162,12 @@
 
     ! initialization. set the number of iteration as 0.
     ! set dumb values for the variables "e" and "fe".
-    e  = huge(1.0_wp)
-    fe = huge(1.0_wp)
+    e  = huge(1.0_sp)
+    fe = huge(1.0_sp)
 
     ! iteration starts. the enclosing interval before executing the
     ! iteration is recorded as [a0, b0].
-    do itnum = 1, me%maxiter
+    do itnum = 1, maxiter
 
         a0 = a
         b0 = b
@@ -2099,7 +2190,7 @@
             ! well as to update the termination criterion. stop the procedure
             ! if the criterion is satisfied or the exact solution is obtained.
             call bracket(a,b,c,fa,fb,tol,d,fd)
-            if ((abs(fa)<=me%ftol) .or. ((b-a)<=tol)) exit
+            if ((abs(fa)<=ftol4) .or. ((b-a)<=tol)) exit
 
             cycle
 
@@ -2112,11 +2203,11 @@
         ! four function values "fa", "fb", "fd", and "fe" are distinct, and
         ! hence "pzero" will be called.
         prof=(fa-fb)*(fa-fd)*(fa-fe)*(fb-fd)*(fb-fe)*(fd-fe)
-        if ((itnum == 2) .or. (prof == 0.0_wp)) then
+        if ((itnum == 2) .or. (prof == 0.0_sp)) then
             call newqua(a,b,d,fa,fb,fd,c,2)
         else
             c = pzero(a,b,d,e,fa,fb,fd,fe)
-            if ((c-a)*(c-b) >= 0.0_wp) then
+            if ((c-a)*(c-b) >= 0.0_sp) then
                 call newqua(a,b,d,fa,fb,fd,c,2)
             end if
         end if
@@ -2127,9 +2218,9 @@
         ! well as to update the termination criterion. stop the procedure
         ! if the criterion is satisfied or the exact solution is obtained.
         call bracket(a,b,c,fa,fb,tol,d,fd)
-        if ((abs(fa)<=me%ftol) .or. ((b-a)<=tol)) exit
+        if ((abs(fa)<=ftol4) .or. ((b-a)<=tol)) exit
         prof=(fa-fb)*(fa-fd)*(fa-fe)*(fb-fd)*(fb-fe)*(fd-fe)
-        if (prof == 0.0_wp) then
+        if (prof == 0.0_sp) then
             call newqua(a,b,d,fa,fb,fd,c,3)
         else
             c = pzero(a,b,d,e,fa,fb,fd,fe)
@@ -2142,7 +2233,7 @@
         ! well as to update the termination criterion. stop the procedure
         ! if the criterion is satisfied or the exact solution is obtained.
         call bracket(a,b,c,fa,fb,tol,d,fd)
-        if ((abs(fa)<=me%ftol) .or. ((b-a)<=tol)) exit
+        if ((abs(fa)<=ftol4) .or. ((b-a)<=tol)) exit
         e=d
         fe=fd
 
@@ -2154,31 +2245,31 @@
             u=b
             fu=fb
         end if
-        c=u-2.0_wp*(fu/(fb-fa))*(b-a)
-        if (abs(c-u) > (0.5_wp*(b-a))) then
-            c=a+0.5_wp*(b-a)
+        c=u-2.0_sp*(fu/(fb-fa))*(b-a)
+        if (abs(c-u) > (0.5_sp*(b-a))) then
+            c=a+0.5_sp*(b-a)
         end if
 
         ! call subroutine bracket to get a shrinked enclosing interval as
         ! well as to update the termination criterion. stop the procedure
         ! if the criterion is satisfied or the exact solution is obtained.
         call bracket(a,b,c,fa,fb,tol,d,fd)
-        if ((abs(fa)<=me%ftol) .or. ((b-a)<=tol)) exit
+        if ((abs(fa)<=ftol4) .or. ((b-a)<=tol)) exit
 
         ! determines whether an additional bisection step is needed. and takes
         ! it if necessary.
-        if ((b-a) < (0.5_wp*(b0-a0))) cycle
+        if ((b-a) < (0.5_sp*(b0-a0))) cycle
         e=d
         fe=fd
 
         ! call subroutine "bracket" to get a shrinked enclosing interval as
         ! well as to update the termination criterion. stop the procedure
         ! if the criterion is satisfied or the exact solution is obtained.
-        tmpc = a+0.5_wp*(b-a)
+        tmpc = a+0.5_sp*(b-a)
         call bracket(a,b,tmpc,fa,fb,tol,d,fd)
-        if ((abs(fa)<=me%ftol) .or. ((b-a)<=tol)) exit
+        if ((abs(fa)<=ftol4) .or. ((b-a)<=tol)) exit
 
-        if (itnum == me%maxiter) iflag = -2    ! maximum iterations reached
+        if (itnum == maxiter) iflag = -2    ! maximum iterations reached
 
     end do
 
@@ -2199,28 +2290,28 @@
 
     implicit none
 
-    real(wp),intent(inout)  :: a    !! input as the current left point of the
+    real(sp),intent(inout)  :: a    !! input as the current left point of the
+                                   !! enclosing interval and output as the shrinked
+                                    !! new enclosing interval
+    real(sp),intent(inout)  :: b    !! input as the current right point of the
                                     !! enclosing interval and output as the shrinked
                                     !! new enclosing interval
-    real(wp),intent(inout)  :: b    !! input as the current right point of the
-                                    !! enclosing interval and output as the shrinked
-                                    !! new enclosing interval
-    real(wp),intent(inout)  :: c    !! used to determine the new enclosing interval
-    real(wp),intent(inout)  :: fa   !! f(a)
-    real(wp),intent(inout)  :: fb   !! f(b)
-    real(wp),intent(inout)  :: tol  !! input as the current termination
+    real(sp),intent(inout)  :: c    !! used to determine the new enclosing interval
+    real(sp),intent(inout)  :: fa   !! f(a)
+    real(sp),intent(inout)  :: fb   !! f(b)
+    real(sp),intent(inout)  :: tol  !! input as the current termination
                                     !! criterion and output as the updated termination
                                     !! criterion according to the new enclosing interval
-    real(wp),intent(out)    :: d    !! if the new enclosing interval
+    real(sp),intent(out)    :: d    !! if the new enclosing interval
                                     !! is [a,c] then d=b, otherwise d=a;
-    real(wp),intent(out)    :: fd   !! f(d)
+    real(sp),intent(out)    :: fd   !! f(d)
 
-    real(wp) :: fc
+    real(sp) :: fc
 
     ! adjust c if (b-a) is very small or if c is very close to a or b.
-    tol = 0.7_wp*tol
-    if ((b-a) <= 2.0_wp*tol) then
-        c = a+0.5_wp*(b-a)
+    tol = 0.7_sp*tol
+    if ((b-a) <= 2.0_sp*tol) then
+        c = a+0.5_sp*(b-a)
     else if (c <= a+tol) then
         c = a+tol
     else
@@ -2228,16 +2319,16 @@
     end if
 
     ! call subroutine to obtain f(c)
-    fc = me%f(c)
+    fc = fx(c)
 
     ! if c is a root, then set a=c and return. this will terminate the
     ! procedure in the calling routine.
-    if (abs(fc) <= me%ftol) then
+    if (abs(fc) <= ftol4) then
 
         a   = c
         fa  = fc
-        d   = 0.0_wp
-        fd  = 0.0_wp
+        d   = 0.0_sp
+        fd  = 0.0_sp
 
     else
 
@@ -2274,11 +2365,11 @@
     implicit none
 
     integer :: i
-    real(wp),intent(in) :: x
+    real(sp),intent(in) :: x
 
-    if (x > 0.0_wp) then
+    if (x > 0.0_sp) then
         i = 1
-    else if (x == 0.0_wp) then
+    else if (x == 0.0_sp) then
         i = 0
     else
         i = -1
@@ -2294,10 +2385,10 @@
 
     implicit none
 
-    real(wp),intent(in) :: b
-    real(wp) :: tol  !! termination criterion: 2*(2*rtol*|b| + atol)
+    real(sp),intent(in) :: b
+    real(sp) :: tol  !! termination criterion: 2*(2*rtol*|b| + atol)
 
-    tol = 2.0_wp * (me%atol + 2.0_wp*abs(b)*me%rtol)
+    tol = 2.0_sp * (atol4 + 2.0_sp*abs(b)*rtol4)
 
     end function get_tolerance
     !************************************************************************
@@ -2311,18 +2402,18 @@
 
     implicit none
 
-    real(wp),intent(in)  :: a
-    real(wp),intent(in)  :: b
-    real(wp),intent(in)  :: d  !! d lies outside the interval [a,b]
-    real(wp),intent(in)  :: fa !! f(a), f(a)f(b)<0
-    real(wp),intent(in)  :: fb !! f(b), f(a)f(b)<0
-    real(wp),intent(in)  :: fd !! f(d)
-    real(wp),intent(out) :: c  !! the approximate zero
+    real(sp),intent(in)  :: a
+    real(sp),intent(in)  :: b
+    real(sp),intent(in)  :: d  !! d lies outside the interval [a,b]
+    real(sp),intent(in)  :: fa !! f(a), f(a)f(b)<0
+    real(sp),intent(in)  :: fb !! f(b), f(a)f(b)<0
+    real(sp),intent(in)  :: fd !! f(d)
+    real(sp),intent(out) :: c  !! the approximate zero
                                !! in (a,b) of the quadratic polynomial.
     integer,intent(in)   :: k  !! number of newton steps to take.
 
     integer  :: ierror,i
-    real(wp) :: a0,a1,a2,pc,pdc
+    real(sp) :: a0,a1,a2,pc,pdc
 
     ! initialization
     ! find the coefficients of the quadratic polynomial
@@ -2334,7 +2425,7 @@
     do    ! main loop
 
         ! safeguard to avoid overflow
-        if ((a2 == 0.0_wp) .or. (ierror == 1)) then
+        if ((a2 == 0.0_sp) .or. (ierror == 1)) then
             c=a-a0/a1
             return
         end if
@@ -2350,7 +2441,7 @@
         do i=1,k
             if (ierror == 0) then
                 pc=a0+(a1+a2*(c-b))*(c-a)
-                pdc=a1+a2*((2.0_wp*c)-(a+b))
+                pdc=a1+a2*((2.0_sp*c)-(a+b))
                 if (pdc == 0.0_wp) then
                     ierror=1
                 else
@@ -2376,10 +2467,10 @@
 
     implicit none
 
-    real(wp),intent(in) :: a,b,d,e,fa,fb,fd,fe
-    real(wp) :: c
+    real(sp),intent(in) :: a,b,d,e,fa,fb,fd,fe
+    real(sp) :: c
 
-    real(wp) :: q11,q21,q31,d21,d31,q22,q32,d32,q33
+    real(sp) :: q11,q21,q31,d21,d31,q22,q32,d32,q33
 
     q11 = (d-e)*fd/(fe-fd)
     q21 = (b-d)*fb/(fd-fb)
@@ -2397,7 +2488,363 @@
     end function pzero
     !************************************************************************
 
-    end subroutine toms748
+  end subroutine toms748_r4
+
+
+    subroutine toms748_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+               
+      !dir$ attributes code_align : 32 :: toms748_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: toms748_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    integer  :: itnum
+    real(dp) :: a,b,fa,fb,c,u,fu,a0,b0,tol,d,fd
+    real(dp) :: prof,e,fe,tmpc
+
+    a = ax
+    b = bx
+    fa = fax
+    fb = fbx
+
+    ! initialization. set the number of iteration as 0.
+    ! set dumb values for the variables "e" and "fe".
+    e  = huge(1.0_dp)
+    fe = huge(1.0_dp)
+
+    ! iteration starts. the enclosing interval before executing the
+    ! iteration is recorded as [a0, b0].
+    do itnum = 1, maxiter
+
+        a0 = a
+        b0 = b
+
+        ! calculates the termination criterion. stops the procedure if the
+        ! criterion is satisfied.
+        if (abs(fb) <= abs(fa)) then
+            tol = get_tolerance(b)
+        else
+            tol = get_tolerance(a)
+        end if
+        if ((b-a)<=tol) exit
+
+        ! for the first iteration, secant step is taken.
+        if (itnum == 1) then
+
+            c=a-(fa/(fb-fa))*(b-a)
+
+            ! call subroutine "bracket" to get a shrinked enclosing interval as
+            ! well as to update the termination criterion. stop the procedure
+            ! if the criterion is satisfied or the exact solution is obtained.
+            call bracket(a,b,c,fa,fb,tol,d,fd)
+            if ((abs(fa)<=ftol8) .or. ((b-a)<=tol)) exit
+
+            cycle
+
+        end if
+
+        ! starting with the second iteration, in the first two steps, either
+        ! quadratic interpolation is used by calling the subroutine "newqua"
+        ! or the cubic inverse interpolation is used by calling the subroutine
+        ! "pzero". in the following, if "prof" is not equal to 0, then the
+        ! four function values "fa", "fb", "fd", and "fe" are distinct, and
+        ! hence "pzero" will be called.
+        prof=(fa-fb)*(fa-fd)*(fa-fe)*(fb-fd)*(fb-fe)*(fd-fe)
+        if ((itnum == 2) .or. (prof == 0.0_dp)) then
+            call newqua(a,b,d,fa,fb,fd,c,2)
+        else
+            c = pzero(a,b,d,e,fa,fb,fd,fe)
+            if ((c-a)*(c-b) >= 0.0_dp) then
+                call newqua(a,b,d,fa,fb,fd,c,2)
+            end if
+        end if
+        e=d
+        fe=fd
+
+        ! call subroutine "bracket" to get a shrinked enclosing interval as
+        ! well as to update the termination criterion. stop the procedure
+        ! if the criterion is satisfied or the exact solution is obtained.
+        call bracket(a,b,c,fa,fb,tol,d,fd)
+        if ((abs(fa)<=ftol8) .or. ((b-a)<=tol)) exit
+        prof=(fa-fb)*(fa-fd)*(fa-fe)*(fb-fd)*(fb-fe)*(fd-fe)
+        if (prof == 0.0_dp) then
+            call newqua(a,b,d,fa,fb,fd,c,3)
+        else
+            c = pzero(a,b,d,e,fa,fb,fd,fe)
+            if ((c-a)*(c-b) >= 0.0_wp) then
+                call newqua(a,b,d,fa,fb,fd,c,3)
+            end if
+        end if
+
+        ! call subroutine "bracket" to get a shrinked enclosing interval as
+        ! well as to update the termination criterion. stop the procedure
+        ! if the criterion is satisfied or the exact solution is obtained.
+        call bracket(a,b,c,fa,fb,tol,d,fd)
+        if ((abs(fa)<=ftol8) .or. ((b-a)<=tol)) exit
+        e=d
+        fe=fd
+
+        ! takes the double-size secant step.
+        if (abs(fa) < abs(fb)) then
+            u=a
+            fu=fa
+        else
+            u=b
+            fu=fb
+        end if
+        c=u-2.0_dp*(fu/(fb-fa))*(b-a)
+        if (abs(c-u) > (0.5_dp*(b-a))) then
+            c=a+0.5_dp*(b-a)
+        end if
+
+        ! call subroutine bracket to get a shrinked enclosing interval as
+        ! well as to update the termination criterion. stop the procedure
+        ! if the criterion is satisfied or the exact solution is obtained.
+        call bracket(a,b,c,fa,fb,tol,d,fd)
+        if ((abs(fa)<=ftol8) .or. ((b-a)<=tol)) exit
+
+        ! determines whether an additional bisection step is needed. and takes
+        ! it if necessary.
+        if ((b-a) < (0.5_dp*(b0-a0))) cycle
+        e=d
+        fe=fd
+
+        ! call subroutine "bracket" to get a shrinked enclosing interval as
+        ! well as to update the termination criterion. stop the procedure
+        ! if the criterion is satisfied or the exact solution is obtained.
+        tmpc = a+0.5_dp*(b-a)
+        call bracket(a,b,tmpc,fa,fb,tol,d,fd)
+        if ((abs(fa)<=ftol8) .or. ((b-a)<=tol)) exit
+
+        if (itnum == maxiter) iflag = -2    ! maximum iterations reached
+
+    end do
+
+    !return result:
+    xzero = a
+    fzero = fa
+
+    contains
+!**********************************************************************************
+
+    !************************************************************************
+    subroutine bracket(a,b,c,fa,fb,tol,d,fd)
+
+    !!  Given current enclosing interval [a,b] and a number c in (a,b), if
+    !!  f(c)=0 then sets the output a=c. Otherwise determines the new
+    !!  enclosing interval: [a,b]=[a,c] or [a,b]=[c,b]. Also updates the
+    !!  termination criterion corresponding to the new enclosing interval.
+
+    implicit none
+
+    real(dp),intent(inout)  :: a    !! input as the current left point of the
+                                   !! enclosing interval and output as the shrinked
+                                    !! new enclosing interval
+    real(dp),intent(inout)  :: b    !! input as the current right point of the
+                                    !! enclosing interval and output as the shrinked
+                                    !! new enclosing interval
+    real(dp),intent(inout)  :: c    !! used to determine the new enclosing interval
+    real(dp),intent(inout)  :: fa   !! f(a)
+    real(dp),intent(inout)  :: fb   !! f(b)
+    real(dp),intent(inout)  :: tol  !! input as the current termination
+                                    !! criterion and output as the updated termination
+                                    !! criterion according to the new enclosing interval
+    real(dp),intent(out)    :: d    !! if the new enclosing interval
+                                    !! is [a,c] then d=b, otherwise d=a;
+    real(dp),intent(out)    :: fd   !! f(d)
+
+    real(dp) :: fc
+
+    ! adjust c if (b-a) is very small or if c is very close to a or b.
+    tol = 0.7_dp*tol
+    if ((b-a) <= 2.0_dp*tol) then
+        c = a+0.5_dp*(b-a)
+    else if (c <= a+tol) then
+        c = a+tol
+    else
+        if (c >= b-tol) c = b-tol
+    end if
+
+    ! call subroutine to obtain f(c)
+    fc = fx(c)
+
+    ! if c is a root, then set a=c and return. this will terminate the
+    ! procedure in the calling routine.
+    if (abs(fc) <= ftol8) then
+
+        a   = c
+        fa  = fc
+        d   = 0.0_dp
+        fd  = 0.0_dp
+
+    else
+
+        ! if c is not a root, then determine the new enclosing interval.
+        if ((isign(fa)*isign(fc)) < 0) then
+            d   = b
+            fd  = fb
+            b   = c
+            fb  = fc
+        else
+            d   = a
+            fd  = fa
+            a   = c
+            fa  = fc
+        end if
+
+        ! update the termination criterion according to the new enclosing interval.
+        if (abs(fb) <= abs(fa)) then
+            tol = get_tolerance(b)
+        else
+            tol = get_tolerance(a)
+        end if
+
+    end if
+
+    end subroutine bracket
+    !************************************************************************
+
+    !************************************************************************
+    pure function isign(x) result(i)
+
+    !! sign of the variable `x` (note: return `0` if `x=0`)
+
+    implicit none
+
+    integer :: i
+    real(dp),intent(in) :: x
+
+    if (x > 0.0_dp) then
+        i = 1
+    else if (x == 0.0_dp) then
+        i = 0
+    else
+        i = -1
+    end if
+
+    end function isign
+    !************************************************************************
+
+    !************************************************************************
+    pure function get_tolerance(b) result(tol)
+
+    !! determines the termination criterion.
+
+    implicit none
+
+    real(dp),intent(in) :: b
+    real(dp) :: tol  !! termination criterion: 2*(2*rtol*|b| + atol)
+
+    tol = 2.0_dp * (atol8 + 2.0_dp*abs(b)*rtol8)
+
+    end function get_tolerance
+    !************************************************************************
+
+    !************************************************************************
+    pure subroutine newqua(a,b,d,fa,fb,fd,c,k)
+
+    !! uses k newton steps to approximate the zero in (a,b) of the
+    !! quadratic polynomial interpolating f(x) at a, b, and d.
+    !! safeguard is used to avoid overflow.
+
+    implicit none
+
+    real(dp),intent(in)  :: a
+    real(dp),intent(in)  :: b
+    real(dp),intent(in)  :: d  !! d lies outside the interval [a,b]
+    real(dp),intent(in)  :: fa !! f(a), f(a)f(b)<0
+    real(dp),intent(in)  :: fb !! f(b), f(a)f(b)<0
+    real(dp),intent(in)  :: fd !! f(d)
+    real(dp),intent(out) :: c  !! the approximate zero
+                               !! in (a,b) of the quadratic polynomial.
+    integer,intent(in)   :: k  !! number of newton steps to take.
+
+    integer  :: ierror,i
+    real(dp) :: a0,a1,a2,pc,pdc
+
+    ! initialization
+    ! find the coefficients of the quadratic polynomial
+    ierror = 0
+    a0 = fa
+    a1 = (fb-fa)/(b-a)
+    a2 = ((fd-fb)/(d-b)-a1)/(d-a)
+
+    do    ! main loop
+
+        ! safeguard to avoid overflow
+        if ((a2 == 0.0_dp) .or. (ierror == 1)) then
+            c=a-a0/a1
+            return
+        end if
+
+        ! determine the starting point of newton steps
+        if (isign(a2)*isign(fa) > 0) then
+            c=a
+        else
+            c=b
+        end if
+
+        ! start the safeguarded newton steps
+        do i=1,k
+            if (ierror == 0) then
+                pc=a0+(a1+a2*(c-b))*(c-a)
+                pdc=a1+a2*((2.0_dp*c)-(a+b))
+                if (pdc == 0.0_dp) then
+                    ierror=1
+                else
+                    c=c-pc/pdc
+                end if
+            end if
+        end do
+        if (ierror/=1) exit
+
+    end do
+
+    end subroutine newqua
+    !************************************************************************
+
+    !************************************************************************
+    pure function pzero(a,b,d,e,fa,fb,fd,fe) result(c)
+
+    !! uses cubic inverse interpolation of f(x) at a, b, d, and e to
+    !! get an approximate root of f(x). this procedure is a slight
+    !! modification of aitken-neville algorithm for interpolation
+    !! described by stoer and bulirsch in "Intro. to numerical analysis"
+    !! springer-verlag. new york (1980).
+
+    implicit none
+
+    real(dp),intent(in) :: a,b,d,e,fa,fb,fd,fe
+    real(dp) :: c
+
+    real(dp) :: q11,q21,q31,d21,d31,q22,q32,d32,q33
+
+    q11 = (d-e)*fd/(fe-fd)
+    q21 = (b-d)*fb/(fd-fb)
+    q31 = (a-b)*fa/(fb-fa)
+    d21 = (b-d)*fd/(fd-fb)
+    d31 = (a-b)*fb/(fb-fa)
+
+    q22 = (d21-q11)*fb/(fe-fb)
+    q32 = (d31-q21)*fa/(fd-fa)
+    d32 = (d31-q21)*fd/(fd-fa)
+    q33 = (d32-q22)*fa/(fe-fa)
+
+    c = a + q31+q32+q33
+
+    end function pzero
+    !************************************************************************
+
+    end subroutine toms748_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2412,20 +2859,23 @@
 !    International Journal of Experimental Algorithms (IJEA), Volume (4) : Issue (1) : 2013.
 !    https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.740.923&rep=rep1&type=pdf
 
-    subroutine zhang(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine zhang_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: zhang_r4
+      !dir$ attributes code_align : 32 :: zhang_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: zhang_r4
     implicit none
 
-    class(zhang_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: a,b,c,fa,fb,fc,s,fs
+    real(sp) :: a,b,c,fa,fb,fc,s,fs
     integer :: i !! iteration counter
 
     iflag = 0
@@ -2434,11 +2884,11 @@
     fa = fax
     fb = fbx
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
-        c = bisect(a,b)
-        fc = me%f(c)
-        if (solution(c,fc,me%ftol,xzero,fzero)) return
+        c = bisect_r4(a,b)
+        fc = fx(c)
+        if (solution_r4(c,fc,ftol4,xzero,fzero)) return
 
         if (fa/=fc .and. fb/=fc) then
             ! inverse quadratic interpolation
@@ -2446,8 +2896,8 @@
                 b*fa*fc/((fb-fa)*(fb-fc)) + &
                 c*fa*fb/((fc-fa)*(fc-fb))
             if (a<s .and. s<b) then
-                fs = me%f(s)
-                if (abs(fs)<=me%ftol) then
+                fs = fx(s)
+                if (abs(fs)<=ftol4) then
                     xzero = s
                     fzero = fs
                     return
@@ -2459,27 +2909,27 @@
             end if
         else
             ! secant
-            if (fa*fc<0.0_wp) then ! root in [a,c]
-                s = secant(a,c,fa,fc,ax,bx)
+            if (fa*fc<0.0_sp) then ! root in [a,c]
+                s = secant_r4(a,c,fa,fc,ax,bx)
             else ! root in [c,b]
-                s = secant(c,b,fc,fb,ax,bx)
+                s = secant_r4(c,b,fc,fb,ax,bx)
             end if
-            fs = me%f(s)
-            if (solution(s,fs,me%ftol,xzero,fzero)) return
+            fs = fx(s)
+            if (solution_r4(s,fs,ftol4,xzero,fzero)) return
         end if
 
         if (c>s) then
             ! ensures a <= c <= s <= b
-            call swap(s,c)
-            call swap(fs,fc)
+            call swap_r4(s,c)
+            call swap_r4(fs,fc)
         end if
 
-        if (fc*fs<0.0_wp) then       ! root on [c,s]
+        if (fc*fs<0.0_sp) then       ! root on [c,s]
             a = c
             b = s
             fa = fc
             fb = fs
-        else if (fa*fc<0.0_wp) then  ! root on [a,c]
+        else if (fa*fc<0.0_sp) then  ! root on [a,c]
             b = c
             fb = fc
         else                         ! root on [s,b]
@@ -2487,15 +2937,106 @@
             fa = fs
         end if
 
-        if (me%converged(a,b)) exit
-        if (i == me%maxiter) iflag = -2 ! max iterations reached
+        if (converged_r4(a,b)) exit
+        if (i == maxiter) iflag = -2 ! max iterations reached
 
     end do
 
     ! pick the one closest to the root:
-    call choose_best(a,b,fa,fb,xzero,fzero)
+    call choose_best_r4(a,b,fa,fb,xzero,fzero)
 
-    end subroutine zhang
+  end subroutine zhang_r4
+
+
+    subroutine zhang_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+      !dir$ attributes forceinline :: zhang_r8
+      !dir$ attributes code_align : 32 :: zhang_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: zhang_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: a,b,c,fa,fb,fc,s,fs
+    integer :: i !! iteration counter
+
+    iflag = 0
+    a  = ax
+    b  = bx
+    fa = fax
+    fb = fbx
+
+    do i = 1, maxiter
+
+        c = bisect_r8(a,b)
+        fc = fx(c)
+        if (solution_r8(c,fc,ftol8,xzero,fzero)) return
+
+        if (fa/=fc .and. fb/=fc) then
+            ! inverse quadratic interpolation
+            s = a*fb*fc/((fa-fb)*(fa-fc)) + &
+                b*fa*fc/((fb-fa)*(fb-fc)) + &
+                c*fa*fb/((fc-fa)*(fc-fb))
+            if (a<s .and. s<b) then
+                fs = fx(s)
+                if (abs(fs)<=ftol8) then
+                    xzero = s
+                    fzero = fs
+                    return
+                end if
+            else
+                ! s is not in (a,b)
+                s = c ! just use this (there are 3 options in the reference)
+                fs = fc
+            end if
+        else
+            ! secant
+            if (fa*fc<0.0_dp) then ! root in [a,c]
+                s = secant_r8(a,c,fa,fc,ax,bx)
+            else ! root in [c,b]
+                s = secant_r8(c,b,fc,fb,ax,bx)
+            end if
+            fs = fx(s)
+            if (solution_r8(s,fs,ftol4,xzero,fzero)) return
+        end if
+
+        if (c>s) then
+            ! ensures a <= c <= s <= b
+            call swap_r8(s,c)
+            call swap_r8(fs,fc)
+        end if
+
+        if (fc*fs<0.0_dp) then       ! root on [c,s]
+            a = c
+            b = s
+            fa = fc
+            fb = fs
+        else if (fa*fc<0.0_dp) then  ! root on [a,c]
+            b = c
+            fb = fc
+        else                         ! root on [s,b]
+            a = s
+            fa = fs
+        end if
+
+        if (converged_r8(a,b)) exit
+        if (i == maxiter) iflag = -2 ! max iterations reached
+
+    end do
+
+    ! pick the one closest to the root:
+    call choose_best_r8(a,b,fa,fb,xzero,fzero)
+
+  end subroutine zhang_r8
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2507,22 +3048,25 @@
 !  * Kroger & Torsten, "On-Line Trajectory Generation in Robotic Systems", 2010.
 !    https://link.springer.com/content/pdf/bbm%3A978-3-642-05175-3%2F1.pdf
 
-    subroutine anderson_bjorck_king(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine anderson_bjorck_king_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+         !dir$ attributes forceinline :: anderson_bjorck_king_r4
+      !dir$ attributes code_align : 32 :: anderson_bjorck_king_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: anderson_bjorck_king_r4
     implicit none
 
-    class(anderson_bjorck_king_solver),intent(inout) :: me
-    real(wp),intent(in)    :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)    :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)    :: fax     !! `f(ax)`
-    real(wp),intent(in)    :: fbx     !! `f(ax)`
-    real(wp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)     :: fx
+    real(sp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)    :: fax     !! `f(ax)`
+    real(sp),intent(in)    :: fbx     !! `f(ax)`
+    real(sp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
     integer :: i !! counter
     logical :: root_found !! convergence in x
-    real(wp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
+    real(sp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
 
     ! initialize:
     iflag = 0
@@ -2532,17 +3076,17 @@
     f2    = fbx
 
     ! main loop:
-    do i = 1,me%maxiter
+    do i = 1,maxiter
 
         ! bisection step:
-        x3 = bisect(x1,x2)
+        x3 = bisect_r4(x1,x2)
 
         ! calculate f3:
-        f3 = me%f(x3)
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
         ! determine a new inclusion interval:
-        if (f2*f3<0.0_wp) then
+        if (f2*f3<0.0_sp) then
             ! zero lies between x2 and x3
             x1 = x2
             x2 = x3
@@ -2555,14 +3099,14 @@
         end if
 
         ! secant step:
-        x3 = secant(x1,x2,f1,f2,ax,bx)
+        x3 = secant_r4(x1,x2,f1,f2,ax,bx)
 
         ! calculate f3:
-        f3 = me%f(x3)
-        if (solution(x3,f3,me%ftol,xzero,fzero)) return
+        f3 = fx(x3)
+        if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
         ! determine a new inclusion interval:
-        if (f2*f3<0.0_wp) then
+        if (f2*f3<0.0_sp) then
             ! zero lies between x2 and x3
             x1 = x2
             x2 = x3
@@ -2571,8 +3115,8 @@
             f1tmp = f1
         else
             ! zero lies between x1 and x3
-            g = 1.0_wp-f3/f2
-            if (g<=0.0_wp) g = 0.5_wp
+            g = 1.0_sp-f3/f2
+            if (g<=0.0_sp) g = 0.5_sp
             x2 = x3
             f1tmp = f1
             f1 = g*f1
@@ -2580,16 +3124,104 @@
         end if
 
         ! check for convergence:
-        root_found = me%converged(x1,x2)
-        if (root_found .or. i == me%maxiter) then
-            call choose_best(x1,x2,f1tmp,f2,xzero,fzero)
+        root_found = converged_r4(x1,x2)
+        if (root_found .or. i == maxiter) then
+            call choose_best_r4(x1,x2,f1tmp,f2,xzero,fzero)
             if (.not. root_found) iflag = -2  ! max iterations reached
             exit
         end if
 
     end do
 
-    end subroutine anderson_bjorck_king
+  end subroutine anderson_bjorck_king_r4
+
+
+   subroutine anderson_bjorck_king_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+         !dir$ attributes forceinline :: anderson_bjorck_king_r8
+      !dir$ attributes code_align : 32 :: anderson_bjorck_king_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: anderson_bjorck_king_r8
+    implicit none
+
+    procedure(func_r8)     :: fx
+    real(dp),intent(in)    :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)    :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)    :: fax     !! `f(ax)`
+    real(dp),intent(in)    :: fbx     !! `f(ax)`
+    real(dp),intent(out)   :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out)   :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)    :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    integer :: i !! counter
+    logical :: root_found !! convergence in x
+    real(dp) :: x1,x2,x3,f1,f2,f3,g,f1tmp
+
+    ! initialize:
+    iflag = 0
+    x1    = ax
+    x2    = bx
+    f1    = fax
+    f2    = fbx
+
+    ! main loop:
+    do i = 1,maxiter
+
+        ! bisection step:
+        x3 = bisect_r8(x1,x2)
+
+        ! calculate f3:
+        f3 = fx(x3)
+        if (solution_r8(x3,f3,ftol8,xzero,fzero)) return
+
+        ! determine a new inclusion interval:
+        if (f2*f3<0.0_dp) then
+            ! zero lies between x2 and x3
+            x1 = x2
+            x2 = x3
+            f1 = f2
+            f2 = f3
+        else
+            ! zero lies between x1 and x3
+            x2 = x3
+            f2 = f3
+        end if
+
+        ! secant step:
+        x3 = secant_r8(x1,x2,f1,f2,ax,bx)
+
+        ! calculate f3:
+        f3 = fx(x3)
+        if (solution_r8(x3,f3,ftol8,xzero,fzero)) return
+
+        ! determine a new inclusion interval:
+        if (f2*f3<0.0_dp) then
+            ! zero lies between x2 and x3
+            x1 = x2
+            x2 = x3
+            f1 = f2
+            f2 = f3
+            f1tmp = f1
+        else
+            ! zero lies between x1 and x3
+            g = 1.0_dp-f3/f2
+            if (g<=0.0_dp) g = 0.5_dp
+            x2 = x3
+            f1tmp = f1
+            f1 = g*f1
+            f2 = f3
+        end if
+
+        ! check for convergence:
+        root_found = converged_r8(x1,x2)
+        if (root_found .or. i == maxiter) then
+            call choose_best_r8(x1,x2,f1tmp,f2,xzero,fzero)
+            if (.not. root_found) iflag = -2  ! max iterations reached
+            exit
+        end if
+
+    end do
+
+    end subroutine anderson_bjorck_king_r8
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2601,20 +3233,23 @@
 !    "A Comparative Study among New Hybrid Root Finding
 !    Algorithms and Traditional Methods", Mathematics 2021, 9, 1306.
 
-    subroutine blendtf(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine blendtf_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes forceinline :: blendtf_r4
+      !dir$ attributes code_align : 32 :: blendtf_r4
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: blendtf_r4
     implicit none
 
-    class(blendtf_solver),intent(inout) :: me
-    real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-    real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-    real(wp),intent(in)  :: fax     !! `f(ax)`
-    real(wp),intent(in)  :: fbx     !! `f(ax)`
-    real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-    real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    procedure(func_r4)   :: fx
+    real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(sp),intent(in)  :: fax     !! `f(ax)`
+    real(sp),intent(in)  :: fbx     !! `f(ax)`
+    real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
     integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
-    real(wp) :: a1,a2,b1,b2,fa,fb,a,b,xt1,xt2,xf,x,fx,fxt2,&
+    real(sp) :: a1,a2,b1,b2,fa,fb,a,b,xt1,xt2,xf,x,fx,fxt2,&
                 fxf,xprev,fxt1,fxprev,fa1,fa2,fb1,fb2
     integer :: i !! iteration counter
 
@@ -2625,10 +3260,10 @@
     b1 = b; b2 = b
     fa1 = fa; fa2 = fa
     fb1 = fb; fb2 = fb
-    xprev = huge(1.0_wp)
-    fxprev = huge(1.0_wp)
+    xprev = huge(1.0_sp)
+    fxprev = huge(1.0_sp)
 
-    do i = 1, me%maxiter
+    do i = 1, maxiter
 
         if (fa == fb) then
             ! should fallback to bisection if this happens -TODO
@@ -2636,13 +3271,13 @@
             return
         end if
 
-        xt1  = (b + 2.0_wp * a) / 3.0_wp
-        xt2  = (2.0_wp * b + a) / 3.0_wp
+        xt1  = (b + 2.0_sp * a) * 0.3333333333333333_sp
+        xt2  = (2.0_sp * b + a) * 0.3333333333333333_sp
         xf   = a - (fa*(b-a))/(fb-fa)
         x    = xt1
-        fxt1 = me%f(xt1); if (solution(xt1,fxt1,me%ftol,xzero,fzero)) return
-        fxt2 = me%f(xt2); if (solution(xt2,fxt2,me%ftol,xzero,fzero)) return
-        fxf  = me%f(xf);  if (solution(xf,fxf,me%ftol,xzero,fzero))   return
+        fxt1 = fx(xt1); if (solution_r4(xt1,fxt1,ftol4,xzero,fzero)) return
+        fxt2 = fx(xt2); if (solution_r4(xt2,fxt2,ftol4,xzero,fzero)) return
+        fxf  = fx(xf);  if (solution_r4(xf,fxf,ftol4,xzero,fzero))   return
         fx   = fxt1
 
         if (abs(fxf) < abs(fxt1)) then
@@ -2654,24 +3289,24 @@
         end if
 
         ! apply the convergence tols to [a,b]
-        if (me%converged(a, b) .or. i == me%maxiter) then
-            call choose_best(x,xprev,fx,fxprev,xzero,fzero)
-            if (i == me%maxiter) iflag = -2 ! max iterations reached
+        if (converged_r4(a, b) .or. i == maxiter) then
+            call choose_best_r4(x,xprev,fx,fxprev,xzero,fzero)
+            if (i == maxiter) iflag = -2 ! max iterations reached
             exit
         end if
         xprev = x
         fxprev = fx
 
-        if ((fa * fxt1) < 0.0_wp) then
+        if ((fa * fxt1) < 0.0_sp) then
             b1 = xt1; fb1 = fxt1
-        else if ((fxt1 * fxt2) < 0.0_wp) then
+        else if ((fxt1 * fxt2) < 0.0_sp) then
             a1 = xt1; fa1 = fxt1
             b1 = xt2; fb1 = fxt2
         else
             a1 = xt2; fa1 = fxt2
         end if
 
-        if (fa*fxf < 0.0_wp) then
+        if (fa*fxf < 0.0_sp) then
             b2 = xf; fb2 = fxf
         else
             a2 = xf; fa2 = fxf
@@ -2694,7 +3329,109 @@
 
     end do
 
-    end subroutine blendtf
+  end subroutine blendtf_r4
+
+
+    subroutine blendtf_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes forceinline :: blendtf_r8
+      !dir$ attributes code_align : 32 :: blendtf_r8
+      !dir$ optimize : 3
+      !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: blendtf_r8
+    implicit none
+
+    procedure(func_r8)   :: fx
+    real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+    real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+    real(dp),intent(in)  :: fax     !! `f(ax)`
+    real(dp),intent(in)  :: fbx     !! `f(ax)`
+    real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+    real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+    integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+    real(dp) :: a1,a2,b1,b2,fa,fb,a,b,xt1,xt2,xf,x,fx,fxt2,&
+                fxf,xprev,fxt1,fxprev,fa1,fa2,fb1,fb2
+    integer :: i !! iteration counter
+
+    iflag = 0
+    a = ax; b = bx
+    fa = fax; fb = fbx
+    a1 = a; a2 = a
+    b1 = b; b2 = b
+    fa1 = fa; fa2 = fa
+    fb1 = fb; fb2 = fb
+    xprev = huge(1.0_dp)
+    fxprev = huge(1.0_dp)
+
+    do i = 1, maxiter
+
+        if (fa == fb) then
+            ! should fallback to bisection if this happens -TODO
+            iflag = -3
+            return
+        end if
+
+        xt1  = (b + 2.0_dp * a) * 0.3333333333333333_dp
+        xt2  = (2.0_dp * b + a) * 0.3333333333333333_dp
+        xf   = a - (fa*(b-a))/(fb-fa)
+        x    = xt1
+        fxt1 = fx(xt1); if (solution_r8(xt1,fxt1,ftol8,xzero,fzero)) return
+        fxt2 = fx(xt2); if (solution_r8(xt2,fxt2,ftol8,xzero,fzero)) return
+        fxf  = fx(xf);  if (solution_r8(xf,fxf,ftol8,xzero,fzero))   return
+        fx   = fxt1
+
+        if (abs(fxf) < abs(fxt1)) then
+            x = xf
+            fx = fxf
+        elseif (abs(fxt2) < abs(fxt1)) then
+            x = xt2
+            fx = fxt2
+        end if
+
+        ! apply the convergence tols to [a,b]
+        if (converged_r8(a, b) .or. i == maxiter) then
+            call choose_best_r8(x,xprev,fx,fxprev,xzero,fzero)
+            if (i == maxiter) iflag = -2 ! max iterations reached
+            exit
+        end if
+        xprev = x
+        fxprev = fx
+
+        if ((fa * fxt1) < 0.0_dp) then
+            b1 = xt1; fb1 = fxt1
+        else if ((fxt1 * fxt2) < 0.0_dp) then
+            a1 = xt1; fa1 = fxt1
+            b1 = xt2; fb1 = fxt2
+        else
+            a1 = xt2; fa1 = fxt2
+        end if
+
+        if (fa*fxf < 0.0_dp) then
+            b2 = xf; fb2 = fxf
+        else
+            a2 = xf; fa2 = fxf
+        end if
+
+        if (a1>a2) then
+            a = a1
+            fa = fa1
+        else
+            a = a2
+            fa = fa2
+        end if
+        if (b1<b2) then
+            b = b1
+            fb = fb1
+        else
+            b = b2
+            fb = fb2
+        end if
+
+    end do
+
+  end subroutine blendtf_r8
+
+
+  
 !*****************************************************************************************
 
 !*****************************************************************************************
@@ -2707,87 +3444,89 @@
 !    January 2021, Applied Mathematical Sciences 15(7):321-336
 !  * Python implemention here: https://github.com/EnriqueAguilarM/
 
-    subroutine barycentric(me,ax,bx,fax,fbx,xzero,fzero,iflag)
-
+    subroutine barycentric_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes code_align : 32 :: barycentric_r4
+           !dir$ optimize : 3
+           !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: barycentric_r4
         implicit none
 
-        class(barycentric_solver),intent(inout) :: me
-        real(wp),intent(in)  :: ax      !! left endpoint of initial interval
-        real(wp),intent(in)  :: bx      !! right endpoint of initial interval
-        real(wp),intent(in)  :: fax     !! `f(ax)`
-        real(wp),intent(in)  :: fbx     !! `f(ax)`
-        real(wp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
-        real(wp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+        procedure(func_4)    :: fx
+        real(sp),intent(in)  :: ax      !! left endpoint of initial interval
+        real(sp),intent(in)  :: bx      !! right endpoint of initial interval
+        real(sp),intent(in)  :: fax     !! `f(ax)`
+        real(sp),intent(in)  :: fbx     !! `f(ax)`
+        real(sp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+        real(sp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
         integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
 
         integer :: i !! iteration counter
-        real(wp) :: k !! a real number in the interval (0, 0.5)
-        real(wp) :: x0,x1,x2,x3,x4,x5,x6,&
+        real(sp) :: k !! a real number in the interval (0, 0.5)
+        real(sp) :: x0,x1,x2,x3,x4,x5,x6,&
                     f0,f1,f2,f3,f4,f5,f6,&
                     w0,w1,w2,w3,w22,w32
 
-        real(wp),parameter :: bisection_tol = 1.0e-17_wp  !! if `f0` or `f1` are below this value,
+        real(sp),parameter :: bisection_tol = 1.0e-17_sp  !! if `f0` or `f1` are below this value,
                                                           !! the method switches to bisection.
                                                           !! (should be an input or computed from `epsilon`?)
-        real(wp),parameter :: k0 =  1.0_wp / 6.0_wp !! initial value of `k` (should be an input?)
+        real(sp),parameter :: k0 =  1.0_sp / 6.0_sp !! initial value of `k` (should be an input?)
 
         iflag = 0
         x0 = ax; f0 = fax
         x1 = bx; f1 = fbx
         k = k0
 
-        do i = 1, me%maxiter
+        do i = 1, maxiter
 
             if (i>1) then
-                f0 = me%f(x0)
-                if (solution(x0,f0,me%ftol,xzero,fzero)) return
-                f1 = me%f(x1)
-                if (solution(x1,f1,me%ftol,xzero,fzero)) return
+                f0 = fx(x0)
+                if (solution_r4(x0,f0,ftol4,xzero,fzero)) return
+                f1 = fx(x1)
+                if (solution_r4(x1,f1,ftol4,xzero,fzero)) return
             end if
 
-            if (me%converged(x0, x1) .or. i == me%maxiter) then
-                if (i == me%maxiter) iflag = -2 ! max iterations reached
+            if (converged_r4(x0, x1) .or. i == maxiter) then
+                if (i == maxiter) iflag = -2 ! max iterations reached
                 exit
             end if
 
             if (abs(f0)<bisection_tol .or. abs(f1)<bisection_tol) then
                 ! if f is too small, switch to bisection
-                k = 0.5_wp
+                k = 0.5_sp
             end if
 
             x2 = x0 + k*(x1-x0)   ! first point for interpolation
-            f2 = me%f(x2)
-            if (solution(x2,f2,me%ftol,xzero,fzero)) return
+            f2 = fx(x2)
+            if (solution_r4(x2,f2,ftol4,xzero,fzero)) return
 
-            if (f0*f2 < 0.0_wp) then
+            if (f0*f2 < 0.0_sp) then
                 x1 = x2
             else if (f0 == f2) then
                 x0 = x2
             else
                 x3 = x1 + k*(x0-x1) ! second point for interpolation
-                f3 = me%f(x3)
-                if (solution(x3,f3,me%ftol,xzero,fzero)) return
+                f3 = fx(x3)
+                if (solution_r4(x3,f3,ftol4,xzero,fzero)) return
 
-                if (f3*f1 < 0.0_wp) then
+                if (f3*f1 < 0.0_sp) then
                     x0 = x3
                 else if (f3 == f1) then
                     x0 = x2        ! note: typo in python version here?
                     x1 = x3
                 else
 
-                    w0 = 1.0_wp/(f0*(f0-f2)*(f0-f3))   ! first quadratic interpolation
-                    w2 = 1.0_wp/(f2*(f2-f0)*(f2-f3))
-                    w3 = 1.0_wp/(f3*(f3-f0)*(f3-f2))
+                    w0 = 1.0_sp/(f0*(f0-f2)*(f0-f3))   ! first quadratic interpolation
+                    w2 = 1.0_sp/(f2*(f2-f0)*(f2-f3))
+                    w3 = 1.0_sp/(f3*(f3-f0)*(f3-f2))
                     x4 = (w0*x0+w2*x2+w3*x3)/(w0+w3+w2)
-                    f4 = me%f(x4)
-                    if (solution(x4,f4,me%ftol,xzero,fzero)) return
+                    f4 = fx(x4)
+                    if (solution_r4(x4,f4,ftol4,xzero,fzero)) return
 
-                    w1  = 1.0_wp/(f1*(f1-f2)*(f1-f3))  ! second quadratic interpolation
-                    w22 = 1.0_wp/(f2*(f2-f1)*(f2-f3))
-                    w32 = 1.0_wp/(f3*(f3-f1)*(f3-f2))
+                    w1  = 1.0_sp/(f1*(f1-f2)*(f1-f3))  ! second quadratic interpolation
+                    w22 = 1.0_sp/(f2*(f2-f1)*(f2-f3))
+                    w32 = 1.0_sp/(f3*(f3-f1)*(f3-f2))
                     x5  = (w1*x1+w22*x2+w32*x3)/(w1+w32+w22)
-                    f5  = me%f(x5)
-                    if (solution(x5,f5,me%ftol,xzero,fzero)) return
+                    f5  = fx(x5)
+                    if (solution_r4(x5,f5,ftol4,xzero,fzero)) return
 
                     ! determine if x3,x4 are in the interval [x2,x3]
                     if (x4<x2 .or. x4>x3) then
@@ -2795,7 +3534,7 @@
                             x0 = x2
                             x1 = x3
                         else
-                            if (f5*f2<0.0_wp) then
+                            if (f5*f2<0.0_sp) then
                                 x0 = x2
                                 x1 = x5
                             else
@@ -2805,7 +3544,7 @@
                         end if
                     else
                         if (x5<x2 .or. x5>x3) then
-                            if (f4*f2<0.0_wp) then
+                            if (f4*f2<0.0_sp) then
                                 x0 = x2
                                 x1 = x4
                             else
@@ -2814,8 +3553,8 @@
                             end if
                         else
 
-                            if (f5*f4>0.0_wp) then
-                                if (f4*f2<0.0_wp) then
+                            if (f5*f4>0.0_sp) then
+                                if (f4*f2<0.0_sp) then
                                     x0 = x2
                                     x1 = min(x4,x5)
                                 else
@@ -2829,15 +3568,15 @@
                                 w2 = w2/(f2-f1)
                                 w3 = w3/(f3-f1)
                                 x6 = (w0*x0+w1*x1+w2*x2+w3*x3)/(w0+w1+w3+w2)
-                                f6 = me%f(x6)
-                                if (solution(x6,f6,me%ftol,xzero,fzero)) return
+                                f6 = fx(x6)
+                                if (solution_r4(x6,f6,ftol4,xzero,fzero)) return
 
                                 ! verify that x6 is in the interval [x2,x3]
                                 if (x6<=x2 .or. x6>=x3) then
                                     x0 = min(x4,x5)
                                     x1 = max(x4,x5)
                                 else
-                                    if (f6*f4<0.0_wp) then
+                                    if (f6*f4<0.0_sp) then
                                         x0 = min(x4,x6)
                                         x1 = max(x4,x6)
                                     else
@@ -2853,9 +3592,165 @@
 
         end do
 
-        call choose_best(x0,x1,f0,f1,xzero,fzero)
+        call choose_best_r4(x0,x1,f0,f1,xzero,fzero)
 
-    end subroutine barycentric
+      end subroutine barycentric_r4
+
+
+        subroutine barycentric_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
+           !dir$ attributes code_align : 32 :: barycentric_r8
+           !dir$ optimize : 3
+           !dir$ attributes optimization_parameter:TARGET_ARCH=AVX :: barycentric_r8
+        implicit none
+
+        procedure(func_8)    :: fx
+        real(dp),intent(in)  :: ax      !! left endpoint of initial interval
+        real(dp),intent(in)  :: bx      !! right endpoint of initial interval
+        real(dp),intent(in)  :: fax     !! `f(ax)`
+        real(dp),intent(in)  :: fbx     !! `f(ax)`
+        real(dp),intent(out) :: xzero   !! abscissa approximating a zero of `f` in the interval `ax`,`bx`
+        real(dp),intent(out) :: fzero   !! value of `f` at the root (`f(xzero)`)
+        integer,intent(out)  :: iflag   !! status flag (`0`=root found, `-2`=max iterations reached)
+
+        integer :: i !! iteration counter
+        real(dp) :: k !! a real number in the interval (0, 0.5)
+        real(dp) :: x0,x1,x2,x3,x4,x5,x6,&
+                    f0,f1,f2,f3,f4,f5,f6,&
+                    w0,w1,w2,w3,w22,w32
+
+        real(dp),parameter :: bisection_tol = 1.0e-17_dp  !! if `f0` or `f1` are below this value,
+                                                          !! the method switches to bisection.
+                                                          !! (should be an input or computed from `epsilon`?)
+        real(dp),parameter :: k0 =  1.0_dp / 6.0_dp !! initial value of `k` (should be an input?)
+
+        iflag = 0
+        x0 = ax; f0 = fax
+        x1 = bx; f1 = fbx
+        k = k0
+
+        do i = 1, maxiter
+
+            if (i>1) then
+                f0 = fx(x0)
+                if (solution_r8(x0,f0,ftol8,xzero,fzero)) return
+                f1 = fx(x1)
+                if (solution_r8(x1,f1,ftol8,xzero,fzero)) return
+            end if
+
+            if (converged_r8(x0, x1) .or. i == maxiter) then
+                if (i == maxiter) iflag = -2 ! max iterations reached
+                exit
+            end if
+
+            if (abs(f0)<bisection_tol .or. abs(f1)<bisection_tol) then
+                ! if f is too small, switch to bisection
+                k = 0.5_dp
+            end if
+
+            x2 = x0 + k*(x1-x0)   ! first point for interpolation
+            f2 = fx(x2)
+            if (solution_r8(x2,f2,ftol8,xzero,fzero)) return
+
+            if (f0*f2 < 0.0_dp) then
+                x1 = x2
+            else if (f0 == f2) then
+                x0 = x2
+            else
+                x3 = x1 + k*(x0-x1) ! second point for interpolation
+                f3 = fx(x3)
+                if (solution_r8(x3,f3,ftol8,xzero,fzero)) return
+
+                if (f3*f1 < 0.0_dp) then
+                    x0 = x3
+                else if (f3 == f1) then
+                    x0 = x2        ! note: typo in python version here?
+                    x1 = x3
+                else
+
+                    w0 = 1.0_sp/(f0*(f0-f2)*(f0-f3))   ! first quadratic interpolation
+                    w2 = 1.0_sp/(f2*(f2-f0)*(f2-f3))
+                    w3 = 1.0_sp/(f3*(f3-f0)*(f3-f2))
+                    x4 = (w0*x0+w2*x2+w3*x3)/(w0+w3+w2)
+                    f4 = fx(x4)
+                    if (solution_r8(x4,f4,ftol8,xzero,fzero)) return
+
+                    w1  = 1.0_sp/(f1*(f1-f2)*(f1-f3))  ! second quadratic interpolation
+                    w22 = 1.0_sp/(f2*(f2-f1)*(f2-f3))
+                    w32 = 1.0_sp/(f3*(f3-f1)*(f3-f2))
+                    x5  = (w1*x1+w22*x2+w32*x3)/(w1+w32+w22)
+                    f5  = fx(x5)
+                    if (solution_r8(x5,f5,ftol8,xzero,fzero)) return
+
+                    ! determine if x3,x4 are in the interval [x2,x3]
+                    if (x4<x2 .or. x4>x3) then
+                        if (x5<x2 .or. x5>x3) then
+                            x0 = x2
+                            x1 = x3
+                        else
+                            if (f5*f2<0.0_dp) then
+                                x0 = x2
+                                x1 = x5
+                            else
+                                x0 = x5
+                                x1 = x3
+                            end if
+                        end if
+                    else
+                        if (x5<x2 .or. x5>x3) then
+                            if (f4*f2<0.0_dp) then
+                                x0 = x2
+                                x1 = x4
+                            else
+                                x0 = x4
+                                x1 = x3
+                            end if
+                        else
+
+                            if (f5*f4>0.0_dp) then
+                                if (f4*f2<0.0_dp) then
+                                    x0 = x2
+                                    x1 = min(x4,x5)
+                                else
+                                    x0 = max(x4,x5)
+                                    x1 = x3
+                                end if
+                            else
+                                ! cubic interpolation if f4 and f5 have opposite signs
+                                w0 = w0/(f0-f1)
+                                w1 = w1/(f1-f0)
+                                w2 = w2/(f2-f1)
+                                w3 = w3/(f3-f1)
+                                x6 = (w0*x0+w1*x1+w2*x2+w3*x3)/(w0+w1+w3+w2)
+                                f6 = fx(x6)
+                                if (solution_r8(x6,f6,ftol8,xzero,fzero)) return
+
+                                ! verify that x6 is in the interval [x2,x3]
+                                if (x6<=x2 .or. x6>=x3) then
+                                    x0 = min(x4,x5)
+                                    x1 = max(x4,x5)
+                                else
+                                    if (f6*f4<0.0_dp) then
+                                        x0 = min(x4,x6)
+                                        x1 = max(x4,x6)
+                                    else
+                                        x0 = min(x5,x6)
+                                        x1 = max(x5,x6)
+                                    end if
+                                end if
+                            end if
+                        end if
+                    end if
+                end if
+            end if
+
+        end do
+
+        call choose_best_r8(x0,x1,f0,f1,xzero,fzero)
+
+      end subroutine barycentric_r8
+
+
+      
 !*****************************************************************************************
 
 !*****************************************************************************************
