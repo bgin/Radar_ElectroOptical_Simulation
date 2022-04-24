@@ -43,7 +43,7 @@
             implicit none
             real(dp),intent(in) :: x !! independant variable
             real(dp) :: f !! f(x)
-        end function func_r4  
+        end function func_r8 
      
     end interface
 
@@ -314,7 +314,7 @@
 !  * G.E. Mullges & F. Uhlig, "Numerical Algorithms with Fortran",
 !    Springer, 1996. Section 2.8.1, p 32-34.
 
-    subroutine bisection_r4(fx,me,ax,bx,fax,fbx,xzero,fzero,iflag)
+    subroutine bisection_r4(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
       !dir$ attributes forceinline :: bisection_r4
       !dir$ attributes code_align : 32 :: bisection_r4
       !dir$ optimize : 3
@@ -378,7 +378,7 @@
   end subroutine bisection_r4
 
 
-   subroutine bisection_r8(fx,me,ax,bx,fax,fbx,xzero,fzero,iflag)
+   subroutine bisection_r8(fx,ax,bx,fax,fbx,xzero,fzero,iflag)
       !dir$ attributes forceinline :: bisection_r8
       !dir$ attributes code_align : 32 :: bisection_r8
       !dir$ optimize : 3
