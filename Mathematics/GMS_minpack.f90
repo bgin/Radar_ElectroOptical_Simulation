@@ -9,7 +9,7 @@
 !  * Bernard Gingold, April 2022, slightly modified to suit better the 'Guided Missile Simulation' project.
 module minpack
 
-    !use iso_fortran_env, only: dp => real64
+   
     use mod_kinds, only : i4,dp
     implicit none
 
@@ -603,7 +603,10 @@ contains
     subroutine hybrd(fcn, n, x, Fvec, Xtol, Maxfev, Ml, Mu, Epsfcn, Diag, Mode, &
                      Factor, Nprint, Info, Nfev, Fjac, Ldfjac, r, Lr, Qtf, Wa1, &
                      Wa2, Wa3, Wa4)
-
+           !dir$ attributes code_align : 32 :: hybrd
+           !dir$ optimize : 3
+           !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: hybrd
+           use omp_lib
         implicit none
 
         procedure(func) :: fcn                  !! user-supplied subroutine which calculates the functions
@@ -779,10 +782,14 @@ contains
         do j = 1, n
             if (Fjac(j, j) /= zero) then
                 sum = zero
+                !dir$ assume_aligned Fjac:64
+                !$omp simd simdlen(8) reduction(+:sum)
                 do i = j, n
                     sum = sum + Fjac(i, j)*Qtf(i)
                 end do
                 temp = -sum/Fjac(j, j)
+                !dir$ assume_aligned Fjac:64
+                !$omp simd simdlen(8) reduction(+:Qtf)
                 do i = j, n
                     Qtf(i) = Qtf(i) + Fjac(i, j)*temp
                 end do
@@ -862,6 +869,7 @@ contains
             l = 1
             do i = 1, n
                 sum = zero
+                !$omp simd simdlen(8) reduction(+:sum)
                 do j = i, n
                     sum = sum + r(l)*Wa1(j)
                     l = l + 1
@@ -935,6 +943,8 @@ contains
 
                     do j = 1, n
                         sum = zero
+                         !dir$ assume_aligned Fjac:64
+                         !$omp simd simdlen(8) reduction(+:sum)
                         do i = 1, n
                             sum = sum + Fjac(i, j)*Wa4(i)
                         end do
@@ -980,7 +990,9 @@ contains
 !  approximation.
 
     subroutine hybrd1(fcn, n, x, Fvec, Tol, Info, Wa, Lwa)
-
+           !dir$ attributes code_align : 32 :: hybrd1
+           !dir$ optimize : 3
+           
         implicit none
 
         procedure(func)                     :: fcn      !! user-supplied subroutine which calculates the functions
@@ -1053,7 +1065,10 @@ contains
     subroutine hybrj(fcn, n, x, Fvec, Fjac, Ldfjac, Xtol, Maxfev, Diag, Mode, &
                      Factor, Nprint, Info, Nfev, Njev, r, Lr, Qtf, Wa1, Wa2, &
                      Wa3, Wa4)
-
+            !dir$ attributes code_align : 32 :: hybrj
+           !dir$ optimize : 3
+           !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: hybrj
+           use omp_lib
         implicit none
 
         procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
@@ -1218,10 +1233,14 @@ contains
         do j = 1, n
             if (Fjac(j, j) /= zero) then
                 sum = zero
+                 !dir$ addume_aligned Fjac:64
+                 !$omp simd simdlen(8) reduction(+:sum)
                 do i = j, n
                     sum = sum + Fjac(i, j)*Qtf(i)
                 end do
                 temp = -sum/Fjac(j, j)
+                 !dir$ addume_aligned Fjac:64
+                 !$omp simd simdlen(8) reduction(+:Qtf)
                 do i = j, n
                     Qtf(i) = Qtf(i) + Fjac(i, j)*temp
                 end do
@@ -1302,6 +1321,8 @@ contains
             l = 1
             do i = 1, n
                 sum = zero
+                  
+                 !$omp simd simdlen(8) reduction(+:sum)
                 do j = i, n
                     sum = sum + r(l)*Wa1(j)
                     l = l + 1
@@ -1376,6 +1397,8 @@ contains
 
                     do j = 1, n
                         sum = zero
+                        !dir$ addume_aligned Fjac:64
+                        !$omp simd simdlen(8) reduction(+:sum)
                         do i = 1, n
                             sum = sum + Fjac(i, j)*Wa4(i)
                         end do
@@ -1420,7 +1443,9 @@ contains
 !  and the jacobian.
 
     subroutine hybrj1(fcn, n, x, Fvec, Fjac, Ldfjac, Tol, Info, Wa, Lwa)
-
+           !dir$ attributes code_align : 32 :: hybrj1
+           !dir$ optimize : 3
+          
         implicit none
 
         procedure(fcn_hybrj) :: fcn !! the user-supplied subroutine which
@@ -1495,7 +1520,10 @@ contains
     subroutine lmder(fcn, m, n, x, Fvec, Fjac, Ldfjac, Ftol, Xtol, Gtol, Maxfev, &
                      Diag, Mode, Factor, Nprint, Info, Nfev, Njev, Ipvt, Qtf, &
                      Wa1, Wa2, Wa3, Wa4)
-
+           !dir$ attributes code_align : 32 :: lmder
+           !dir$ optimize : 3
+           !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: lmder
+           use omp_lib
         implicit none
 
         procedure(fcn_lmder) :: fcn !! the user-supplied subroutine which
@@ -1694,10 +1722,14 @@ contains
                     do j = 1, n
                         if (Fjac(j, j) /= zero) then
                             sum = zero
+                            !dir$ assume_aligned Fjac:64
+                            !$omp simd simdlen(8) reduction(+:sum)
                             do i = j, m
                                 sum = sum + Fjac(i, j)*Wa4(i)
                             end do
                             temp = -sum/Fjac(j, j)
+                             !dir$ assume_aligned Fjac:64
+                            !$omp simd simdlen(8) reduction(+:Wa4)
                             do i = j, m
                                 Wa4(i) = Wa4(i) + Fjac(i, j)*temp
                             end do
@@ -1714,6 +1746,8 @@ contains
                             l = Ipvt(j)
                             if (Wa2(l) /= zero) then
                                 sum = zero
+                                 !dir$ assume_aligned Fjac:64
+                                 !$omp simd simdlen(8) reduction(+:sum)
                                 do i = 1, j
                                     sum = sum + Fjac(i, j)*(Qtf(i)/fnorm)
                                 end do
@@ -1774,6 +1808,8 @@ contains
                                 Wa3(j) = zero
                                 l = Ipvt(j)
                                 temp = Wa1(l)
+                                !dir$ assume_aligned Fjac:64
+                               !$omp simd simdlen(8) reduction(+:Wa3)
                                 do i = 1, j
                                     Wa3(i) = Wa3(i) + Fjac(i, j)*temp
                                 end do
@@ -1863,6 +1899,9 @@ contains
 !  subroutine which calculates the functions and the jacobian.
 
     subroutine lmder1(fcn, m, n, x, Fvec, Fjac, Ldfjac, Tol, Info, Ipvt, Wa, Lwa)
+            !dir$ attribute code_align : 32 :: lmder1
+            !dir$ optimize : 3
+           
         implicit none
 
         procedure(fcn_lmder) :: fcn !! user-supplied subroutine which
@@ -1961,6 +2000,10 @@ contains
     subroutine lmdif(fcn, m, n, x, Fvec, Ftol, Xtol, Gtol, Maxfev, Epsfcn, Diag, &
                      Mode, Factor, Nprint, Info, Nfev, Fjac, Ldfjac, Ipvt, &
                      Qtf, Wa1, Wa2, Wa3, Wa4)
+            !dir$ attribute code_align : 32 :: lmdif
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: lmdif
+            use omp_lib
         implicit none
 
         procedure(func2) :: fcn !! the user-supplied subroutine which
@@ -2162,11 +2205,15 @@ contains
                     end do
                     do j = 1, n
                         if (Fjac(j, j) /= zero) then
-                            sum = zero
+                           sum = zero
+                           !dir$ assume_aligned Fjac:64
+                           !$omp simd simdlen(8) reduction(+:sum)
                             do i = j, m
                                 sum = sum + Fjac(i, j)*Wa4(i)
                             end do
                             temp = -sum/Fjac(j, j)
+                            !dir$ assume_aligned Fjac:64
+                            !$omp simd simdlen(8) reduction(+:Wa4)
                             do i = j, m
                                 Wa4(i) = Wa4(i) + Fjac(i, j)*temp
                             end do
@@ -2182,7 +2229,9 @@ contains
                         do j = 1, n
                             l = Ipvt(j)
                             if (Wa2(l) /= zero) then
-                                sum = zero
+                               sum = zero
+                                 !dir$ assume_aligned Fjac:64
+                                 !$omp simd simdlen(8) reduction(+:sum)
                                 do i = 1, j
                                     sum = sum + Fjac(i, j)*(Qtf(i)/fnorm)
                                 end do
@@ -2244,6 +2293,8 @@ contains
                                 Wa3(j) = zero
                                 l = Ipvt(j)
                                 temp = Wa1(l)
+                                 !dir$ assume_aligned Fjac:64
+                                 !$omp simd simdlen(8) reduction(+:Wa3)
                                 do i = 1, j
                                     Wa3(i) = Wa3(i) + Fjac(i, j)*temp
                                 end do
@@ -2340,6 +2391,9 @@ contains
 !  then calculated by a forward-difference approximation.
 
     subroutine lmdif1(fcn, m, n, x, Fvec, Tol, Info, Iwa, Wa, Lwa)
+            !dir$ attribute code_align : 32 :: lmdif1
+            !dir$ optimize : 3
+           
         implicit none
 
         procedure(func2) :: fcn !! the user-supplied subroutine which
@@ -2451,6 +2505,10 @@ contains
 !  value obtained so far.
 
     subroutine lmpar(n, r, Ldr, Ipvt, Diag, Qtb, Delta, Par, x, Sdiag, Wa1, Wa2)
+            !dir$ attribute code_align : 32 :: lmpar
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: lmpar
+            use omp_lib
         implicit none
 
         integer(i4), intent(in) :: n !! a positive integer(i4) input variable set to the order of r.
@@ -2504,6 +2562,8 @@ contains
                 temp = Wa1(j)
                 jm1 = j - 1
                 if (jm1 >= 1) then
+                   !dir$ assume_aligned r:64
+                   !$omp simd simdlen(8) reduction(-:Wa1)
                     do i = 1, jm1
                         Wa1(i) = Wa1(i) - r(i, j)*temp
                     end do
@@ -2544,6 +2604,8 @@ contains
                     sum = zero
                     jm1 = j - 1
                     if (jm1 >= 1) then
+                        !dir$ assume_aligned r:64
+                        !$omp simd simdlen(8) reduction(+:sum)
                         do i = 1, jm1
                             sum = sum + r(i, j)*Wa1(i)
                         end do
@@ -2557,7 +2619,9 @@ contains
             ! calculate an upper bound, paru, for the zero of the function.
 
             do j = 1, n
-                sum = zero
+               sum = zero
+                   !dir$ assume_aligned r:64
+                   !$omp simd simdlen(8) reduction(+:sum)
                 do i = 1, j
                     sum = sum + r(i, j)*Qtb(i)
                 end do
@@ -2614,6 +2678,8 @@ contains
                     temp = Wa1(j)
                     jp1 = j + 1
                     if (n >= jp1) then
+                         !dir$ assume_aligned r:64
+                         !$omp simd simdlen(8) reduction(-:Wa1)
                         do i = jp1, n
                             Wa1(i) = Wa1(i) - r(i, j)*temp
                         end do
@@ -2651,6 +2717,10 @@ contains
     subroutine lmstr(fcn, m, n, x, Fvec, Fjac, Ldfjac, Ftol, Xtol, Gtol, Maxfev, &
                      Diag, Mode, Factor, Nprint, Info, Nfev, Njev, Ipvt, Qtf, &
                      Wa1, Wa2, Wa3, Wa4)
+            !dir$ attribute code_align : 32 :: lmstr
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: lmstr
+            use omp_lib
         implicit none
 
         procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
@@ -2839,11 +2909,14 @@ contains
             call qrfac(n, n, Fjac, Ldfjac, .true., Ipvt, n, Wa1, Wa2, Wa3)
             do j = 1, n
                 if (Fjac(j, j) /= zero) then
-                    sum = zero
+                   sum = zero
+                   !dir$ assume_aligned Fjac:64
+                   !$omp simd simdlen(8) reduction(+:sum)
                     do i = j, n
                         sum = sum + Fjac(i, j)*Qtf(i)
                     end do
                     temp = -sum/Fjac(j, j)
+                    !$omp simd simdlen(8) reduction(+:Qtf)
                     do i = j, n
                         Qtf(i) = Qtf(i) + Fjac(i, j)*temp
                     end do
@@ -2881,7 +2954,9 @@ contains
             do j = 1, n
                 l = Ipvt(j)
                 if (Wa2(l) /= zero) then
-                    sum = zero
+                   sum = zero
+                   !dir$ assume_aligned Fjac:64
+                   !$omp simd simdlen(8) reduction(+:sum)
                     do i = 1, j
                         sum = sum + Fjac(i, j)*(Qtf(i)/fnorm)
                     end do
@@ -2942,6 +3017,7 @@ contains
                     Wa3(j) = zero
                     l = Ipvt(j)
                     temp = Wa1(l)
+                    !$omp simd simdlen(8) reduction(+:Wa3)
                     do i = 1, j
                         Wa3(i) = Wa3(i) + Fjac(i, j)*temp
                     end do
@@ -3036,6 +3112,9 @@ contains
 !  the functions and the rows of the jacobian.
 
     subroutine lmstr1(fcn, m, n, x, Fvec, Fjac, Ldfjac, Tol, Info, Ipvt, Wa, Lwa)
+            !dir$ attribute code_align : 32 :: lmstr1
+            !dir$ optimize : 3
+            
         implicit none
 
         procedure(fcn_lmstr) :: fcn !! user-supplied subroutine which
@@ -3130,6 +3209,11 @@ contains
 !   q from its factored form.
 
     subroutine qform(m, n, q, Ldq, Wa)
+            !dir$ attribute forceinline :: qform
+            !dir$ attribute code_align : 32 :: qform
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: qform
+            use omp_lib
         implicit none
 
         integer(i4), intent(in) :: m !! a positive integer(i4) input variable set to the number
@@ -3151,7 +3235,9 @@ contains
         minmn = min(m, n)
         if (minmn >= 2) then
             do j = 2, minmn
-                jm1 = j - 1
+               jm1 = j - 1
+               !dir$ assume_aligned q:64
+                !$omp simd simdlen(8)
                 do i = 1, jm1
                     q(i, j) = zero
                 end do
@@ -3162,7 +3248,9 @@ contains
 
         np1 = n + 1
         if (m >= np1) then
-            do j = np1, m
+           do j = np1, m
+              !dir$ assume_aligned q:64
+              !$omp simd simdlen(8)
                 do i = 1, m
                     q(i, j) = zero
                 end do
@@ -3173,7 +3261,9 @@ contains
         ! accumulate q from its factored form.
 
         do l = 1, minmn
-            k = minmn - l + 1
+           k = minmn - l + 1
+           !dir$ assume_aligned q:64
+           !$omp simd simdlen(8)
             do i = k, m
                 Wa(i) = q(i, k)
                 q(i, k) = zero
@@ -3181,11 +3271,15 @@ contains
             q(k, k) = one
             if (Wa(k) /= zero) then
                 do j = k, m
-                    sum = zero
+                   sum = zero
+                   !dir$ assume_aligned q:64
+                   !$omp simd simdlen(8) reduction(+:sum)
                     do i = k, m
                         sum = sum + q(i, j)*Wa(i)
                     end do
                     temp = sum/Wa(k)
+                     !dir$ assume_aligned q:64
+                     !$omp simd simdlen(8) reduction(-:q)
                     do i = k, m
                         q(i, j) = q(i, j) - temp*Wa(i)
                     end do
@@ -3214,6 +3308,10 @@ contains
 !  appeared in the corresponding linpack subroutine.
 
     subroutine qrfac(m, n, a, Lda, Pivot, Ipvt, Lipvt, Rdiag, Acnorm, Wa)
+            !dir$ attribute code_align : 32 :: qrfac
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: qrfac
+            use omp_lib
         implicit none
 
         integer(i4), intent(in) :: m !! a positive integer(i4) input variable set to the number
@@ -3274,6 +3372,8 @@ contains
                     if (Rdiag(k) > Rdiag(kmax)) kmax = k
                 end do
                 if (kmax /= j) then
+                   !dir$ assume_aligned a:64
+                   !$omp simd simdlen(8) private(temp)
                     do i = 1, m
                         temp = a(i, j)
                         a(i, j) = a(i, kmax)
@@ -3304,11 +3404,15 @@ contains
                 jp1 = j + 1
                 if (n >= jp1) then
                     do k = jp1, n
-                        sum = zero
+                       sum = zero
+                       !dir$ assume_aligned a:64
+                       !$omp simd simdlen(8) reduction(+:sum)
                         do i = j, m
                             sum = sum + a(i, j)*a(i, k)
                         end do
                         temp = sum/a(j, j)
+                        !dir$ assume_aligned a:64
+                        !$omp simd simdlen(8) reduction(+:a)
                         do i = j, m
                             a(i, k) = a(i, k) - temp*a(i, j)
                         end do
@@ -3362,6 +3466,10 @@ contains
 !  s is computed within qrsolv and may be of separate interest.
 
     subroutine qrsolv(n, r, Ldr, Ipvt, Diag, Qtb, x, Sdiag, Wa)
+            !dir$ attribute code_align : 32 :: qrsolv
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: qrsolv
+            use omp_lib
         implicit none
 
         integer(i4), intent(in) :: n !! a positive integer(i4) input variable set to the order of r.
@@ -3386,7 +3494,7 @@ contains
         real(dp), intent(inout) :: Wa(n) !! a work array of length n.
 
         integer(i4) :: i, j, jp1, k, kp1, l, nsing
-        real(dp) :: cos, cotan, qtbpj, sin, sum, tan, temp
+        real(dp) :: cos, cotan, qtbpj, sin, sum, tan, temp,c0
 
         real(dp), parameter :: p5 = 5.0e-1_dp
         real(dp), parameter :: p25 = 2.5e-1_dp
@@ -3395,8 +3503,9 @@ contains
         ! in particular, save the diagonal elements of r in x.
 
         do j = 1, n
-            do i = j, n
-                r(i, j) = r(j, i)
+           do i = j, n
+                c0 = r(j,i)
+                r(i, j) = c0
             end do
             x(j) = r(j, j)
             Wa(j) = Qtb(j)
@@ -3449,6 +3558,8 @@ contains
 
                         kp1 = k + 1
                         if (n >= kp1) then
+                           !dir$ assume_aligned r:64
+                           !$omp simd simdlen(8) private(temp)
                             do i = kp1, n
                                 temp = cos*r(i, k) + sin*Sdiag(i)
                                 Sdiag(i) = -sin*r(i, k) + cos*Sdiag(i)
@@ -3480,6 +3591,8 @@ contains
                 sum = zero
                 jp1 = j + 1
                 if (nsing >= jp1) then
+                   !dir$ assume_aligned r:64
+                   !$omp simd simdlen(8) reduction(+:sum)
                     do i = jp1, nsing
                         sum = sum + r(i, j)*Wa(i)
                     end do
@@ -3511,7 +3624,12 @@ contains
 !  gv, gw rotations is supplied.
 
     subroutine r1mpyq(m, n, a, Lda, v, w)
-        implicit none
+            !dir$ attribute forceinline :: r1mpyq
+            !dir$ attribute code_align : 32 :: r1mpyq
+            !dir$ optimize : 3
+            !dir$ attribute optimization_parameter:TARGET_ARCH=skylake_avx512 :: r1mpyq
+            use omp_lib
+            implicit none
 
         integer(i4), intent(in) :: m !! a positive integer(i4) input variable set to the number
                                 !! of rows of a.
@@ -3559,6 +3677,8 @@ contains
                 if (abs(w(j)) > one) sin = sqrt(one - cos**2)
                 if (abs(w(j)) <= one) sin = w(j)
                 if (abs(w(j)) <= one) cos = sqrt(one - sin**2)
+                !dir$ assume_aligned a:64
+                !$omp simd simdlen(8) private(temp) linear(i:1)
                 do i = 1, m
                     temp = cos*a(i, j) + sin*a(i, n)
                     a(i, n) = -sin*a(i, j) + cos*a(i, n)
@@ -3592,6 +3712,11 @@ contains
 !  information to recover the gv, gw rotations is returned.
 
     subroutine r1updt(m, n, s, Ls, u, v, w, Sing)
+            
+            !dir$ attribute code_align : 32 :: r1updt
+            !dir$ optimize : 3
+            !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: r1updt
+            use omp_lib
         implicit none
 
         integer(i4), intent(in) :: m !! a positive integer(i4) input variable set to the number
@@ -3670,6 +3795,8 @@ contains
                     ! apply the transformation to s and extend the spike in w.
 
                     l = jj
+                    !dir$ assume_aligned s:64
+                    !$omp simd simdlen(8) private(temp,l)
                     do i = j, m
                         temp = cos*s(l) - sin*w(i)
                         w(i) = sin*s(l) + cos*w(i)
@@ -3712,6 +3839,8 @@ contains
                     ! apply the transformation to s and reduce the spike in w.
 
                     l = jj
+                    !dir$ assume_aligned s:64
+                    !$omp simd simdlen(8) private(temp,l)
                     do i = j, m
                         temp = cos*s(l) + sin*w(i)
                         w(i) = -sin*s(l) + cos*w(i)
@@ -3763,6 +3892,11 @@ contains
 !  the information to recover the g rotations is supplied.
 
     subroutine rwupdt(n, r, Ldr, w, b, Alpha, Cos, Sin)
+            !dir$ attribute forceinline :: rwupdt
+            !dir$ attribute code_align : 32 :: rwupdt
+            !dir$ optimize : 3
+            !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: rwupdt
+        use omp_lib
         implicit none
 
         integer(i4), intent(in) :: n !! a positive integer(i4) input variable set to the order of r.
@@ -3798,6 +3932,8 @@ contains
             ! r(i,j), i=1,2,...,j-1, and to w(j).
 
             if (jm1 >= 1) then
+                !dir$ assume_aligned r:64
+                !$omp simd simdlen(8) private(temp,rowj) 
                 do i = 1, jm1
                     temp = Cos(i)*r(i, j) + Sin(i)*rowj
                     rowj = -Sin(i)*r(i, j) + Cos(i)*rowj
