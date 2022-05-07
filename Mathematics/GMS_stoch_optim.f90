@@ -41,24 +41,24 @@ INTEGER(kind=i4), SAVE    :: ngra(20), lsca, idsca, nx, nord
 ! Interfaces to user-supplied functions & subroutines
 INTERFACE
   FUNCTION FUNCT(n, x) RESULT(fn_val)
-    IMPLICIT NONE
     IMPORT :: i4,dp
+    IMPLICIT NONE
     INTEGER(kind=i4), INTENT(IN)    :: n
     REAL (dp), INTENT(IN)  :: x(:)
     REAL (dp)              :: fn_val
   END FUNCTION FUNCT
 
-  SUBROUTINE PTSEG(N, XPFMIN, FPFMIN, FPFMAX, KP, NFEV)
-    IMPLICIT NONE
+  SUBROUTINE PTSEG(N, XPFMIN, FPFMIN, FPFMAX, KP, NFEV)   
     IMPORT :: i4,dp
+    IMPLICIT NONE
     INTEGER(kind=i4), INTENT(IN)    :: n, kp, nfev
     REAL (dp), INTENT(IN)  :: xpfmin(:), fpfmin, fpfmax
   END SUBROUTINE PTSEG
 
   SUBROUTINE PTRIAL(N, XOPT, FOPT, FTFMIN, FTFMAX, FTFOPT,  &
                     ISTOP, ISTOPT, NFEV, KP, IPRINT)
-    IMPLICIT NONE
     IMPORT :: i4,dp
+    IMPLICIT NONE
     INTEGER(kind=i4), INTENT(IN)    :: n, kp, nfev, istop, istopt, iprint
     REAL (dp), INTENT(IN)  :: xopt(:), fopt, ftfmin, ftfmax, ftfopt
   END SUBROUTINE PTRIAL
@@ -74,6 +74,9 @@ CONTAINS
 
 
 SUBROUTINE sigma1(n,x0,nsuc,iprint,xmin,fmin,nfev,iout)
+      !dir$ attribute code_align : 32 :: sigma1
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: sigma1
 
 !  SIGMA1  IS A 'DRIVER' SUBROUTINE WHICH SIMPLY CALLS THE PRINCIPAL SUBROUTINE
 !  SIGMA  AFTER HAVING ASSIGNED DEFAULT VALUES TO A NUMBER OF INPUT PARAMETERS
@@ -147,7 +150,9 @@ INTEGER(kind=i4), INTENT(OUT)    :: iout
 REAL (dp)  :: dx, eps, h, tolabs, tolrel
 REAL (dp)  :: vrmax = 1.0E+4_dp, vrmin = -1.0E-4_dp
 
-REAL (dp)  :: xrmin(100), xrmax(100)
+REAL (dp)  :: xrmin(104), xrmax(104)
+!dir$ attribute align : 64 :: xrmin
+!dir$ attribute align : 64 :: xrmax
 INTEGER(kind=i4)    :: inhp, inkpbr, inpmax, irand, isegbr, ix, kpasca, kpbr0,  &
               npmin, npmax, ntraj, ntrial, ntrild = 50
 
@@ -185,6 +190,11 @@ END SUBROUTINE sigma1
 SUBROUTINE sigma(n,x0,h,eps,dx,ntraj,isegbr,kpbr0,inkpbr,npmin,npmax0,  &
                  inpmax,nsuc,ntrial,tolrel,tolabs,xrmin,xrmax,kpasca,  &
                  irand,inhp,iprint,xmin,fmin,nfev,iout)
+      !dir$ attribute code_align : 32 :: sigma1
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: sigma1
+
+
 
 !  THE SUBROUTINE  SIGMA  IS THE PRINCIPAL SUBROUTINE OF THE PACKAGE
 !  SIGMA, WHICH ATTEMPTS TO FIND A GLOBAL MINIMIZER OF A REAL VALUED
@@ -662,7 +672,10 @@ END SUBROUTINE sigma
 
 
 SUBROUTINE init(nx,x0,h0,eps0,dx0,irand,f,n1,n2,n3,n4,inh,ife,xri,xra,it)
-
+      !dir$ attribute forceinline :: init
+      !dir$ attribute code_align : 32 :: init
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: init
 !  INIT  PERFORMS THE INITIALIZATION OF THE FIRST TRIAL.
 !  THE PART OF THE INITIALIZATION WHICH IS COMMON ALSO TO THE TRIALS
 !  FOLLOWING THE FIRST ONE IS PERFORMED BY CALLING THE SUBROUTINE REINIT.
@@ -742,6 +755,10 @@ END SUBROUTINE init
 
 
 SUBROUTINE reinit(x0,eps0,irand,f,ife)
+      !dir$ attribute forceinline :: reinit
+      !dir$ attribute code_align : 32 :: reinit
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: reinit
 
 ! N.B. Argument NX has been removed.
 
@@ -788,6 +805,10 @@ END SUBROUTINE reinit
 
 SUBROUTINE trial(n,npmin,npmax,kpasca,tolrel,tolabs,iprint,xmin,  &
                  fmin,fmax,nfev,nr,istop)
+      !dir$ attribute forceinline :: trial
+      !dir$ attribute code_align : 32 :: trial
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: trial
 
 !  THE SUBROUTINE  TRIAL  GENERATES A TRIAL, I.E. A SET OF COMPLETE
 !  SIMULTANEOUS TRAJECTORIES BY REPEATEDLY PERFORMING
@@ -851,6 +872,10 @@ END SUBROUTINE trial
 
 
 SUBROUTINE geneva(nx,xmin,fmin,fmax,ncef)
+      !dir$ attribute forceinline :: geneva
+      !dir$ attribute code_align : 32 :: geneva
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: geneva
 
 !  GENEVA  PERFORMS THE GENERATION AND THE FINAL PROCESSING AND
 !  EVALUATION OF THE SET OF TRAJECTORY SEGMENTS CORRESPONDING TO
@@ -911,6 +936,10 @@ END SUBROUTINE geneva
 
 
 SUBROUTINE period()
+      !dir$ attribute forceinline :: period
+      !dir$ attribute code_align : 32 :: period
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: period
 
 !  PERIOD  IS CALLED BY SUBROUTINE  GENEVA  TO PERFORM THE GENERATION
 !  OF THE TRAJECTORY SEGMENTS.
@@ -953,6 +982,10 @@ END SUBROUTINE period
 
 
 SUBROUTINE brasi()
+      !dir$ attribute forceinline :: brasi
+      !dir$ attribute code_align : 32 :: brasi
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: brasi
 
 !  BRASI  PERFORMS THE SELECTION PROCESS FOR THE TRAJECTORIES
 !  BRASI  - UPDATES THE DATA ABOUT THE PAST TRAJECTORIES
@@ -1031,6 +1064,10 @@ END SUBROUTINE brasi
 
 
 SUBROUTINE order(ip,im,iu)
+      !dir$ attribute forceinline :: order
+      !dir$ attribute code_align : 32 :: order
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: order
 
 !  ORDER  COMPARES THE TRAJECTORIES FROM THE POINT OV VIEW OF PAST
 !  HISTORY (BY CALLING THE FUNCTION  IPREC ) AND FROM THE POINT OF VIEW
@@ -1095,6 +1132,10 @@ END SUBROUTINE order
 
 
 FUNCTION iprec(id1,id2) RESULT(ival)
+      !dir$ attribute forceinline :: iprec
+      !dir$ attribute code_align : 32 :: iprec
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: iprec
 
 !  IPREC  DETERMINES THE PRECEDENCE RELATION BETWEEN TWO TRAJECTORIES
 !  BASED ON THE PAST HISTORY DATA
@@ -1127,6 +1168,10 @@ END FUNCTION iprec
 
 
 FUNCTION iprece(id1,id2) RESULT(ival)
+      !dir$ attribute forceinline :: iprece
+      !dir$ attribute code_align : 32 :: iprece
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: iprece
 
 !  IPRECE  DETERMINES THE PRECEDENCE RELATION BETWEEN TWO TRAJECTORIES
 !  BASED ON THEIR CURRENT VALUE OF  EPS
@@ -1152,6 +1197,10 @@ END FUNCTION iprece
 
 
 SUBROUTINE compas()
+      !dir$ attribute forceinline :: compas
+      !dir$ attribute code_align : 32 :: compas
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: compas
 
 !  COMPAS  TAKES CARE OF THE STORAGE OF PAST HISTORY DATA, DISCARDING
 !  ALL DATA NOT NEEDED BY THE ONLY USER OF SUCH DATA, THE FUNCTION IPREC .
@@ -1212,6 +1261,10 @@ END SUBROUTINE compas
 
 
 SUBROUTINE step(ik)
+      !dir$ attribute forceinline :: step
+      !dir$ attribute code_align : 32 :: step
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: step
 
 !  STEP  PERFORMS A SINGLE TIME-INTEGRATION STEP FOR EACH ONE OF THE
 !  SIMULTANEOUS TRAJECTORIES BY REPEATEDLY CALLING THE SUBROUTINE  SSTEP
@@ -1221,7 +1274,8 @@ USE common_dincom
 INTEGER(kind=i4), INTENT(IN)  :: ik
 
 REAL (dp)  :: f
-REAL (dp)  :: xid(100), hid, epsid, dxid
+REAL (dp)  :: xid(104), hid, epsid, dxid
+!d
 INTEGER(kind=i4)    :: id, ieid, ix, ka
 
 ktim = ktim + 1
@@ -1266,6 +1320,10 @@ END SUBROUTINE step
 
 
 SUBROUTINE sstep(ktim,ndim,x,h,eps,dx,ie,f)
+      !dir$ attribute forceinline :: sstep
+      !dir$ attribute code_align : 32 :: sstep
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: sstep
 
 !  THE BASIC TIME-INTEGRATION STEP FOR A GIVEN TRAJECTORY IS PERFORMED
 !  BY THE SUBROUTINE  STEP  WHICH
@@ -1293,8 +1351,9 @@ REAL (dp), INTENT(IN OUT)  :: f
 
 REAL (dp)  :: dfdx, dfdxv
 REAL (dp)  :: epsr, fs, fv, fvs, hs
-REAL (dp)  :: w(100), xp(100)
-
+REAL (dp)  :: w(104), xp(104)
+!dir$ attribute align : 64 :: w
+!dir$ attribute align : 64 :: xp
 REAL (dp), SAVE  :: rdx = 1.0E-4_dp, dxmin = 1.0E-35_dp, dxmax = 1000.0_dp, &
                     hr = 0.1_dp, hmins = 1.0E-30_dp, stf = 100.0_dp,  &
                     rcd = 2.0_dp, tolri = 1.0E-5_dp, tolra = 1.0E-11_dp, &
@@ -1384,6 +1443,10 @@ END SUBROUTINE sstep
 
 
 SUBROUTINE newh(k,fv,f,h,ie,iec)
+      !dir$ attribute forceinline :: newh
+      !dir$ attribute code_align : 32 :: newh
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: newh
 
 !  NEWH  IS CALLED BY THE SUBROUTINE  SSTEP  TO DECIDE WHETHER TO ACCEPT
 !  OR REJECT THE FIRST HALF-STEP, AND TO PROVIDE AN UPDATED VALUE FOR  H
@@ -1434,7 +1497,10 @@ END SUBROUTINE newh
 
 
 SUBROUTINE derfor(ndim,x,f,dx,w,dfdx)
-
+      !dir$ attribute forceinline :: derfor
+      !dir$ attribute code_align : 32 :: derfor
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: derfor
 !  DERFOR  COMPUTED THE FORWARD FINITE-DIFFERNCES DIRECTIONAL
 !  DERIVATIVES (CALLING  FUNCT0 )
 
@@ -1473,6 +1539,10 @@ END SUBROUTINE derfor
 
 
 SUBROUTINE dercen(ndim,x,f,dx,w,dfdx)
+      !dir$ attribute forceinline :: dercen
+      !dir$ attribute code_align : 32 :: dercen
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: dercen
 
 !  DERFOR  COMPUTED THE CENTRAL FINITE-DIFFERNCES DIRECTIONAL
 !  DERIVATIVES (CALLING  FUNCT0 )
@@ -1497,6 +1567,10 @@ END SUBROUTINE dercen
 
 
 SUBROUTINE rclopt(n,xo,fo)
+      !dir$ attribute forceinline :: rclopt
+      !dir$ attribute code_align : 32 :: rclopt
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: rclopt
 
 !  RCLOPT  RECALLS THE CURRENT BEST MINIMUM VALUE  FOPT  FOUND SO FAR
 !  FROM ALGORITHM START, AND THE POINT  XOPT  (OR POSSIBLY ONE OF THE
@@ -1517,6 +1591,10 @@ END SUBROUTINE rclopt
 
 
 SUBROUTINE stoopt(n,xo,fo)
+      !dir$ attribute forceinline :: stoopt
+      !dir$ attribute code_align : 32 :: stoopt
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: stoopt
 
 !  STOOPT  STORES THE CURRENT BEST MINIMUM VALUE  FOPT  FOUND SO FAR
 !  FROM ALGORITHM START, AND THE POINT  XOPT  (OR POSSIBLY ONE OF THE
@@ -1537,6 +1615,10 @@ END SUBROUTINE stoopt
 
 
 FUNCTION funct0(n,xx) RESULT(fn_val)
+      !dir$ attribute forceinline :: funct0
+      !dir$ attribute code_align : 32 :: funct0
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: funct0
 
 !  FUNCT0  IS CALLED  WHENEVER THE VALUE OF THE FUNCTION  F  IS REQUIRED
 !  IN THE NUMERICAL INTEGRATION PROCESS.
@@ -1579,6 +1661,10 @@ END FUNCTION funct0
 
 
 SUBROUTINE range(n,xs,xrmin,xrmax,r)
+      !dir$ attribute forceinline :: range
+      !dir$ attribute code_align : 32 :: range
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: range
 
 !  RANGE  IS CALLED BY THE FUNCTION  FUNCT0  TO TAKE CARE OF THE CASES
 !  WHERE THE CURRENT POINT  X  IS OUTSIDE A GIVEN ADMISSIBLE REGION
@@ -1621,6 +1707,10 @@ END SUBROUTINE range
 
 
 FUNCTION itolch(fmax,fmin,tolrel,tolabs) RESULT(ival)
+      !dir$ attribute forceinline :: itolch
+      !dir$ attribute code_align : 32 :: itolch
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: itolch
 
 !  ITOLCH  DETERMINES  WHETHER TWO QUANTITIES ARE TO BE CONSIDERED NU-
 !  MERICALLY EQUAL WITH RESPECT TO AN ABSOLUTE (OR RELATIVE) DIFFERENCE
@@ -1643,7 +1733,11 @@ END FUNCTION itolch
 
 
 SUBROUTINE inisca(n,nd)
-
+      !dir$ attribute forceinline :: inisca
+      !dir$ attribute code_align : 32 :: inisca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: inisca
+     
 !  INISCA  INITIALIZES THE COOMON AREA  /SCALE/  FOR THE SCALING DATA
 
 INTEGER(kind=i4), INTENT(IN)  :: n
@@ -1658,6 +1752,7 @@ lsca = 0
 nx = n
 nord = nd
 idsca = 1
+
 DO  id = 1, nord
   DO  ix = 1, nx
     DO  iy = 1, nx
@@ -1677,7 +1772,10 @@ END SUBROUTINE inisca
 
 
 SUBROUTINE nosca()
-
+      !dir$ attribute forceinline :: nosca
+      !dir$ attribute code_align : 32 :: nosca
+      !dir$ optimize : 3
+      
 !  NOSCA  DEACTIVATES THE SCALING
 
 lsca = -1
@@ -1688,7 +1786,9 @@ END SUBROUTINE nosca
 
 
 SUBROUTINE segsca(id)
-
+      !dir$ attribute forceinline :: segsca
+      !dir$ attribute code_align : 32 :: segsca
+      !dir$ optimize : 3
 !  SEGSCA  SELECTS THE TRAJECTORY WHICH MUST BE RESCALED
 
 INTEGER(kind=i4), INTENT(IN)  :: id
@@ -1701,16 +1801,23 @@ END SUBROUTINE segsca
 
 
 SUBROUTINE varsca(n,x)
-
+      !dir$ attribute forceinline :: varsca
+      !dir$ attribute code_align : 32 :: varsca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=skylake_avx512 :: varsca
+      use omp_lib
 !  VARSCA  COMPUTES THE RESCALED VARIABLE  AX + B
 
 INTEGER(kind=i4), INTENT(IN)        :: n
 REAL (dp), INTENT(IN OUT)  :: x(:)
 
 REAL (dp)  :: xb(n)
+!dir$ attribute align : 64 :: xb
 INTEGER(kind=i4)    :: i
 
 IF (lsca <= 0) RETURN
+!dir$ assume_aligned x:64
+!$omp simd simdlen(8) linear(i:1)
 DO  i = 1, n
   xb(i) = bias(i,idsca) + DOT_PRODUCT( dist(i,1:n,idsca), x(1:n) )
 END DO
@@ -1722,7 +1829,11 @@ END SUBROUTINE varsca
 
 
 SUBROUTINE cumsca(n,w,dfdx)
-
+      !dir$ attribute forceinline :: cumsca
+      !dir$ attribute code_align : 32 :: cumsca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=skylake_avx512 :: cumsca
+      use omp_lib
 !  CUMSCA  STORES CUMULATED STATISTICAL DATA ON THE ILL-CONDITIONING OF
 !  F(AX+B) W.R.T. X
 
@@ -1735,7 +1846,9 @@ INTEGER(kind=i4)          :: i, j
 
 IF (lsca <= 0) RETURN
 IF (ABS(dfdx) > dfdxma) RETURN
+!dir$ assume_aligned w:64
 DO  i = 1, n
+  !$omp simd simdlen(8) reduction(+:gragra)
   DO  j = 1, n
     gragra(i,j,idsca) = gragra(i,j,idsca) + dfdx * w(i) * dfdx * w(j)
   END DO
@@ -1749,7 +1862,9 @@ END SUBROUTINE cumsca
 
 
 SUBROUTINE actsca()
-
+      !dir$ attribute forceinline :: actsca
+      !dir$ attribute code_align : 32 :: actsca
+      !dir$ optimize : 3
 !  ACTSCA  ACTIVATES THE RESCALING
 
 IF (lsca == 0) lsca = 1
@@ -1760,7 +1875,11 @@ END SUBROUTINE actsca
 
 
 SUBROUTINE movsca(iu,im)
-
+      !dir$ attribute forceinline :: movsca
+      !dir$ attribute code_align : 32 :: movsca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=skylake_avx512 :: movsca
+      use omp_lib
 !  MOVSCA  MOVES THE SCALING DATA OF THE UNPERTURBED CONTINUATION TO THE
 !  POSITION OF THE PERTURBED CONTINUATION
 
@@ -1771,6 +1890,7 @@ INTEGER(kind=i4)  :: i, j
 
 IF (lsca < 0) RETURN
 DO  i = 1, nx
+  !$omp simd simdlen(8)
   DO  j = 1, nx
     dist(i,j,iu) = dist(i,j,im)
     gragra(i,j,iu) = gragra(i,j,im)
@@ -1786,7 +1906,11 @@ END SUBROUTINE movsca
 
 
 SUBROUTINE updsca(n,x)
-
+      !dir$ attribute forceinline :: updsca
+      !dir$ attribute code_align : 32 :: updsca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=skylake_avx512 :: updsca
+      use omp_lib
 !  UPDSCA  UPDATES THE SCALING MATRIX  A  AND THE BIAS VECTOR  B BY
 !  CALLING  EIGSCA  AND  VARSCA
 
@@ -1794,7 +1918,9 @@ INTEGER(kind=i4), INTENT(IN)    :: n
 REAL (dp), INTENT(IN)  :: x(:)
 
 REAL (dp)  :: agrai, ala1, alpha = 0.3_dp, amcor, biast(10)
-REAL (dp)  :: cd, cor(10,10), distt(10,10), sn
+REAL (dp)  :: cd, cor(10,16), distt(10,16), sn
+!dir$ attribute align : 64 :: cor
+!dir$ attribute align : 64 :: distt
 INTEGER(kind=i4)    :: i, id, j, k
 
 IF (lsca <= 0) RETURN
@@ -1802,15 +1928,20 @@ id = idsca
 IF (ngra(id) >= 2*nx*nx) THEN
   agrai = 1.d0 / ngra(id)
   amcor = 0.d0
+  !dir$ assume_aligned cor:64
+  !dir$ assume_aligned gragra:64
+  !dir$ assume_aligned gra:64
   DO  i = 1, nx
+    !$omp simd simdlen(8)
     DO  j = 1, nx
       cor(i,j) = agrai * gragra(i,j,id) - agrai * gra(i,id) * agrai * gra(j,id)
       amcor = MAX(amcor, ABS(cor(i,j)))
     END DO
   END DO
   IF (amcor <= 0.d0) GO TO 110
-
+  !dir$ assume_aligned cor:64
   DO  i = 1, nx
+    !$omp simd simdlen(8) reduction(/:cor)
     DO  j = 1, nx
       cor(i,j) = cor(i,j) / amcor
     END DO
@@ -1823,9 +1954,12 @@ IF (ngra(id) >= 2*nx*nx) THEN
   END DO
   CALL varsca(nx,biast)
   sn = 0.d0
+  !dir$ assume_aligned distt:64
+  !dir$ assume_aligned cor:64
   DO  i = 1, nx
     DO  j = 1, nx
       distt(i,j) = 0.d0
+      !$omp simd simdlen(8) reduction(-:dist)
       DO  k = 1, nx
         distt(i,j) = distt(i,j) - dist(i,k,id) * cor(k,j)
       END DO
@@ -1833,8 +1967,12 @@ IF (ngra(id) >= 2*nx*nx) THEN
     END DO
   END DO
   sn = 1.d0 / SQRT(sn/DBLE(nx))
+  !dir$ assume_aligned bias:64
+  !dir$ assume_aligned dist:64
+  !dir$ assume_aligned distt:64
   DO  i = 1, nx
     bias(i,id) = biast(i)
+    !$omp simd simdlen(8) reduction(*:dist) reduction(-:bias)
     DO  j = 1, n
       dist(i,j,id) = sn * distt(i,j)
       bias(i,id) = bias(i,id) - dist(i,j,id) * x(j)
@@ -1851,25 +1989,35 @@ END SUBROUTINE updsca
 
 
 FUNCTION eigsca(cor) RESULT(fn_val)
-
+      !dir$ attribute forceinline :: eigsca
+      !dir$ attribute code_align : 32 :: eigsca
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=skylake_avx512 :: eigsca
+      use omp_lib
 !  EIGSCA COMPUTES THE LARGEST EIGENVALUE OF A MATRIX USED FOR RESCA-
 !  LING, STARTING FROM A RANDOMLY-CHOSEN ESTIMATE (OBTAINED BY CALLING
 !  THE SUBROUTINE  UNITRV ) OF THE CORRESPONDING EIGENVECTOR
 
-REAL (dp), INTENT(IN)  :: cor(10,10)
+REAL (dp), INTENT(IN)  :: cor(10,16)
 REAL (dp)              :: fn_val
 
 REAL (dp)  :: ala1, ala1i, ala1o
-REAL (dp)  :: prec = 0.001_dp, sww, w(10), ww(10)
+REAL (dp)  :: prec = 0.001_dp, sww, w(16), ww(16)
+!dir$ assume_aligned w:64
+!dir$ assume_aligned ww:64
 INTEGER(kind=i4)    :: ir, ix, jx, nrmin = 10, nrmax = 100
 
 CALL unitrv(nx,w)
 ala1 = 0.d0
+!dir$ assume_aligned ww:64
+!dir$ assume_aligned cor:64
+!dir$ assume_aligned w:64
 DO  ir = 1, nrmax
   ala1o = ala1
   sww = 0.d0
   DO  ix = 1, nx
     ww(ix) = 0.d0
+    !$omp simd simdlen(8) reduction(+:ww)
     DO  jx = 1, nx
       ww(ix) = ww(ix) + cor(ix,jx) * w(jx)
     END DO
@@ -1888,6 +2036,10 @@ END FUNCTION eigsca
 
 
 FUNCTION chaos(iniz) RESULT(fn_val)
+      !dir$ attribute forceinline :: chaos
+      !dir$ attribute code_align : 32 :: chaos
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: chaos
 
 !  CHAOS  GENERATES A RANDOM SAMPLE FROM ONE OUT OF FOUR POSSIBLE
 ! PROBABILITY DISTRIBUTIONS USING RANDOM NUMBERS UNIFORMLY
@@ -1944,6 +2096,10 @@ END FUNCTION chaos
 
 
 FUNCTION unifrd(iniz) RESULT(fn_val)
+      !dir$ attribute forceinline :: unifrd
+      !dir$ attribute code_align : 32 :: unifrd
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: unifrd
 
 ! UNIFRD GENERATES THE RANDOM NUMBERS UNIFORMLY DISTRIBUTED IN (0,1)
 ! EXPLOITING THOSE GENERATED BY  ALKNUT  WITH A FURTHER RANDOMIZATION
@@ -2004,6 +2160,10 @@ END FUNCTION unifrd
 
 
 SUBROUTINE alknut(nrem,x,irem)
+      !dir$ attribute forceinline :: alknut
+      !dir$ attribute code_align : 32 :: alknut
+      !dir$ optimize : 3
+     
 
 ! UPDATES THE COMPONENT IREM OF THE NREM-VECTOR X WITH A RANDOM NUMBER
 ! UNIFORMLY DISTRIBUTED IN (0,1) BY MEANS OF THE ALGORITHM OF MITCHELL-MOORE,
@@ -2036,7 +2196,10 @@ END SUBROUTINE alknut
 
 
 SUBROUTINE gausrv(n,w)
-
+      !dir$ attribute forceinline :: gausrv
+      !dir$ attribute code_align : 32 :: gausrv
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: gausrv
 ! GENERATES A RANDOM VECTOR SAMPLE FROM AN N-DIMENSIONAL NORMAL DISTRIBUTION
 
 INTEGER(kind=i4), INTENT(IN)     :: n
@@ -2069,7 +2232,10 @@ END SUBROUTINE gausrv
 
 
 SUBROUTINE unitrv(n,w)
-
+      !dir$ attribute forceinline :: unitrv
+      !dir$ attribute code_align : 32 :: unitrv
+      !dir$ optimize : 3
+      !dir$ attribute optimization_parameter: target_arch=AVX :: unitrv
 ! GENERATES A RANDOM VECTOR UNIFORMLY DISTRIBUTED ON THE UNIT SPHERE.
 
 INTEGER(kind=i4), INTENT(IN)        :: n
