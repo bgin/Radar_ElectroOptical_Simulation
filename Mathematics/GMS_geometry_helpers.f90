@@ -1965,5 +1965,1198 @@ subroutine polygon_xy_2d(n,v,result)
 
 end function polygon_xy_2d
 
+subroutine polygon_y_2d ( n, v, result )
+        !dir$ attribute forceinline :: polygon_y_2d
+        !dir$ attribute code_align : 32 :: polygon_y_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=skylake_AVX512 :: polygon_y_2d
+        use omp_lib  
+!*****************************************************************************80
+!
+!! POLYGON_Y_2D integrates the function Y over a polygon in 2D.
+!
+!  Discussion:
+!
+!    The polygon is bounded by the points (X(1:N), Y(1:N)).
+!
+!    INTEGRAL = (1/6) * sum ( 1 <= I <= N )
+!      - ( Y(I)^2 + Y(I) * Y(I-1) + Y(I-1)^2 ) * ( X(I) - X(I-1) )
+!
+!    where X(0) and Y(0) should be replaced by X(N) and Y(N).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    10 July 2001
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    SF Bockman,
+!    Generalizing the Formula for Areas of Polygons to Moments,
+!    American Mathematical Society Monthly,
+!    1989, pages 131-132.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) N, the number of vertices of the polygon.
+!    N should be at least 3 for a nonzero result.
+!
+!    Input, real ( kind = 8 ) V(2,N), the coordinates of the vertices
+!    of the polygon.  These vertices should be given in
+!    counter clockwise order.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the integral.
+!
+  implicit none
+  real ( kind = dp ) result
+  real ( kind = dp ), dimension(dim_num), intent(in) ::  v
+  integer ( kind = i4 ) n
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) im1
+  
+
+  result = 0.0_dp
+
+  if ( n < 3 ) then
+       return
+  end if
+  !dir$ assume_aligned v:64
+  !$omp simd simdlen(8) reduction(-:result)
+  do i = 1, n
+
+    if ( i == 1 ) then
+      im1 = n
+    else
+      im1 = i - 1
+    end if
+
+    result = result - ( v(2,i)**2 + v(2,i) * v(2,im1) + v(2,im1)**2 ) &
+      * ( v(1,i) - v(1,im1) )
+
+  end do
+
+  result = result / 6.0_dp
+
+ 
+end subroutine
+
+subroutine polygon_yy_2d ( n, v, result )
+        !dir$ attribute forceinline :: polygon_yy_2d
+        !dir$ attribute code_align : 32 :: polygon_yy_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=skylake_AVX512 :: polygon_yy_2d
+        use omp_lib  
+!*****************************************************************************80
+!
+!! POLYGON_YY_2D integrates the function Y*Y over a polygon in 2D.
+!
+!  Discussion:
+!
+!    The polygon is bounded by the points (X(1:N), Y(1:N)).
+!
+!    INTEGRAL = (1/12) * sum ( 1 <= I <= N )
+!      - ( Y(I)^3 + Y(I)^2 * Y(I-1) + Y(I) * Y(I-1)^2 + Y(I-1)^3 )
+!      * ( X(I) - X(I-1) )
+!
+!    where X(0) and Y(0) should be replaced by X(N) and Y(N).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    10 July 2001
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    SF Bockman,
+!    Generalizing the Formula for Areas of Polygons to Moments,
+!    American Mathematical Society Monthly,
+!    1989, pages 131-132.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) N, the number of vertices of the polygon.
+!    N should be at least 3 for a nonzero result.
+!
+!    Input, real ( kind = 8 ) V(2,N), the coordinates of the vertices
+!    of the polygon.  These vertices should be given in
+!    counter clockwise order.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the integral.
+!
+  implicit none
+  real ( kind = dp ) result
+  real ( kind = dp ), dimension(dim_num,n), intent(in) ::  v 
+  integer ( kind = i4 ) n
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) im1
+  
+
+  result = 0.0_dp
+
+  if ( n < 3 ) then
+       return
+  end if
+  !dir$ assume_aligned v:64
+  !$omp simd simdlen(8) reduction(+:result)
+  do i = 1, n
+
+    if ( i == 1 ) then
+      im1 = n
+    else
+      im1 = i - 1
+    end if
+
+    result = result - ( v(2,i)**3 + v(2,i)**2 * v(2,im1) &
+      + v(2,i) * v(2,im1)**2 + v(2,im1)**3 ) * ( v(1,i) - v(1,im1) )
+
+  end do
+
+  result = result / 12.0_dp
+
+end subroutine
+
+
+subroutine angle_box_2d( dist, p1, p2, p3, p4, p5 )
+        !dir$ attribute code_align : 32 :: angle_box_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_box_2d
+!*****************************************************************************80
+!
+!! ANGLE_BOX_2D "boxes" an angle defined by three points in 2D.
+!
+!  Discussion:
+!
+!    The routine is given points P1, P2 and P3, determining the two lines:
+!      P1 to P2
+!    and
+!      P2 to P3
+!    and a nonnegative distance
+!      DIST.
+!
+!    The routine returns a pair of "corner" points
+!      P4 and P5
+!    both of which are a distance DIST from both lines, and in fact,
+!    both of which are a distance DIST from P2.
+!
+!                         /  P3
+!                        /   /   /
+!     - - - - - - - - -P4 - / -P6 - - -
+!                      /   /   /
+!    P1---------------/--P2-----------------
+!                    /   /   /
+!     - - - - - - -P7 - / -P5 - - - - -
+!                  /   /   /
+!
+!    In the illustration, P1, P2 and P3 are the points defining the lines.
+!
+!    P4 and P5 represent the desired "corner points", which
+!    are on the positive or negative sides of both lines.
+!
+!    P6 and P7 represent the undesired points, which
+!    are on the positive side of one line and the negative of the other.
+!
+!    Special cases:
+!
+!    if P1 = P2, this is the same as extending the line from
+!    P3 through P2 without a bend.
+!
+!    if P3 = P2, this is the same as extending the line from
+!    P1 through P2 without a bend.
+!
+!    if P1 = P2 = P3 this is an error.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    05 March 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) DIST, the nonnegative distance from P1
+!    to the computed points P4 and P5.
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), P3(2).
+!    P1 and P2 are distinct points that define a line.
+!    P2 and P3 are distinct points that define a line.
+!
+!    Output, real ( kind = 8 ) P4(2), P5(2), points which lie DIST units from
+!    the line between P1 and P2, and from the line between P2 and P3.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  real ( kind = dp ),                     intent(in)  ::  dist
+  real ( kind = dp ), dimension(dim_num), intent(in)  ::  p1
+  real ( kind = dp ), dimension(dim_num), intent(in)  ::  p2
+  real ( kind = dp ), dimension(dim_num), intent(in)  ::  p3
+  real ( kind = dp ), dimension(dim_num), intent(out) ::  p4
+  real ( kind = dp ), dimension(dim_num), intent(out) ::  p5
+  real ( kind = dp ) :: stheta
+  real ( kind = dp ) :: temp1
+  real ( kind = dp ) :: temp2
+  real ( kind = dp ), dimension(dim_num) :: u
+  real ( kind = dp ), dimension(dim_num) :: u1
+  real ( kind = dp ), dimension(dim_num) :: u2
+!
+!  If DIST = 0, assume the user knows best.
+!
+  if ( dist == 0.0_dp ) then
+    p4(1:dim_num) = p2(1:dim_num)
+    p5(1:dim_num) = p2(1:dim_num)
+    return
+  end if
+!
+!  Fail if all three points are equal.
+!
+  if ( all ( p1(1:dim_num) == p2(1:dim_num) ) .and. &
+       all ( p2(1:dim_num) == p3(1:dim_num) ) ) then
+            return
+  end if
+!
+!  If P1 = P2, extend the line through the doubled point.
+!
+  if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
+    u2(1) = p3(2) - p2(2)
+    u2(2) = p2(1) - p3(1)
+    temp1 = sqrt ( sum ( u2(1:dim_num)**2 ) )
+    u2(1:dim_num) = u2(1:dim_num) / temp1
+    p4(1:dim_num) = p2(1:dim_num) + dist * u2(1:dim_num)
+    p5(1:dim_num) = p2(1:dim_num) - dist * u2(1:dim_num)
+    return
+  end if
+!
+!  If P2 = P3, extend the line through the doubled point.
+!
+  if ( all ( p2(1:dim_num) == p3(1:dim_num) ) ) then
+    u1(1) = p1(2) - p2(2)
+    u1(2) = p2(1) - p1(1)
+    temp1 = sqrt ( sum ( u1(1:dim_num)**2 ) )
+    u1(1:dim_num) = u1(1:dim_num) / temp1
+    p4(1:dim_num) = p2(1:dim_num) + dist * u1(1:dim_num)
+    p5(1:dim_num) = p2(1:dim_num) - dist * u1(1:dim_num)
+    return
+  end if
+!
+!  Compute the unit normal vectors to each line.
+!  We choose the sign so that the unit normal to line 1 has
+!  a positive dot product with line 2.
+!
+  u1(1) = p1(2) - p2(2)
+  u1(2) = p2(1) - p1(1)
+  temp1 = sqrt ( sum ( u1(1:dim_num)**2 ) )
+  u1(1:dim_num) = u1(1:dim_num) / temp1
+
+  temp1 = dot_product ( u1(1:dim_num), p3(1:dim_num) - p2(1:dim_num) )
+
+  if ( temp1 < 0.0_dp ) then
+    u1(1:dim_num) = -u1(1:dim_num)
+  end if
+
+  u2(1) = p3(2) - p2(2)
+  u2(2) = p2(1) - p3(1)
+  temp1 = sqrt ( sum ( u2(1:dim_num)**2 ) )
+  u2(1:dim_num) = u2(1:dim_num) / temp1
+
+  temp1 = dot_product ( u2(1:dim_num), p1(1:dim_num) - p2(1:dim_num) )
+  if ( temp1 < 0.0_dp ) then
+    u2(1:dim_num) = -u2(1:dim_num)
+  end if
+!
+!  Try to catch the case where we can't determine the
+!  sign of U1, because both U1 and -U1 are perpendicular
+!  to (P3-P2)...and similarly for U2 and (P1-P2).
+!
+  temp1 = dot_product ( u1(1:dim_num), p3(1:dim_num) - p2(1:dim_num) )
+  temp2 = dot_product ( u2(1:dim_num), p1(1:dim_num) - p2(1:dim_num) )
+
+  if ( temp1 == 0.0_dp .or. temp2 == 0.0_dp ) then
+
+    if ( dot_product ( u1(1:dim_num), u2(1:dim_num) ) < 0.0_dp ) then
+      u1(1:dim_num) = -u1(1:dim_num)
+    end if
+
+  end if
+!
+!  Try to catch a line turning back on itself, evidenced by
+!    Cos(theta) = (P3-P2) dot (P2-P1) / ( norm(P3-P2) * norm(P2-P1) )
+!  being -1, or very close to -1.
+!
+  temp1 = dot_product ( p3(1:dim_num) - p2(1:dim_num), &
+                       p2(1:dim_num) - p1(1:dim_num) ) 
+
+  temp1 = temp1 / &
+        ( sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) ) &
+        * sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) ) )
+
+  if ( temp1 < -0.99_dp ) then
+    temp1 = sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
+    p4(1:dim_num) = p2(1:dim_num) + dist * ( p2(1:dim_num) - p1(1:dim_num) ) &
+      / temp1 + dist * u1(1:dim_num)
+    p5(1:dim_num) = p2(1:dim_num) + dist * ( p2(1:dim_num) - p1(1:dim_num) ) &
+      / temp1 - dist * u1(1:dim_num)
+    return
+  end if
+!
+!  Compute the "average" unit normal vector.
+!
+!  The average of the unit normals could be zero, but only when
+!  the second line has the same direction and opposite sense
+!  of the first, and we've already checked for that case.
+!
+!  Well, check again!  This problem "bit" me in the case where
+!  P1 = P2, which I now treat specially just to guarantee I
+!  avoid this problem!
+!
+  if ( dot_product ( u1(1:dim_num), u2(1:dim_num) ) < 0.0_dp ) then
+    u2(1:dim_num) = -u2(1:dim_num)
+  end if
+
+  u(1:dim_num) = 0.5_dp * ( u1(1:dim_num) + u2(1:dim_num) )
+  temp1 = sqrt ( sum ( u(1:dim_num)**2 ) )
+  u(1:dim_num) = u(1:dim_num) / temp1
+!
+!  You must go DIST/STHETA units along this unit normal to
+!  result in a distance DIST from line1 (and line2).
+!
+  stheta = dot_product ( u(1:dim_num), u1(1:dim_num) )
+
+  p4(1:dim_num) = p2(1:dim_num) + dist * u(1:dim_num) / stheta
+  p5(1:dim_num) = p2(1:dim_num) - dist * u(1:dim_num) / stheta
+
+  
+end  subroutine
+
+subroutine angle_contains_point_2d ( p1, p2, p3, p, inside )
+        !dir$ attribute forceinline :: angle_contains_point_2d
+        !dir$ attribute code_align : 32 :: angle_contains_point_2d
+        !dir$ optimize : 3
+       
+!*****************************************************************************80
+!
+!! ANGLE_CONTAINS_POINT_2D determines if an angle contains a point, in 2D.
+!
+!  Discussion:
+!
+!    The angle is defined by the sequence of points P1, P2 and P3.
+!
+!    The point is "contained" by the angle if the ray P - P2
+!    is between (in a counter clockwise sense) the rays P1 - P2
+!    and P3 - P2.
+!
+!        P1
+!        /
+!       /   P
+!      /  .  
+!     / .
+!    P2--------->P3
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    15 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), P3(2), the coordinates of
+!    three points that define the angle.  The order of these points matters!
+!
+!    Input, real ( kind = 8 ) P(2), the point to be checked.
+!
+!    Output, logical INSIDE, is TRUE if the point is inside the angle.
+!
+  implicit none
+
+ 
+  logical inside
+  real ( kind = dp ) p(2)
+  real ( kind = dp ) p1(2)
+  real ( kind = dp ) p2(2)
+  real ( kind = dp ) p3(2)
+
+  if ( angle_rad_2d ( p1, p2, p ) <= angle_rad_2d ( p1, p2, p3 ) ) then
+    inside = .true.
+  else
+    inside = .false.
+  end if
+
+ 
+end subroutine
+
+function angle_deg_2d ( p1, p2, p3 )
+        !dir$ attribute forceinline :: angle_deg_2d
+        !dir$ attribute code_align : 32 :: angle_deg_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_deg_2d
+!*****************************************************************************80
+!
+!! ANGLE_DEG_2D returns the angle swept out between two rays in 2D.
+!
+!  Discussion:
+!
+!    Except for the zero angle case, it should be true that
+!
+!      ANGLE_DEG_2D ( P1, P2, P3 ) + ANGLE_DEG_2D ( P3, P2, P1 ) = 360.0
+!
+!        P1
+!        /
+!       /    
+!      /     
+!     /  
+!    P2--------->P3
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    14 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), P3(2), define the rays
+!    P1 - P2 and P3 - P2 which define the angle.
+!
+!    Output, real ( kind = 8 ) ANGLE_DEG_2D, the angle swept out by the 
+!    rays, measured in degrees.  0 <= ANGLE_DEG_2D < 360.  If either ray 
+!    has zero length, then ANGLE_DEG_2D is set to 0.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  
+  real(kind=dp), parameter :: pitwo = 6.283185307179586476925286766559_dp
+  real ( kind = dp ) p(dim_num)
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+  real ( kind = dp ) p3(dim_num)
+
+  p(1) = ( p3(1) - p2(1) ) * ( p1(1) - p2(1) ) &
+       + ( p3(2) - p2(2) ) * ( p1(2) - p2(2) )
+
+  p(2) = ( p3(1) - p2(1) ) * ( p1(2) - p2(2) ) &
+       - ( p3(2) - p2(2) ) * ( p1(1) - p2(1) )
+
+  if ( p(1) == 0.0_dp .and. p(2) == 0.0_dp ) then
+    angle_deg_2d = 0.0_dp
+    return
+  end if
+
+  angle_rad_2d = atan2 ( p(2), p(1) )
+
+  if ( angle_rad_2d < 0.0_dp ) then
+    angle_rad_2d = angle_rad_2d + pitwo
+  end if
+
+  angle_deg_2d = radians_to_degrees ( angle_rad_2d )
+
+end function
+
+subroutine angle_half_2d ( p1, p2, p3, p4 )
+        !dir$ attribute forceinline :: angle_half_2d
+        !dir$ attribute code_align : 32 :: angle_half_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_half_2d
+!*****************************************************************************80
+!
+!! ANGLE_HALF_2D finds half an angle in 2D.
+!
+!  Discussion:
+!
+!    The original angle is defined by the sequence of points P1, P2 and P3.
+!
+!    The point P4 is calculated so that:
+!
+!      (P1,P2,P4) = (P1,P2,P3) / 2
+!
+!        P1
+!        /
+!       /   P4
+!      /  .  
+!     / .
+!    P2--------->P3
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    01 March 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), P3(2), points defining the angle. 
+!
+!    Input, real ( kind = 8 ) P4(2), a point defining the half angle.
+!    The vector P4 - P2 will have unit norm.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+  real ( kind = dp ) p3(dim_num)
+  real ( kind = dp ) p4(dim_num)
+  real(kind=dp), automatic :: t1,t2,t3
+  t1 = p1(1:2)
+  t2 = p2(1:2)
+  t3 = p3(1:2)
+  
+  p4(1:2) = 0.5_dp * ( &
+      ( t1 - t2 ) / sqrt ( sum ( ( t1 - t2 )**2 ) ) &
+    + ( t3 - t2 ) / sqrt ( sum ( ( t3 - t2 )**2 ) ) )
+
+   p4(1:2) = t1 + p4(1:2) / sqrt ( sum ( p4(1:2)**2 ) )
+
+  
+end function
+
+function angle_rad_2d ( p1, p2, p3 )
+        !dir$ attribute forceinline :: angle_rad_2d
+        !dir$ attribute code_align : 32 :: angle_rad_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_rad_2d
+!*****************************************************************************80
+!
+!! ANGLE_RAD_2D returns the angle in radians swept out between two rays in 2D.
+!
+!  Discussion:
+!
+!    Except for the zero angle case, it should be true that
+!
+!      ANGLE_RAD_2D ( P1, P2, P3 ) + ANGLE_RAD_2D ( P3, P2, P1 ) = 2 * PI
+!
+!        P1
+!        /
+!       /    
+!      /     
+!     /  
+!    P2--------->P3
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    15 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), P3(2), define the rays
+!    P1 - P2 and P3 - P2 which define the angle.
+!
+!    Output, real ( kind = 8 ) ANGLE_RAD_2D, the angle swept out by the rays,
+!    in radians.  0 <= ANGLE_RAD_2D < 2 * PI.  If either ray has zero
+!    length, then ANGLE_RAD_2D is set to 0.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 2
+
+  
+  real ( kind = dp ), parameter :: twopi = 6.283185307179586476925286766559_dp
+  real ( kind = dp ) p(dim_num)
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+  real ( kind = dp ) p3(dim_num)
+  real(kind=dp), automatic :: d0,d1,d2,d3
+  d0 = p3(1)-p2(1)
+  d1 = p1(1)-p2(1)
+  d2 = p3(2)-p2(2)
+  d3 = p1(2)-p2(2)
+  p(1) = d0 * d1 + d2 * d3
+  p(2) = d0 * d3 - d2 * d1
+       
+  if ( all ( p(1:dim_num) == 0.0_dp)  ) then
+    angle_rad_2d = 0.0_dp
+    return
+  end if
+
+  angle_rad_2d = atan2 ( p(2), p(1) )
+
+  if ( angle_rad_2d < 0.0_dp ) then
+    angle_rad_2d = angle_rad_2d + twopi
+  end if
+
+end function
+
+function angle_rad_3d ( p1, p2, p3 )
+        !dir$ attribute forceinline :: angle_rad_3d
+        !dir$ attribute code_align : 32 :: angle_rad_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_rad_3d
+!*****************************************************************************80
+!
+!! ANGLE_RAD_3D returns the angle in radians between two rays in 3D.
+!
+!  Discussion:
+!
+!    The routine always computes the SMALLER of the two angles between
+!    two rays.  Thus, if the rays make an (exterior) angle of
+!    1.5 pi radians, the (interior) angle of 0.5 pi radians will be reported.
+!
+!    X dot Y = Norm(X) * Norm(Y) * Cos ( Angle(X,Y) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    21 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(3), P2(3), P3(3), points defining an angle.
+!    The rays are P1 - P2 and P3 - P2.
+!
+!    Output, real ( kind = 8 ) ANGLE_RAD_3D, the angle between the two rays,
+!    in radians.  This value will always be between 0 and PI.  If either ray has
+!    zero length, then the angle is returned as zero.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 4
+
+  real ( kind = dp ) angle_rad_3d
+  real ( kind = dp ) dot
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+  real ( kind = dp ) p3(dim_num)
+  real ( kind = dp ) v1norm
+  real ( kind = dp ) v2norm
+
+  v1norm = sqrt ( sum ( ( p1(1:dim_num) - p2(1:dim_num) )**2 ) )
+
+  if ( v1norm == 0.0_dp ) then
+    angle_rad_3d = 0.0_dp
+    return
+  end if
+
+  v2norm = sqrt ( sum ( ( p3(1:dim_num) - p2(1:dim_num) )**2 ) )
+
+  if ( v2norm == 0.0_dp ) then
+    angle_rad_3d = 0.0_dp
+    return
+  end if
+
+  dot = sum ( ( p1(1:dim_num) - p2(1:dim_num) ) &
+            * ( p3(1:dim_num) - p2(1:dim_num) ) )
+
+  angle_rad_3d = r8_acos ( dot / ( v1norm * v2norm ) )
+
+ 
+end function
+
+function angle_rad_nd ( dim_num, v1, v2 )
+        !dir$ attribute forceinline :: angle_rad_nd
+        !dir$ attribute code_align : 32 :: angle_rad_nd
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: angle_rad_nd
+!*****************************************************************************80
+!
+!! ANGLE_RAD_ND returns the angle in radians between two rays in ND.
+!
+!  Discussion:
+!
+!    This routine always computes the SMALLER of the two angles between
+!    two rays.  Thus, if the rays make an (exterior) angle of 1.5 PI,
+!    then the (interior) angle of 0.5 PI is reported.
+!
+!    X dot Y = Norm(X) * Norm(Y) * Cos( Angle(X,Y) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    19 April 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) DIM_NUM, the spatial dimension.
+!
+!    Input, real ( kind = 8 ) V1(DIM_NUM), V2(DIM_NUM), the two rays.
+!
+!    Output, real ( kind = 8 ) ANGLE_RAD_ND, the angle between the rays,
+!    in radians.  This value will always be between 0 and PI.
+!
+  implicit none
+
+  integer ( kind = i4 ) dim_num
+
+ 
+  real ( kind = dp ) dot
+  real ( kind = dp ) v1(dim_num)
+  real ( kind = dp ) v1norm
+  real ( kind = dp ) v2(dim_num)
+  real ( kind = dp ) v2norm
+
+  dot = dot_product ( v1(1:dim_num), v2(1:dim_num) )
+
+  v1norm = sqrt ( sum ( v1(1:dim_num)**2 ) )
+
+  if ( v1norm == 0.0_dp ) then
+    angle_rad_nd = 0.0_dp
+    return
+  end if
+
+  v2norm = sqrt ( sum ( v2(1:dim_num)**2 ) )
+
+  if ( v2norm == 0.0_dp ) then
+    angle_rad_nd = 0.0_dp
+    return
+  end if
+
+  angle_rad_nd = r8_acos ( dot / ( v1norm * v2norm ) )
+
+ 
+end function
+
+subroutine annulus_area_2d ( r1, r2, area )
+        !dir$ attribute forceinline :: annulus_area_2d
+        !dir$ attribute code_align : 32 :: annulus_area_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: annulus_area_2d
+!*****************************************************************************80
+!
+!! ANNULUS_AREA_2D computes the area of a circular annulus in 2D.
+!
+!  Discussion:
+!
+!    A circular annulus with center (XC,YC), inner radius R1 and
+!    outer radius R2, is the set of points (X,Y) so that
+!
+!      R1^2 <= (X-XC)^2 + (Y-YC)^2 <= R2^2
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) R1, R2, the inner and outer radii.
+!
+!    Output, real ( kind = 8 ) AREA, the area.
+!
+  implicit none
+
+  real ( kind = dp ) area
+  real ( kind = dp ), parameter :: pi = 3.14159265358979323846264338328_dp
+  real ( kind = dp ) r1
+  real ( kind = dp ) r2
+
+  area = pi * ( r2 + r1 ) * ( r2 - r1 )
+
+ 
+end function
+
+
+subroutine annulus_sector_area_2d ( r1, r2, theta1, theta2, area )
+        !dir$ attribute forceinline :: annulus_sector_area_2d
+        !dir$ attribute code_align : 32 :: annulus_sector_area_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: annulus_sector_area_2d
+!*****************************************************************************80
+!
+!! ANNULUS_SECTOR_AREA_2D computes the area of an annular sector in 2D.
+!
+!  Discussion:
+!
+!    An annular sector with center PC, inner radius R1 and
+!    outer radius R2, and angles THETA1, THETA2, is the set of points 
+!    P so that
+!
+!      R1^2 <= (P(1)-PC(1))^2 + (P(2)-PC(2))^2 <= R2^2
+!
+!    and
+!
+!      THETA1 <= THETA ( P - PC ) <= THETA2
+!
+!  Modified:
+!
+!    02 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) R1, R2, the inner and outer radii.
+!
+!    Input, real ( kind = 8 ) THETA1, THETA2, the angles.
+!
+!    Output, real ( kind = 8 ) AREA, the area.
+!
+  implicit none
+
+  real ( kind = dp ) area
+  real ( kind = dp ) r1
+  real ( kind = dp ) r2
+  real ( kind = dp ) theta1
+  real ( kind = dp ) theta2
+
+  area = 0.5_dp * ( theta2 - theta1 ) * ( r2 + r1 ) * ( r2 - r1 )
+
+ 
+end subroutine
+
+
+subroutine annulus_sector_centroid_2d ( pc, r1, r2, theta1, theta2, centroid )
+        !dir$ attribute forceinline :: annulus_sector_centroid_2d
+        !dir$ attribute code_align : 32 :: annulus_sector_centroid_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: annulus_sector_centroid_2d
+!*****************************************************************************80
+!
+!! ANNULUS_SECTOR_CENTROID_2D computes the centroid of an annular sector in 2D.
+!
+!  Discussion:
+!
+!    An annular sector with center PC, inner radius R1 and
+!    outer radius R2, and angles THETA1, THETA2, is the set of points 
+!    P so that
+!
+!      R1^2 <= (P(1)-PC(1))^2 + (P(2)-PC(2))^2 <= R2^2
+!
+!    and
+!
+!      THETA1 <= THETA ( P - PC ) <= THETA2
+!
+!    Thanks to Ed Segall for pointing out a mistake in the computation
+!    of the angle THETA associated with the centroid.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 December 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    John Harris, Horst Stocker,
+!    Handbook of Mathematics and Computational Science,
+!    Springer, 1998, QA40.S76
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) PC(2), the center.
+!
+!    Input, real ( kind = 8 ) R1, R2, the inner and outer radii.
+!
+!    Input, real ( kind = 8 ) THETA1, THETA2, the angles.
+!
+!    Output, real ( kind = 8 ) CENTROID(2), the centroid.
+!
+  implicit none
+
+  real ( kind = dp ) centroid(2)
+  real ( kind = dp ) pc(2)
+  real ( kind = dp ) r
+  real ( kind = dp ) r1
+  real ( kind = dp ) r2
+  real ( kind = dp ) theta
+  real ( kind = dp ) theta1
+  real ( kind = dp ) theta2
+  real(kind=dp) :: c0
+  theta = theta2 - theta1
+  c0 = theta1+theta*0.5_dp
+  r = 4.0_dp * sin ( theta*0.5_dp ) / ( 3.0_dp * theta ) &
+    * ( r1 * r1 + r1 * r2 + r2 * r2 ) / ( r1 + r2 )
+
+  centroid(1) = pc(1) + r * cos ( c0 )
+  centroid(2) = pc(2) + r * sin ( c0 )
+
+ 
+end subroutine
+
+function box_01_contains_point_2d ( p )
+        !dir$ attribute forceinline :: box_01_contains_point_2d
+        !dir$ attribute code_align : 32 :: box_01_contains_point_2d
+        !dir$ optimize : 3
+!*****************************************************************************80
+!
+!! BOX_01_CONTAINS_POINT_2D determines if a point is inside the unit box in 2D.
+!
+!  Discussion:
+!
+!    A unit box is assumed to be a rectangle with sides aligned on coordinate
+!    axes.  It can be described as the set of points P satisfying:
+!
+!      0.0 <= P(1:DIM_NUM) <= 1.0
+!
+!      0.0 <= P(1:2) <= 1.0 
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    10 May 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P(2), the point to be checked.
+!
+!    Output, logical BOX_01_CONTAINS_POINT_2D, is TRUE if the point is 
+!    inside the box.
+!
+  implicit none
+
+  logical box_01_contains_point_2d
+  real ( kind = dp ) p(2)
+
+  box_01_contains_point_2d = &
+    all ( 0.0_dp <= p(1:2) ) .and. all ( p(1:2) <= 1.0_dp )
+
+ 
+end function
+
+function box_01_contains_point_nd ( dim_num, p )
+        !dir$ attribute forceinline :: box_01_contains_point_nd
+        !dir$ attribute code_align : 32 :: box_01_contains_point_nd
+        !dir$ optimize : 3
+!*****************************************************************************80
+!
+!! BOX_01_CONTAINS_POINT_ND determines if a point is inside the unit box in ND.
+!
+!  Discussion:
+!
+!    A unit box is assumed to be a rectangle with sides aligned on coordinate
+!    axes.  It can be described as the set of points P satisfying:
+!
+!      0.0 <= P(1:DIM_NUM) <= 1.0
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    16 June 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) DIM_NUM, the spatial dimension.
+!
+!    Input, real ( kind = 8 ) P(DIM_NUM), the point to be checked.
+!
+!    Output, logical BOX_01_CONTAINS_POINT_ND, is TRUE if the point is 
+!    inside the box.
+!
+  implicit none
+
+  integer ( kind = i4 ) dim_num
+
+  logical box_01_contains_point_nd
+  real ( kind = dp ) p(dim_num)
+
+  box_01_contains_point_nd = &
+    all ( 0.0_dp <= p(1:dim_num) ) .and. all ( p(1:dim_num) <= 1.0_dp )
+
+ 
+end function
+
+function box_contains_point_2d ( p1, p2, p )
+        !dir$ attribute forceinline :: box_contains_point_2d
+        !dir$ attribute code_align : 32 :: box_contains_point_2d
+        !dir$ optimize : 3
+!*****************************************************************************80
+!
+!! BOX_CONTAINS_POINT_2D determines if a point is inside a box in 2D.
+!
+!  Discussion:
+!
+!    A box in 2D is a rectangle with sides aligned on coordinate
+!    axes.  It can be described by its low and high corners, P1 and P2
+!    as the set of points P satisfying:
+!
+!      P1(1:2) <= P(1:2) <= P2(1:2).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    16 June 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(2), P2(2), the low and high 
+!    corners of the box.
+!
+!    Input, real ( kind = 8 ) P(2), the point to be checked.
+!
+!    Output, logical BOX_CONTAINS_POINT_2D, is TRUE if the point 
+!    is inside the box.
+!
+  implicit none
+
+  logical box_contains_point_2d
+  real ( kind = dp ) p(2)
+  real ( kind = dp ) p1(2)
+  real ( kind = dp ) p2(2)
+
+  if ( p(1)  < p1(1) .or. &
+       p2(1) < p(1)  .or. &
+       p(2)  < p1(2) .or. &
+       p2(2) < p(2) ) then
+    box_contains_point_2d = .false.
+  else
+    box_contains_point_2d = .true.
+  end if
+
+ 
+end function 
+
+function box_contains_point_nd ( dim_num, p1, p2, p )
+        !dir$ attribute forceinline :: box_contains_point_nd
+        !dir$ attribute code_align : 32 :: box_contains_point_nd
+        !dir$ optimize : 3
+!*****************************************************************************80
+!
+!! BOX_CONTAINS_POINT_ND determines if a point is inside a box in ND.
+!
+!  Discussion:
+!
+!    A box is a rectangle with sides aligned on coordinate
+!    axes.  It can be described by its low and high corners, P1 and P2
+!    as the set of points P satisfying:
+!
+!      P1(1:DIM_NUM) <= P(1:DIM_NUM) <= P2(1:DIM_NUM).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    28 February 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) DIM_NUM, the spatial dimension.
+!
+!    Input, real ( kind = 8 ) P1(DIM_NUM), P2(DIM_NUM), the low and high 
+!    corners of the box.
+!
+!    Input, real ( kind = 8 ) P(DIM_NUM), the point to be checked.
+!
+!    Output, logical BOX_CONTAINS_POINT_ND, is TRUE if the point 
+!    is inside the box.
+!
+  implicit none
+
+  integer ( kind = i4 ) dim_num
+
+  logical box_contains_point_nd
+  integer ( kind = i4 ) i
+  real ( kind = dp) p(dim_num)
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+
+  box_contains_point_nd = .false.
+
+  do i = 1, dim_num
+    if ( p(i) < p1(i) .or. p2(i) < p(i) ) then
+      return
+    end if
+  end do
+
+  box_contains_point_nd = .true.
+
+ 
+end function
 
 end module geometry_helpers
