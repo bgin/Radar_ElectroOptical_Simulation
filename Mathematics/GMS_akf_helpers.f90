@@ -50,7 +50,7 @@ module akf_helpers
     subroutine bicgstab (ier,  xe,  a,b,n,nd)
       !dir$ attributes code_align : 32 :: bicgstab
       !dir$ optimize : 3
-      !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: bicgstab
+      !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: bicgstab
       use omp_lib
 !** preconditioned bi-conjugate gradient stabilized method for solving A * xe =b.
 !** where A is n x n.  Note version assumes that matrix A is full.  For most problems of this
@@ -89,7 +89,8 @@ module akf_helpers
       !dir$ assume_aligned a:64
       !dir$ assume_aligned hs:64
       !dir$ ivdep
-      !$omp simd simdlen(8) linear(i:1)
+      !dir$ code_align(32)
+       !$omp simd simdlen(8) linear(i:1)
       do i=1,n
         d(i)=sqrt(sum(a(:,i)**2))
         hs(:,i) =a(:,i)/d(i)
@@ -111,7 +112,7 @@ module akf_helpers
       !dir$ assume_aligned r:64
       !dir$ assume_aligned t:64
       !dir$ assume_aligned xe:64
-      !$omp simd simdlen(8)
+      !dir$ ivdep
       do i=1,imax
         beta =(rho/rhol)*(alpha/w)
         p(:) =r(:) +beta*(p(:)-w*v(:))
