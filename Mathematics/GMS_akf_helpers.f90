@@ -137,6 +137,228 @@ module akf_helpers
       end subroutine bicgstab
 
 
+      subroutine cfactor(ier, a, n,eps)
+        !dir$ attributes code_align : 32 :: cfactor
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: cfactor
+
+!** subroutine cfactor computes the Cholesky factor of a symmetric
+!** positive definite matrix A, i.e., A =U^T * U where U is upper triangular.
+!** Matrix A is stored as upper triangular by columns and the output U is stored in A.
+!** If matrix A is singular at row i, the same row of U will be set to zero and
+!** ier will be set to the first row that is found to be singular.  cfactor also tests
+!** for a loss of precision or singularity and returns an error code indicating
+!** at which row the loss occurred.
+
+!** Author: B. Gibbs, 12/2009
+
+!**************************************
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+!**************************************
+
+
+      implicit none
+
+      integer(i4),intent(in) :: n               !Dimension of A
+      real(dp),intent(in) :: eps                !Tolerance for loss of precision, e.g. eps =1d-4
+      real(dp),intent(inout) :: a((n*(n+1))/2)  !Symmetric matrix to be factored, or output factor
+!      real(8),intent(out) :: errm               !minimum remaining precision
+      integer(i4),intent(out) :: ier            !Error flag: ier = -1 = n < 0, ier = -i means matrix
+                                                ! is singular at row i, ier = +i, loss of precision
+                                                ! exceeds eps at row i
+
+      integer(i4) i,k,kpiv,ki,iflg,km1
+      real(dp) tol,dsum,dpiv,work,wmax
+      real(dp) errm   !minimum remaining precision
+      !____________________________________________________
+
+      iflg =0
+!      if (ier == -2) iflg=1
+
+      !**  test for invalid n
+      if (n < 1) then
+        ier =-1
+        return
+      endif
+
+      ier =0
+      kpiv =0          !initialize diagonal index
+      wmax =0.d0
+
+      do k=1,n         !row index
+        kpiv =kpiv+k   !index of diagonal element of row
+        ki =kpiv
+        km1 =k-1
+        !**  calculate tolerance for testing loss of significance
+        tol =abs(eps*a(kpiv))
+
+        !**   start factorization-loop over k-th row
+        do i=k,n    !i is column index, ki is index of (k,i) element
+          if (k > 1) then
+            dsum =dot_product(a(kpiv-km1:kpiv-1),a(ki-km1:ki-1))
+          else
+            dsum =0.0_dp
+          endif
+
+          !**  compute difference for a(ki)
+          dsum =a(ki)-dsum
+
+          if (i == k) then
+            !**  diagonal element: test for negative pivot element and for loss of significance
+            wmax =max(wmax,abs(a(kpiv)/dsum))   !(a(kpiv)/dsum)**1.3 matches actual errors - WHY ??
+            if (dsum <= tol) then
+              if (dsum <= 0.d0) then
+                write (6,'(/"MATRIX IS SINGULAR AT ROW ",I3)') i
+                if (ier >= 0) ier =-i    !set for first row that is singular
+                dpiv =0.0_dp              !set dpiv to zero elements in row k
+                a(kpiv) =0.0_dp
+                !dsum =1.d40  !when called by sinv, set diagonal to big number to get "pseudo-inverse" ?
+                !return
+              else
+                work =log10(abs(a(kpiv)/dsum))
+                write (6,100) k,work
+  100           format(/'AT ROW',i5,',',f7.1,                           &
+     &            ' DIGITS WERE LOST IN MATRIX FACTORIZATION')
+                if (ier == 0) ier =k-1
+              endif
+            endif
+
+            if (dsum > 0.0_dp) then
+              !** compute pivot element
+              a(kpiv) =sqrt(dsum)
+              dpiv =1.d0/a(kpiv)
+            endif
+
+          else      !**  calculate terms in row
+            a(ki) =dsum*dpiv
+          endif
+
+          ki =ki+i
+        enddo       !____ end i loop
+      enddo      !____ end k loop
+
+!      errm =1.1d-16*sqrt(wmax)      !little difference between using max vs RSS
+      errm =1.1d-16*wmax     !1.1d-16 is mantissa LSB (53) of IEEE S_floating on PC
+
+     
+      end subroutine cfactor
+
+      subroutine cgnr (ier,xe,h,y,n,m,mmax)
+          !dir$ attributes code_align : 32 :: cgnr
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: cgnr
+          use omp_lib
+!** preconditioned conjugate gradient method for solving the least squares normal equations
+!** to minimize the residual.  The measurement equation is y =H*xe +r.
+!** Least squares normal equations are xe = (H^T*H)^(-1) * H^T*y.
+!** References:
+!**    1) C.T. Kelley, Iterative Methods for Linear and Nonlinear Equations,
+!**       SIAM, Philadelphia (1995),
+!**    2) Å Björck, Numerical Methods for Least Squares Problems, SIAM, Philadelphia (1996)
+
+!** Author: B. Gibbs, 12/2009
+
+!**************************************
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+!**************************************
+      implicit none
+
+      integer(i4),intent(in) :: n         !column dimension of matrix H
+      integer(i4),intent(in) :: m         !number of actual measurements (rows) in H and y
+      integer(i4),intent(in) :: mmax      !row dimension of H
+      real(dp),intent(in) :: h(mmax,n)    !measurement partial matrix
+      real(dp),intent(in) :: y(m)         !measurement vector
+      real(dp),intent(inout) :: xe(n)     !state vector
+      integer(i4),intent(out) :: ier      !error return: 0 =OK, 1 =not converged in 100 iterations
+
+      integer(i4) i,j
+      integer(i4) :: imax =100            !max allowed iterations
+      real(dp) hs(m,n),r(m),q(m),rho0,tau,taul,alpha
+      !dir$ attributes align : 64 :: hs
+      !dir$ attributes align : 64 :: r
+      !dir$ attributes align : 64 :: q
+      real(dp) d(n),p(n),s(n)
+      !dir$ attributes align : 64 :: d
+      !dir$ attributes align : 64 :: p
+      !dir$ attributes align : 64 :: s
+      real(dp) :: eps =1.d-12
+      !_____________________________________
+
+      ier =0
+      !** compute pre-conditioning as diagonal
+      !dir$ assume_aligned d:64
+      !dir$ assume_aligned h:64
+      !dir$ assume_aligned hs:64
+      !dir$ code_align(32)
+      !$omp simd simdlen(8) linear(i:1)
+      do i=1,n
+        d(i) =sqrt(sum(h(:m,i)**2))
+!        d(i) =1.d0      !### test (little difference)
+        hs(:,i) =h(:m,i)/d(i)
+      enddo
+      xe(:) =xe(:)*d(:)
+
+      r(:) =y(:)-matmul(hs,xe)
+      s(:) =matmul(r(:),hs)
+      p(:) =s(:)
+      rho0 =sqrt(sum(s(:)**2))
+      taul =1.0_dp
+      !dir$ loop_count(100)
+      do i=1,imax
+        tau =sum(s(:)**2)
+        if (i > 1) then
+          p(:) =s(:) +(tau/taul)*p(:)
+        endif
+        taul =tau
+        q(:) =matmul(hs,p)
+        alpha=tau/sum(q(:)**2)
+        xe(:)=xe(:)+alpha*p(:)
+        s(:)=s(:)-alpha*matmul(q,hs)
+!       write (6,'("cgnr: ",2i3,2g13.5)') n,i,sqrt(sum(s(:)**2)),rho0
+        if (sqrt(sum(s(:)**2)) < eps*rho0) exit
+        if (i >= imax) then
+          ier =1
+          xe(:) =xe(:)/d(:)
+          return
+        endif
+      enddo
+
+      xe(:) =xe(:)/d(:)
+
+     
+      end subroutine cgnr
+
+
 
 
 
