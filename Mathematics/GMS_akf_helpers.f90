@@ -52,6 +52,16 @@ module akf_helpers
         module procedure :: r4_cov2ud_m
     end interface cov2ud_m 
 
+    interface rdx
+        module procedure :: r4_rdx
+        module procedure :: r8_rdx
+    end interface rdx
+
+    interface matInvGJ
+        module procedure :: r4_matInvGJ
+        module procedure :: r8_matInvGJ
+    end interface matInvGJ
+
     contains
 
     subroutine bicgstab (ier,  xe,  a,b,n,nd)
@@ -1094,6 +1104,394 @@ module akf_helpers
 
      
       end subroutine 
+
+
+ subroutine r4_rdx(del,r,dx,n)
+          !dir$ attributes forceinline :: r4_rdx
+          !dir$ attributes code_align : 32 :: r4_rdx
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r4_rdx
+!        rdx computes del =r*dx where r is the upper
+!        triangular square-root information matrix
+
+!        B. Gibbs 8/27/09
+
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+
+      
+      implicit none
+
+      integer(i4),intent(in) :: n                  !state dimension
+      real(sp),intent(in) :: r(n*(n+1)/2) !srif r matrix
+      real(sp),intent(in) :: dx(n)        !vector
+      real(sp),intent(out) :: del(n)      !computed solution
+
+      integer(i4) i,j,k
+      real(sp), automatic :: rsum
+      !_______________________________________________
+
+      k=0
+      !dir$ assume_aligned r:64
+      !dir$ assume_aligned dx:64
+      !dir$ assume_aligned del:64
+      !dir$ novector
+      do i=1,n
+        rsum =0.0_sp
+        k=(i*(i+1))/2
+        do j=i,n
+          rsum=rsum +r(k)*dx(j)
+          k=k+j
+        enddo
+        del(i)=rsum
+      enddo
+   
+      end subroutine 
+
+
+      subroutine r8_rdx(del,r,dx,n)
+          !dir$ attributes forceinline :: r8_rdx
+          !dir$ attributes code_align : 32 :: r8_rdx
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r8_rdx
+
+!        rdx computes del =r*dx where r is the upper
+!        triangular square-root information matrix
+
+!        B. Gibbs 8/27/09
+
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+
+      
+      implicit none
+
+      integer(i4),intent(in) :: n                  !state dimension
+      real(dp),intent(in) :: r(n*(n+1)/2) !srif r matrix
+      real(dp),intent(in) :: dx(n)        !vector
+      real(dp),intent(out) :: del(n)      !computed solution
+
+      integer(i4) i,j,k
+      real(dp), automatic :: rsum
+      !_______________________________________________
+
+      k=0
+      !dir$ assume_aligned r:64
+      !dir$ assume_aligned dx:64
+      !dir$ assume_aligned del:64
+      !dir$ novector
+      do i=1,n
+        rsum =0.0_dp
+        k=(i*(i+1))/2
+        do j=i,n
+          rsum=rsum +r(k)*dx(j)
+          k=k+j
+        enddo
+        del(i)=rsum
+      enddo
+   
+     end subroutine 
+
+
+   
+    subroutine r4_matInvGJ(ierr,a,b,np,n,m)
+          !dir$ attributes code_align : 32 :: r4_matInvGJ
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r4_matInvGJ
+          use omp_lib
+!**  matrix inversion and linear equation solver using Gauss-Jordan elimination
+!**  Based on gaussj in Numerical Recipes in Fortran, Version 2
+
+!** Author: B. Gibbs, 12/2009
+
+!**************************************
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+!**************************************
+     
+      implicit none
+
+      integer(i4),intent(in) :: np        !row dimension of a and b (np >= n)
+      integer(i4),intent(in) :: n         !number of rows and columns in a
+      integer(i4),intent(in) :: m         !number of columns in b
+      real(sp),intent(inout) :: a(np,n)!matrix to be inverted, and inverse
+      real(sp),intent(inout) :: b(np,m)!right-hand-side matrix to be multiplied: b=inv(a)*b
+      integer(i4),intent(out) :: ierr     !error return flag. 0=no error, 1=matrix singular
+
+!****  local
+      integer(i4) i,j,k,icol,irow,indxc(n),indxr(n),ipiv(n)
+      !dir$ attributes align : 64 :: indxc
+      !dir$ attributes align : 64 :: indxr
+      !dir$ attributes align : 64 :: ipiv
+      real(sp) biga,atmp,pivinv,atmp1(max(n,m))
+      !dir$ attributes align : 64 :: atmp1
+      !____________________________________________________________
+
+      ierr =0
+      ipiv(:) =0
+
+      !***  compute pivot vector
+      do i=1,n
+        biga =0.0_sp
+
+        do j=1,n
+          if (ipiv(j) /= 1) then
+            do k=1,n
+              if (ipiv(k) == 0) then
+                if (abs(a(j,k)) >= biga) then
+                  biga =abs(a(j,k))
+                  irow =j
+                  icol =k
+                endif
+              else if (ipiv(k) > 1) then
+                ierr =1       !stop 'matInvGJ error: singular matrix'
+                return
+              endif
+            enddo
+          endif
+        enddo
+
+        ipiv(icol) =ipiv(icol)+1
+
+        !*** interchange rows if needed to put the pivot element on diagonal.
+        !*** columns are relabeled, not physicaly interchanged
+        !dir$ assume_aligned atmp1:64
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        if (irow /= icol) then
+          atmp1(:n)=a(irow,:)
+          a(irow,:)=a(icol,:)
+          a(icol,:)=atmp1(:n)
+          atmp1(:m)=b(irow,:)
+          b(irow,:)=b(icol,:)
+          b(icol,:)=atmp1(:m)
+        endif
+
+        indxr(i)=irow
+        indxc(i)=icol
+
+        if (a(icol,icol) == 0.0_sp) then
+          ierr=1       !stop 'matInvGJ error: singular matrix'
+          return
+        endif
+        pivinv =1.0_sp/a(icol,icol)
+        a(icol,icol)=1.0_sp
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        a(icol,:)=a(icol,:)*pivinv
+        b(icol,:)=b(icol,:)*pivinv
+
+        !*** reduce the rows, except for pivot
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        !dir$ code_align:32
+        do j=1,n
+          if (j /= icol) then
+            atmp =a(j,icol)
+            a(j,icol)=0.0_sp
+            a(j,:)=a(j,:)-a(icol,:)*atmp
+            b(j,:)=b(j,:)-b(icol,:)*atmp
+          endif
+        enddo
+      enddo!___ end do i loop
+
+      !** now reset column order to original
+      !dir$ assume_aligned a:64
+      !dir$ assume_aligned indxc:64
+      !dir$ assume_aligned indxr:64
+      !dir$ code_align:32
+      do j=n,1,-1
+        if (indxr(j) /= indxc(j)) then
+          !dir$ code_align:32
+          !$omp simd simdlen(4) private(atmp)
+          do k=1,n
+            atmp =a(k,indxr(j))
+            a(k,indxr(j)) =a(k,indxc(j))
+            a(k,indxc(j)) =atmp
+          enddo
+        endif
+      enddo
+
+    end subroutine 
+
+
+    subroutine r8_matInvGJ(ierr,a,b,np,n,m)
+          !dir$ attributes code_align : 32 :: r8_matInvGJ
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r8_matInvGJ
+          use omp_lib
+!**  matrix inversion and linear equation solver using Gauss-Jordan elimination
+!**  Based on gaussj in Numerical Recipes in Fortran, Version 2
+
+!** Author: B. Gibbs, 12/2009
+
+!**************************************
+! The author grants the user a non-exclusive, worldwide, royalty-free copyright license to
+
+! 1. reproduce and modify the software for your own purposes, and
+! 2. to distribute the software provided that you give credit to the author,
+!    do not make claims against the author or Wiley-Interscience,
+!    and mark any modifications as your own.  If the software is incorporated in
+!    a commercial product, you  agree to defend and indemnify this author and
+!    Wiley-Interscience against any losses, damages and costs arising from claims,
+!    lawsuits and other legal actions brought by a third party.
+
+! The software is provided on an as is basis, without warranties or conditions
+! of any kind, either express or implied (including any warranties or conditions
+! of title, non-infringement, merchantability or fitness for a particular purpose).
+! The user is solely responsible for determining the appropriateness of using and
+! distributing the program and assumes all risks associated with its exercise of
+! rights under this agreement.
+!**************************************
+     
+      implicit none
+
+      integer(i4),intent(in) :: np        !row dimension of a and b (np >= n)
+      integer(i4),intent(in) :: n         !number of rows and columns in a
+      integer(i4),intent(in) :: m         !number of columns in b
+      real(dp),intent(inout) :: a(np,n)!matrix to be inverted, and inverse
+      real(dp),intent(inout) :: b(np,m)!right-hand-side matrix to be multiplied: b=inv(a)*b
+      integer(i4),intent(out) :: ierr     !error return flag. 0=no error, 1=matrix singular
+
+!****  local
+      integer(i4) i,j,k,icol,irow,indxc(n),indxr(n),ipiv(n)
+      !dir$ attributes align : 64 :: indxc
+      !dir$ attributes align : 64 :: indxr
+      !dir$ attributes align : 64 :: ipiv
+      real(dp) biga,atmp,pivinv,atmp1(max(n,m))
+      !dir$ attributes align : 64 :: atmp1
+      !____________________________________________________________
+
+      ierr =0
+      ipiv(:) =0
+
+      !***  compute pivot vector
+      do i=1,n
+        biga =0.0_dp
+
+        do j=1,n
+          if (ipiv(j) /= 1) then
+            do k=1,n
+              if (ipiv(k) == 0) then
+                if (abs(a(j,k)) >= biga) then
+                  biga =abs(a(j,k))
+                  irow =j
+                  icol =k
+                endif
+              else if (ipiv(k) > 1) then
+                ierr =1       !stop 'matInvGJ error: singular matrix'
+                return
+              endif
+            enddo
+          endif
+        enddo
+
+        ipiv(icol) =ipiv(icol)+1
+
+        !*** interchange rows if needed to put the pivot element on diagonal.
+        !*** columns are relabeled, not physicaly interchanged
+        !dir$ assume_aligned atmp1:64
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        if (irow /= icol) then
+          atmp1(:n)=a(irow,:)
+          a(irow,:)=a(icol,:)
+          a(icol,:)=atmp1(:n)
+          atmp1(:m)=b(irow,:)
+          b(irow,:)=b(icol,:)
+          b(icol,:)=atmp1(:m)
+        endif
+
+        indxr(i)=irow
+        indxc(i)=icol
+
+        if (a(icol,icol) == 0.0_dp) then
+          ierr=1       !stop 'matInvGJ error: singular matrix'
+          return
+        endif
+        pivinv =1.0_dp/a(icol,icol)
+        a(icol,icol)=1.0_dp
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        a(icol,:)=a(icol,:)*pivinv
+        b(icol,:)=b(icol,:)*pivinv
+
+        !*** reduce the rows, except for pivot
+        !dir$ assume_aligned a:64
+        !dir$ assume_aligned b:64
+        !dir$ code_align:32
+        do j=1,n
+          if (j /= icol) then
+            atmp =a(j,icol)
+            a(j,icol)=0.0_dp
+            a(j,:)=a(j,:)-a(icol,:)*atmp
+            b(j,:)=b(j,:)-b(icol,:)*atmp
+          endif
+        enddo
+      enddo!___ end do i loop
+
+      !** now reset column order to original
+      !dir$ assume_aligned a:64
+      !dir$ assume_aligned indxc:64
+      !dir$ assume_aligned indxr:64
+      !dir$ code_align:32
+      do j=n,1,-1
+        if (indxr(j) /= indxc(j)) then
+          !dir$ code_align:32
+          !$omp simd simdlen(4) private(atmp)
+          do k=1,n
+            atmp =a(k,indxr(j))
+            a(k,indxr(j)) =a(k,indxc(j))
+            a(k,indxc(j)) =atmp
+          enddo
+        endif
+      enddo
+
+    end subroutine 
+
+
 
 
       subroutine errhand (message)
