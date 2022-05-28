@@ -90,27 +90,30 @@ module kf_state_r4
       !dir$ attributes align : 64 :: dxsum
       !dir$ attributes align : 64 :: sigsum
 !      real(kind=dp) rnoise(mmaxi,mmaxi)           !meas noise covariance
-#if 0
+#if 1
       type, public :: states
         integer(i4) status      !0=ignore, 1=unadjusted analyze, 2=consider, 3=estimate
         integer(i4) xtype       !1=core state, 2=1 or 2 order Markov, 3=bias
         character(20) xname    !name of state that must match name in hard-coded model
-        real(kind=dp) x0             !a priori estimate at epoch time
-        real(kind=dp) sig0           !1-sigma uncertainty of x0 at epoch time
-        real(kind=dp) qs             !PSD of driving white noise
-        real(kind=dp) const(2)       !known constants associated with this state in dynamic or measurement model
+        real(kind=sp) x0             !a priori estimate at epoch time
+        real(kind=sp) sig0           !1-sigma uncertainty of x0 at epoch time
+        real(kind=sp) qs             !PSD of driving white noise
+        real(kind=sp) const(2)       !known constants associated with this state in dynamic or measurement model
       end type states
-      type(states),allocatable :: xstate(:)
+      type(states), dimension(:), allocatable :: xstate
+      !dir$ attributes align : 64 :: xstate
 
       type, public ::  meass
         integer(i4) mtype       !meas type (must match types in model)
         integer(i4) m           !number of scalar meas included in this meas
         character(20) mname    !name of meas for output (may include sensor name)
-        real(kind=dp) t              !meas time
-        real(kind=dp) y(mmaxi)        !up to mmax scalar meas values
-        real(kind=dp) sigr(mmaxi)     !1-sigma meas noise for mmax scalar meas
+        real(kind=sp) t              !meas time
+        real(kind=sp) y(mmaxi)        !up to mmax scalar meas values
+        real(kind=sp) sigr(mmaxi)     !1-sigma meas noise for mmax scalar meas
       end type
+      !      type (meass),allocatable :: meas(:)
 #endif
+#if 0
       type, public :: states_soa
           character(20) :: xname    !name of state that must match name in hard-coded model
           integer(i4)   :: status      !0=ignore, 1=unadjusted analyze, 2=consider, 3=estimate
@@ -136,6 +139,7 @@ module kf_state_r4
           !dir$ attributes align : 64 :: y
           !dir$ attributes align : 64 :: sigr
       end type measures_soa
-!      type (meass),allocatable :: meas(:)
+#endif
+
 
 end module kf_state_r4
