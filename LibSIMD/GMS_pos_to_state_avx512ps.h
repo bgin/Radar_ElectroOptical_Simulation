@@ -40,6 +40,10 @@
 
 #include <immintrin.h>
 #include <stdint.h>
+	 
+#if !defined(POS_TO_STATE_AVX512PS_SLEEF_LIB)
+#define POS_TO_STATE_AVX512PS_SLEEF_LIB 1
+#endif
 
 /*
 https://github.com/USNavalResearchLaboratory/TrackerComponentLibrary/tree/27317126c57c19f57f6d14eb6aa35700f57b869a/Coordinate_Systems/State_Conversion
