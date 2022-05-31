@@ -325,4 +325,197 @@ turn_accelerate_zmm8r8_u(const __m512d xDot,
 }
 
 
+void
+const_pol_vel_zmm8r8(const __m512d theta,
+                     const __m512d v,
+		     __m512d * __restrict  __attribute__((aligned(64))) vcth,
+		     __m512d * __restrict  __attribute__((aligned(64))) vsth) {
 
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         *vcth = _mm512_mul_pd(v,cth);
+			 *vsth = _mm512_mul_pd(v,sth);
+}
+
+
+void
+const_pol_vel_zmm8r8_a(const __m512d theta,
+                       const __m512d v,
+		       double * __restrict __attribute__((aligned(64))) vcth,
+		       double * __restrict __attribute__((aligned(64))) vsth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_store_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_store_pd(&vsth[0],_mm512_mul_pd(v,sth));
+}
+
+
+void
+const_pol_vel_zmm8r8_u(const __m512d theta,
+                       const __m512d v,
+		       double * __restrict  vcth,
+		       double * __restrict  vsth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_storeu_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_storeu_pd(&vsth[0],_mm512_mul_pd(v,sth));
+}
+
+
+void
+const_pol_accel_zmm8r8(const __m512d theta,
+                       const __m512d v,
+		       const __m512d vDot,
+		       __m512d * __restrict __attribute__((aligned(64))) vcth,
+		       __m512d * __restrict __attribute__((aligned(64))) vsth,
+		       __m512d * __restrict __attribute__((aligned(64))) vdcth,
+		       __m512d * __restrict __attribute__((aligned(64))) vdsth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         *vcth              = _mm512_mul_pd(v,cth);
+			 *vsth              = _mm512_mul_pd(v,sth);
+			 *vdcth             = _mm512_mul_pd(vDot,cth);
+			 *vdsth             = _mm512_mul_pd(vDot,sth);
+		   }
+}
+
+
+void
+const_pol_accel_zmm8r8_a(const __m512d theta,
+                         const __m512d v,
+		         const __m512d vDot,
+		         double * __restrict __attribute__((aligned(64))) vcth,
+		         double * __restrict __attribute__((aligned(64))) vsth,
+		         double * __restrict __attribute__((aligned(64))) vdcth,
+		         double * __restrict __attribute__((aligned(64))) vdsth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_store_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_store_pd(&vsth[0],_mm512_mul_pd(v,sth));
+			 _mm512_store_pd(&vdcth[0],_mm512_mul_pd(vDot,cth));
+			 _mm512_store_pd(&vdsth[0],_mm512_mul_pd(vDot,sth));
+}
+
+
+void
+const_pol_accel_zmm8r8_u(const __m512d theta,
+                         const __m512d v,
+		         const __m512d vDot,
+		         double * __restrict vcth,
+		         double * __restrict vsth,
+		         double * __restrict vdcth,
+		         double * __restrict vdsth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_storeu_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_storeu_pd(&vsth[0],_mm512_mul_pd(v,sth));
+			 _mm512_storeu_pd(&vdcth[0],_mm512_mul_pd(vDot,cth));
+			 _mm512_storeu_pd(&vdsth[0],_mm512_mul_pd(vDot,sth));
+}
+
+
+void
+const_pol_turn_zmm8r8( const __m512d theta,
+                       const __m512d v,
+		       const __m512d omega, // turn-rate
+		       __m512d * __restrict __attribute__((aligned(64))) vcth,
+		       __m512d * __restrict __attribute__((aligned(64))) vsth,
+		       __m512d * __restrict __attribute__((aligned(64))) vomsth,
+		       __m512d * __restrict __attribute__((aligned(64))) vomcth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         *vcth              = _mm512_mul_pd(v,cth);
+			 *vsth              = _mm512_mul_pd(v,sth);
+                         *vomsth            = _mm512_mul_pd(zmm8r8_negate(v),
+			                               _mm512_mul_pd(omega,sth));
+			 *vomcth            = _mm512_mul_pd(v,_mm512_mul_pd(omega,cth));
+}
+
+
+void
+const_pol_turn_zmm8r8_a( const __m512d theta,
+                         const __m512d v,
+		         const __m512d omega,
+		         double * __restrict __attribute__((aligned(64))) vcth,
+		         double * __restrict __attribute__((aligned(64))) vsth,
+		         double * __restrict __attribute__((aligned(64))) vomsth,
+		         double * __restrict __attribute__((aligned(64))) vomcth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_store_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_store_pd(&vsth[0],_mm512_mul_pd(v,sth));
+                         _mm512_store_pd(&vomsth[0],_mm512_mul_pd(zmm8r8_negate(v),
+			                               _mm512_mul_pd(omega,sth)));
+			 _mm512_store_pd(&vomcth[0],_mm512_mul_pd(v,_mm512_mul_pd(omega,cth)));
+}
+
+
+void
+const_pol_turn_zmm8r8_u( const __m512d theta,
+                         const __m512d v,
+		         const __m512d omega,
+		         double * __restrict  vcth,
+		         double * __restrict  vsth,
+		         double * __restrict  vomsth,
+		         double * __restrict  vomcth) {
+
+#if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
+                         const __m512d cth = xcos(theta);
+			 const __m512d sth = xsin(theta);
+#else
+                         const __m512d cth = _mm512_cos_pd(theta);
+			 const __m512d sth = _mm512_sin_pd(theta);
+#endif
+                         _mm512_storeu_pd(&vcth[0],_mm512_mul_pd(v,cth));
+			 _mm512_storeu_pd(&vsth[0],_mm512_mul_pd(v,sth));
+                         _mm512_storeu_pd(&vomsth[0],_mm512_mul_pd(zmm8r8_negate(v),
+			                               _mm512_mul_pd(omega,sth)));
+			 _mm512_storeu_pd(&vomcth[0],_mm512_mul_pd(v,_mm512_mul_pd(omega,cth)));
+}
