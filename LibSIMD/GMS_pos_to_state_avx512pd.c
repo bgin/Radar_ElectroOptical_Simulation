@@ -179,7 +179,7 @@ const_turn_zmm8r8(const __m512d xDot,
 			                                 _mm512_mul_pd(yDot,yDot));
 			  *omega           = _mm512_div_pd(t0,t1);
 #if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
-                          *a               = atan2kf(yDot,xDot);
+                          *a               = atan2k(yDot,xDot);
 #else
                           *a               = _mm512_atan2_pd(yDot,xDot);
 #endif
@@ -203,7 +203,7 @@ const_turn_zmm8r8_a(const __m512d xDot,
 			                                 _mm512_mul_pd(yDot,yDot));
 			  _mm512_store_pd(&omega[0],_mm512_div_pd(t0,t1));
 #if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
-                          _mm512_store_pd(&a[0],atan2kf(yDot,xDot));
+                          _mm512_store_pd(&a[0],atan2k(yDot,xDot));
 #else
                           _mm512_store_pd(&a[0],_mm512_atan2_pd(yDot,xDot));
 #endif
@@ -227,7 +227,7 @@ const_turn_zmm8r8_u(const __m512d xDot,
 			                                 _mm512_mul_pd(yDot,yDot));
 			  _mm512_storeu_pd(&omega[0],_mm512_div_pd(t0,t1));
 #if (POS_TO_STATE_AVX512PD_SLEEF_LIB) == 1
-                          _mm512_storeu_pd(&a[0],atan2kf(yDot,xDot));
+                          _mm512_storeu_pd(&a[0],atan2k(yDot,xDot));
 #else
                           _mm512_storeu_pd(&a[0],_mm512_atan2_pd(yDot,xDot));
 #endif
