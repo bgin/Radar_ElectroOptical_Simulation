@@ -27,7 +27,8 @@ const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility function
 
 
 
-
+#define max(x,y) ( (x) < (y) ? (y) : (x) )
+#define min(x,y) ( (x) < (y) ? (x) : (y) )
 
 
          
