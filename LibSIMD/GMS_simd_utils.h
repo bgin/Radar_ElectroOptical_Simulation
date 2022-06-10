@@ -4,7 +4,7 @@
 #define __GMS_SIMD_UTILS_H__ 040120220918
 
 
-
+namespace file_info {
 
 const unsigned int GMS_SIMD_UTILS_MAJOR = 1U;
 const unsigned int GMS_SIMD_UTILS_MINOR = 0U;
@@ -19,7 +19,7 @@ const char * const GMS_SIMD_UTILS_AUTHOR        = "Programmer: Bernard Gingold, 
 const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility functions.";
 
 
-
+}
 
 
 
@@ -27,8 +27,7 @@ const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility function
 
 
 
-#define max(x,y) ( (x) < (y) ? (y) : (x) )
-#define min(x,y) ( (x) < (y) ? (x) : (y) )
+
 
 
          
@@ -58,6 +57,57 @@ const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility function
                             const __mmask8 k = 0x7;
                             return (_mm_mask_loadu_ps(_0PS,k,v));
 		    }
+
+
+                      __attribute__((regcall))
+                     __attribute__((always_inline))
+                     __attribute__((hot))
+		     __attribute__((aligned(32)))
+                     static inline
+		      __mmask8 isinf_zmm8r8(__m512d x) {
+
+                         union {
+                           __m512i u;
+			   __m512d f;
+			 } ieee754;
+			 const __m512i c0 = _mm512_set1_epi64(0x7fffffff);
+			 const __m512i c1 = _mm512_set1_epi64(0x7ff00000);
+			 const __m512i _0 = _mm512_setzero_si512();
+			 __m512i t0,t1;
+			 __mmask8 b0,b1;
+			 ieee754.f = x;
+			 t0 = _mm512_and_epi64(_mm512_srli_epi64(ieee754.u,32),c0);
+			 b0 = _mm512_cmp_epi64_mask(t0,c1,_MM_CMPINT_EQ);
+			 b1 = _mm512_cmp_epi64_mask(ieee754.u,_0,_MM_CMPINT_EQ);
+			 return (b0 && b1);
+		    }
+
+
+		        __attribute__((regcall))
+                     __attribute__((always_inline))
+                     __attribute__((hot))
+		     __attribute__((aligned(32)))
+		      static inline
+		      __mmask8 isnan_zmm8r8(__m512d x) {
+
+		        union {
+                           __m512i u;
+			   __m512d f;
+			 } ieee754;
+			 const __m512i c0 = _mm512_set1_epi64(0x7fffffff);
+			 const __m512i c1 = _mm512_set1_epi64(0x7ff00000);
+			 const __m512i _0 = _mm512_setzero_si512();
+			 __m512i t0,t1;
+			 __mmask8 b0,b1;
+			 ieee754.f = x;
+			 t0 = _mm512_and_epi64(_mm512_srli_epi64(ieee754.u,32),c0);
+			 b0 = _mm512_cmp_epi64_mask(ieee754.u,_0,_MM_CMPINT_NE);
+			 t1 = _mm512_movm_epi64(b0);
+			 b1 = _mm512_cmp_epi64_mask(t1,c1,_MM_CMPINT_LT);
+			 b0 = _mm512_movm_epi64(t0);
+			 return (b0+b1);
+
+		      }
 
 
 		     __attribute__((regcall))
