@@ -29,15 +29,15 @@
 
 
 
- const unsigned int gGMS_RANGE_RATE_AVX512_MAJOR = 1U;
- const unsigned int gGMS_RANGE_RATE_AVX512_MINOR = 0U;
- const unsigned int gGMS_RANGE_RATE_AVX512_MICRO = 0U;
- const unsigned int gGMS_RANGE_RATE_AVX512_FULLVER =
-  1000U*gGMS_RANGE_RATE_AVX512_MAJOR+100U*gGMS_RANGE_RATE_AVX512_MINOR+10U*gGMS_RANGE_RATE_AVX512_MICRO;
- const char * const pgGMS_RANGE_RATE_AVX512_CREATION_DATE = "14-05-2022 11:11 +00200 (SAT 14 MAY 2022 11:11 GMT+2)";
- const char * const pgGMS_RANGE_RATE_AVX512_BUILD_DATE    = __DATE__ " " __TIME__ ;
- const char * const pgGMS_RANGE_RATE_AVX512_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com";
- const char * const pgGMS_RANGE_RATE_AVX512_SYNOPSIS      = "AVX512 based range-rate functions (vectorized)."
+ const unsigned int gGMS_RANGE_RATE_AVX512PD_MAJOR = 1U;
+ const unsigned int gGMS_RANGE_RATE_AVX512PD_MINOR = 0U;
+ const unsigned int gGMS_RANGE_RATE_AVX512PD_MICRO = 0U;
+ const unsigned int gGMS_RANGE_RATE_AVX512PD_FULLVER =
+  1000U*gGMS_RANGE_RATE_AVX512PD_MAJOR+100U*gGMS_RANGE_RATE_AVX512PD_MINOR+10U*gGMS_RANGE_RATE_AVX512PD_MICRO;
+ const char * const pgGMS_RANGE_RATE_AVX512PD_CREATION_DATE = "14-05-2022 11:11 +00200 (SAT 14 MAY 2022 11:11 GMT+2)";
+ const char * const pgGMS_RANGE_RATE_AVX512PD_BUILD_DATE    = __DATE__ " " __TIME__ ;
+ const char * const pgGMS_RANGE_RATE_AVX512PD_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com";
+ const char * const pgGMS_RANGE_RATE_AVX512PD_SYNOPSIS      = "AVX512 based range-rate functions (vectorized)."
 
 
 
