@@ -60,7 +60,7 @@
  *         xRx The 4X1 [x;y;xDot;yDot] position and velocity vector of
  *             the receiver in global Cartesian coordinates.
  *
- *OUTPUTS: rr The range rate as a double.
+ *OUTPUTS: rr The range rate as a float.
  *
  *See the comments to the Matlab function getRangeRate for more information
  *on how this function works.
@@ -101,7 +101,7 @@
  *         xTx The 6X1 [x;y;z;xDot;yDot;zDot] position and velocity
  *             vector of the receiver in global Cartesian coordinates.
  *
- *OUTPUTS: rr The range rate as a double.
+ *OUTPUTS: rr The range rate as a float.
  *
  *See the comments to the Matlab function getRangeRate for more information
  *on how this function works.
@@ -170,10 +170,10 @@
 
 
  void
- range_hessian_2d_zmm16r4_a(double * __restrict ,
-		           double * __restrict ,
-			   double * __restrict ,
-			   double * __restrict ,
+ range_hessian_2d_zmm16r4_a(float * __restrict ,
+		           float * __restrict ,
+			   float * __restrict ,
+			   float * __restrict ,
 			   const __m512,
 			   const __m512,
 			   const bool)  __attribute__((noinline))
@@ -183,10 +183,10 @@
 
 
  void
- range_hessian_2d_zmm16r4_u(double * __restrict ,
-		           double * __restrict ,
-			   double * __restrict ,
-			   double * __restrict ,
+ range_hessian_2d_zmm16r4_u(float * __restrict ,
+		           float * __restrict ,
+			   float * __restrict ,
+			   float * __restrict ,
 			   const __m512,
 			   const __m512,
 			   const bool)  __attribute__((noinline))
@@ -196,15 +196,15 @@
 
 
  void
- range_hessian_3d_zmm16r4_a(double * __restrict,
-		           double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
+ range_hessian_3d_zmm16r4_a(float * __restrict,
+		           float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
 			   const __m512,
 			   const __m512,
 			   const __m512,
@@ -215,15 +215,15 @@
 
 
  void
- range_hessian_3d_zmm16r4_u(double * __restrict,
-		           double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
+ range_hessian_3d_zmm16r4_u(float * __restrict,
+		           float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
 			   const __m512,
 			   const __m512,
 			   const __m512,
@@ -269,10 +269,10 @@ range_hess_gen_2d_zmm16r4(__m512 * __restrict,
 
 
 void
-range_hess_gen_2d_zmm16r4_a(double * __restrict,
-		           double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
+range_hess_gen_2d_zmm16r4_a(float * __restrict,
+		           float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
 			   const __m512,
 			   const __m512,
 			   const __m512,
@@ -286,10 +286,10 @@ range_hess_gen_2d_zmm16r4_a(double * __restrict,
 
 
 void
-range_hess_gen_2d_zmm16r4_u(double * __restrict,
-		           double * __restrict,
-			   double * __restrict,
-			   double * __restrict,
+range_hess_gen_2d_zmm16r4_u(float * __restrict,
+		           float * __restrict,
+			   float * __restrict,
+			   float * __restrict,
 			   const __m512,
 			   const __m512,
 			   const __m512,
@@ -328,15 +328,15 @@ range_hess_3d_zmm16r4(__m512 * __restrict,
 
 
 void
-range_hess_3d_zmm16r4_a( double * __restrict,
-		        double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
+range_hess_3d_zmm16r4_a( float * __restrict,
+		        float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
 			const __m512,
 			const __m512,
 			const __m512,
@@ -353,15 +353,15 @@ range_hess_3d_zmm16r4_a( double * __restrict,
 
 
 void
-range_hess_3d_zmm16r4_u( double * __restrict,
-		        double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
-			double * __restrict,
+range_hess_3d_zmm16r4_u( float * __restrict,
+		        float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
+			float * __restrict,
 			const __m512,
 			const __m512,
 			const __m512,
@@ -380,7 +380,7 @@ range_hess_3d_zmm16r4_u( double * __restrict,
 /*CART2RUVGENCPP A C++ function to convert a Cartesian point into range,
  *           and direction cosines, possibly including the w component.
  *
- *INPUTS: retData A pointer to an array of doubles with 3 elements to
+ *INPUTS: retData A pointer to an array of floats with 3 elements to
  *                hold the result in [r;u;v] order or with 4 elements if
  *                includeW is true to hold [r;u;v;w].
  *             zC The 3X1 Cartesian points [x;y;z] to be converted.
@@ -429,10 +429,10 @@ cart_to_ruv_zmm16r4(__m512 * __restrict,
 				         __attribute__((aligned(32)));
 
 void
-cart_to_ruv_zmm16r4_a(double * __restrict ,
-		     double * __restrict ,
-		     double * __restrict ,
-		     double * __restrict ,
+cart_to_ruv_zmm16r4_a(float * __restrict ,
+		     float * __restrict ,
+		     float * __restrict ,
+		     float * __restrict ,
 		     const __m512,
 		     const __m512,
 		     const __m512,
@@ -452,10 +452,10 @@ cart_to_ruv_zmm16r4_a(double * __restrict ,
 
 
 void
-cart_to_ruv_zmm16r4_u(double * __restrict ,
-		     double * __restrict ,
-		     double * __restrict ,
-		     double * __restrict ,
+cart_to_ruv_zmm16r4_u(float * __restrict ,
+		     float * __restrict ,
+		     float * __restrict ,
+		     float * __restrict ,
 		     const __m512,
 		     const __m512,
 		     const __m512,
@@ -475,7 +475,7 @@ cart_to_ruv_zmm16r4_u(double * __restrict ,
 /*CART2SPHEREGENCPP A C++ function to convert Cartesian points to bistatic
  *            range, azimuth and elevation.
  *
- *INPUTS: retData A pointer to an array of doubles with 3 elements to
+ *INPUTS: retData A pointer to an array of floats with 3 elements to
  *                hold the result in [range;azimuth;elevation]. order.
  *     cartPoints A pointer to the 3X1 Cartesian points [x;y;z] to be
  *                converted.
@@ -544,9 +544,9 @@ cart_to_sphere_zmm16r4(__m512 * __restrict,
 
 
 void
-cart_to_sphere_zmm16r4_a(double * __restrict,
-		        double * __restrict,
-			double * __restrict,
+cart_to_sphere_zmm16r4_a(float * __restrict,
+		        float * __restrict,
+			float * __restrict,
 			const __m512,
 			const __m512,
 			const __m512,
@@ -566,9 +566,9 @@ cart_to_sphere_zmm16r4_a(double * __restrict,
 
 
 void
-cart_to_sphere_zmm16r4_u(double * __restrict,
-		        double * __restrict,
-			double * __restrict,
+cart_to_sphere_zmm16r4_u(float * __restrict,
+		        float * __restrict,
+			float * __restrict,
 			const __m512,
 			const __m512,
 			const __m512,
