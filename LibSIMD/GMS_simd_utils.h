@@ -4,7 +4,7 @@
 #define __GMS_SIMD_UTILS_H__ 040120220918
 
 
-namespace file_info {
+
 
 const unsigned int GMS_SIMD_UTILS_MAJOR = 1U;
 const unsigned int GMS_SIMD_UTILS_MINOR = 0U;
@@ -19,7 +19,7 @@ const char * const GMS_SIMD_UTILS_AUTHOR        = "Programmer: Bernard Gingold, 
 const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility functions.";
 
 
-}
+
 
 
 
