@@ -591,4 +591,4 @@ cart_to_sphere_zmm16r4_u(double * __restrict,
 
 
 
-#endif /*__GMS_RANGE_RATE_AVX512PD_H__*/
+#endif /*__GMS_RANGE_RATE_AVX512PS_H__*/
