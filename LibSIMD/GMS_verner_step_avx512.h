@@ -40,7 +40,7 @@ SOFTWARE.
       100U*GMS_VERNER_STEP_AVX512_MINOR+
       10U*GMS_VERNER_STEP_AVX512_MICRO;
     const char * const GMS_VERNER_STEP_AVX512_CREATION_DATE = "05-06-2022 10:002 AM +00200 (SUN 05 JUN 2022 GMT+2)";
-    const char * const GMS_VERNER_STEPAVX512_BUILD_DATE    = __DATE__ ":" __TIME__;
+    const char * const GMS_VERNER_STEP_AVX512_BUILD_DATE    = __DATE__ ":" __TIME__;
     const char * const GMS_VERNER_STEP_AVX512_AUTHOR        = "Programmer: Bernard Gingold, contact: beniekg@gmail.com";
     const char * const GMS_VERNER_STEP_AVX512_DESCRIPTION   = "Vectorized (AVX512) Runge-Kutta-Verner order 7 step."
 
@@ -81,7 +81,7 @@ SOFTWARE.
 ////////////////////////////////////////////////////////////////////////////////
 
 __m512d
-verner_step_zmm8r8(_m512d(*)(__m512d,
+verner_step_zmm8r8(__m512d(*)(__m512d,
 		             __m512d),
 		   __m512d,
 		   __m512d,
@@ -93,7 +93,7 @@ verner_step_zmm8r8(_m512d(*)(__m512d,
 
 
 __m512
-verner_step_zmm16r4(_m512(*)(__m512,
+verner_step_zmm16r4(__m512(*)(__m512,
 		             __m512),
 		   __m512,
 		   __m512,
