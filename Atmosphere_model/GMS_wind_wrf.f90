@@ -50,7 +50,7 @@ module mod_wind_wrf
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
    
-    use mod_kinds, only : i4,dp
+    use mod_kinds, only : i4,i8,sp,dp
     use netcdf
     implicit none
     !=====================================================59
@@ -98,36 +98,29 @@ module mod_wind_wrf
           integer(kind=i4) :: ny,nyp1  ! dimension y, staggered nyp1
           
           integer(kind=i4) :: nz,nzp1  ! dimension z, staggered nzp1
-#if defined __INTEL_COMPILER          
+      
           real(kind=dp), allocatable, dimension(:,:,:,:) :: U   ! U-component
 !DIR$     ATTRIBUTES ALIGN : 64 :: U
-#elif defined __GFORTRAN__
-          real(kind=dp), allocatable, dimension(:,:,:,:) :: U   !GCC$ ATTRIBUTES aligned(64) :: U
-#endif
-#if defined __INTEL_COMPILER
+
+
           real(kind=dp), allocatable, dimension(:,:,:,:) :: V   ! V-component
 !DIR$     ATTRIBUTES ALIGN : 64 :: V
-#elif defined __GFORTRAN__
-          real(kind=dp), allocatable, dimension(:,:,:,:) :: V   !GCC$ ATTRIBUTES aligned(64) :: V
-#endif
-#if defined __INTEL_COMPILER
+
+#if defined __INTEL_COMPILE
           real(kind=dp), allocatable, dimension(:,:,:,:) :: W   ! W-component
 !DIR$     ATTRIBUTES ALIGN : 64 :: W        
-#elif defined __GFORTRAN__
-          real(kind=dp), allocatable, dimension(:,:,:,:) :: W   !GCC$ ATTRIBUTES aligned(64) :: W
-#endif
+
     end type Wind3D_t
     
     contains
 
-#if defined __GFORTRAN__
-      subroutine init_wind3D(wind3d,fwrfout,statd,stata,logging,verbose,append,fname)  !GCC$ ATTRIBUTES cold :: init_wind3D !GCC$ ATTRIBUTES aligned(32) :: init_wind3D
-#elif defined __INTEL_COMPILER
+
+     
       subroutine init_wind3D(wind3d,fwrfout,statd,stata,logging,verbose,append,fname)
 
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: init_wind3D
         use IFPORT,          only : TRACEBACKQQ
-#endif
+
           use mod_print_error, only : handle_fatal_memory_error,  &
                                       print_fatal_error
           type(Wind3D_t),   intent(inout) :: wind3d
