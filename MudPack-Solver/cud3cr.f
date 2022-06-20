@@ -58,7 +58,9 @@ c
 c     cudcom.f
 c
       subroutine cud3cr(iparm,fparm,wk,coef,bnd3cr,rhs,phi,mgopt,
-     +icros,crsxy,crsxz,crsyz,tol,maxit,iouter,rmax,ierror)
+     +     icros,crsxy,crsxz,crsyz,tol,maxit,iouter,rmax,ierror)
+           !dir$ attributes code_align : 32 :: cud3cr
+           !dir$ optimize : 3
       implicit none
       integer iparm(23),mgopt(4),icros(3),maxit,iouter,ierror
       real fparm(8),tol,rmax(maxit)
@@ -68,14 +70,17 @@ c
      +kcycle,iprer,ipost,intpol
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
-     +kcycle,iprer,ipost,intpol
+     +     kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       real xa,xb,yc,yd,ze,zf,tolmax,relmax
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
-     +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
+     +     ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /fcd3cr/
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
-     +nzk(50),ngrid,klevel,kcur,kps
+     +     nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       integer int,m,isx,jsy,ksz,ixy,ixz,iyz
       integer nx,ny,nz,itx,ity,itz,k,kb,ip,ic,ir
       real  dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
@@ -84,10 +89,12 @@ c
      +        kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +        kxy,kxz,kyz
       common / incr3 / dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
+      !dir$ attributes align : 64 :: /incr3/
       common/kcrsxyz/kxyxa,kxyxb,kxyyc,kxyyd,kxyze,kxyzf,
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
-     +               kxy,kxz,kyz
+     +     kxy,kxz,kyz
+      !dir$ attributes align : 64 :: /kcrsxyz/
       external coef,bnd3cr,crsxy,crsxz,crsyz
       data int / 0 /
       save int
@@ -355,7 +362,10 @@ c
       end
 
       subroutine cud3cr1(nx,ny,nz,wk,coef,bnd3cr,rhsf,phif,rhs,phi,
-     +crsxy,crsxz,crsyz,tol,rmax,maxit,iouter,ierror)
+     +     crsxy,crsxz,crsyz,tol,rmax,maxit,iouter,ierror)
+        !dir$ attributes code_align : 32 :: cud3cr1
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: cud3cr1
       implicit none
       integer nx,ny,nz,maxit,iouter,ierror
       real tol,rmax(maxit)
@@ -370,13 +380,16 @@ c
       complex phi(0:nx+1,0:ny+1,0:nz+1),rhs(nx,ny,nz)
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
-     +kcycle,iprer,ipost,intpol
+     +     kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
+      !dir$ attributes align : 64 :: /fcd3cr/
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
      +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
-     +nzk(50),ngrid,klevel,kcur,kps
+     +     nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       integer kxyxa,kxyxb,kxyyc,kxyyd,kxyze,kxyzf,
      +        kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +        kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
@@ -384,7 +397,8 @@ c
       common/kcrsxyz/kxyxa,kxyxb,kxyyc,kxyyd,kxyze,kxyzf,
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
-     +               kxy,kxz,kyz
+     +     kxy,kxz,kyz
+      !dir$ attributes align : 64 :: /kcrsxyz/
       external coef,bnd3cr,crsxy,crsxz,crsyz
       nx = nxk(ngrid)
       ny = nyk(ngrid)
@@ -395,8 +409,18 @@ c
 c
 c     set phif,rhsf in phi,rhs
 c
+      !dir$ assume_aligned phif:64
+      !dir$ assume_aligned phi:64
+      !dir$ assume_aligned rhsf:64
+      !dir$ assume_aligned rhs:64
+      !dir$ code_align(32)
+      !$omp parallel do default(none) schedule(static,8) private(k,j,j) &
+      !$omp& shared(nfz,nfy,nfx,phif,phi,rhsf,rhs)
       do k=1,nfz
-	do j=1,nfy
+         do j=1,nfy
+         !dir$ vector aligned
+         !dir$ vector always
+         !dir$ unroll(16)   
 	  do i=1,nfx
 	    phi(i,j,k) = phif(i,j,k)
 	    rhs(i,j,k) = rhsf(i,j,k)
@@ -420,8 +444,14 @@ c
       if (nze.eq.1) kst = 2
       kfn = nfz
       if (nzf.eq.1) kfn = nfz-1
+      !dir$ assume_aligned phif:64
+      !dir$ code_align(32)
       do k=kst,kfn
-	do j=jst,jfn
+         do j=jst,jfn
+         !dir$ vector nontemporal(phif)
+         !dir$ vector aligned   
+         !dir$ vector always
+         !dir$ unroll(16)   
 	  do i=ist,ifn
 	    phif(i,j,k) = (0.,0.)
 	  end do
@@ -474,8 +504,14 @@ c
 c
 c     set initial guess p(0) from phi in phif
 c
+        !dir$ assume_aligned phif:64
+        !dir$ assume_aligned phi:64
+ 1      !dir$ code_align(32)
 	do k=1,nfz
-	  do j=1,nfy
+          do j=1,nfy
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ unroll(16)
 	    do i=1,nfx
 	      phif(i,j,k) = phi(i,j,k)
 	    end do
@@ -524,6 +560,7 @@ c     iterates in rmax
 c
 	  pmax = 0.0
 	  difmax = 0.0
+          
 	  do k=1,nfz
 	    do j=1,nfy
 	      do i=1,nfx
@@ -544,8 +581,19 @@ c
 c
 c     update current estimate in phif and restore rhs from rhsf
 c
+       
+        !dir$ assume_aligned phif:64
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned rhsf:64
+        !dir$ assume_aligned rhs:64
+        !$omp parallel do schedule(static,8) default(none) private(k,j,i)
+        !$omp& shared(nfz,nfy,nfx,phi,phif,rhs,rhsf)
 	do k=1,nfz
 	  do j=1,nfy
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
+            !dir$ unroll(8)
 	    do i=1,nfx
 	      phif(i,j,k) = phi(i,j,k)
 	      rhs(i,j,k) = rhsf(i,j,k)
@@ -570,6 +618,8 @@ c
       end
 
       subroutine kcycd3cr(wk)
+       !dir$ attributes code_align : 32 :: kcycd3cr
+       !dir$ optimize : 3
 c
 c     perform multigrid k-cycle at kcur level
 c     kcycle = 1 corresponds to v cycles
@@ -583,11 +633,13 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
      +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
      +nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       integer nx,ny,nz,ncx,ncy,ncz
       integer kount(50),ip,ic,ir,ipc,irc,nrel,l,ixy,ixz,iyz
       klevel = kcur
@@ -747,6 +799,9 @@ c
 
       subroutine rescd3cr(nx,ny,nz,phi,rhs,cof,ncx,ncy,ncz,phic,rhsc,
      +resf,coxy,coxz,coyz)
+        !dir$ attributes code_align : 32 :: rescd3cr
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: rescd3cr
 c
 c     compute fully weighted residual restriction in rhsc
 c
@@ -758,6 +813,7 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       complex phi(0:nx+1,0:ny+1,0:nz+1),phic(0:ncx+1,0:ncy+1,0:ncz+1)
       complex rhsc(ncx,ncy,ncz),resf(nx,ny,nz),cof(nx,ny,nz,7)
       complex rhs(nx,ny,nz),coxy(nx,ny,nz),coxz(nx,ny,nz),coyz(nx,ny,nz)
@@ -770,11 +826,18 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+     !dir$ attributes align : 64 :: /kcrsxyz/
 c
 c     initialize phic to zero
 c
+      !dir$ assume_aligned phic:64
+      !dir$ code_align(32)
       do kc=0,ncz+1
 	do jc=0,ncy+1
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ vector nontemporal(phic)
+          !dir$ unroll(8)
 	  do ic=0,ncx+1
 	    phic(ic,jc,kc) = (0.0,0.0)
 	  end do
@@ -783,9 +846,19 @@ c
 c
 c     compute fine grid residual
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(rhs,resf,cof,phi,nx,ny,nz)
+      !dir$ assume_aligned resf:64
+      !dir$ assume_aligned rhs:64
+      !dir$ assume_aligned cof:64
+      !dir$ assume_aligned phi:64
+      !dir$ code_align(32)
+!$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+!$OMP&       PRIVATE(i,j,k) SHARED(rhs,resf,cof,phi,nx,ny,nz)
       do k=1,nz
 	do j=1,ny
+          !dir$ oce_align(32)
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always
 	  do i=1,nx
 	    resf(i,j,k) =  rhs(i,j,k)-(
      +                     cof(i,j,k,1)*phi(i-1,j,k)+
@@ -802,9 +875,16 @@ c
 c   adjust residual with cross coefs as necessary on interior
 c
       if (kxy .eq. 1) then
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(resf,coxy,phi,nx,ny,nz)
+      !dir$ assume_aligned resf:64
+      !dir$ assume_aligned coxy:64
+      !dir$ assume_aligned phi:64
+!$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+!$OMP&   PRIVATE(i,j,k), SHARED(resf,coxy,phi,nx,ny,nz)
 	do k=2,nz-1
 	  do j=2,ny-1
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do i=2,nx-1
 	    resf(i,j,k) =  resf(i,j,k) - coxy(i,j,k)*(
      +                     phi(i+1,j+1,k)+phi(i-1,j-1,k) -(
@@ -814,9 +894,16 @@ C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(resf,coxy,phi,nx,ny,nz)
 	end do
       end if
       if (kxz .eq. 1) then
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(resf,coxz,phi,nx,ny,nz)
+      !dir$ assume_aligned resf:64
+      !dir$ assume_aligned coxz:64
+      !dir$ assume_aligned phi:64
+!$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+!$OMP&  PRIVATE(i,j,k), SHARED(resf,coxz,phi,nx,ny,nz)
 	do k=2,nz-1
 	  do j=2,ny-1
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do i=2,nx-1
 	    resf(i,j,k) =  resf(i,j,k) - coxz(i,j,k)*(
      +                     phi(i+1,j,k+1)+phi(i-1,j,k-1) -(
@@ -826,9 +913,16 @@ C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(resf,coxz,phi,nx,ny,nz)
 	end do
       end if
       if (kyz .eq. 1) then
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(resf,coyz,phi,nx,ny,nz)
+      !dir$ assume_aligned resf:64
+      !dir$ assume_aligned coyz:64
+      !dir$ assume_aligned phi:64
+!$OMP PARALLEL DO DEFAULT(NONE) SCHEDULE(STATIC,8)
+!$OMP& PRIVATE(i,j,k), SHARED(resf,coyz,phi,nx,ny,nz)
 	do k=2,nz-1
 	  do j=2,ny-1
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do i=2,nx-1
 	    resf(i,j,k) =  resf(i,j,k) - coyz(i,j,k)*(
      +                     phi(i,j+1,k+1)+phi(i,j-1,k-1) - (
@@ -847,6 +941,9 @@ c
 
       subroutine discd3cr(nx,ny,nz,cof,coxy,coxz,coyz,tx,ty,tz,
      +                    bnd3cr,coef,crsxy,crsxz,crsyz,wk,ier)
+        !dir$ attributes code_align : 32 :: discd3cr
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: discd3cr
 c
 c     discretize the 3-d elliptic pde
 c
@@ -862,12 +959,15 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
+      !dir$ attributes align : 64 :: /fcd3cr/
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
      +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
      +nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       real dlx,dly,dlz,dlx2,dly2,dlz2,dlxx,dlyy,dlzz,cmin,cemax,alfmax
       complex cxx,cyy,czz,cx,cy,cz,ce,alfa,x,y,z,c1,c2,c3,c4,c5,c6
       complex cxy,cxz,cyz,a,b,c,g
@@ -882,6 +982,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+     !dir$ attributes align : 64 :: /kcrsxyz/
       real cxxr,cxxi,cyyr,cyyi,czzr,czzi
       external bnd3cr,coef,crsxy,crsxz,crsyz
 c
@@ -974,17 +1075,30 @@ c
 c     set cross derivative coefficients as necessary
 c
       if (kxy.eq.1) then
+        !dir$ assume_aligned coxy:64
+!$omp parallel default(none) private(k,j,i,z,y,x) 
+!$omp& shared(nz,ny,nx,coxy,ze,dlz,yc,dly,xa,dlx,cxy,odlxy4)
+!$omp do schedule(static,8)
 	do k=1,nz
 	  do j=1,ny
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(coxy)
 	    do i=1,nx
 	      coxy(i,j,k) = (0.0,0.0)
 	    end do
 	  end do
 	end do
+!$omp end do
+!$omp do schedule(static,8)
 	do k=2,nz-1
 	  z = ze+(k-1)*dlz
 	  do j=2,ny-1
 	    y = yc+(j-1)*dly
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do i=2,nx-1
 	      x = xa+(i-1)*dlx
 	      call crsxy(x,y,z,cxy)
@@ -992,39 +1106,69 @@ c
 	    end do
 	  end do
 	end do
+!$omp  end do
+!$omp end parallel
       end if
       if (kxz.eq.1) then
+  !dir$ assume_aligned coxz:64
+!$omp parallel default(none) private(k,j,i,z,y,x) 
+!$omp& shared(nz,ny,nx,ze,coxz,dlz,yc,dly,xa,dlx,cxz,odlxz4)
+!$omp do schedule(static,8)
 	do k=1,nz
 	  do j=1,ny
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(coxz)
 	    do i=1,nx
 	      coxz(i,j,k) = (0.0,0.0)
 	    end do
 	  end do
 	end do
+!$omp end do
+!$omp do schedule(static,8)
 	do k=2,nz-1
 	  z = ze+(k-1)*dlz
 	  do j=2,ny-1
 	    y = yc+(j-1)*dly
 	    do i=2,nx-1
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	      x = xa+(i-1)*dlx
 	      call crsxz(x,y,z,cxz)
 	      coxz(i,j,k) = cxz*odlxz4
 	    end do
 	  end do
 	end do
+!$omp end do
+!$omp end parallel
       end if
       if (kyz.eq.1) then
+ !dir$ assume_aligned coyz:64
+!$omp parallel default(none) private(k,j,i,z,y,x) 
+!$omp& shared(nz,ny,nx,ze,coyz,dlz,yc,dly,xa,dlx,cyz,odlyz4)
+!$omp do schedule(static,8)
 	do k=1,nz
 	  do j=1,ny
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(coyz)
 	    do i=1,nx
 	      coyz(i,j,k) = (0.0,0.0)
 	    end do
 	  end do
 	end do
+!$omp end do
+!$omp do schedule(static,8)
 	do k=2,nz-1
 	  z = ze+(k-1)*dlz
 	  do j=2,ny-1
 	    y = yc+(j-1)*dly
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do i=2,nx-1
 	      x = xa+(i-1)*dlx
 	      call crsyz(x,y,z,cyz)
@@ -1032,6 +1176,8 @@ c
 	    end do
 	  end do
 	end do
+!$omp end do
+!$omp end parallel
       end if
       alfmax = 0.0
 c
@@ -1041,8 +1187,13 @@ c
 	kbdy = 1
 	x = xa
 	i = 1
-	do k=kst,kfn
+        
+        do k=kst,kfn
 	  z = ze+(k-1)*dlz
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always
 	  do j=jst,jfn
 	    y = yc+(j-1)*dly
 	    call bnd3cr(kbdy,y,z,a,b,c,g)
@@ -1061,6 +1212,10 @@ c
 	i = nx
 	do k=kst,kfn
 	  z = ze+(k-1)*dlz
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always
 	  do j=jst,jfn
 	    y = yc+(j-1)*dly
 	    call bnd3cr(kbdy,y,z,a,b,c,g)
@@ -1079,6 +1234,10 @@ c
 	j = 1
 	do k=kst,kfn
 	  z = ze+(k-1)*dlz
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always
 	  do i=ist,ifn
 	    x = xa+(i-1)*dlx
 	    call bnd3cr(kbdy,x,z,a,b,c,g)
@@ -1097,6 +1256,10 @@ c
 	j = ny
 	do k=kst,kfn
 	z = ze+(k-1)*dlz
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always 
 	do i=ist,ifn
 	    x = xa+(i-1)*dlx
 	    call bnd3cr(kbdy,x,z,a,b,c,g)
@@ -1115,6 +1278,10 @@ c
 	k = 1
 	do j=jst,jfn
 	  y = yc+(j-1)*dly
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always 
 	  do i=ist,ifn
 	    x = xa+(i-1)*dlx
 	    call bnd3cr(kbdy,x,y,a,b,c,g)
@@ -1133,6 +1300,10 @@ c
 	k = nz
 	do j=jst,jfn
 	  y = yc+(j-1)*dly
+          !dir$ assume_aligned cof:64
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always 
 	  do i=ist,ifn
 	    x = xa+(i-1)*dlx
 	    call bnd3cr(kbdy,x,y,a,b,c,g)
@@ -1163,9 +1334,14 @@ c
 c     reset cof for specified b.c.
 c
       if (nxa.eq.1) then
+        !dir$ assume_aligned cof:64
 	i = 1
 	do j=1,ny
 	  do k=1,nz
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1174,9 +1350,14 @@ c
 	end do
       end if
       if (nxb.eq.1) then
+        !dir$ assume_aligned cof:64
 	i = nx
 	do k=1,nz
 	  do j=1,ny
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1185,9 +1366,14 @@ c
 	end do
       end if
       if (nyc.eq.1) then
+        !dir$ assume_aligned cof:64
 	j = 1
 	do k=1,nz
 	  do i=1,nx
+             !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1196,9 +1382,14 @@ c
 	end do
       end if
       if (nyd.eq.1) then
+          !dir$ assume_aligned cof:64
 	j = ny
 	do i=1,nx
 	  do k=1,nz
+             !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1207,9 +1398,14 @@ c
 	end do
       end if
       if (nze.eq.1) then
+         !dir$ assume_aligned cof:64
 	k = 1
 	do j=1,ny
 	  do i=1,nx
+              !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1218,9 +1414,14 @@ c
 	end do
       end if
       if (nzf.eq.1) then
+         !dir$ assume_aligned cof:64
 	k = nz
 	do j=1,ny
 	  do i=1,nx
+             !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
+           !dir$ vector nontemporal(cof)
 	    do l=1,7
 	      cof(i,j,k,l) = (0.0,0.0)
 	    end do
@@ -1242,6 +1443,10 @@ c
 c
 c     set non-periodic tridiagonal matrices in tx and factor
 c
+          !dir$ assume_aligned tx:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,im1,k,j) shared(nx,nz,ny,tx,cof)
 	  do i=1,nx
 	    im1 = max0(i-1,1)
 	    do k=1,nz
@@ -1252,6 +1457,7 @@ c
 	      end do
 	    end do
 	  end do
+!$omp end parallel do
 	  nynz = ny*nz
 	  call cfactri(nynz,nx,tx(1,1,1,1),tx(1,1,1,2),tx(1,1,1,3))
 	else
@@ -1259,6 +1465,10 @@ c
 c
 c     set "periodic" tridiagonal matrices in tx and factor when nx > 3
 c
+           !dir$ assume_aligned tx:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,k,j) shared(nx,nz,ny,tx,cof)
 	    do k=1,nz
 	      do j=1,ny
 		do i=1,nx-1
@@ -1268,6 +1478,7 @@ c
 		end do
 	      end do
 	    end do
+!$omp end parallel do
 	    nynz = ny*nz
 	    call cfactrp(nynz,nx,tx,tx(1,1,1,2),tx(1,1,1,3),tx(1,1,1,4),
      +                   tx(1,1,1,5),wk(kps))
@@ -1282,6 +1493,10 @@ c
 c
 c     set non-periodic tridiagonal matrices and factor
 c
+          !dir$ assume_aligned ty:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,jm1,k,j) shared(nx,nz,ny,ty,cof)
 	  do j=1,ny
 	    jm1 = max0(j-1,1)
 	    do k=1,nz
@@ -1292,6 +1507,7 @@ c
 	      end do
 	    end do
 	  end do
+!$omp end parallel do
 	  nxnz = nx*nz
 	  call cfactri(nxnz,ny,ty(1,1,1,1),ty(1,1,1,2),ty(1,1,1,3))
 	else
@@ -1299,6 +1515,10 @@ c
 c
 c     set and factor periodic "tridiagonal" matrices when ny > 3
 c
+          !dir$ assume_aligned ty:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,k,j) shared(nx,nz,ny,ty,cof)
 	    do k=1,nz
 	      do i=1,nx
 		do j=1,ny-1
@@ -1308,6 +1528,7 @@ c
 		end do
 	      end do
 	    end do
+!$omp end parallel do
 	    nxnz = nx*nz
 	    call cfactrp(nxnz,ny,ty,ty(1,1,1,2),ty(1,1,1,3),ty(1,1,1,4),
      +                   ty(1,1,1,5),wk(kps))
@@ -1322,6 +1543,10 @@ c
 c
 c     set and factor non-periodic tridiagonal matrices
 c
+          !dir$ assume_aligned tz:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,km1,k,j) shared(nx,nz,ny,tz,cof)
 	  do k=1,nz
 	    km1 = max0(k-1,1)
 	    do j=1,ny
@@ -1332,6 +1557,7 @@ c
 	      end do
 	    end do
 	  end do
+!$omp end parallel do
 	  nxny = nx*ny
 	  call cfactri(nxny,nz,tz(1,1,1,1),tz(1,1,1,2),tz(1,1,1,3))
 	else
@@ -1339,6 +1565,10 @@ c
 c
 c     set and factor periodic "tridiagonal matrices when nz > 3
 c
+          !dir$ assume_aligned tz:64
+          !dir$ assume_aligned cof:64
+!$omp parallel do schedule(static,8) default(none) &
+!$omp& private(i,k,j) shared(nx,nz,ny,tx,cof)
 	    do j=1,ny
 	      do i=1,nx
 		do k=1,nz-1
@@ -1348,6 +1578,7 @@ c
 		end do
 	      end do
 	    end do
+!$omp end parallel do
 	    nxny = nx*ny
 	    call cfactrp(nxny,nz,tz(1,1,1,1),tz(1,1,1,2),tz(1,1,1,3),
      +                   tz(1,1,1,4),tz(1,1,1,5),wk(kps))
@@ -1604,6 +1835,9 @@ c
       end
 
       subroutine cdifxyz(nx,ny,nz,p,i,j,k,px,py,pz)
+        !dir$ attributes forceinline :: cdifxyz
+        !dir$ optimize : 3
+        !dir$ attributes vector:processor(skylake_avx512) :: cdifxyz
 c
 c     estimate first order partial derivatives at (i,j,k) fine grid point
 c     in px,py,pz using second order difference formula applied to p
