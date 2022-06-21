@@ -92,7 +92,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: q4x8_to_rmat9x8_ymm8r4
         !DIR$ ATTRIBUTES VECTOR :: q4x8_to_rmat9x8_ymm8r4
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_rmat9x8_ymm8r4
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: q4x8_to_rmat9x8_ymm8r4
 #endif
         use rotation_types, only : Qu4x8v8, RMat9x8v8
        
@@ -136,7 +136,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: q4x4_to_rmat9x4_ymm4r8
         !DIR$ ATTRIBUTES VECTOR :: q4x4_to_rmat9x4_ymm4r8
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x4_to_rmat9x4_ymm4r8
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: q4x4_to_rmat9x4_ymm4r8
 #endif
         use rotation_types, only : Qu4x4v4, RMat9x4v4
        
@@ -179,7 +179,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: rand_sphere_rm9x8_ymm8r4
         !DIR$ ATTRIBUTES VECTOR :: rand_sphere_rm9x8_ymm8r4
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rand_sphere_rm9x8_ymm8r4
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: rand_sphere_rm9x8_ymm8r4
 #endif
         use rotation_types, only : RMat9x8v8
       
@@ -227,7 +227,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: rand_sphere_rm9x4_ymm4r8
         !DIR$ ATTRIBUTES VECTOR :: rand_sphere_rm9x4_ymm4r8
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: rand_sphere_rm9x4_ymm4r8
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: rand_sphere_rm9x4_ymm4r8
 #endif
         use rotation_types, only : RMat9x4v4
       
@@ -285,7 +285,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: urand_q4x8_ymm8r4
         !DIR$ ATTRIBUTES VECTOR :: urand_q4x8_ymm8r4
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: urand_q4x8_ymm8r4
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: urand_q4x8_ymm8r4
 #endif
        use rotation_types, only : Qu4x8v8
     
@@ -326,7 +326,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: urand_q4x4_ymm4r8
         !DIR$ ATTRIBUTES VECTOR :: urand_q4x4_ymm4r8
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: urand_q4x4_ymm4r8
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: urand_q4x4_ymm4r8
 #endif
        use rotation_types, only : Qu4x4v4
     
@@ -366,7 +366,7 @@ module avx_rotations
         !DIR$ ATTRIBUTES INLINE :: q4x8_to_ea3x8_zmm8r4
         !DIR$ ATTRIBUTES VECTOR :: q4x8_to_ea3x8_zmm8r4
         !DIR$ OPTIMIZE : 3
-        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: q4x8_to_ea3x8_ymm8r4
+        !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: "TARGET_ARCH=skylake_avx512" :: q4x8_to_ea3x8_ymm8r4
 #endif
         use rotation_types, only : Qu4x8v8,EAng3x8v8
         use mod_vectypes,   only : Mask8_t
