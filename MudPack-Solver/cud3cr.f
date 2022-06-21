@@ -586,9 +586,7 @@ c
         !dir$ assume_aligned phi:64
         !dir$ assume_aligned rhsf:64
         !dir$ assume_aligned rhs:64
-        !$omp parallel do schedule(static,8) default(none) private(k,j,i)
-        !$omp& shared(nfz,nfy,nfx,phi,phif,rhs,rhsf)
-	do k=1,nfz
+        do k=1,nfz
 	  do j=1,nfy
             !dir$ ivdep
             !dir$ vector aligned
@@ -1589,6 +1587,9 @@ c
       end
 
       subroutine adjcd3cr(nx,ny,nz,phi,rhs,phif,bnd3cr,coef)
+          !dir$ attributes code_align : 32 :: adjcd3cr
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: adjcd3cr
 c
 c     adjust for mixed b.c. or specified boundaries
 c     approximate nonnormal b.c. derivatives with finite differences
@@ -1605,15 +1606,19 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       real xa,xb,yc,yd,ze,zf,tolmax,relmax
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
+      !dir$ attributes align : 64 :: /fcd3cr/
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
      +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
      +nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       real  dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
       common / incr3 / dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
+      !dir$ attributes align : 64 :: /incr3/
       real dlx,dlx2,dlxx,dly,dly2,dlyy,dlz,dlz2,dlzz
       real odlxy4,odlxz4,odlyz4
       complex c1,c2,c3,c4,c5,c6
@@ -1684,9 +1689,9 @@ c
 	kbdy = 2
 	x = xb
 	i = nx
-	do k=kst,kfn
+       	do k=kst,kfn
 	  z = ze+(k-1)*dlz
-	  do j=jst,jfn
+          do j=jst,jfn
 	    y = yc+(j-1)*dly
 	    call bnd3cr(kbdy,y,z,a,b,c,g)
 	    call coef(x,y,z,cxx,cyy,czz,cx,cy,cz,ce)
@@ -1785,14 +1790,15 @@ c     adjust for specified (dirchlet) boundary conditions
 c
       if (nxa.eq.1) then
 	i = 1
-	do j=1,ny
-	  do k=1,nz
+  	do j=1,ny
+    	  do k=1,nz
 	    rhs(i,j,k) = phi(i,j,k)
 	  end do
 	end do
       end if
       if (nxb.eq.1) then
 	i = nx
+
 	do j=1,ny
 	  do k=1,nz
 	    rhs(i,j,k) = phi(i,j,k)
@@ -1836,8 +1842,9 @@ c
 
       subroutine cdifxyz(nx,ny,nz,p,i,j,k,px,py,pz)
         !dir$ attributes forceinline :: cdifxyz
+        !dir$ attributes code_align : 32 :: cdifxyz
         !dir$ optimize : 3
-        !dir$ attributes vector:processor(skylake_avx512) :: cdifxyz
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: cdifxyz
 c
 c     estimate first order partial derivatives at (i,j,k) fine grid point
 c     in px,py,pz using second order difference formula applied to p
@@ -1848,6 +1855,7 @@ c
       complex p(nx,ny,nz),px,py,pz
       real  dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
       common / incr3 / dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
+     
       if (i.gt.1 .and. i.lt.nx) then
 	px = (p(i+1,j,k)-p(i-1,j,k))/dx2
       else if (i.eq.1) then
@@ -1873,6 +1881,8 @@ c
       end
 
       subroutine relcd3cr(wk)
+        !dir$ attributes code_align : 32 :: relcd3cr
+        !dir$ optimize : 3
 c
 c     point or line relaxation in the x and/or y and/or z direction(s)
 c
@@ -1885,12 +1895,15 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
+      !dir$ attributes align : 64 :: /fcd3cr/
       integer kpbgn,kcbgn,krbgn,kxybgn,kxzbgn,kyzbgn,ktxbgn,ktybgn,
      +ktzbgn,nxk,nyk,nzk,ngrid,klevel,kcur,kps
       common/cd3cr/kpbgn(50),kcbgn(50),krbgn(50),kxybgn(50),kxzbgn(50),
      +kyzbgn(50),ktxbgn(50),ktybgn(50),ktzbgn(50),nxk(50),nyk(50),
      +nzk(50),ngrid,klevel,kcur,kps
+      !dir$ attributes align : 64 :: /cd3cr/
       integer nx,ny,nz,ip,ic,ir,m,itx,ity,itz,ixy,ixz,iyz
       nx = nxk(klevel)
       ny = nyk(klevel)
@@ -1980,6 +1993,9 @@ c
       end
 
       subroutine relcd3crp(nx,ny,nz,phi,cof,coxy,coxz,coyz,rhs)
+        !dir$ attributes code_align : 32 :: relcd3crp
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: relcd3crp
 c
 c     gauss-seidel point relaxation with red/black ordering
 c     in three dimensions for nonseparable pde with cross terms
@@ -1992,6 +2008,7 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       complex phi(0:nx+1,0:ny+1,0:nz+1),cof(nx,ny,nz,7),rhs(nx,ny,nz)
       complex coxy(nx,ny,nz),coxz(nx,ny,nz),coyz(nx,ny,nz)
       integer kxyxa,kxyxb,kxyyc,kxyyd,kxyze,kxyzf,
@@ -2002,6 +2019,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+      !dir$ attributes align : 64 :: /kcrsxyz/
       integer i,j,k,nper
 c
 c     set periodic b.c. indicator
@@ -2018,13 +2036,20 @@ c     (2) black (x,y) on even z planes
 c     (3) black (x,y) on odd z planes
 c     (4) red (x,y) on even z planes
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(phi,cof,rhs,coxy,coxz,coyz)
-C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
+!$omp parallel do schedule(static,8) private(i,j,k) shared(phi,cof,rhs,coxy,coxz,coyz)
+!$omp& shared(nx,ny,nz,kxy,kxz,kyz)
       do k=1,nz,2
 c
 c     red (x,y) points on odd z planes
 c
-	do i=1,nx,2
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned rhs:64
+        !dir$ assume_aligned cof:64
+        !dir$ code_align(32)
+       	do i=1,nx,2
+          !dir$ ivdep
+          !dir$ vector aligned
+          !dir$ vector always
 	  do j=1,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2040,7 +2065,14 @@ c
 c     adjust for cross derivative coefficients as necessary
 c
 	if (kxy.eq.1) then
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned coxy:64
+        !dir$ assume_aligned cof:64
+        !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2049,7 +2081,14 @@ c
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2058,7 +2097,14 @@ c
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2066,7 +2112,14 @@ c
 	    end do
 	  end do
 	end if
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=2,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2082,7 +2135,14 @@ c
 c     adjust for cross derivative coefficients as necessary
 c
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2091,7 +2151,14 @@ c
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2100,7 +2167,14 @@ c
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2113,10 +2187,17 @@ c
 c
 c    black (x,y) points on even z planes
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(phi,cof,rhs,coxy,coxz,coyz)
-C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
+!$omp parallel do schedule(static,8) private(i,j,k), shared(phi,cof,rhs,coxy,coxz,coyz)
+!$omp& shared(nx,ny,nz,kxy,kxz,kyz)
       do k=2,nz,2
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=2,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2129,7 +2210,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+             !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2138,7 +2226,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2147,7 +2242,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2155,7 +2257,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	    end do
 	  end do
 	end if
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=1,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2168,7 +2277,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+           !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2177,7 +2293,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2186,7 +2309,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2199,10 +2329,17 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 c
 c     black (x,y) points on odd z planes
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(phi,cof,rhs,coxy,coxz,coyz)
-C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
+!$omp parallel do schedule(static,8) private(i,j,k) shared(phi,cof,rhs,coxy,coxz,coyz)
+!$omp& shared(nx,ny,nz,kxy,kxz,kyz)
       do k=1,nz,2
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=2,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2215,7 +2352,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+             !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2224,7 +2368,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2233,7 +2384,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2241,7 +2399,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	    end do
 	  end do
 	end if
+         !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=1,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2254,7 +2419,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+             !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2263,7 +2435,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2272,7 +2451,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+             !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2285,10 +2471,17 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 c
 c     red (x,y) points on even z planes
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k), SHARED(phi,cof,rhs,coxy,coxz,coyz)
-C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
+!$omp parallel do schedule(static,8) private(i,j,k), shared(phi,cof,rhs,coxy,coxz,coyz)
+!$omp& shared(nx,ny,nz,kxy,kxz,kyz)
       do k=2,nz,2
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=1,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2301,7 +2494,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2310,7 +2510,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+           !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2319,7 +2526,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=1,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2327,7 +2541,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	    end do
 	  end do
 	end if
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	  do j=2,ny,2
 	    phi(i,j,k) = (rhs(i,j,k) - (
      +                    cof(i,j,k,1)*phi(i-1,j,k)+
@@ -2340,7 +2561,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end do
 	if (kxy.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxy:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxy(i,j,k)*(
      +        phi(i-1,j-1,k)+phi(i+1,j+1,k)-(
@@ -2349,7 +2577,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kxz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coxz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+             !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coxz(i,j,k)*(
      +        phi(i-1,j,k-1)+phi(i+1,j,k+1)-(
@@ -2358,7 +2593,14 @@ C$OMP+SHARED(nx,ny,nz,kxy,kxz,kyz)
 	  end do
 	end if
 	if (kyz.eq.1) then
+          !dir$ assume_aligned phi:64
+          !dir$ assume_aligned coyz:64
+          !dir$ assume_aligned cof:64
+          !dir$ code_align(32)
 	  do i=2,nx,2
+            !dir$ ivdep
+            !dir$ vector aligned
+            !dir$ vector always
 	    do j=2,ny,2
 	      phi(i,j,k) = phi(i,j,k) - (coyz(i,j,k)*(
      +        phi(i,j-1,k-1)+phi(i,j+1,k+1)-(
@@ -2377,6 +2619,9 @@ c
       subroutine csexyzb(nx,ny,nz,crsxy,crsxz,crsyz,cxyxa,cxyxb,
      +cxyyc,cxyyd,cxyze,cxyzf,cxzxa,cxzxb,cxzyc,cxzyd,cxzze,
      +cxzzf,cyzxa,cyzxb,cyzyc,cyzyd,cyzze,cyzzf)
+        !dir$ attributes code_align : 32 :: csexyzb
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: csexyzb
 c
 c     set cross derivative coefficient values along boundaries
 c     on fine grid where nonzero cross coefs are flagged
@@ -2398,10 +2643,13 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       real xa,xb,yc,yd,ze,zf,tolmax,relmax
       common/fcd3cr/xa,xb,yc,yd,ze,zf,tolmax,relmax
+      !dir$ attributes align : 64 :: /icd3cr/
       real dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
       common / incr3 / dx,dy,dz,dx2,dy2,dz2,odxy4,odxz4,odyz4
+      !dir$ attributes align : 64 :: /icd3cr/
       integer kxyxa,kxyxb,kxyyc,kxyyd,kxyze,kxyzf,
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
@@ -2410,6 +2658,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+     !dir$ attributes align : 64 :: /kcrsxyz/
       real x,y,z
       complex cxy,cxz,cyz
       external crsxy,crsxz,crsyz
@@ -2549,6 +2798,10 @@ c
       end
 
       subroutine csubxy(nx,ny,nz,p,r,cxyxa,cxyxb,cxyyc,cxyyd,cxyze,cxyzf)
+        !dir$ attributes forceinline :: csubxy
+        !dir$ attributes code_align : 32 :: csubxy
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: csubxy
 c
 c     adjust right hand side r by subtracting off second order finite
 c     difference approximations to pxy over nonspecified boundaries
@@ -2566,6 +2819,7 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       complex px(3),pxy
       ks = 1
       kf = nz
@@ -2740,6 +2994,10 @@ c
       end
 
       subroutine csubxz(nx,ny,nz,p,r,cxzxa,cxzxb,cxzyc,cxzyd,cxzze,cxzzf)
+        !dir$ attributes forceinline :: csubxz
+        !dir$ attributes code_align : 32 :: csubxz
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: csubxz
 c
 c     adjust right hand side r by subtracting off second order finite
 c     difference approximations to pxz over nonspecified boundaries
@@ -2756,6 +3014,7 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       complex px(3),pxz
       js = 1
       jf = ny
@@ -2765,6 +3024,12 @@ c
 	i = 1
 	if (nze.eq.2) then
 	  k = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = -3.*p(1,j,1)+4.*p(2,j,1)-p(3,j,1)
 	    px(2) = -3.*p(1,j,2)+4.*p(2,j,2)-p(3,j,2)
@@ -2773,7 +3038,13 @@ c
 	    r(1,j,1) = r(1,j,1) - cxzxa(j,k)*pxz
 	  end do
 	end if
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
 	do k=2,nz-1
+            !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = -3.*p(1,j,k-1)+4.*p(2,j,k-1)-p(3,j,k-1)
 	    px(3) = -3.*p(1,j,k+1)+4.*p(2,j,k+1)-p(3,j,k+1)
@@ -2783,6 +3054,12 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = -3.*p(1,j,nz-2)+4.*p(2,j,nz-2)-p(3,j,nz-2)
 	    px(2) = -3.*p(1,j,nz-1)+4.*p(2,j,nz-1)-p(3,j,nz-1)
@@ -2796,6 +3073,12 @@ c
 	i = nx
 	if (nze.eq.2) then
 	  k = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = 3.*p(nx,j,1)-4.*p(nx-1,j,1)+p(nx-2,j,1)
 	    px(2) = 3.*p(nx,j,2)-4.*p(nx-1,j,2)+p(nx-2,j,2)
@@ -2804,7 +3087,13 @@ c
 	    r(i,j,k) = r(i,j,k) - cxzxb(j,k)*pxz
 	  end do
 	end if
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxb:64
 	do k=2,nz-1
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = 3.*p(nx,j,k-1)-4.*p(nx-1,j,k-1)+p(nx-2,j,k-1)
 	    px(3) = 3.*p(nx,j,k+1)-4.*p(nx-1,j,k+1)+p(nx-2,j,k+1)
@@ -2814,6 +3103,12 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = 3.*p(nx,j,nz-2)-4.*p(nx-1,j,nz-2)+p(nx-2,j,nz-2)
 	    px(2) = 3.*p(nx,j,nz-1)-4.*p(nx-1,j,nz-1)+p(nx-2,j,nz-1)
@@ -2825,7 +3120,13 @@ c
       end if
       if (nze.eq.2) then
 	k = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzze:64
 	do i=2,nx-1
+            !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = p(i+1,j,1)-p(i-1,j,1)
 	    px(2) = p(i+1,j,2)-p(i-1,j,2)
@@ -2837,7 +3138,13 @@ c
       end if
       if (nzf.eq.2) then
 	k = nz
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzzf:64
 	do i=2,nx-1
+             !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = p(i+1,j,nz-2)-p(i-1,j,nz-2)
 	    px(2) = p(i+1,j,nz-1)-p(i-1,j,nz-1)
@@ -2855,6 +3162,13 @@ c
 	im1 = nx-1
 	if (nze.eq.2) then
 	  k = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = p(ip1,j,1)-p(im1,j,1)
 	    px(2) = p(ip1,j,2)-p(im1,j,2)
@@ -2864,6 +3178,13 @@ c
 	    r(nx,j,1) = r(nx,j,1) - cxzxb(j,k)*pxz
 	  end do
 	end if
+          !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	do k=2,nz-1
 	  do j=js,jf
 	    pxz = p(ip1,j,k+1)+p(im1,j,k-1)-(p(ip1,j,k-1)+p(im1,j,k+1))
@@ -2873,6 +3194,13 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    px(1) = p(ip1,j,nz-2)-p(im1,j,nz-2)
 	    px(2) = p(ip1,j,nz-1)-p(im1,j,nz-1)
@@ -2888,6 +3216,13 @@ c
 	if (nze.eq.0) then
 	  km1 = nz-1
 	  kp1 = 2
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzxa:64
+           !dir$ assume_aligned cxzxb:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do j=js,jf
 	    pxz = p(ip1,j,kp1)+p(im1,j,km1)-(p(ip1,j,km1)+p(im1,j,kp1))
 	    r(1,j,1) = r(1,j,1) - cxzxa(j,1)*pxz
@@ -2900,6 +3235,13 @@ c
       if (nze.eq.0) then
 	km1 = nz-1
 	kp1 = 2
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzze:64
+           !dir$ assume_aligned cxzxf:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	do i=2,nx-1
 	  do j=js,jf
 	    pxz = p(i+1,j,kp1)+p(i-1,j,km1)-(p(i+1,j,km1)+p(i-1,j,kp1))
@@ -2911,6 +3253,13 @@ c
 
       if (nyc.ne.1) then
 	j = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzyc:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	do i=2,nx-1
 	  do k=2,nz-1
 	    pxz = p(i+1,j,k+1)+p(i-1,j,k-1)-(p(i+1,j,k-1)+p(i-1,j,k+1))
@@ -2920,6 +3269,13 @@ c
       end if
       if (nyd.ne.1) then
 	j = ny
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cxzyd:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	do i=2,nx-1
 	  do k=2,nz-1
 	    pxz = p(i+1,j,k+1)+p(i-1,j,k-1)-(p(i+1,j,k-1)+p(i-1,j,k+1))
@@ -2931,6 +3287,9 @@ c
       end
 
       subroutine csubyz(nx,ny,nz,p,r,cyzxa,cyzxb,cyzyc,cyzyd,cyzze,cyzzf)
+          !dir$ attributes code_align : 32 :: csubyz
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: csubyz
 c
 c     adjust right hand side r by subtracting off second order finite
 c     difference approximations to pyz over nonspecified boundaries
@@ -2947,6 +3306,7 @@ c
       common/icd3cr/intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,
      +kez,nfx,nfy,nfz,iguess,maxcy,method,meth2,nwork,lwork,itero,
      +kcycle,iprer,ipost,intpol
+      !dir$ attributes align : 64 :: /icd3cr/
       complex py(3),pyz
       ist = 1
       ifn = nx
@@ -2956,6 +3316,13 @@ c
 	j = 1
 	if (nze.eq.2) then
 	  k = 1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = -3.*p(i,1,1)+4.*p(i,2,1)-p(i,3,1)
 	    py(2) = -3.*p(i,1,2)+4.*p(i,2,2)-p(i,3,2)
@@ -2964,7 +3331,15 @@ c
 	    r(i,j,k) = r(i,j,k) - cyzyc(i,k)*pyz
 	  end do
 	end if
+       
 	do k=2,nz-1
+           !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = -3.*p(i,1,k-1)+4.*p(i,2,k-1)-p(i,3,k-1)
 	    py(3) = -3.*p(i,1,k+1)+4.*p(i,2,k+1)-p(i,3,k+1)
@@ -2974,6 +3349,13 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = -3.*p(i,1,nz-2)+4.*p(i,2,nz-2)-p(i,3,nz-2)
 	    py(2) = -3.*p(i,1,nz-1)+4.*p(i,2,nz-1)-p(i,3,nz-1)
@@ -2987,6 +3369,13 @@ c
 	j = ny
 	if (nze.eq.2) then
 	  k = 1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyd:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = 3.*p(i,ny,1)-4.*p(i,ny-1,1)+p(i,ny-2,1)
 	    py(2) = 3.*p(i,ny,2)-4.*p(i,ny-1,2)+p(i,ny-2,2)
@@ -2996,6 +3385,13 @@ c
 	  end do
 	end if
 	do k=2,nz-1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyd:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = 3.*p(i,ny,k-1)-4.*p(i,ny-1,k-1)+p(i,ny-2,k-1)
 	    py(3) = 3.*p(i,ny,k+1)-4.*p(i,ny-1,k+1)+p(i,ny-2,k+1)
@@ -3005,6 +3401,13 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+             !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyd:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = 3.*p(i,ny,nz-2)-4.*p(i,ny-1,nz-2)+p(i,ny-2,nz-2)
 	    py(2) = 3.*p(i,ny,nz-1)-4.*p(i,ny-1,nz-1)+p(i,ny-2,nz-1)
@@ -3017,6 +3420,13 @@ c
       if (nze.eq.2) then
 	k = 1
 	do j=2,ny-1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzze:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = p(i,j+1,1)-p(i,j-1,1)
 	    py(2) = p(i,j+1,2)-p(i,j-1,2)
@@ -3029,6 +3439,13 @@ c
       if (nzf.eq.2) then
 	k = nz
 	do j=2,ny-1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzzf:64
+           
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = p(i,j+1,nz-2)-p(i,j-1,nz-2)
 	    py(2) = p(i,j+1,nz-1)-p(i,j-1,nz-1)
@@ -3046,6 +3463,13 @@ c
 	jm1 = ny-1
 	if (nze.eq.2) then
 	  k = 1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           !dir$ assume_aligned cyzyd:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = p(i,jp1,1)-p(i,jm1,1)
 	    py(2) = p(i,jp1,2)-p(i,jm1,2)
@@ -3056,6 +3480,13 @@ c
 	  end do
 	end if
 	do k=2,nz-1
+            !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           !dir$ assume_aligned cyzyd:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    pyz = p(i,jp1,k+1)+p(i,jm1,k-1)-(p(i,jp1,k-1)+p(i,jm1,k+1))
 	    r(i,1,k) = r(i,1,k) - cyzyc(i,k)*pyz
@@ -3064,6 +3495,13 @@ c
 	end do
 	if (nzf.eq.2) then
 	  k = nz
+              !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           !dir$ assume_aligned cyzyd:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    py(1) = p(i,jp1,nz-2)-p(i,jm1,nz-2)
 	    py(2) = p(i,jp1,nz-1)-p(i,jm1,nz-1)
@@ -3079,6 +3517,13 @@ c
 	if (nze.eq.0) then
 	  km1 = nz-1
 	  kp1 = 2
+             !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzyc:64
+           !dir$ assume_aligned cyzyd:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    pyz = p(i,jp1,kp1)+p(i,jm1,km1)-(p(i,jp1,km1)+p(i,jm1,kp1))
 	    r(i,1,1) = r(i,1,1) - cyzyc(i,1)*pyz
@@ -3092,6 +3537,13 @@ c
 	km1 = nz-1
 	kp1 = 2
 	do j=2,ny-1
+             !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzze:64
+           !dir$ assume_aligned cyzzf:64
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do i=ist,ifn
 	    pyz = p(i,j+1,kp1)+p(i,j-1,km1)-(p(i,j+1,km1)+p(i,j-1,kp1))
 	    r(i,j,1) = r(i,j,1) - cyzze(i,j)*pyz
@@ -3102,6 +3554,13 @@ c
       if (nxa.ne.1) then
 	i = 1
 	do j=2,ny-1
+             !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzxa:64
+         
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do k=2,nz-1
 	    pyz = p(i,j+1,k+1)+p(i,j-1,k-1)-(p(i,j+1,k-1)+p(i,j-1,k+1))
 	    r(i,j,k) = r(i,j,k) - cyzxa(j,k)*pyz
@@ -3111,6 +3570,13 @@ c
       if (nxb.ne.1) then
 	i = nx
 	do j=2,ny-1
+             !dir$ assume_aligned p:64
+           !dir$ assume_aligned r:64
+           !dir$ assume_aligned cyzxb:64
+         
+           !dir$ ivdep
+           !dir$ vector aligned
+           !dir$ vector always
 	  do k=2,nz-1
 	    pyz = p(i,j+1,k+1)+p(i,j-1,k-1)-(p(i,j+1,k-1)+p(i,j-1,k+1))
 	    r(i,j,k) = r(i,j,k) - cyzxb(j,k)*pyz
@@ -3122,6 +3588,9 @@ c
 
       subroutine slxcd3cr(nx,ny,nz,phi,rhs,cof,tx,sum,coxy,coxz,coyz,
      +                    nxa,nyc,nze)
+          !dir$ attributes code_align : 32 :: slxcd3cr
+          !dir$ optimize : 3
+          !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: slxcd3cr
 c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
@@ -3140,6 +3609,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+     !dir$ attributes align : 64 :: /kcrsxyz/
 c
 c     set periodic indicator
 c
@@ -3152,8 +3622,8 @@ c
 c
 c     x direction not periodic
 c     first solve for x lines thru red points in (y,z) plane
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 c
 	do k=1,nz,2
 	  do j=1,ny,2
@@ -3215,8 +3685,8 @@ c
 c
 c     black lines in z plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do j=2,ny,2
 	    do i=1,nx
@@ -3278,8 +3748,8 @@ c
 c
 c     solve for x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do j=2,ny,2
 	    do i=1,nx
@@ -3337,8 +3807,8 @@ c
 	    end do
 	  end do
 	end do
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do j=1,ny,2
 	    do i=1,nx
@@ -3410,8 +3880,8 @@ c
 c
 c      sweep x lines thru red (y,z) forward and back
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do j=1,ny,2
 	    do i=1,nx-1
@@ -3480,8 +3950,8 @@ c
 c     set periodic virtual boundaries as necessary
 c
 	if (nper.eq.0) call cper3vb(nx,ny,nz,phi,nxa,nyc,nze)
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do j=2,ny,2
 	    do i=1,nx-1
@@ -3550,8 +4020,8 @@ c
 c
 c     now solve x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(static,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do j=2,ny,2
 	    do i=1,nx-1
@@ -3620,8 +4090,8 @@ c
 	  end do
 	end do
 	call cper3vb(nx,ny,nz,phi,nxa,nyc,nze)
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tx,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do j=1,ny,2
 	    do i=1,nx-1
@@ -3696,6 +4166,9 @@ c
 
       subroutine slycd3cr(nx,ny,nz,phi,rhs,cof,ty,sum,coxy,coxz,coyz,
      +                    nxa,nyc,nze)
+         !dir$ attributes code_align : 32 :: slycd3cr
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: slycd3cr
 c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
@@ -3714,6 +4187,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+      !dir$ attributes align : 64 :: /kcrsxyz/
 c
 c     set periodic indicator
 c
@@ -3727,8 +4201,8 @@ c
 c     y direction not periodic
 c     first solve for y lines thru red points in (x,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do i=1,nx,2
 	    do j=1,ny
@@ -3845,8 +4319,8 @@ c
 c
 c     solve for x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do i=2,nx,2
 	    do j=1,ny
@@ -3904,8 +4378,8 @@ c
 	    end do
 	  end do
 	end do
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do i=1,nx,2
 	    do j=1,ny
@@ -3977,8 +4451,8 @@ c
 c
 c      sweep y lines thru red (x,z) forward and back
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do i=1,nx,2
 	    do j=1,ny-1
@@ -4053,8 +4527,8 @@ c
 c
 c     forward even-even
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do i=2,nx,2
 	    do j=1,ny-1
@@ -4126,8 +4600,8 @@ c
 c
 c     now solve x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=1,nz,2
 	  do i=2,nx,2
 	    do j=1,ny-1
@@ -4202,8 +4676,8 @@ c
 c
 c     forward even-even
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,ty,kxy,kxz,kyz,nx,ny,nz)
 	do k=2,nz,2
 	  do i=1,nx,2
 	    do j=1,ny-1
@@ -4279,6 +4753,9 @@ c
 
       subroutine slzcd3cr(nx,ny,nz,phi,rhs,cof,tz,sum,coxy,coxz,coyz,
      +                    nxa,nyc,nze)
+        !dir$ attributes code_align : 32 :: slzcd3cr
+        !dir$ optimize : 3
+        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: slzcd3cr
 c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
@@ -4297,6 +4774,7 @@ c
      +               kxzxa,kxzxb,kxzyc,kxzyd,kxzze,kxzzf,
      +               kyzxa,kyzxb,kyzyc,kyzyd,kyzze,kyzzf,
      +               kxy,kxz,kyz
+     !dir$ attributes align : 64 :: /kcrsxyz/
 c
 c     set periodic indicator
 c
@@ -4310,8 +4788,8 @@ c
 c     z direction not periodic
 c     first solve for z lines thru red points in (x,y) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp parallel do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=1,nx,2
 	    do k=1,nz
@@ -4370,8 +4848,8 @@ c
 	  end do
 	end do
 
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp parallel do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=2,nx,2
 	    do k=1,nz
@@ -4433,8 +4911,8 @@ c
 c
 c     solve for x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp parallel do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=2,nx,2
 	    do k=1,nz
@@ -4492,8 +4970,8 @@ c
 	    end do
 	  end do
 	end do
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp parallel do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=1,nx,2
 	    do k=1,nz
@@ -4565,8 +5043,8 @@ c
 c
 c      sweep z lines thru red (x,y) forward and back
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp parallel do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=1,nx,2
 	    do k=1,nz-1
@@ -4641,8 +5119,8 @@ c
 c
 c     forward even-even
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$omp PARALLEL do schedule(static,8) private(i,j,k)
+!$omp& shared(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=2,nx,2
 	    do k=1,nz-1
@@ -4714,8 +5192,8 @@ c
 c
 c     now solve x lines thru black points in (y,z) plane
 c
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=2,nx,2
 	    do k=1,nz-1
@@ -4787,8 +5265,8 @@ c
 c     set periodic virtual boundaries as necessary
 c
 	if (nper.eq.0) call cper3vb(nx,ny,nz,phi,nxa,nyc,nze)
-C$OMP PARALLEL DO PRIVATE(i,j,k)
-C$OMP+SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
+!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k)
+!$OMP& SHARED(phi,cof,rhs,coxy,coxz,coyz,tz,kxy,kxz,kyz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=1,nx,2
 	    do k=1,nz-1
