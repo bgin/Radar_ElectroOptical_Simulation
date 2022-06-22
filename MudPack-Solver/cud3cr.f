@@ -366,6 +366,7 @@ c
         !dir$ attributes code_align : 32 :: cud3cr1
         !dir$ optimize : 3
         !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: cud3cr1
+      use omp_lib
       implicit none
       integer nx,ny,nz,maxit,iouter,ierror
       real tol,rmax(maxit)
@@ -803,6 +804,7 @@ c
 c
 c     compute fully weighted residual restriction in rhsc
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz,ncx,ncy,ncz
       integer intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,kez,
@@ -945,6 +947,7 @@ c
 c
 c     discretize the 3-d elliptic pde
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz,ier
       complex cof(nx,ny,nz,7)
@@ -1808,6 +1811,11 @@ c
       if (nyc.eq.1) then
 	j = 1
 	do k=1,nz
+          !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned phi:64
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ unroll(16)
 	  do i=1,nx
 	    rhs(i,j,k) = phi(i,j,k)
 	  end do
@@ -1816,6 +1824,11 @@ c
       if (nyd.eq.1) then
 	j = ny
 	do k=1,nz
+           !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned phi:64
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ unroll(16)
 	  do i=1,nx
 	    rhs(i,j,k) = phi(i,j,k)
 	  end do
@@ -1824,6 +1837,11 @@ c
       if (nze.eq.1) then
 	k = 1
 	do j=1,ny
+           !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned phi:64
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ unroll(16)
 	  do i=1,nx
 	    rhs(i,j,k) = phi(i,j,k)
 	  end do
@@ -1832,6 +1850,11 @@ c
       if (nzf.eq.1) then
 	k = nz
 	do j=1,ny
+           !dir$ assume_aligned rhs:64
+          !dir$ assume_aligned phi:64
+          !dir$ vector aligned
+          !dir$ vector always
+          !dir$ unroll(16)
 	  do i=1,nx
 	    rhs(i,j,k) = phi(i,j,k)
 	  end do
@@ -2000,6 +2023,7 @@ c
 c     gauss-seidel point relaxation with red/black ordering
 c     in three dimensions for nonseparable pde with cross terms
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz
       integer intl,nxa,nxb,nyc,nyd,nze,nzf,ixp,jyq,kzr,iex,jey,kez,
@@ -3595,6 +3619,7 @@ c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz,i,ib,j,k
       integer nxa,nyc,nze,nper
@@ -4173,6 +4198,7 @@ c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz,i,jb,j,k
       integer nxa,nyc,nze,nper
@@ -4760,6 +4786,7 @@ c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
 c
+      use omp_lib
       implicit none
       integer nx,ny,nz,i,kb,j,k
       integer nxa,nyc,nze,nper
