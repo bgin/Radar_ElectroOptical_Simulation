@@ -12,8 +12,9 @@ MODULE cobyla2
 ! Mainly ifort and OMP directives were added
 ! Bernard Gingold 08-05-2022, beniekg@gmail.com
 use mod_kinds, only : i4,dp
-IMPLICIT NONE
 
+IMPLICIT NONE
+PUBLIC
 
 CONTAINS
 
