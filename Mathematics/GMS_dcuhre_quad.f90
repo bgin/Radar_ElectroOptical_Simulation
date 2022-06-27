@@ -1,6 +1,7 @@
 MODULE dcuhre_quadrature
   use mod_kinds, only : i4, dp
 IMPLICIT NONE
+PUBLIC
 
 !INTEGER, PARAMETER :: dp = SELECTED_REAL_KIND(15, 60)
 
