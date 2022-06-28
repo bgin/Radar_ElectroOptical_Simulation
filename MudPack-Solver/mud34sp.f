@@ -299,7 +299,7 @@ c
 !$omp private(ux3,ux4,uy3,uy4,uz3,uz4)                      &
 !$omp shared(kstart,kfinal,istart,ifinal,dlxx,cofx,cofy)    &
 !$omp shared(dlyy,dlzz,cofz,dlz,nx,ny,nz,nxa,nyc,dlx,nze)   &
-!$omp shared(jstart,r,u,jfinal,ifinal)
+!$omp shared(jstart,r,u,jfinal,ifinal,dly)
       do k=kstart,kfinal
 	do i=istart,ifinal
 	  do j=jstart,2
