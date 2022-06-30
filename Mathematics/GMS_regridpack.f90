@@ -14,6 +14,7 @@
 !                               to better suite my simulation projects
 !                               Added OpenMP parallelization and 
 !                               optimization ifort directives.
+
     module regridpack
 
     
@@ -25,10 +26,10 @@
     interface regrid
 
         !low level routines:
-        module procedure :: rgrd1, rgrd2, rgrd3, rgrd4
-        module procedure :: rgrd1u, rgrd2u, rgrd3u, rgrd4u
+        module procedure :: rgrd1, rgrd2, rgrd3 !, rgrd4
+        module procedure :: rgrd1u, rgrd2u, rgrd3u! , rgrd4u
 
-        module procedure :: rgrd1_wrapper, rgrd2_wrapper, rgrd3_wrapper, rgrd4_wrapper
+        module procedure :: rgrd1_wrapper, rgrd2_wrapper, rgrd3_wrapper !, rgrd4_wrapper
 
     end interface
     public :: regrid
@@ -1970,6 +1971,8 @@
                 ! update j-1,j,j+1 and interpolate j+2
                 !dir$ assume_aligned pj:64
                 !dir$ assume_aligned pjp:64
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
                 !dir$ vector aligned
                 !dir$ assume (mod(mx,8) .eq. 0)
                 !dir$ vector vectorlength(8)
@@ -2168,7 +2171,8 @@
 !  in subgrid directions.
 
     subroutine rgrd2u(nx,ny,p,mx,my,q,intpol,w,lw,iw,liw,ier)
-
+           !dir$ attributes code_align : 32 :: rgrd2u
+           !dir$ optimize : 3
     implicit none
 
     integer(kind=i4),intent(in)  :: nx   !! the integer(kind=i4) first dimension of p.  nx > 1 if intpol(1) = 1 or
@@ -2367,7 +2371,10 @@
 !  linearly interpolate p onto q in y
 
     subroutine lint2u(nx,ny,p,mx,my,q,intpol,jy,dy,pj,pjp,ix,dxm,dx,dxp,dxpp,inmx,jnmy,isubx,jsuby)
-
+       !dir$ attributes forceinline :: lint2u
+       !dir$ attributes code_align : 32 :: lint2u
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: lint2u
     implicit none
 
     integer(kind=i4) :: nx,ny,mx,my,intpol(2),jy(my),ix(mx),inmx,jnmy,isubx,jsuby
@@ -2395,6 +2402,18 @@
             if (j == jsave) then
                 ! pointer has not moved, no interpolation in pj,pjp necessary
             else if (j == jsave+1) then
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjp:64
+#if (AUTO_VECTORIZE) == 1
+                !!dir$ ivdep
+                !dir$ vector aligned
+                !dir$ vector always
+                !dir$ vector vectorlength(8)
+                !dir$ assume (mod(mx,8) .eq. 0)
+#else
+   
+    !dir$ novector
+#endif                
                 do ii=1,mx
                     pj(ii) = pjp(ii)
                 end do
@@ -2405,6 +2424,19 @@
             end if
             ! update pointer
             jsave = j
+                !dir$ assume_aligned dy:64
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjp:64
+#if (AUTO_VECTORIZE) == 1
+                !!dir$ ivdep
+                !dir$ vector aligned
+                !dir$ vector always
+                !dir$ vector vectorlength(8)
+                !dir$ assume (mod(mx,8) .eq. 0)
+#else
+   
+    !dir$ novector
+#endif                         
             do ii=1,mx
                 q(ii,jj) = pj(ii)+dy(jj)*(pjp(ii)-pj(ii))
             end do
@@ -2439,6 +2471,19 @@
             end if
             ! update pointer
             jsave = j
+                !dir$ assume_aligned dy:64
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjp:64
+#if (AUTO_VECTORIZE) == 1
+                !!dir$ ivdep
+                !dir$ vector aligned
+                !dir$ vector always
+                !dir$ vector vectorlength(8)
+                !dir$ assume (mod(mx,8) .eq. 0)
+#else
+   
+                !dir$ novector
+#endif               
             do ii=1,mx
                 q(ii,jj) = pj(ii)+dy(jj)*(pjp(ii)-pj(ii))
             end do
@@ -2456,7 +2501,10 @@
     subroutine cubt2u(nx,ny,p,mx,my,q,intpol,jy,dym,dy,dyp,dypp,&
                       pjm,pj,pjp,pjpp,ix,dxm,dx,dxp,dxpp,inmx,jnmy,&
                       isubx,jsuby)
-
+       !dir$ attributes forceinline :: cubt2u
+       !dir$ attributes code_align : 32 :: cubt2u
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: cubt2u
     implicit none
 
     integer(kind=i4)  :: nx,ny,mx,my,intpol(2),jy(my),ix(mx),inmx,jnmy,isubx,jsuby
@@ -2488,6 +2536,14 @@
             if (j==jsave) then
                 ! no updates or x interpolation necessary
             else if (j==jsave+1) then
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ assume_aligned pjp:64
+                !dir$ vector aligned
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do ii=1,mx
                     pjm(ii) = pj(ii)
                     pj(ii) = pjp(ii)
@@ -2495,6 +2551,14 @@
                 end do
                 call lint1u(nx,p(1,j+2),mx,pjpp,ix,dx,inmx,isubx)
             else if (j==jsave+2) then
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ assume_aligned pjp:64
+                !dir$ vector aligned
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do ii=1,mx
                     pjm(ii) = pjp(ii)
                     pj(ii) = pjpp(ii)
@@ -2517,6 +2581,18 @@
             end if
             ! update pointer
             jsave = j
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjp:64
+                !dir$ assume_aligned dy:64
+                !dir$ assume_aligned dym:64
+                !dir$ assume_aligned dyp:64
+                !dir$ assume_aligned dypp:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do ii=1,mx
                 q(ii,jj) = dym(jj)*pjm(ii) + dy(jj)*pj(ii) + dyp(jj)*pjp(ii) + dypp(jj)*pjpp(ii)
             end do
@@ -2544,6 +2620,14 @@
             if (j==jsave) then
                 ! no updates or x interpolation necessary
             else if (j==jsave+1) then
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ assume_aligned pjp:64
+                !dir$ vector aligned
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do ii=1,mx
                     pjm(ii) = pj(ii)
                     pj(ii) = pjp(ii)
@@ -2551,6 +2635,14 @@
                 end do
                 call cubt1u(nx,p(1,j+2),mx,pjpp,ix,dxm,dx,dxp,dxpp,inmx,isubx)
             else if (j==jsave+2) then
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ assume_aligned pjp:64
+                !dir$ vector aligned
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do ii=1,mx
                     pjm(ii) = pjp(ii)
                     pj(ii) = pjpp(ii)
@@ -2558,6 +2650,13 @@
                 call cubt1u(nx,p(1,j+1),mx,pjp,ix,dxm,dx,dxp,dxpp,inmx,isubx)
                 call cubt1u(nx,p(1,j+2),mx,pjpp,ix,dxm,dx,dxp,dxpp,inmx,isubx)
             else if (j==jsave+3) then
+                 
+                !dir$ assume_aligned pjm:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ vector aligned
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do ii=1,mx
                     pjm(ii) = pjpp(ii)
                 end do
@@ -2573,6 +2672,18 @@
             end if
             ! update pointer
             jsave = j
+                !dir$ assume_aligned pj:64
+                !dir$ assume_aligned pjp:64
+                !dir$ assume_aligned dy:64
+                !dir$ assume_aligned dym:64
+                !dir$ assume_aligned dyp:64
+                !dir$ assume_aligned dypp:64
+                !dir$ assume_aligned pjpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do ii=1,mx
                 q(ii,jj) = dym(jj)*pjm(ii) + dy(jj)*pj(ii) + dyp(jj)*pjp(ii) + dypp(jj)*pjpp(ii)
             end do
@@ -2614,7 +2725,8 @@
 !  should be used instead of rgrd3.
 
     subroutine rgrd3(nx,ny,nz,x,y,z,p,mx,my,mz,xx,yy,zz,q,intpol,w,lw,iw,liw,ier)
-
+       !dir$ attributes code_align : 32 :: rgrd3
+       !dir$ optimize : 3
     implicit none
 
     integer(kind=i4),intent(in)      :: nx   !! the integer(kind=i4) dimension of the grid vector x and the first dimension of p.
@@ -2913,7 +3025,9 @@
     subroutine lint3(nx,ny,nz,p,mx,my,mxmy,mz,q,intpol,kz,&
                      dz,pk,pkp,jy,dym,dy,dyp,dypp,pjm,pj,pjp,&
                      pjpp,ix,dxm,dx,dxp,dxpp)
-
+       !dir$ attributes code_align : 32 :: lint3
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: lint3
     implicit none
 
     integer(kind=i4)  :: nx,ny,nz,mx,my,mz,mxmy
@@ -2936,6 +3050,13 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k and interpolate k+1
+                 !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pk(iijj) = pkp(iijj)
                 end do
@@ -2951,7 +3072,15 @@
             ksave = k
 
             ! linearly interpolate q(ii,jj,k) from pk,pkp in z direction
-
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned q:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do iijj=1,mxmy
                 q(iijj,kk) = pk(iijj)+dz(kk)*(pkp(iijj)-pk(iijj))
             end do
@@ -2968,6 +3097,13 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k and interpolate k+1
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pk(iijj) = pkp(iijj)
                 end do
@@ -2983,7 +3119,15 @@
             ksave = k
 
             ! linearly interpolate q(ii,jj,k) from pk,pkp in z direction
-
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned q:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mx,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do iijj=1,mxmy
                 q(iijj,kk) = pk(iijj)+dz(kk)*(pkp(iijj)-pk(iijj))
             end do
@@ -3002,7 +3146,9 @@
                      kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,&
                      jy,dym,dy,dyp,dypp,pjm,pj,&
                      pjp,pjpp,ix,dxm,dx,dxp,dxpp)
-
+       !dir$ attributes code_align : 32 :: cubt3
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: cubt3
     implicit none
 
     integer(kind=i4)  :: nx,ny,nz,mx,my,mxmy,mz,k,kk,ksave,iijj
@@ -3025,6 +3171,15 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k-1,k,k+1 and interpolate k+2
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pk(iijj)
                     pk(iijj) = pkp(iijj)
@@ -3033,6 +3188,15 @@
                 call lint2(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dy,pj,pjp,ix,dxm,dx,dxp,dxpp)
             else if (k==ksave+2) then
                 ! update k-1,k and interpolate k+1,k+2
+                 !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkp(iijj)
                     pk(iijj) = pkpp(iijj)
@@ -3041,6 +3205,13 @@
                 call lint2(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dy,pj,pjp,ix,dxm,dx,dxp,dxpp)
             else if (k==ksave+3) then
                 ! update k-1 and interpolate k,k+1,k+2
+                 !dir$ assume_aligned pkm:64
+                 !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkpp(iijj)
                 end do
@@ -3060,7 +3231,21 @@
             ksave = k
 
             ! cubically interpolate q(ii,jj,kk) from pkm,pk,pkp,pkpp in z direction
-
+                !dir$ assume_aligned q:64
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ assume_aligned dzm:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned dzp:64
+                !dir$ assume_aligned dzpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do iijj=1,mxmy
                 q(iijj,kk) = dzm(kk)*pkm(iijj) + dz(kk)*pk(iijj) + dzp(kk)*pkp(iijj) + dzpp(kk)*pkpp(iijj)
             end do
@@ -3077,6 +3262,15 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k-1,k,k+1 and interpolate k+2
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pk(iijj)
                     pk(iijj) = pkp(iijj)
@@ -3085,6 +3279,15 @@
                 call cubt2(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dym,dy,dyp,dypp,pjm,pj,pjp,pjpp,ix,dxm,dx,dxp,dxpp)
             else if (k==ksave+2) then
                 ! update k-1,k and interpolate k+1,k+2
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkp(iijj)
                     pk(iijj) = pkpp(iijj)
@@ -3093,6 +3296,13 @@
                 call cubt2(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dym,dy,dyp,dypp,pjm,pj,pjp,pjpp,ix,dxm,dx,dxp,dxpp)
             else if (k==ksave+3) then
                 ! update k-1 and interpolate k,k+1,k+2
+                 !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkpp(iijj)
                 end do
@@ -3113,6 +3323,21 @@
 
             ! cubically interpolate q(ii,jj,kk) from pkm,pk,pkp,pkpp in z direction
 
+               !dir$ assume_aligned q:64
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ assume_aligned dzm:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned dzp:64
+                !dir$ assume_aligned dzpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8) 
             do iijj=1,mxmy
                 q(iijj,kk) = dzm(kk)*pkm(iijj) + dz(kk)*pk(iijj) + dzp(kk)*pkp(iijj) + dzpp(kk)*pkpp(iijj)
             end do
@@ -3143,7 +3368,8 @@
 !  in subgrid directions.
 
     subroutine rgrd3u(nx,ny,nz,p,mx,my,mz,q,intpol,w,lw,iw,liw,ier)
-
+       !dir$ attributes code_align : 32 :: rgrd3u
+       !dir$ optimize : 3
     implicit none
 
     integer(kind=i4),intent(in)     :: nx    !! the integer(kind=i4) first dimension of p.  nx > 1 if intpol(1) = 1 or
@@ -3436,7 +3662,9 @@
                       dz,pk,pkp,jy,dym,dy,dyp,dypp,pjm,pj,pjp,&
                       pjpp,ix,dxm,dx,dxp,dxpp,&
                       inmx,jnmy,knmz,isubx,jsuby,ksubz)
-
+       !dir$ attributes code_align : 32 :: lint3u
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: lint3u
     implicit none
 
     integer(kind=i4)  :: nx,ny,nz,mx,my,mz,mxmy,intpol(3),kz(mz),jy(my),ix(mx)
@@ -3468,6 +3696,13 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k and interpolate k+1
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pk(iijj) = pkp(iijj)
                 end do
@@ -3483,7 +3718,16 @@
             ksave = k
 
             ! linearly interpolate q(ii,jj,k) from pk,pkp in z direction
-
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned q:64
+                !dir$ assume_aligned dz:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do iijj=1,mxmy
                 q(iijj,kk) = pk(iijj)+dz(kk)*(pkp(iijj)-pk(iijj))
             end do
@@ -3511,6 +3755,13 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k and interpolate k+1
+                 !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pk(iijj) = pkp(iijj)
                 end do
@@ -3532,7 +3783,16 @@
             ksave = k
 
             ! linearly interpolate q(ii,jj,k) from pk,pkp in z direction
-
+               !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned q:64
+                !dir$ assume_aligned dz:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
             do iijj=1,mxmy
                 q(iijj,kk) = pk(iijj)+dz(kk)*(pkp(iijj)-pk(iijj))
             end do
@@ -3551,7 +3811,9 @@
                       kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,jy,dym,dy,dyp,dypp,pjm,pj,&
                       pjp,pjpp,ix,dxm,dx,dxp,dxpp,&
                       inmx,jnmy,knmz,isubx,jsuby,ksubz)
-
+       !dir$ attributes code_align : 32 :: cubt3u
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: cubt3u
     implicit none
 
     integer(kind=i4)  :: nx,ny,nz,mx,my,mz,mxmy,intpol(3),kz(mz),jy(my),ix(mx)
@@ -3585,6 +3847,15 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k-1,k,k+1 and interpolate k+2
+                 !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pk(iijj)
                     pk(iijj) = pkp(iijj)
@@ -3593,6 +3864,15 @@
                 call lint2u(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dy,pj,pjp,ix,dxm,dx,dxp,dxpp,inmx,jnmy,isubx,jsuby)
             else if (k==ksave+2) then
                 ! update k-1,k and interpolate k+1,k+2
+                 !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkp(iijj)
                     pk(iijj) = pkpp(iijj)
@@ -3601,6 +3881,13 @@
                 call lint2u(nx,ny,p(1,1,k+2),mx,my,pkpp,intpol,jy,dy,pj,pjp,ix,dxm,dx,dxp,dxpp,inmx,jnmy,isubx,jsuby)
             else if (k==ksave+3) then
                 ! update k-1 and interpolate k,k+1,k+2
+                 !dir$ assume_aligned pkm:64
+                 !dir$ assume_aligned pkp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkpp(iijj)
                 end do
@@ -3620,7 +3907,21 @@
             ksave = k
 
             ! cubically interpolate q(ii,jj,kk) from pkm,pk,pkp,pkpp in z direction
-
+                !dir$ assume_aligned q:64
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ assume_aligned dzm:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned dzp:64
+                !dir$ assume_aligned dzpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8) 
             do iijj=1,mxmy
                 q(iijj,kk) = dzm(kk)*pkm(iijj) + dz(kk)*pk(iijj) + dzp(kk)*pkp(iijj) + dzpp(kk)*pkpp(iijj)
             end do
@@ -3649,6 +3950,15 @@
                 ! k pointer has not moved since last pass (no updates or interpolation)
             else if (k==ksave+1) then
                 ! update k-1,k,k+1 and interpolate k+2
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pk(iijj)
                     pk(iijj) = pkp(iijj)
@@ -3659,6 +3969,15 @@
                             inmx,jnmy,isubx,jsuby)
             else if (k==ksave+2) then
                 ! update k-1,k and interpolate k+1,k+2
+               !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkp(iijj)
                     pk(iijj) = pkpp(iijj)
@@ -3671,6 +3990,13 @@
                             inmx,jnmy,isubx,jsuby)
             else if (k==ksave+3) then
                 ! update k-1 and interpolate k,k+1,k+2
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8)
                 do iijj=1,mxmy
                     pkm(iijj) = pkpp(iijj)
                 end do
@@ -3704,7 +4030,21 @@
             ksave = k
 
             ! cubically interpolate q(ii,jj,kk) from pkm,pk,pkp,pkpp in z direction
-
+               !dir$ assume_aligned q:64
+                !dir$ assume_aligned pkm:64
+                !dir$ assume_aligned pk:64
+                !dir$ assume_aligned pkp:64
+                !dir$ assume_aligned pkpp:64
+                !dir$ assume_aligned dzm:64
+                !dir$ assume_aligned dz:64
+                !dir$ assume_aligned dzp:64
+                !dir$ assume_aligned dzpp:64
+                !dir$ vector aligned
+                !dir$ assume (mod(mxmy,8) .eq. 0)
+                !dir$ assume (mod(mz,8) .eq. 0)
+                !dir$ vector vectorlength(8)
+                !dir$ vector always
+                !dir$ unroll(8) 
             do iijj=1,mxmy
                 q(iijj,kk) = dzm(kk)*pkm(iijj) + dz(kk)*pk(iijj) + dzp(kk)*pkp(iijj) + dzpp(kk)*pkpp(iijj)
             end do
@@ -3743,7 +4083,7 @@
 !  regions are identical and the orthogonal grids are UNIFORM
 !  in each direction then subroutine rgrd4u
 !  should be used instead of rgrd4.
-
+#if 0
     subroutine rgrd4(nx,ny,nz,nt,x,y,z,t,p,mx,my,mz,mt,xx,yy,zz,tt,q,intpol,w,lw,iw,liw,ier)
 
     implicit none
@@ -4126,12 +4466,13 @@
     end if
 
     end subroutine rgrd4
+#endif
 !**************************************************************************
 
 !**************************************************************************
 !>
 !  linearly interpolate in t direction
-
+#if 0
     subroutine lint4(nx,ny,nz,nt,p,mx,my,mz,mt,mxmy,mxmymz,q,intpol,&
                      lt,dt,pt,ptp,kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,&
                      jy,dym,dy,dyp,dypp,pjm,pj,pjp,pjpp,ix,dxm,dx,dxp,dxpp)
@@ -4226,12 +4567,13 @@
     end if
 
     end subroutine lint4
+#endif
 !**************************************************************************
 
 !**************************************************************************
 !>
 !  cubically interpolate in t
-
+#if 0
     subroutine cubt4(nx,ny,nz,nt,p,mx,my,mz,mt,mxmy,mxmymz,q,intpol,&
                      lt,dtm,dt,dtp,dtpp,ptm,pt,ptp,ptpp,&
                      kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,&
@@ -4389,6 +4731,7 @@
     end if
 
     end subroutine cubt4
+#endif
 !**************************************************************************
 
 !**************************************************************************
@@ -4409,7 +4752,7 @@
 !  uniform grid if and only if mx-1 (my-1,nz-1,nt-1) divides nx-1
 !  (ny-1,nz-1,nt-1)].  Values are set directly without (the need for)
 !  interpolation in subgrid directions.
-
+#if 0
     subroutine rgrd4u(nx,ny,nz,nt,p,mx,my,mz,mt,q,intpol,w,lw,iw,liw,ier)
 
     implicit none
@@ -4736,12 +5079,13 @@
     end if
 
     end subroutine rgrd4u
+#endif
 !**************************************************************************
 
 !**************************************************************************
 !>
 !  linearly interpolate in t direction
-
+#if 0
     subroutine lint4u(nx,ny,nz,nt,p,mx,my,mz,mt,mxmy,mxmymz,q,intpol,&
                       lt,dt,pt,ptp,kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,&
                       jy,dym,dy,dyp,dypp,pjm,pj,pjp,pjpp,ix,dxm,dx,dxp,dxpp,&
@@ -4864,12 +5208,13 @@
     end if
 
     end subroutine lint4u
+#endif
 !**************************************************************************
 
 !**************************************************************************
 !>
 !  cubically interpolate in t
-
+#if 0
     subroutine cubt4u(nx,ny,nz,nt,p,mx,my,mz,mt,mxmy,mxmymz,q,intpol,&
                         lt,dtm,dt,dtp,dtpp,ptm,pt,ptp,ptpp,&
                         kz,dzm,dz,dzp,dzpp,pkm,pk,pkp,pkpp,&
@@ -5081,6 +5426,7 @@
     end if
 
     end subroutine cubt4u
+#endif
 !**************************************************************************
 
 !***************************************************************************************************
