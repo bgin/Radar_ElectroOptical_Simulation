@@ -4895,7 +4895,10 @@ subroutine cmfgkb ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
 end
 subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
   ch, ch1, im2, in2, wa )
-
+       !dir$ attributes forceinline :: cmfgkf
+       !dir$ attributes code_align : 32 :: cmfgkf
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: cmfgkf
 !*****************************************************************************80
 !
 !! CMFGKF is an FFTPACK5.1 auxiliary routine.
@@ -4929,14 +4932,15 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
 !
 !  Parameters:
 !
+  use omp_lib
   implicit none
 
-  integer(kind=i4)ido
-  integer(kind=i4)in1
-  integer(kind=i4)in2
-  integer(kind=i4)ip
-  integer(kind=i4)l1
-  integer(kind=i4)lid
+  integer(kind=i4) ido
+  integer(kind=i4) in1
+  integer(kind=i4) in2
+  integer(kind=i4) ip
+  integer(kind=i4) l1
+  integer(kind=i4) lid
 
  real(kind=dp) cc(2,in1,l1,ip,ido)
  real(kind=dp) cc1(2,in1,lid,ip)
@@ -4944,24 +4948,24 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
  real(kind=dp) ch1(2,in2,lid,ip)
  real(kind=dp) chold1
  real(kind=dp) chold2
-  integer(kind=i4)i
-  integer(kind=i4)idlj
-  integer(kind=i4)im1
-  integer(kind=i4)im2
-  integer(kind=i4)ipp2
-  integer(kind=i4)ipph
-  integer(kind=i4)j 
-  integer(kind=i4)jc
-  integer(kind=i4)k
-  integer(kind=i4)ki
-  integer(kind=i4)l
-  integer(kind=i4)lc
-  integer(kind=i4)lot
-  integer(kind=i4)m1
-  integer(kind=i4)m1d
-  integer(kind=i4)m2
-  integer(kind=i4)m2s
-  integer(kind=i4)na
+  integer(kind=i4) i
+  integer(kind=i4) idlj
+  integer(kind=i4) im1
+  integer(kind=i4) im2
+  integer(kind=i4) ipp2
+  integer(kind=i4) ipph
+  integer(kind=i4) j 
+  integer(kind=i4) jc
+  integer(kind=i4) k
+  integer(kind=i4) ki
+  integer(kind=i4) l
+  integer(kind=i4) lc
+  integer(kind=i4) lot
+  integer(kind=i4) m1
+  integer(kind=i4) m1d
+  integer(kind=i4) m2
+  integer(kind=i4) m2s
+  integer(kind=i4) na
  real(kind=dp) sn
  real(kind=dp) wa(ido,ip-1,2)
  real(kind=dp) wai
@@ -4973,6 +4977,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
       ipph = (ip+1)/2
       do 110 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 110 m1=1,m1d,im1
          m2 = m2+im2
          ch1(1,m2,ki,1) = cc1(1,m1,ki,1)
@@ -4983,6 +4993,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
          jc = ipp2-j
          do 112 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 112 m1=1,m1d,im1
          m2 = m2+im2
             ch1(1,m2,ki,j) =  cc1(1,m1,ki,j)+cc1(1,m1,ki,jc)
@@ -4994,6 +5010,13 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
       do 118 j=2,ipph
          do 117 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !$omp simd reduction(+:cc1)
          do 117 m1=1,m1d,im1
          m2 = m2+im2
             cc1(1,m1,ki,1) = cc1(1,m1,ki,1)+ch1(1,m2,ki,j)
@@ -5004,6 +5027,14 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
          lc = ipp2-l
          do 113 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ assume_aligned wa:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
          do 113 m1=1,m1d,im1
          m2 = m2+im2
             cc1(1,m1,ki,l) = ch1(1,m2,ki,1)+wa(1,l-1,1)*ch1(1,m2,ki,2)
@@ -5018,6 +5049,15 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
             wai = -wa(1,idlj,2)
             do 114 ki=1,lid
                m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ assume_aligned wa:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
+   !$omp simd reduction(+:cc1)
                do 114 m1=1,m1d,im1
                m2 = m2+im2
                cc1(1,m1,ki,l) = cc1(1,m1,ki,l)+war*ch1(1,m2,ki,j)
@@ -5028,10 +5068,17 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
   115    continue
   116 continue
       if ( 1 < ido ) go to 136
-      sn = 1.0D+00 / real ( ip * l1, kind = 8 )
+      sn = 1.0_dp / real ( ip * l1, kind = dp )
       if (na == 1) go to 146
       do 149 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !$omp simd reduction(*:cc1)
          do 149 m1=1,m1d,im1
          m2 = m2+im2
          cc1(1,m1,ki,1) = sn*cc1(1,m1,ki,1)
@@ -5040,6 +5087,13 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
       do 120 j=2,ipph
          jc = ipp2-j
          do 119 ki=1,lid
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
          do 119 m1=1,m1d,im1
             chold1 = sn*(cc1(1,m1,ki,j)-cc1(2,m1,ki,jc))
             chold2 = sn*(cc1(1,m1,ki,j)+cc1(2,m1,ki,jc))
@@ -5054,6 +5108,13 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
 
   146 do 147 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !$omp simd reduction(*:ch1)
          do 147 m1=1,m1d,im1
          m2 = m2+im2
          ch1(1,m2,ki,1) = sn*cc1(1,m1,ki,1)
@@ -5063,6 +5124,13 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
          jc = ipp2-j
          do 144 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
          do 144 m1=1,m1d,im1
          m2 = m2+im2
             ch1(1,m2,ki,j) = sn*(cc1(1,m1,ki,j)-cc1(2,m1,ki,jc))
@@ -5076,6 +5144,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
 
   136 do 137 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 137 m1=1,m1d,im1
          m2 = m2+im2
          ch1(1,m2,ki,1) = cc1(1,m1,ki,1)
@@ -5085,6 +5159,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
          jc = ipp2-j
          do 134 ki=1,lid
          m2 = m2s
+   !dir$ assume_aligned ch1:64
+   !dir$ assume_aligned cc1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 134 m1=1,m1d,im1
          m2 = m2+im2
             ch1(1,m2,ki,j) = cc1(1,m1,ki,j)-cc1(2,m1,ki,jc)
@@ -5096,6 +5176,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
       do 131 i=1,ido
          do 130 k=1,l1
          m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 130 m1=1,m1d,im1
          m2 = m2+im2
             cc(1,m1,k,1,i) = ch(1,m2,k,i,1)
@@ -5105,6 +5191,12 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
       do 123 j=2,ip
          do 122 k=1,l1
          m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
          do 122 m1=1,m1d,im1
          m2 = m2+im2
             cc(1,m1,k,j,1) = ch(1,m2,k,1,j)
@@ -5115,6 +5207,14 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
          do 125 i=2,ido
             do 124 k=1,l1
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ ivdep
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
                do 124 m1=1,m1d,im1
                m2 = m2+im2
                cc(1,m1,k,j,i) = wa(i,j-1,1)*ch(1,m2,k,i,j) &
@@ -5128,7 +5228,10 @@ subroutine cmfgkf ( lot, ido, ip, l1, lid, na, cc, cc1, im1, in1, &
   return
 end
 subroutine cmfm1b ( lot, jump, n, inc, c, ch, wa, fnf, fac )
-
+       
+       !dir$ attributes code_align : 32 :: cmfm1b
+       !dir$ optimize : 3
+      
 !*****************************************************************************80
 !
 !! CMFM1B is an FFTPACK5.1 auxiliary routine.
@@ -5168,20 +5271,20 @@ subroutine cmfm1b ( lot, jump, n, inc, c, ch, wa, fnf, fac )
  real(kind=dp) ch(*)
  real(kind=dp) fac(*)
  real(kind=dp) fnf
-  integer(kind=i4)ido
-  integer(kind=i4)inc
-  integer(kind=i4)ip
-  integer(kind=i4)iw
-  integer(kind=i4)jump
-  integer(kind=i4)k1
-  integer(kind=i4)l1
-  integer(kind=i4)l2
-  integer(kind=i4)lid
-  integer(kind=i4)lot
-  integer(kind=i4)n
-  integer(kind=i4)na
-  integer(kind=i4)nbr
-  integer(kind=i4)nf
+  integer(kind=i4) ido
+  integer(kind=i4) inc
+  integer(kind=i4) ip
+  integer(kind=i4) iw
+  integer(kind=i4) jump
+  integer(kind=i4) k1
+  integer(kind=i4) l1
+  integer(kind=i4) l2
+  integer(kind=i4) lid
+  integer(kind=i4) lot
+  integer(kind=i4) n
+  integer(kind=i4) na
+  integer(kind=i4) nbr
+  integer(kind=i4) nf
  real(kind=dp) wa(*)
 
       nf = int ( fnf )
@@ -5223,7 +5326,10 @@ subroutine cmfm1b ( lot, jump, n, inc, c, ch, wa, fnf, fac )
   return
 end
 subroutine cmfm1f ( lot, jump, n, inc, c, ch, wa, fnf, fac )
-
+ 
+       !dir$ attributes code_align : 32 :: cmfm1f
+       !dir$ optimize : 3
+       
 !*****************************************************************************80
 !
 !! CMFM1F is an FFTPACK5.1 auxiliary routine.
@@ -5263,20 +5369,20 @@ subroutine cmfm1f ( lot, jump, n, inc, c, ch, wa, fnf, fac )
  real(kind=dp) ch(*)
  real(kind=dp) fac(*)
  real(kind=dp) fnf
-  integer(kind=i4)ido
-  integer(kind=i4)inc
-  integer(kind=i4)ip
-  integer(kind=i4)iw
-  integer(kind=i4)jump
-  integer(kind=i4)k1
-  integer(kind=i4)l1
-  integer(kind=i4)l2
-  integer(kind=i4)lid
-  integer(kind=i4)lot
-  integer(kind=i4)n
-  integer(kind=i4)na
-  integer(kind=i4)nbr
-  integer(kind=i4)nf
+  integer(kind=i4) ido
+  integer(kind=i4) inc
+  integer(kind=i4) ip
+  integer(kind=i4) iw
+  integer(kind=i4) jump
+  integer(kind=i4) k1
+  integer(kind=i4) l1
+  integer(kind=i4) l2
+  integer(kind=i4) lid
+  integer(kind=i4) lot
+  integer(kind=i4) n
+  integer(kind=i4) na
+  integer(kind=i4) nbr
+  integer(kind=i4) nf
  real(kind=dp) wa(*)
 
       nf = int ( fnf )
@@ -5318,7 +5424,10 @@ subroutine cmfm1f ( lot, jump, n, inc, c, ch, wa, fnf, fac )
   return
 end
 subroutine cosq1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
-
+       
+       !dir$ attributes code_align : 32 :: cosq1b
+       !dir$ optimize : 3
+       
 !*****************************************************************************80
 !
 !! COSQ1B: real double precision backward cosine quarter wave transform, 1D.
@@ -5398,14 +5507,14 @@ subroutine cosq1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)lenx
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) lenx
+  integer(kind=i4) n
  real(kind=dp) ssqrt2
  real(kind=dp) work(lenwrk)
  real(kind=dp) wsave(lensav)
@@ -5419,7 +5528,7 @@ subroutine cosq1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
     call xerfft ('cosq1b', 6)
     return
   else if (lensav < &
-    2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+    2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cosq1b', 8)
     return
@@ -5431,7 +5540,7 @@ subroutine cosq1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
 
       if (n-2) 300,102,103
 
- 102  ssqrt2 = 1.0D+00 / sqrt ( 2.0D+00 )
+ 102  ssqrt2 = 1.0_dp/sqrt ( 2.0_dp )
       x1 = x(1,1)+x(1,2)
       x(1,2) = ssqrt2*(x(1,1)-x(1,2))
       x(1,1) = x1
@@ -5449,7 +5558,10 @@ subroutine cosq1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
   return
 end
 subroutine cosq1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
-
+    
+       !dir$ attributes code_align : 32 :: cosq1f
+       !dir$ optimize : 3
+       
 !*****************************************************************************80
 !
 !! COSQ1F: real double precision forward cosine quarter wave transform, 1D.
@@ -5529,14 +5641,14 @@ subroutine cosq1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)n
-  integer(kind=i4)lenx
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) n
+  integer(kind=i4) lenx
  real(kind=dp) ssqrt2
  real(kind=dp) tsqx
  real(kind=dp) work(lenwrk)
@@ -5549,7 +5661,7 @@ subroutine cosq1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
     ier = 1
     call xerfft ('cosq1f', 6)
     return
-  else if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  else if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp)) +4) then
     ier = 2
     call xerfft ('cosq1f', 8)
     return
@@ -5560,7 +5672,7 @@ subroutine cosq1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
   end if
 
       if (n-2) 102,101,103
-  101 ssqrt2 = 1.0D+00 / sqrt ( 2.0D+00 )
+  101 ssqrt2 = 1.0_dp / sqrt ( 2.0_dp )
       tsqx = ssqrt2*x(1,2)
       x(1,2) = 0.5D+00 *x(1,1)-tsqx
       x(1,1) = 0.5D+00 *x(1,1)+tsqx
@@ -5575,7 +5687,10 @@ subroutine cosq1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
   return
 end
 subroutine cosq1i ( n, wsave, lensav, ier )
-
+   
+       !dir$ attributes code_align : 32 :: cosq1i
+       !dir$ optimize : 3
+       
 !*****************************************************************************80
 !
 !! COSQ1I: initialization for COSQ1B and COSQ1F.
@@ -5635,36 +5750,39 @@ subroutine cosq1i ( n, wsave, lensav, ier )
 !
   implicit none
 
-  integer(kind=i4)lensav
+  integer(kind=i4) lensav
 
  real(kind=dp) dt
  real(kind=dp) fk
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)k
-  integer(kind=i4)lnsv
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) k
+  integer(kind=i4) lnsv
+  integer(kind=i4) n
  real(kind=dp) pih
  real(kind=dp) wsave(lensav)
 
   ier = 0
 
-  if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cosq1i', 3)
     return
   end if
 
-  pih = 2.0D+00 * atan ( 1.0D+00 )
-  dt = pih / real  ( n, kind = 8 )
-  fk = 0.0D+00
-
+  pih = 2.0_dp * atan ( 1.0_dp )
+  dt = pih / real  ( n, kind = dp )
+  fk = 0.0_dp
+   !dir$ assume_aligned wsave:64
+   !dir$ vector aligned
+   !dir$ vector always
+   !dir$ unroll(4)
   do k=1,n
     fk = fk + 1.0D+00
     wsave(k) = cos(fk*dt)
   end do
 
-  lnsv = n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4
+  lnsv = n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4
   call rfft1i (n, wsave(n+1), lnsv, ier1)
 
   if (ier1 /= 0) then
@@ -5675,7 +5793,10 @@ subroutine cosq1i ( n, wsave, lensav, ier )
   return
 end
 subroutine cosqb1 ( n, inc, x, wsave, work, ier )
-
+       
+       !dir$ attributes code_align : 32 :: cosqb1
+       !dir$ optimize : 3
+       
 !*****************************************************************************80
 !
 !! COSQB1 is an FFTPACK5.1 auxiliary routine.
@@ -5711,20 +5832,20 @@ subroutine cosqb1 ( n, inc, x, wsave, work, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
+  integer(kind=i4) inc
 
-  integer(kind=i4)i
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)k
-  integer(kind=i4)kc
-  integer(kind=i4)lenx
-  integer(kind=i4)lnsv
-  integer(kind=i4)lnwk
-  integer(kind=i4)modn
-  integer(kind=i4)n
-  integer(kind=i4)np2
-  integer(kind=i4)ns2
+  integer(kind=i4) i
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) k
+  integer(kind=i4) kc
+  integer(kind=i4) lenx
+  integer(kind=i4) lnsv
+  integer(kind=i4) lnwk
+  integer(kind=i4) modn
+  integer(kind=i4) n
+  integer(kind=i4) np2
+  integer(kind=i4) ns2
  real(kind=dp) work(*)
  real(kind=dp) wsave(*)
  real(kind=dp) x(inc,*)
@@ -5736,19 +5857,19 @@ subroutine cosqb1 ( n, inc, x, wsave, work, ier )
 
   do i=3,n,2
     xim1 = x(1,i-1)+x(1,i)
-    x(1,i) = 0.5D+00 * (x(1,i-1)-x(1,i))
-    x(1,i-1) = 0.5D+00 * xim1
+    x(1,i) = 0.5_dp * (x(1,i-1)-x(1,i))
+    x(1,i-1) = 0.5_dp * xim1
   end do
 
-  x(1,1) = 0.5D+00 * x(1,1)
+  x(1,1) = 0.5_dp * x(1,1)
   modn = mod(n,2)
 
   if (modn == 0 ) then
-    x(1,n) = 0.5D+00 * x(1,n)
+    x(1,n) = 0.5_dp * x(1,n)
   end if
 
   lenx = inc*(n-1)  + 1
-  lnsv = n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) + 4
+  lnsv = n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) + 4
   lnwk = n
 
   call rfft1b(n,inc,x,lenx,wsave(n+1),lnsv,work,lnwk,ier1)
@@ -5780,7 +5901,10 @@ subroutine cosqb1 ( n, inc, x, wsave, work, ier )
   return
 end
 subroutine cosqf1 ( n, inc, x, wsave, work, ier )
-
+   
+       !dir$ attributes code_align : 32 :: cosqf1
+       !dir$ optimize : 3
+     
 !*****************************************************************************80
 !
 !! COSQF1 is an FFTPACK5.1 auxiliary routine.
@@ -5816,20 +5940,20 @@ subroutine cosqf1 ( n, inc, x, wsave, work, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
+  integer(kind=i4) inc
 
-  integer(kind=i4)i
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)k
-  integer(kind=i4)kc
-  integer(kind=i4)lenx
-  integer(kind=i4)lnsv
-  integer(kind=i4)lnwk
-  integer(kind=i4)modn
-  integer(kind=i4)n
-  integer(kind=i4)np2
-  integer(kind=i4)ns2
+  integer(kind=i4) i
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) k
+  integer(kind=i4) kc
+  integer(kind=i4) lenx
+  integer(kind=i4) lnsv
+  integer(kind=i4) lnwk
+  integer(kind=i4) modn
+  integer(kind=i4) n
+  integer(kind=i4) np2
+  integer(kind=i4) ns2
  real(kind=dp) work(*)
  real(kind=dp) wsave(*)
  real(kind=dp) x(inc,*)
@@ -5862,7 +5986,7 @@ subroutine cosqf1 ( n, inc, x, wsave, work, ier )
   end if
 
   lenx = inc*(n-1)  + 1
-  lnsv = n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) + 4
+  lnsv = n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) + 4
   lnwk = n
 
   call rfft1f(n,inc,x,lenx,wsave(n+1),lnsv,work,lnwk,ier1)
@@ -5874,8 +5998,8 @@ subroutine cosqf1 ( n, inc, x, wsave, work, ier )
   end if
 
   do i=3,n,2
-    xim1 = 0.5D+00 * (x(1,i-1)+x(1,i))
-    x(1,i) = 0.5D+00 * (x(1,i-1)-x(1,i))
+    xim1 = 0.5_dp * (x(1,i-1)+x(1,i))
+    x(1,i) = 0.5_dp * (x(1,i-1)-x(1,i))
     x(1,i-1) = xim1
   end do
 
@@ -5883,7 +6007,8 @@ subroutine cosqf1 ( n, inc, x, wsave, work, ier )
 end
 subroutine cosqmb ( lot, jump, n, inc, x, lenx, wsave, lensav, work, lenwrk, &
   ier )
-
+       !dir$ attributes code_align : 32 :: cosqmb
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COSQMB: real double precision backward cosine quarter wave, multiple vectors.
@@ -5973,18 +6098,18 @@ subroutine cosqmb ( lot, jump, n, inc, x, lenx, wsave, lensav, work, lenwrk, &
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)jump
-  integer(kind=i4)lenx
-  integer(kind=i4)lj
-  integer(kind=i4)lot
-  integer(kind=i4)m
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) jump
+  integer(kind=i4) lenx
+  integer(kind=i4) lj
+  integer(kind=i4) lot
+  integer(kind=i4) m
+  integer(kind=i4) n
  real(kind=dp) ssqrt2
  real(kind=dp) work(lenwrk)
  real(kind=dp) wsave(lensav)
@@ -5999,7 +6124,7 @@ subroutine cosqmb ( lot, jump, n, inc, x, lenx, wsave, lensav, work, lenwrk, &
     call xerfft ('cosqmb', 6)
     return
   else if (lensav < &
-    2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+    2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cosqmb', 8)
     return
@@ -6019,7 +6144,7 @@ subroutine cosqmb ( lot, jump, n, inc, x, lenx, wsave, lensav, work, lenwrk, &
         x(m,1) = x(m,1)
       end do
       return
- 102  ssqrt2 = 1.0D+00 / sqrt ( 2.0D+00 )
+ 102  ssqrt2 = 1.0_dp / sqrt ( 2.0_dp )
       do m=1,lj,jump
         x1 = x(m,1)+x(m,2)
         x(m,2) = ssqrt2*(x(m,1)-x(m,2))
@@ -6038,7 +6163,8 @@ subroutine cosqmb ( lot, jump, n, inc, x, lenx, wsave, lensav, work, lenwrk, &
 end
 subroutine cosqmf ( lot, jump, n, inc, x, lenx, wsave, lensav, work, &
   lenwrk, ier )
-
+       !dir$ attributes code_align : 32 :: cosqmf
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COSQMF: real double precision forward cosine quarter wave, multiple vectors.
@@ -6129,18 +6255,18 @@ subroutine cosqmf ( lot, jump, n, inc, x, lenx, wsave, lensav, work, &
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)jump
-  integer(kind=i4)lenx
-  integer(kind=i4)lj
-  integer(kind=i4)lot
-  integer(kind=i4)m
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) jump
+  integer(kind=i4) lenx
+  integer(kind=i4) lj
+  integer(kind=i4) lot
+  integer(kind=i4) m
+  integer(kind=i4) n
  real(kind=dp) ssqrt2
  real(kind=dp) tsqx
  real(kind=dp) work(lenwrk)
@@ -6155,7 +6281,7 @@ subroutine cosqmf ( lot, jump, n, inc, x, lenx, wsave, lensav, work, &
     call xerfft ('cosqmf', 6)
     return
   else if (lensav < &
-    2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+    2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cosqmf', 8)
     return
@@ -6172,12 +6298,12 @@ subroutine cosqmf ( lot, jump, n, inc, x, lenx, wsave, lensav, work, &
   lj = (lot-1)*jump+1
 
   if (n-2) 102,101,103
-  101 ssqrt2 = 1.0D+00 / sqrt ( 2.0D+00 )
+  101 ssqrt2 = 1.0_dp / sqrt ( 2.0_dp )
 
       do m=1,lj,jump
         tsqx = ssqrt2*x(m,2)
-        x(m,2) = 0.5D+00 * x(m,1)-tsqx
-        x(m,1) = 0.5D+00 * x(m,1)+tsqx
+        x(m,2) = 0.5_dp * x(m,1)-tsqx
+        x(m,1) = 0.5_dp * x(m,1)+tsqx
       end do
 
   102 return
@@ -6192,7 +6318,8 @@ subroutine cosqmf ( lot, jump, n, inc, x, lenx, wsave, lensav, work, &
   return
 end
 subroutine cosqmi ( n, wsave, lensav, ier )
-
+       !dir$ attributes code_align : 32 :: cosqmi
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COSQMI: initialization for COSQMB and COSQMF.
@@ -6256,32 +6383,32 @@ subroutine cosqmi ( n, wsave, lensav, ier )
 
  real(kind=dp) dt
  real(kind=dp) fk
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)k
-  integer(kind=i4)lnsv
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) k
+  integer(kind=i4) lnsv
+  integer(kind=i4) n
  real(kind=dp) pih
  real(kind=dp) wsave(lensav)
 
   ier = 0
 
-  if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) + 4) then
     ier = 2
     call xerfft ('cosqmi', 3)
     return
   end if
 
-  pih = 2.0D+00 * atan ( 1.0D+00 )
-  dt = pih/real ( n, kind = 8 )
-  fk = 0.0D+00
+  pih = 2.0_dp * atan ( 1.0_dp )
+  dt = pih/real ( n, kind = dp )
+  fk = 0.0_dp
 
   do k=1,n
-    fk = fk + 1.0D+00
+    fk = fk + 1.0_dp
     wsave(k) = cos(fk*dt)
   end do
 
-  lnsv = n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4
+  lnsv = n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4
 
   call rfftmi (n, wsave(n+1), lnsv, ier1)
 
@@ -6293,7 +6420,8 @@ subroutine cosqmi ( n, wsave, lensav, ier )
   return
 end
 subroutine cost1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
-
+       !dir$ attributes code_align : 32 :: cosq1b
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COST1B: real double precision backward cosine transform, 1D.
@@ -6373,14 +6501,14 @@ subroutine cost1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)lenx
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) lenx
+  integer(kind=i4) n
  real(kind=dp) work(lenwrk)
  real(kind=dp) wsave(lensav)
  real(kind=dp) x(inc,*)
@@ -6391,7 +6519,7 @@ subroutine cost1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
     ier = 1
     call xerfft ('cost1b', 6)
     return
-  else if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  else if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cost1b', 8)
     return
@@ -6415,7 +6543,8 @@ subroutine cost1b ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
   return
 end
 subroutine cost1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
-
+       !dir$ attributes code_align : 32 :: cost1f
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COST1F: real double precision forward cosine transform, 1D.
@@ -6495,14 +6624,14 @@ subroutine cost1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
 !
   implicit none
 
-  integer(kind=i4)inc
-  integer(kind=i4)lensav
-  integer(kind=i4)lenwrk
+  integer(kind=i4) inc
+  integer(kind=i4) lensav
+  integer(kind=i4) lenwrk
 
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)lenx
-  integer(kind=i4)n
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) lenx
+  integer(kind=i4) n
  real(kind=dp) work(lenwrk)
  real(kind=dp) wsave(lensav)
  real(kind=dp) x(inc,*)
@@ -6513,7 +6642,7 @@ subroutine cost1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
     ier = 1
     call xerfft ('cost1f', 6)
     return
-  else if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  else if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cost1f', 8)
     return
@@ -6537,7 +6666,8 @@ subroutine cost1f ( n, inc, x, lenx, wsave, lensav, work, lenwrk, ier )
   return
 end
 subroutine cost1i ( n, wsave, lensav, ier )
-
+       !dir$ attributes code_align : 32 :: cost1i
+       !dir$ optimize : 3
 !*****************************************************************************80
 !
 !! COST1I: initialization for COST1B and COST1F.
@@ -6601,21 +6731,21 @@ subroutine cost1i ( n, wsave, lensav, ier )
 
  real(kind=dp) dt
  real(kind=dp) fk
-  integer(kind=i4)ier
-  integer(kind=i4)ier1
-  integer(kind=i4)k
-  integer(kind=i4)kc
-  integer(kind=i4)lnsv
-  integer(kind=i4)n
-  integer(kind=i4)nm1
-  integer(kind=i4)np1
-  integer(kind=i4)ns2
+  integer(kind=i4) ier
+  integer(kind=i4) ier1
+  integer(kind=i4) k
+  integer(kind=i4) kc
+  integer(kind=i4) lnsv
+  integer(kind=i4) n
+  integer(kind=i4) nm1
+  integer(kind=i4) np1
+  integer(kind=i4) ns2
  real(kind=dp) pi
  real(kind=dp) wsave(lensav)
 
   ier = 0
 
-  if (lensav < 2*n + int(log( real ( n, kind = 8 ) )/log( 2.0D+00 )) +4) then
+  if (lensav < 2*n + int(log( real ( n, kind = dp ) )/log( 2.0_dp )) +4) then
     ier = 2
     call xerfft ('cost1i', 3)
     return
@@ -6628,18 +6758,18 @@ subroutine cost1i ( n, wsave, lensav, ier )
   nm1 = n-1
   np1 = n+1
   ns2 = n/2
-  pi = 4.0D+00 * atan ( 1.0D+00 )
-  dt = pi/ real ( nm1, kind = 8 )
-  fk = 0.0D+00
+  pi = 4.0_dp * atan ( 1.0_dp )
+  dt = pi/ real ( nm1, kind = dp )
+  fk = 0.0_dp
 
   do k=2,ns2
     kc = np1-k
-    fk = fk + 1.0D+00
-    wsave(k) = 2.0D+00 * sin(fk*dt)
-    wsave(kc) = 2.0D+00 * cos(fk*dt)
+    fk = fk + 1.0_dp
+    wsave(k) = 2.0_dp * sin(fk*dt)
+    wsave(kc) = 2.0_dp * cos(fk*dt)
   end do
 
-  lnsv = nm1 + int(log( real ( nm1, kind = 8 ) )/log( 2.0D+00 )) +4
+  lnsv = nm1 + int(log( real ( nm1, kind = dp ) )/log( 2.0_dp )) + 4
 
   call rfft1i (nm1, wsave(n+1), lnsv, ier1)
 
