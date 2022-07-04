@@ -8581,7 +8581,13 @@ subroutine mradb4 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3)
       sqrt2=sqrt( 2.0_dp )
       do 101 k=1,l1
           m2 = m2s
-          
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+  
           do m1=1,m1d,im1
           m2 = m2+im2
          ch(m2,1,k,3) = (cc(m1,1,1,k)+cc(m1,ido,4,k)) &
@@ -8600,6 +8606,13 @@ subroutine mradb4 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3)
          do 103 i=3,ido,2
             ic = idp2-i
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned wa:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
                do 1002 m1=1,m1d,im1
                m2 = m2+im2
         ch(m2,i-1,k,1) = (cc(m1,i-1,1,k)+cc(m1,ic-1,4,k)) &
@@ -8632,6 +8645,13 @@ subroutine mradb4 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3)
   105 continue
       do 106 k=1,l1
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !dir$ fma
                do 1003 m1=1,m1d,im1
                m2 = m2+im2
          ch(m2,ido,k,1) = (cc(m1,ido,1,k)+cc(m1,ido,3,k)) &
@@ -8649,7 +8669,10 @@ subroutine mradb4 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3)
   return
 end
 subroutine mradb5 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3,wa4)
-
+       !dir$ attributes forceinline :: mradb5
+       !dir$ attributes code_align : 32 :: mradb5
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: mradb5
 !*****************************************************************************80
 !
 !! MRADB5 is an FFTPACK5.1 auxilliary function.
@@ -8723,6 +8746,13 @@ subroutine mradb5 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3,wa4)
 
       do 101 k=1,l1
       m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(4)
+   !dir$ fma
       do 1001 m1=1,m1d,im1
          m2 = m2+im2
          ch(m2,1,k,1) = cc(m1,1,1,k)+ 2.0_dp *cc(m1,ido,2,k)+ 2.0_dp *cc(m1,ido,4,k)
@@ -8738,7 +8768,7 @@ subroutine mradb5 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3,wa4)
          ch(m2,1,k,5) = (cc(m1,1,1,k)+tr11* 2.0_dp *cc(m1,ido,2,k) &
          +tr12* 2.0_dp *cc(m1,ido,4,k))+(ti11* 2.0_dp *cc(m1,1,3,k) &
          +ti12* 2.0_dp *cc(m1,1,5,k))
- 1001          continue
+ 1001  continue
   101 continue
 
       if (ido == 1) return
@@ -8747,6 +8777,13 @@ subroutine mradb5 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3,wa4)
          do 102 i=3,ido,2
             ic = idp2-i
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ assume_aligned wa:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
       do 1002 m1=1,m1d,im1
         m2 = m2+im2
         ch(m2,i-1,k,1) = cc(m1,i-1,1,k)+(cc(m1,i-1,3,k)+cc(m1,ic-1,2,k)) &
@@ -8834,7 +8871,10 @@ subroutine mradb5 (m,ido,l1,cc,im1,in1,ch,im2,in2,wa1,wa2,wa3,wa4)
   return
 end
 subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
-
+       !dir$ attributes forceinline :: mradbg
+       !dir$ attributes code_align : 32 :: mradbg
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: mradb5
 !*****************************************************************************80
 !
 !! MRADBG is an FFTPACK5.1 auxilliary function.
@@ -8934,6 +8974,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
       do k=1,l1
          do i=1,ido
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
             do m1=1,m1d,im1
             m2 = m2+im2
             ch(m2,i,k,1) = cc(m1,i,1,k)
@@ -8946,6 +8992,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
   103 do 105 i=1,ido
          do 104 k=1,l1
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
             do 1004 m1=1,m1d,im1
             m2 = m2+im2
             ch(m2,i,k,1) = cc(m1,i,1,k)
@@ -8957,6 +9009,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
          j2 = j+j
          do 107 k=1,l1
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
             do 1007 m1=1,m1d,im1
             m2 = m2+im2
             ch(m2,1,k,j) = cc(m1,ido,j2-2,k)+cc(m1,ido,j2-2,k)
@@ -8972,6 +9030,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
             do 109 i=3,ido,2
                ic = idp2-i
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
                do 1009 m1=1,m1d,im1
                m2 = m2+im2
                ch(m2,i-1,k,j) = cc(m1,i-1,2*j-1,k)+cc(m1,ic-1,2*j-2,k)
@@ -8989,6 +9053,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
             ic = idp2-i
             do 113 k=1,l1
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
                do 1013 m1=1,m1d,im1
                m2 = m2+im2
                ch(m2,i-1,k,j) = cc(m1,i-1,2*j-1,k)+cc(m1,ic-1,2*j-2,k)
@@ -9008,6 +9078,13 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
          ar1 = ar1h
          do 117 ik=1,idl1
             m2 = m2s
+   !dir$ assume_aligned ch2:64
+   !dir$ assume_aligned c2:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(8)
             do 1017 m1=1,m1d,im1
             m2 = m2+im2
             c2(m1,ik,l) = ch2(m2,ik,1)+ar1*ch2(m2,ik,2)
@@ -9025,6 +9102,14 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
             ar2 = ar2h
             do 118 ik=1,idl1
                m2 = m2s
+   !dir$ assume_aligned ch2:64
+   !dir$ assume_aligned c2:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(8)
+   !$omp simd reduction(+:c2)
                do 1018 m1=1,m1d,im1
                m2 = m2+im2
                c2(m1,ik,l) = c2(m1,ik,l)+ar2*ch2(m2,ik,j)
@@ -9036,6 +9121,13 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
       do 122 j=2,ipph
          do 121 ik=1,idl1
             m2 = m2s
+   !dir$ assume_aligned ch2:64
+   
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
+   !$omp simd reduction(+:ch2)
             do 1021 m1=1,m1d,im1
             m2 = m2+im2
             ch2(m2,ik,1) = ch2(m2,ik,1)+ch2(m2,ik,j)
@@ -9046,6 +9138,13 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
          jc = ipp2-j
          do 123 k=1,l1
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+  
+   !dir$ unroll(8)
             do 1023 m1=1,m1d,im1
             m2 = m2+im2
             ch(m2,1,k,j) = c1(m1,1,k,j)-c1(m1,1,k,jc)
@@ -9060,6 +9159,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
          do 126 k=1,l1
             do 125 i=3,ido,2
                m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
                do 1025 m1=1,m1d,im1
                m2 = m2+im2
                ch(m2,i-1,k,j) = c1(m1,i-1,k,j)-c1(m1,i,k,jc)
@@ -9076,6 +9181,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
          do 130 i=3,ido,2
             do 129 k=1,l1
                m2 = m2s
+  !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
                do 1029 m1=1,m1d,im1
                m2 = m2+im2
                ch(m2,i-1,k,j) = c1(m1,i-1,k,j)-c1(m1,i,k,jc)
@@ -9090,6 +9201,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
       if (ido == 1) return
       do 133 ik=1,idl1
          m2 = m2s
+   !dir$ assume_aligned ch2:64
+   !dir$ assume_aligned c2:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+    !dir$ unroll(8)
          do 1033 m1=1,m1d,im1
          m2 = m2+im2
          c2(m1,ik,1) = ch2(m2,ik,1)
@@ -9098,6 +9215,12 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
       do 135 j=2,ip
          do 134 k=1,l1
             m2 = m2s
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned c1:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(8)
             do 1034 m1=1,m1d,im1
             m2 = m2+im2
             c1(m1,1,k,j) = ch(m2,1,k,j)
@@ -9113,6 +9236,14 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
             idij = idij+2
             do 136 k=1,l1
                m2 = m2s
+   !dir$ assume_aligned c1:64
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned wa:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(8)
                do 1036 m1=1,m1d,im1
                m2 = m2+im2
                c1(m1,i-1,k,j) = wa(idij-1)*ch(m2,i-1,k,j)-wa(idij)* ch(m2,i,k,j)
@@ -9130,6 +9261,14 @@ subroutine mradbg (m,ido,ip,l1,idl1,cc,c1,c2,im1,in1,ch,ch2,im2,in2,wa)
             do 140 i=3,ido,2
                idij = idij+2
                m2 = m2s
+   !dir$ assume_aligned c1:64
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned wa:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(8)
                do 1040 m1=1,m1d,im1
                m2 = m2+im2
                c1(m1,i-1,k,j) = wa(idij-1)*ch(m2,i-1,k,j)-wa(idij)*ch(m2,i,k,j)
@@ -11279,6 +11418,10 @@ subroutine r1f4kb (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3)
 end
 subroutine r1f4kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3)
 
+       !dir$ attributes forceinline :: r1f4kf
+       !dir$ attributes code_align : 32 :: r1f4kf
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r1f4kf
 !*****************************************************************************80
 !
 !! R1F4KF is an FFTPACK5.1 auxilliary function.
@@ -11331,7 +11474,13 @@ subroutine r1f4kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3)
  real(kind=dp) wa3(ido)
 
   hsqt2=sqrt( 2.0_dp )/ 2.0_dp 
-
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(4)
   do k=1,l1
     ch(1,1,1,k) = (cc(1,1,k,2)+cc(1,1,k,4))+(cc(1,1,k,1)+cc(1,1,k,3))
     ch(1,ido,4,k) = (cc(1,1,k,1)+cc(1,1,k,3))-(cc(1,1,k,2)+cc(1,1,k,4))
@@ -11342,6 +11491,15 @@ subroutine r1f4kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3)
       if (ido-2) 107,105,102
   102 idp2 = ido+2
       do 104 k=1,l1
+    !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ assume_aligned wa1:64
+   !dir$ assume_aligned wa2:64
+   !dir$ assume_aligned wa3:64
+    !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
          do 103 i=3,ido,2
             ic = idp2-i
             ch(1,i-1,1,k) = ((wa1(i-2)*cc(1,i-1,k,2)+wa1(i-1)* &
@@ -11391,7 +11549,10 @@ subroutine r1f4kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3)
   return
 end
 subroutine r1f5kb (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
-
+       !dir$ attributes forceinline :: r1f5kb
+       !dir$ attributes code_align : 32 :: r1f5kb
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r1f5kb
 !*****************************************************************************80
 !
 !! R1F5KB is an FFTPACK5.1 auxilliary function.
@@ -11453,7 +11614,13 @@ subroutine r1f5kb (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
   ti11=sin(arg)
   tr12=cos( 2.0_dp *arg )
   ti12=sin( 2.0_dp *arg )
-
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
+   !dir$ unroll(4)
   do k=1,l1
     ch(1,1,k,1) = cc(1,1,1,k)+ 2.0_dp *cc(1,ido,2,k)+ 2.0_dp *cc(1,ido,4,k)
     ch(1,1,k,2) = (cc(1,1,1,k)+tr11* 2.0_dp *cc(1,ido,2,k) &
@@ -11474,6 +11641,16 @@ subroutine r1f5kb (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
 
       idp2 = ido+2
       do 103 k=1,l1
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ assume_aligned wa1:64
+   !dir$ assume_aligned wa2:64
+   !dir$ assume_aligned wa3:64
+   !dir$ assume_aligned wa4:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
          do 102 i=3,ido,2
             ic = idp2-i
         ch(1,i-1,k,1) = cc(1,i-1,1,k)+(cc(1,i-1,3,k)+cc(1,ic-1,2,k)) &
@@ -11561,7 +11738,10 @@ subroutine r1f5kb (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
   return
 end
 subroutine r1f5kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
-
+       !dir$ attributes forceinline :: r1f5kf
+       !dir$ attributes code_align : 32 :: r1f5kf
+       !dir$ optimize : 3
+       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: r1f5kf
 !*****************************************************************************80
 !
 !! R1F5KF is an FFTPACK5.1 auxilliary function.
@@ -11623,7 +11803,12 @@ subroutine r1f5kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
   ti11=sin(arg)
   tr12=cos( 2.0_dp *arg)
   ti12=sin( 2.0_dp *arg)
-
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ unroll(4)
   do k=1,l1
     ch(1,1,1,k) = cc(1,1,k,1)+(cc(1,1,k,5)+cc(1,1,k,2))+ &
       (cc(1,1,k,4)+cc(1,1,k,3))
@@ -11641,6 +11826,16 @@ subroutine r1f5kf (ido,l1,cc,in1,ch,in2,wa1,wa2,wa3,wa4)
 
       idp2 = ido+2
       do 103 k=1,l1
+   !dir$ assume_aligned ch:64
+   !dir$ assume_aligned cc:64
+   !dir$ assume_aligned wa1:64
+   !dir$ assume_aligned wa2:64
+   !dir$ assume_aligned wa3:64
+   !dir$ assume_aligned wa4:64
+   !dir$ vector aligned 
+   !dir$ vector vectorlength(8)
+   !dir$ vector always
+   !dir$ fma
          do 102 i=3,ido,2
             ic = idp2-i
 
