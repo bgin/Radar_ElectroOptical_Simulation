@@ -101,13 +101,11 @@ PRIVATE            :: integral
 CONTAINS
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_normal() RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_normal !GCC$ ATTRIBUTES aligned(32) :: random_normal !GCC$ ATTRIBUTES inline :: random_normal
-#elif defined __ICC || defined __INTEL_COMPILER
+
 FUNCTION random_normal() RESULT(fn_val)
   !DIR$ ATTRIBUTES INLINE :: random_normal
-  !DIR$ ATTRIBUTES ALIGN : 32 :: random_normal
-#endif
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_normal
+
 
 ! Adapted from the following Fortran 77 code
 !      ALGORITHM 712, COLLECTED ALGORITHMS FROM ACM.
@@ -153,13 +151,11 @@ RETURN
 END FUNCTION random_normal
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_gamma(s, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_gamma !GCC$ ATTRIBUTES aligned(32) :: random_gamma !GCC$ ATTRIBUTES inline :: random_gamma
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_gamma(s,first) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_gamma
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_gamma
+
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
 !     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
@@ -189,13 +185,11 @@ RETURN
 END FUNCTION random_gamma
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_gamma1(s, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_gamma1 !GCC$ ATTRIBUTES aligned(32) :: random_gamma1 !GCC$ ATTRIBUTES inline :: random_gamma1
-#elif defined __ICC || defined __INTEL_COMPILER
+
 FUNCTION random_gamma1(s,first) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_gamma1
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma1
-#endif    
+    !DIR$ ATTRIBUTES ACODE_LIGN : 32 :: random_gamma1
+  
 ! Uses the algorithm in
 ! Marsaglia, G. and Tsang, W.W. (2000) `A simple method for generating
 ! gamma variables', Trans. om Math. Software (TOMS), vol.26(3), pp.363-372.
@@ -242,13 +236,11 @@ RETURN
 END FUNCTION random_gamma1
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_gamma2(s, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_gamma2 !GCC$ ATTRIBUTES aligned(32) :: random_gamma2 !GCC$ ATTRIBUTES inline :: random_gamma2
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_gamma2(s,first) RESULT(fn_val)
      !DIR$ ATTRIBUTES INLINE :: random_gamma2
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma2
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_gamma2
+
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
 !     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
@@ -313,13 +305,11 @@ RETURN
 END FUNCTION random_gamma2
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_chisq(ndf, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_chisq !GCC$ ATTRIBUTES aligned(32) :: random_chisq !GCC$ ATTRIBUTES inline :: random_chisq
-#elif defined __ICC || defined __INTEL_COMPILER
+
 FUNCTION random_chisq(ndf, first) RESULT(fn_val)
   !DIR$ ATTRIBUTES INLINE :: random_chisq
-  !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq
-#endif
+  !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_chisq
+
 
 !     Generates a random variate from the chi-squared distribution with
 !     ndf degrees of freedom
@@ -334,13 +324,11 @@ RETURN
 END FUNCTION random_chisq
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_exponential() RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_exponential !GCC$ ATTRIBUTES aligned(32) :: random_exponential !GCC$ ATTRIBUTES inline :: random_exponential
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_exponential() RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_exponential
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_exponential
+
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
 !     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
@@ -365,13 +353,11 @@ RETURN
 END FUNCTION random_exponential
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_Weibull(a) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_Weibull !GCC$ ATTRIBUTES aligned(32) :: random_Weibull !GCC$ ATTRIBUTES inline :: random_Weibull
-#elif defined __ICC || defined _INTEL_COMPILER
+
 FUNCTION random_Weibull(a) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_Weibull
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Weibull
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_Weibull
+
 
 !     Generates a random variate from the Weibull distribution with
 !     probability density:
@@ -390,13 +376,11 @@ RETURN
 END FUNCTION random_Weibull
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_beta(aa, bb, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_beta !GCC$ ATTRIBUTES aligned(32) :: random_beta !GCC$ ATTRIBUTES inline :: random_beta
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_beta(aa,bb,first) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_beta
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_beta
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_beta
+
 
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
@@ -469,13 +453,11 @@ RETURN
 END FUNCTION random_beta
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_t(m) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_t !GCC$ ATTRIBUTES aligned(32) :: random_t !GCC$ ATTRIBUTES inline :: random_t
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_t(m) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_t
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_t
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_t
+
 
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
@@ -532,13 +514,11 @@ RETURN
 END FUNCTION random_t
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-SUBROUTINE random_mvnorm(n, h, d, f, first, x, ier) !GCC$ ATTRIBUTES hot :: random_mvnorm !GCC$ ATTRIBUTES aligned(32) :: random_mvnorm !GCC$ ATTRIBUTES inline :: random_mvnorm
-#elif defined __ICC || defined __INTEL_COMPILER
+
   SUBROUTINE ramdom_mvnorm(n,h,d,f,first,x,ier)
     !DIR$ ATTRIBUTES INLINE :: random_mvnorm
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_mvnorm
+
 
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
@@ -635,13 +615,11 @@ RETURN
 END SUBROUTINE random_mvnorm
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_inv_gauss(h, b, first) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: random_inv_gauss !GCC$ ATTRIBUTES aligned(32) :: random_inv_gauss !GCC$ ATTRIBUTES inline :: random_inv_gauss
-#elif defined __ICC || defined __INTEL_COMPILER
+
 FUNCTION random_inv_gauss(h,b, first) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: random_inv_gauss
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_inv_gauss
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_inv_gauss
+
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
 !     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
@@ -707,12 +685,10 @@ RETURN
 END FUNCTION random_inv_gauss
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_Poisson(mu, first) RESULT(ival) !GCC$ ATTRIBUTES hot :: random_Poisson !GCC$ ATTRIBUTES aligned(32) :: random_Poisson
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_Poisson(mu, first) RESULT(ival)
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Poisson
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_Poisson
+
 !**********************************************************************
 !     Translated to Fortran 90 by Alan Miller from:
 !                           RANLIB
@@ -953,12 +929,10 @@ RETURN
 END FUNCTION random_Poisson
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_binomial1(n, p, first) RESULT(ival) !GCC$ ATTRIBUTES hot :: random_binomial1 !GCC$ ATTRIBUTES aligned(32) :: random_binomial1 !GCC$ ATTRIBUTES inline :: random_binomial1
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_binomial(n,p,first)    RESULT(ival)
     !DIR$ ATTRIBUTES INLINE :: random_binomial1
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_binomial1
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_binomial1
     
 #endif
 
@@ -1036,12 +1010,10 @@ RETURN
 END FUNCTION random_binomial1
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION bin_prob(n, p, r) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: bin_prob !GCC$ ATTRIBUTES inline :: bin_prob !GCC$ ATTRIBUTES aligned(32) :: bin_prob
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION bin_prob(n,p,r) RESULT(fn_val)
     !DIR$ ATTRIBUTES ALIGN : 32 :: bin_prob
-    !DIR$ ATTRIBUTES INLINE :: bin_prob
+    !DIR$ ATTRIBUTES CODE_INLINE :: bin_prob
 #endif
 !     Calculate a binomial probability
 
@@ -1059,13 +1031,11 @@ RETURN
 END FUNCTION bin_prob
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION lngamma(x) RESULT(fn_val) !GCC$ ATTRIBUTES hot :: lngamma !GCC$ ATTRIBUTES aligned(32) :: lngamma !GCC$ ATTRIBUTES inline :: lngamma
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION lngamma(x) RESULT(fn_val)
     !DIR$ ATTRIBUTES INLINE :: lngamma
-    !DIR$ ATTRIBUTES ALIGN : 32 :: lngamma
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: lngamma
+
 ! Logarithm to base e of the gamma function.
 !
 ! Accurate to about 1.e-14.
@@ -1127,12 +1097,10 @@ RETURN
 END FUNCTION lngamma
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_binomial2(n, pp, first) RESULT(ival) !GCC$ ATTRIBUTES hot :: random_binomial2 !GCC$ ATTRIBUTES aligned(32) :: random_binomial2
-#elif defined __ICC || defined __INTEL_COMPILER
+#
   FUNCTION random_binomial2(n,pp,first) RESULT(ival)
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_binomial2
-    
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_binomial2
+    !DIR$ OPTIMIZE : 3
 #endif
 !**********************************************************************
 !     Translated to Fortran 90 by Alan Miller from:
@@ -1364,13 +1332,12 @@ END FUNCTION random_binomial2
 
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-FUNCTION random_neg_binomial(sk, p) RESULT(ival) !GCC$ ATTRIBUTES hot :: random_neg_binomial !GCC$ ATTRIBUTES inline :: random_neg_binomial !GCC$ ATTRIBUTES aligned(32) :: random_neg_binomial
-#elif defined __ICC || defined __INTEL_COMPILER
+
   FUNCTION random_neg_binomial(sk, p) RESULT(ival)
     !DIR$ ATTRIBUTES INLINE :: random_neg_binomial
-    !DIR$ ATTRIBUTES ALIGN : 32 :: random_neg_binomial
-#endif
+    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: random_neg_binomial
+     !DIR$ OPTIMIZE : 3
+
 ! Adapted from Fortran 77 code from the book:
 !     Dagpunar, J. 'Principles of random variate generation'
 !     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
@@ -1441,114 +1408,114 @@ END FUNCTION random_neg_binomial
 
 
 
-!FUNCTION random_von_Mises(k, first) RESULT(fn_val)
+FUNCTION random_von_Mises(k, first) RESULT(fn_val)
 
-!     Algorithm VMD from:
-!     Dagpunar, J.S. (1990) `Sampling from the von Mises distribution via a
-!     comparison of random numbers', J. of Appl. Statist., 17, 165-168.
+     !Algorithm VMD from:
+     !Dagpunar, J.S. (1990) `Sampling from the von Mises distribution via a
+     !comparison of random numbers', J. of Appl. Statist., 17, 165-168.
 
-!     Fortran 90 code by Alan Miller
-!     CSIRO Division of Mathematical & Information Sciences
+     !Fortran 90 code by Alan Miller
+     !CSIRO Division of Mathematical & Information Sciences
 
-!     Arguments:
-!     k (real)        parameter of the von Mises distribution.
-!     first (logical) set to .TRUE. the first time that the function
-!                     is called, or the first time with a new value
-!                     for k.   When first = .TRUE., the function sets
-!                     up starting values and may be very much slower.
+    !Arguments:
+     !k (real)        parameter of the von Mises distribution.
+     !first (logical) set to .TRUE. the first time that the function
+     !                is called, or the first time with a new value
+      !               for k.   When first = .TRUE., the function sets
+!     !               up starting values and may be very much slower.
 
-!REAL, INTENT(IN)     :: k
-!LOGICAL, INTENT(IN)  :: first
-!REAL                 :: fn_val
+REAL, INTENT(IN)     :: k
+LOGICAL, INTENT(IN)  :: first
+REAL                 :: fn_val
 
 !     Local variables
 
-!INTEGER          :: j, n
-!INTEGER, SAVE    :: nk
-!REAL, PARAMETER  :: pi = 3.14159265_sp
-!REAL, SAVE       :: p(20), theta(0:20)
-!REAL             :: sump, r, th, lambda, rlast
-!REAL (dp)        :: dk
+INTEGER          :: j, n
+INTEGER, SAVE    :: nk
+REAL, PARAMETER  :: pi = 3.14159265_sp
+REAL, SAVE       :: p(20), theta(0:20)
+REAL             :: sump, r, th, lambda, rlast
+REAL (sp)        :: dk
 
-!IF (first) THEN                        ! Initialization, if necessary
-!  IF (k < zero) THEN
+IF (first) THEN                        ! Initialization, if necessary
+  IF (k < zero) THEN
     !WRITE(*, *) '** Error: argument k for random_von_Mises = ', k
-!    RETURN
-!  END IF
+    RETURN
+  END IF
 
-!  nk = k + k + one
-!  IF (nk > 20) THEN
+  nk = k + k + one
+  IF (nk > 20) THEN
     !WRITE(*, *) '** Error: argument k for random_von_Mises = ', k
-!    RETURN
-!  END IF
+    RETURN
+! END IF
 
-!  dk = k
-!  theta(0) = zero
-!  IF (k > half) THEN
+  dk = k
+! theta(0) = zero
+  IF (k > half) THEN
 
 !     Set up array p of probabilities.
 
- !   sump = zero
- !   DO j = 1, nk
- !     IF (j < nk) THEN
- !       theta(j) = ACOS(one - j/k)
- !     ELSE
- !       theta(nk) = pi
- !     END IF
+    sump = zero
+    DO j = 1, nk
+     IF (j < nk) THEN
+       theta(j) = ACOS(one - j/k)
+      ELSE
+       theta(nk) = pi
+      END IF
 
 !     Numerical integration of e^[k.cos(x)] from theta(j-1) to theta(j)
 
-!      CALL integral(theta(j-1), theta(j), p(j), dk)
- !     sump = sump + p(j)
- !   END DO
-!    p(1:nk) = p(1:nk) / sump
- ! ELSE
- !   p(1) = one
- !   theta(1) = pi
-!  END IF                         ! if k > 0.5
-!END IF                           ! if first
+     CALL integral(theta(j-1), theta(j), p(j), dk)
+      sump = sump + p(j)
+   END DO
+   p(1:nk) = p(1:nk) / sump
+  ELSE
+    p(1) = one
+    theta(1) = pi
+   END IF                         ! if k > 0.5
+END IF                           ! if first
 
-!CALL RANDOM_NUMBER(r)
-!DO j = 1, nk
-!  r = r - p(j)
-!  IF (r < zero) EXIT
-!END DO
-!r = -r/p(j)
+CALL RANDOM_NUMBER(r)
+DO j = 1, nk
+  r = r - p(j)
+  IF (r < zero) EXIT
+END DO
+r = -r/p(j)
 
-!DO
-!  th = theta(j-1) + r*(theta(j) - theta(j-1))
-!  lambda = k - j + one - k*COS(th)
-!  n = 1
-!  rlast = lambda
+DO
+  th = theta(j-1) + r*(theta(j) - theta(j-1))
+! lambda = k - j + one - k*COS(th)
+ n = 1
+  rlast = lambda
 
- ! DO
- !   CALL RANDOM_NUMBER(r)
- !   IF (r > rlast) EXIT
-!    n = n + 1
-!    rlast = r
-!  END DO
+  DO
+    CALL RANDOM_NUMBER(r)
+    IF (r > rlast) EXIT
+    n = n + 1
+    rlast = r
+  END DO
 
-!  IF (n .NE. 2*(n/2)) EXIT         ! is n even?
-!  CALL RANDOM_NUMBER(r)
-!END DO
+  IF (n .NE. 2*(n/2)) EXIT         ! is n even?
+  CALL RANDOM_NUMBER(r)
+END DO
 
-!fn_val = SIGN(th, (r - rlast)/(one - rlast) - half)
-!RETURN
-!END FUNCTION random_von_Mises
+fn_val = SIGN(th, (r - rlast)/(one - rlast) - half)
+RETURN
+END FUNCTION random_von_Mises
 
 
 
-!SUBROUTINE integral(a, b, result, dk)
+SUBROUTINE integral(a, b, result, dk)
 
-!     Gaussian integration of exp(k.cosx) from a to b.
+     !Gaussian integration of exp(k.cosx) from a to b.
 
-!REAL (dp), INTENT(IN) :: dk
-!REAL, INTENT(IN)      :: a, b
-!REAL, INTENT(OUT)     :: result
+REAL (dp), INTENT(IN) :: dk
+REAL (dp), INTENT(IN)      :: a, b
+REAL (dp), INTENT(OUT)     :: result
 
-!     Local variables
+     Local variables
 
-!REAL (dp)  :: xmid, range, x1, x2,                                    &
+REAL (dp)  :: xmid, range, x1, x2,                                    &
 !  x(3) = (/0.238619186083197_dp, 0.661209386466265_dp, 0.932469514203152_dp/), &
 !  w(3) = (/0.467913934572691_dp, 0.360761573048139_dp, 0.171324492379170_dp/)
 !INTEGER    :: i
@@ -1556,16 +1523,16 @@ END FUNCTION random_neg_binomial
 !xmid = (a + b)/2._dp
 !range = (b - a)/2._dp
 
-!result = 0._dp
-!DO i = 1, 3
-!  x1 = xmid + x(i)*range
-!  x2 = xmid - x(i)*range
-!  result = result + w(i)*(EXP(dk*COS(x1)) + EXP(dk*COS(x2)))
-!END DO
+result = 0._dp
+DO i = 1, 3
+ x1 = xmid + x(i)*range
+  x2 = xmid - x(i)*range
+  result = result + w(i)*(EXP(dk*COS(x1)) + EXP(dk*COS(x2)))
+END DO
 
-!result = result * range
-!RETURN
-!END SUBROUTINE integral
+result = result * range
+RETURN
+END SUBROUTINE integral
 
 
 #if defined __GFORTRAN__ && !defined __INTEL_COMPILER
