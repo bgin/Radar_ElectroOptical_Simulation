@@ -46,11 +46,12 @@ module quadpack_generic
 
     abstract interface
 
-        real(kind=dp) function func(x)
+        real(kind=dp) function func(x,user_data)
         !! interface for user-supplied function.
-            import :: wp
+            import :: dp
             implicit none
             real(kind=dp), intent(in) :: x
+            class(*),      intent(in) :: user_data
         end function func
 
         real(kind=dp) function weight_func(x, a, b, c, d, i)
@@ -94,7 +95,7 @@ module quadpack_generic
 !  * QUADPACK: date written 800101, revision date 830518 (yymmdd)
 
     recursive subroutine dqag(f, a, b, Epsabs, Epsrel, Key, Result, Abserr, Neval, Ier, &
-                    Limit, Lenw, Last, Iwork, Work)
+                    Limit, Lenw, Last, Iwork, Work,user_data)
 
         implicit none
 
@@ -191,6 +192,7 @@ module quadpack_generic
                                      !! determines the number of significant elements
                                      !! actually in the work arrays.
         integer(kind=i4), intent(out) :: Neval !! number of integrand evaluations
+        class(*),         intent(in)  :: user_data ! additional input to integrand, used mainly with Mellin and Laplace transforms.
 
         integer(kind=i4) :: lvl, l1, l2, l3
 
@@ -209,7 +211,7 @@ module quadpack_generic
             l3 = Limit + l2
 
             call dqage(f, a, b, Epsabs, Epsrel, Key, Limit, Result, Abserr, Neval, &
-                       Ier, Work(1), Work(l1), Work(l2), Work(l3), Iwork, Last)
+                       Ier, Work(1), Work(l1), Work(l2), Work(l3), Iwork, Last,user_data)
 
             ! call error handler if necessary.
 
@@ -234,7 +236,7 @@ module quadpack_generic
 !  * QUADPACK: date written 800101, revision date 830518 (yymmdd)
 
     recursive subroutine dqage(f, a, b, Epsabs, Epsrel, Key, Limit, Result, Abserr, &
-                     Neval, Ier, Alist, Blist, Rlist, Elist, Iord, Last)
+                     Neval, Ier, Alist, Blist, Rlist, Elist, Iord, Last,user_data)
         implicit none
 
         procedure(func) :: f !! function subprogram defining the integrand function `f(x)`.
@@ -323,6 +325,7 @@ module quadpack_generic
                                             !! `k = limit+1-last` otherwise
         integer(kind=i4), intent(out) :: Last !! number of subintervals actually produced in the
                                      !! subdivision process
+        class(*),         intent(in)  :: user_data
 
         real(kind=dp) :: area1, a1, b1, defab1, error1 !! variable for the left subinterval
         real(kind=dp) :: area2, a2, b2, defab2, error2 !! variable for the right subinterval
@@ -358,12 +361,12 @@ module quadpack_generic
             if (Key >= 7) keyf = 6
             Neval = 0
             select case (keyf)
-            case (1); call dqk15(f, a, b, Result, Abserr, defabs, resabs)
-            case (2); call dqk21(f, a, b, Result, Abserr, defabs, resabs)
-            case (3); call dqk31(f, a, b, Result, Abserr, defabs, resabs)
-            case (4); call dqk41(f, a, b, Result, Abserr, defabs, resabs)
-            case (5); call dqk51(f, a, b, Result, Abserr, defabs, resabs)
-            case (6); call dqk61(f, a, b, Result, Abserr, defabs, resabs)
+            case (1); call dqk15(f, a, b, Result, Abserr, defabs, resabs, user_data)
+            case (2); call dqk21(f, a, b, Result, Abserr, defabs, resabs, user_data)
+            case (3); call dqk31(f, a, b, Result, Abserr, defabs, resabs, user_data)
+            case (4); call dqk41(f, a, b, Result, Abserr, defabs, resabs, user_data)
+            case (5); call dqk51(f, a, b, Result, Abserr, defabs, resabs, user_data)
+            case (6); call dqk61(f, a, b, Result, Abserr, defabs, resabs, user_data)
             end select
             Last = 1
             Rlist(1) = Result
@@ -400,23 +403,23 @@ module quadpack_generic
                     b2 = Blist(maxerr)
                     select case (keyf)
                     case (1)
-                        call dqk15(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk15(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk15(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk15(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     case (2)
-                        call dqk21(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk21(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk21(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk21(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     case (3)
-                        call dqk31(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk31(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk31(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk31(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     case (4)
-                        call dqk41(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk41(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk41(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk41(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     case (5)
-                        call dqk51(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk51(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk51(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk51(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     case (6)
-                        call dqk61(f, a1, b1, area1, error1, resabs, defab1)
-                        call dqk61(f, a2, b2, area2, error2, resabs, defab2)
+                        call dqk61(f, a1, b1, area1, error1, resabs, defab1, user_data)
+                        call dqk61(f, a2, b2, area2, error2, resabs, defab2, user_data)
                     end select
 
                     ! improve previous approximations to integral
