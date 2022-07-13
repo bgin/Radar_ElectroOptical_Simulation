@@ -8,11 +8,11 @@ module mol_solvers
 ! the codes of William E. Schiesser.
 ! Reference:
 !               https://www.lehigh.edu/~wes1/books/
-! 
-!
+! This is rather a low priority module for solving
+! PDE at least in case of elliptic types.
 !===========================================================
 
-  use mod_kinds, only : i4,sp,sp
+  
   public
   implicit none
 
@@ -20,6 +20,7 @@ module mol_solvers
   !           Finite-Difference Scheme collection                  !
   !================================================================!
 
+contains
   
       SUBROUTINE DSS002(XL,XU,N,U,UX)
           !dir$ optimize:3
@@ -1180,6 +1181,1116 @@ C...  IS CONSIDERED ADEQUATE FOR MOST PROBLEMS.
    END SUBROUTINE
 
 
+   
+   SUBROUTINE DSS036(XL,XU,N1,N2,N3,ND,U3D,UX3D,V)
+            !dir$ optimize:3
+          !dir$ attributes forceinline :: DSS036
+          !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: DSS036
+#if 0
+C...
+C...  SUBROUTINE DSS036 COMPUTES A PARTIAL DERIVATIVE OVER A THREE-
+C...  DIMENSIONAL DOMAIN USING EITHER FIVE-POINT CENTERED OR FIVE-
+C...  POINT BIASED UPWIND APPROXIMATIONS.  IT IS INTENDED PRIMARILY
+C...  FOR THE NUMERICAL METHOD OF LINES (NMOL) NUMERICAL INTEGRATION
+C...  OF PARTIAL DIFFERENTIAL EQUATIONS (PDES) IN THREE DIMENSIONS.
+C...
+C...  SUBROUTINE DSS036 IS CALLED IN ESSENTIALLY THE SAME WAY AS
+C...  SUBROUTINE DSS034.  THE ONLY DIFFERENCE IS AN ADDITIONAL ARGU-
+C...  MENT, N3, TO DEFINE THE NUMBER OF GRID POINTS IN THE THIRD
+C...  DIMENSION.  THE COMMENTS IN DSS034 SHOULD THEREFORE BE USEFUL
+C...  IN UNDERSTANDING THE OPERATION OF DSS036.  IN PARTICULAR,
+C...  DSS036 CALLS SUBROUTINES DSS004 AND DSS020 TO IMPLEMENT THE
+C...  FIVE-POINT CENTERED APPROXIMATION AND FIVE-POINT BIASED UPWIND
+C...  APPROXIMATION OF THE PARTIAL DERIAVTIVE, RESPECTIVELY.
+C...
+C...  ARGUMENT LIST
+C...
+C...     XL        LOWER VALUE OF THE INDEPENDENT VARIABLE FOR WHICH
+C...               THE PARTIAL DERIVATIVE IS TO BE COMPUTED (INPUT)
+C...
+C...     XU        UPPER VALUE OF THE INDEPENDENT VARIABLE FOR WHICH
+C...               THE PARTIAL DERIVATIVE IS TO BE COMPUTED (INPUT)
+C...
+C...     N1        NUMBER OF GRID POINTS FOR THE FIRST INDEPENDENT
+C...               VARIABLE (INPUT)
+C...
+C...     N2        NUMBER OF GRID POINTS FOR THE SECOND INDEPENDENT
+C...               VARIABLE (INPUT)
+C...
+C...     N3        NUMBER OF GRID POINTS FOR THE THIRD INDEPENDENT
+C...               VARIABLE (INPUT)
+C...
+C...     ND        NUMBER OF THE INDEPENDENT VARIABLE FOR WHICH THE
+C...               PARTIAL DERIVATIVE IS TO BE COMPUTED (INPUT)
+C...
+C...     U3D       THREE-DIMENSIONAL ARRAY CONTAINING THE DEPENDENT
+C...               VARIABLE WHICH IS TO BE DIFFERENTIATED WITH RESPECT
+C...               TO INDEPENDENT VARIABLE ND (INPUT)
+C...
+C...     UX3D      THREE-DIMENSIONAL ARRAY CONTAINING THE PARTIAL DERI-
+C...               VATIVE OF THE DEPENDENT VARIABLE WITH RESPECT TO
+C...               INDEPENDENT VARIABLE ND (OUTPUT)
+C...
+C...     V         VARIABLE TO SELECT EITHER THE FIVE-POINT CENTERED
+C...               OR FIVE-POINT BIASED UPWIND APPROXIMATION FOR THE
+C...               PARTIAL DERIVATIVE.  V EQ 0 CALLS THE FIVE-POINT
+C...               CENTERED APPROXIMATION.  V NE 0 CALLS THE FIVE-POINT
+C...               BIASED UPWIND APPROXIMATION (INPUT)
+C...
+C...  TYPE SELECTED REAL VARIABLES AS DOUBLE PRECISION
+#endif
+      DOUBLE PRECISION   UX1D,UX3D,U1D,U3D,V,XL,XU
+                          
+!C...
+!C...  THE FOLLOWING THREE-DIMENSIONAL ARRAYS CONTAIN THE DEPENDENT
+!C...  VARIABLE (U3D) AND ITS PARTIAL DERIVATIVE (UX3D)
+      DOUBLE PRECISION, DIMENSION(N1,N2,N3) ::  U3D,UX3D
+#if 0
+C...
+C...  THE FOLLOWING ONE-DIMENSIONAL ARRAYS CONTAIN THE DEPENDENT
+C...  VARIABLE (U1D) AND ITS PARTIAL DERIVATIVE (UX1D).  IN EACH
+C...  CASE, ONE OF THE INDEPENDENT VARIABLES IS CONSTANT AND THE
+C...  OTHER TWO INDEPENDENT VARIABLES VARY OVER THEIR TOTAL INTERVALS.
+C...  THESE ARRAYS ARE USED FOR TEMPORARY STORAGE IN CALLING THE
+C...  ONE-DIMENSIONAL ROUTINES DSS004 AND DSS020.
+C...
+C...  NOTE THAT THE ARRAYS HAVE ABSOLUTE DIMENSIONS AND MAY THERE-
+C...  FORE HAVE TO BE INCREASED IN SIZE.  HOWEVER, WITH A SIZE
+C...  OF 51, THE THREE-DIMENSIONAL PROBLEM COULD HAVE A GRID OF
+C...  51 X 51 X 51 POINTS, THEREBY GENERATING AN APPROXIMATING ODE
+C...  SYSTEM WITH A MULTIPLE OF 51 X 51 X 51 EQUATIONS, DEPENDING ON
+C...  THE NUMBER OF SIMULTANEOUS PDES.  THIS IS A VERY LARGE ODE
+C...  PROBLEM, AND THEREFORE THE FOLLOWING ABSOLUTE DIMENSIONING
+C...  IS CONSIDERED ADEQUATE FOR MOST PROBLEMS.
+#endif
+      DOUBLE PRECISION,DIMENSION(1024) :: U1D,UX1D
+       dir$ attributes align : 64 :: U1D,UX1D
+!C...
+!C...  GO TO STATEMENT 2 IF THE PARTIAL DERIVATIVE IS TO BE COMPUTED
+!C...  WITH RESPECT TO THE SECOND INDEPENDENT VARIABLE
+      IF(ND.EQ.2)GO TO 2
+!C...
+!C...  GO TO STATEMENT 3 IF THE PARTIAL DERIVATIVE IS TO BE COMPUTED
+!C...  WITH RESPECT TO THE THIRD INDEPENDENT VARIABLE
+      IF(ND.EQ.3)GO TO 3
+!C...
+!C...  ******************************************************************
+!C...
+!C...  THE PARTIAL DERIVATIVE IS TO BE COMPUTED WITH RESPECT TO THE
+!C...  FIRST INDEPENDENT VARIABLE DEFINED OVER AN INTERVAL CONSISTING
+!C...  OF N1 GRID POINTS.  COMPUTE THE PARTIAL DERIVATIVE AT THE N1 X
+!C...  N2 X N3 GRID POINTS VIA NESTED DO LOOPS 10, 11, 12 AND 13
+      DO 10 J=1,N2
+      DO 11 K=1,N3
+!C...
+!C...  TRANSFER THE DEPENDENT VARIABLE IN THE THREE-DIMENSIONAL ARRAY U3D
+!C...  TO THE ONE-DIMENSIONAL ARRAY U1D SO THAT SUBROUTINES DSS004 AND
+!C...  DSS020 CAN BE USED TO CALCULATE THE PARTIAL DERIVATIVE
+       !dir$ assume_aligned U1D:64,U3D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 12 I=1,N1
+             U1D(I)=U3D(I,J,K)
+12    CONTINUE
+!C...
+!C...  IF V EQ 0, A FIVE-POINT CENTERED APPROXIMATION IS USED FOR THE
+!C...  PARTIAL DERIVATIVE
+      IF(V.EQ.0.D+00)CALL DSS004(XL,XU,N1,U1D,UX1D)
+!C...
+!C...  IF V NE 0, A FIVE-POINT BIASED UPWIND APPROXIMATION IS USED FOR
+!C...  THE PARTIAL DERIVATIVE
+      IF(V.NE.0.D+00)CALL DSS020(XL,XU,N1,U1D,UX1D,V)
+!C...
+!C...  RETURN THE PARTIAL DERIVATIVE IN THE ONE-DIMENSIONAL ARRAY UX1D
+!C...  TO THE THREE-DIMENSIONAL ARRAY UX3D
+      !dir$ assume_aligned UX3D:64,UX1D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 13 I=1,N1
+            UX3D(I,J,K)=UX1D(I)
+13    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE AT PARTICULAR VALUES OF THE SECOND AND
+!C...  THIRD INDEPENDENT VARIABLE HAS BEEN CALCULATED.  REPEAT THE
+!C...  CALCULATION FOR THE OTHER VALUES OF THE SECOND AND THIRD
+!C...  INDEPENDENT VARIABLES
+11    CONTINUE
+10    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE HAS BEEN CALCULATED OVER THE ENTIRE N1 X
+!C...  N2 X N3 GRID.  THEREFORE RETURN TO THE CALLING PROGRAM WITH THE
+!C...  PARTIAL DERIVATIVE IN THE THREE-DIMENSIONAL ARRAY UX3D
+      RETURN
+!C...
+!C...  ******************************************************************
+!C...
+!C...  THE PARTIAL DERIVATIVE IS TO BE COMPUTED WITH RESPECT TO THE
+!C...  SECOND INDEPENDENT VARIABLE DEFINED OVER AN INTERVAL CONSISTING
+!C...  OF N2 GRID POINTS.  COMPUTE THE PARTIAL DERIVATIVE AT THE N1 X
+!C...  N2 X N3 GRID POINTS VIA NESTED DO LOOPS 20, 21, 22 AND 23
+2     DO 20 I=1,N1
+      DO 21 K=1,N3
+!C...
+!C...  TRANSFER THE DEPENDENT VARIABLE IN THE THREE-DIMENSIONAL ARRAY U3D
+!C...  TO THE ONE-DIMENSIONAL ARRAY U1D SO THAT SUBROUTINES DSS004 AND
+!C...  DSS020 CAN BE USED TO CALCULATE THE PARTIAL DERIVATIVE
+       !dir$ assume_aligned U1D:64,U3D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 22 J=1,N2
+            U1D(J)=U3D(I,J,K)
+22    CONTINUE
+!C...
+!C...  IF V EQ 0, A FIVE-POINT CENTERED APPROXIMATION IS USED FOR THE
+!C...  PARTIAL DERIVATIVE
+      IF(V.EQ.0.D+00)CALL DSS004(XL,XU,N2,U1D,UX1D)
+!C...
+!C...  IF V NE 0, A FIVE-POINT BIASED UPWIND APPROXIMATION IS USED FOR
+!C...  THE PARTIAL DERIVATIVE
+      IF(V.NE.0.D+00)CALL DSS020(XL,XU,N2,U1D,UX1D,V)
+!C...
+!C...  RETURN THE PARTIAL DERIVATIVE IN THE ONE-DIMENSIONAL ARRAY UX1D
+!C...  TO THE THREE-DIMENSIONAL ARRAY UX3D
+       !dir$ assume_aligned UX3D:64,UX1D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 23 J=1,N2
+            UX3D(I,J,K)=UX1D(J)
+23    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE AT PARTICULAR VALUES OF THE FIRST AND
+!C...  THIRD INDEPENDENT VARIABLE HAS BEEN CALCULATED.  REPEAT THE
+!C...  CALCULATION FOR THE OTHER VALUES OF THE FIRST AND THIRD
+!C...  INDEPENDENT VARIABLES
+21    CONTINUE
+20    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE HAS BEEN CALCULATED OVER THE ENTIRE N1 X
+!C...  N2 X N3 GRID.  THEREFORE RETURN TO THE CALLING PROGRAM WITH THE
+!C...  PARTIAL DERIVATIVE IN THE THREE-DIMENSIONAL ARRAY UX3D
+      RETURN
+!C...
+!C...  ******************************************************************
+!C...
+!C...  THE PARTIAL DERIVATIVE IS TO BE COMPUTED WITH RESPECT TO THE
+!C...  THIRD INDEPENDENT VARIABLE DEFINED OVER AN INTERVAL CONSISTING
+!C...  OF N3 GRID POINTS.  COMPUTE THE PARTIAL DERIVATIVE AT THE N1 X
+!C...  N2 X N3 GRID POINTS VIA NESTED DO LOOPS 30, 31, 32 AND 33
+3     DO 30 I=1,N1
+      DO 31 J=1,N2
+!C...
+!C...  TRANSFER THE DEPENDENT VARIABLE IN THE THREE-DIMENSIONAL ARRAY U3D
+!C...  TO THE ONE-DIMENSIONAL ARRAY U1D SO THAT SUBROUTINES DSS004 AND
+!C...  DSS020 CAN BE USED TO CALCULATE THE PARTIAL DERIVATIVE
+        !dir$ assume_aligned U1D:64,U3D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 32 K=1,N3
+             U1D(K)=U3D(I,J,K)
+32    CONTINUE
+!C...
+!C...  IF V EQ 0, A FIVE-POINT CENTERED APPROXIMATION IS USED FOR THE
+!C...  PARTIAL DERIVATIVE
+      IF(V.EQ.0.D+00)CALL DSS004(XL,XU,N3,U1D,UX1D)
+!C...
+!C...  IF V NE 0, A FIVE-POINT BIASED UPWIND APPROXIMATION IS USED FOR
+!C...  THE PARTIAL DERIVATIVE
+      IF(V.NE.0.D+00)CALL DSS020(XL,XU,N3,U1D,UX1D,V)
+!C...
+!C...  RETURN THE PARTIAL DERIVATIVE IN THE ONE-DIMENSIONAL ARRAY UX1D
+!C...  TO THE THREE-DIMENSIONAL ARRAY UX3D
+      !dir$ assume_aligned UX3D:64,UX1D:64
+      !dir$ vector aligned
+      !dir$ unroll(16)
+      !dir$ vector always
+      DO 33 K=1,N3
+             UX3D(I,J,K)=UX1D(K)
+33    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE AT PARTICULAR VALUES OF THE FIRST AND
+!C...  SECOND INDEPENDENT VARIABLE HAS BEEN CALCULATED.  REPEAT THE
+!C...  CALCULATION FOR THE OTHER VALUES OF THE FIRST AND SECOND
+!C...  INDEPENDENT VARIABLES
+31    CONTINUE
+30    CONTINUE
+!C...
+!C...  THE PARTIAL DERIVATIVE HAS BEEN CALCULATED OVER THE ENTIRE N1 X
+!C...  N2 X N3 GRID.  THEREFORE RETURN TO THE CALLING PROGRAM WITH THE
+!C...  PARTIAL DERIVATIVE IN THE THREE-DIMENSIONAL ARRAY UX3D
+    
+    END SUBROUTINE
+
+
+   
+    SUBROUTINE DSS042(XL,XU,N,U,UX,UXX,NL,NU)
+            !dir$ optimize:3
+          !dir$ attributes forceinline :: DSS042
+          !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: DSS042
+#if 0
+C...
+C...  SUBROUTINE DSS042 COMPUTES A SECOND-ORDER APPROXIMATION OF A
+C...  SECOND-ORDER DERIVATIVE, WITH OR WITHOUT THE NORMAL DERIVATIVE
+C...  AT THE BOUNDARY.
+C...
+C...     DOUBLE PRECISION
+C...
+C...  ARGUMENT LIST
+C...
+C...     XL      LEFT VALUE OF THE SPATIAL INDEPENDENT VARIABLE (INPUT)
+C...
+C...     XU      RIGHT VALUE OF THE SPATIAL INDEPENDENT VARIABLE (INPUT)
+C...
+C...     N       NUMBER OF SPATIAL GRID POINTS, INCLUDING THE END
+C...             POINTS (INPUT)
+C...
+C...     U       ONE-DIMENSIONAL ARRAY OF THE DEPENDENT VARIABLE TO BE
+C...             DIFFERENTIATED (INPUT)
+C...
+C...     UX      ONE-DIMENSIONAL ARRAY OF THE FIRST DERIVATIVE OF U.
+C...             THE END VALUES OF UX, UX(1) AND UX(N), ARE USED IN
+C...             NEUMANN BOUNDARY CONDITIONS AT X = XL AND X = XU,
+C...             DEPENDING ON THE ARGUMENTS NL AND NU (SEE THE DE-
+C...             SCRIPTION OF NL AND NU BELOW)
+C...
+C...     UXX     ONE-DIMENSIONAL ARRAY OF THE SECOND DERIVATIVE OF U
+C...             (OUTPUT)
+C...
+C...     NL      INTEGER INDEX FOR THE TYPE OF BOUNDARY CONDITION AT
+C...             X = XL (INPUT).  THE ALLOWABLE VALUES ARE
+C...
+C...                1 - DIRICHLET BOUNDARY CONDITION AT X = XL
+C...                    (UX(1) IS NOT USED)
+C...
+C...                2 - NEUMANN BOUNDARY CONDITION AT X = XL
+C...                    (UX(1) IS USED)
+C...
+C...     NU      INTEGER INDEX FOR THE TYPE OF BOUNDARY CONDITION AT
+C...             X = XU (INPUT).  THE ALLOWABLE VALUES ARE
+C...
+C...                1 - DIRICHLET BOUNDARY CONDITION AT X = XU
+C...                    (UX(N) IS NOT USED)
+C...
+C...                2 - NEUMANN BOUNDARY CONDITION AT X = XU
+C...                    (UX(N) IS USED)
+C...
+C...  TYPE REAL VARIABLES AS DOUBLE PRECISION
+#endif
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+
+      DOUBLE PRECISION,DIMENSION(N) :: U, UX, UXX
+      !dir$ attributes align : 64 :: U,UX,UXX
+#if 0
+C...
+C...  THE FOLLOWING DERIVATION IS FOR A SET OF SECOND-ORDER, FOUR-POINT
+C...  APPROXIMATIONS FOR A SECOND DERIVATIVE THAT CAN BE USED AT THE
+C...  BOUNDARIES OF A SPATIAL DOMAIN.  THESE APPROXIMATIONS HAVE THE
+C...  FEATURES
+C...
+C...     (1)  ONLY INTERIOR AND BOUNDARY POINTS ARE USED (I.E., NO
+C...          FICTITIOUS POINTS ARE USED)
+C...
+C...     (2)  THE NORMAL DERIVATIVE AT THE BOUNDARY IS INCLUDED AS PART
+C...          OF THE APPROXIMATION FOR THE SECOND DERIVATIVE
+C...
+C...     (3)  APPROXIMATIONS FOR THE BOUNDARY CONDITIONS ARE NOT USED.
+C...
+C...  THE DERIVATION IS BY PROFESSOR GILBERT A. STENGLE, DEPARTMENT OF
+C...  MATHEMATICS, LEHIGH UNIVERSITY, BETHLEHEM, PA 18015, AND WAS DONE
+C...  ON DECEMBER 7, 1985.
+C...
+C...  FOR AN APPROXIMATION AT THE LEFT BOUNDARY, INVOLVING THE POINTS
+C...  I, I+1, I+2 AND I+3, CONSIDER THE FOLLOWING TAYLOR SERIES EXPAN-
+C...  SIONS
+C...
+C...                  UX(I)( DX)   UXX(I)( DX)**2   UXXX(I)( DX)**3
+C...  U(I+1) = U(I) + ---------- + -------------- + --------------- +...
+C...                       1             2                 6
+C...
+C...
+C...                  UX(I)(2DX)   UXX(I)(2DX)**2   UXXX(I)(2DX)**3
+C...  U(I+2) = U(I) + ---------- + -------------- + --------------- +...
+C...                       1             2                 6
+C...
+C...  IF WE NOW FORM THE FOLLOWING LINEAR COMBINATION, INVOLVING CON-
+C...  STANTS A, B, C AND D TO BE DETERMINED, AND USE THE PRECEDING TWO
+C...  TAYLOR SERIES,
+C...
+C...     A*U(I) + B*UX(I) + C*U(I+1) + D*U(I+2)
+C...
+C...  WE HAVE
+C...
+C...     A*U(I) + B*UX(I) + C*U(I+1) + D*U(I+2) =
+C...
+C...     (A + B + C + D)*U(I) +
+C...
+C...     (B + DX*C + 2*DX*D)*UX(I) +
+C...
+C...     (C*(DX**2)/2 + D*((2*DX)**2)/2)*UXX(I) +
+C...
+C...     (C*(DX**3)/6 + D*((2*DX)**3)/6)*UXXX(I) + O(DX**4)
+C...
+C...  THE THIRD DERIVATIVE, UXXX(I), CAN BE DROPPED BY TAKING
+C...
+C...     C = -8*D
+C...
+C...  THE SECOND DERIVATIVE, UXX(I), CAN BE RETAINED BY TAKING
+C...
+C...     (DX**2)(C/2 + 2*D) = 1
+C...
+C...  WHICH, WHEN COMBINED WITH THE PRECEDING RESULT GIVES
+C...
+C...     D = -1/(2*(DX**2))
+C...
+C...     C = 4/(DX**2)
+C...
+C...  THE FIRST DERIVATIVE, UX(I), CAN BE DROPPED BY TAKING
+C...
+C...     B + DX*C + 2*DX*D = 0
+C...
+C...  OR
+C...
+C...     B = -DX*C - 2*DX*D = -4/DX - 2*DX*(-1/(2*(DX**2))) = -3/DX
+C...
+C...  FINALLY, U(I), CAN BE DROPPED BY TAKING
+C...
+C...     A = - C - D = 8*D - D = -7*D = -7/(2*(DX**2))
+C...
+C...  IF WE NOW SOLVE FOR THE DERIVATIVE OF INTEREST, UXX(I),
+C...
+C...     UXX(I) = -7/(2(DX**2))*U(I) - 3/DX*UX(I)
+C...
+C...              + 8/(DX**2)*U(I+1) - 1/(2*(DX**2))U(I+2) + O(DX**2)
+C...
+C...       = (1/(2*(DX**2)))*(-U(I+2) + 8*U(I+1) - 7*U(I) - 6*DX*UX(I))
+C...
+C...         + O(DX**2)
+C...
+C...  WHICH IS THE FOUR-POINT, SECOND-ORDER APPROXIMATION FOR THE SECOND
+C...  DERIVATIVE, UXX(I), INCLUDING THE FIRST DERIVATIVE, UX(I).
+C...
+C...  FOUR CHECKS OF THIS APPROXIMATION CAN EASILY BE MADE FOR U(I) =
+C...  1, U(I) = X, U(I) = X**2 AND U(I) = X**3
+C...
+C...     UXX(I) = (1/(2*(DX**2)))*(-1 + 8*1 - 7*1 - 6*DX*0) = 0
+C...
+C...     UXX(I) = (1/(2*(DX**2)))*(-(X + 2*DX) + 8*(X + DX)
+C...
+C...              -7*X - 6*DX*1) = 0
+C...
+C...     UXX(I) = (1/(2*(DX**2)))*(-(X + 2*DX)**2 + 8*(X + DX)**2
+C...
+C...            - 7*(X**2) - 6*DX*(2*X))
+C...
+C...             = (-  X**2 -  4*X*DX - 4*DX**2
+C...
+C...               + 8*X**2 + 16*X*DX + 8*DX**2
+C...
+C...               - 7*X**2 - 12*X*DX)/(2*(DX**2)) = 2
+C...
+C...     UXX(I) = (1/(2*(DX**2)))*(-(X + 2*DX)**3 + 8*(X + DX)**3
+C...
+C...            - 7*(X**3) - 6*DX*(3*X**2))
+C...
+C...            = (1/(2*(DX**2)))*(- X**3 - 6*DX*X**2 - 12*X*DX**2
+C...
+C...            - 8*DX**3 + 8*X**3 + 24*DX*X**2 + 24*X*DX**2 + 8*DX**3
+C...
+C...            - 7*X**3 - 18*DX*X**2)
+C...
+C...            = (1/(2*(DX**2)))*(12*X*DX**2) = 6*X
+C...
+C...  THE PRECEDING APPROXIMATION FOR UXX(I) CAN BE APPLIED AT THE
+C...  LEFT BOUNDARY VALUE OF X BY TAKING I = 1.  AN APPROXIMATION AT
+C...  THE RIGHT BOUNDARY IS OBTAINED BY TAKING DX = -DX AND REVERSING
+C...  THE SUBSCRIPTS IN THE PRECEDING APPROXIMATION, WITH I = N
+C...
+C...     UXX(I)
+C...
+C...       = (1/(2*(DX**2)))*(-U(I-2) + 8*U(I-1) - 7*U(I) + 6*DX*UX(I))
+C...
+C...         + O(DX**2)
+C...
+C...  TO OBTAIN APPROXIMATIONS OF THE SECOND DERVIAVTIVE WHICH DO NOT
+C...  INVOLVE THE FIRST DERIVATIVE, WE TAKE AS THE LINEAR COMBINATION
+C...
+C...     A*U(I) + B*U(I+1) + C*U(I+2) + D*U(I+3) =
+C...
+C...  WE HAVE
+C...
+C...     A*U(I) + B*U(I+1) + C*U(I+2) + D*U(I+3) =
+C...
+C...     (A + B + C + D)*U(I)+
+C...
+C...     (DX*B + 2*DX*C + 4*DX*D)*UX(I)+
+C...
+C...     (B*(DX**2)/2 + C*((2*DX)**2)/2 + D*((3*DX)**2)/2)*UXX(I) +
+C...
+C...     (B*(DX**3)/6 + C*((2*DX)**3)/6 + D*((3*DX)**3)/6)*UXX(I) +
+C...
+C...     O(DX**4)
+C...
+C...  THE THIRD DERIVATIVE, UXXX(I), CAN BE DROPPED BY TAKING
+C...
+C...     B + 8*C + 27*D = 0
+C...
+C...  THE SECOND DERIVATIVE, UXX(I), CAN BE RETAINED BY TAKING
+C...
+C...     (DX**2)*(B/2 + 2*C + (9/2)*D) = 1
+C...
+C...  THE FIRST DERIVATIVE CAN BE DROPPED BY TAKING
+C...
+C...     B + 2*C + 3*D = 0
+C...
+C...  SOLUTION OF THE PRECEDING EQUATIONS FOR C AND D BY ELIMINATION OF
+C...  B GIVES
+C...
+C...     6*C + 24*D = 0
+C...
+C...     4*C + 18*D = -2/(DX**2)
+C...
+C...  THEN, ELIMINATING C, GIVES
+C...
+C...     (18 - 16)*D = -2/(DX**2)
+C...
+C...  OR
+C...
+C...     D = -1/(DX**2)
+C...
+C...     C = (24/6)/(DX**2) = 4/(DX**2)
+C...
+C...     B = -8/(DX**2) + 3/(DX**2) = -5/(DX**2)
+C...
+C...  U(I) CAN BE DROPPED BY TAKING
+C...
+C...     A + B + C + D = 0
+C...
+C...  OR
+C...
+C...     A = (5 - 4 + 1)/(DX**2) = 2/(DX**2)
+C...
+C...  IF WE NOW SOLVE FOR THE DERIVATIVE OF INTEREST, UXX(I),
+C...
+C...     UXX(I) = (1/DX**2)*(2*U(I) - 5*U(I+1) + 4*U(I+2) - 1*U(I+3))
+C...
+C...            + O(DX**2)
+C...
+C...  WHICH IS THE FOUR-POINT, SECOND-ORDER APPROXIMATION FOR THE SECOND
+C...  DERIVATIVE, UXX(I), WITHOUT THE FIRST DERIVATIVE, UX(I).
+C...
+C...  FOUR CHECKS OF THIS APPROXIMATION CAN EASILY BE MADE FOR U(I) =
+C...  1, U(I) = X, U(I) = X**2 AND U(I) = X**3
+C...
+C...     UXX(I) = (1/DX**2)*(2 - 5 + 4 - 1) = 0
+C...
+C...     UXX(I) = (1/DX**2)*(2*X - 5*(X + DX) + 4*(X + 2*DX)
+C...
+C...              - 1*(X + 3*DX)) = 0
+C...
+C...     UXX(I) = (1/DX**2)*(2*X**2 - 5*(X + DX)**2 + 4*(X + 2*DX)**2
+C...
+C...              - 1*(X + 3*DX)**2) = 2
+C...
+C...     UXX(I) = (1/DX**2)*(2*X**3 - 5*(X + DX)**3 + 4*(X + 2*DX)**3
+C...
+C...            - 1*(X + 3*DX)**3)
+C...
+C...             = (1/DX**2)*(2*X**3 - 5*X**3 - 15*X*DX**2
+C...
+C...             - 15*DX*X**2 - 5*DX**3 + 4*X**3 + 24*DX*X**2
+C...
+C...             + 48*X*DX**2 + 32*DX**3 - X**3 - 9*DX*X**2
+C...
+C...             - 27*X*DX**2 - 27DX**3)
+C...
+C...             = (1/DX**2)*(6*X*DX**2) = 6*X
+C...
+C...  THE PRECEDING APPROXIMATION FOR UXX(I) CAN BE APPLIED AT THE
+C...  LEFT BOUNDARY VALUE OF X BY TAKING I = 1.  AN APPROXIMATION AT
+C...  THE RIGHT BOUNDARY IS OBTAINED BY TAKING DX = -DX AND REVERSING
+C...  THE SUBSCRIPTS IN THE PRECEDING APPROXIMATION, WITH I = N
+C...
+C...     UXX(I) = (1/DX**2)*(2*U(I) - 5*U(I-1) + 4*U(I-2) - 1*U(I-3))
+C...
+C...            + O(DX**2)
+C...
+C...  GRID SPACING
+#endif
+      DX=(XU-XL)/DFLOAT(N-1)
+!C...
+!C...  CALCULATE UXX AT THE LEFT BOUNDARY, WITHOUT UX
+      IF(NL.EQ.1)THEN
+      UXX(1)=((     2.D0)*U(  1) &
+             +(    -5.D0)*U(  2) &
+             +(     4.D0)*U(  3) &
+             +(    -1.D0)*U(  4))/(DX**2)
+!C...
+!C...  CALCULATE UXX AT THE LEFT BOUNDARY, INCLUDING UX
+      ELSE IF(NL.EQ.2)THEN
+      UXX(1)=((    -7.D0)*U(  1)  &
+             +(     8.D0)*U(  2)  &
+             +(    -1.D0)*U(  3))/(2.D0*DX**2) &
+             +(    -6.D0)*UX( 1) /(2.D0*DX)
+      END IF
+!C...
+!C...  CALCULATE UXX AT THE RIGHT BOUNDARY, WITHOUT UX
+      IF(NU.EQ.1)THEN
+      UXX(N)=((     2.D0)*U(N  )   &
+              +(    -5.D0)*U(N-1)  &
+              +(     4.D0)*U(N-2)  &
+              +(    -1.D0)*U(N-3))/(DX**2)
+!C...
+!C...  CALCULATE UXX AT THE RIGHT BOUNDARY, INCLUDING UX
+      ELSE IF(NU.EQ.2)THEN
+      UXX(N)=((    -7.D0)*U(N  )  &
+            +(     8.D0)*U(N-1)   &
+            +(    -1.D0)*U(N-2))/(2.D0*DX**2) &
+            +(     6.D0)*UX(N ) /(2.D0*DX)
+      END IF
+!C...
+!C...  CALCULATE UXX AT THE INTERIOR GRID POINTS
+      !dir$ assume_aligned UXX:64,U:64
+      !dir$ ivdep
+      !dir$ vector aligned
+      !dir$ vector always
+      DO 1 I=2,N-1
+            UXX(I)=(U(I+1)-2.D0*U(I)+U(I-1))/DX**2
+1     CONTINUE
+    
+   END SUBROUTINE
+
+   
+   SUBROUTINE DSS044(XL,XU,N,U,UX,UXX,NL,NU)
+             !dir$ optimize:3
+          !dir$ attributes forceinline :: DSS044
+          !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: DSS044
+#if 0
+C...
+C...  SUBROUTINE DSS044 COMPUTES A FOURTH-ORDER APPROXIMATION OF A
+C...  SECOND-ORDER DERIVATIVE, WITH OR WITHOUT THE NORMAL DERIVATIVE
+C...  AT THE BOUNDARY.
+C...
+C...     SINGLE PRECISION
+C...
+C...  ARGUMENT LIST
+C...
+C...     XL      LEFT VALUE OF THE SPATIAL INDEPENDENT VARIABLE (INPUT)
+C...
+C...     XU      RIGHT VALUE OF THE SPATIAL INDEPENDENT VARIABLE (INPUT)
+C...
+C...     N       NUMBER OF SPATIAL GRID POINTS, INCLUDING THE END
+C...             POINTS (INPUT)
+C...
+C...     U       ONE-DIMENSIONAL ARRAY OF THE DEPENDENT VARIABLE TO BE
+C...             DIFFERENTIATED (INPUT)
+C...
+C...     UX      ONE-DIMENSIONAL ARRAY OF THE FIRST DERIVATIVE OF U.
+C...             THE END VALUES OF UX, UX(1) AND UX(N), ARE USED IN
+C...             NEUMANN BOUNDARY CONDITIONS AT X = XL AND X = XU,
+C...             DEPENDING ON THE ARGUMENTS NL AND NU (SEE THE DE-
+C...             SCRIPTION OF NL AND NU BELOW)
+C...
+C...     UXX     ONE-DIMENSIONAL ARRAY OF THE SECOND DERIVATIVE OF U
+C...             (OUTPUT)
+C...
+C...     NL      INTEGER INDEX FOR THE TYPE OF BOUNDARY CONDITION AT
+C...             X = XL (INPUT).  THE ALLOWABLE VALUES ARE
+C...
+C...                1 - DIRICHLET BOUNDARY CONDITION AT X = XL
+C...                    (UX(1) IS NOT USED)
+C...
+C...                2 - NEUMANN BOUNDARY CONDITION AT X = XL
+C...                    (UX(1) IS USED)
+C...
+C...     NU      INTEGER INDEX FOR THE TYPE OF BOUNDARY CONDITION AT
+C...             X = XU (INPUT).  THE ALLOWABLE VALUES ARE
+C...
+C...                1 - DIRICHLET BOUNDARY CONDITION AT X = XU
+C...                    (UX(N) IS NOT USED)
+C...
+C...                2 - NEUMANN BOUNDARY CONDITION AT X = XU
+C...                    (UX(N) IS USED)
+C...
+C...  TYPE REAL VARIABLES AS DOUBLE PRECISION
+#endif
+      IMPLICIT DOUBLE PRECISION (A-H,O-Z)
+
+      DOUBLE PRECISION,DIMENSION(N) :: U,UX,UXX
+      !dir$ attributes align : 64 :: U,UX,UXX
+#if 0
+C...
+C...  THE FOLLOWING DERIVATION WAS COMPLETED BY W. E. SCHIESSER, DEPTS
+C...  OF CHE AND CSEE, LEHIGH UNIVERSITY, BETHLEHEM, PA 18015, USA, ON
+C...  DECEMBER 15, 1986.  ADDITIONAL DETAILS ARE GIVEN IN SUBROUTINE
+C...  DSS042.
+C...
+C...  ******************************************************************
+C...
+C...  (1)  UXX AT THE INTERIOR POINTS 3, 4,..., N-2
+C...
+C...  TO DEVELOP A SET OF FOURTH-ORDER CORRECT DIFFERENTIATION FORMULAS
+C...  FOR THE SECOND DERIVATIVE UXX, WE CONSIDER FIRST THE INTERIOR
+C...  GRID POINTS AT WHICH A SYMMETRIC FORMULA CAN BE USED.
+C...
+C...  IF WE CONSIDER A FORMULA OF THE FORM
+C...
+C...     A*U(I-2) + B*U(I-1) + E*U(I) + C*U(I+1) + D*U(I+2)
+C...
+C...  TAYLOR SERIES EXPANSIONS OF U(I-2), U(I-1), U(I+1) AND U(I+2)
+C...  CAN BE SUBSTITUTED INTO THIS FORMULA.  WE THEN CONSIDER THE
+C...  LINEAR ALBEGRAIC EQUATIONS RELATING A, B, C AND D WHICH WILL
+C...  RETAIN CERTAIN TERMS, I.E., UXX, AND DROP OTHERS, E.G., UXXX,
+C...  UXXXX AND UXXXXX.
+C...
+C...  THUS, FOR GRID POINTS 3, 4,..., N-2
+C...
+C...     TO RETAIN UXX
+C...
+C...        4*A + B + C +  4*D = 2                              (1)
+C...
+C...     TO DROP UXXX
+C...
+C...       -8*A - B + C +  8*D = 0                              (2)
+C...
+C...     TO DROP UXXXX
+C...
+C...       16*A + B + C + 16*D = 0                              (3)
+C...
+C...     TO DROP UXXXXX
+C...
+C...      -32*A - B + C + 32*D = 0                              (4)
+C...
+C...  EQUATIONS (1) TO (4) CAN BE SOLVED FOR A, B, C AND D.  IF EQUA-
+C...  TION (1) IS ADDED TO EQUATION (2)
+C...
+C...        -4*A + 2*C + 12*D = 2                               (5)
+C...
+C...  IF EQUATION (1) IS SUBTRACTED FROM EQUATION (3)
+C...
+C...        12*A + 12*D = -2                                    (6)
+C...
+C...  IF EQUATION (1) IS ADDED TO EQUATION (4)
+C...
+C...        -28*A + 2*C + 36*D = 2                              (7)
+C...
+C...  EQUATIONS (5) TO (7) CAN BE SOLVED FOR A, C AND D.  IF EQUATION
+C...  (5) IS SUBTRACTED FROM EQUATION (7), AND THE RESULT COMBINED
+C...  WITH EQUATION (6)
+C...
+C...         12*A + 12*D = -2                                   (6)
+C...
+C...        -24*A + 24*D = 0                                    (8)
+C...
+C...  EQUATIONS (6) AND (8) CAN BE SOLVED FOR A AND D.  FROM (8), A
+C...  = D.  FROM EQUATION (6), A = -1/12 AND D = -1/12.  THEN, FROM
+C...  EQUATION (5), C = 4/3, AND FROM EQUATION (1), B = 4/3.
+C...
+C...  THE FINAL DIFFERENTIATION FORMULA IS THEN OBTAINED AS
+C...
+C...     (-1/12)*U(I-2) +   (4/3)*U(I-1) +
+C...
+C...       (4/3)*U(I+1) + (-1/12)*U(I+2)
+C...
+C...     (-1/12 + 4/3 - 1/12 + 4/3)*U(I) + UXX(I)*(DX**2) + O(DX**6)
+C...
+C...  OR
+C...
+C...     UXX(I) = (1/(12*DX**2))*(-1*U(I-2) + 16*U(I-1)
+C...
+C...                  - 30*U(I) + 16*U(I+1) -  1*U(I+2)         (9)
+C...
+C...                  + O(DX**4)
+C...
+C...  NOTE THAT THE UX TERM DROPS OUT, I.E., THE BASIC EQUATION IS
+C...
+C...        -2*A - B + C + 2*D =
+C...
+C...        -2*(-1/12) - (4/3) + (4/3) + 2*(-1/12) = 0
+C...
+C...  EQUATION (9) WAS OBTAINED BY DROPPING ALL TERMS IN THE UNDERLYING
+C...  TAYLOR SERIES UP TO AND INCLUDING THE FIFTH DERIVATIVE, UXXXXX.
+C...  THUS, EQUATION (9) IS EXACT FOR POLYNOMIALS UP TO AND INCLUDING
+C...  FIFTH ORDER.  THIS CAN BE CHECKED BY SUBSTITUTING THE FUNCTIONS
+C...  1, X, X**2, X**3, X**4 AND X**5 IN EQUATION (9) AND COMPUTING THE
+C...  CORRESPONDING DERIVATIVES FOR COMPARISON WITH THE KNOWN SECOND
+C...  DERIVATIVES.  THIS IS DONE FOR 1 MERELY BY SUMMING THE WEIGHTING
+C...  COEFFICIENTS IN EQUATION (9), WHICH SHOULD SUM TO ZERO, I.E.,
+C...  -1 + 16 - 30 + 16 -1 = 0.
+C...
+C...  FOR THE REMAINING FUNCTIONS, THE ALGEBRA IS RATHER INVOLVED, BUT
+C...  THESE FUNCTIONS CAN BE CHECKED NUMERICALLY, I.E., NUMERICAL VALUES
+C...  OF X**2, X**3, X**4 AND X**5 CAN BE SUBSTITUTED IN EQUATION (9)
+C...  AND THE COMPUTED DERIVATIVES CAN BE COMPARED WITH THE KNOW NUMERI-
+C...  CAL SECOND DERIVATIVES.  THIS IS NOT A PROOF OF CORRECTNESS OF
+C...  EQUATION (9), BUT WOULD LIKELY DETECT ANY ERRORS IN EQUATION (9).
+C...
+C...  CHECK THE VALUES OF A, B, C AND D IN EQUATIONS (1) TO (4)
+C...  CALL CHECK(1)
+C...
+C...  ******************************************************************
+C...
+C...  (2)  UXX AT THE INTERIOR POINTS I = 2 AND N-1
+C...
+C...  FOR GRID POINT 2, WE CONSIDER A FORMULA OF THE FORM
+C...
+C...     A*U(I-1) + F*U(I) + B*U(I+1) + C*U(I+2) + D*U(I+3) + E*U(I+4)
+C...
+C...  TAYLOR SERIES EXPANSIONS OF U(I-1), U(I+1), U(I+2), U(I+3) AND
+C...  U(I+4) WHEN SUBSTITUTED INTO THIS FORMULA GIVE LINEAR ALGEBRAIC
+C...  EQUATIONS RELATING A, B, C, D AND E.
+C...
+C...     TO DROP UX
+C...
+C...        -A + B + 2*C + 3*D + 4*E = 0                       (10)
+C...
+C...     TO RETAIN UXX
+C...
+C...        A + B + 4*C + 9*D + 16*E = 2                       (11)
+C...
+C...     TO DROP UXXX
+C...
+C...       -A + B + 8*C + 27*D + 64*E = 0                      (12)
+C...
+C...     TO DROP UXXXX
+C...
+C...        A + B + 16*C + 81*D + 256*E = 0                    (13)
+C...
+C...     TO DROP UXXXXX
+C...
+C...       -A + B + 32*C + 243*D + 1024*E = 0                  (14)
+C...
+C...  EQUATIONS (11), (12), (13) AND (14) CAN BE SOLVED FOR A, B, C,
+C...  D AND E.  IF EQUATION (10) IS ADDED TO EQUATION (11)
+C...
+C...     2*B + 6*C + 12*D +20*E = 2                            (15)
+C...
+C...  IF EQUATION (10) IS SUBTRACTED FROM EQUATION (12)
+C...
+C...     6*C + 24*D + 60*E = 0                                 (16)
+C...
+C...  IF EQUATION (10) IS ADDED TO EQUATION (13)
+C...
+C...     2*B + 18*C + 84*D + 260*E = 0                         (17)
+C...
+C...  IF EQUATION (10) IS SUBTRACTED FROM EQUATION (14)
+C...
+C...     30*C + 240*D + 1020*E = 0                             (18)
+C...
+C...  EQUATIONS (15), (16), (17) AND (18) CAN BE SOLVED FOR B, C, D
+C...  AND E.
+C...
+C...     6*C + 24*D + 60*E = 0                                 (16)
+C...
+C...  IF EQUATION (15) IS SUBTRACTED FROM EQUATION (17)
+C...
+C...     12*C + 72*D + 240*E = -2                              (19)
+C...
+C...     30*C + 240*D + 1020*E = 0                             (18)
+C...
+C...  EQUATIONS (16), (18) AND (19) CAN BE SOLVED FOR C, D AND E.  IF
+C...  TWO TIMES EQUATION (16) IS SUBTRACTED FROM EQUATION (19),
+C...
+C...     24*D + 120*E = -2                                     (20)
+C...
+C...  IF FIVE TIMES EQUATION (16) IS SUBTRACTED FROM EQUATION (18),
+C...
+C...     120*D + 720*E = 0                                     (21)
+C...
+C...  EQUATIONS (20) AND (21) CAN BE SOLVED FOR D AND E.  FROM (21),
+C...  E = (-1/6)*D.  SUBSTITUTION IN EQUATION (20) GIVES D = -1/2.
+C...  THUS, E = 1/12.  FROM EQUATION (16), C = 7/6.  FROM EQUATION
+C...  (15), B = -1/3.  FROM EQUATION (10), A = 5/6.
+C...
+C...  THE FINAL DIFFERENTIATION FORMULA IS THEN OBTAINED AS
+C...
+C...  (5/6)*U(I-1) + (-1/3)*U(I+1) + (7/6)*U(I+2) + (-1/2)*U(I+3)
+C...
+C...  + (1/12)*U(I+4) = (5/6 - 1/3 + 7/6 - 1/2 + 1/12)*U(I)
+C...
+C...  + UXX*(DX**2) + O(DX**6)
+C...
+C...  OR
+C...
+C...  UXX(I) = (1/12*DX**2)*(10*U(I-1) - 15*U(I) - 4*U(I+1)
+C...                                                           (22)
+C...         + 14*U(I+2) - 6*U(I+3) + 1*U(I+4)) + O(DX**4)
+C...
+C...  EQUATION (22) WILL BE APPLIED AT I = 2 AND N-1.  THUS
+C...
+C...  UXX(2) = (1/12*DX**2)*(10*U(1) - 15*U(2) - 4*U(3)
+C...                                                           (23)
+C...         + 14*U(4) - 6*U(5) + 1*U(6)) + O(DX**4)
+C...
+C...  UXX(N-1) = (1/12*DX**2)*(10*U(N) - 15*U(N-1) - 4*U(N-2)
+C...                                                           (24)
+C...           + 14*U(N-3) - 6*U(N-4) + 1*U(N-5)) + O(DX**4)
+C...
+C...  CHECK THE VALUES OF A, B, C, D AND E IN EQUATIONS (10) TO (14)
+C...  CALL CHECK(2)
+C...
+C...  ******************************************************************
+C...
+C...  (3)  UXX AT THE BOUNDARY POINTS 1 AND N
+C...
+C...  FINALLY, FOR GRID POINT 1, AN APPROXIMATION WITH A NEUMANN BOUND-
+C...  ARY CONDITON OF THE FORM
+C...
+C...     A*U(I+1) + B*U(I+2) + C*U(I+3) + D*U(I+4) + E*UX(I) + F*U(I)
+C...
+C...  WILL BE USED.  THE CORRESPONDING ALGEBRAIC EQUATIONS ARE
+C...
+C...     TO DROP UX
+C...
+C...        A + 2*B + 3*C + 4*D + E = 0                        (25)
+C...
+C...     TO RETAIN UXX
+C...
+C...        A + 4*B + 9*C + 16*D = 2                           (26)
+C...
+C...     TO DROP UXXX
+C...
+C...        A + 8*B + 27*C + 64*D = 0                          (27)
+C...
+C...     TO DROP UXXXX
+C...
+C...        A + 16*B + 81*C + 256*D = 0                        (28)
+C...
+C...     TO DROP UXXXXX
+C...
+C...        A + 32*B + 243*C + 1024*D = 0                      (29)
+C...
+C...  EQUATIONS (25) TO (29) CAN BE SOLVED FOR A, B, C, D AND E.  IF
+C...
+C...  EQUATION (26) IS SUBTRACTED FROM EQUATIONS (27), (28) AND (29),
+C...
+C...     4*B + 18*C + 48*D = -2                                (30)
+C...
+C...     12*B + 72*C + 240*D = -2                              (31)
+C...
+C...     28*B + 234*C + 1008*D = -2                            (32)
+C...
+C...  EQUATIONS (30), (31) AND (32) CAN BE SOLVED FOR B, C AND D
+C...
+C...     18*C + 96*D = 4                                       (33)
+C...
+C...     108*C + 672*D = 12                                    (34)
+C...
+C...  EQUATIONS (3) AND (34) CAN BE SOLVED FOR C AND D, C = 8/9, D =
+C...  -1/8.
+C...
+C...  FROM EQUATION (30), B = -3.  FROM EQUATION (26), A = 8.  FROM
+C...  EQUATION (25), E = -25/6.
+C...
+C...  THE FINAL DIFFERENTIATION FORMULA IS THEN OBTAINED AS
+C...
+C...  8*U(I+1) - 3*U(I+2) + (8/9)*U(I+3) - (1/8)*U(I+4)
+C...
+C...  - (25/6)*UX(I)*DX
+C...
+C...  = (8 - 3 + (8/9) - (1/8))*U(I) + UXX*(DX**2) + O(DX**6)
+C...
+C...  OR
+C...
+C...  UXX(I) = (1/12*DX**2)*((-415/6)*U(I) + 96*U(I+1) - 36*U(I+2)
+C...                                                                (35)
+C...  + (32/3)*U(I+3) - (3/2)*U(I+4) - 50*UX(I)*DX) + O(DX**4)
+C...
+C...  EQUATION (35) WILL BE APPLIED AT I = 1 AND I = N
+C...
+C...  UXX(1) = (1/12*DX**2)*((-415/6)*U(1) + 96*U(2) - 36*U(3)
+C...                                                                (36)
+C...  + (32/3)*U(4) - (3/2)*U(5) - 50*UX(1)*DX) + O(DX**4)
+C...
+C...  UXX(N) = (1/12*DX**2)*((-415/6)*U(N) + 96*U(N-1) - 36*U(N-2)
+C...                                                                (37)
+C...  + (32/3)*U(N-3) - (3/2)*U(N-4) + 50*UX(N)*DX) + O(DX**4)
+C...
+C...  CHECK THE VALUES OF A, B, C AND D IN EQUATIONS (25) TO (29)
+C...  CALL CHECK(3)
+C...
+C...  ALTERNATIVELY, FOR GRID POINT 1, AN APPROXIMATION WITH A DIRICHLET
+C...  BOUNDARY CONDITION OF THE FORM
+C...
+C...  A*U(I+1) + B*U(I+2) + C*U(I+3) + D*U(I+4) + E*U(I+5) + F*U(I)
+C...
+C...  CAN BE USED.  THE CORRESPONDING ALGEBRAIC EQUATIONS ARE
+C...
+C...     TO DROP UX
+C...
+C...        A + 2*B + 3*C + 4*D + 5*E = 0                      (38)
+C...
+C...     TO RETAIN UXX
+C...
+C...        A + 4*B + 9*C + 16*D + 25*E = 2                    (39)
+C...
+C...     TO DROP UXXX
+C...
+C...        A + 8*B + 27*C + 64*D + 125*E = 0                  (40)
+C...
+C...     TO DROP UXXXX
+C...
+C...        A + 16*B + 81*C + 256*D + 625*E = 0                (41)
+C...
+C...     TO DROP UXXXXX
+C...
+C...        A + 32*B + 243*C + 1024*D + 3125*E = 0             (42)
+C...
+C...  EQUATIONS (38), (39), (40), (41) AMD (42) CAN BE SOLVED FOR A,
+C...  B, C, D AND E.
+C...
+C...        2*B + 6*C + 12*D + 20*E = 2                        (43)
+C...
+C...        6*B + 24*C + 60*D + 120*E = 0                      (44)
+C...
+C...        14*B + 78*C + 252*D + 620*E = 0                    (45)
+C...
+C...        30*B + 240*C + 1020*D + 3120*E = 0                 (46)
+C...
+C...  EQUATIONS (43), (44), (45) AND (46) CAN BE SOLVED FOR B, C, D
+C...  AND E
+C...
+C...        6*C + 24*D + 60*E = -6                             (47)
+C...
+C...        36*C + 168*D + 480*E = -14                         (48)
+C...
+C...        150*C + 840*D + 2820*E = -30                       (49)
+C...
+C...  EQUATIONS (47), (48) AND (49) CAN BE SOLVED FOR C, D AND E
+C...
+C...        24*D + 120*E = 22                                  (50)
+C...
+C...        240*D + 1320*E = 120                               (51)
+C...
+C...  FROM EQUATIONS (50) AND (51), D = 61/12, E = -5/6.  FROM EQUATION
+C...  (47), C = -13.  FROM EQUATION (43), B = 107/6.  FROM EQUATION
+C...  (38), A = -77/6.
+C...
+C...  THE FINAL DIFFERENTIATION FORMULA IS THEN OBTAINED AS
+C...
+C...  (-77/6)*U(I+1) + (107/6)*U(I+2) - 13*U(I+3) + (61/12)*U(I+4)
+C...
+C...  - (5/6)*U(I+5) = (-77/6 + 107/6 - 13 + 61/12 - 5/6)*U(I) +
+C...
+C...  UXX(I)*(DX**2) + O(DX**6)
+C...
+C...  OR
+C...
+C...  UXX(I) = (1/12*DX**2)*(45*U(I) - 154*U(I+1) + 214*U(I+2)
+C...                                                                (52)
+C...         - 156*U(I+3) + 61*U(I+4) - 10*U(I+5)) + O(DX**4)
+C...
+C...  EQUATION (52) WILL BE APPLIED AT I = 1 AND I = N
+C...
+C...  UXX(1) = (1/12*DX**2)*(45*U(1) - 154*U(2) + 214*U(3)
+C...                                                                (53)
+C...         - 156*U(4) + 61*U(5) - 10*U(6)) + O(DX**4)
+C...
+C...  UXX(N) = (1/12*DX**2)*(45*U(N) - 154*U(N-1) + 214*U(N-2)
+C...                                                                (54)
+C...         -156*U(N-3) + 61*U(N-4) - 10*U(N-5)) + O(DX**4)
+C...
+C...  CHECK THE VALUES OF A, B, C, D, AND E IN EQUATIONS (38) TO (42)
+C...  CALL CHECK(4)
+C...
+C...  ******************************************************************
+C...
+C...  GRID SPACING
+#endif
+      DX=(XU-XL)/DFLOAT(N-1)
+!C...
+!C...  1/(12*DX**2) FOR SUBSEQUENT USE
+      R12DXS=1./(12.0D0*DX**2)
+!C...
+!C...  UXX AT THE LEFT BOUNDARY
+!C...
+!C...     WITHOUT UX (EQUATION (53))
+         IF(NL.EQ.1)THEN
+         UXX(1)=R12DXS*                &
+                      (   45.0D0*U(1)  &
+                        -154.0D0*U(2)  &
+                        +214.0D0*U(3)  &
+                        -156.0D0*U(4)  &
+                         +61.0D0*U(5)  &
+                         -10.0D0*U(6))
+!C...
+!C...     WITH UX (EQUATION (36))
+         ELSE IF(NL.EQ.2)THEN
+         UXX(1)=R12DXS*                     &
+                      (-415.0D0/6.0D0*U(1)  &
+                             +96.0D0*U(2)   &
+                              -36.0D0*U(3)  &
+                        +32.0D0/3.0D0*U(4)  &
+                         -3.0D0/2.0D0*U(5)  &
+                              -50.0D0*UX(1)*DX)
+         END IF
+!C...
+!C...  UXX AT THE RIGHT BOUNDARY
+!C...
+!C...     WITHOUT UX (EQUATION (54))
+         IF(NU.EQ.1)THEN
+         UXX(N)=R12DXS*                   &
+                      (   45.0D0*U(N  )   &
+                        -154.0D0*U(N-1)   &
+                        +214.0D0*U(N-2)   &
+                        -156.0D0*U(N-3)   &
+                         +61.0D0*U(N-4)   &
+                         -10.0D0*U(N-5))
+!C...
+!C...     WITH UX (EQUATION (37))
+         ELSE IF(NU.EQ.2)THEN
+         UXX(N)=R12DXS*                       &
+                      (-415.0D0/6.0D0*U(N  )  &
+                              +96.0D0*U(N-1)  &
+                              -36.0D0*U(N-2)  &
+                        +32.0D0/3.0D0*U(N-3)  &
+                         -3.0D0/2.0D0*U(N-4)  &
+                              +50.0D0*UX(N  )*DX)
+         END IF
+!C...
+!C...  UXX AT THE INTERIOR GRID POINTS
+!C...
+!C...     I = 2 (EQUATION (23))
+         UXX(2)=R12DXS*                 &
+                      (   10.0D0*U(1)   &
+                         -15.0D0*U(2)   &
+                          -4.0D0*U(3)   &
+                         +14.0D0*U(4)   &
+                          -6.0D0*U(5)   &
+                          +1.0D0*U(6))
+!C...
+!C...     I = N-1 (EQUATION (24))
+         UXX(N-1)=R12DXS*                 &
+                        ( 10.0D0*U(N  )   &
+                         -15.0D0*U(N-1)   &
+                          -4.0D0*U(N-2)   &
+                         +14.0D0*U(N-3)   &
+                          -6.0D0*U(N-4)   &
+                          +1.0D0*U(N-5))
+!C...
+!C...     I = 3, 4,..., N-2 (EQUATION (9))
+           !dir$ assume_aligned UXX:64,U:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector always
+         DO 1 I=3,N-2
+              UXX(I)=R12DXS*             &
+                      (   -1.0D0*U(I-2)  &
+                         +16.0D0*U(I-1)  &
+                         -30.0D0*U(I  )  &
+                         +16.0D0*U(I+1)  &
+                          -1.0D0*U(I+2))
+1        CONTINUE
+      
+      END SUBROUTINE
+
+
+ 
+
+   
 !=======================================================================!
 
    SUBROUTINE DDRIV2 (N,T,Y,F,TOUT,MSTATE,NROOT,EPS,EWT,MINT,WORK, &
@@ -3996,6 +5107,1903 @@ C
       IF (A(N,N) .EQ. 0.0D0) INFO = N
       RETURN
       END
+
+
+    SUBROUTINE EIGEN(N,A,WR,WI,Z,RW,IW)
+          !dir$ optimize:3
+#if 0
+C...
+C...  SUBROUTINE EIGEN COMPUTES THE TEMPORAL EIGENVALUES OF AN NTH ORDER
+C...  ODE SYSTEM WHOSE COEFFICIENT MATRIX IS STORED IN ARRAY A, AND
+C...  OPTIONALLY, THE ASSOCIATED EIGENVECTORS.  EIGEN IN TURN CALLS
+C...  EISPACK ROUTINES BALANC, ELMHES, ELTRAN, HQR2, AND OPTIONALLY,
+C...  BALBAK IF THE EIGENVECTORS ARE TO BE COMPUTED (EISPACK IS A
+C...  STANDARD LIBRARY OF ROUTINES FOR EIGENVALUE ANALYSIS OF LINEAR
+C...  ALGEBRAIC SYSTEMS).
+C...
+C...  SUBROUTINES EIGEN, IN ALL CASES, COMPUTES AND PRINTS THE EIGEN-
+C...  VALUES.  OPTIONALLY, IT COMPUTES, BUT DOES NOT PRINT, THE EIGEN-
+C...  VECTORS (WHICH CAN BE PRINTED FROM THE CALLING PROGRAM)
+C...
+C...  ARGUMENT LIST
+C...
+C...     N       ORDER OF THE SQUARE MATRIX FOR WHICH THE EIGENVALUES,
+C...             AND OPTIONALLY, THE EIGENVECTORS ARE TO BE COMPUTED
+C...             (INPUT)
+C...
+C...             N LT 0, NO EIGENVECTORS
+C...
+C...             N GT 0, EIGENVECTORS ARE COMPUTED
+C...
+C...     A       MATRIX FOR WHICH EIGENVALUES AND EIGENVECTORS ARE TO
+C...             BE COMPUTED (INPUT)
+C...
+C...     WR      ARRAY CONTAINING THE REAL PARTS OF THE N EIGENVALUES
+C...             (OUTPUT)
+C...
+C...     WI      ARRAY CONTAINING THE IMAGINARY PARTS OF THE N EIGEN-
+C...             VALUES (INPUT)
+C...
+C...     Z       ARRAY CONTAINING THE N EIGENVECTORS (OUTPUT)
+C...
+C...     RW,IW   REAL AND INTEGER WORK ARRAYS (NOT USED FOR INPUT OR
+C...             OUTPUT)
+C...
+C...  THE FOLLOWING COMMENTS WERE TAKEN FROM THE EISPACK DOCUMENTATION:
+C...
+C...  THE EIGENVALUES OF A REAL GENERAL MATRIX ARE EITHER REAL OR
+C...  COMPLEX CONJUGATE PAIRS.  WR(I) AND WI(I) CONTAIN THE REAL
+C...  AND IMAGINARY PARTS OF THE I-TH EIGENVALUE.  THE EIGENVALUES ARE
+C...  UNORDERED EXCEPT THAT COMPLEX CONJUGATE PAIRS OF EIGENVALUES
+C...  APPEAR CONSECUTIVELY WITH THE EIGENVALUE HAVING THE POSITIVE
+C...  IMAGINARY PART FIRST.
+C...
+C...  IF THE J-TH EIGENVALUE IS REAL, THEN THE J-TH COLUMN OF Z
+C...  CONTAINS ITS EIGENVECTOR.
+C...
+C...  IF THE J-TH EIGENVALUE IS COMPLEX WITH POSITIVE IMAGINARY PART,
+C...  THEN THE J-TH AND J+1-TH COLUMNS OF Z CONTAIN THE REAL AND IMAG-
+C...  INARY PARTS OF ITS EIGENVECTOR.
+C...
+C...  THE CONJUGATE OF THIS VECTOR IS THE EIGENVECTOR FOR THE CONJUGATE
+C...  EIGENVALUE.
+C...
+C...  THE EIGENVECTORS ARE NOT NORMALIZED.
+C...
+C...  VARIABLE DIMENSION THE ARRAYS USED BY THE EISPACK ROUTINES
+#endif
+      REAL A(N,N),   WR(N),   WI(N), Z(N,N), RW(N)
+      INTEGER  NM      LOW,     UPP,  ERROR, IW(N)
+!C...
+!C...  COMMON/IO/ CONTAINS THE INPUT/OUTPUT UNIT (DEVICE) NUMBERS
+      COMMON/IO/       NI,        NO
+!C...
+!C...  SET VARIABLE IVEC DEPENDING ON WHETHER EIGENVECTORS ARE TO BE
+!C...  COMPUTED
+!C...
+!C...     NO EIGENVECTORS
+         IF(N.LT.0)THEN
+            N=-N
+            IVEC=0
+!C...
+!C...     EIGENVECTORS WILL BE COMPUTED
+         ELSE
+            IVEC=1
+         END IF
+!C...
+!C...  ROW DIMENSION OF THE ARRAYS USED BY THE EISPACK ROUTINES
+      NM=N
+!C...
+!C...  COMPUTE THE EIGENVALUES
+      CALL BALANC(NM,N,A,LOW,UPP,RW)
+      CALL ELMHES(NM,N,LOW,UPP,A,IW)
+      CALL ELTRAN(NM,N,LOW,UPP,A,IW,Z)
+      CALL HQR2  (NM,N,LOW,UPP,A,WR,WI,Z,ERROR)
+!C...
+!C...  PRINT THE EIGENVALUES
+      WRITE(NO,900)ERROR,LOW,UPP
+      WRITE(NO,901)
+      DO 1 I=1,N
+      IF(ABS(WI(I)).GT.1.0E-10)GO TO 2
+!C...
+!C...  THE EIGENVALUE IS REAL
+      WRITE(NO,902)I,WR(I),WI(I)
+      GO TO 1
+!C...
+!C...  THE EIGENVALUE IS COMPLEX, SO THE DAMPING COEFFICIENT AND NATURAL
+!C...  FREQUENCY ARE COMPUTED FOR PRINTING
+2     RATIO=WI(I)/WR(I)
+      ZD=SQRT(1.0E+00/(1.0E+00+RATIO**2))
+      WN=ABS(WR(I))/ZD
+      WRITE(NO,903)I,WR(I),WI(I),ZD,WN
+1     CONTINUE
+!C...
+!C...  NO EIGENVECTORS
+      IF(IVEC.EQ.0)THEN
+         RETURN
+!C...
+!C...  EIGENVECTORS ARE COMPUTED
+      ELSE
+         CALL BALBAK(NM,N,LOW,UPP,RW,N,Z)
+      END IF
+900   FORMAT(1H1,' ERROR = ',I3,' LOW = ',I3,' UPP = ',I3,//)
+901   FORMAT(4X,'I',11X,'REAL',11X,'IMAG',14X,'Z',13X,'WN',/)
+902   FORMAT(I5,2F15.3)
+903   FORMAT(I5,4F15.3)
+      RETURN
+      END
+!C
+!C     ------------------------------------------------------------------
+!C
+      SUBROUTINE BALANC(NM,N,A,LOW,IGH,SCALE)
+          !dir$ optimize:3
+          !dir$ attributes forceinline :: BALANC
+          !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: BALANC
+     
+      INTEGER I,J,K,L,M,N,JJ,NM,IGH,LOW,IEXC
+      REAL A(NM,N),SCALE(N)
+      REAL C,F,G,R,S,B2,RADIX
+!C     REAL ABS
+      LOGICAL NOCONV
+#if 0
+C
+C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE BALANCE,
+C     NUM. MATH. 13, 293-304(1969) BY PARLETT AND REINSCH.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 315-326(1971).
+C
+C     THIS SUBROUTINE BALANCES A REAL MATRIX AND ISOLATES
+C     EIGENVALUES WHENEVER POSSIBLE.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING PROGRAM
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        A CONTAINS THE INPUT MATRIX TO BE BALANCED.
+C
+C     ON OUTPUT-
+C
+C        A CONTAINS THE BALANCED MATRIX,
+C
+C        LOW AND IGH ARE TWO INTEGERS SUCH THAT A(I,J)
+C          IS EQUAL TO ZERO IF
+C           (1) I IS GREATER THAN J AND
+C           (2) J=1,...,LOW-1 OR I=IGH+1,...,N,
+C
+C        SCALE CONTAINS INFORMATION DETERMINING THE
+C           PERMUTATIONS AND SCALING FACTORS USED.
+C
+C     SUPPOSE THAT THE PRINCIPAL SUBMATRIX IN ROWS LOW THROUGH IGH
+C     HAS BEEN BALANCED, THAT P(J) DENOTES THE INDEX INTERCHANGED
+C     WITH J DURING THE PERMUTATION STEP, AND THAT THE ELEMENTS
+C     OF THE DIAGONAL MATRIX USED ARE DENOTED BY D(I,J).  THEN
+C        SCALE(J) = P(J),    FOR J = 1,...,LOW-1
+C                 = D(J,J),      J = LOW,...,IGH
+C                 = P(J)         J = IGH+1,...,N.
+C     THE ORDER IN WHICH THE INTERCHANGES ARE MADE IS N TO IGH+1,
+C     THEN 1 TO LOW-1.
+C
+C     NOTE THAT 1 IS RETURNED FOR IGH IF IGH IS ZERO FORMALLY.
+C
+C     THE ALGOL PROCEDURE EXC CONTAINED IN BALANCE APPEARS IN
+C     BALANC  IN LINE.  (NOTE THAT THE ALGOL ROLES OF IDENTIFIERS
+C     K,L HAVE BEEN REVERSED.)
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** RADIX IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C                THE BASE OF THE MACHINE FLOATING POINT REPRESENTATION.
+C
+C                **********
+#endif 
+      RADIX = 2.
+
+      B2 = RADIX * RADIX
+      K = 1
+      L = N
+      GO TO 100
+!C     ********** IN-LINE PROCEDURE FOR ROW AND
+!C                COLUMN EXCHANGE **********
+   20 SCALE(M) = J
+      IF (J .EQ. M) GO TO 50
+!C
+       !dir$ assume_aligned A:64
+       !dir$ vector aligned
+       !dir$ vector always
+      DO 30 I = 1, L
+         F = A(I,J)
+         A(I,J) = A(I,M)
+         A(I,M) = F
+   30 CONTINUE
+!C
+      DO 40 I = K, N
+         F = A(J,I)
+         A(J,I) = A(M,I)
+         A(M,I) = F
+   40 CONTINUE
+!C
+   50 GO TO (80,130), IEXC
+!C     ********** SEARCH FOR ROWS ISOLATING AN EIGENVALUE
+!C                AND PUSH THEM DOWN **********
+   80 IF (L .EQ. 1) GO TO 280
+      L = L - 1
+!C     ********** FOR J=L STEP -1 UNTIL 1 DO -- **********
+  100 DO 120 JJ = 1, L
+         J = L + 1 - JJ
+!C
+         DO 110 I = 1, L
+            IF (I .EQ. J) GO TO 110
+            IF (A(J,I) .NE. 0.0) GO TO 120
+  110    CONTINUE
+!C
+         M = L
+         IEXC = 1
+         GO TO 20
+  120 CONTINUE
+!C
+      GO TO 140
+!C     ********** SEARCH FOR COLUMNS ISOLATING AN EIGENVALUE
+!C                AND PUSH THEM LEFT **********
+  130 K = K + 1
+!C
+  140 DO 170 J = K, L
+!C
+         DO 150 I = K, L
+            IF (I .EQ. J) GO TO 150
+            IF (A(I,J) .NE. 0.0) GO TO 170
+  150    CONTINUE
+!C
+         M = K
+         IEXC = 2
+         GO TO 20
+  170 CONTINUE
+!C     ********** NOW BALANCE THE SUBMATRIX IN ROWS K TO L **********
+      DO 180 I = K, L
+  180 SCALE(I) = 1.0
+!C     ********** ITERATIVE LOOP FOR NORM REDUCTION **********
+  190 NOCONV = .FALSE.
+!C
+      DO 270 I = K, L
+         C = 0.0
+         R = 0.0
+!C
+         DO 200 J = K, L
+            IF (J .EQ. I) GO TO 200
+            C = C + ABS(A(J,I))
+            R = R + ABS(A(I,J))
+  200    CONTINUE
+
+         G = R / RADIX
+         F = 1.0
+         S = C + R
+  210    IF (C .GE. G) GO TO 220
+         F = F * RADIX
+         C = C * B2
+         GO TO 210
+  220    G = R * RADIX
+  230    IF (C .LT. G) GO TO 240
+         F = F / RADIX
+         C = C / B2
+         GO TO 230
+!C     ********** NOW BALANCE **********
+  240    IF ((C + R) / F .GE. 0.95 * S) GO TO 270
+         G = 1.0 / F
+         SCALE(I) = SCALE(I) * F
+         NOCONV = .TRUE.
+
+         DO 250 J = K, N
+  250    A(I,J) = A(I,J) * G
+
+         DO 260 J = 1, L
+  260    A(J,I) = A(J,I) * F
+
+  270 CONTINUE
+
+      IF (NOCONV) GO TO 190
+
+  280 LOW = K
+      IGH = L
+      RETURN
+!     ********** LAST CARD OF BALANC **********
+      END
+
+      SUBROUTINE ELMHES(NM,N,LOW,IGH,A,INT)
+
+      INTEGER I,J,M,N,LA,NM,IGH,KP1,LOW,MM1,MP1
+      REAL A(NM,N)
+      REAL X,Y
+!C     REAL ABS
+      INTEGER INT(IGH)
+#if 0
+C
+C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE ELMHES,
+C     NUM. MATH. 12, 349-368(1968) BY MARTIN AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 339-358(1971).
+C
+C     GIVEN A REAL GENERAL MATRIX, THIS SUBROUTINE
+C     REDUCES A SUBMATRIX SITUATED IN ROWS AND COLUMNS
+C     LOW THROUGH IGH TO UPPER HESSENBERG FORM BY
+C     STABILIZED ELEMENTARY SIMILARITY TRANSFORMATIONS.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING PROGRAM
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        LOW AND IGH ARE INTEGERS DETERMINED BY THE BALANCING
+C          SUBROUTINE  BALANC.  IF  BALANC  HAS NOT BEEN USED,
+C          SET LOW=1, IGH=N,
+C
+C        A CONTAINS THE INPUT MATRIX.
+C
+C     ON OUTPUT-
+C
+C        A CONTAINS THE HESSENBERG MATRIX.  THE MULTIPLIERS
+C          WHICH WERE USED IN THE REDUCTION ARE STORED IN THE
+C          REMAINING TRIANGLE UNDER THE HESSENBERG MATRIX,
+C
+C        INT CONTAINS INFORMATION ON THE ROWS AND COLUMNS
+C          INTERCHANGED IN THE REDUCTION.
+C          ONLY ELEMENTS LOW THROUGH IGH ARE USED.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+#endif
+      LA = IGH - 1
+      KP1 = LOW + 1
+      IF (LA .LT. KP1) GO TO 200
+
+      DO 180 M = KP1, LA
+         MM1 = M - 1
+         X = 0.0
+         I = M
+
+         DO 100 J = M, IGH
+            IF (ABS(A(J,MM1)) .LE. ABS(X)) GO TO 100
+            X = A(J,MM1)
+            I = J
+  100    CONTINUE
+
+         INT(M) = I
+         IF (I .EQ. M) GO TO 130
+!C    ********** INTERCHANGE ROWS AND COLUMNS OF A **********
+         DO 110 J = MM1, N
+            Y = A(I,J)
+            A(I,J) = A(M,J)
+            A(M,J) = Y
+  110    CONTINUE
+
+         DO 120 J = 1, IGH
+            Y = A(J,I)
+            A(J,I) = A(J,M)
+            A(J,M) = Y
+  120    CONTINUE
+!C    ********** END INTERCHANGE **********
+  130    IF (X .EQ. 0.0) GO TO 180
+         MP1 = M + 1
+!C
+         DO 160 I = MP1, IGH
+            Y = A(I,MM1)
+            IF (Y .EQ. 0.0) GO TO 160
+            Y = Y / X
+            A(I,MM1) = Y
+!C
+            DO 140 J = M, N
+  140       A(I,J) = A(I,J) - Y * A(M,J)
+!C
+            DO 150 J = 1, IGH
+  150       A(J,M) = A(J,M) + Y * A(J,I)
+!C
+  160    CONTINUE
+!C
+  180 CONTINUE
+!C
+  200 RETURN
+!C    ********** LAST CARD OF ELMHES **********
+      END
+
+      SUBROUTINE HQR2(NM,N,LOW,IGH,H,WR,WI,Z,IERR)
+!C
+      INTEGER I,J,K,L,M,N,EN,II,JJ,LL,MM,NA,NM,NN,
+     X        IGH,ITS,LOW,MP2,ENM2,IERR
+      REAL H(NM,N),WR(N),WI(N),Z(NM,N)
+      REAL P,Q,R,S,T,W,X,Y,RA,SA,VI,VR,ZZ,NORM,MACHEP
+!C     REAL SQRT,ABS,SIGN
+!C     INTEGER MIN0
+      LOGICAL NOTLAS
+      COMPLEX Z3
+!C     COMPLEX CMPLX
+      REAL T3(2)
+      EQUIVALENCE (Z3,T3(1))
+#if 0
+C
+C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE HQR2,
+C     NUM. MATH. 16, 181-204(1970) BY PETERS AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 372-395(1971).
+C
+C     THIS SUBROUTINE FINDS THE EIGENVALUES AND EIGENVECTORS
+C     OF A REAL UPPER HESSENBERG MATRIX BY THE QR METHOD.  THE
+C     EIGENVECTORS OF A REAL GENERAL MATRIX CAN ALSO BE FOUND
+C     IF  ELMHES  AND  ELTRAN  OR  ORTHES  AND  ORTRAN  HAVE
+C     BEEN USED TO REDUCE THIS GENERAL MATRIX TO HESSENBERG FORM
+C     AND TO ACCUMULATE THE SIMILARITY TRANSFORMATIONS.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING PROGRAM
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        LOW AND IGH ARE INTEGERS DETERMINED BY THE BALANCING
+C          SUBROUTINE  BALANC.  IF  BALANC  HAS NOT BEEN USED,
+C          SET LOW=1, IGH=N,
+C
+C        H CONTAINS THE UPPER HESSENBERG MATRIX,
+C
+C        Z CONTAINS THE TRANSFORMATION MATRIX PRODUCED BY  ELTRAN
+C          AFTER THE REDUCTION BY  ELMHES, OR BY  ORTRAN  AFTER THE
+C          REDUCTION BY  ORTHES, IF PERFORMED.  IF THE EIGENVECTORS
+C          OF THE HESSENBERG MATRIX ARE DESIRED, Z MUST CONTAIN THE
+C          IDENTITY MATRIX.
+C
+C     ON OUTPUT-
+C
+C        H HAS BEEN DESTROYED,
+C
+C        WR AND WI CONTAIN THE REAL AND IMAGINARY PARTS,
+C          RESPECTIVELY, OF THE EIGENVALUES.  THE EIGENVALUES
+C          ARE UNORDERED EXCEPT THAT COMPLEX CONJUGATE PAIRS
+C          OF VALUES APPEAR CONSECUTIVELY WITH THE EIGENVALUE
+C          HAVING THE POSITIVE IMAGINARY PART FIRST.  IF AN
+C          ERROR EXIT IS MADE, THE EIGENVALUES SHOULD BE CORRECT
+C          FOR INDICES IERR+1,...,N,
+C
+C        Z CONTAINS THE REAL AND IMAGINARY PARTS OF THE EIGENVECTORS.
+C          IF THE I-TH EIGENVALUE IS REAL, THE I-TH COLUMN OF Z
+C          CONTAINS ITS EIGENVECTOR.  IF THE I-TH EIGENVALUE IS COMPLEX
+C          WITH POSITIVE IMAGINARY PART, THE I-TH AND (I+1)-TH
+C          COLUMNS OF Z CONTAIN THE REAL AND IMAGINARY PARTS OF ITS
+C          EIGENVECTOR.  THE EIGENVECTORS ARE UNNORMALIZED.  IF AN
+C          ERROR EXIT IS MADE, NONE OF THE EIGENVECTORS HAS BEEN FOUND,
+C
+C        IERR IS SET TO
+C          ZERO       FOR NORMAL RETURN,
+C          J          IF THE J-TH EIGENVALUE HAS NOT BEEN
+C                     DETERMINED AFTER 30 ITERATIONS.
+C
+C     ARITHMETIC IS REAL EXCEPT FOR THE REPLACEMENT OF THE ALGOL
+C     PROCEDURE CDIV BY COMPLEX DIVISION.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** MACHEP IS A MACHINE DEPENDENT PARAMETER SPECIFYING
+C                THE RELATIVE PRECISION OF FLOATING POINT ARITHMETIC.
+C
+C                **********
+#endif
+      MACHEP = 2.**(-47)
+
+      IERR = 0
+!C     ********** STORE ROOTS ISOLATED BY BALANC **********
+      DO 50 I = 1, N
+         IF (I .GE. LOW .AND. I .LE. IGH) GO TO 50
+         WR(I) = H(I,I)
+         WI(I) = 0.0
+   50 CONTINUE
+!C
+      EN = IGH
+      T = 0.0
+!C     ********** SEARCH FOR NEXT EIGENVALUES **********
+   60 IF (EN .LT. LOW) GO TO 340
+      ITS = 0
+      NA = EN - 1
+      ENM2 = NA - 1
+!C     ********** LOOK FOR SINGLE SMALL SUB-DIAGONAL ELEMENT
+!C                FOR L=EN STEP -1 UNTIL LOW DO -- **********
+   70 DO 80 LL = LOW, EN
+         L = EN + LOW - LL
+         IF (L .EQ. LOW) GO TO 100
+         IF (ABS(H(L,L-1)) .LE. MACHEP * (ABS(H(L-1,L-1))
+     X      + ABS(H(L,L)))) GO TO 100
+   80 CONTINUE
+!C     ********** FORM SHIFT **********
+  100 X = H(EN,EN)
+      IF (L .EQ. EN) GO TO 270
+      Y = H(NA,NA)
+      W = H(EN,NA) * H(NA,EN)
+      IF (L .EQ. NA) GO TO 280
+      IF (ITS .EQ. 30) GO TO 1000
+      IF (ITS .NE. 10 .AND. ITS .NE. 20) GO TO 130
+!C     ********** FORM EXCEPTIONAL SHIFT **********
+      T = T + X
+!C
+      DO 120 I = LOW, EN
+  120 H(I,I) = H(I,I) - X
+!C
+      S = ABS(H(EN,NA)) + ABS(H(NA,ENM2))
+      X = 0.75 * S
+      Y = X
+      W = -0.4375 * S * S
+  130 ITS = ITS + 1
+!C     ********** LOOK FOR TWO CONSECUTIVE SMALL
+!C                SUB-DIAGONAL ELEMENTS.
+!C                FOR M=EN-2 STEP -1 UNTIL L DO -- **********
+      DO 140 MM = L, ENM2
+         M = ENM2 + L - MM
+         ZZ = H(M,M)
+         R = X - ZZ
+         S = Y - ZZ
+         P = (R * S - W) / H(M+1,M) + H(M,M+1)
+         Q = H(M+1,M+1) - ZZ - R - S
+         R = H(M+2,M+1)
+         S = ABS(P) + ABS(Q) + ABS(R)
+         P = P / S
+         Q = Q / S
+         R = R / S
+         IF (M .EQ. L) GO TO 150
+         IF (ABS(H(M,M-1)) * (ABS(Q) + ABS(R)) .LE. MACHEP * ABS(P)
+     X    * (ABS(H(M-1,M-1)) + ABS(ZZ) + ABS(H(M+1,M+1)))) GO TO 150
+  140 CONTINUE
+!C
+  150 MP2 = M + 2
+!C
+      DO 160 I = MP2, EN
+         H(I,I-2) = 0.0
+         IF (I .EQ. MP2) GO TO 160
+         H(I,I-3) = 0.0
+  160 CONTINUE
+!C     ********** DOUBLE QR STEP INVOLVING ROWS L TO EN AND
+!C                COLUMNS M TO EN **********
+      DO 260 K = M, NA
+         NOTLAS = K .NE. NA
+         IF (K .EQ. M) GO TO 170
+         P = H(K,K-1)
+         Q = H(K+1,K-1)
+         R = 0.0
+         IF (NOTLAS) R = H(K+2,K-1)
+         X = ABS(P) + ABS(Q) + ABS(R)
+         IF (X .EQ. 0.0) GO TO 260
+         P = P / X
+         Q = Q / X
+         R = R / X
+  170    S = SIGN(SQRT(P*P+Q*Q+R*R),P)
+         IF (K .EQ. M) GO TO 180
+         H(K,K-1) = -S * X
+         GO TO 190
+  180    IF (L .NE. M) H(K,K-1) = -H(K,K-1)
+  190    P = P + S
+         X = P / S
+         Y = Q / S
+         ZZ = R / S
+         Q = Q / P
+         R = R / P
+!C     ********** ROW MODIFICATION **********
+         DO 210 J = K, N
+            P = H(K,J) + Q * H(K+1,J)
+            IF (.NOT. NOTLAS) GO TO 200
+            P = P + R * H(K+2,J)
+            H(K+2,J) = H(K+2,J) - P * ZZ
+  200       H(K+1,J) = H(K+1,J) - P * Y
+            H(K,J) = H(K,J) - P * X
+  210    CONTINUE
+!C
+         J = MIN0(EN,K+3)
+!C     ********** COLUMN MODIFICATION **********
+         DO 230 I = 1, J
+            P = X * H(I,K) + Y * H(I,K+1)
+            IF (.NOT. NOTLAS) GO TO 220
+            P = P + ZZ * H(I,K+2)
+            H(I,K+2) = H(I,K+2) - P * R
+  220       H(I,K+1) = H(I,K+1) - P * Q
+            H(I,K) = H(I,K) - P
+  230    CONTINUE
+!C     ********** ACCUMULATE TRANSFORMATIONS **********
+         DO 250 I = LOW, IGH
+            P = X * Z(I,K) + Y * Z(I,K+1)
+            IF (.NOT. NOTLAS) GO TO 240
+            P = P + ZZ * Z(I,K+2)
+            Z(I,K+2) = Z(I,K+2) - P * R
+  240       Z(I,K+1) = Z(I,K+1) - P * Q
+            Z(I,K) = Z(I,K) - P
+  250    CONTINUE
+!C
+  260 CONTINUE
+!C
+      GO TO 70
+!C     ********** ONE ROOT FOUND **********
+  270 H(EN,EN) = X  +  T
+      WR(EN) = H(EN,EN)
+      WI(EN) = 0.0
+      EN = NA
+      GO TO 60
+!C     ********** TWO ROOTS FOUND **********
+  280 P = (Y - X) / 2.0
+      Q = P * P + W
+      ZZ = SQRT(ABS(Q))
+      H(EN,EN) = X + T
+      X = H(EN,EN)
+      H(NA,NA) = Y + T
+      IF (Q .LT. 0.0) GO TO 320
+!C     ********** REAL PAIR **********
+      ZZ = P + SIGN(ZZ,P)
+      WR(NA) = X + ZZ
+      WR(EN) = WR(NA)
+      IF (ZZ .NE. 0.0) WR(EN) = X - W / ZZ
+      WI(NA) = 0.0
+      WI(EN) = 0.0
+      X = H(EN,NA)
+      R = SQRT(X*X+ZZ*ZZ)
+      P = X / R
+      Q = ZZ / R
+!C     ********** ROW MODIFICATION **********
+      DO 290 J = NA, N
+         ZZ = H(NA,J)
+         H(NA,J) = Q * ZZ + P * H(EN,J)
+         H(EN,J) = Q * H(EN,J) - P * ZZ
+  290 CONTINUE
+!C     ********** COLUMN MODIFICATION **********
+      DO 300 I = 1, EN
+         ZZ = H(I,NA)
+         H(I,NA) = Q * ZZ + P * H(I,EN)
+         H(I,EN) = Q * H(I,EN) - P * ZZ
+  300 CONTINUE
+!C     ********** ACCUMULATE TRANSFORMATIONS **********
+      DO 310 I = LOW, IGH
+         ZZ = Z(I,NA)
+         Z(I,NA) = Q * ZZ + P * Z(I,EN)
+         Z(I,EN) = Q * Z(I,EN) - P * ZZ
+  310 CONTINUE
+!C
+      GO TO 330
+!C     ********** COMPLEX PAIR **********
+  320 WR(NA) = X + P
+      WR(EN) = X + P
+      WI(NA) = ZZ
+      WI(EN) = -ZZ
+  330 EN = ENM2
+      GO TO 60
+!C     ********** ALL ROOTS FOUND.  BACKSUBSTITUTE TO FIND
+!C                VECTORS OF UPPER TRIANGULAR FORM **********
+  340 NORM = 0.0
+      K = 1
+
+      DO 360 I = 1, N
+
+         DO 350 J = K, N
+  350    NORM = NORM + ABS(H(I,J))
+
+         K = I
+  360 CONTINUE
+
+      IF (NORM .EQ. 0.0) GO TO 1001
+!C     ********** FOR EN=N STEP -1 UNTIL 1 DO -- **********
+      DO 800 NN = 1, N
+         EN = N + 1 - NN
+         P = WR(EN)
+         Q = WI(EN)
+         NA = EN - 1
+         IF (Q) 710, 600, 800
+!C     ********** REAL VECTOR **********
+  600    M = EN
+         H(EN,EN) = 1.0
+         IF (NA .EQ. 0) GO TO 800
+!C     ********** FOR I=EN-1 STEP -1 UNTIL 1 DO -- **********
+         DO 700 II = 1, NA
+            I = EN - II
+            W = H(I,I) - P
+            R = H(I,EN)
+            IF (M .GT. NA) GO TO 620
+!C
+            DO 610 J = M, NA
+  610       R = R + H(I,J) * H(J,EN)
+!C
+  620       IF (WI(I) .GE. 0.0) GO TO 630
+            ZZ = W
+            S = R
+            GO TO 700
+  630       M = I
+            IF (WI(I) .NE. 0.0) GO TO 640
+            T = W
+            IF (W .EQ. 0.0) T = MACHEP * NORM
+            H(I,EN) = -R / T
+            GO TO 700
+!C     ********** SOLVE REAL EQUATIONS **********
+  640       X = H(I,I+1)
+            Y = H(I+1,I)
+            Q = (WR(I) - P) * (WR(I) - P) + WI(I) * WI(I)
+            T = (X * S - ZZ * R) / Q
+            H(I,EN) = T
+            IF (ABS(X) .LE. ABS(ZZ)) GO TO 650
+            H(I+1,EN) = (-R - W * T) / X
+            GO TO 700
+  650       H(I+1,EN) = (-S - Y * T) / ZZ
+  700    CONTINUE
+!C     ********** END REAL VECTOR **********
+         GO TO 800
+!C     ********** COMPLEX VECTOR **********
+  710    M = NA
+!C     ********** LAST VECTOR COMPONENT CHOSEN IMAGINARY SO THAT
+!C                EIGENVECTOR MATRIX IS TRIANGULAR **********
+         IF (ABS(H(EN,NA)) .LE. ABS(H(NA,EN))) GO TO 720
+         H(NA,NA) = Q / H(EN,NA)
+         H(NA,EN) = -(H(EN,EN) - P) / H(EN,NA)
+         GO TO 730
+  720    Z3 = CMPLX(0.0,-H(NA,EN)) / CMPLX(H(NA,NA)-P,Q)
+         H(NA,NA) = T3(1)
+         H(NA,EN) = T3(2)
+  730    H(EN,NA) = 0.0
+         H(EN,EN) = 1.0
+         ENM2 = NA - 1
+         IF (ENM2 .EQ. 0) GO TO 800
+!C
+         DO 790 II = 1, ENM2
+            I = NA - II
+            W = H(I,I) - P
+            RA = 0.0
+            SA = H(I,EN)
+!C
+            DO 760 J = M, NA
+               RA = RA + H(I,J) * H(J,NA)
+               SA = SA + H(I,J) * H(J,EN)
+  760       CONTINUE
+!C
+            IF (WI(I) .GE. 0.0) GO TO 770
+            ZZ = W
+            R = RA
+            S = SA
+            GO TO 790
+  770       M = I
+            IF (WI(I) .NE. 0.0) GO TO 780
+            Z3 = CMPLX(-RA,-SA) / CMPLX(W,Q)
+            H(I,NA) = T3(1)
+            H(I,EN) = T3(2)
+            GO TO 790
+!C     ********** SOLVE COMPLEX EQUATIONS **********
+  780       X = H(I,I+1)
+            Y = H(I+1,I)
+            VR = (WR(I) - P) * (WR(I) - P) + WI(I) * WI(I) - Q * Q
+            VI = (WR(I) - P) * 2.0 * Q
+            IF (VR .EQ. 0.0 .AND. VI .EQ. 0.0) VR = MACHEP * NORM
+     X       * (ABS(W) + ABS(Q) + ABS(X) + ABS(Y) + ABS(ZZ))
+            Z3 = CMPLX(X*R-ZZ*RA+Q*SA,X*S-ZZ*SA-Q*RA) / CMPLX(VR,VI)
+            H(I,NA) = T3(1)
+            H(I,EN) = T3(2)
+            IF (ABS(X) .LE. ABS(ZZ) + ABS(Q)) GO TO 785
+            H(I+1,NA) = (-RA - W * H(I,NA) + Q * H(I,EN)) / X
+            H(I+1,EN) = (-SA - W * H(I,EN) - Q * H(I,NA)) / X
+            GO TO 790
+  785       Z3 = CMPLX(-R-Y*H(I,NA),-S-Y*H(I,EN)) / CMPLX(ZZ,Q)
+            H(I+1,NA) = T3(1)
+            H(I+1,EN) = T3(2)
+  790    CONTINUE
+!C     ********** END COMPLEX VECTOR **********
+  800 CONTINUE
+!C     ********** END BACK SUBSTITUTION.
+!C                VECTORS OF ISOLATED ROOTS **********
+      DO 840 I = 1, N
+         IF (I .GE. LOW .AND. I .LE. IGH) GO TO 840
+!C
+         DO 820 J = I, N
+  820    Z(I,J) = H(I,J)
+!C
+  840 CONTINUE
+!C     ********** MULTIPLY BY TRANSFORMATION MATRIX TO GIVE
+!C                VECTORS OF ORIGINAL FULL MATRIX.
+!                FOR J=N STEP -1 UNTIL LOW DO -- **********
+      DO 880 JJ = LOW, N
+         J = N + LOW - JJ
+         M = MIN0(J,IGH)
+
+         DO 880 I = LOW, IGH
+            ZZ = 0.0
+
+            DO 860 K = LOW, M
+  860       ZZ = ZZ + Z(I,K) * H(K,J)
+
+            Z(I,J) = ZZ
+  880 CONTINUE
+
+      GO TO 1001
+!C     ********** SET ERROR -- NO CONVERGENCE TO AN
+!C                EIGENVALUE AFTER 30 ITERATIONS **********
+ 1000 IERR = EN
+ 1001 RETURN
+!C     ********** LAST CARD OF HQR2 **********
+      END
+!C
+!C     ------------------------------------------------------------------
+!C
+      SUBROUTINE ELTRAN(NM,N,LOW,IGH,A,INT,Z)
+!C
+      INTEGER I,J,N,KL,MM,MP,NM,IGH,LOW,MP1
+      REAL A(NM,IGH),Z(NM,N)
+      INTEGER INT(IGH)
+#if 0
+C
+C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE ELMTRANS,
+C     NUM. MATH. 16, 181-204(1970) BY PETERS AND WILKINSON.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 372-395(1971).
+C
+C     THIS SUBROUTINE ACCUMULATES THE STABILIZED ELEMENTARY
+C     SIMILARITY TRANSFORMATIONS USED IN THE REDUCTION OF A
+C     REAL GENERAL MATRIX TO UPPER HESSENBERG FORM BY  ELMHES.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING PROGRAM
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        LOW AND IGH ARE INTEGERS DETERMINED BY THE BALANCING
+C          SUBROUTINE  BALANC.  IF  BALANC  HAS NOT BEEN USED,
+C          SET LOW=1, IGH=N,
+C
+C        A CONTAINS THE MULTIPLIERS WHICH WERE USED IN THE
+C          REDUCTION BY  ELMHES  IN ITS LOWER TRIANGLE
+C          BELOW THE SUBDIAGONAL,
+C
+C        INT CONTAINS INFORMATION ON THE ROWS AND COLUMNS
+C          INTERCHANGED IN THE REDUCTION BY  ELMHES.
+C          ONLY ELEMENTS LOW THROUGH IGH ARE USED.
+C
+C     ON OUTPUT-
+C
+C        Z CONTAINS THE TRANSFORMATION MATRIX PRODUCED IN THE
+C          REDUCTION BY  ELMHES.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+C     ********** INITIALIZE Z TO IDENTITY MATRIX **********
+#endif
+      DO 80 I = 1, N
+
+         DO 60 J = 1, N
+   60    Z(I,J) = 0.0
+
+         Z(I,I) = 1.0
+   80 CONTINUE
+
+      KL = IGH - LOW - 1
+      IF (KL .LT. 1) GO TO 200
+!C     ********** FOR MP=IGH-1 STEP -1 UNTIL LOW+1 DO -- **********
+      DO 140 MM = 1, KL
+         MP = IGH - MM
+         MP1 = MP + 1
+
+         DO 100 I = MP1, IGH
+  100    Z(I,MP) = A(I,MP-1)
+
+         I = INT(MP)
+         IF (I .EQ. MP) GO TO 140
+
+         DO 130 J = MP, IGH
+            Z(MP,J) = Z(I,J)
+            Z(I,J) = 0.0
+  130    CONTINUE
+
+         Z(I,MP) = 1.0
+  140 CONTINUE
+
+  200 RETURN
+!C     ********** LAST CARD OF ELTRAN **********
+      END
+
+      SUBROUTINE BALBAK(NM,N,LOW,IGH,SCALE,M,Z)
+
+      INTEGER I,J,K,M,N,II,NM,IGH,LOW
+      REAL SCALE(N),Z(NM,M)
+      REAL S
+#if 0
+C
+C     THIS SUBROUTINE IS A TRANSLATION OF THE ALGOL PROCEDURE BALBAK,
+C     NUM. MATH. 13, 293-304(1969) BY PARLETT AND REINSCH.
+C     HANDBOOK FOR AUTO. COMP., VOL.II-LINEAR ALGEBRA, 315-326(1971).
+C
+C     THIS SUBROUTINE FORMS THE EIGENVECTORS OF A REAL GENERAL
+C     MATRIX BY BACK TRANSFORMING THOSE OF THE CORRESPONDING
+C     BALANCED MATRIX DETERMINED BY  BALANC.
+C
+C     ON INPUT-
+C
+C        NM MUST BE SET TO THE ROW DIMENSION OF TWO-DIMENSIONAL
+C          ARRAY PARAMETERS AS DECLARED IN THE CALLING PROGRAM
+C          DIMENSION STATEMENT,
+C
+C        N IS THE ORDER OF THE MATRIX,
+C
+C        LOW AND IGH ARE INTEGERS DETERMINED BY  BALANC,
+C
+C        SCALE CONTAINS INFORMATION DETERMINING THE PERMUTATIONS
+C          AND SCALING FACTORS USED BY  BALANC,
+C
+C        M IS THE NUMBER OF COLUMNS OF Z TO BE BACK TRANSFORMED,
+C
+C        Z CONTAINS THE REAL AND IMAGINARY PARTS OF THE EIGEN-
+C          VECTORS TO BE BACK TRANSFORMED IN ITS FIRST M COLUMNS.
+C
+C     ON OUTPUT-
+C
+C        Z CONTAINS THE REAL AND IMAGINARY PARTS OF THE
+C          TRANSFORMED EIGENVECTORS IN ITS FIRST M COLUMNS.
+C
+C     QUESTIONS AND COMMENTS SHOULD BE DIRECTED TO B. S. GARBOW,
+C     APPLIED MATHEMATICS DIVISION, ARGONNE NATIONAL LABORATORY
+C
+C     ------------------------------------------------------------------
+C
+#endif
+      IF (IGH .EQ. LOW) GO TO 120
+
+      DO 110 I = LOW, IGH
+         S = SCALE(I)
+!C     ********** LEFT HAND EIGENVECTORS ARE BACK TRANSFORMED
+!C                IF THE FOREGOING STATEMENT IS REPLACED BY
+!C                S=1.0/SCALE(I). **********
+         DO 100 J = 1, M
+  100    Z(I,J) = Z(I,J) * S
+!C
+  110 CONTINUE
+!C     ********- FOR I=LOW-1 STEP -1 UNTIL 1,
+!C               IGH+1 STEP 1 UNTIL N DO -- **********
+  120 DO 140 II = 1, N
+         I = II
+         IF (I .GE. LOW .AND. I .LE. IGH) GO TO 140
+         IF (I .LT. LOW) I = LOW - II
+         K = SCALE(I)
+         IF (K .EQ. I) GO TO 140
+!C
+         DO 130 J = 1, M
+            S = Z(I,J)
+            Z(I,J) = Z(K,J)
+            Z(K,J) = S
+  130    CONTINUE
+!C
+  140 CONTINUE
+!C
+     
+
+   END SUBROUTINE
+
+
+  
+   SUBROUTINE RKF45(F,NEQN,Y,T,TOUT,RELERR,ABSERR,IFLAG,WORK,IWORK)
+#if 0
+C
+C     FEHLBERG FOURTH-FIFTH ORDER RUNGE-KUTTA METHOD
+C
+C     WRITTEN BY H.A.WATTS AND L.F.SHAMPINE
+C                   SANDIA LABORATORIES
+C                  ALBUQUERQUE,NEW MEXICO
+C
+C    RKF45 IS PRIMARILY DESIGNED TO SOLVE NON-STIFF AND MILDLY STIFF
+C    DIFFERENTIAL EQUATIONS WHEN DERIVATIVE EVALUATIONS ARE INEXPENSIVE.
+C    RKF45 SHOULD GENERALLY NOT BE USED WHEN THE USER IS DEMANDING
+C    HIGH ACCURACY.
+C
+C ABSTRACT
+C
+C    SUBROUTINE  RKF45  INTEGRATES A SYSTEM OF NEQN FIRST ORDER
+C    ORDINARY DIFFERENTIAL EQUATIONS OF THE FORM
+C             DY(I)/DT = F(T,Y(1),Y(2),...,Y(NEQN))
+C              WHERE THE Y(I) ARE GIVEN AT T .
+C    TYPICALLY THE SUBROUTINE IS USED TO INTEGRATE FROM T TO TOUT BUT IT
+C    CAN BE USED AS A ONE-STEP INTEGRATOR TO ADVANCE THE SOLUTION A
+C    SINGLE STEP IN THE DIRECTION OF TOUT.  ON RETURN THE PARAMETERS IN
+C    THE CALL LIST ARE SET FOR CONTINUING THE INTEGRATION. THE USER HAS
+C    ONLY TO CALL RKF45 AGAIN (AND PERHAPS DEFINE A NEW VALUE FOR TOUT).
+C    ACTUALLY, RKF45 IS AN INTERFACING ROUTINE WHICH CALLS SUBROUTINE
+C    RKFS FOR THE SOLUTION.  RKFS IN TURN CALLS SUBROUTINE  FEHL WHICH
+C    COMPUTES AN APPROXIMATE SOLUTION OVER ONE STEP.
+C
+C    RKF45  USES THE RUNGE-KUTTA-FEHLBERG (4,5)  METHOD DESCRIBED
+C    IN THE REFERENCE
+C    E.FEHLBERG , LOW-ORDER CLASSICAL RUNGE-KUTTA FORMULAS WITH STEPSIZE
+C                 CONTROL , NASA TR R-315
+C
+C    THE PERFORMANCE OF RKF45 IS ILLUSTRATED IN THE REFERENCE
+C    L.F.SHAMPINE,H.A.WATTS,S.DAVENPORT, SOLVING NON-STIFF ORDINARY
+C                 DIFFERENTIAL EQUATIONS-THE STATE OF THE ART ,
+C                 SANDIA LABORATORIES REPORT SAND75-0182 ,
+C                 TO APPEAR IN SIAM REVIEW.
+C
+C
+C    THE PARAMETERS REPRESENT-
+C      F -- SUBROUTINE F(T,Y,YP) TO EVALUATE DERIVATIVES YP(I)=DY(I)/DT
+C      NEQN -- NUMBER OF EQUATIONS TO BE INTEGRATED
+C      Y(*) -- SOLUTION VECTOR AT T
+C      T -- INDEPENDENT VARIABLE
+C      TOUT -- OUTPUT POINT AT WHICH SOLUTION IS DESIRED
+C      RELERR,ABSERR -- RELATIVE AND ABSOLUTE ERROR TOLERANCES FOR LOCAL
+C            ERROR TEST. AT EACH STEP THE CODE REQUIRES THAT
+C                 ABS(LOCAL ERROR) .LE. RELERR*ABS(Y) + ABSERR
+C            FOR EACH COMPONENT OF THE LOCAL ERROR AND SOLUTION VECTORS
+C      IFLAG -- INDICATOR FOR STATUS OF INTEGRATION
+C      WORK(*) -- ARRAY TO HOLD INFORMATION INTERNAL TO RKF45 WHICH IS
+C            NECESSARY FOR SUBSEQUENT CALLS. MUST BE DIMENSIONED
+C            AT LEAST  3+6*NEQN
+C      IWORK(*) -- INTEGER ARRAY USED TO HOLD INFORMATION INTERNAL TO
+C            RKF45 WHICH IS NECESSARY FOR SUBSEQUENT CALLS. MUST BE
+C            DIMENSIONED AT LEAST  5
+C
+C
+C  FIRST CALL TO RKF45
+C
+C    THE USER MUST PROVIDE STORAGE IN HIS CALLING PROGRAM FOR THE ARRAYS
+C    IN THE CALL LIST  -      Y(NEQN) , WORK(3+6*NEQN) , IWORK(5)  ,
+C    DECLARE F IN AN EXTERNAL STATEMENT, SUPPLY SUBROUTINE F(T,Y,YP) AND
+C    INITIALIZE THE FOLLOWING PARAMETERS-
+C
+C      NEQN -- NUMBER OF EQUATIONS TO BE INTEGRATED.  (NEQN .GE. 1)
+C      Y(*) -- VECTOR OF INITIAL CONDITIONS
+C      T -- STARTING POINT OF INTEGRATION , MUST BE A VARIABLE
+C      TOUT -- OUTPUT POINT AT WHICH SOLUTION IS DESIRED.
+C            T=TOUT IS ALLOWED ON THE FIRST CALL ONLY, IN WHICH CASE
+C            RKF45 RETURNS WITH IFLAG=2 IF CONTINUATION IS POSSIBLE.
+C      RELERR,ABSERR -- RELATIVE AND ABSOLUTE LOCAL ERROR TOLERANCES
+C            WHICH MUST BE NON-NEGATIVE. RELERR MUST BE A VARIABLE WHILE
+C            ABSERR MAY BE A CONSTANT. THE CODE SHOULD NORMALLY NOT BE
+C            USED WITH RELATIVE ERROR CONTROL SMALLER THAN ABOUT 1.E-8 .
+C            TO AVOID LIMITING PRECISION DIFFICULTIES THE CODE REQUIRES
+C            RELERR TO BE LARGER THAN AN INTERNALLY COMPUTED RELATIVE
+C            ERROR PARAMETER WHICH IS MACHINE DEPENDENT. IN PARTICULAR,
+C            PURE ABSOLUTE ERROR IS NOT PERMITTED. IF A SMALLER THAN
+C            ALLOWABLE VALUE OF RELERR IS ATTEMPTED, RKF45 INCREASES
+C            RELERR APPROPRIATELY AND RETURNS CONTROL TO THE USER BEFORE
+C            CONTINUING THE INTEGRATION.
+C      IFLAG -- +1,-1  INDICATOR TO INITIALIZE THE CODE FOR EACH NEW
+C            PROBLEM. NORMAL INPUT IS +1. THE USER SHOULD SET IFLAG=-1
+C            ONLY WHEN ONE-STEP INTEGRATOR CONTROL IS ESSENTIAL. IN THIS
+C            CASE, RKF45 ATTEMPTS TO ADVANCE THE SOLUTION A SINGLE STEP
+C            IN THE DIRECTION OF TOUT EACH TIME IT IS CALLED. SINCE THIS
+C            MODE OF OPERATION RESULTS IN EXTRA COMPUTING OVERHEAD, IT
+C            SHOULD BE AVOIDED UNLESS NEEDED.
+C
+C
+C  OUTPUT FROM RKF45
+C
+C      Y(*) -- SOLUTION AT T
+C      T -- LAST POINT REACHED IN INTEGRATION.
+C      IFLAG = 2 -- INTEGRATION REACHED TOUT. INDICATES SUCCESSFUL RETUR
+C                   AND IS THE NORMAL MODE FOR CONTINUING INTEGRATION.
+C            =-2 -- A SINGLE SUCCESSFUL STEP IN THE DIRECTION OF TOUT
+C                   HAS BEEN TAKEN. NORMAL MODE FOR CONTINUING
+C                   INTEGRATION ONE STEP AT A TIME.
+C            = 3 -- INTEGRATION WAS NOT COMPLETED BECAUSE RELATIVE ERROR
+C                   TOLERANCE WAS TOO SMALL. RELERR HAS BEEN INCREASED
+C                   APPROPRIATELY FOR CONTINUING.
+C            = 4 -- INTEGRATION WAS NOT COMPLETED BECAUSE MORE THAN
+C                   3000 DERIVATIVE EVALUATIONS WERE NEEDED. THIS
+C                   IS APPROXIMATELY 500 STEPS.
+C            = 5 -- INTEGRATION WAS NOT COMPLETED BECAUSE SOLUTION
+C                   VANISHED MAKING A PURE RELATIVE ERROR TEST
+C                   IMPOSSIBLE. MUST USE NON-ZERO ABSERR TO CONTINUE.
+C                   USING THE ONE-STEP INTEGRATION MODE FOR ONE STEP
+C                   IS A GOOD WAY TO PROCEED.
+C            = 6 -- INTEGRATION WAS NOT COMPLETED BECAUSE REQUESTED
+C                   ACCURACY COULD NOT BE ACHIEVED USING SMALLEST
+C                   ALLOWABLE STEPSIZE. USER MUST INCREASE THE ERROR
+C                   TOLERANCE BEFORE CONTINUED INTEGRATION CAN BE
+C                   ATTEMPTED.
+C            = 7 -- IT IS LIKELY THAT RKF45 IS INEFFICIENT FOR SOLVING
+C                   THIS PROBLEM. TOO MUCH OUTPUT IS RESTRICTING THE
+C                   NATURAL STEPSIZE CHOICE. USE THE ONE-STEP INTEGRATOR
+C                   MODE.
+C            = 8 -- INVALID INPUT PARAMETERS
+C                   THIS INDICATOR OCCURS IF ANY OF THE FOLLOWING IS
+C                   SATISFIED -   NEQN .LE. 0
+C                                 T=TOUT  AND  IFLAG .NE. +1 OR -1
+C                                 RELERR OR ABSERR .LT. 0.
+C                                 IFLAG .EQ. 0  OR  .LT. -2  OR  .GT. 8
+C      WORK(*),IWORK(*) -- INFORMATION WHICH IS USUALLY OF NO INTEREST
+C                   TO THE USER BUT NECESSARY FOR SUBSEQUENT CALLS.
+C                   WORK(1),...,WORK(NEQN) CONTAIN THE FIRST DERIVATIVES
+C                   OF THE SOLUTION VECTOR Y AT T. WORK(NEQN+1) CONTAINS
+C                   THE STEPSIZE H TO BE ATTEMPTED ON THE NEXT STEP.
+C                   IWORK(1) CONTAINS THE DERIVATIVE EVALUATION COUNTER.
+C
+C
+C  SUBSEQUENT CALLS TO RKF45
+C
+C    SUBROUTINE RKF45 RETURNS WITH ALL INFORMATION NEEDED TO CONTINUE
+C    THE INTEGRATION. IF THE INTEGRATION REACHED TOUT, THE USER NEED ONL
+C    DEFINE A NEW TOUT AND CALL RKF45 AGAIN. IN THE ONE-STEP INTEGRATOR
+C    MODE (IFLAG=-2) THE USER MUST KEEP IN MIND THAT EACH STEP TAKEN IS
+C    IN THE DIRECTION OF THE CURRENT TOUT. UPON REACHING TOUT (INDICATED
+C    BY CHANGING IFLAG TO 2),THE USER MUST THEN DEFINE A NEW TOUT AND
+C    RESET IFLAG TO -2 TO CONTINUE IN THE ONE-STEP INTEGRATOR MODE.
+C
+C    IF THE INTEGRATION WAS NOT COMPLETED BUT THE USER STILL WANTS TO
+C    CONTINUE (IFLAG=3,4 CASES), HE JUST CALLS RKF45 AGAIN. WITH IFLAG=3
+C    THE RELERR PARAMETER HAS BEEN ADJUSTED APPROPRIATELY FOR CONTINUING
+C    THE INTEGRATION. IN THE CASE OF IFLAG=4 THE FUNCTION COUNTER WILL
+C    BE RESET TO 0 AND ANOTHER 3000 FUNCTION EVALUATIONS ARE ALLOWED.
+C
+C    HOWEVER,IN THE CASE IFLAG=5, THE USER MUST FIRST ALTER THE ERROR
+C    CRITERION TO USE A POSITIVE VALUE OF ABSERR BEFORE INTEGRATION CAN
+C    PROCEED. IF HE DOES NOT,EXECUTION IS TERMINATED.
+C
+C    ALSO,IN THE CASE IFLAG=6, IT IS NECESSARY FOR THE USER TO RESET
+C    IFLAG TO 2 (OR -2 WHEN THE ONE-STEP INTEGRATION MODE IS BEING USED)
+C    AS WELL AS INCREASING EITHER ABSERR,RELERR OR BOTH BEFORE THE
+C    INTEGRATION CAN BE CONTINUED. IF THIS IS NOT DONE, EXECUTION WILL
+C    BE TERMINATED. THE OCCURRENCE OF IFLAG=6 INDICATES A TROUBLE SPOT
+C    (SOLUTION IS CHANGING RAPIDLY,SINGULARITY MAY BE PRESENT) AND IT
+C    OFTEN IS INADVISABLE TO CONTINUE.
+C
+C    IF IFLAG=7 IS ENCOUNTERED, THE USER SHOULD USE THE ONE-STEP
+C    INTEGRATION MODE WITH THE STEPSIZE DETERMINED BY THE CODE OR
+C    CONSIDER SWITCHING TO THE ADAMS CODES DE/STEP,INTRP. IF THE USER
+C    INSISTS UPON CONTINUING THE INTEGRATION WITH RKF45, HE MUST RESET
+C    IFLAG TO 2 BEFORE CALLING RKF45 AGAIN. OTHERWISE,EXECUTION WILL BE
+C    TERMINATED.
+C
+C    IF IFLAG=8 IS OBTAINED, INTEGRATION CAN NOT BE CONTINUED UNLESS
+C    THE INVALID INPUT PARAMETERS ARE CORRECTED.
+C
+C    IT SHOULD BE NOTED THAT THE ARRAYS WORK,IWORK CONTAIN INFORMATION
+C    REQUIRED FOR SUBSEQUENT INTEGRATION. ACCORDINGLY, WORK AND IWORK
+C    SHOULD NOT BE ALTERED.
+C
+C
+#endif
+      INTEGER NEQN,IFLAG,IWORK(5)
+      DOUBLE PRECISION Y(NEQN),T,TOUT,RELERR,ABSERR,WORK(1)
+!C     IF COMPILER CHECKS SUBSCRIPTS, CHANGE WORK(1) TO WORK(3+6*NEQN)
+!C
+      EXTERNAL F
+!C
+      INTEGER K1,K2,K3,K4,K5,K6,K1M
+!C
+!C
+!C     COMPUTE INDICES FOR THE SPLITTING OF THE WORK ARRAY
+!C
+      K1M=NEQN+1
+      K1=K1M+1
+      K2=K1+NEQN
+      K3=K2+NEQN
+      K4=K3+NEQN
+      K5=K4+NEQN
+      K6=K5+NEQN
+!C
+!C     THIS INTERFACING ROUTINE MERELY RELIEVES THE USER OF A LONG
+!C     CALLING LIST VIA THE SPLITTING APART OF TWO WORKING STORAGE
+!C     ARRAYS. IF THIS IS NOT COMPATIBLE WITH THE USERS COMPILER,
+!C     HE MUST USE RKFS DIRECTLY.
+!C
+      CALL RKFS(F,NEQN,Y,T,TOUT,RELERR,ABSERR,IFLAG,WORK(1),WORK(K1M),   &
+               WORK(K1),WORK(K2),WORK(K3),WORK(K4),WORK(K5),WORK(K6),   &
+               WORK(K6+1),IWORK(1),IWORK(2),IWORK(3),IWORK(4),IWORK(5))
+
+      RETURN
+      END SUBROUTINE
+
+      SUBROUTINE RKFS(F,NEQN,Y,T,TOUT,RELERR,ABSERR,IFLAG,YP,H,F1,F2,F3, &
+                     F4,F5,SAVRE,SAVAE,NFE,KOP,INIT,JFLAG,KFLAG)
+#if 0
+C
+C     FEHLBERG FOURTH-FIFTH ORDER RUNGE-KUTTA METHOD
+C
+C
+C     RKFS INTEGRATES A SYSTEM OF FIRST ORDER ORDINARY DIFFERENTIAL
+C     EQUATIONS AS DESCRIBED IN THE COMMENTS FOR RKF45 .
+C     THE ARRAYS YP,F1,F2,F3,F4,AND F5 (OF DIMENSION AT LEAST NEQN) AND
+C     THE VARIABLES H,SAVRE,SAVAE,NFE,KOP,INIT,JFLAG,AND KFLAG ARE USED
+C     INTERNALLY BY THE CODE AND APPEAR IN THE CALL LIST TO ELIMINATE
+C     LOCAL RETENTION OF VARIABLES BETWEEN CALLS. ACCORDINGLY, THEY
+C     SHOULD NOT BE ALTERED. ITEMS OF POSSIBLE INTEREST ARE
+C         YP - DERIVATIVE OF SOLUTION VECTOR AT T
+C         H  - AN APPROPRIATE STEPSIZE TO BE USED FOR THE NEXT STEP
+C         NFE- COUNTER ON THE NUMBER OF DERIVATIVE FUNCTION EVALUATIONS
+C
+C
+#endif
+      LOGICAL HFAILD,OUTPUT
+
+      INTEGER  NEQN,IFLAG,NFE,KOP,INIT,JFLAG,KFLAG
+      DOUBLE PRECISION  Y(NEQN),T,TOUT,RELERR,ABSERR,H,YP(NEQN), &
+       F1(NEQN),F2(NEQN),F3(NEQN),F4(NEQN),F5(NEQN),SAVRE,      &
+       SAVAE
+
+      EXTERNAL F
+
+      DOUBLE PRECISION  A,AE,DT,EE,EEOET,ESTTOL,ET,HMIN,REMIN,RER,S, &
+       SCALE,TOL,TOLN,U26,EPSP1,EPS,YPK
+
+      INTEGER  K,MAXNFE,MFLAG
+
+      DOUBLE PRECISION  DABS,DMAX1,DMIN1,DSIGN
+!C
+!C     REMIN IS THE MINIMUM ACCEPTABLE VALUE OF RELERR.  ATTEMPTS
+!C     TO OBTAIN HIGHER ACCURACY WITH THIS SUBROUTINE ARE USUALLY
+!C     VERY EXPENSIVE AND OFTEN UNSUCCESSFUL.
+!C
+      DATA REMIN/1.D-12/
+!C
+!C
+!C     THE EXPENSE IS CONTROLLED BY RESTRICTING THE NUMBER
+!C     OF FUNCTION EVALUATIONS TO BE APPROXIMATELY MAXNFE.
+!C     AS SET, THIS CORRESPONDS TO ABOUT 500 STEPS.
+!C
+      DATA MAXNFE/3000/
+!C
+!C
+!C     CHECK INPUT PARAMETERS
+!C
+!C
+      IF (NEQN .LT. 1) GO TO 10
+      IF ((RELERR .LT. 0.0D0)  .OR.  (ABSERR .LT. 0.0D0)) GO TO 10
+      MFLAG=IABS(IFLAG)
+      IF ((MFLAG .EQ. 0) .OR. (MFLAG .GT. 8)) GO TO 10
+      IF (MFLAG .NE. 1) GO TO 20
+!C
+!C     FIRST CALL, COMPUTE MACHINE EPSILON
+!C
+      EPS = 1.0D0
+    5 EPS = EPS/2.0D0
+      EPSP1 = EPS + 1.0D0
+      IF (EPSP1 .GT. 1.0D0) GO TO 5
+      U26 = 26.0D0*EPS
+      GO TO 50
+!C
+!C     INVALID INPUT
+   10 IFLAG=8
+      RETURN
+!C
+!C     CHECK CONTINUATION POSSIBILITIES
+!C
+   20 IF ((T .EQ. TOUT) .AND. (KFLAG .NE. 3)) GO TO 10
+      IF (MFLAG .NE. 2) GO TO 25
+!C
+!C     IFLAG = +2 OR -2
+      IF ((KFLAG .EQ. 3) .OR. (INIT .EQ. 0)) GO TO 45
+      IF (KFLAG .EQ. 4) GO TO 40
+      IF ((KFLAG .EQ. 5)  .AND.  (ABSERR .EQ. 0.0D0)) GO TO 30
+      IF ((KFLAG .EQ. 6)  .AND.  (RELERR .LE. SAVRE)  .AND. &
+         (ABSERR .LE. SAVAE)) GO TO 30
+      GO TO 50
+!C
+!C     IFLAG = 3,4,5,6,7 OR 8
+   25 IF (IFLAG .EQ. 3) GO TO 45
+      IF (IFLAG .EQ. 4) GO TO 40
+      IF ((IFLAG .EQ. 5) .AND. (ABSERR .GT. 0.0D0)) GO TO 45
+!C
+!C     INTEGRATION CANNOT BE CONTINUED SINCE USER DID NOT RESPOND TO
+!C     THE INSTRUCTIONS PERTAINING TO IFLAG=5,6,7 OR 8
+   30 STOP
+!C
+!C     RESET FUNCTION EVALUATION COUNTER
+   40 NFE=0
+      IF (MFLAG .EQ. 2) GO TO 50
+!C
+!C     RESET FLAG VALUE FROM PREVIOUS CALL
+   45 IFLAG=JFLAG
+      IF (KFLAG .EQ. 3) MFLAG=IABS(IFLAG)
+!C!
+!C     SAVE INPUT IFLAG AND SET CONTINUATION FLAG VALUE FOR SUBSEQUENT
+!C     INPUT CHECKING
+   50 JFLAG=IFLAG
+      KFLAG=0
+!C
+!C     SAVE RELERR AND ABSERR FOR CHECKING INPUT ON SUBSEQUENT CALLS
+      SAVRE=RELERR
+      SAVAE=ABSERR
+!C
+!C     RESTRICT RELATIVE ERROR TOLERANCE TO BE AT LEAST AS LARGE AS
+!C     2*EPS+REMIN TO AVOID LIMITING PRECISION DIFFICULTIES ARISING
+!C     FROM IMPOSSIBLE ACCURACY REQUESTS
+!C
+      RER=2.0D0*EPS+REMIN
+      IF (RELERR .GE. RER) GO TO 55
+!C
+!C     RELATIVE ERROR TOLERANCE TOO SMALL
+      RELERR=RER
+      IFLAG=3
+      KFLAG=3
+      RETURN
+!C
+   55 DT=TOUT-T
+!C
+      IF (MFLAG .EQ. 1) GO TO 60
+      IF (INIT .EQ. 0) GO TO 65
+      GO TO 80
+!C
+!C     INITIALIZATION --
+!C                       SET INITIALIZATION COMPLETION INDICATOR,INIT
+!C                       SET INDICATOR FOR TOO MANY OUTPUT POINTS,KOP
+!C                       EVALUATE INITIAL DERIVATIVES
+!C                       SET COUNTER FOR FUNCTION EVALUATIONS,NFE
+!C                       ESTIMATE STARTING STEPSIZE
+!C
+   60 INIT=0
+      KOP=0
+!C
+      A=T
+      CALL F(A,Y,YP)
+      NFE=1
+      IF (T .NE. TOUT) GO TO 65
+      IFLAG=2
+      RETURN
+!C
+C
+   65 INIT=1
+      H=DABS(DT)
+      TOLN=0.
+      DO 70 K=1,NEQN
+        TOL=RELERR*DABS(Y(K))+ABSERR
+        IF (TOL .LE. 0.) GO TO 70
+        TOLN=TOL
+        YPK=DABS(YP(K))
+        IF (YPK*H**5 .GT. TOL) H=(TOL/YPK)**0.2D0
+   70 CONTINUE
+      IF (TOLN .LE. 0.0D0) H=0.0D0
+      H=DMAX1(H,U26*DMAX1(DABS(T),DABS(DT)))
+      JFLAG=ISIGN(2,IFLAG)
+!C
+!C
+!C     SET STEPSIZE FOR INTEGRATION IN THE DIRECTION FROM T TO TOUT
+!C
+   80 H=DSIGN(H,DT)
+!C
+!C     TEST TO SEE IF RKF45 IS BEING SEVERELY IMPACTED BY TOO MANY
+!C     OUTPUT POINTS
+!C
+      IF (DABS(H) .GE. 2.0D0*DABS(DT)) KOP=KOP+1
+      IF (KOP .NE. 100) GO TO 85
+!C
+!C     UNNECESSARY FREQUENCY OF OUTPUT
+      KOP=0
+      IFLAG=7
+      RETURN
+!C
+   85 IF (DABS(DT) .GT. U26*DABS(T)) GO TO 95
+!C
+!C     IF TOO CLOSE TO OUTPUT POINT,EXTRAPOLATE AND RETURN
+!C
+      DO 90 K=1,NEQN
+   90   Y(K)=Y(K)+DT*YP(K)
+      A=TOUT
+      CALL F(A,Y,YP)
+      NFE=NFE+1
+      GO TO 300
+!C
+!C
+!C     INITIALIZE OUTPUT POINT INDICATOR
+!C
+   95 OUTPUT= .FALSE.
+!C!
+!C     TO AVOID PREMATURE UNDERFLOW IN THE ERROR TOLERANCE FUNCTION,
+!C     SCALE THE ERROR TOLERANCES
+!C
+      SCALE=2.0D0/RELERR
+      AE=SCALE*ABSERR
+!C
+!C
+!C     STEP BY STEP INTEGRATION
+!C
+  100 HFAILD= .FALSE.
+!C
+!C     SET SMALLEST ALLOWABLE STEPSIZE
+!C
+      HMIN=U26*DABS(T)
+!C
+!C     ADJUST STEPSIZE IF NECESSARY TO HIT THE OUTPUT POINT.
+!C     LOOK AHEAD TWO STEPS TO AVOID DRASTIC CHANGES IN THE STEPSIZE AND
+!C     THUS LESSEN THE IMPACT OF OUTPUT POINTS ON THE CODE.
+C
+!      DT=TOUT-T
+      IF (DABS(DT) .GE. 2.0D0*DABS(H)) GO TO 200
+      IF (DABS(DT) .GT. DABS(H)) GO TO 150
+!C
+!C     THE NEXT SUCCESSFUL STEP WILL COMPLETE THE INTEGRATION TO THE
+!C     OUTPUT POINT
+!C
+      OUTPUT= .TRUE.
+      H=DT
+      GO TO 200
+!C
+  150 H=0.5D0*DT
+#if 0
+C
+C
+C
+C     CORE INTEGRATOR FOR TAKING A SINGLE STEP
+C
+C     THE TOLERANCES HAVE BEEN SCALED TO AVOID PREMATURE UNDERFLOW IN
+C     COMPUTING THE ERROR TOLERANCE FUNCTION ET.
+C     TO AVOID PROBLEMS WITH ZERO CROSSINGS,RELATIVE ERROR IS MEASURED
+C     USING THE AVERAGE OF THE MAGNITUDES OF THE SOLUTION AT THE
+C     BEGINNING AND END OF A STEP.
+C     THE ERROR ESTIMATE FORMULA HAS BEEN GROUPED TO CONTROL LOSS OF
+C     SIGNIFICANCE.
+C     TO DISTINGUISH THE VARIOUS ARGUMENTS, H IS NOT PERMITTED
+C     TO BECOME SMALLER THAN 26 UNITS OF ROUNDOFF IN T.
+C     PRACTICAL LIMITS ON THE CHANGE IN THE STEPSIZE ARE ENFORCED TO
+C     SMOOTH THE STEPSIZE SELECTION PROCESS AND TO AVOID EXCESSIVE
+C     CHATTERING ON PROBLEMS HAVING DISCONTINUITIES.
+C     TO PREVENT UNNECESSARY FAILURES, THE CODE USES 9/10 THE STEPSIZE
+C     IT ESTIMATES WILL SUCCEED.
+C     AFTER A STEP FAILURE, THE STEPSIZE IS NOT ALLOWED TO INCREASE FOR
+C     THE NEXT ATTEMPTED STEP. THIS MAKES THE CODE MORE EFFICIENT ON
+C     PROBLEMS HAVING DISCONTINUITIES AND MORE EFFECTIVE IN GENERAL
+C     SINCE LOCAL EXTRAPOLATION IS BEING USED AND EXTRA CAUTION SEEMS
+C     WARRANTED.
+C
+C
+C     TEST NUMBER OF DERIVATIVE FUNCTION EVALUATIONS.
+C     IF OKAY,TRY TO ADVANCE THE INTEGRATION FROM T TO T+H
+C
+#endif
+  200 IF (NFE .LE. MAXNFE) GO TO 220
+!C
+!C     TOO MUCH WORK
+      IFLAG=4
+      KFLAG=4
+      RETURN
+!C
+!C     ADVANCE AN APPROXIMATE SOLUTION OVER ONE STEP OF LENGTH H
+!C
+  220 CALL FEHL(F,NEQN,Y,T,H,YP,F1,F2,F3,F4,F5,F1)
+      NFE=NFE+5
+!C
+!C     COMPUTE AND TEST ALLOWABLE TOLERANCES VERSUS LOCAL ERROR ESTIMATES
+!C     AND REMOVE SCALING OF TOLERANCES. NOTE THAT RELATIVE ERROR IS
+!C     MEASURED WITH RESPECT TO THE AVERAGE OF THE MAGNITUDES OF THE
+!C     SOLUTION AT THE BEGINNING AND END OF THE STEP.
+!C
+      EEOET=0.0D0
+      DO 250 K=1,NEQN
+        ET=DABS(Y(K))+DABS(F1(K))+AE
+        IF (ET .GT. 0.0D0) GO TO 240
+!C
+!C       INAPPROPRIATE ERROR TOLERANCE
+        IFLAG=5
+        RETURN
+!C
+  240   EE=DABS((-2090.0D0*YP(K)+(21970.0D0*F3(K)-15048.0D0*F4(K)))+
+     1                        (22528.0D0*F2(K)-27360.0D0*F5(K)))
+  250   EEOET=DMAX1(EEOET,EE/ET)
+!C
+      ESTTOL=DABS(H)*EEOET*SCALE/752400.0D0
+!C
+      IF (ESTTOL .LE. 1.0D0) GO TO 260
+!C
+!C
+!C     UNSUCCESSFUL STEP
+!C                       REDUCE THE STEPSIZE , TRY AGAIN
+!C                       THE DECREASE IS LIMITED TO A FACTOR OF 1/10
+!C
+      HFAILD= .TRUE.
+      OUTPUT= .FALSE.
+      S=0.1D0
+      IF (ESTTOL .LT. 59049.0D0) S=0.9D0/ESTTOL**0.2D0
+      H=S*H
+      IF (DABS(H) .GT. HMIN) GO TO 200
+!C
+!C     REQUESTED ERROR UNATTAINABLE AT SMALLEST ALLOWABLE STEPSIZE
+      IFLAG=6
+      KFLAG=6
+      RETURN
+!C
+!C
+!C     SUCCESSFUL STEP
+!C                        STORE SOLUTION AT T+H
+!C                        AND EVALUATE DERIVATIVES THERE
+!C
+  260 T=T+H
+      DO 270 K=1,NEQN
+  270   Y(K)=F1(K)
+      A=T
+      CALL F(A,Y,YP)
+      NFE=NFE+1
+!C
+!C
+!C                       CHOOSE NEXT STEPSIZE
+!C                       THE INCREASE IS LIMITED TO A FACTOR OF 5
+!C                       IF STEP FAILURE HAS JUST OCCURRED, NEXT
+!C                          STEPSIZE IS NOT ALLOWED TO INCREASE
+!C
+      S=5.0D0
+      IF (ESTTOL .GT. 1.889568D-4) S=0.9D0/ESTTOL**0.2D0
+      IF (HFAILD) S=DMIN1(S,1.0D0)
+      H=DSIGN(DMAX1(S*DABS(H),HMIN),H)
+
+      IF (OUTPUT) GO TO 300
+      IF (IFLAG .GT. 0) GO TO 100
+     ONE-STEP MODE
+      IFLAG=-2
+      RETURN
+   
+  300 T=TOUT
+      IFLAG=2
+      RETURN
+
+      END SUBROUTINE
+
+      SUBROUTINE FEHL(F,NEQN,Y,T,H,YP,F1,F2,F3,F4,F5,S)
+#if 0
+C
+C     FEHLBERG FOURTH-FIFTH ORDER RUNGE-KUTTA METHOD
+C
+C    FEHL INTEGRATES A SYSTEM OF NEQN FIRST ORDER
+C    ORDINARY DIFFERENTIAL EQUATIONS OF THE FORM
+C             DY(I)/DT=F(T,Y(1),---,Y(NEQN))
+C    WHERE THE INITIAL VALUES Y(I) AND THE INITIAL DERIVATIVES
+C    YP(I) ARE SPECIFIED AT THE STARTING POINT T. FEHL ADVANCES
+C    THE SOLUTION OVER THE FIXED STEP H AND RETURNS
+C    THE FIFTH ORDER (SIXTH ORDER ACCURATE LOCALLY) SOLUTION
+C    APPROXIMATION AT T+H IN ARRAY S(I).
+C    F1,---,F5 ARE ARRAYS OF DIMENSION NEQN WHICH ARE NEEDED
+C    FOR INTERNAL STORAGE.
+C    THE FORMULAS HAVE BEEN GROUPED TO CONTROL LOSS OF SIGNIFICANCE.
+C    FEHL SHOULD BE CALLED WITH AN H NOT SMALLER THAN 13 UNITS OF
+C    ROUNDOFF IN T SO THAT THE VARIOUS INDEPENDENT ARGUMENTS CAN BE
+C    DISTINGUISHED.
+C
+C
+#endif
+      INTEGER  NEQN
+      DOUBLE PRECISION  Y(NEQN),T,H,YP(NEQN),F1(NEQN),F2(NEQN), &
+       F3(NEQN),F4(NEQN),F5(NEQN),S(NEQN)
+
+      DOUBLE PRECISION  CH
+      INTEGER  K
+
+      CH=H/4.0D0
+      DO 221 K=1,NEQN
+  221   F5(K)=Y(K)+CH*YP(K)
+      CALL F(T+CH,F5,F1)
+
+      CH=3.0D0*H/32.0D0
+      DO 222 K=1,NEQN
+  222   F5(K)=Y(K)+CH*(YP(K)+3.0D0*F1(K))
+      CALL F(T+3.0D0*H/8.0D0,F5,F2)
+
+      CH=H/2197.0D0
+      DO 223 K=1,NEQN
+  223   F5(K)=Y(K)+CH*(1932.0D0*YP(K)+(7296.0D0*F2(K)-7200.0D0*F1(K)))
+      CALL F(T+12.0D0*H/13.0D0,F5,F3)
+
+      CH=H/4104.0D0
+      DO 224 K=1,NEQN
+  224   F5(K)=Y(K)+CH*((8341.0D0*YP(K)-845.0D0*F3(K))+ &
+                                 (29440.0D0*F2(K)-32832.0D0*F1(K)))
+      CALL F(T+H,F5,F4)
+
+      CH=H/20520.0D0
+      DO 225 K=1,NEQN
+  225   F1(K)=Y(K)+CH*((-6080.0D0*YP(K)+(9295.0D0*F3(K)-
+     1         5643.0D0*F4(K)))+(41040.0D0*F1(K)-28352.0D0*F2(K)))
+      CALL F(T+H/2.0D0,F1,F5)
+!C
+!C     COMPUTE APPROXIMATE SOLUTION AT T+H
+!C
+      CH=H/7618050.0D0
+      DO 230 K=1,NEQN
+  230   S(K)=Y(K)+CH*((902880.0D0*YP(K)+(3855735.0D0*F3(K)- &
+             1371249.0D0*F4(K)))+(3953664.0D0*F2(K)+   &
+             277020.0D0*F5(K)))
+
+      RETURN
+    END SUBROUTINE
+
+
+     
+    SUBROUTINE JMAP(N,A,Y,YOLD,F,FOLD)
+#if 0
+C...
+C...  ******************************************************************
+C...
+C...  SUBROUTINE JMAP MAPS THE JACOBIAN MATRIX OF AN NTH-ORDER SYSTEM OF
+C...  ALGEBRAIC EQUATIONS OR FIRST-ORDER ORDINARY DIFFERENTIAL EQUATIONS
+C...
+C...  DOUBLE PRECISION VERSION
+C...
+C...  ******************************************************************
+C...
+C...  COPYRIGHT - LEHIGH UNIVERSITY, 1980
+C...
+C...  AUTHORS
+C...
+C...     G. R. DISSINGER
+C...           AND
+C...     W. E. SCHIESSER
+C...     MOUNTAINTOP, BLDG A(111), RM D307
+C...     LEHIGH UNIVERSITY
+C...     BETHLEHEM, PA  18015
+C...
+C...     215/758-4264
+C...
+C...  ARGUMENT LIST
+C...
+C...     N       NUMBER OF ALGEBRAIC OR FIRST-ORDER ORDINARY DIFFEREN-
+C...             TIAL EQUATIONS (ODES) FOR WHICH THE JACOBIAN MATRIX IS
+C...             TO BE MAPPED, I.E., THE ORDER OF THE ALGEBRAIC OR ODE
+C...             SYSTEM (INPUT)
+C...
+C...     A       TWO-DIMENSIONAL ARRAY CONTAINING THE JACOBIAN MATRIX
+C...             OF THE NTH-ORDER ALGEBRAIC OR ODE SYSTEM (OUTPUT)
+C...
+C...     Y       ONE-DIMENSIONAL ARRAY OF N DEPENDENT VARIABLES SET TO
+C...             INITIAL VALUES BY A CALL TO SUBROUTINE INITAL IN JMAP
+C...             (INPUT TO SUBROUTINE JMAP VIA SUBROUTINE INITAL)
+C...
+C...     YOLD    ONE-DIMENSIONAL WORK ARRAY TO STORE THE N DEPENDENT
+C...             VARIABLES IN Y TEMPORARILY SO THAT WHEN THE INDIVIDUAL
+C...             Y*S ARE PERTURBED IN COMPUTING THE JACOBIAN MATRIX ELE-
+C...             MENTS, THE Y*S CAN THEN BE RESTORED TO THEIR ORIGINAL
+C...             VALUES
+C...
+C...     F       ONE-DIMENSIONAL ARRAY OF N DERIVATIVES OF THE DEPENDENT
+C...             VARIABLES SET BY A CALL TO SUBROUTINE DERV IN JMAP
+C...             (INPUT TO SUBROUTINE JMAP VIA SUBROUTINE DERV)
+C...
+C...     FOLD    ONE-DIMENSIONAL WORK ARRAY TO STORE THE N DERIVATIVES
+C...             IN F SO THAT A FINITE DIFFERENCE APPROXIMATION OF THE
+C...             INDIVIDUAL ELEMENTS OF THE JACOBIAN MATRIX CAN BE COM-
+C...             PUTED
+C...
+C...  FROM THIS POINT ON, THE DISCUSSION IS IN TERMS OF FIRST-ORDER
+C...  ODES, BUT IT CAN AS WELL BE PRESENTED IN TERMS OF LINEAR OR NON-
+C...  ALGEBRAIC EQUATIONS, OR TRANSCENDENTAL EQUATIONS, OR A COMBINA-
+C...  TION OF ALL THREE TYPES OF EQUATIONS.  THE ONLY REQUIREMENT IS
+C...  THAT INITIAL CONDITIONS ABOUT WHICH THE JACOBIAN MATRIX IS TO BE
+C...  COMPUTED MUST BE DEFINED IN SUBROUTINE INITAL, AND THE EQUATIONS
+C...  THEMSELVES MUST BE PROGRAMMED IN SUBROUTINE DERV.
+C...
+C...  SUBROUTINES INITAL AND DERV DEFINING THE ODE SYSTEM ARE SUPPLIED
+C...  BY THE USER, AS WELL AS A CALLING PROGRAM FOR JMAP.  THE MATHE-
+C...  MATICAL CONCEPTS ARE EXPLAINED FURTHER IN THE FOLLOWING COMMENTS.
+C...  THE CALCULATION OF THE INDIVIDUAL ELEMENTS OF THE JACOBIAN MATRIX
+C...  BY A FINITE DIFFERENCE APPROXIMATION IS PROGRAMMED AS STATEMENT 14
+C...  WITHIN DO LOOP 7.
+C...
+C...  THE SYSTEM OF ODES FOR WHICH THE JACOBIAN MATRIX IS MAPPED IS
+C...
+C...     DY1/DT = F1(Y1,Y2,...,YN)
+C...
+C...     DY2/DT = F2(Y1,Y2,...,YN)                                   (1)
+C...       .              .
+C...       .              .
+C...       .              .
+C...     DYN/DT = FN(Y1,Y2,...,YN)
+C...
+C...  WHICH CAN BE SUMMARIZED IN VECTOR FORM AS
+C...
+C...      -      - -
+C...     DY/DT = F(Y)                                                (2)
+C...
+C...  WHERE
+C...
+C...     -                T
+C...     Y = (Y1,Y2,..,YN)
+C...
+C...     -                T
+C...     F = (F1,F2,..,FN)
+C...
+C...                              -
+C...  SINCE THE DERIVATIVE VECTOR F IS IN GENERAL A NONLINEAR FUNCTION
+C...                                   -
+C...  OF THE DEPENDENT VARIABLE VECTOR Y, A TAYLOR SERIES EXPANSION
+C...  TRUNCATED AFTER LINEAR TERMS GIVES A LINEARZED APPROXIMATION OF
+C...  THE ORIGINAL SYSTEM
+C...
+C...      -      -
+C...     DY/DT = JY                                                  (3)
+C...
+C...        -
+C...  WHERE J IS THE JACOBIAN MATRIX OF THE ORIGINAL SYSTEM, I.E.,
+C...
+C...         ...         ...
+C...         .F         F  .
+C...         . 11        1N.
+C...         .             .
+C...     -   .    F        .
+C...     J = .     IJ      .                                         (4)
+C...         .             .
+C...         .F         F  .
+C...         . N1        NN.
+C...         ...         ...
+C...
+C...  F   IS THE PARTIAL DERIVATIVE OF F  WITH RESPECT TO Y .  THUS THE
+C...   IJ                               I                  J
+C...  JACOBIAN MATRIX IS SQUARE (N X N).
+C...                                                  -
+C...  SUBROUTINE JMAP PRINTS A TWO-DIMENSIONAL MAP OF J WITH THE NUMBERS
+C...  0 TO 9 INDICATING THE RELATIVE ORDER-OF-MAGNITUDE OF THE INDIVID-
+C...  UAL ELEMENTS OF THE MATRIX.  THE VALUES OF THE ROW SUBSCRIPT I ARE
+C...  PRINTED DOWN THE LEFT SIDE OF THE MAP AND THE VALUES OF THE COLUMN
+C...  SUBSCRIPT J ARE PRINTED ACROSS THE TOP.  THE MAP IS PRINTED IN
+C...  SECTIONS 99 COLUMNS WIDE.  THUS IF THE DIFFERENTIAL EQUATION
+C...  SYSTEM IS GREATER THAN 99TH-ORDER, SUCCESSIVE SECTIONS OF THE MAP
+C...  WILL BE PRINTED VERTICALLY.  THESE CAN THEN BE JOINED TOGETHER TO
+C...  MAKE UP THE COMPLETE MAP.
+C...
+C...  THE N X N PARTIAL DERIVATIVES IN THE JACOBIAN MATRIX ARE COMPUTED
+C...  APPROXIMATELY BY A SIMPLE DIFFERENCING PROCEDURE.  THE INITIAL
+C...            -
+C...  VALUES OF Y REQUIRED TO START THE CALCULATION ARE OBTAINED BY A
+C...                                        -
+C...  CALL TO SUBROUTINE DERV.  VALUES OF F ARE COMPUTED BY A SERIES
+C...  OF CALLS TO SUBROUTINE DERV.  ALTHOUGH THESE SUBROUTINE NAMES
+C...  PERTAIN SPECIFICALLY TO DSS/2, JMAP CAN EASILY BE ADAPTED FOR USE
+C...  WITH ANY INITIAL-VALUE ODE INTEGRATION SYSTEM.
+C...
+C...  TYPE SELECTED REAL VARIABLES AS DOUBLE PRECISION (NOTE THIS DOES
+C...  NOT INCLUDE ARRAY A FOR TWO REASONS (1) THE ODE JACOBIAN MATRIX
+C...  STORED IN ARRAY A DOES NOT HAVE TO BE OF HIGH ACCURACY TO BE
+C...  MAPPED BY SUBROUTINE JMAP, AND IN FACT, THE ELEMENTS OF THE ODE
+C...  JACOBIAN MATRIX ARE NOT OF HIGH ACCURACY SINCE THEY ARE COMPUTED
+C...  BY FIRST ORDER DIFFERENCES, AND (2) SINCE ARRAY IS OF SIZE N X N
+C...  WHERE N IS THE NUMBER OF ODES, THIS SIZE INCREASES VERY RAPIDLY
+C...  WITH N, AND THE STORAGE PROBLEM FOR ARRAY A IS MADE MORE SEVERE
+C...  BY DECLARING ARRAY A AS DOUBLE PRECISION
+#endif
+      DOUBLE PRECISION      Y,   YOLD,      F,   FOLD,  FRACT,  YOLDJ
+!C...
+!C...  COMMON/IO/ CONTAINS THE INPUT/OUTPUT UNIT (DEVICE) NUMBERS
+      COMMON/IO/       NI,        NO
+!C...
+!C...  VARIABLE DIMENSIONS FOR THE ARRAYS PASSED TO SUBROUTINE JMAP
+      DIMENSION A(N,N),Y(N),YOLD(N),F(N),FOLD(N)
+!C...
+!C...  ABSOLUTE DIMENSIONS FOR THE ARRAYS USED IN SUBROUTINE JMAP
+      DIMENSION SYM(11),SYMBOL(100),N1(100),N10(100),N100(100)
+!C...
+!C...  SET THE SCALE FACTOR, FRACTIONAL CHANGE USED IN THE CALCULATION
+!C...  AND PROCESSING OF THE JACOBIAN MATRIX
+      DATA SCALE,FRACT/1.0,0.001D+00/
+!C...
+!C...  DEFINE THE SYMBOLS USED IN PRINTING THE JACOBIAN MAP
+      DATA SYM/1H ,1H0,1H1,1H2,1H3,1H4,1H5,1H6,1H7,1H8,1H9/
+!C...
+!C...  SET THE ARRAYS USED TO PRINT THE UNITS (N1), TENS (N10) AND
+!C...  HUNDREDS (N100) PLACES IN THE COLUMN SUBSCRIPTS OF THE JACOBIAN
+!C...  MAP
+      DATA N1(1),N1(2),N1(3),N1(4),N1(5),N1(6),N1(7),N1(8),N1(9),N1(10)/ &
+          0,1,2,3,4,5,6,7,8,9/
+      DATA N10/10*0,10*1,10*2,10*3,10*4,10*5,10*6,10*7,10*8,10*9/
+      DO 1 I=11,100
+      N1(I)=N1(I-10)
+1     CONTINUE
+!C...                                     -     -
+!C...  SET THE BASE VALUES OF THE VECTORS Y AND F
+      CALL DERV
+
+      DO 2 I=1,N
+      YOLD(I)=Y(I)
+2     CONTINUE
+
+      CALL DERV
+
+      DO 3 I=1,N
+      Y(I)=YOLD(I)
+      FOLD(I)=F(I)
+3     CONTINUE
+
+      NSECT=N/100+1
+
+      DO 4 NSEC=1,NSECT
+
+      JL=(NSEC-1)*100
+      JU=JL+99
+
+      IF(N.LT.JU)JU=N
+
+      IF(NSEC.NE.1)GO TO 11
+
+      JL=1
+      JU=99
+      IF(N.LT.JU)JU=N
+      JUP1=JU+1
+
+      WRITE(NO,908)
+
+      IF(JUP1.LT.11)GO TO 5
+
+      WRITE(NO,901)(N10(JCOL),JCOL=11,JUP1)
+5     WRITE(NO,902)( N1(JCOL),JCOL= 2,JUP1)
+      GO TO 8
+
+11    JD=JU-JL+1
+      DO 12 JCOL=1,JD
+
+      N100(JCOL)=NSEC-1
+12    CONTINUE
+
+      IF(NSEC.EQ.1)WRITE(NO,908)
+
+      WRITE(NO,904)(N100(JCOL),JCOL=1,JD)
+      WRITE(NO,904)( N10(JCOL),JCOL=1,JD)
+      WRITE(NO,904)(  N1(JCOL),JCOL=1,JD)
+
+8     DO 6 JCOL=JL,JU
+                                                                IJ
+      YOLDJ= Y(JCOL)
+                                                  J
+      Y(JCOL)=Y(JCOL)*(1.D+00+FRACT)
+      IF(DABS(Y(JCOL)).LT.FRACT)Y(JCOL)=Y(JCOL)+FRACT
+                                               I
+      CALL DERV
+
+      DO 7 IROW=1,N
+
+      IF(Y(JCOL).NE.YOLDJ)GO TO 14
+      YOLDJ=YOLDJ+FRACT
+
+14    A(IROW,JCOL)=SNGL((F(IROW)-FOLD(IROW))/(Y(JCOL)-YOLDJ))
+7     CONTINUE
+
+      DO 13 I=1,N
+      Y(I)=YOLD(I)
+13    CONTINUE
+6     CONTINUE
+
+      DO 9 IROW=1,N
+      DO 10 JCOL=JL,JU
+      JS=JCOL-JL+1
+      IF(ABS(A(IROW,JCOL)).LE.0.00001*SCALE)SYMBOL(JS)=SYM(1)
+      IF(ABS(A(IROW,JCOL)).GT.0.00001*SCALE)SYMBOL(JS)=SYM(2)
+      IF(ABS(A(IROW,JCOL)).GT.0.00010*SCALE)SYMBOL(JS)=SYM(3)
+      IF(ABS(A(IROW,JCOL)).GT.0.00100*SCALE)SYMBOL(JS)=SYM(4)
+      IF(ABS(A(IROW,JCOL)).GT.0.01000*SCALE)SYMBOL(JS)=SYM(5)
+      IF(ABS(A(IROW,JCOL)).GT.0.10000*SCALE)SYMBOL(JS)=SYM(6)
+      IF(ABS(A(IROW,JCOL)).GT.1.00000*SCALE)SYMBOL(JS)=SYM(7)
+      IF(ABS(A(IROW,JCOL)).GT.10.0000*SCALE)SYMBOL(JS)=SYM(8)
+      IF(ABS(A(IROW,JCOL)).GT.100.000*SCALE)SYMBOL(JS)=SYM(9)
+      IF(ABS(A(IROW,JCOL)).GT.1000.00*SCALE)SYMBOL(JS)=SYM(10)
+      IF(ABS(A(IROW,JCOL)).GT.10000.0*SCALE)SYMBOL(JS)=SYM(11)
+10    CONTINUE
+
+      JD=JU-JL+1
+      IF(NSEC.EQ.1)WRITE(NO,906)IROW,(SYMBOL(JS),JS=1,JD)
+      IF(NSEC.GT.1)WRITE(NO,903)IROW,(SYMBOL(JS),JS=1,JD)
+9     CONTINUE
+
+4     CONTINUE
+      RETURN
+901   FORMAT(1H ,/,20X,90I1)
+902   FORMAT(11X,99I1)
+903   FORMAT(I8,2X,100A1)
+904   FORMAT(10X,100I1)
+906   FORMAT(I8,3X,100A1)
+907   FORMAT(1H ,//, &
+      58H DIVISION BY ZERO WAS ATTEMPTED IN DO LOOP 7 OF SUBROUTINE, &
+      18H JMAP WITH IROW = ,I4,12H AND JCOL = ,I4,8H SO THAT,/,      &
+      58H PROGRAM EXECUTION IS TERMINATED.  CHECK THE PROGRAMMING I, &
+      58HN SUBROUTINES INITAL AND DERV FOR A DEPENDENT VARIABLE    , /, &
+      58H WHICH IS CONSTANT, I.E., Y(JCOL) = YOLDJ.                )
+908   FORMAT(1H ,/, &
+      58H DEPENDENT VARIABLE COLUMN INDEX J (FOR YJ) IS PRINTED HOR,     &
+      58HIZONTALLY                                                 ,//,  &
+      58H DERIVATIVE ROW INDEX I (FOR DYI/DT = FI(Y1,Y2,...,YJ,...,,     &
+      58HYN) IS PRINTED VERTICALLY                                 ,//,  &
+      58H JACOBIAN MATRIX ELEMENT IN THE MAP WITH INDICES I,J IS FO,     &
+      58HR PFI/PYJ WHERE P DENOTES A PARTIAL DERIVATIVE            ,//)
+      END SUBROUTINE
+
+   
 
 
 
