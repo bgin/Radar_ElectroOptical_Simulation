@@ -207,11 +207,10 @@ module solver_pstd_3d
 
 
   !Initialize Maxwell equations solver
-  subroutine init_solver_pstd_3d(fpx,bpx,fpy,bpy,fpz,bpz,&
+  subroutine init_solver_pstd_3d(plans,&
                                  minx,maxx,miny,maxy, &
                                  minz,maxz,nx,ny,nz)
-      type(fftw_plan), intent(in) :: fpx   !forward plan x-line 
-      
+      type(fftw_plan), dimension(6), intent(in) :: plans   !FFTW plans
       real(kind=dp),   intent(in) :: minx
       real(kind=dp),   intent(in) :: maxx
       real(kind=dp),   intent(in) :: miny
@@ -225,7 +224,8 @@ module solver_pstd_3d
       complex(kind=dp), automatic :: c0
       real(kind=dp),    automatic :: dx,dy,dz     !step size
       real(kind=dp),    automatic :: wx0,wy0,wz0  ! wave numbers
-      real(kind=dp),    automatic :: r0
+      real(kind=dp),    automatic :: stx,sty,stz
+      real(kind=dp),    automatic :: r0,t0
       integer(kind=i4), automatic :: i
       ! Execute
       cnx = nx
@@ -242,6 +242,9 @@ module solver_pstd_3d
       allocate(kx(cnx/2+1))
       allocate(ky(cny/2+1))
       allocate(kz(cnz/2+1))
+      stx = real(cnx,kind=dp)
+      sty = real(cny,kind=dp)
+      stz = real(cnz,kind=dp)
       c0 = cmplx(0.0_dp,0.0_dp)
       r0 = 0.0_dp
       fftx(:) = c0
@@ -253,10 +256,393 @@ module solver_pstd_3d
       fftz(:) = c0
       ddz(:)  = r0
       kz(:)   = r0
-      call init_r_to_c_1d(plan.pff,
+      dx      = (maxx-minx)/stx
+      call init_r_to_c_1d(plans(1),cnx,ddx,fftx)
+      dy      = (maxy-miny)/sty
+      call init_c_to_r_1d(plans(2),cnx,fftx,ddx)
+      dz      = (maxz-minz)/stz
+      call init_r_to_c_1d(plans(3),cny,ddy,ffty)
+      wx0     = 2.0*pi/(stx*dx)
+      call init_c_to_r_1d(plans(4),cny,ffty,ddy)
+      wy0     = 2.0*pi/(sty*dy)
+      call init_r_to_c_1d(plans(5),cnz,ddz,fftz)
+      wz0     = 2.0*pi/(stz*dz)
+      call init_c_to_r_1d(plans(6),cnz,fftz,ddz)
+      kx(1)   = 1.0_dp
+      t0      = 0.0_dp
+      !dir$ assume_aligned kx:64
+      !dir$ vector aligned
+      !dir$ vector vectorlength(8)
+      !dir$ vector always
+      do i=2, cnx/2+1
+         t0 = real(i,kind=dp)
+         kx(i) = t0*wx0
+      end do
+      !dir$ assume_aligned ky:64
+      !dir$ vector aligned
+      !dir$ vector vectorlength(8)
+      !dir$ vector always
+      do i=2, cny/2+1
+         t0 = real(i,kind=dp)
+         ky(i) = t0*wy0
+      end do
+      !dir$ assume_aligned kz:64
+      !dir$ vector aligned
+      !dir$ vector vectorlength(8)
+      !dir$ vector always
+      do i=2, cnz/2+1
+         t0 = real(i,kind=dp)
+         kz(i) = t0*wz0
+      end do
   end subroutine init_solver_pstd_3d
 
-                                 
+#if 0
+
+  complex(kind=dp), dimension(:), allocatable :: fftx
+  complex(kind=dp), dimension(:), allocatable :: ffty
+  complex(kind=dp), dimension(:), allocatable :: fftz
+  real(kind=dp),    dimension(:), allocatable :: ddx
+  real(kind=dp),    dimension(:), allocatable :: ddy
+  real(kind=dp),    dimension(:), allocatable :: ddz
+  real(kind=dp),    dimension(:), allocatable :: kx
+  real(kind=dp),    dimension(:), allocatable :: ky
+  real(kind=dp),    dimension(:), allocatable :: kz
+#endif
+  subroutine free_fields()
+     implicit none
+     ! Exec code ....
+     deallocate(kz);deallocate(ky)
+     deallocate(kx);deallocate(ddz)
+     deallocate(ddy);deallocate(ddx)
+     deallocate(fftz);deallocate(ffty)
+     deallocate(fftz)
+  end subroutine free_fields
+
+  
+
+
+  subroutine solve_faraday(plans,      &
+                           Ex,Ey,Ez,   &
+                           Hx,Hy,Hz,dt )
+       use omp_lib
+       implicit none
+       type(fftw_plans), dimension(6),     intent(in)    :: plans
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ex ! Electric fields
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ey
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ez
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hx ! Magnetic fields
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hy
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hz
+       real(kind=dp),                      intent(in)    :: dt ! time-step
+       ! Locals
+       complex(kind=dp), automatic :: c0,c1,c2
+       real(kind=dp), automatic :: dtmu,inx,iny,inz
+       integer(kind=i4), automatic :: nx,ny,nz
+       integer(kind=i4), automatic :: j,k,i
+       integer(kind=i4), automatic :: sx,sy,sz
+       !Execute
+       nx  = cnx
+       inx = 1.0_dp/real(nx,kind=dp) 
+       sx = nx/2+1
+       c0 = cmplx(0.0_dp,0.0_dp)
+       ny = cny
+       iny = 1.0_dp/real(ny,kind=dp)
+       sy = ny/2+1
+       c1 = c0
+       nz = cnz
+       inz = 1.0_dp/real(nz,kind=dp)
+       sz = nz/2+1
+       c2 = c0
+       dtmu = dt/mu
+       !dir$ assume_aligned Ex:64
+       !dir$ assume_aligned Hx:64
+       !dir$ assume_aligned ddy:64
+       !dir$ assume_aligned Hz:64
+       !dir$ assume_aligned ddx:64
+       !dir$ assume_aligned fftx:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(nz,nx,ny,ddy,Ez,ffty,sy,ky)          &
+!$omp shared(dtmu,Hx,iny)
+       do k=1,nz+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,nx+1
+              ddy = Ez(i,1:ny,k)
+              call exec_r_to_c1_1d(plans(3),ddy,ffty)
+              c0   = ffty(2:sy)
+              c1   = -cmplx(0.0_dp,ky(2:sy),kind=dp)*c0
+              ffty(2:sy) = c1
+              call exec_c_to_r1_1d(plans(4),ffty,ddy)
+              ddy = ddy*iny
+              Hx(i,1:ny,k) = Hx(i,1:ny,k)-dtmu*ddy
+              ddy = Ex(i,1:ny,k)
+              call exec_r_to_c1_1d(plans(3),ddy,ffty)
+              c0   = ffty(2:sy)
+              c1   = -cmplx(0.0_dp,ky(2:sy),kind=dp)*c0
+              ffty(2:sy) = c1
+              call exec_c_to_r1_1d(plans(4),ffty,ddy)
+              ddy = ddy*iny
+              Hz(i,1:ny,k) = Hz(i,1:ny,k)+dtmu*ddy
+           end do
+       end do
+!$omp end parallel do
+
+       Hx(:,ny+1,:) = Hx(:,1,:)
+       Hz(:,ny+1,:) = Hz(:,1,:)
+
+       !dir$ assume_aligned ddz:64
+       !dir$ assume_aligned Ey:64
+       !dir$ assume_aligned Ex:64
+       !dir$ assume_aligned fftz:64
+       !dir$ assume_aligned kz:64
+       !dir$ assume_aligned Hx:64
+       !dir$ assume_aligned Hy:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(ny,nx,nz,ddz,Ey,fftz,kz,Hx,Hy)       &
+!$omp shared(sz,dtmu,inz,Ex)
+       do k=1,ny+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,nx+1
+              ddz = Ey(i,k,1:nz)
+              call exec_r_to_c1_1d(plans(5),ddz,fftz)
+              c0   = fftz(2:sz)
+              c1   = -cmplx(0.0_dp,kz(2:sz),kind=dp)*c0
+              fftz(2:sz) = c1
+              call exec_c_to_r1_1d(plans(6),fftz,ddz)
+              ddz = ddz*inz
+              Hx(i,k,1:nz) = Hx(i,k,1:nz)-dtmu*ddz
+              ddz = Ex(i,k,1:nz)
+              call exec_r_to_c1_1d(plans(5),ddz,fftz)
+              c0   = fftz(2:sz)
+              c1   = -cmplx(0.0_dp,kz(2:sz),kind=dp)*c0
+              fftz(2:sz) = c1
+              call exec_c_to_r1_1d(plans(6),fftz,ddz)
+              ddz = ddz*inz
+              Hy(i,j,1:nz) = Hy(i,k,1:nz)+dtmu*ddz
+           end do
+       end do
+!$omp end parallel do
+ 
+       Hx(:,:,nz+1) = Hx(:,:,1)
+       Hy(:,:,nz+1) = Hy(:,:,1)
+
+       !dir$ assume_aligned ddx:64
+       !dir$ assume_aligned Ez:64
+       !dir$ assume_aligned Ey:64
+       !dir$ assume_aligned fftx:64
+       !dir$ assume_aligned kx:64
+       !dir$ assume_aligned Hz:64
+       !dir$ assume_aligned Hy:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(ny,nx,nz,ddx,Ey,fftx,kx,Hz,Hy)       &
+!$omp shared(sx,dtmu,inx,Ez)
+       do k=1,nz+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,ny+1
+              ddx = Ez(1:nx,i,k)
+              call exec_r_to_c1_1d(plans(1),ddx,fftx)
+              c0   = fftx(2:sx)
+              c1   = -cmplx(0.0_dp,kx(2:sx),kind=dp)*c0
+              fftx(2:sx) = c1
+              call exec_c_to_r1_1d(plans(2),fftx,ddx)
+              ddx = ddx*inx
+              Hy(1:nx,i,k) = Hy(1:nx,i,k)-dtmu*ddx
+              ddx = Ey(1:nx,i,k)
+              call exec_r_to_c1_1d(plans(1),ddx,fftx)
+              c0   = fftx(2:sx)
+              c1   = -cmplx(0.0_dp,kx(2:sx),kind=dp)*c0
+              fftx(2:sx) = c1
+              call exec_c_to_r1_1d(plans(2),fftx,ddx)
+              ddx = ddx*inx
+              Hz(1:nx,i,k) = Hz(1:nx,i,k)+dtmu*ddx
+           end do
+       end do
+!$omp end parallel do
+ 
+       Hy(nx+1,:,:) = Hy(1,:,:)
+       Hz(nx+1,:,:) = Hz(1,:,:)
+
+             
+  end subroutine solve_faraday
+
+
+  subroutine solve_ampere( plans,      &
+                           Ex,Ey,Ez,   &
+                           Hx,Hy,Hz,dt,&
+                           Jx,Jy,Jz )
+       use omp_lib
+       implicit none
+       type(fftw_plans), dimension(6),     intent(in)    :: plans
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ex ! Electric fields
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ey
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Ez
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hx ! Magnetic fields
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hy
+       real(kind=dp),    dimension(:,:,:), intent(inout) :: Hz
+       real(kind=dp),                      intent(in)    :: dt ! time-step
+       real(kind=dp),    dimension(:,:,:), intent(in),optional :: Jx
+       real(kind=dp),    dimension(:,:,:), intent(in),optional :: Jy
+       real(kind=dp),    dimension(:,:,:), intent(in),optional :: Jz
+       ! Locals
+       complex(kind=dp), automatic :: c0,c1,c2
+       real(kind=dp), automatic :: dte,inx,iny,inz
+       integer(kind=i4), automatic :: nx,ny,nz
+       integer(kind=i4), automatic :: j,k,i
+       integer(kind=i4), automatic :: sx,sy,sz
+       !Execute
+       nx  = cnx
+       inx = 1.0_dp/real(nx,kind=dp) 
+       sx = nx/2+1
+       c0 = cmplx(0.0_dp,0.0_dp)
+       ny = cny
+       iny = 1.0_dp/real(ny,kind=dp)
+       sy = ny/2+1
+       c1 = c0
+       nz = cnz
+       inz = 1.0_dp/real(nz,kind=dp)
+       sz = nz/2+1
+       c2 = c0
+       dte = dt/e
+       !dir$ assume_aligned Ex:64
+       !dir$ assume_aligned Hx:64
+       !dir$ assume_aligned Hz:64
+       !dir$ assume_aligned ddy:64
+       !dir$ assume_aligned Ez:64
+       !dir$ assume_aligned ddx:64
+       !dir$ assume_aligned fftx:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(nz,nx,ny,ddy,ffty,sy,ky)          &
+!$omp shared(dte,Hx,Ez,iny,Hz,Ex)
+       do k=1,nz+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,nx+1
+              ddy = Hz(i,1:ny,k)
+              call exec_r_to_c1_1d(plans(3),ddy,ffty)
+              c0   = ffty(2:sy)
+              c1   = -cmplx(0.0_dp,ky(2:sy),kind=dp)*c0
+              ffty(2:sy) = c1
+              call exec_c_to_r1_1d(plans(4),ffty,ddy)
+              ddy = ddy*iny
+              Ex(i,1:ny,k) = Hx(i,1:ny,k)-dte*ddy
+              ddy = Hx(i,1:ny,k)
+              call exec_r_to_c1_1d(plans(3),ddy,ffty)
+              c0   = ffty(2:sy)
+              c1   = -cmplx(0.0_dp,ky(2:sy),kind=dp)*c0
+              ffty(2:sy) = c1
+              call exec_c_to_r1_1d(plans(4),ffty,ddy)
+              ddy = ddy*iny
+              Ez(i,1:ny,k) = Ez(i,1:ny,k)+dte*ddy
+           end do
+       end do
+!$omp end parallel do
+       
+      Ex(:,ny + 1,:) = Ex(:,1,:)
+      Ez(:,ny + 1,:) = Ez(:,1,:)
+
+       !dir$ assume_aligned ddz:64
+       !dir$ assume_aligned Ey:64
+       !dir$ assume_aligned Ex:64
+       !dir$ assume_aligned fftz:64
+       !dir$ assume_aligned kz:64
+       !dir$ assume_aligned Hx:64
+       !dir$ assume_aligned Hy:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(ny,nx,nz,ddz,Ey,fftz,kz,Hx,Hy)       &
+!$omp shared(sz,dte,inz,Ex)
+       do k=1,ny+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,nx+1
+              ddz = Hy(i,k,1:nz)
+              call exec_r_to_c1_1d(plans(5),ddz,fftz)
+              c0   = fftz(2:sz)
+              c1   = -cmplx(0.0_dp,kz(2:sz),kind=dp)*c0
+              fftz(2:sz) = c1
+              call exec_c_to_r1_1d(plans(6),fftz,ddz)
+              ddz = ddz*inz
+              Ex(i,k,1:nz) = Ex(i,k,1:nz)-dte*ddz
+              ddz = Hx(i,k,1:nz)
+              call exec_r_to_c1_1d(plans(5),ddz,fftz)
+              c0   = fftz(2:sz)
+              c1   = -cmplx(0.0_dp,kz(2:sz),kind=dp)*c0
+              fftz(2:sz) = c1
+              call exec_c_to_r1_1d(plans(6),fftz,ddz)
+              ddz = ddz*inz
+              Ey(i,j,1:nz) = Ey(i,k,1:nz)+dte*ddz
+           end do
+       end do
+!$omp end parallel do
+      
+      Ex(:,:,nz+1) = Ex(:,:,1)
+      Ey(:,:,nz+1) = Ey(:,:,1)
+
+
+       !dir$ assume_aligned ddx:64
+       !dir$ assume_aligned Ez:64
+       !dir$ assume_aligned Ey:64
+       !dir$ assume_aligned fftx:64
+       !dir$ assume_aligned kx:64
+       !dir$ assume_aligned Hz:64
+       !dir$ assume_aligned Hy:64
+!$omp parallel do default(none) schedule(runtime) &
+!$omp private(k,i,c0,c1,plans)                    &
+!$omp shared(ny,nx,nz,ddx,Ey,fftx,kx,Hz,Hy)       &
+!$omp shared(sx,dte,inx,Ez)
+       do k=1,nz+1
+          !dir$ vector aligned
+          !dir$ ivdep
+          !dir$ vector vectorlength(8)
+          !$omp simd
+          do i=1,ny+1
+              ddx = Hz(1:nx,i,k)
+              call exec_r_to_c1_1d(plans(1),ddx,fftx)
+              c0   = fftx(2:sx)
+              c1   = -cmplx(0.0_dp,kx(2:sx),kind=dp)*c0
+              fftx(2:sx) = c1
+              call exec_c_to_r1_1d(plans(2),fftx,ddx)
+              ddx = ddx*inx
+              Ey(1:nx,i,k) = Ey(1:nx,i,k)-dte*ddx
+              ddx = Hy(1:nx,i,k)
+              call exec_r_to_c1_1d(plans(1),ddx,fftx)
+              c0   = fftx(2:sx)
+              c1   = -cmplx(0.0_dp,kx(2:sx),kind=dp)*c0
+              fftx(2:sx) = c1
+              call exec_c_to_r1_1d(plans(2),fftx,ddx)
+              ddx = ddx*inx
+              Ez(1:nx,i,k) = Ez(1:nx,i,k)+dte*ddx
+           end do
+       end do
+!$omp end parallel do
+
+
+      Ey(nx+1,:,:) = Ey(1,:,:)
+      Ez(nx+1,:,:) = Ez(1,:,:)
+
+      if(present(jx) .and. present(jy) .and. present(jz)) then
+         ex = ex-dte*jx
+         ey = ey-dte*jy
+         ez = ez-dte*jz
+      end if
+      
+  end subroutine solve_ampere                         
 
   
   
