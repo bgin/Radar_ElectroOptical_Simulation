@@ -62,11 +62,11 @@ module avx2_cvec4
      ! Module creation date
      character(*),        parameter :: MOD_AVX2_CVEC4_CREATE_DATE = "17-01-2022 15:04 +00200 (MON 17 JAN 2022 GMT+2)"
      ! Module build date
-     character(*),        parameter :: MOD__AVX2_CVEC4_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: MOD_AVX2_CVEC4_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter :: MOD__AVX2_CVEC4_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: MOD_AVX2_CVEC4_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: MOD__AVX2_CVEC4_SYNOPSIS    = "Packed complex vector of 4 elements (complex numbers)"
+     character(*),        parameter :: MOD_AVX2_CVEC4_SYNOPSIS    = "Packed complex vector of 4 elements (complex numbers)"
 
      ! public operators
 
