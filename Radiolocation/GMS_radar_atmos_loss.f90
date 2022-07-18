@@ -147,9 +147,10 @@ module radar_atmos_loss
      
 
     subroutine blake_atmos_loss_r4_1(h_a,_sp,theta,R_m,K,L1a)
+        !dir$ optimize:3
         !dir$ attributes align : 32 :: blake_atmos_loss_r4_1
-        !dir$ optimize : 3 
-        !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: blake_atmos_loss_r4_1
+        !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: blake_atmos_loss_r4_1
+        implicit none
         real(sp),                intent(in)  :: h_a   ! m, target heigth
         real(sp),                intent(in)  :: _sp     ! Mhz, radar _sprequency
         real(sp),                intent(in)  :: theta ! deg, angle
@@ -426,7 +427,7 @@ module radar_atmos_loss
              delfk2 = delfk*delfk
              Sigma_K      = 0.0_sp
              do j = 1, n45
-                  t0  = f_N_plus(j)
+                  t0         = f_N_plus(j)
                   Sig1_plus  = delfk/((t0-f_ghz)*(t0-f_ghz))+delfk2
                   Sig2_plus  = delfk/((t0+f_ghz)*(t0+f_ghz))+delfk2
 		  t1         = f_N_minus(j)
@@ -465,9 +466,9 @@ module radar_atmos_loss
      
 
       subroutine blake_atmos_loss_r8_1(h_a,_sp,theta,R_m,K,L1a)
+        !dir$ optimize : 3
         !dir$ attributes align : 32 :: blake_atmos_loss_r8_1
-        !dir$ optimize : 3 
-        !dir$ attributes optimization_parameter:TARGET_ARCH=skylake_avx512 :: blake_atmos_loss_r8_1
+        !dir$ attributes optimization_parameter: "target_arch=skylake-avx512" :: blake_atmos_loss_r8_1
         real(dp),                intent(in)  :: h_a   ! m, target heigth
         real(dp),                intent(in)  :: _sp     ! Mhz, radar _sprequency
         real(dp),                intent(in)  :: theta ! deg, angle
