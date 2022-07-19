@@ -688,8 +688,408 @@ module mueller_calculus_avx512
           v.v  = v1.v-v2.v
        end function JVec2x8c8_delta
       
+        
+#if 0
+
+/*
+                         Jones Matrix implementation based on SIMD 
+                         16-tuple complex vector [deinterleaved]
+                         single-precision.
+                         @Reference
+                           
+                                  typedef struct  __ATTR_ALIGN__(64) JMat4x16c16 {
+                                      ZMM16c4 pp;
+				      ZMM16c4 ss;
+				      ZMM16c4 ps;
+				      ZMM16c4 sp;
+		                 }JMat4x16c16;
+                                 typedef struct __ATTR_ALIGN__(64)  JMat4x8c8 {
+                                       ZMM8c8 pp;
+				       ZMM8c8 ss;
+				       ZMM8c8 ps;
+				       ZMM8c8 sp;
+		                }JMat4x8c8;
+                  */
+
+#endif       
+       
+       !==================================================!
+       ! Notification!!
+       ! Subroutine version shall be used in case of 
+       ! failed vectorization of argument passing and
+       ! result returning through ZMM registers.
+       !==================================================!
+
+       pure function JMat4x16c16_set_1() result(mat)
+
+      !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_1
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_1
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_1
+
+             type(JMat4x16c16) :: mat
+             !dir$ attributes align : 64 :: mat
+             !Executable code ....
+             mat.j0 = default_init() ! 'pp' component
+             mat.j1 = default_init() ! 'ss' component
+             mat.j2 = default_init() ! 'ps' component
+             mat.j3 = default_init() ! 'sp' component
+        end function JMat4x16c16_set_1
+
+       ! Subroutine version shall be used in case of 
+       ! failed vectorization of argument passing and
+       ! result returning through ZMM registers.
+
+       
+       subroutine JMat4x16c16_set1(mat) 
+
+      !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set1
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set1
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set1
+
+             type(JMat4x16c16),  intent(out) :: mat
+            
+             !Executable code ....
+             mat.j0 = default_init() ! 'pp' component
+             mat.j1 = default_init() ! 'ss' component
+             mat.j2 = default_init() ! 'ps' component
+             mat.j3 = default_init() ! 'sp' component
+        end subroutine JMat4x16c16_set1
+
+        pure function JMat4x16c16_set_2(pp,ss,ps,sp) result(mat)
+      !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_2
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_2
+             complex(kind=dp), intent(in) :: pp
+             complex(kind=sp), intent(in) :: ss
+             complex(kind=sp), intent(in) :: ps
+             complex(kind=sp), intent(in) :: sp
+             type(JMat4x16c16) :: mat
+             !dir$ attributes align : 64 :: mat
+             ! Executable code ....
+             mat.j0 = complex1_init(pp)
+             mat.j1 = complex1_init(ss)
+             mat.j2 = complex1_init(ps)
+             mat.j3 = complex1_init(sp)
+        end function JMat4x16c16_set_2
 
 
+        subroutine JMat4x16c16_set2(pp,ss,ps,sp,mat) 
+      !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set2
+      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set2
+      !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set2
+             complex(kind=dp),  intent(in) :: pp
+             complex(kind=sp),  intent(in) :: ss
+             complex(kind=sp),  intent(in) :: ps
+             complex(kind=sp),  intent(in) :: sp
+             type(JMat4x16c16),intent(out) :: mat
+             
+             ! Executable code ....
+             mat.j0 = complex1_init(pp)
+             mat.j1 = complex1_init(ss)
+             mat.j2 = complex1_init(ps)
+             mat.j3 = complex1_init(sp)
+        end subroutine JMat4x16c16_set2
+
+
+        pure function JMat4x16c16_set_3(re1,im1,re2,im2,  &
+                                        re3,im3,re4,im4)  result(mat)
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_3
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_3
+            real(kind=sp), dimension(0:15), intent(in) :: re1
+            real(kind=sp), dimension(0:15), intent(in) :: im1
+            real(kind=sp), dimension(0:15), intent(in) :: re2
+            real(kind=sp), dimension(0:15), intent(in) :: im2
+            real(kind=sp), dimension(0:15), intent(in) :: re3
+            real(kind=sp), dimension(0:15), intent(in) :: im3
+            real(kind=sp), dimension(0:15), intent(in) :: re4
+            real(kind=sp), dimension(0:15), intent(in) :: im4
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            !Executable code ....
+            mat.j0 = array_init(re1,im1)
+            mat.j1 = array_init(re2,im2)
+            mat.j2 = array_init(re3,im3)
+            mat.j3 = array_init(re4,im4)
+        end function JMat4x16c16_set_3
+
+
+        subroutine JMat4x16c16_set3(re1,im1,re2,im2,  &
+                                    re3,im3,re4,im4,mat)  
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set3
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set3
+            real(kind=sp), dimension(0:15), intent(in) :: re1
+            real(kind=sp), dimension(0:15), intent(in) :: im1
+            real(kind=sp), dimension(0:15), intent(in) :: re2
+            real(kind=sp), dimension(0:15), intent(in) :: im2
+            real(kind=sp), dimension(0:15), intent(in) :: re3
+            real(kind=sp), dimension(0:15), intent(in) :: im3
+            real(kind=sp), dimension(0:15), intent(in) :: re4
+            real(kind=sp), dimension(0:15), intent(in) :: im4
+            type(JMat4x16c16),              intent(out) :: mat
+        
+            !Executable code ....
+            mat.j0 = array_init(re1,im1)
+            mat.j1 = array_init(re2,im2)
+            mat.j2 = array_init(re3,im3)
+            mat.j3 = array_init(re4,im4)
+        end subroutine JMat4x16c16_set_3
+
+
+        pure function JMat4x16c16_set_4(re1,im1,re2,im2,   &
+                                        re3,im3,re4,im4)  result(mat)
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_4
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_4
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_4
+            real(kind=sp),      intent(in) :: re1
+            real(kind=sp),      intent(in) :: im1
+            real(kind=sp),      intent(in) :: re2
+            real(kind=sp),      intent(in) :: im2
+            real(kind=sp),      intent(in) :: re3
+            real(kind=sp),      intent(in) :: im3
+            real(kind=sp),      intent(in) :: re4
+            real(kind=sp),      intent(in) :: im4
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            complex(kind=sp), automatic :: c1,c2,c3,c4
+            ! Executable code ....
+            c1 = cmplx(re1,im1)
+            mat.j0 = complex1_init(c1)
+            c2 = cmplx(re2,im2)
+            mat.j1 = complex1_init(c2)
+            c3 = cmplx(re3,im3)
+            mat.j2 = complex1_init(c3)
+            c4 = cmplx(re4,im4)
+            mat.j3 = complex1_init(c4) 
+        end function JMat4x16c16_set_4
+
+
+        subroutine JMat4x16c16_set4(re1,im1,re2,im2,   &
+                                    re3,im3,re4,im4,mat)  
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_4
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_4
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_4
+            real(kind=sp),      intent(in) :: re1
+            real(kind=sp),      intent(in) :: im1
+            real(kind=sp),      intent(in) :: re2
+            real(kind=sp),      intent(in) :: im2
+            real(kind=sp),      intent(in) :: re3
+            real(kind=sp),      intent(in) :: im3
+            real(kind=sp),      intent(in) :: re4
+            real(kind=sp),      intent(in) :: im4
+            type(JMat4x16c16),  intent(out) :: mat
+            
+            complex(kind=sp), automatic :: c1,c2,c3,c4
+            ! Executable code ....
+            c1 = cmplx(re1,im1)
+            mat.j0 = complex1_init(c1)
+            c2 = cmplx(re2,im2)
+            mat.j1 = complex1_init(c2)
+            c3 = cmplx(re3,im3)
+            mat.j2 = complex1_init(c3)
+            c4 = cmplx(re4,im4)
+            mat.j3 = complex1_init(c4) 
+        end subroutine JMat4x16c16_set4
+
+
+        pure function JMat4x16c16_set_5(re1,im1,re2,im2,   &
+                                        re3,im3,re4,im4)  result(mat)
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set_5
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set_5
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set_5
+            type(ZMM16r4_t),  intent(in) :: re1
+            type(ZMM16r4_t),  intent(in) :: im1
+            type(ZMM16r4_t),  intent(in) :: re2
+            type(ZMM16r4_t),  intent(in) :: im2
+            type(ZMM16r4_t),  intent(in) :: re3
+            type(ZMM16r4_t),  intent(in) :: im3
+            type(ZMM16r4_t),  intent(in) :: re4
+            type(ZMM16r4_t),  intent(in) :: im4
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code .....
+            mat.j0 = zmm16r42x_init(re1,im1)
+            mat.j1 = zmm16r42x_init(re2,im2)
+            mat.j2 = zmm16r42x_init(re3,im3)
+            mat.j3 = zmm16r42x_init(re4,im4)
+        end function JMat4x16c16_set_5
+
+
+        subroutine JMat4x16c16_set5(re1,im1,re2,im2,   &
+                                    re3,im3,re4,im4,mat)  
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_set5
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_set5
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_set5
+            type(ZMM16r4_t),  intent(in) :: re1
+            type(ZMM16r4_t),  intent(in) :: im1
+            type(ZMM16r4_t),  intent(in) :: re2
+            type(ZMM16r4_t),  intent(in) :: im2
+            type(ZMM16r4_t),  intent(in) :: re3
+            type(ZMM16r4_t),  intent(in) :: im3
+            type(ZMM16r4_t),  intent(in) :: re4
+            type(ZMM16r4_t),  intent(in) :: im4
+            type(JMat4x16c16),intent(out) :: mat
+          
+            ! Executable code .....
+            mat.j0 = zmm16r42x_init(re1,im1)
+            mat.j1 = zmm16r42x_init(re2,im2)
+            mat.j2 = zmm16r42x_init(re3,im3)
+            mat.j3 = zmm16r42x_init(re4,im4)
+        end subroutine JMat4x16c16_set5
+
+        
+        pure function JMat4x16c16_copy(x) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_copy
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_copy
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_copy
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code ....
+            mat.j0 = copy_init(x.j0)
+            mat.j1 = copy_init(x.j1)
+            mat.j2 = copy_init(x.j2)
+            mat.j3 = copy_init(x.j3)
+        end function
+
+
+        subroutine JMat4x16c16_copy_v2(x,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_copy_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_copy_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_copy_v2
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat4x16c16),  intent9out) :: mat
+           
+            ! Executable code ....
+            mat.j0 = copy_init(x.j0)
+            mat.j1 = copy_init(x.j1)
+            mat.j2 = copy_init(x.j2)
+            mat.j3 = copy_init(x.j3)
+        end subroutine JMat4x16c16_copy_v2
+
+
+        ! Jones-Matrix multiplication
+        !     mat.j0 = default_init() ! 'pp' component
+        !     mat.j1 = default_init() ! 'ss' component
+        !     mat.j2 = default_init() ! 'ps' component
+        !     mat.j3 = default_init() ! 'sp' component
+        ! Multiply two Jones Matrices, i.e. of type JMat4x16c16
+
+        pure function JMat4x16c16_matmul_v1(m1,m2) result(mat)
+          
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_matmul_v1
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_matmul_v1
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_matmul_v1
+            type(JMat4x16c16),  intent(in) :: m1
+            type(JMat4x16c16),  intent(in) :: m2
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code ....
+            mat.j0 = m1.j3*m2.j2+m1.j0*m2.j0
+            mat.j1 = m1.j1*m2.j1+m1.j2*m2.j1
+            mat.j2 = m1.j1*m2.j2+m1.j2*m2.j0
+            mat.j3 = m1.j3*m2.j1+m1.j0*m2.j3
+        end function JMat4x16c16_matmul_v1
+
+
+        subroutine JMat4x16c16_matmul_v2(m1,m2,mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_matmul_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_matmul_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_matmul_v2
+            type(JMat4x16c16),  intent(in)  :: m1
+            type(JMat4x16c16),  intent(in)  :: m2
+            type(JMat4x16c16),  intent(out) :: mat
+            ! Executable code ...
+            mat.j0 = m1.j3*m2.j2+m1.j0*m2.j0
+            mat.j1 = m1.j1*m2.j1+m1.j2*m2.j1
+            mat.j2 = m1.j1*m2.j2+m1.j2*m2.j0
+            mat.j3 = m1.j3*m2.j1+m1.j0*m2.j3
+        end subroutine JMat4x16c16_matmul_v2
+
+
+        ! Jones Matrix multiplied by contant i.e. complex 16-tuple vector
+        function JMat4x16c16_vecmul_v1(m,v) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_vecmul_v1
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_vecmul_v1
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_vecmul_v1
+            type(JMat4x16c16),  intent(in) :: m
+            type(ZMM16c4),      intent(in) :: v
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code .....
+            mat.j0 = m.j0*x
+            mat.j1 = m.j1*x
+            mat.j2 = m.j2*x
+            mat.j3 = m.j3*x
+        end function JMat4x16c16_vecmul_v1        
+
+
+         ! Jones Matrix multiplied by contant i.e. complex 16-tuple vector
+        subroutine JMat4x16c16_vecmul_v2(m,v,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_vecmul_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_vecmul_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_vecmul_v2
+            type(JMat4x16c16),  intent(in)  :: m
+            type(ZMM16c4),      intent(in)  :: v
+            type(JMat4x16c16),  intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code .....
+            mat.j0 = m.j0*x
+            mat.j1 = m.j1*x
+            mat.j2 = m.j2*x
+            mat.j3 = m.j3*x
+        end subroutine JMat4x16c16_vecmul_v2   
+
+
+        !Multiplication by Jones Vector     
+        pure function JVec2x16c16_mul_JMat4x16c16(v,m) result(jvec)
+            
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JVec2x16c16_mul_JMat4x16c16
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x16c16_mul_JMat4x16c16
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x16c16_mul_JMat4x16c16
+            type(JVec2x16c16),  intent(in) :: v
+            type(JMat4x16c16),  intent(in) :: m
+            type(JVec2x16c16) :: jvec
+            !dir$ attributes align : 64 :: mat
+            ! Executable code ....
+            jvec.p = m.j1*v.p+m.j3*v.s
+            jvec.s = m.j3*v.p+m.j0*v.s
+        end function JVec2x16c16_mul_JMat4x16c16
+
+
+        subroutine JVec2x16c16_mul_JMat4x16c16_v2(v,m,jvec) 
+            
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JVec2x16c16_mul_JMat4x16c16_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JVec2x16c16_mul_JMat4x16c16_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JVec2x16c16_mul_JMat4x16c16_v2
+            type(JVec2x16c16),  intent(in) :: v
+            type(JMat4x16c16),  intent(in) :: m
+            type(JVec2x16c16),  intent(out) :: jvec
+            
+            ! Executable code ....
+            jvec.p = m.j1*v.p+m.j3*v.s
+            jvec.s = m.j3*v.p+m.j0*v.s
+        end subroutine JVec2x16c16_mul_JMat4x16c16_v2
      
     
     
