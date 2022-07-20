@@ -79,6 +79,9 @@ module mueller_calculus_avx512
     ! Module short synopsis
     character(*),       parameter, public :: MUELLER_TYPES_AVX512_SYNOPSIS = " Mueller calculus implementation"
 
+    type(ZMM16c4), parameter, private :: j     = ZMM16c4(0.0_sp,-1.0_sp)
+    type(ZMM16c4), parameter, private :: czero = ZMM16c4()
+
   contains
 
     !=============================================================
@@ -698,10 +701,10 @@ module mueller_calculus_avx512
                          @Reference
                            
                                   typedef struct  __ATTR_ALIGN__(64) JMat4x16c16 {
-                                      ZMM16c4 pp;
-				      ZMM16c4 ss;
-				      ZMM16c4 ps;
-				      ZMM16c4 sp;
+                                      ZMM16c4 pp; j0
+				      ZMM16c4 ss; j1
+				      ZMM16c4 ps; j2
+				      ZMM16c4 sp; j3
 		                 }JMat4x16c16;
                                  typedef struct __ATTR_ALIGN__(64)  JMat4x8c8 {
                                        ZMM8c8 pp;
@@ -1092,10 +1095,261 @@ module mueller_calculus_avx512
         end subroutine JVec2x16c16_mul_JMat4x16c16_v2
      
     
-    
+        pure function JMat4x16c16_vecdiv_v1(m,x) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_vecdiv_v1
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_vecdiv_v1
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_vecdiv_v1
+            type(JMat4x16c16),  intent(in) :: m
+            type(ZMM16c4),      intent(in) :: x
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code ....
+            mat.j0 = m.j0/x
+            mat.j1 = m.j1/x
+            mat.j2 = m.j2/x
+            mat.j3 = m.j3/x
+        end function JMat4x16c16_vecdiv_v1
 
 
-      
+        subroutine JMat4x16c16_vecdiv_v2(m,x,mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_vecdiv_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_vecdiv_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_vecdiv_v2
+            type(JMat4x16c16),  intent(in) :: m
+            type(ZMM16c4),      intent(in) :: x
+            type(JMat4x16c16),  intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            ! Executable code ....
+            mat.j0 = m.j0/x
+            mat.j1 = m.j1/x
+            mat.j2 = m.j2/x
+            mat.j3 = m.j3/x
+        end subroutine JMat4x16c16_vecdiv_v2
+
+
+        pure function JMat4x16c16_add_JMat4xc16c16(x,y) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_add_JMat4xc16c16
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_add_JMat4xc16c16
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_add_JMat4xc16c16
+            type(JMat4x16c16),   intent(in) :: x
+            type(JMat4x16c16),   intent(in) :: y
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            mat.j0 = x.j0+y.j0
+            mat.j1 = x.j1+y.j1
+            mat.j2 = x.j2+y.j2
+            mat.j3 = x.j3+y.j3
+        end function JMat4x16c16_add_JMat4x16c16
+
+
+        subroutine JMat4x16c16_add_JMat4xc16c16_v2(x,y,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_add_JMat4xc16c16_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_add_JMat4xc16c16_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_add_JMat4xc16c16_v2
+            type(JMat4x16c16),   intent(in) :: x
+            type(JMat4x16c16),   intent(in) :: y
+            type(JMat4x16c16),   intent(out) :: mat
+            
+            mat.j0 = x.j0+y.j0
+            mat.j1 = x.j1+y.j1
+            mat.j2 = x.j2+y.j2
+            mat.j3 = x.j3+y.j3
+        end subroutine JMat4x16c16_add_JMat4x16c16_v2
+
+
+        pure function JMat4x16c16_sub_JMat4xc16c16(x,y) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_sub_JMat4xc16c16
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_sub_JMat4xc16c16
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_sub_JMat4xc16c16
+            type(JMat4x16c16),   intent(in) :: x
+            type(JMat4x16c16),   intent(in) :: y
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            mat.j0 = x.j0-y.j0
+            mat.j1 = x.j1-y.j1
+            mat.j2 = x.j2-y.j2
+            mat.j3 = x.j3-y.j3
+        end function JMat4x16c16_sub_JMat4x16c16
+
+
+        subroutine JMat4x16c16_sub_JMat4xc16c16_v2(x,y,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_sub_JMat4xc16c16_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_sub_JMat4xc16c16_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_sub_JMat4xc16c16_v2
+            type(JMat4x16c16),   intent(in) :: x
+            type(JMat4x16c16),   intent(in) :: y
+            type(JMat4x16c16),   intent(out) :: mat
+            
+            mat.j0 = x.j0-y.j0
+            mat.j1 = x.j1-y.j1
+            mat.j2 = x.j2-y.j2
+            mat.j3 = x.j3-y.j3
+        end subroutine JMat4x16c16_sub_JMat4x16c16_v2
+
+
+        pure function JMat4x16c16_rotator_v1(theta) result(mat)
+ 
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_rotator_v1
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_rotator_v1
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_rotator_v1
+            type(ZMM16r4_t),  intent(in) :: theta
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t) :: vc,vs,nvs
+            !dir$ attributes align : 64 :: vc,vs,nvs
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t()
+            ! Exec code .... 
+            vc.v   = cos(theta.v)
+            mat.j0 = array_init(vc.v,zero.v)
+            mat.j1 = mat.j0
+            vs.v   = sin(theta.v)
+            mat.j2 = array_init(vs.v,zero.v)
+            nvs.v  = -vs.v
+            mat.j3 = array_init(nvs.v,zero.v) 
+        end function JMat4x16c16_rotator_v2
+
+
+        subroutine JMat4x16c16_rotator_v2(theta,mat)
+ 
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_rotator_v12
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_rotator_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_rotator_v2
+            type(ZMM16r4_t),    intent(in)  :: theta
+            type(JMat4x16c16),  intent(out) :: mat
+          
+            type(ZMM16r4_t) :: vc,vs,nvs
+            !dir$ attributes align : 64 :: vc,vs,nvs
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t()
+            ! Exec code .... 
+            vc.v   = cos(theta.v)
+            mat.j0 = array_init(vc.v,zero.v)
+            mat.j1 = mat.j0
+            vs.v   = sin(theta.v)
+            mat.j2 = array_init(vs.v,zero.v)
+            nvs.v  = -vs.v
+            mat.j3 = array_init(nvs.v,zero.v) 
+        end subroutine JMat4x16c16_rotator_v2
+
+
+        pure function JMat4x16c16_lin_retarder(phi,ang) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_lin_retarder
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_lin_retarder
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_lin_retarder
+            type(ZMM16r4_t),   intent(in) :: phi
+            type(ZMM16r4_t),   intent(in) :: ang
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: n1   = ZMM16r4_t(-1.0_sp)
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t(0.0_sp)
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16c4),   automatic :: phasor
+            type(ZMM16r4_t), automatic :: h_phi
+            !dir$ attributes align : 64 :: phasor,h_phi
+            ! Exec code ....
+            phasor = cexp_c16(j*h_phi)
+            mat.j0 = phasor
+            h_phi  = phi.v*half.v 
+            mat.j1 = one/phasor
+            mat.j2 = czero
+            mat.j3 = czero
+        end function JMat4x16c16_lin_retarder
+
+
+        subroutine JMat4x16c16_lin_retarder_v2(phi,ang,mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_lin_retarder_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_lin_retarder_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_lin_retarder_v2
+            type(ZMM16r4_t),    intent(in)  :: phi
+            type(ZMM16r4_t),    intent(in)  :: ang
+            type(JMat4x16c16),  intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: n1   = ZMM16r4_t(-1.0_sp)
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t(0.0_sp)
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16c4),   automatic :: phasor
+            type(ZMM16r4_t), automatic :: h_phi
+            !dir$ attributes align : 64 :: phasor,h_phi
+            ! Exec code ....
+            phasor = cexp_c16(j*h_phi)
+            mat.j0 = phasor
+            h_phi  = phi.v*half.v 
+            mat.j1 = one/phasor
+            mat.j2 = czero
+            mat.j3 = czero
+        end subroutine JMat4x16c16_lin_retarder_v2
+ 
+
+        pure function JMat4x16c16_circ_retarder(phi) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_circ_retarder
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_circ_retarder
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_circ_retarder
+            type(ZMM16r4_t),  intent(in) :: phi
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: half  = ZMM16r4_t(0.5_sp)
+            type(ZMM16c4),   automatic :: nre
+            type(ZMM16r4_t), automatic :: h_phi,ch_phi,sh_phi
+            !dir$ attributes align : 64 :: nre
+            !dir$ attributes align : 64 :: h_phi
+            !dir$ attributes align : 64 :: ch_phi
+            !dir$ attributes align : 64 :: sh_phi
+            ! Exec code ....
+            ch_phi = cos(phi.v)
+            mat.j0 = zmm16r41x_init(ch_phi)
+            mat.j1 = mat.j0
+            sh_phi = sin(phi.v)
+            mat.j2 = zmm16r41x_init(sh_phi)
+            mat.j3 = -mat.j2.re
+        end function JMat4x16c16_circ_retarder
+
+
+        subroutine JMat4x16c16_circ_retarder_v2(phi,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_circ_retarder_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_circ_retarder_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_circ_retarder_v2
+            type(ZMM16r4_t),   intent(in) :: phi
+            type(JMat4x16c16), intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: half  = ZMM16r4_t(0.5_sp)
+            type(ZMM16c4),   automatic :: nre
+            type(ZMM16r4_t), automatic :: h_phi,ch_phi,sh_phi
+            !dir$ attributes align : 64 :: nre
+            !dir$ attributes align : 64 :: h_phi
+            !dir$ attributes align : 64 :: ch_phi
+            !dir$ attributes align : 64 :: sh_phi
+            ! Exec code ....
+            ch_phi = cos(phi.v)
+            mat.j0 = zmm16r41x_init(ch_phi)
+            mat.j1 = mat.j0
+            sh_phi = sin(phi.v)
+            mat.j2 = zmm16r41x_init(sh_phi)
+            mat.j3 = -mat.j2.re
+        end subroutine JMat4x16c16_circ_retarder_v2
+
     
     
 
