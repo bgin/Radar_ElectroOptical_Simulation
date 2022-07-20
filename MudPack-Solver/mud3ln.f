@@ -40,10 +40,6 @@ c     and z direction.  This file must be loaded with any of the real
 c     3-d mudpack solvers except mud3sp.
 c
       subroutine slxmd3(nx,ny,nz,phi,cof,tx,sum,nxa,nyc,nze)
-       !dir$ attributes code_align : 32 :: slxmd3
-       !dir$ optimize : 3
-       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: slxmd3
-       use omp_lib
 c
 c     x line relaxation thru red and then black points in the
 c     (y,z) plane for periodic or nonperiodic x b.c.
@@ -66,17 +62,9 @@ c
 c     x direction not periodic
 c     first solve for x lines thru red points in (y,z) plane
 c
-      !dir$ assume_aligned phi:64
-      !dir$ assume_aligned cof:64
-       
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
 	do k=1,nz,2
-           do j=1,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=1,ny,2
 	    do i=1,nx
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -87,7 +75,6 @@ c
 c     forward sweep
 c
 	  do i=2,nx
-          
 	    do j=1,ny,2
 	      phi(i,j,k) = phi(i,j,k)-tx(i-1,j,k,1)*phi(i-1,j,k)
 	    end do
@@ -99,8 +86,7 @@ c
 	    phi(nx,j,k) = phi(nx,j,k)/tx(nx,j,k,2)
 	  end do
 	  do ib=2,nx
-             i = nx-ib+1
-             
+	    i = nx-ib+1
 	    do j=1,ny,2
 	      phi(i,j,k) = (phi(i,j,k)-tx(i,j,k,3)*phi(i+1,j,k))
      +                     /tx(i,j,k,2)
@@ -111,16 +97,9 @@ c     end of k odd loop
 c
 	end do
 c
-        !dir$ assume_aligned phi:64
-        !dir$ assume_aligned cof:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
 	do k=2,nz,2
-           do j=2,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=2,ny,2
 	    do i=1,nx
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -151,16 +130,9 @@ c
 c
 c     solve for x lines thru black points in (y,z) plane
 c
-        !dir$ assume_aligned phi:64
-        !dir$ assume_aligned cof:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
 	do k=1,nz,2
-           do j=2,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-            !dir$ fma
+	  do j=2,ny,2
 	    do i=1,nx
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -186,16 +158,9 @@ c
 
 c
 c
-        !dir$ assume_aligned phi:64
-        !dir$ assume_aligned cof:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(phi,cof,tx,nx,ny,nz)
 	do k=2,nz,2
-           do j=1,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=1,ny,2
 	    do i=1,nx
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -224,11 +189,7 @@ c
 c
 c     x direction periodic
 c
-         do k=1,nz
-           
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8) 
+	do k=1,nz
 	  do j=1,ny
 	    sum(j,k) = 0.0
 	  end do
@@ -236,16 +197,9 @@ c
 c
 c      sweep x lines thru red (y,z) forward and back
 c
-      !dir$ assume_aligned phi:64
-      !dir$ assume_aligned cof:64  
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k) SHARED(sum,phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
 	do k=1,nz,2
-           do j=1,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=1,ny,2
 	    do i=1,nx-1
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -261,12 +215,6 @@ c
 	    end do
 	  end do
 	  do i=1,nx-2
-           
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp simd reduction(+:sum)  
 	    do j=1,ny,2
 	      sum(j,k) = sum(j,k)+tx(i,j,k,5)*phi(i,j,k)
 	    end do
@@ -297,16 +245,9 @@ c
 c
 c     forward even-even
 c
-       !dir$ assume_aligned phi:64
-       !dir$ assume_aligned cof:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
 	do k=2,nz,2
-           do j=2,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=2,ny,2
 	    do i=1,nx-1
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -319,12 +260,6 @@ c
 	    end do
 	  end do
 	  do i=1,nx-2
-             
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp simd reduction(+:sum)  
 	    do j=2,ny,2
 	      sum(j,k) = sum(j,k)+tx(i,j,k,5)*phi(i,j,k)
 	    end do
@@ -349,16 +284,9 @@ c
 c
 c     now solve x lines thru black points in (y,z) plane
 c
-        !dir$ assume_aligned phi:64
-        !dir$ assume_aligned cof:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
 	do k=1,nz,2
-           do j=2,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=2,ny,2
 	    do i=1,nx-1
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -371,12 +299,6 @@ c
 	    end do
 	  end do
 	  do i=1,nx-2
-            
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(+:sum)
 	    do j=2,ny,2
 	      sum(j,k) = sum(j,k)+tx(i,j,k,5)*phi(i,j,k)
 	    end do
@@ -401,17 +323,9 @@ c
 c
 c     forward even-odd
 c
-       !dir$ assume_aligned cof:64
-       !dir$ assume_aligned sum:64
-       !dir$ assume_aligned phi:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,ib,j,k), SHARED(sum,phi,cof,tx,nx,ny,nz)
 	do k=2,nz,2
-           do j=1,ny,2
-           !dir$ ivdep
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  do j=1,ny,2
 	    do i=1,nx-1
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,3)*phi(i,j-1,k)+cof(i,j,k,4)*phi(i,j+1,k) +
@@ -424,12 +338,6 @@ c
 	    end do
 	  end do
 	  do i=1,nx-2
-            
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp simd reduction(+:sum)
 	    do j=1,ny,2
 	      sum(j,k) = sum(j,k)+tx(i,j,k,5)*phi(i,j,k)
 	    end do
@@ -456,9 +364,6 @@ c
       end
 
       subroutine slymd3(nx,ny,nz,phi,cof,ty,sum,nxa,nyc,nze)
-        !dir$ attributes code_align : 32 :: slymd3
-        !dir$ optimize : 3
-        !dir$ attributes optimization_parameter:"TARGET_ARCH=skylake_avx512" :: slymd3
 c
 c     y line relaxation thru red and then black points in the
 c     (x,z) plane for periodic or nonperiodic y b.c.
@@ -481,10 +386,7 @@ c
 c     y direction not periodic
 c     first solve for y lines thru red points in (x,z) plane
 c
-      !dir$ assume_aligned phi:64
-      !dir$ assume_aligned cof:64
-       !dir$ assume_aligned ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k) SHARED(phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
 	do k=1,nz,2
 	  do i=1,nx,2
 	    do j=1,ny
@@ -497,11 +399,6 @@ c
 c     forward sweep
 c
 	  do j=2,ny
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp simd reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j-1,i,k,1)*phi(i,j-1,k)
 	    end do
@@ -513,21 +410,14 @@ c
 	    phi(i,ny,k) = phi(i,ny,k)/ty(ny,i,k,2)
 	  end do
 	  do jb=2,ny
-             j = ny-jb+1
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           do i=1,nx,2
+	    j = ny-jb+1
+	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k))
      +                     /ty(j,i,k,2)
 	    end do
 	  end do
-       end do
-       !dir$ assume_aligned phi:64
-       !dir$ assume_aligned cof:64
-       !dir$ assume_aligned ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
+	end do
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
 	do k=2,nz,2
 	  do i=2,nx,2
 	    do j=1,ny
@@ -537,11 +427,6 @@ c
 	    end do
 	  end do
 	  do j=2,ny
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j-1,i,k,1)*phi(i,j-1,k)
 	    end do
@@ -562,10 +447,7 @@ c
 c     solve for x lines thru black points in (y,z) plane
 c
 c
-        !dir$ assume_aligned cof:64
-        !dir$ assume_aligned phi:64
-        !dir$ assume_aligned ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
 	do k=1,nz,2
 	  do i=2,nx,2
 	    do j=1,ny
@@ -575,11 +457,6 @@ c
 	    end do
 	  end do
 	  do j=2,ny
-            !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j-1,i,k,1)*phi(i,j-1,k)
 	    end do
@@ -596,7 +473,7 @@ c
 	  end do
 	end do
 	if (nper.eq.0) call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(phi,cof,ty,nx,ny,nz)
 	do k=2,nz,2
 	  do i=1,nx,2
 	    do j=1,ny
@@ -606,29 +483,15 @@ c
 	    end do
 	  end do
 	  do j=2,ny
-               !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j-1,i,k,1)*phi(i,j-1,k)
 	    end do
-         end do
-            !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(/:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,ny,k) = phi(i,ny,k)/ty(ny,i,k,2)
 	  end do
 	  do jb=2,ny
-             j = ny-jb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-             !dir$ fma
+	    j = ny-jb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k))
      +                     /ty(j,i,k,2)
@@ -641,10 +504,7 @@ c
 c
 c     y direction periodic
 c
-         do k=1,nz
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
+	do k=1,nz
 	  do i=1,nx
 	    sum(i,k) = 0.0
 	  end do
@@ -652,8 +512,7 @@ c
 c
 c      sweep y lines thru red (x,z) forward and back
 c
-        !dir$ assume_aligned cof:64,sum:64,phi:64,ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k)  SHARED(sum,phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
 	do k=1,nz,2
 	  do i=1,nx,2
 	    do j=1,ny-1
@@ -666,21 +525,11 @@ c
 c     forward sweep
 c
 	  do j=2,ny-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp simd reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j,i,k,1)*phi(i,j-1,k)
 	    end do
 	  end do
 	  do j=1,ny-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp simd reduction(-:sum)
 	    do i=1,nx,2
 	      sum(i,k) = sum(i,k)+ty(j,i,k,5)*phi(i,j,k)
 	    end do
@@ -697,11 +546,7 @@ c
      +                      /ty(ny-2,i,k,2)
 	  end do
 	  do jb=4,ny
-             j = ny-jb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	    j = ny-jb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k)-
      +                      ty(j,i,k,4)*phi(i,ny-1,k))/ty(j,i,k,2)
@@ -715,8 +560,7 @@ c
 c
 c     forward even-even
 c
-         !dir$ assume_aligned cof:64,sum:64,phi:64,ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k) SHARED(sum,phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
 	do k=2,nz,2
 	  do i=2,nx,2
 	    do j=1,ny-1
@@ -726,29 +570,15 @@ c
 	    end do
 	  end do
 	  do j=2,ny-2
-                !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp simd reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j,i,k,1)*phi(i,j-1,k)
 	    end do
 	  end do
 	  do j=1,ny-2
-                !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !dir$ simd reduction(+:sum)
 	    do i=2,nx,2
 	      sum(i,k) = sum(i,k)+ty(j,i,k,5)*phi(i,j,k)
 	    end do
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp simd reduction(-:phi)
+	  end do
 	  do i=2,nx,2
 	    phi(i,ny-1,k) = phi(i,ny-1,k)-sum(i,k)
 	  end do
@@ -758,11 +588,7 @@ c
      +                      /ty(ny-2,i,k,2)
 	  end do
 	  do jb=4,ny
-             j = ny-jb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	    j = ny-jb+1
 	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k)-
      +                      ty(j,i,k,4)*phi(i,ny-1,k))/ty(j,i,k,2)
@@ -773,8 +599,7 @@ c
 c
 c     now solve x lines thru black points in (y,z) plane
 c
-        !dir$ assume_aligned cof:64,sum:64,phi:64,ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
 	do k=1,nz,2
 	  do i=2,nx,2
 	    do j=1,ny-1
@@ -784,43 +609,25 @@ c
 	    end do
 	  end do
 	  do j=2,ny-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp simd reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j,i,k,1)*phi(i,j-1,k)
 	    end do
 	  end do
 	  do j=1,ny-2
-               !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp simd reduction(+:sum)
 	    do i=2,nx,2
 	      sum(i,k) = sum(i,k)+ty(j,i,k,5)*phi(i,j,k)
 	    end do
 	  end do
 	  do i=2,nx,2
 	    phi(i,ny-1,k) = phi(i,ny-1,k)-sum(i,k)
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	  end do
 	  do i=2,nx,2
 	    phi(i,ny-1,k) = phi(i,ny-1,k)/ty(ny-1,i,k,2)
 	    phi(i,ny-2,k) = (phi(i,ny-2,k)-ty(ny-2,i,k,4)*phi(i,ny-1,k))
      +                      /ty(ny-2,i,k,2)
 	  end do
 	  do jb=4,ny
-             j = ny-jb+1
-               !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
+	    j = ny-jb+1
 	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k)-
      +                      ty(j,i,k,4)*phi(i,ny-1,k))/ty(j,i,k,2)
@@ -834,60 +641,36 @@ c
 c
 c     forward even-even
 c
-        !dir$ assume_aligned sum:64,phi:64,cof:64,ty:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,jb,k), SHARED(sum,phi,cof,ty,nx,ny,nz)
 	do k=2,nz,2
-           do i=1,nx,2
-             do j=1,ny-1
+	  do i=1,nx,2
+	    do j=1,ny-1
 	      phi(i,j,k) = cof(i,j,k,8) - (
      +        cof(i,j,k,1)*phi(i-1,j,k)+cof(i,j,k,2)*phi(i+1,j,k) +
      +        cof(i,j,k,5)*phi(i,j,k-1)+cof(i,j,k,6)*phi(i,j,k+1))
 	    end do
 	  end do
 	  do j=2,ny-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-ty(j,i,k,1)*phi(i,j-1,k)
 	    end do
 	  end do
 	  do j=1,ny-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp reduction(+:sum)
 	    do i=1,nx,2
 	      sum(i,k) = sum(i,k)+ty(j,i,k,5)*phi(i,j,k)
 	    end do
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-             !$omp reduction(-:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,ny-1,k) = phi(i,ny-1,k)-sum(i,k)
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-          do i=1,nx,2
+	  end do
+	  do i=1,nx,2
 	    phi(i,ny-1,k) = phi(i,ny-1,k)/ty(ny-1,i,k,2)
 	    phi(i,ny-2,k) = (phi(i,ny-2,k)-ty(ny-2,i,k,4)*phi(i,ny-1,k))
      +                      /ty(ny-2,i,k,2)
 	  end do
 	  do jb=4,ny
-             j = ny-jb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           do i=1,nx,2
+	    j = ny-jb+1
+	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-ty(j,i,k,3)*phi(i,j+1,k)-
      +                      ty(j,i,k,4)*phi(i,ny-1,k))/ty(j,i,k,2)
 	    end do
@@ -900,9 +683,6 @@ c
       end
 
       subroutine slzmd3(nx,ny,nz,phi,cof,tz,sum,nxa,nyc,nze)
-       !dir$ attributes code_align : 32 :: slzmd3
-       !dir$ optimize : 3
-       !dir$ attributes optimization_parameter: "TARGET_ARCH=skylake_avx512" :: slzmd3
 c
 c     z line relaxation thru red and then black points in the
 c     (x,y) plane for periodic or nonperiodic z b.c.
@@ -925,8 +705,7 @@ c
 c     z direction not periodic
 c     first solve for z lines thru red points in (x,y) plane
 c
-         !dir$ assume_aligned phi:64,cof:64,tz:64
-!$OMP PARALLEL DO SCHEDULE(STTAIC,8) PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=1,nx,2
 	    do k=1,nz
@@ -939,11 +718,6 @@ c
 c     forward sweep
 c
 	  do k=2,nz
-            !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-            !$omp reduction(+:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k-1,i,j,1)*phi(i,j,k-1)
 	    end do
@@ -951,20 +725,11 @@ c
 c
 c     backward sweep
 c
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(+:phi)
 	  do i=1,nx,2
 	    phi(i,j,nz) = phi(i,j,nz)/tz(nz,i,j,2)
 	  end do
 	  do kb=2,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1))
      +                     /tz(k,i,j,2)
@@ -972,8 +737,7 @@ c
 	  end do
 	end do
 	if (nper.eq.0) call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
-         
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=2,nx,2
 	    do k=1,nz
@@ -983,40 +747,26 @@ c
 	    end do
 	  end do
 	  do k=2,nz
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k-1,i,j,1)*phi(i,j,k-1)
 	    end do
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(/:phi)
+	  end do
 	  do i=2,nx,2
 	    phi(i,j,nz) = phi(i,j,nz)/tz(nz,i,j,2)
 	  end do
 	  do kb=2,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           do i=2,nx,2
+	    k = nz-kb+1
+	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1))
      +                     /tz(k,i,j,2)
 	    end do
 	  end do
 	end do
 	if (nper.eq.0) call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
-         !dir$ assume_aligned phi:64,cof:64,tz:64
 c
 c     solve for z lines thru black points in (x,y)plane
 c
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=2,nx,2
 	    do k=1,nz
@@ -1026,29 +776,15 @@ c
 	    end do
 	  end do
 	  do k=2,nz
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k-1,i,j,1)*phi(i,j,k-1)
 	    end do
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(/:phi)
+	  end do
 	  do i=2,nx,2
 	    phi(i,j,nz) = phi(i,j,nz)/tz(nz,i,j,2)
 	  end do
 	  do kb=2,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1))
      +                     /tz(k,i,j,2)
@@ -1056,9 +792,8 @@ c
 	  end do
 	end do
 	if (nper.eq.0) call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
-        !dir$ assume_aligned phi:64,cof:64,tz:64
-c    
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k,kb) SHARED(phi,cof,tz,nx,ny,nz)
+c
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(phi,cof,tz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=1,nx,2
 	    do k=1,nz
@@ -1068,29 +803,15 @@ c
 	    end do
 	  end do
 	  do k=2,nz
-             !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi) 
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k-1,i,j,1)*phi(i,j,k-1)
 	    end do
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(/:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,j,nz) = phi(i,j,nz)/tz(nz,i,j,2)
 	  end do
 	  do kb=2,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1))
      +                     /tz(k,i,j,2)
@@ -1103,12 +824,7 @@ c
 c
 c     z direction periodic
 c
-         do j=1,ny
-             !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-          
+	do j=1,ny
 	  do i=1,nx
 	    sum(i,j) = 0.0
 	  end do
@@ -1116,7 +832,6 @@ c
 c
 c      sweep z lines thru red (x,y) forward and back
 c
-        !dir$ assume_aligned sum:64,phi:64,cof:64,tz:64
 !$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(sum,phi,cof,tz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=1,nx,2
@@ -1130,29 +845,15 @@ c
 c     forward sweep
 c
 	  do k=2,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k,i,j,1)*phi(i,j,k-1)
 	    end do
 	  end do
 	  do k=1,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(+:sum)
 	    do i=1,nx,2
 	      sum(i,j) = sum(i,j)+tz(k,i,j,5)*phi(i,j,k)
 	    end do
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(-:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)-sum(i,j)
 	  end do
@@ -1165,12 +866,7 @@ c
      +                      /tz(nz-2,i,j,2)
 	  end do
 	  do kb=4,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1)-
      +                      tz(k,i,j,4)*phi(i,j,nz-1))/tz(k,i,j,2)
@@ -1184,8 +880,7 @@ c
 c
 c     sweep black z lines thru (x,y)
 c
-        !dir$ assume_aligned sum:64,phi:64,cof:64,tz:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k,kb) SHARED(sum,phi,cof,tz,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(sum,phi,cof,tz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=2,nx,2
 	    do k=1,nz-1
@@ -1195,48 +890,25 @@ c
 	    end do
 	  end do
 	  do k=2,nz-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k,i,j,1)*phi(i,j,k-1)
 	    end do
 	  end do
 	  do k=1,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(+:sum)
 	    do i=2,nx,2
 	      sum(i,j) = sum(i,j)+tz(k,i,j,5)*phi(i,j,k)
 	    end do
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(-:phi)
+	  end do
 	  do i=2,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)-sum(i,j)
-         end do
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-         do i=2,nx,2
+	  end do
+	  do i=2,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)/tz(nz-1,i,j,2)
 	    phi(i,j,nz-2) = (phi(i,j,nz-2)-tz(nz-2,i,j,4)*phi(i,j,nz-1))
      +                      /tz(nz-2,i,j,2)
 	  end do
 	  do kb=4,nz
-             k = nz-kb+1
-            !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1)-
      +                      tz(k,i,j,4)*phi(i,j,nz-1))/tz(k,i,j,2)
@@ -1244,7 +916,6 @@ c
 	  end do
 	end do
 	call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
-        !dir$ assume_aligned sum:64,phi:64,cof:64,tz:64
 !$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(sum,phi,cof,tz,nx,ny,nz)
 	do j=1,ny,2
 	  do i=2,nx,2
@@ -1255,48 +926,25 @@ c
 	    end do
 	  end do
 	  do k=2,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=2,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k,i,j,1)*phi(i,j,k-1)
 	    end do
 	  end do
 	  do k=1,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(+:sum)
 	    do i=2,nx,2
 	      sum(i,j) = sum(i,j)+tz(k,i,j,5)*phi(i,j,k)
 	    end do
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(-:phi)
+	  end do
 	  do i=2,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)-sum(i,j)
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-         do i=2,nx,2
+	  end do
+	  do i=2,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)/tz(nz-1,i,j,2)
 	    phi(i,j,nz-2) = (phi(i,j,nz-2)-tz(nz-2,i,j,4)*phi(i,j,nz-1))
      +                      /tz(nz-2,i,j,2)
 	  end do
 	  do kb=4,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=2,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1)-
      +                      tz(k,i,j,4)*phi(i,j,nz-1))/tz(k,i,j,2)
@@ -1305,10 +953,7 @@ c
 	end do
 	if (nper.eq.0) call per3vb(nx,ny,nz,phi,nxa,nyc,nze)
 c
-        
-
-        !dir$ assume_aligned sum:64,phi:64,cof:64,tz:64
-!$OMP PARALLEL DO SCHEDULE(STATIC,8) PRIVATE(i,j,k,kb) SHARED(sum,phi,cof,tz,nx,ny,nz)
+!$OMP PARALLEL DO PRIVATE(i,j,k,kb), SHARED(sum,phi,cof,tz,nx,ny,nz)
 	do j=2,ny,2
 	  do i=1,nx,2
 	    do k=1,nz-1
@@ -1318,49 +963,25 @@ c
 	    end do
 	  end do
 	  do k=2,nz-2
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
 	    do i=1,nx,2
 	      phi(i,j,k) = phi(i,j,k)-tz(k,i,j,1)*phi(i,j,k-1)
 	    end do
 	  end do
 	  do k=1,nz-2
-              !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(+:sum)
 	    do i=1,nx,2
 	      sum(i,j) = sum(i,j)+tz(k,i,j,5)*phi(i,j,k)
 	    end do
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !$omp reduction(-:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)-sum(i,j)
-         end do
-          !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	  end do
 	  do i=1,nx,2
 	    phi(i,j,nz-1) = phi(i,j,nz-1)/tz(nz-1,i,j,2)
 	    phi(i,j,nz-2) = (phi(i,j,nz-2)-tz(nz-2,i,j,4)*phi(i,j,nz-1))
      +                      /tz(nz-2,i,j,2)
 	  end do
 	  do kb=4,nz
-             k = nz-kb+1
-           !dir$ vector aligned
-           !dir$ vector always
-           !dir$ unroll(8)
-           !dir$ fma
-           !$omp reduction(-:phi)
+	    k = nz-kb+1
 	    do i=1,nx,2
 	      phi(i,j,k) = (phi(i,j,k)-tz(k,i,j,3)*phi(i,j,k+1)-
      +                      tz(k,i,j,4)*phi(i,j,nz-1))/tz(k,i,j,2)
