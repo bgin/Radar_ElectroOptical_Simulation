@@ -1350,6 +1350,327 @@ module mueller_calculus_avx512
             mat.j3 = -mat.j2.re
         end subroutine JMat4x16c16_circ_retarder_v2
 
+
+        pure function JMat4x16c16_circ_polar(atten) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_circ_polar
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_circ_polar
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_circ_polar
+            type(ZMM16r4_t),   intent(in) :: atten
+            type(JMat4x16c16)  :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t(0.0_sp)
+            type(ZMM16r4_t), automatic :: t0,e,t1,t2
+            !dir$ attributes align : 64 :: t0,e,t1,t2
+            ! Exec code ....
+            t0.v   = (atten.v-one.v)/(atten.v+one.v)
+            e.v    = sqrt(t0.v)
+            t2.v   = half.v*(one.v+e.v)
+            mat.j0 = zmm16r41x_init(t2)
+            mat.j1 = mat.j0 
+            t1.v   = half.v*(one.v-e.v)
+            mat.j2 = array_init(zero.v,t1.v)
+            mat.j3 = array_init(zero.v,zero.v-t1.v)
+        end function JMat4x16c16_circ_polar
+
+
+        subroutine JMat4x16c16_circ_polar_v2(atten,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_circ_polar_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_circ_polar_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_circ_polar_v2
+            type(ZMM16r4_t),   intent(in) :: atten
+            type(JMat4x16c16), intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16r4_t), parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t(0.0_sp)
+            type(ZMM16r4_t), automatic :: t0,e,t1,t2
+            !dir$ attributes align : 64 :: t0,e,t1,t2
+            ! Exec code ....
+            t0.v   = (atten.v-one.v)/(atten.v+one.v)
+            e.v    = sqrt(t0.v)
+            t2.v   = half.v*(one.v+e.v)
+            mat.j0 = zmm16r41x_init(t2)
+            mat.j1 = mat.j0 
+            t1.v   = half.v*(one.v-e.v)
+            mat.j2 = array_init(zero.v,t1.v)
+            mat.j3 = array_init(zero.v,zero.v-t1.v)
+        end subroutine JMat4x16c16_circ_polar_v2
+
+
+        pure function JMat4x16c16_eigenvalue(a,b,ca,cb) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_eigenvalue
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_eigenvalue
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_eigenvalue
+            type(JVec2x16c16),  intent(in) :: a
+            type(JVec2x16c16),  intent(in) :: b
+            type(ZMM16c4),      intent(in) :: ca
+            type(ZMM16c4),      intent(in) :: cb
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16c4), automatic :: det,t0,t1
+            !dir$ attributes align : 64 :: det,t0,t1
+            ! Exec code .....
+            t0     = a.p*b.s
+            t1     = a.s*b.p
+            det    = t0-t1
+            mat.j0 = t0*cb-t1*ca
+            mat.j0 = mat.j0/det
+            mat.j1 = t0.ca-t1*cb
+            mat.j1 = mat.j1/det
+            mat.j2 = a.p*b.p*(cb-ca)
+            mat.j2 = mat.j2/det
+            mat.j3 = a.s*b.S*(ca-cb)
+            mat.j3 = mat.j3/set
+        end function JMat4x16c16_eigenvalue
+
+
+        subroutine JMat4x16c16_eigenvalue_v2(a,b,ca,cb,mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_eigenvalue_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_eigenvalue_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_eigenvalue_v2
+            type(JVec2x16c16),  intent(in) :: a
+            type(JVec2x16c16),  intent(in) :: b
+            type(ZMM16c4),      intent(in) :: ca
+            type(ZMM16c4),      intent(in) :: cb
+            type(JMat4x16c16),  intent(out) :: mat
+            !dir$ attributes align : 64 :: mat
+            type(ZMM16c4), automatic :: det,t0,t1
+            !dir$ attributes align : 64 :: det,t0,t1
+            ! Exec code .....
+            t0     = a.p*b.s
+            t1     = a.s*b.p
+            det    = t0-t1
+            mat.j0 = t0*cb-t1*ca
+            mat.j0 = mat.j0/det
+            mat.j1 = t0.ca-t1*cb
+            mat.j1 = mat.j1/det
+            mat.j2 = a.p*b.p*(cb-ca)
+            mat.j2 = mat.j2/det
+            mat.j3 = a.s*b.S*(ca-cb)
+            mat.j3 = mat.j3/set
+        subroutine JMat4x16c16_eigenvalue_v2
+
+
+        pure function JMat4x16c16_transpose(x) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_transpose
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_transpose
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_transpose
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat4x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            mat.j0 = x.j0
+            mat.j1 = x.j1
+            mat.j2 = mat.j3
+            mat.j3 = mat.j2
+        end function JMat4x16c16_transpose
+
+
+        subroutine JMat4x16c16_transpose_v2(x,mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_transpose_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_transpose_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_transpose_v2
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat4x16c16),  intent(out) :: mat
+            mat.j0 = x.j0
+            mat.j1 = x.j1
+            mat.j2 = mat.j3
+            mat.j3 = mat.j2
+        end subroutine JMat4x16c16_transpose
+
+
+        pure function JMat4x16c16_conj(x) result(mat)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_conj
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_conj
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_conj
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat47x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            mat.j0 = conjugate(x.j0)
+            mat.j1 = conjugate(x.j1)
+            mat.j2 = conjugate(x.j2)
+            mat.j3 = conjugate(x.j3)
+        end function JMat4x16c16_conj
+
+
+        subroutine JMat4x16c16_conj_v2(x,mat) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: JMat4x16c16_conj_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: JMat4x16c16_conj_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: JMat4x16c16_conj_v2
+            type(JMat4x16c16),  intent(in) :: x
+            type(JMat47x16c16) :: mat
+            !dir$ attributes align : 64 :: mat
+            mat.j0 = conjugate(x.j0)
+            mat.j1 = conjugate(x.j1)
+            mat.j2 = conjugate(x.j2)
+            mat.j3 = conjugate(x.j3)
+        end subroutine JMat4x16c16_conj_v2
+
+        pure function SVec4x16v16_set_1() result(svec)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_1
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_1
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_1
+            type(SVec4x16v16) :: svec
+            type(ZMM16r4_t), parameter :: vz = ZMM16r4_t(0.0_sp)
+            svec.s0 = vz
+            svec.s1 = vz
+            svec.s2 = vz
+            svec.s3 = vz
+        end function SVec4x16v16_set_1
+
+
+        subroutine SVec4x16v16_set1(svec) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set1_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set1_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set1_v2
+            type(SVec4x16v16), intent(out) :: svec
+            type(ZMM16r4_t), parameter :: vz = ZMM16r4_t(0.0_sp)
+            svec.s0 = vz
+            svec.s1 = vz
+            svec.s2 = vz
+            svec.s3 = vz
+        end subroutine SVec4x16v16_set1_v2
+
+       
+        pure function SVec4x16v16_set_2(x0,x1,x2,x3) result(svec)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_2
+            real(kind=sp),  intent(in) :: x0
+            real(kind=sp),  intent(in) :: x1
+            real(kind=sp),  intent(in) :: x2
+            real(kind=dp),  intent(in) :: x3
+            type(SVec4x16v16) :: svec
+            svec.s0 = ZMM16r4_t(x0)
+            svec.s1 = ZMM16r4_t(x1)
+            svec.s2 = ZMM16r4_t(x2)
+            svec.s3 = ZMM16r4_t(x3)
+        end function SVec4x16v16_set_2
+
+
+        subroutine SVec4x16v16_set2_v2(x0,x1,x2,x3,svec) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set2_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set2_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set2_v2
+            real(kind=sp),     intent(in) :: x0
+            real(kind=sp),     intent(in) :: x1
+            real(kind=sp),     intent(in) :: x2
+            real(kind=dp),     intent(in) :: x3
+            type(SVec4x16v16), intent(out) :: svec
+            svec.s0 = ZMM16r4_t(x0)
+            svec.s1 = ZMM16r4_t(x1)
+            svec.s2 = ZMM16r4_t(x2)
+            svec.s3 = ZMM16r4_t(x3)
+        end subroutine SVec4x16v16_set2_v2
+
+
+        pure function SVec4x16v16_set_3(x0,x1,x2,x3) result(svec)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_3
+            real(kind=sp), dimension(0:15),  intent(in) :: x0
+            real(kind=sp), dimension(0:15),  intent(in) :: x1
+            real(kind=sp), dimension(0:15),  intent(in) :: x2
+            real(kind=dp), dimension(0:15),  intent(in) :: x3
+            type(SVec4x16v16) :: svec
+            svec.s0 = x0
+            svec.s1 = x1
+            svec.s2 = x2
+            svec.s3 = x3
+        end function SVec4x16v16_set_3
+
+
+        subroutine SVec4x16v16_set2_v3(x0,x1,x2,x3,svec) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set2_v3
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set2_v3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set2_v3
+            real(kind=sp), dimension(0:15),  intent(in) :: x0
+            real(kind=sp), dimension(0:15),  intent(in) :: x1
+            real(kind=sp), dimension(0:15),  intent(in) :: x2
+            real(kind=dp), dimension(0:15),  intent(in) :: x3
+            type(SVec4x16v16), intent(out) :: svec
+            svec.s0 = x0
+            svec.s1 = x1
+            svec.s2 = x2
+            svec.s3 = x3
+        end subroutine SVec4x16v16_set2_v3
+        
+ 
+        pure function SVec4x16v16_set_4(x0,x1,x2,x3) result(svec)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_4
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_4
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_4
+            type(ZMM16r4_t), intent(in) :: x0
+            type(ZMM16r4_t), intent(in) :: x1
+            type(ZMM16r4_t), intent(in) :: x2
+            type(ZMM16r4_t), intent(in) :: x3
+            type(SVec4x16v16) :: svec
+            svec.s0 = x0
+            svec.s1 = x1
+            svec.s2 = x2
+            svec.s3 = x3
+        end function SVec4x16v16_set_4
+
+
+        subroutine SVec4x16v16_set_4_v2(x0,x1,x2,x3,svec) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_4_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_4_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_4_v2
+            type(ZMM16r4_t), intent(in) :: x0
+            type(ZMM16r4_t), intent(in) :: x1
+            type(ZMM16r4_t), intent(in) :: x2
+            type(ZMM16r4_t), intent(in) :: x3
+            type(SVec4x16v16), intent(out) :: svec
+            svec.s0 = x0
+            svec.s1 = x1
+            svec.s2 = x2
+            svec.s3 = x3
+        end subroutine SVec4x16v16_set_4_v2
+
+
+        
+
+        
+
+
+        
+     
+     
+
+
     
     
 
