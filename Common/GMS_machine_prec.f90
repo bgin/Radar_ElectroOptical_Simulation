@@ -1,5 +1,6 @@
 
-module mod_machine_prec
+mo
+dule mod_machine_prec
 
   use mod_kinds, only : i4, sp, dp
   implicit none
