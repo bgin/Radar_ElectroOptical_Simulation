@@ -6,7 +6,7 @@ module eos_radiometry
    !============================================================
    ! This module is based on: 'The Infrared & Electro-Optical
    ! Systems Handbook' tom 1.
-   ! Many of the equations will be implemented from the above 
+   ! Many of the equations was implemented from the above 
    ! quoted source.
    !============================================================
 
@@ -16,17 +16,27 @@ module eos_radiometry
 
    ! Constants
    
-   real(kind=sp), parameter :: c      = 299792458.0_dp    ! speed of light in vacuum
+   real(kind=dp), parameter :: c      = 299792458.0_dp    ! speed of light in vacuum
    real(kind=dp), parameter :: h      = 6.62607015e-34_dp ! Planck const
    real(kind=dp), parameter :: k      = 1.380649e−23_dp   ! Boltzmann const
    real(kind=dp), parameter :: c1     = 6.283185307179586476925286766559_dp*c*c*h ! first radiation constant
-   real(kind=sp), parameter :: c2     = h*c/k                                     ! second radiation constant
-
+   real(kind=dp), parameter :: c2     = h*c/k                                     ! second radiation constant
+   !Maxima for Different Planck Functions
+   real(kind=dp), dimension(2), parameter :: photon_freq = [1.593624260_dp,0.6476_dp] ! x-max,R-max
+   real(kind=dp), dimension(2), parameter :: power_freq  = [2.821439372_dp,1.4214_dp] ! as above
+   real(kind=dp), dimension(2), parameter :: photon_gam  = [3.920690395_dp,4.7796_dp] ! as above
+   real(kind=dp), dimension(2), parameter :: power_gam   = [4.96511423_dp, 21.2036_dp]! as above
+   real(kind=dp), dimension(2), parameter :: pow_contrast= [5.96940917_dp,115.9359_dp]! as above 
 
    interface radiant_exitance
        module procedure :: radiant_exitance_r4
        module procedure :: radiant_exitance_r8
    end interface radiant_exitance
+
+   interface bbody_radiance
+       module procedure :: bbody_radiance_r4
+       module procedure :: bbody_radiance_r8
+   end interface bbody_radiance
 
 
    contains
@@ -168,9 +178,179 @@ radiance
      end function radiant_exitance_r8
 
 
+     pure elemental function bbody_radiance_r4(gamma,T) result(Lgamm)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: bbody_radiance_r4
+        !dir$ attributes code_align : 32 :: bbody_radiance_r4
+        !dir$ attributes vector:processor(skylake_avx512) :: bbody_radiance_r4
+        real(kind=sp),  intent(in) :: gamma !wavelength
+        real(kind=sp),  intent(in) :: T     !temperature
+        real(kind=sp) :: Lgamm
+        ! Locals
+        real(kind=sp), automatic :: num,gamm5,x
+        ! Exec code ....
+        gamm5 = gamma*gamma*gamma*gamma*gamma
+        num   = 2.0_sp*real(c*c,kind=sp)*h
+        x     = c2/gamma*T
+        Lgamm = num/(gamm5*exp(x)-1.0_sp)
+     end function bbody_radiance_r4
 
 
+     pure elemental function bbody_radiance_r8(gamma,T) result(Lgamm)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: bbody_radiance_r8
+        !dir$ attributes code_align : 32 :: bbody_radiance_r8
+        !dir$ attributes vector:processor(skylake_avx512) :: bbody_radiance_r8
+        real(kind=dp),  intent(in) :: gamma !wavelength
+        real(kind=dp),  intent(in) :: T     !temperature
+        real(kind=dp) :: Lgamm
+        ! Locals
+        real(kind=dp), automatic :: num,gamm5,x
+        ! Exec code ....
+        gamm5 = gamma*gamma*gamma*gamma*gamma
+        num   = 2.0_dp*c*c*h
+        x     = c2/gamma*T
+        Lgamm = num/(gamm5*exp(x)-1.0_dp)
+     end function bbody_radiance_r8
 
+
+     pure elemental function contrast_analytic_r4(Ry,T,x) result(dT)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: contrast_analytic_r4
+        !dir$ attributes code_align : 32 :: contrast_analytic_r4
+        !dir$ attributes vector:processor(skylake_avx512) :: contrast_analytic_r4
+        real(kind=sp),  intent(in) :: Ry  !spectral radiometric function, radiance, radiant emittance
+        real(kind=sp),  intent(in) :: T   ! Temperature
+        real(kind=sp),  intent(in) :: x   ! dimensionless frequency
+        ! Locals
+        real(kind=sp), automatic :: num,den,expx
+        ! Exec code ....
+        expx = exp(x)
+        num = x*expx
+        den = T*expx-1.0_sp
+        dT  = (num/den)*Ry
+     end function contrast_analytic_r4
+
+
+     pure elemental function contrast_analytic_r8(Ry,T,x) result(dT)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: contrast_analytic_r8
+        !dir$ attributes code_align : 32 :: contrast_analytic_r8
+        !dir$ attributes vector:processor(skylake_avx512) :: contrast_analytic_r8
+        real(kind=dp),  intent(in) :: Ry  !spectral radiometric function, radiance, radiant emittance
+        real(kind=dp),  intent(in) :: T   ! Temperature
+        real(kind=dp),  intent(in) :: x   ! dimensionless frequency
+        ! Locals
+        real(kind=dp), automatic :: num,den,expx
+        ! Exec code ....
+        expx = exp(x)
+        num = x*expx
+        den = T*expx-1.0_dp
+        dT  = (num/den)*Ry
+     end function contrast_analytic_r8
+
+
+     subroutine contrast_num_r4(Ry,T,dRydT,n,omp)
+ 
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: contrast_num_r4
+        !dir$ attributes code_align : 32 :: contrast_num_r4
+        use data_fdiff
+        implicit none
+        real(kind=sp),   dimension(n), intent(in) :: Ry !any spectral radiometric function, radiance, radiant emittance
+        real(kind=sp),   dimension(n), intent(in) :: T  !Temperature as an independent variable
+        real(kind=sp),   dimension(n), intent(out):: dRydT !Resulting numerical derivative
+        integer(kind=i4),              intent(in) :: n
+        logical(kind=i4),              intent(in) :: omp !use OpenMP
+        ! Exec code ....
+        if(omp) then
+           data_fdiff_omp(Ry,T,dRydT,n)
+        else
+           data_fdiff(Ry,T,dRyDt,n)
+        end if
+     end subroutine contrast_num_r4
+
+
+     subroutine contrast_num_r8(Ry,T,dRydT,n,omp)
+ 
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: contrast_num_r8
+        !dir$ attributes code_align : 32 :: contrast_num_r8
+        use data_fdiff
+        implicit none
+        real(kind=dp),   dimension(n), intent(in) :: Ry !any spectral radiometric function, radiance, radiant emittance
+        real(kind=dp),   dimension(n), intent(in) :: T  !Temperature as an independent variable
+        real(kind=dp),   dimension(n), intent(out):: dRydT !Resulting numerical derivative
+        integer(kind=i4),              intent(in) :: n
+        logical(kind=i4),              intent(in) :: omp !use OpenMP
+        ! Exec code ....
+        if(omp) then
+           data_fdiff_omp(Ry,T,dRydT,n)
+        else
+           data_fdiff(Ry,T,dRyDt,n)
+        end if
+     end subroutine contrast_num_r8
+
+
+     subroutine relative_contrast_r4(x,T,dx,dT,n,omp)
+
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: relative_contrast_r4
+        !dir$ attributes code_align : 32 :: relative_contrast_r4
+        use data_fdiff
+        implicit none
+        real(kind=sp),                 intent(in) :: x
+        real(kind=sp),   dimension(n), intent(in) :: T  !Temperature
+        real(kind=sp),   dimension(n), intent(in) :: dx !independent variable
+        real(kind=sp),   dimension(n), intent(out):: dT !Resulting numerical derivative
+        integer(kind=i4),              intent(in) :: n
+        logical(kind=i4),              intent(in) :: omp !use OpenMP
+        ! Locals
+        real(kind=sp), automatic :: expx,num,den,rat
+        expx = exp(x)
+        num  = x*exp(x)
+        den  = expx-1.0_sp
+        rat  = num/den
+        if(omp) then
+           data_fdiff_omp(T,dx,dT,n)
+        else
+           data_fdiff(T,dx,dT,n)
+        end if
+        !dir$ assume_aligned dT:64
+        dT(:) = dT(:)*rat
+     end subroutine relative_contrast_r4
+
+
+     subroutine relative_contrast_r8(x,T,dx,dT,n,omp)
+
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: relative_contrast_r8
+        !dir$ attributes code_align : 32 :: relative_contrast_r8
+        use data_fdiff
+        implicit none
+        real(kind=dp),                 intent(in) :: x
+        real(kind=dp),   dimension(n), intent(in) :: T  !Temperature
+        real(kind=dp),   dimension(n), intent(in) :: dx !independent variable
+        real(kind=dp),   dimension(n), intent(out):: dT !Resulting numerical derivative
+        integer(kind=i4),              intent(in) :: n
+        logical(kind=i4),              intent(in) :: omp !use OpenMP
+        ! Locals
+        real(kind=dp), automatic :: expx,num,den,rat
+        expx = exp(x)
+        num  = x*exp(x)
+        den  = expx-1.0_dp
+        rat  = num/den
+        if(omp) then
+           data_fdiff_omp(T,dx,dT,n)
+        else
+           data_fdiff(T,dx,dT,n)
+        end if
+        !dir$ assume_aligned dT:64
+        dT(:) = dT(:)*rat
+     end subroutine relative_contrast_r8
+
+
+     
 
 
 
