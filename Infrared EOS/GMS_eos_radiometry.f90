@@ -6,7 +6,7 @@ module eos_radiometry
    !============================================================
    ! This module is based on: 'The Infrared & Electro-Optical
    ! Systems Handbook' tom 1.
-   ! Many of the equations was implemented from the above 
+   ! Many of the equations will be implemented from the above 
    ! quoted source.
    !============================================================
 
