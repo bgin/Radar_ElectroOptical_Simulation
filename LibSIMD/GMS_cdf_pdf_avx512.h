@@ -469,6 +469,892 @@
 				                     __attribute__((aligned(32)));
 
 
+              __m512
+	      arcsin_pdf_zmm16r4(const __m512,
+		                 const __m512)       __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_VARIANCE returns the variance of the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!		    
+*/
+
+
+
+                __m512d
+		arcsin_variance_zmm8r8(const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		 __m512
+		arcsin_variance_zmm16r4(const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_SAMPLE samples the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+!
+*/
+
+
+              __m512d
+	      arcsin_sample_zmm8r8()                 __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+	      __m512d
+	      arcsin_sample_zmm8r8(const __m512d)     __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! BETA_BINOMIAL_CDF evaluates the Beta Binomial CDF.
+!
+!  Discussion:
+!
+!    A simple summing approach is used.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Input, integer ( kind = 4 ) C, a parameter of the PDF.
+!    0 <= C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+               __m512d
+	       beta_binomial_cdf_zmm8r8(const int32_t,
+		                        const int32_t,
+					const __m512d,
+					const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*!*****************************************************************************80
+!
+!! BETA_PDF evaluates the Beta PDF.
+!
+!  Discussion:
+!
+!    The formula for the PDF is:
+!
+!      PDF(A,B;X) = X**(A-1) * (1-X)**(B-1) / BETA(A,B).
+!
+!    A = B = 1 yields the Uniform distribution on [0,1].
+!    A = B = 1/2 yields the Arcsin distribution.
+!        B = 1 yields the power function distribution.
+!    A = B -> Infinity tends to the Normal distribution.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    01 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!*/
+
+
+               __m512d
+	       beta_pdf_zmm8r8(const __m512d,
+		               const __m512d,
+			       const __m512d)        __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+	       __m512
+	       beta_pdf_zmm16r4(const __m512,
+		               const __m512,
+			       const __m512)        __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+	       __m512d
+	       beta_variance_zmm8r8(const __m512d,
+		                   const __m512d )   __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+	       __m512
+	       beta_variance_zmm16r4(const __m512,
+		                     const __m512 )   __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+	       
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_CDF evaluates the Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A <= X.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!		    
+*/
+
+
+                      __m512d
+		      weibull_cdf_zmm8r8(const __m512d,
+		                         const __m512d,
+					 const __m512d,
+					 const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512
+		      weibull_cdf_zmm16r4(const __m512,
+		                         const __m512,
+					 const __m512,
+					 const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512d
+		      weibull_cdf_inv_zmm8r8(const __m512d,
+		                             const __m512d,
+					     const __m512d,
+					     const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512
+		      weibull_cdf_inv_zmm16r4(const __m512,
+		                             const __m512,
+					     const __m512,
+					     const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512d
+		      weibull_sample_zmm8r8(const __m512d,
+		                            const __m512d,
+					    const __m512d,
+					    const __m512d)   __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512
+		      weibull_sample_zmm16r4(const __m512,
+		                            const __m512,
+					    const __m512,
+					    const __m512)   __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_VARIANCE returns the variance of the Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/
+
+
+
+                      __m512d
+                      weibull_discrete_cdf_zmm8r8(const __m512d,
+		                                  const __m512d,
+					          const __m512d)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+		      
+		      __m512
+                      weibull_discrete_cdf_zmm16r4(const __m512,
+		                                   const __m512,
+					           const __m512)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512d
+		      weibull_discrete_pdf_zmm8r8(const __m512d,
+		                                  const __m512d,
+					          const __m512d)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		       __m512
+		      weibull_discrete_pdf_zmm16r4(const __m512,
+		                                   const __m512,
+					           const __m512)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_CDF_INV inverts the Discrete Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Output, integer ( kind = 4 ) X, the corresponding argument.
+*/
+
+
+                      __m512d
+		      weibull_discr_icdf_zmm8r8(const __m512d,
+		                                const __m512d,
+						const __m512d)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      __m512
+		      weibull_discr_icdf_zmm16r4(const __m512,
+		                                const __m512,
+						const __m512)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_SAMPLE samples the discrete Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, integer ( kind = 4 ) X, a sample of the PDF.
+!
+*/
+
+
+                       __m512d
+		      weibull_discr_samp_zmm8r8(   const __m512d,
+		                                   const __m512d,
+						   const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_CDF evaluates the von Mises CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    22 September 2005
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Geoffrey Hill.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Geoffrey Hill,
+!    Algorithm 518,
+!    Incomplete Bessel Function I0: The von Mises Distribution,
+!    ACM Transactions on Mathematical Software,
+!    Volume 3, Number 3, September 1977, pages 279-284.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+                      __m512d
+		      von_misses_cdf_zmm8r8(const __m512d,
+		                            const __m512d,
+					    const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      
+		       __m512
+		      von_misses_cdf_zmm16r4(const __m512,
+		                            const __m512,
+					    const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+				                     __attribute__((aligned(32)));
+
+
+		      
+/*
+   !*****************************************************************************80
+!
+!! VON_MISES_PDF evaluates the von Mises PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = EXP ( B * COS ( X - A ) ) / ( 2 * PI * I0(B) )
+!
+!    where:
+!
+!      I0(*) is the modified Bessel function of the first
+!      kind of order 0.
+!
+!    The von Mises distribution for points on the unit circle is
+!    analogous to the normal distribution of points on a line.
+!    The variable X is interpreted as a deviation from the angle A,
+!    with B controlling the amount of dispersion.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    27 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Jerry Banks, editor,
+!    Handbook of Simulation,
+!    Engineering and Management Press Books, 1998, page 160.
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!    Merran Evans, Nicholas Hastings, Brian Peacock,
+!    Statistical Distributions,
+!    Wiley, 2000,
+!    LC: QA273.6.E92, pages 189-191.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    LC: QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!              
+*/
+
+
+
+                       __m512d
+		      von_misses_pdf_zmm8r8(const __m512d,
+		                            const __m512d,
+					    const __m512d)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+		       __m512
+		      von_misses_pdf_zmm16r4(const __m512,
+		                            const __m512,
+					    const __m512)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_SAMPLE samples the von Mises PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+	              
+*/
+
+
+                      __m512d
+                      von_misses_sample_zmm8r8(const __m512d,
+		                               const __m512d)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		      
+                       __m512
+                      von_misses_sample_zmm16r4(const __m512,
+		                                const __m512)  __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_PDF evaluates the Rayleigh PDF.
+!
+!  Discussion:
+!
+!    PDF(A;X) = ( X / A^2 ) * EXP ( - X^2 / ( 2 * A^2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    15 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0 < A.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+                      
+*/
+
+
+                       __m512d
+		      rayleigh_pdf_zmm8r8(const __m512d,
+		                          const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		       __m512
+		      rayleigh_pdf_zmm16r4(const __m512,
+		                          const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_MEAN returns the mean of the Rayleigh PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean of the PDF.		     
+*/
+
+
+                       __m512d
+		      rayleigh_mean_zmm8r8(const __m512d)__attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+						     
+                        __m512
+		      rayleigh_mean_zmm16r4(const __m512)__attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF_INV inverts the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+*/
+
+
+                      __m512d
+		      rayleigh_invcdf_zmm8r8(const __m512d,
+		                             const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		      
+		       __m512
+		      rayleigh_invcdf_zmm16r4(const __m512,
+		                             const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF evaluates the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    0.0D+00 <= X.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+*/
+
+
+
+                      __m512d
+		      rayleigh_cdf_zmm8r8(const __m512d,
+		                          const __m512d) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		       __m512
+		      rayleigh_cdf_zmm16r4(const __m512,
+		                          const __m512) __attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+
+		      __m512d
+		      rayleigh_sample_zmm8r8(const __m512d,
+		                             const __m512d)__attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		      __m512
+		      rayleigh_sample_zmm16r4(const __m512,
+		                             const __m512)__attribute__((noinline))
+			                             __attribute__((hot))
+				                     __attribute__((regcall))
+                                                     __attribute__((aligned(32)));
+
+
+		      
+
+
+
+
+
 
 
 
