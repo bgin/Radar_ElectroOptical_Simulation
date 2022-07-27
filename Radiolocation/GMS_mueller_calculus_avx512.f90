@@ -1661,6 +1661,304 @@ module mueller_calculus_avx512
         end subroutine SVec4x16v16_set_4_v2
 
 
+        pure function SVec4x16v16_set_5(x) result(svec)
+
+
+             !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_5
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_5
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_5
+            type(SVec4x16v16),  intent(in) :: x
+            type(SVec4x16v16) :: svec
+            !dir$ attributes align : 64 :: svec
+            ! Exec code ....
+            svec.s0 = x.s0
+            svec.s1 = x.s1
+            svec.s2 = x.s2
+            svec.s3 = x.s3
+        end function SVec4x16v16_set_5
+          
+
+        subroutine SVec4x16v16_set_5_v2(x,svec)
+
+
+             !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_set_5_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_set_5_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_set_5_v2
+            type(SVec4x16v16),  intent(in)  :: x
+            type(SVec4x16v16),  intent(out) :: svec
+            !dir$ attributes align : 64 :: svec
+            ! Exec code ....
+            svec.s0 = x.s0
+            svec.s1 = x.s1
+            svec.s2 = x.s2
+            svec.s3 = x.s3
+         end subroutine  SVec4x16v16_set_5_v2
+
+
+         pure function SVec4x16v16_normal_Q(jv) result(v16)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_Q
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_Q
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_Q
+            type(SVec4x16v16),  intent(in) :: jv
+            type(ZMM16r4_t)  :: v16
+            !dir$ attributes align : 64 :: v16
+            v16.v = jv.s1.v/jv.s0.v
+         end function SVec4x16v16_normal_Q
+
+
+         subroutine SVec4x16v16_normal_Q_v2(jv,v16) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_Q_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_Q_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_Q_v2
+            type(SVec4x16v16),  intent(in)   :: jv
+            type(ZMM16r4_t),    intent(out)  :: v16
+            v16.v = jv.s1.v/jv.s0.v
+         end subroutine SVec4x16v16_normal_Q_v2
+
+
+         pure function SVec4x16v16_normal_U(jv) result(v16)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_U
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_U
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_U
+            type(SVec4x16v16),  intent(in) :: jv
+            type(ZMM16r4_t)  :: v16
+            !dir$ attributes align : 64 :: v16
+            v16.v = jv.s2.v/jv.s0.v
+         end function SVec4x16v16_normal_U
+
+
+         subroutine SVec4x16v16_normal_U_v2(jv,v16) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_U_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_U_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_U_v2
+            type(SVec4x16v16),  intent(in)   :: jv
+            type(ZMM16r4_t),    intent(out)  :: v16
+            v16.v = jv.s2.v/jv.s0.v
+         end subroutine SVec4x16v16_normal_U_v2
+
+          
+         pure function SVec4x16v16_normal_V(jv) result(v16)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_V
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_V
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_V
+            type(SVec4x16v16),  intent(in) :: jv
+            type(ZMM16r4_t)  :: v16
+            !dir$ attributes align : 64 :: v16
+            v16.v = jv.s3.v/jv.s0.v
+         end function SVec4x16v16_normal_V
+
+
+         subroutine SVec4x16v16_normal_V_v2(jv,v16) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_normal_V_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_normal_V_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_normal_V_v2
+            type(SVec4x16v16),  intent(in)   :: jv
+            type(ZMM16r4_t),    intent(out)  :: v16
+            v16.v = jv.s3.v/jv.s0.v
+         end subroutine SVec4x16v16_normal_V_v2
+
+          
+         pure function SVec4x16v16_add_SVec4x16v16(sv1,sv2) result(sv)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_add_SVec4x16v16
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_add_SVec4x16v16
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_add_SVec4x16v16
+            type(SVec4x16v16),  intent(in) :: sv1
+            type(SVec4x16v16),  intent(in) :: sv2
+            type(SVec4x16v16) :: sv
+            sv.s0.v = sv1.s0.v+sv2.s0.v
+            sv.s1.v = sv1.s1.v+sv2.s1.v
+            sv.s2.v = sv1.s2.v+sv2.s2.v
+            sv.s3.v = sv1.s3.v+sv2.s3.v
+         end function SVec4x16v16_add_SVec4x16v16
+
+
+         subroutine SVec4x16v16_add_SVec4x16v16_v2(sv1,sv2,sv) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_add_SVec4x16v16_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_add_SVec4x16v16_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_add_SVec4x16v16_v2
+            type(SVec4x16v16),  intent(in)  :: sv1
+            type(SVec4x16v16),  intent(in)  :: sv2
+            type(SVec4x16v16),  intent(out) :: sv
+            sv.s0.v = sv1.s0.v+sv2.s0.v
+            sv.s1.v = sv1.s1.v+sv2.s1.v
+            sv.s2.v = sv1.s2.v+sv2.s2.v
+            sv.s3.v = sv1.s3.v+sv2.s3.v
+         subroutine SVec4x16v16_add_SVec4x16v16_v2
+
+              
+         subroutine SVec4x16v16_add_SVec4x16v16_v3(sv1,sv2) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_add_SVec4x16v16_v3
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_add_SVec4x16v16_v3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_add_SVec4x16v16_v3
+            type(SVec4x16v16),  intent(inout)  :: sv1
+            type(SVec4x16v16),  intent(in)     :: sv2
+            
+            sv1.s0.v = sv1.s0.v+sv2.s0.v
+            sv1.s1.v = sv1.s1.v+sv2.s1.v
+            sv1.s2.v = sv1.s2.v+sv2.s2.v
+            sv1.s3.v = sv1.s3.v+sv2.s3.v
+         subroutine SVec4x16v16_add_SVec4x16v16_v3
+
+
+          
+         pure function SVec4x16v16_sub_SVec4x16v16(sv1,sv2) result(sv)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_sub_SVec4x16v16
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_sub_SVec4x16v16
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_sub_SVec4x16v16
+            type(SVec4x16v16),  intent(in) :: sv1
+            type(SVec4x16v16),  intent(in) :: sv2
+            type(SVec4x16v16) :: sv
+            sv.s0.v = sv1.s0.v-sv2.s0.v
+            sv.s1.v = sv1.s1.v-sv2.s1.v
+            sv.s2.v = sv1.s2.v-sv2.s2.v
+            sv.s3.v = sv1.s3.v-sv2.s3.v
+         end function SVec4x16v16_sub_SVec4x16v16
+
+
+         subroutine SVec4x16v16_sub_SVec4x16v16_v2(sv1,sv2,sv) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_sub_SVec4x16v16_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_sub_SVec4x16v16_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_sub_SVec4x16v16_v2
+            type(SVec4x16v16),  intent(in)  :: sv1
+            type(SVec4x16v16),  intent(in)  :: sv2
+            type(SVec4x16v16),  intent(out) :: sv
+            sv.s0.v = sv1.s0.v-sv2.s0.v
+            sv.s1.v = sv1.s1.v-sv2.s1.v
+            sv.s2.v = sv1.s2.v-sv2.s2.v
+            sv.s3.v = sv1.s3.v-sv2.s3.v
+         subroutine SVec4x16v16_sub_SVec4x16v16_v2
+
+              
+         subroutine SVec4x16v16_sub_SVec4x16v16_v3(sv1,sv2) 
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_sub_SVec4x16v16_v3
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_sub_SVec4x16v16_v3
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_sub_SVec4x16v16_v3
+            type(SVec4x16v16),  intent(inout)  :: sv1
+            type(SVec4x16v16),  intent(in)     :: sv2
+            
+            sv1.s0.v = sv1.s0.v-sv2.s0.v
+            sv1.s1.v = sv1.s1.v-sv2.s1.v
+            sv1.s2.v = sv1.s2.v-sv2.s2.v
+            sv1.s3.v = sv1.s3.v-sv2.s3.v
+         subroutine SVec4x16v16_sub_SVec4x16v16_v3
+
+
+         pure function SVec4x16v16_negate(sv1) result(sv)
+
+             !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_negate
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_negate
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_negate
+            type(SVec4x16v16),  intent(in) :: sv1
+            type(SVec4x16v16) :: sv
+            type(ZMM16r4_t), parameter :: zero = ZMM16r4_t(0.0_sp)
+            sv.s0 = zero.v-sv1.s0.v
+            sv.s1 = zero.v-sv1.s1.v
+            sv.s2 = zero.v-sv1.s2.v
+            sv.s3 = zero.v-sv1.s3.v
+         end function SVec4x16v16_negate
+
+
+         pure function SVec4x16v16_dot(sv1,sv2) result(dotp)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_dot
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_dot
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_dot
+            type(SVec4x16v16),  intent(in) :: sv1
+            type(SVec4x16v16),  intent(in) :: sv2
+            type(ZMM16r4_t) :: dotp
+            !dir$ attributes align : 64 :: dotp
+            type(ZMM16r4_t), automatic :: t0,t1
+            !dir$ attributes align : 64 :: t0,t1
+            t0 = sv1.s0.v*sv2.s0.v+sv1.s1.v*sv2.s1.v
+            t1 = sv1.s2.v*sv2.s2.v+sv1.s3.v*sv2.s3.v
+            dotp.v = t1.v+t0.v
+         end function SVec4x16v16_dot
+
+
+         subroutine SVec4x16v16_dot_v2(sv1,sv2,dotp)
+
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_dot_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_dot_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_dot_v2
+            type(SVec4x16v16),  intent(in) :: sv1
+            type(SVec4x16v16),  intent(in) :: sv2
+            type(ZMM16r4_t),    intent(out) :: dotp
+            !dir$ attributes align : 64 :: dotp
+            type(ZMM16r4_t), automatic :: t0,t1
+            !dir$ attributes align : 64 :: t0,t1
+            t0 = sv1.s0.v*sv2.s0.v+sv1.s1.v*sv2.s1.v
+            t1 = sv1.s2.v*sv2.s2.v+sv1.s3.v*sv2.s3.v
+            dotp.v = t1.v+t0.v
+         subroutine SVec4x16v16_dot_v2
+
+
+         pure function SVec4x16v16_mul_ZMM16r4(sv,v16) result(svv)
+             
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_mul_ZMM16r4
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_mul_ZMM16r4
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_mul_ZMM16r4
+            type(SVec4x16v16),   intent(in) :: sv
+            type(ZMM16r4_t),     intent(in) :: v16
+            type(SVec4x16v16) :: svv
+            svv.s0 = sv.s0.v*v16.v
+            svv.s1 = sv.s1.v*v16.v
+            svv.s2 = sv.s2.v*v16.v
+            svv.s3 = sv.s3.v*v16.v
+         end function SVec4x16v16_mul_ZMM16r4
+
+
+         subroutine SVec4x16v16_mul_ZMM16r4_v2(sv,v16,svv) 
+             
+            !DIR$ OPTIMIZE:3
+            !DIR$ ATTRIBUTES INLINE :: SVec4x16v16_mul_ZMM16r4_v2
+            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SVec4x16v16_mul_ZMM16r4_v2
+            !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: SVec4x16v16_mul_ZMM16r4_v2
+            type(SVec4x16v16),   intent(in) :: sv
+            type(ZMM16r4_t),     intent(in) :: v16
+            type(SVec4x16v16),   intent(out) :: svv
+            svv.s0 = sv.s0.v*v16.v
+            svv.s1 = sv.s1.v*v16.v
+            svv.s2 = sv.s2.v*v16.v
+            svv.s3 = sv.s3.v*v16.v
+         subroutine SVec4x16v16_mul_ZMM16r4_v2
+
+         
+          
+         
+ 
+
+          
+
         
 
         
