@@ -136,7 +136,7 @@ module laplace_transform
      subroutine free_l_qage_params(params)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: free_l_qage_params
-         type(m_qage_params),   intent(in) :: params
+         type(l_qage_params),   intent(in) :: params
          ! Exec code
          if(.not.params.isalloc) return
          deallocate(params.re_abserr)
@@ -186,7 +186,7 @@ module laplace_transform
                                      epsrel,params,lenw,limit,    &
                                      work,iwork,output)
               !dir$ optimize:3
-              !dir$ attributes code_align : 32 :: laplace_dqagi_omp
+              !dir$ attributes code_align : 32 :: laplacet_dqagi_omp
               use quadpack, only : dqagi
               use omp_lib
               implicit none
@@ -350,7 +350,7 @@ module laplace_transform
                                     epsrel,params,lenw,limit,    &
                                     work,iwork,output)
               !dir$ optimize:3
-              !dir$ attributes code_align : 32 :: laplace_dqagi
+              !dir$ attributes code_align : 32 :: laplacet_dqagi
               use quadpack, only : dqagi
              
               implicit none
