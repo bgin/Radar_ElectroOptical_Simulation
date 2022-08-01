@@ -183,7 +183,7 @@ module hankel_transform
 !$omp shared(npts,f,bound,inf,epsabs,epsrel,re_abserr)  &
 !$omp shared(re_neval,re_ier,limit,lenw,re_last,output,twopi)                     
                      do i=1, params.npts
-                        call dqagi(re_f,bound,inf,epsabs,epsrel,result,         &
+                        call dqagi(f,bound,inf,epsabs,epsrel,result,         &
                                    params.re_abserr(i),params.re_neval(i),  &
                                    params.re_ier(i),limit,lenw,             &
                                    params.re_last(i),iwork,work)
