@@ -93,14 +93,14 @@ module laplace_transform
 
      abstract interface
 
-        real(kind=dp) function re_func(t,user_data)
+        real(kind=dp) function re_func(t)
              import :: dp
              implicit none
              real(kind=dp),   intent(in) :: t
        
         end function re_func
 
-        real(kind=dp) function im_func(t,user_data)
+        real(kind=dp) function im_func(t)
              import :: dp
              implicit none
              real(kind=dp),   intent(in) :: t
