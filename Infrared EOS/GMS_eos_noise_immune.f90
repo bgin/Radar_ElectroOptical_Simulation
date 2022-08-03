@@ -421,5 +421,121 @@ module eos_noise_immune
    end subroutine source_amp_gauss2d_zmm16r4
 
 
+   ! Exponential Burger law for gamm wavelength radiation
+   pure elemental function burger_law_r4(I0g,alphg,l) result(Ilg)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: burger_law_r4
+        !dir$ forceinline :: burger_law_r4
+        real(kind=sp),  intent(in) :: I0g     !Initial distance radiance power
+        real(kind=sp),  intent(in) :: alphg   ! coefficient absorption 
+        real(kind=sp),  intent(in) :: l       ! distance in km
+        real(kind=sp) :: Ilg
+        Ilg = I0g*exp(-alphg*l)
+   end function burger_law_r4
+
+ 
+   pure elemental function burger_law_r8(I0g,alphg,l) result(Ilg)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: burger_law_r8
+        !dir$ forceinline :: burger_law_r8
+        real(kind=dp),  intent(in) :: I0g     !Initial distance radiance power
+        real(kind=dp),  intent(in) :: alphg   ! coefficient absorption 
+        real(kind=dp),  intent(in) :: l       ! distance in km
+        real(kind=dp) :: Ilg
+        Ilg = I0g*exp(-alphg*l)
+   end function burger_law_r8
+
+
+   subroutine burger_law_zmm8r8(I0g,alphg,l,Ilg)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: burger_law_zmm8r8
+        !dir$ forceinline :: burger_law_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: burger_law_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: I0g
+        type(ZMM8r8_t),  intent(in) :: alphg
+        type(ZMM8r8_t),  intent(in) :: l
+        type(ZMM8r8_t),  intent(out) :: Ilg
+               
+        Ilg.v = I0g.v*exp(-alphg.v*l.v)
+   end subroutine burger_law_zmm8r8
+
+
+   subroutine burger_law_zmm16r4(I0g,alphg,l,Ilg)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: burger_law_zmm16r4
+        !dir$ forceinline :: burger_law_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: burger_law_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: I0g
+        type(ZMM16r4_t),  intent(in) :: alphg
+        type(ZMM16r4_t),  intent(in) :: l
+        type(ZMM16r4_t),  intent(out) :: Ilg
+               
+        Ilg.v = I0g.v*exp(-alphg.v*l.v)
+   end subroutine burger_law_zmm16r4
+
+
+   pure elemental function atmos_humid_r4(aref,T) result(aabs)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: atmos_humid_r4
+        !dir$ forceinline :: atmos_humid_r4
+        real(kind=sp), intent(in) :: aref !referential humidity (g*m^-3)
+        real(kind=sp), intent(in) :: T ! Atmosphere temperature (K)
+        real(kind=sp) :: T
+        real(kind=sp), parameter :: c0 = 25.22_sp
+        real(kind=sp), parameter :: c1 = 273.16_sp
+        real(kind=sp), parameter :: c2 = 5.31_sp
+        real(kind=sp), automatic :: ft,st,tt
+        ft   = aref/T
+        st   = c0*(T-c1)/T
+        tt   = c2*log(T/c1)
+        aabs = ft*exp(st-tt)
+   end function atmos_humid_r4
+
+
+   pure elemental function atmos_humid_r8(aref,T) result(aabs)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: atmos_humid_r8
+        !dir$ forceinline :: atmos_humid_r8
+        real(kind=dp), intent(in) :: aref !referential humidity (g*m^-3)
+        real(kind=dp), intent(in) :: T ! Atmosphere temperature (K)
+        real(kind=dp) :: T
+        real(kind=dp), parameter :: c0 = 25.22_dp
+        real(kind=dp), parameter :: c1 = 273.16_dp
+        real(kind=dp), parameter :: c2 = 5.31_dp
+        real(kind=dp), automatic :: ft,st,tt
+        ft   = aref/T
+        st   = c0*(T-c1)/T
+        tt   = c2*log(T/c1)
+        aabs = ft*exp(st-tt)
+   end function atmos_humid_r8
+
+
+   subroutine atmos_humid_zmm8r8(aref,T,aabs)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: atmos_humid_zmm8r8
+        !dir$ forceinline :: atmos_humid_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: atmos_humid_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: aref
+        type(ZMM8r8_t),  intent(in) :: T
+        type(ZMM8r8_t),  intent(out) :: aabs
+        type(ZMM8r8_t), parameter :: c0 = ZMM8r8_t(25.22_dp)
+        type(ZMM8r8_t), parameter :: c1 = ZMM8r8_t(273.16_dp)
+        type(ZMM8r8_t), parameter :: c2 = ZMM8r8_t(5.31_dp)
+        type(ZMM8r8_t), automatic :: ft,st,tt
+        !dir$ attributes align : 64 :: ft,st,tt
+        ft.v = aref.v/T.v
+        st.v = c0.v*(T.v-c1.v)/T.v
+        tt.v = c2.v*log(T.v/c1.v)
+        aabs.v = ft.v*exp(st.v-tt.v)
+   end subroutine atmos_humid_zmm8r8
+
+
+   
+
+
+
+   
+
+
 
 end module eos_noise_immune
