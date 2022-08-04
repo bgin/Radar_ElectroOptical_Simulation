@@ -87,6 +87,23 @@ module eos_noise_immune
    real(kind=dp), dimension(6), parameter :: jupiter_rad = [0.150_dp,0.240_dp,0.51_dp,122.0_dp,145.0_dp,102.0_dp]
    real(kind=dp), dimension(6), parameter :: saturn_rad  = [0.072_dp,0.1_dp,0.5_dp,90.0_dp,107.0_dp,76.0_dp]
 
+   ! Relevant derived types
+
+   ! Blend filter which is of use to suppress the of-axial light sources
+   ! to penetrate the 
+   type, public :: blend_filter
+
+         sequence
+         real(kind=sp)    :: R_l ! radius of input blend window
+         real(kind=sp)    :: R   ! radius of output blend window
+         real(kind=sp)    :: L_b ! blend length
+         real(kind=sp)    :: om  ! half of FOV
+         real(kind=sp)    :: phi ! angle of blend direct irradiance
+         real(kind=sp)    :: k   ! coefficient of diminishing irradiance power
+         integer(kind=i4) :: btype !blend filter type i.e. [type 1 for k<=5*10^8,type 2 for k<=0.5*10^6,
+                                   !                        type 3 for k<=10^5,  type 4 for k<=10^3]                        
+   end type blend_filter
+
    contains
 
    
@@ -530,12 +547,165 @@ module eos_noise_immune
    end subroutine atmos_humid_zmm8r8
 
 
-   
+   subroutine atmos_humid_zmm16r4(aref,T,aabs)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: atmos_humid_zmm16r4
+        !dir$ forceinline :: atmos_humid_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: atmos_humid_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: aref
+        type(ZMM16r4_t),  intent(in) :: T
+        type(ZMM16r4_t),  intent(out) :: aabs
+        type(ZMM16r4_t), parameter :: c0 = ZMM16r4_t(25.22_sp)
+        type(ZMM16r4_t), parameter :: c1 = ZMM16r4_t(273.16_sp)
+        type(ZMM16r4_t), parameter :: c2 = ZMM16r4_t(5.31_sp)
+        type(ZMM16r4_t), automatic :: ft,st,tt
+        !dir$ attributes align : 64 :: ft,st,tt
+        ft.v = aref.v/T.v
+        st.v = c0.v*(T.v-c1.v)/T.v
+        tt.v = c2.v*log(T.v/c1.v)
+        aabs.v = ft.v*exp(st.v-tt.v)
+   end subroutine atmos_humid_zmm16r4
+
+  ! Blend filter related functions
+  ! Compute radiance flux composed of uniform background
+  ! and of-axial flux noise source.
+  ! Yakushenkov book (rus) "ElectroOptical devices noise immunity"
+  ! page 113 formula (6.1)
+  pure elemental function background_flux(blend,A,O,theta,k1, &
+                                      L,E,k2) result(Phi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: background_flux
+        !dir$ forceinline :: background_flux
+        type(blend_filter),  intent(in) :: blend
+        real(kind=sp),       intent(in) :: A     ! input lens area
+        real(kind=sp),       intent(in) :: O     ! FoV
+        real(kind=sp),       intent(in) :: theta ! coeff of optical 
+        real(kind=sp),       intent(in) :: k1    ! system coefficient 1 
+        real(kind=sp),       intent(in) :: L     ! brightness of uniform background
+        real(kind=sp),       intent(in) :: E     ! irradiance by the of-axial point source
+        real(kind=sp),       intent(in) :: k2    ! system coefficient 2
+        real(kind=sp) :: Phi ! combined input flux
+        real(kind=sp), automatic :: ft,st,tt
+        real(kind=sp), automatic :: lk
+        lk = blend.k
+        ft = A*O*theta
+        st = k1*L
+        tt = E*(k2/lk)
+        Phi= ft*(st+tt)
+  end function background_flux
 
 
+  ! Vectorized form of above function
+  subroutine background_flux_zmm16r4(blend,A,O,theta,k1, &
+                                 L,E,k2,Phi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: background_flux_zmm16r4
+        !dir$ forceinline :: background_flux_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: background_flux_zmm16r4
+        type(blend_filter),  intent(in) :: blend
+        type(ZMM16r4_t),     intent(in) :: A
+        type(ZMM16r4_t),     intent(in) :: O
+        type(ZMM16r4_t),     intent(in) :: theta
+        real(kind=sp),       intent(in) :: k1
+        type(ZMM16r4_t),     intent(in) :: L
+        type(ZMM16r4_t),     intent(in) :: E
+        real(kind=sp),       intent(in) :: k2
+        type(ZMM16r4_t),     intent(out) :: Phi
+        type(ZMM16r4_t), automatic :: ft,st,tt
+        !dir$ attributes align : 64 :: ft,st,tt
+        real(kind=sp), automatic :: lk
+        lk = blend.k
+        ft.v = A.v*O.v*theta.v
+        st.v = k1*L.v
+        tt.v = E.v*(k2/lk)
+        Phi.v= ft.v*(st.v+tt.v)
+  end subroutine background_flux_zmm16r4
 
-   
+  ! Compute schema K_1A formulae (6.5) 
+  !$omp declare simd simdlen(4) 
+  pure elemental function schema_K1A(r_ob,phi,omega,K,rho) result(K1A) 
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: schema_K1A
+        !dir$ forceinline :: schema_K1A
+        use omp_lib
+        real(kind=sp),  intent(in) :: r_ob  ! coeff of total brightness of optical objective surfaces
+        real(kind=sp),  intent(in) :: phi   ! angle of direct irradiance of blend surface
+        real(kind=sp),  intent(in) :: omega ! half of FOV
+        real(kind=sp),  intent(in) :: K     ! K=C/(Dtg(omega)) diaphragm objective number
+        real(kind=sp),  intent(in) :: rho
+        real(kind=sp) :: K1A
+        real(kind=sp), automatic :: t0,t1,t2,t3,t4
+        real(kind=sp), automatic :: KK,K2,tphi,tom,cphi,com
+        tphi = tan(phi)
+        KK   = K*K
+        K2   = K+K
+        tom  = tan(omega)
+        t0   = (tphi+tom)*(tphi+tom)
+        t1   = 0.25_sp*t0
+        t2   = 1.0_sp+r_ob/(t1+1.0_sp)
+        cphi = cos(phi)
+        t3   = 2.0_sp+KK*rho
+        com  = cos(omega)
+        t4   = 1.0_sp+K2
+        K1A  = t2+(cphi-com)*(t3/t4)
+  end function schema_K1A
 
 
+  ! Compute schema K_1B formulae (6.6)
+  !$omp declare simd simdlen(4)
+  pure elemental function schema_K1B(r_ob,phi,omega,K,r_k,rho) result(K1B) 
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: schema_K1B
+        !dir$ forceinline :: schema_K1B
+        use omp_lib
+        real(kind=sp),  intent(in) :: r_ob  ! coeff of total brightness of optical objective surfaces
+        real(kind=sp),  intent(in) :: phi   ! angle of direct irradiance of blend surface
+        real(kind=sp),  intent(in) :: omega ! half of FOV
+        real(kind=sp),  intent(in) :: K     ! K=C/(Dtg(omega)) diaphragm objective number
+        real(kind=sp),  intent(in) :: rho
+        real(kind=sp),  intent(in) :: r_k
+        real(kind=sp) :: K1B
+        real(kind=sp), automatic :: t0,t1,t2,t3,t4,KK4,t5
+        real(kind=sp), automatic :: KK,K2,tphi,tom,cphi,com
+        K2 = K*K
+        tom  = tan(omega)
+        t0   = (tphi+tom)*(tphi+tom)
+        t1   = 0.25_sp*t0
+        t2   = 1.0_sp+r_ob/(t1+1.0_sp)
+        KK4  = 4.0_sp*K2
+        KK4  = r_k/KK4
+        cphi = cos(phi)
+        t3   = K2*rho*rho
+        t4   = 1.0_sp+K+K
+        t5   = t4*t4
+        com  = cos(omega)
+        K1B  = t2+KK4+(com-cphi)*(t3/t4)
+  end function schema_K1B
+
+
+  subroutine schema_K1B_looped(r_ob,phi,omega,K,r_k,rho,K1B,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: schema_K1B_looped
+        !dir$ forceinline :: schema_K1B_looped
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1B_looped
+        real(kind=sp),  intent(in) :: r_ob
+        real(kind=sp), dimension(n), intent(in) :: phi
+        real(kind=sp), dimension(n), intent(in) :: omega
+        real(kind=sp), dimension(n), intent(in) :: K
+        real(kind=sp),               intent(in) :: r_k
+        real(kinf=sp),               intent(in) :: rho
+        real(kind=sp), dimension(n), intent(out) :: K1B
+        integer(kind=i4),            intent(in) :: n
+        integer(kind=i4)
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned omega:64
+        !dir$ assume_aligned K:64
+        !dir$ assume_aligned K1B:64
+        !dir$ vector aligned
+        !$omp simd simdlen(4)
+        do i=1, n
+            K1B(i) = schema_K1B(r_ob,phi(i),omega(i),K(i),r_k,rho)
+        end do
+  end subroutine schema_K1B_looped
 
 end module eos_noise_immune
