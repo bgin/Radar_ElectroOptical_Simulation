@@ -6,7 +6,7 @@ module eos_radiometry
    !============================================================
    ! This module is based on: 'The Infrared & Electro-Optical
    ! Systems Handbook' tom 1.
-   ! Many of the equations will be implemented from the above 
+   ! Many of the equations was implemented from the above 
    ! quoted source.
    !============================================================
 
@@ -27,6 +27,9 @@ module eos_radiometry
    real(kind=dp), dimension(2), parameter :: photon_gam  = [3.920690395_dp,4.7796_dp] ! as above
    real(kind=dp), dimension(2), parameter :: power_gam   = [4.96511423_dp, 21.2036_dp]! as above
    real(kind=dp), dimension(2), parameter :: pow_contrast= [5.96940917_dp,115.9359_dp]! as above 
+
+   ! Interstellar-Extinction integrand variable
+   real(kind=dp) :: Rd,b,l,rad ! 'r' can not be zero
 
    interface radiant_exitance
        module procedure :: radiant_exitance_r4
@@ -348,13 +351,216 @@ radiance
         !dir$ assume_aligned dT:64
         dT(:) = dT(:)*rat
      end subroutine relative_contrast_r8
-
-
+   
      
 
+     ! Planck function in terms of dimensionless frequency 'x'
+     pure elemental function M_x_r4(x,T) result(Mx)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: M_x_r4
+        !dir$ attributes code_align : 32 :: M_x_r4
+        real(kind=sp),   intent(in) :: x  ! dimensionless frequency
+        real(kind=sp),   intent(in) :: T  ! Temperature
+        real(kind=sp) :: Mx
+        real(kind=sp), automatic :: T4,x3,ratio,lt
+        T4 = T*T*T*T
+        x3 = x*x*x
+        ratio = real(c1,kind=sp)*(T4/real(c2,kind=sp))
+        lt    = x3/(exp(x)-1.0_sp)
+        Mx    = ratio*lt
+     end function M_x_r4
+
+     pure elemental function M_x_r8(x,T) result(Mx)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: M_x_r8
+        !dir$ attributes code_align : 32 :: M_x_r8
+        real(kind=dp),   intent(in) :: x  ! dimensionless frequency
+        real(kind=dp),   intent(in) :: T  ! Temperature
+        real(kind=dp) :: Mx
+        real(kind=dp), automatic :: T4,x3,ratio,lt
+        T4 = T*T*T*T
+        x3 = x*x*x
+        ratio = c1*(T4/c2)
+        lt    = x3/(exp(x)-1.0_dp)
+        Mx    = ratio*lt
+     end function M_x_r8
 
 
+     ! The planck function integrand
+     pure function planck_f(x) result(y)
+        real(kind=dp),  intent(in) :: x
+        real(kind=dp) :: y
+        real(kind=dp), automatic :: x3
+        x3 = x*x*x
+        y  = x3/(exp(x)-1.0_dp)
+     end function planck_f
 
+     ! Compute Planck function integral
+     subroutine planckf_quadrature(T,x,a,b,key,limit,lenw,ier,result) 
+         use quadpack, only : dqag
+         real(kind=dp),    intent(in) :: T
+         real(kind=dp),    intent(in) :: x
+         real(kind=dp),    intent(in) :: a
+         real(kind=dp),    intent(in) :: b
+         integer(kind=i4), intent(in) :: key
+         integer(kind=i4), intent(in) :: limit
+         integer(kind=i4), intent(in) :: lenw
+         integer(kind=i4), intent(out):: ier
+         real(kind=dp),    intent(out):: result
+         real(kind=dp),    intent(out):: abserr
+         real(kind=dp),    dimension(lenw)  :: work
+         !dir$ attributes align : 64 :: work
+         integer(kind=i4), dimension(limit) :: iwork
+         !dir$ attributes align : 64 :: iwork
+         real(kind=dp), automatic :: epsabs,epsrel
+         real(kind=dp), automatic :: c4,T4,fact
+         integer(kind=i4), automatic :: neval,last
+         T4   = T*T*T*T
+         c4   = c2*c2*c2*c2
+         fact = (c1/c4)*T4
+         call dqag(planck_f,x,a,b,epsabs,epsrel,key,result,  &
+                   abserr,neval,ier,limit,lenw,last,iwork,work)
+         result = fact*result
+     end subroutine  planckf_quadrature
+
+
+     ! Unpolarized light transmission
+     pure elemental function theta_transmit_r4(theta,rho) result(value)
+         
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: theta_transmit_r4
+        !dir$ attributes code_align : 32 :: theta_transmit_r4
+        real(kind=sp),  intent(in) :: theta
+        real(kind=sp),  intent(in) :: rho
+        real(kind=sp) :: value
+        real(kind=sp), automatic :: num,den,t0,sqr
+        t0    = (1.0_sp-rho)
+        sqr   = t0*t0
+        num   = sqr*rho
+        den   = 1.0_sp-rho*rho*theta*theta
+        value = num/den
+     end function theta_transmit_r4
+
+
+     pure elemental function theta_transmit_r8(theta,rho) result(value)
+         
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: theta_transmit_r8
+        !dir$ attributes code_align : 32 :: theta_transmit_r8
+        real(kind=dp),  intent(in) :: theta
+        real(kind=dp),  intent(in) :: rho
+        real(kind=dp) :: value
+        real(kind=dp), automatic :: num,den,t0,sqr
+        t0    = (1.0_dp-rho)
+        sqr   = t0*t0
+        num   = sqr*rho
+        den   = 1.0_dp-rho*rho*theta*theta
+        value = num/den
+     end function theta_transmit_r8
+
+
+     ! Simple radiation geometry.
+     
+     pure elemental function dfluxp_r4(L,dA1,tht1,dA2,tht2,R) result(dPhi)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: dfluxp_r4
+        !dir$ attributes code_align : 32 :: dfluxp_r4
+        real(kind=sp),  intent(in) :: L
+        real(kind=sp),  intent(in) :: dA1
+        real(kind=sp),  intent(in) :: tht1
+        real(kind=sp),  intent(in) :: dA2
+        real(kind=sp),  intent(in) :: tht2
+        real(kind=sp),  intent(in) :: R
+        real(kind=sp) :: dPhi
+        real(kind=sp), automatic :: ctht1,ctht2,R2,t0,t1
+        R2 = R*R
+        t0 = L*dA1
+        ctht1 = cos(tht1)
+        t1 = t0*ctht1
+        ctht2 = cos(tht2)
+        dPhi = (t1*dA2*ctht2)/R2
+     end function dfluxp_r4
+
+
+     pure elemental function dfluxp_r8(L,dA1,tht1,dA2,tht2,R) result(dPhi)
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: dfluxp_r8
+        !dir$ attributes code_align : 32 :: dfluxp_r8
+        real(kind=dp),  intent(in) :: L
+        real(kind=dp),  intent(in) :: dA1
+        real(kind=dp),  intent(in) :: tht1
+        real(kind=dp),  intent(in) :: dA2
+        real(kind=dp),  intent(in) :: tht2
+        real(kind=dp),  intent(in) :: R
+        real(kind=dp) :: dPhi
+        real(kind=dp), automatic :: ctht1,ctht2,R2,t0,t1
+        R2 = R*R
+        t0 = L*dA1
+        ctht1 = cos(tht1)
+        t1 = t0*ctht1
+        ctht2 = cos(tht2)
+        dPhi = (t1*dA2*ctht2)/R2
+     end function dfluxp_r8
+
+#if 0
+Ba = vertical scale height = 0.1 kpc
+ha = in plane scale height = 4.0 kpc
+AD = 0.07[2.2 J.Lm/A (J.Lm)]2 mag kpc- 1
+R = distance to point from sun, kpc
+Ro = distance of the sun from the galactic center = 8.5 kpc
+b = galactic latitude
+l = galactic longitude.
+
+#endif
+
+     pure function ie_integrand(x) result(y)
+          
+           real(kind=dp), intent(in) :: x
+           real(kind=dp), parameter  :: Ba  = 0.1_dp
+           real(kind=dp), parameter  :: ha  = 4.0_dp
+           real(kind=dp), parameter  :: Ad  = 0.07_dp
+           real(kind=dp), parameter  :: Rd0 = 8.5_dp
+           real(kind=dp), automatic  :: t0,t1,t2,t3,Rd2,rad2
+           t0 = (r*sin(abs(b)))/Ba
+           t1 = cos(l)
+           Rd2 = Rd*Rd
+           rad2= rad*rad
+           t2  = Rd2+rad2-2.0_dp*rad*Rd0*t1
+           t3  = (sqrt(t2)-Rd0)/ha
+           y   = t3-t0
+     end function ie_integrand
+
+     ! Daylight direct sunlight emmision (curve fitted)
+     pure function E_sunlight(m_a) result(E)
+
+        !dir$ optimize:3
+        !dir$ attributes forceinline :: E_sunlight
+        !dir$ attributes code_align : 32 :: E_sunlight
+        real(kind=sp), intent(in) :: m_a !number of air masses
+        real(kind=sp) :: E
+        E = 1089.5_sp/m_a*exp(-0.2819_sp*m_a)
+     end function E_sunlight
+
+
+      subroutine interstellar_extinct(a,b,key,limit,lenw,ier,A_R,abserr)
+           
+            real(kind=dp),    intent(in) :: a
+            real(kind=dp),    intent(in) :: b
+            integer(kind=i4), intent(in) :: key
+            integer(kind=i4), intent(in) :: limit
+            integer(kind=i4), intent(in) :: lenw
+            integer(kind=i4), intent(out) :: ier
+            real(kind=dp),    intent(out) :: A_R
+            real(kind=dp),    intent(out):: abserr
+            real(kind=dp),    dimension(lenw)  :: work
+            !dir$ attributes align : 64 :: work
+            integer(kind=i4), dimension(limit) :: iwork
+            !dir$ attributes align : 64 :: iwork
+            real(kind=dp), automatic :: epsabs,epsrel
+            integer(kind=i4), automatic :: neval,last
+            call dqag(ie_integrand,a,b,epsabs,epsrel,key,A_R,  &
+                      abserr,neval,ier,limit,lenw,last,iwork,work)
+      end subroutine interstellar_extinct
 
 
 end module eos_radiometry
