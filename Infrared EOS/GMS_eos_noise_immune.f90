@@ -683,11 +683,11 @@ module eos_noise_immune
   end function schema_K1B
 
 
-  subroutine schema_K1B_looped(r_ob,phi,omega,K,r_k,rho,K1B,n)
+  subroutine schema_K1B_iterative(r_ob,phi,omega,K,r_k,rho,K1B,n)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 :: schema_K1B_looped
-        !dir$ forceinline :: schema_K1B_looped
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1B_looped
+        !dir$ attributes code_align : 32 :: schema_K1B_iterative
+        !dir$ forceinline :: schema_K1B_iterative
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1B_iterative
         real(kind=sp),  intent(in) :: r_ob
         real(kind=sp), dimension(n), intent(in) :: phi
         real(kind=sp), dimension(n), intent(in) :: omega
@@ -706,6 +706,31 @@ module eos_noise_immune
         do i=1, n
             K1B(i) = schema_K1B(r_ob,phi(i),omega(i),K(i),r_k,rho)
         end do
-  end subroutine schema_K1B_looped
+  end subroutine schema_K1B_iterative
+
+
+  subroutine schema_K1A_iterative(r_ob,phi,omega,K,r_k,rho,K1B,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: schema_K1B_iterative
+        !dir$ forceinline :: schema_K1B_iterative
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1B_iterative
+        real(kind=sp),  intent(in) :: r_ob
+        real(kind=sp), dimension(n), intent(in) :: phi
+        real(kind=sp), dimension(n), intent(in) :: omega
+        real(kind=sp), dimension(n), intent(in) :: K
+        real(kind=sp),               intent(in) :: rho
+        real(kind=sp), dimension(n), intent(out) :: K1B
+        integer(kind=i4),            intent(in) :: n
+        integer(kind=i4)
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned omega:64
+        !dir$ assume_aligned K:64
+        !dir$ assume_aligned K1B:64
+        !dir$ vector aligned
+        !$omp simd simdlen(4)
+        do i=1, n
+            K1B(i) = schema_K1A(r_ob,phi(i),omega(i),K(i),rho)
+        end do
+  end subroutine schema_K1B_iterative
 
 end module eos_noise_immune
