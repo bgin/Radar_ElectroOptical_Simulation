@@ -52,7 +52,7 @@ module MM_VIE
 
       ! Input data for MM Direct Volume Integral code
      type, public :: VIE_In_RC4
-           public
+           
           
            complex(kind=sp) :: inc_eth  ! Complex value of E (incident theta)
            complex(kind=sp) :: inc_eph  ! Complex value of E (incident phi)
@@ -69,10 +69,10 @@ module MM_VIE
 
      ! Mesh data type for MM Direct Volume Integral
      type, public :: VIE_Mesh_RC4
-           public
+           
            integer(kind=i4), dimension(3) :: ndiv ! Number of division (x,y,x) for each rectangular volume cell
            integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
-#if defined(__INTEL_COMPILER) || defined(__ICC)   
+ 
            real(kind=sp),    allocatable, dimension(:)    :: cell_cx ! X-coordinate of n-th cell centre
            real(kind=sp),    allocatable, dimension(:)    :: cell_cy ! Y-coordinate of n-th cell centre
            real(kind=sp),    allocatable, dimension(:)    :: cell_cz ! Z-coordinate of n-th cell centre
@@ -90,25 +90,15 @@ module MM_VIE
            !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dy
            !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dz
            
-#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
 
-           real(kind=sp),    allocatable, dimension(:)    :: cell_cx !GCC$ ATTRIBUTES aligned(64) :: cell_cx
-           real(kind=sp),    allocatable, dimension(:)    :: cell_cy !GCC$ ATTRIBUTES aligned(64) :: cell_cy
-           real(kind=sp),    allocatable, dimension(:)    :: cell_cz !GCC$ ATTRIBUTES aligned(64) :: cell_cz
-           real(kind=sp),    allocatable, dimension(:)    :: cell_vl !GCC$ ATTRIBUTES aligned(64) :: cell_vl
-           complex(kind=sp), allocatable, dimension(:)    :: cell_ee !GCC$ ATTRIBUTES aligned(64) :: cell_ee
-           real(kind=sp),    allocatable, dimension(:)    :: cell_dx !GCC$ ATTRIBUTES aligned(64) :: cell_dx
-           real(kind=sp),    allocatable, dimension(:)    :: cell_dy !GCC$ ATTRIBUTES aligned(64) :: cell_dy
-           real(kind=sp),    allocatable, dimension(:)    :: cell_dz !GCC$ ATTRIBUTES aligned(64) :: cell_dz
-#endif
      end type VIE_Mesh_RC4
 
      ! Output data for MM Direct Volume Integral code.
      
      type, public :: EE_XYZ_RC4
-           public
+       
            integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
-#if defined(__INTEL_COMPILER) || defined(__ICC)             
+           
            complex(kind=sp), allocatable, dimension(:) :: EEx !Complex magnitude x-component [V/m]
            complex(kind=sp), allocatable, dimension(:) :: EEy !Complex magnitude y-component [V/m]
            complex(kind=sp), allocatable, dimension(:) :: EEz !Complex magnitude z-component [V/m]
@@ -121,14 +111,7 @@ module MM_VIE
            !DIR$ ATTRIBUTES ALIGN : 64 :: EEt
            !DIR$ ATTRIBUTES ALIGN : 64 :: PEd
            !DIR$ ATTRIBUTES ALIGN : 64 :: PEs
-#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-           complex(kind=sp), allocatable, dimension(:) :: EEx !GCC$ ATTRIBUTES aligned(64) :: EEx
-           complex(kind=sp), allocatable, dimension(:) :: EEy !GCC$ ATTRIBUTES aligned(64) :: EEy
-           complex(kind=sp), allocatable, dimension(:) :: EEz !GCC$ ATTRIBUTES aligned(64) :: EEz
-           real(kind=sp),    allocatable, dimension(:) :: EEt !GCC$ ATTRIBUTES aligned(64) :: EEt
-           real(kind=sp),    allocatable, dimension(:) :: PEd !GCC$ ATTRIBUTES aligned(64) :: PEd
-           real(kind=sp),    allocatable, dimension(:) :: PEs !GCC$ ATTRIBUTES aligned(64) :: PEs
-#endif
+
       end type EE_XYZ_RC4
 
 
@@ -139,7 +122,7 @@ module MM_VIE
 
          ! Input data for MM Direct Volume Integral code
      type, public :: VIE_In_RC8
-           public
+        
           
            complex(kind=dp) :: inc_eth  ! Complex value of E (incident theta)
            complex(kind=dp) :: inc_eph  ! Complex value of E (incident phi)
@@ -156,10 +139,10 @@ module MM_VIE
 
      ! Mesh data type for MM Direct Volume Integral
      type, public :: VIE_Mesh_RC8
-           public
+         
            integer(kind=i4), dimension(3) :: ndiv ! Number of division (x,y,x) for each rectangular volume cell
            integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
-#if defined(__INTEL_COMPILER) || defined(__ICC)   
+
            real(kind=dp),    allocatable, dimension(:)    :: cell_cx ! X-coordinate of n-th cell centre
            real(kind=dp),    allocatable, dimension(:)    :: cell_cy ! Y-coordinate of n-th cell centre
            real(kind=dp),    allocatable, dimension(:)    :: cell_cz ! Z-coordinate of n-th cell centre
@@ -177,25 +160,15 @@ module MM_VIE
            !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dy
            !DIR$ ATTRIBUTES ALIGN : 64 :: cell_dz
            
-#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
 
-           real(kind=dp),    allocatable, dimension(:)    :: cell_cx !GCC$ ATTRIBUTES aligned(64) :: cell_cx
-           real(kind=dp),    allocatable, dimension(:)    :: cell_cy !GCC$ ATTRIBUTES aligned(64) :: cell_cy
-           real(kind=dp),    allocatable, dimension(:)    :: cell_cz !GCC$ ATTRIBUTES aligned(64) :: cell_cz
-           real(kind=dp),    allocatable, dimension(:)    :: cell_vl !GCC$ ATTRIBUTES aligned(64) :: cell_vl
-           complex(kind=dp), allocatable, dimension(:)    :: cell_ee !GCC$ ATTRIBUTES aligned(64) :: cell_ee
-           real(kind=dp),    allocatable, dimension(:)    :: cell_dx !GCC$ ATTRIBUTES aligned(64) :: cell_dx
-           real(kind=dp),    allocatable, dimension(:)    :: cell_dy !GCC$ ATTRIBUTES aligned(64) :: cell_dy
-           real(kind=dp),    allocatable, dimension(:)    :: cell_dz !GCC$ ATTRIBUTES aligned(64) :: cell_dz
-#endif
      end type VIE_Mesh_RC8
 
      ! Output data for MM Direct Volume Integral code.
      
      type, public :: EE_XYZ_RC8
-           public
+          
            integer(kind=i4) :: n_cells  ! Total number of volume cells (discretized)
-#if defined(__INTEL_COMPILER) || defined(__ICC)             
+           
            complex(kind=dp), allocatable, dimension(:) :: EEx !Complex magnitude x-component [V/m]
            complex(kind=dp), allocatable, dimension(:) :: EEy !Complex magnitude y-component [V/m]
            complex(kind=dp), allocatable, dimension(:) :: EEz !Complex magnitude z-component [V/m]
@@ -208,14 +181,7 @@ module MM_VIE
            !DIR$ ATTRIBUTES ALIGN : 64 :: EEt
            !DIR$ ATTRIBUTES ALIGN : 64 :: PEd
            !DIR$ ATTRIBUTES ALIGN : 64 :: PEs
-#elif defined __GFORTRAN__ && (!defined(__ICC) || !defined(__INTEL_COMPILER))
-           complex(kind=dp), allocatable, dimension(:) :: EEx !GCC$ ATTRIBUTES aligned(64) :: EEx
-           complex(kind=dp), allocatable, dimension(:) :: EEy !GCC$ ATTRIBUTES aligned(64) :: EEy
-           complex(kind=dp), allocatable, dimension(:) :: EEz !GCC$ ATTRIBUTES aligned(64) :: EEz
-           real(kind=dp),    allocatable, dimension(:) :: EEt !GCC$ ATTRIBUTES aligned(64) :: EEt
-           real(kind=dp),    allocatable, dimension(:) :: PEd !GCC$ ATTRIBUTES aligned(64) :: PEd
-           real(kind=dp),    allocatable, dimension(:) :: PEs !GCC$ ATTRIBUTES aligned(64) :: PEs
-#endif
+
       end type EE_XYZ_RC8
 
 
