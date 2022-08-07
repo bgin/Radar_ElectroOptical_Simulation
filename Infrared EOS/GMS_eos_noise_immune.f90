@@ -711,9 +711,9 @@ module eos_noise_immune
 
   subroutine schema_K1A_iterative(r_ob,phi,omega,K,r_k,rho,K1B,n)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 :: schema_K1B_iterative
-        !dir$ forceinline :: schema_K1B_iterative
-        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1B_iterative
+        !dir$ attributes code_align : 32 :: schema_K1A_iterative
+        !dir$ forceinline :: schema_K1A_iterative
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: schema_K1A_iterative
         real(kind=sp),  intent(in) :: r_ob
         real(kind=sp), dimension(n), intent(in) :: phi
         real(kind=sp), dimension(n), intent(in) :: omega
@@ -731,6 +731,288 @@ module eos_noise_immune
         do i=1, n
             K1B(i) = schema_K1A(r_ob,phi(i),omega(i),K(i),rho)
         end do
-  end subroutine schema_K1B_iterative
+  end subroutine schema_K1A_iterative
+
+
+  !Coefficient of interference weakening (formula 6.12)
+  pure elemental function k_weak_r4(q,k2,k1,E_in,L) result(k)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: k_weak_r4
+        !dir$ forceinline :: k_weak_r4
+        real(kind=sp),  intent(in) :: q
+        real(kind=sp),  intent(in) :: k2
+        real(kind=sp),  intent(in) :: k1
+        real(kind=sp),  intent(in) :: E_in
+        real(kind=sp),  intent(in) :: L
+        real(kind=sp) :: k
+        real(kind=sp), automatic :: t0,t1
+        t0 = q*(k1/k2)
+        t1 = E_in/L
+        k = t0*t1
+  end function k_weak_r4
+
+
+  pure elemental function k_weak_r8(q,k2,k1,E_in,L) result(k)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: k_weak_r8
+        !dir$ forceinline :: k_weak_r8
+        real(kind=dp),  intent(in) :: q
+        real(kind=dp),  intent(in) :: k2
+        real(kind=dp),  intent(in) :: k1
+        real(kind=dp),  intent(in) :: E_in
+        real(kind=dp),  intent(in) :: L
+        real(kind=dp) :: k
+        real(kind=dp), automatic :: t0,t1
+        t0 = q*(k1/k2)
+        t1 = E_in/L
+        k = t0*t1
+  end function k_weak_r8
+
+
+  ! Circular blend filters
+
+  ! Formula 6.13
+  pure elemental function dirrad_angle_r4(R,L,phi) result(da)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: dirrad_angle_r4
+        !dir$ forceinline :: dirrad_angle_r4
+        real(kind=sp), intent(in) :: R
+        real(kind=sp), intent(in) :: L
+        real(kind=sp), intent(in) :: phi
+        real(kind=sp) :: da
+        real(kind=sp), automatic :: t0,tom
+        t0 = R+R/L
+        tom = tan(om)
+        da  = atan(t0+tom)
+  end function dirrad_angle_r4
+
+  pure elemental function dirrad_angle_r8(R,L,phi) result(da)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: dirrad_angle_r8
+        !dir$ forceinline :: dirrad_angle_r8
+        real(kind=dp), intent(in) :: R
+        real(kind=dp), intent(in) :: L
+        real(kind=dp), intent(in) :: phi
+        real(kind=dp) :: da
+        real(kind=dp), automatic :: t0,tom
+        t0 = R+R/L
+        tom = tan(om)
+        da  = atan(t0+tom)
+  end function dirrad_angle_r8
+
+
+  ! Formula 6.14
+  pure elemental function param_Lb_r4(R,phi,om) result(Lb)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Lb_r4
+        !dir$ forceinline :: param_Lb_r4
+        real(kind=sp), intent(in) :: R
+        real(kind=sp), intent(in) :: phi
+        real(kind=sp), intent(in) :: om
+        real(kind=sp) :: Lb
+        real(kind=sp), automatic :: tphi,tom,R2
+        R2 = R+R
+        tphi = tan(phi)
+        tom  = tan(om)
+        Lb   = R2/(tphi-tom)
+  end function param_Lb_r4
+
+  
+  pure elemental function param_Lb_r8(R,phi,om) result(Lb)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Lb_r8
+        !dir$ forceinline :: param_Lb_r8
+        real(kind=dp), intent(in) :: R
+        real(kind=dp), intent(in) :: phi
+        real(kind=dp), intent(in) :: om
+        real(kind=dp) :: Lb
+        real(kind=dp), automatic :: tphi,tom,R2
+        R2 = R+R
+        tphi = tan(phi)
+        tom  = tan(om)
+        Lb   = R2/(tphi-tom)
+  end function param_Lb_r8
+
+  
+  ! Formula 6.15
+  pure elemental function param_Rl_r4(R,Lb,om) result(Rl)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Rl_r4
+        !dir$ forceinline :: param_Rl_r4
+        real(kind=sp),  intent(in) :: R
+        real(kind=sp),  intent(in) :: Lb
+        real(kind=sp),  intent(in) :: om
+        real(kind=sp) :: Rl
+        real(kind=sp), automatic :: tom
+        tom = tan(om)
+        Rl  = R+Lb*tom
+  end function param_Rl_r4
+
+
+  pure elemental function param_Rl_r8(R,Lb,om) result(Rl)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Rl_r8
+        !dir$ forceinline :: param_Rl_r8
+        real(kind=dp),  intent(in) :: R
+        real(kind=dp),  intent(in) :: Lb
+        real(kind=dp),  intent(in) :: om
+        real(kind=dp) :: Rl
+        real(kind=dp), automatic :: tom
+        tom = tan(om)
+        Rl  = R+Lb*tom
+  end function param_Rl_r8
+
+
+  ! Formula 6.16
+  pure elemental function param_Db_r4(Rl,g) result(Db)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Db_r4
+        !dir$ forceinline :: param_Db_r4
+        real(kind=sp),  intent(in) :: Rl
+        real(kind=sp),  intent(in) :: g
+        real(kind=sp) :: Db
+        Db = 2.0_sp*(Rl+g)
+  end function param_Db_r4
+
+
+  pure elemental function param_Db_r8(Rl,g) result(Db)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Db_r8
+        !dir$ forceinline :: param_Db_r8
+        real(kind=dp),  intent(in) :: Rl
+        real(kind=dp),  intent(in) :: g
+        real(kind=dp) :: Db
+        Db = 2.0_dp*(Rl+g)
+  end function param_Db_r8
+
+
+  ! Formula 6.18
+  subroutine E_out_r4(L_i,Om_i,Eout,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: E_out_r4
+        !dir$ forceinline :: E_out_r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: E_out_r4
+        use omp_lib
+        real(kind=sp), dimension(n), intent(in)  :: L_i  ! brightness i-th part of blend filter
+        real(kind=sp), dimension(n), intent(in)  :: Om_i ! angle subtended by irradiance if L_i
+        real(kind=sp),               intent(out) :: Eout ! 
+        integer(kind=i4),            intent(in)  :: n
+        integer(kind=i4) :: i
+        Eout = 0.0_sp
+        !dir$ assume_aligned L_i:64,Om_i:64,Eout:64
+        !dir$ vector aligned
+        !dir$ vector vectorlength(4)
+        !$omp simd reduction(+:Eout)
+        do i=1, n
+           Eout = Eout+L_i(i)*Om_(i)
+        end do
+  end subroutine E_out_r4
+
+
+  subroutine E_out_r8(L_i,Om_i,Eout,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: E_out_r8
+        !dir$ forceinline :: E_out_r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: E_out_r8
+        use omp_lib
+        real(kind=dp), dimension(n), intent(in)  :: L_i  ! brightness i-th part of blend filter
+        real(kind=dp), dimension(n), intent(in)  :: Om_i ! angle subtended by irradiance if L_i
+        real(kind=dp),               intent(out) :: Eout ! 
+        integer(kind=i4),            intent(in)  :: n
+        integer(kind=i4) :: i
+        Eout = 0.0_sp
+        !dir$ assume_aligned L_i:64,Om_i:64,Eout:64
+        !dir$ vector aligned
+        !dir$ vector vectorlength(8)
+        !$omp simd reduction(+:Eout)
+        do i=1, n
+           Eout = Eout+L_i(i)*Om_(i)
+        end do
+  end subroutine E_out_r8
+
+
+  ! Formula 6.19
+  pure elemental function param_Ekpi_r4(rho,Ecb,sig1,sig2,k) result(Ekpi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Ekpi_r4
+        !dir$ forceinline :: param_Ekpi_r4
+        real(kind=sp),  intent(in) :: rho
+        real(kind=sp),  intent(in) :: Ecb
+        real(kind=sp),  intent(in) :: sig1
+        real(kind=sp),  intent(in) :: sig2
+        real(kind=sp),  intent(in) :: k
+        real(kind=sp) :: Ekpi
+        real(kind=sp), automatic :: ssig1,ssig2,sin2s1,sin2s2,t0
+        t0 = rho*Ecb
+        ssig1  = sin(sig1)
+        sin2s1 = ssig1*ssig1
+        ssig2  = sin(sig2)
+        sin2s2 = ssig2*ssig2
+        Ekpi   = t0*(sin2s2-sin2s1)*k
+  end function param_Ekpi_r4
+
+
+  pure elemental function param_Ekpi_r8(rho,Ecb,sig1,sig2,k) result(Ekpi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Ekpi_r8
+        !dir$ forceinline :: param_Ekpi_r8
+        real(kind=dp),  intent(in) :: rho
+        real(kind=dp),  intent(in) :: Ecb
+        real(kind=dp),  intent(in) :: sig1
+        real(kind=dp),  intent(in) :: sig2
+        real(kind=dp),  intent(in) :: k
+        real(kind=dp) :: Ekpi
+        real(kind=dp), automatic :: ssig1,ssig2,sin2s1,sin2s2,t0
+        t0 = rho*Ecb
+        ssig1  = sin(sig1)
+        sin2s1 = ssig1*ssig1
+        ssig2  = sin(sig2)
+        sin2s2 = ssig2*ssig2
+        Ekpi   = t0*(sin2s2-sin2s1)*k
+  end function param_Ekpi_r8
+
+
+  subroutine param_Ekpi_zmm16r4(rho,Ecb,sig1,sig2,k,Ekpi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Ekpi_zmm16r4
+        !dir$ forceinline :: param_Ekpi_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_Ekpi_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: rho
+        type(ZMM16r4_t),  intent(in) :: Ecb
+        type(ZMM16r4_t),  intent(in) :: sig1
+        type(ZMM16r4_t),  intent(in) :: sig2
+        type(ZMM16r4_t),  intent(in) :: k
+        type(ZMM16r4_t),  intent(out) :: EKpi
+        type(ZMM16r4_t), automatic :: ssig1,ssig2,sin2s1,sin2s2,t0
+        !dir$ attributes align : 64 :: ssig1,ssig2,sin2s1,sin2s2,t0
+        t0.v     = rho.v*Ecb.v
+        ssig1.v  = sin(sig1.v)
+        sin2s1.v = ssig1.v*ssig1.v
+        ssig2.v  = sin(sig2.v)
+        sin2s2.v = ssig2.v*ssig2.v
+        Ekpi.v   = t0.v*(sin2s2.v-sin2s1.v)*k.v
+  end subroutine param EKpi_zmm16r4
+
+
+  subroutine param_Ekpi_zmm8r8(rho,Ecb,sig1,sig2,k,Ekpi)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_Ekpi_zmm8r8
+        !dir$ forceinline :: param_Ekpi_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_Ekpi_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: rho
+        type(ZMM8r8_t),  intent(in) :: Ecb
+        type(ZMM8r8_t),  intent(in) :: sig1
+        type(ZMM8r8_t),  intent(in) :: sig2
+        type(ZMM8r8_t),  intent(in) :: k
+        type(ZMM8r8_t),  intent(out) :: EKpi
+        type(ZMM8r8_t), automatic :: ssig1,ssig2,sin2s1,sin2s2,t0
+        !dir$ attributes align : 64 :: ssig1,ssig2,sin2s1,sin2s2,t0
+        t0.v     = rho.v*Ecb.v
+        ssig1.v  = sin(sig1.v)
+        sin2s1.v = ssig1.v*ssig1.v
+        ssig2.v  = sin(sig2.v)
+        sin2s2.v = ssig2.v*ssig2.v
+        Ekpi.v   = t0.v*(sin2s2.v-sin2s1.v)*k.v
+  end subroutine param EKpi_zmm8r8
 
 end module eos_noise_immune
