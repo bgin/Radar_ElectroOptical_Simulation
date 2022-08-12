@@ -401,6 +401,10 @@ module eos_sensor
         delta2 = 0.5_sp*delta
         d_ob2  = 0.5_sp*d_ob
         cosg   = cos(gamma)
+        if(delta<=gamma) then
+           t0  = h*delta+d_ob
+           Dmax= t0/cosg
+        end if
         t0     = gamma+delta2
         t1     = gamma-delta2
         sing   = sin(gamma)
@@ -427,6 +431,10 @@ module eos_sensor
         delta2 = 0.5_dp*delta
         d_ob2  = 0.5_dp*d_ob
         cosg   = cos(gamma)
+        if(delta<=gamma) then
+           t0  = h*delta+d_ob
+           Dmax= t0/cosg
+        end if 
         t0     = gamma+delta2
         t1     = gamma-delta2
         sing   = sin(gamma)
@@ -439,10 +447,315 @@ module eos_sensor
      end function compute_Dmax_r8
 
 
+     ! Размер зеркала в направлении, перпендикулярном плоскости
+     ! чертежа, приблизительно равен
+     ! Formula 2, p. 58
+     pure function compute_Dmin_r4(h,delta,d_ob) result(Dmin)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: compute_Dmin_r4
+          !dir$ forceinline :: compute_Dmin_r4
+          real(kind=sp),  intent(in) :: h
+          real(kind=sp),  intent(in) :: delta
+          real(kind=sp),  intent(in) :: d_ob
+          real(kind=sp) :: Dmin
+          Dmin = h*delta+d_ob
+     end function compute_Dmin_r4
 
 
+     pure function compute_Dmin_r8(h,delta,d_ob) result(Dmin)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: compute_Dmin_r8
+          !dir$ forceinline :: compute_Dmin_r8
+          real(kind=dp),  intent(in) :: h
+          real(kind=dp),  intent(in) :: delta
+          real(kind=dp),  intent(in) :: d_ob
+          real(kind=dp) :: Dmin
+          Dmin = h*delta+d_ob
+     end function compute_Dmin_r8
 
 
+     !Если зеркало осуществляет сканирование в пространстве
+     !изображений его размеры
+     ! Formula 7, p. 58
+     pure function Dmax_imag_scan_r4(H,F,B,d_ob,gamma, &
+                                     psi,phi,d) result(Dmax)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: Dmax_imag_scan_r4
+          !dir$ forceinline :: Dmax_imag_scan_r4
+          real(kind=sp),  intent(in) :: H
+          real(kind=sp),  intent(in) :: F
+          real(kind=sp),  intent(in) :: B
+          real(kind=sp),  intent(in) :: d_ob
+          real(kind=sp),  intent(in) :: gamma
+          real(kind=sp),  intent(in) :: psi
+          real(kind=sp),  intent(in) :: phi
+          real(kind=sp),  intent(in) :: d
+          real(kind=sp) :: Dmax
+          real(kind=sp), automatic :: t0,t1,t2,t3
+          real(kind=sp), automatic :: cosg,sing,tanp1,tanp2,psi2,phi2
+          psi2  = 0.5_sp*psi
+          if(psi2<=gamma .and. &
+             B<=d) then
+             phi2 = 0.5_sp*phi
+             t0   = (F+F)*tan(phi2)
+             t1   = (H/F)*d_ob
+             t2   = sin(gamma)
+             Dmax = (t0+t1)*t2
+          end if
+          t0    = (H/F)*(d_ob-B)+B
+          cosg  = cos(gamma)
+          tanp1 = gamma+psi2
+          tanp2 = gamma-psi2
+          sing  = sin(gamma)
+          t1    = 2.0_sp*cosg+sing
+          t2    = tan(tanp1)+tan(tanp2)
+          t3    = 0.5_sp*t1*t2
+          Dmax  = t0*t3
+     end function Dmax_imag_scan_r4
+
+
+     pure function Dmax_imag_scan_r8(H,F,B,d_ob,gamma, &
+                                     psi,phi,d) result(Dmax)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: Dmax_imag_scan_r8
+          !dir$ forceinline :: Dmax_imag_scan_r8
+          real(kind=dp),  intent(in) :: H
+          real(kind=dp),  intent(in) :: F
+          real(kind=dp),  intent(in) :: B
+          real(kind=dp),  intent(in) :: d_ob
+          real(kind=dp),  intent(in) :: gamma
+          real(kind=dp),  intent(in) :: psi
+          real(kind=dp),  intent(in) :: phi
+          real(kind=dp),  intent(in) :: d
+          real(kind=dp) :: Dmax
+          real(kind=dp), automatic :: t0,t1,t2,t3
+          real(kind=dp), automatic :: cosg,sing,tanp1,tanp2,psi2,phi2
+          psi2  = 0.5_dp*psi
+          if(psi2<=gamma .and. &
+             B<=d) then
+             phi2 = 0.5_dp*phi
+             t0   = (F+F)*tan(phi2)
+             t1   = (H/F)*d_ob
+             t2   = sin(gamma)
+             Dmax = (t0+t1)*t2
+          end if
+          t0    = (H/F)*(d_ob-B)+B
+          cosg  = cos(gamma)
+          tanp1 = gamma+psi2
+          tanp2 = gamma-psi2
+          sing  = sin(gamma)
+          t1    = 2.0_dp*cosg+sing
+          t2    = tan(tanp1)+tan(tanp2)
+          t3    = 0.5_dp*t1*t2
+          Dmax  = t0*t3
+     end function Dmax_imag_scan_r8
+
+
+     pure function Dmin_imag_scan_r4(H,F,d_ob,B) result(Dmin)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: Dmin_imag_scan_r4
+          !dir$ forceinline :: Dmin_imag_scan_r4
+          real(kind=sp),     intent(in) :: H
+          real(kind=sp),     intent(in) :: F
+          real(kind=sp),     intent(in) :: d_ob
+          real(kind=sp),     intent(in) :: B
+          real(kind=sp) :: Dmin
+          real(kind=sp), automatic :: t0,t1
+          t0   = H/F
+          t1   = (d_ob-B)+B
+          Dmin = t0*t1 
+     end function Dmin_imag_scan_r4
+
+
+     pure function Dmin_imag_scan_r8(H,F,d_ob,B) result(Dmin)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: Dmin_imag_scan_r8
+          !dir$ forceinline :: Dmin_imag_scan_r8
+          real(kind=dp),     intent(in) :: H
+          real(kind=dp),     intent(in) :: F
+          real(kind=dp),     intent(in) :: d_ob
+          real(kind=dp),     intent(in) :: B
+          real(kind=dp) :: Dmin
+          real(kind=dp), automatic :: t0,t1
+          t0   = H/F
+          t1   = (d_ob-B)+B
+          Dmin = t0*t1 
+     end function Dmin_imag_scan_r8
+
+
+    !величина расфокусировки
+    !Formula 1, p. 59
+    pure elemental function defocus_cof_r4(l2,alpha,O,inf) result(dc)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: defocus_cof_r4
+          !dir$ forceinline :: defocus_cof_r4
+          real(kind=sp),    intent(in) :: l2
+          real(kind=sp),    intent(in) :: alpha
+          real(kind=sp),    intent(in) :: O
+          logical(kind=i4), intent(in) :: inf
+          real(kind=sp) :: df
+          real(kind=sp), automatic :: cos2a,icos
+          cos2a = cos(alpha+alpha)
+          icos  = 1.0_sp/cos2a
+          if(inf) then
+             df    = l2/(icos-1.0_sp)*O
+          else
+             df    = l2/(icos-1.0_sp)
+          end if
+    end function defocus_cof_r4
+
+
+    pure elemental function defocus_cof_r8(l2,alpha,O,inf) result(dc)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: defocus_cof_r8
+          !dir$ forceinline :: defocus_cof_r8
+          real(kind=dp),    intent(in) :: l2
+          real(kind=dp),    intent(in) :: alpha
+          real(kind=dp),    intent(in) :: O
+          logical(kind=i4), intent(in) :: inf
+          real(kind=dp) :: df
+          real(kind=dp), automatic :: cos2a,icos
+          cos2a = cos(alpha+alpha)
+          icos  = 1.0_dp/cos2a
+          if(inf) then
+             df    = l2/(icos-1.0_dp)*O
+          else
+             df    = l2/(icos-1.0_dp)
+          end if
+    end function defocus_cof_r8
+
+
+    pure function defocus_cof_zmm16r4(l2,alpha,O,inf) result(dc)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_zmm16r4
+        !dir$ forceinline :: defocus_cof_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: l2
+        type(ZMM16r4_t),  intent(in) :: alpha
+        type(ZMM16r4_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(ZMM16r4_t) :: dc
+        type(ZMM16r4_t), automatic :: cos2a,icos
+        type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
+        cos2a = cos(alpha.v+alpha.v)
+        icos  = one.v/cos2a.v
+        if(inf) then
+           df    = l2.v/(icos.v-one.v)*O
+        else
+           df    = l2.v/(icos.v-one.v)
+        end if
+    end function defocus_cof_zmm16r4
+
+
+    pure function defocus_cof_zmm8r8(l2,alpha,O,inf) result(dc)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_zmm8r8
+        !dir$ forceinline :: defocus_cof_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_zmm8r8
+        type(ZMM8r8_t),   intent(in) :: l2
+        type(ZMM8r8_t),   intent(in) :: alpha
+        type(ZMM8r8_t),   intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(ZMM8r8_t) :: dc
+        type(ZMM8r8_t), automatic :: cos2a,icos
+        type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
+        cos2a = cos(alpha.v+alpha.v)
+        icos  = one.v/cos2a.v
+        if(inf) then
+           df    = l2.v/(icos.v-one.v)*O
+        else
+           df    = l2.v/(icos.v-one.v)
+        end if
+    end function defocus_cof_zmm8r8
+
+
+    ! Диаметр кружка рассеяния р
+    ! Formula 3, p.59
+    pure elemental function circle_dispersion_r4(d,l1,l2,alpha,O,inf) result(rho)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: circle_dispersion_r4
+          !dir$ forceinline :: circle_dispersion_r4
+          real(kind=sp),    intent(in) :: d
+          real(kind=sp),    intent(in) :: l1
+          real(kind=sp),    intent(in) :: l2
+          real(kind=sp),    intent(in) :: alpha
+          real(kind=sp),    intent(in) :: O
+          logical(kind=i4), intent(in) :: inf
+          real(kind=sp) :: rho
+          real(kind=sp), automatic :: t0,t1
+          t0  = d/(l1+l2)
+          t1  = defocus_cof_r4(l2,alpha,O,inf)
+          rho = t0*t1
+    end function circle_dispersion_r4
+
+
+    pure elemental function circle_dispersion_r8(d,l1,l2,alpha,O,inf) result(rho)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: circle_dispersion_r8
+          !dir$ forceinline :: circle_dispersion_r8
+          real(kind=dp),    intent(in) :: d
+          real(kind=dp),    intent(in) :: l1
+          real(kind=dp),    intent(in) :: l2
+          real(kind=dp),    intent(in) :: alpha
+          real(kind=dp),    intent(in) :: O
+          logical(kind=i4), intent(in) :: inf
+          real(kind=dp) :: rho
+          real(kind=dp), automatic :: t0,t1
+          t0  = d/(l1+l2)
+          t1  = defocus_cof_r8(l2,alpha,O,inf)
+          rho = t0*t1
+    end function circle_dispersion_r8
+
+
+    pure function circle_dispersion_zmm16r4(d,l1,l2,alpha,O,inf) result(rho)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_zmm16r4
+        !dir$ forceinline :: circle_dispersion_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: d
+        type(ZMM16r4_t),  intent(in) :: l1
+        type(ZMM16r4_t),  intent(in) :: l2
+        type(ZMM16r4_t),  intent(in) :: alpha
+        type(ZMM16r4_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(ZMM16r4_t) :: rho
+        type(ZMM16r4_t), automatic :: t0,t1
+        !dir$ attributes align : 64 :: t0,t1
+        t0 = d.v/(l1.v+l2.v)
+        t1 = defocus_cof_zmm16r4(l2,alpha,O,inf)
+        rho= t0.v*t1.v
+    end function circle_dispersion_zmm16r4
+
+
+    pure function circle_dispersion_zmm8r8(d,l1,l2,alpha,O,inf) result(rho)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_zmm8r8
+        !dir$ forceinline :: circle_dispersion_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: d
+        type(ZMM8r8_t),  intent(in) :: l1
+        type(ZMM8r8_t),  intent(in) :: l2
+        type(ZMM8r8_t),  intent(in) :: alpha
+        type(ZMM8r8_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(ZMM8r8_t) :: rho
+        type(ZMM8r8_t), automatic :: t0,t1
+        !dir$ attributes align : 64 :: t0,t1
+        t0 = d.v/(l1.v+l2.v)
+        t1 = defocus_cof_zmm8r8(l2,alpha,O,inf)
+        rho= t0.v*t1.v
+    end function circle_dispersion_zmm8r8
+
+
+    
+
+
+    
+
+
+    
+     
+     
 
 
 end module eos_sensor
