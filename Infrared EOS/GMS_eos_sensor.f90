@@ -744,9 +744,346 @@ module eos_sensor
         t0 = d.v/(l1.v+l2.v)
         t1 = defocus_cof_zmm8r8(l2,alpha,O,inf)
         rho= t0.v*t1.v
-    end function circle_dispersion_zmm8r8
+     end function circle_dispersion_zmm8r8
+
+      
+     !Formula 2, p. 59
+     pure elemental function circ_dispers_diam_r4(l1,l2,alpha,O,inf) result(ratio)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: circ_dispers_diam_r4
+         !dir$ forceinline :: circ_dispers_diam_r4
+         real(kind=sp),    intent(in) :: l1
+         real(kind=sp),    intent(in) :: l2
+         real(kind=sp),    intent(in) :: alpha
+         real(kind=sp),    intent(in) :: O
+         logical(kind=i4), intent(in) :: inf
+         real(kind=sp) :: ratio
+         real(kind=sp), automatic :: t0,t1
+         t0    = l1+l2
+         t1    = defocus_cos_r4(l2,alpha,O,inf)
+         ratio = t1/t0
+     end function circ_dispers_diam_r4
 
 
+     pure elemental function circ_dispers_diam_r4(l1,l2,alpha,O,inf) result(ratio)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: circ_dispers_diam_r8
+         !dir$ forceinline :: circ_dispers_diam_r8
+         real(kind=dp),    intent(in) :: l1
+         real(kind=dp),    intent(in) :: l2
+         real(kind=dp),    intent(in) :: alpha
+         real(kind=dp),    intent(in) :: O
+         logical(kind=i4), intent(in) :: inf
+         real(kind=dp) :: ratio
+         real(kind=dp), automatic :: t0,t1
+         t0    = l1+l2
+         t1    = defocus_cos_r4(l2,alpha,O,inf)
+         ratio = t1/t0
+     end function circ_dispers_diam_r4
+
+
+     pure function circ_dispers_diam_zmm16r4(l1,l2,alpha,O,inf) result(ratio)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circ_dispers_diam_zmm16r4
+        !dir$ forceinline :: circ_dispers_diam_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_zmm16r4
+        type(ZMM16r4_t),     intent(in) :: l1
+        type(ZMM16r4_t),     intent(in) :: l2
+        type(ZMM16r4_t),     intent(in) :: alpha
+        type(ZMM16r4_t),     intent(in) :: O
+        logical(kind=i4),    intent(in) :: inf
+        type(ZMM16r4_t) :: ratio
+        type(ZMM16r4_t), automatic :: t0,t1
+        !dir$ attributes align : 64 :: t0,t1
+        t0    = l1.v+l2.v
+        t1    = defocus_cof_zmm16r4(l2,alpha,O,inf)
+        ratio = t1.v/t0.v
+     end function circ_dispers_diam_zmm16r4
+
+
+     pure function circ_dispers_diam_zmm8r8(l1,l2,alpha,O,inf) result(ratio)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circ_dispers_diam_zmm8r8
+        !dir$ forceinline :: circ_dispers_diam_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_zmm8r8
+        type(ZMM8r8_t),     intent(in) :: l1
+        type(ZMM8r8_t),     intent(in) :: l2
+        type(ZMM8r8_t),     intent(in) :: alpha
+        type(ZMM8r8_t),     intent(in) :: O
+        logical(kind=i4),   intent(in) :: inf
+        type(ZMM8r8_t) :: ratio
+        type(ZMM8r8_t), automatic :: t0,t1
+        !dir$ attributes align : 64 :: t0,t1
+        t0    = l1.v+l2.v
+        t1    = defocus_cof_zmm8r8(l2,alpha,O,inf)
+        ratio = t1.v/t0.v
+     end function circ_dispers_diam_zmm8r8
+      
+       
+     pure elemental function defocus_small_ang_r4(O,l2,alpha) result(rho)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: defocus_small_ang_r4
+         !dir$ forceinline :: defocus_small_ang_r4
+         use mod_fpcompare, only : Compare_Float
+         real(kind=sp),   intent(in) :: O
+         real(kind=sp),   intent(in) :: L2
+         real(kind=sp),   intent(in) :: alpha
+         real(kind=sp) :: rho
+         real(kind=sp), automatic :: t0,t1,t2,alpha2
+         alpha2 = alpha+alpha
+         t0     = cos(alpha2)
+         t1     = 1.0_sp-alpha2*alpha2*0.5_sp
+         if(Compare_FLoat(t0,t1)) then
+            t2  = l2*0.5_sp
+            rho = O*t2*alpha2*alpha2
+         end if
+         rho = tiny(1.0_sp)
+      end function defocus_small_ang_r4
+
+
+      pure elemental function defocus_small_ang_r8(O,l2,alpha) result(rho)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: defocus_small_ang_r8
+         !dir$ forceinline :: defocus_small_ang_r8
+         use mod_fpcompare, only : Compare_Float
+         real(kind=dp),   intent(in) :: O
+         real(kind=dp),   intent(in) :: L2
+         real(kind=dp),   intent(in) :: alpha
+         real(kind=dp) :: rho
+         real(kind=dp), automatic :: t0,t1,t2,alpha2
+         alpha2 = alpha+alpha
+         t0     = cos(alpha2)
+         t1     = 1.0_dp-alpha2*alpha2*0.5_dp
+         if(Compare_FLoat(t0,t1)) then
+            t2  = l2*0.5_dp
+            rho = O*t2*alpha2*alpha2
+         end if
+         rho = tiny(1.0_dp)
+      end function defocus_small_ang_r8
+
+
+      pure elemental function traj_scan_dxdt_r4(dx,dt) result(dxdt)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: traj_scan_dxdt_r4
+         !dir$ forceinline :: traj_scan_dxdt_r4
+         real(kind=sp), dimension(0:1), intent(in) :: dx
+         real(kind=sp), dimension(0:1), intent(in) :: dt
+         real(kind=sp) :: dxdt
+         dxdt = dx(1)-dx(0)/(dt(1)-dt(0))
+      end function traj_scan_dxdt_r4
+
+
+      pure elemental function traj_scan_dxdt_r8(dx,dt) result(dxdt)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: traj_scan_dxdt_r8
+         !dir$ forceinline :: traj_scan_dxdt_r8
+         real(kind=dp), dimension(0:1), intent(in) :: dx
+         real(kind=dp), dimension(0:1), intent(in) :: dt
+         real(kind=dp) :: dxdt
+         dxdt = dx(1)-dx(0)/(dt(1)-dt(0))
+      end function traj_scan_dxdt_r8
+
+
+      pure elemental function traj_scan_dydt_r4(dy,dt) result(dydt)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: traj_scan_dydt_r4
+         !dir$ forceinline :: traj_scan_dydt_r4
+         real(kind=sp), dimension(0:1), intent(in) :: dx=y
+         real(kind=sp), dimension(0:1), intent(in) :: dt
+         real(kind=sp) :: dydt
+         dxdt = dy(1)-dy(0)/(dt(1)-dt(0))
+      end function traj_scan_dydt_r4
+
+       
+      pure elemental function traj_scan_dydt_r8(dy,dt) result(dydt)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: traj_scan_dydt_r8
+         !dir$ forceinline :: traj_scan_dydt_r8
+         real(kind=dp), dimension(0:1), intent(in) :: dx=y
+         real(kind=dp), dimension(0:1), intent(in) :: dt
+         real(kind=dp) :: dydt
+         dxdt = dy(1)-dy(0)/(dt(1)-dt(0))
+      end function traj_scan_dydt_r8
+
+
+      ! СКАНИРОВАНИЕ ЗЕРКАЛОМ, ВРАЩАЮЩИМСЯ
+      ! ВОКРУГ ОСИ, НЕПЕРПЕНДИКУЛЯРНОЙ К НЕМУ
+      ! Formula 1, p. 100
+      pure elemental function fov_x_axis_r4(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_r4
+         !dir$ forceinline :: fov_x_axis_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  intent(in) :: delta
+         real(kind=sp),  intent(in) :: gamma
+         real(kind=sp) :: ax
+         real(kind=sp), automatic :: gamm2,tdel
+         gamm2 = 0.5_sp*gamma
+         tdel  = tan(delta)
+         ax    = H*tdel/cos(gamm2)
+      end function fov_x_axis_r4
+
+
+      pure elemental function fov_x_axis_r8(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_r8
+         !dir$ forceinline :: fov_x_axis_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  intent(in) :: delta
+         real(kind=dp),  intent(in) :: gamma
+         real(kind=dp) :: ax
+         real(kind=dp), automatic :: gamm2,tdel
+         gamm2 = 0.5_dp*gamma
+         tdel  = tan(delta)
+         ax    = H*tdel/cos(gamm2)
+      end function fov_x_axis_r8
+
+
+      pure elemental function fov_y_axis_r4(H,delta,gamma) result(ay)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_y_axis_r4
+         !dir$ forceinline :: fov_y_axis_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  intent(in) :: delta
+         real(kind=sp),  intent(in) :: gamma
+         real(kind=sp) :: ay
+         real(kind=sp) :: ax,t0
+         t0 = 0.5_sp*gamma
+         ax = fov_x_axis_r4(H,delta,gamma)
+         ay = t0*ax
+      end function fov_y_axis_r4
+
+
+      pure elemental function fov_y_axis_r8(H,delta,gamma) result(ay)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_y_axis_r8
+         !dir$ forceinline :: fov_y_axis_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  intent(in) :: delta
+         real(kind=dp),  intent(in) :: gamma
+         real(kind=dp) :: ay
+         real(kind=dp) :: ax,t0
+         t0 = 0.5_dp*gamma
+         ax = fov_x_axis_r8(H,delta,gamma)
+         ay = t0*ax
+      end function fov_y_axis_r8
+
+
+      pure function fov_x_axis_zmm16r4(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_zmm16r4
+         !dir$ forceinline :: fov_x_axis_zmm16r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_zmm16r4
+         type(ZMM16r4_t),   intent(in) :: H
+         type(ZMM16r4_t),   intent(in) :: delta
+         type(ZMM16r4_t),   intent(in) :: gamma
+         type(ZMM16r4_t) :: ax
+         type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+         type(ZMM16r4_t), automatic :: gamm2,tdel
+         !dir$ attributes align : 64 :: gamm2,tdel
+         gamm2 = half.v*gamma.v
+         tdel  = tan(delta.v)
+         ax    = H.v*tdel.v/cos(gamm2.v)
+      end function fov_x_axis_zmm16r4
+
+
+     pure function fov_x_axis_zmm8r8(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_zmm8r8
+         !dir$ forceinline :: fov_x_axis_zmm8r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_zmm8r8
+         type(ZMM8r8_t),   intent(in) :: H
+         type(ZMM8r8_t),   intent(in) :: delta
+         type(ZMM8r8_t),   intent(in) :: gamma
+         type(ZMM8r8_t) :: ax
+         type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+         type(ZMM8r8_t), automatic :: gamm2,tdel
+         !dir$ attributes align : 64 :: gamm2,tdel
+         gamm2 = half.v*gamma.v
+         tdel  = tan(delta.v)
+         ax    = H.v*tdel.v/cos(gamm2.v)
+      end function fov_x_axis_zmm8r8
+
+
+      pure function fov_y_axis_zmm16r4(H,delta,gamma) result(ay)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_y_axis_zmm16r4
+         !dir$ forceinline :: fov_y_axis_zmm16r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_y_axis_zmm16r4
+         type(ZMM16r4_t),   intent(in) :: H
+         type(ZMM16r4_t),   intent(in) :: delta
+         type(ZMM16r4_t),   intent(in) :: gamma
+         type(ZMM16r4_t) :: ay
+         type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+         type(ZMM16r4_t), automatic :: ax,t0
+         t0  = half.v*gamma
+         ax  = fov_x_axis_zmm16r4(H,delta,gamma)
+         ay  = ax.v*cos(t0.v)
+      end function fov_y_axis_zmm16r4
+       
+
+      pure function fov_y_axis_zmm8r8(H,delta,gamma) result(ay)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_y_axis_zmm8r8
+         !dir$ forceinline :: fov_y_axis_zmm8r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_y_axis_zmm8r8
+         type(ZMM8r8_t),   intent(in) :: H
+         type(ZMM8r8_t),   intent(in) :: delta
+         type(ZMM8r8_t),   intent(in) :: gamma
+         type(ZMM8r8_t) :: ay
+         type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+         type(ZMM8r8_t), automatic :: ax,t0
+         t0  = half.v*gamma
+         ax  = fov_x_axis_zmm16r4(H,delta,gamma)
+         ay  = ax.v*cos(t0.v)
+      end function fov_y_axis_zmm8r8
+
+
+      !Если рабочая зона сканирования ограничена углом G, то
+      !ширина захвата
+      !Formula 3, p. 100
+     pure elemental function scan_width_r4(H,gamma,theta) result(B)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_r4
+         !dir$ forceinline :: scan_width_r4
+         real(kind=sp),   intent(in) :: H
+         real(kind=sp),   intent(in) :: gamma
+         real(kind=sp),   intent(in) :: theta
+         real(kind=sp) :: B
+         real(kind=sp), automatic :: gam2,th2,t0,t1
+         gam2  = 0.5_sp*gamma
+         th2   = 0.5_sp*theta
+         t0    = tan(gam2)
+         t1    = sin(th2)
+         B     = (H+H)*t0*t1
+      end function scan_width_r4
+
+
+      pure elemental function scan_width_r8(H,gamma,theta) result(B)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_r8
+         !dir$ forceinline :: scan_width_r8
+         real(kind=dp),   intent(in) :: H
+         real(kind=dp),   intent(in) :: gamma
+         real(kind=dp),   intent(in) :: theta
+         real(kind=dp) :: B
+         real(kind=dp), automatic :: gam2,th2,t0,t1
+         gam2  = 0.5_dp*gamma
+         th2   = 0.5_dp*theta
+         t0    = tan(gam2)
+         t1    = sin(th2)
+         B     = (H+H)*t0*t1
+      end function scan_width_r8
+
+
+      !Плоскопараллельная пластинка, установленная за 
+      !объективом, изменяет ход лучей таким образом, что изображение
+      ! светящейся точки отодвигается и его положение зависит от угла у
+      !между оптической осью и нормалью N к поверхности пластинки
+
+
+       
+ 
     
 
 
