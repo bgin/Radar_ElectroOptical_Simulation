@@ -1076,15 +1076,428 @@ module eos_sensor
       end function scan_width_r8
 
 
+      pure function scan_width_zmm16r4(H,gamma,theta) result(B)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_width_zmm16r4
+        !dir$ forceinline :: scan_width_zmm16r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_zmm16r4
+        type(ZMM16r4_t),  intent(in) :: H
+        type(ZMM16r4_t),  intent(in) :: gamma
+        type(ZMM16r4_t),  intent(in) :: theta
+        type(ZMM16r4_t) :: B
+        type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+        type(ZMM16r4_t), automatic :: gam2,th2,t0,t1
+        !dir$ attributes align : 64 :: gam2,th2,t0,t1
+        gam2  = half.v*gamma.v
+        th2   = half.v*theta.v
+        t0    = tan(gam2.v)
+        t1    = sin(th2.v)
+        B     = (H.v+H.v)*t0.v*t1.v
+      end function scan_width_zmm16r4
+
+
+      pure function scan_width_zmm8r8(H,gamma,theta) result(B)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_width_zmm8r8
+        !dir$ forceinline :: scan_width_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: H
+        type(ZMM8r8_t),  intent(in) :: gamma
+        type(ZMM8r8_t),  intent(in) :: theta
+        type(ZMM8r8_t) :: B
+        type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+        type(ZMM8r8_t), automatic :: gam2,th2,t0,t1
+        !dir$ attributes align : 64 :: gam2,th2,t0,t1
+        gam2  = half.v*gamma.v
+        th2   = half.v*theta.v
+        t0    = tan(gam2.v)
+        t1    = sin(th2.v)
+        B     = (H.v+H.v)*t0.v*t1.v
+      end function scan_width_zmm8r8
+
+
       !Плоскопараллельная пластинка, установленная за 
       !объективом, изменяет ход лучей таким образом, что изображение
       ! светящейся точки отодвигается и его положение зависит от угла у
       !между оптической осью и нормалью N к поверхности пластинки
+      ! Formula 7,8 p. 106
+      pure elemental function refract_shift_r4(i1,delta,alfa,gamma,n) result(l)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: refract_shift_r4
+         !dir$ forceinline :: refract_shift_r4
+         use mod_fpcompare, only : Compare_Float
+         real(kind=sp),   intent(in) :: i1
+         real(kind=sp),   intent(in) :: delta
+         real(kind=sp),   intent(in) :: alfa
+         real(kind=sp),   intent(in) :: gamma
+         real(kind=sp),   intent(in) :: n
+         real(kind=sp) :: l
+         real(kind=sp), automatic :: ag,num,den,sin2,sag,t0,t1
+         ag  = alfa-gamma
+         if(Compare_Float(i1,ag)) then
+            sag  = sin(ag)
+            t0   = delta*sag
+            sin2 = sag*sag
+            num  = 1.0_sp-sag
+            den  = n*n-sag
+            t1   = 1.0_sp-sqrt(num/den)
+            l    = t0*t2
+         else if(alfa==0.0_sp) then
+            sag  = sin(gamma)
+            t0   = -delta*sag
+            sin2 = sag*sag
+            num  = 1.0_sp-sin2
+            den  = n*n-sin2
+            t1   = 1.0_sp-sqrt(num/den)
+            l    = t0*t1
+         else
+            sag  = sin(i1)
+            t0   = delta*sag
+            sin2 = sag*sag
+            num  = 1.0_sp-sin2
+            den  = n*n-sin2
+            t1   = 1.0_sp-sqrt(num/den)
+            l    = t0*t1
+         end if
+      end function refract_shift_r4
+
+
+      pure elemental function refract_shift_r8(i1,delta,alfa,gamma,n) result(l)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: refract_shift_r8
+         !dir$ forceinline :: refract_shift_r8
+         use mod_fpcompare, only : Compare_Float
+         real(kind=dp),   intent(in) :: i1
+         real(kind=dp),   intent(in) :: delta
+         real(kind=dp),   intent(in) :: alfa
+         real(kind=dp),   intent(in) :: gamma
+         real(kind=dp),   intent(in) :: n
+         real(kind=dp) :: l
+         real(kind=dp), automatic :: ag,num,den,sin2,sag,t0,t1
+         ag  = alfa-gamma
+         if(Compare_Float(i1,ag)) then
+            sag  = sin(ag)
+            t0   = delta*sag
+            sin2 = sag*sag
+            num  = 1.0_dp-sag
+            den  = n*n-sag
+            t1   = 1.0_dp-sqrt(num/den)
+            l    = t0*t2
+         else if(alfa==0.0_dp) then
+            sag  = sin(gamma)
+            t0   = -delta*sag
+            sin2 = sag*sag
+            num  = 1.0_dp-sin2
+            den  = n*n-sin2
+            t1   = 1.0_dp-sqrt(num/den)
+            l    = t0*t1
+         else
+            sag  = sin(i1)
+            t0   = delta*sag
+            sin2 = sag*sag
+            num  = 1.0_dp-sin2
+            den  = n*n-sin2
+            t1   = 1.0_dp-sqrt(num/den)
+            l    = t0*t1
+         end if
+     end function refract_shift_r8
+
+       
+     pure function refract_shift_zmm16r4(i1,delta,alfa,gamma,n)  result(l)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_zmm16r4
+            !dir$ forceinline ::  refract_shift_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refract_shift_zmm16r4
+            use mod_fpcompare, only : zmm16r4_equalto_zmm16r4
+            use mod_vectypes,  only : Mask16_t
+            type(ZMM16r4_t),   intent(in) :: i1
+            type(ZMM16r4_t),   intent(in) :: delta
+            type(ZMM16r4_t),   intent(in) :: alfa
+            type(ZMM16r4_t),   intent(in) :: gamma
+            type(ZMM16r4_t),   intent(in) :: n
+            type(ZMM16r4_t) :: l
+            type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t), parameter :: zer = ZMM16r4_t(0.0_sp)
+            type(ZMM16r4_t), automatic :: ag,num,den,sin2,sag,t0,t1
+            !dir$ attributes align : 64 :: ag,num,den,sin2,sag,t0,t1
+            type(Mask16_t), automatic :: m1,m2
+            ag  = alfa.v-gamma.v
+            m1  = zmm16r4_equalto_zmm16r4(i1,ag)
+            m2  = zmm16r4_equalto_zmm16r4(alfa,zer) 
+            if(all(m1)) then
+               sag  = sin(ag.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sag.v
+               den  = n.v*n.v*sag.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else if(all(m2)) then
+               sag  = sin(gamma.v)
+               t0   = -delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else
+               sag  = sin(i1.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            end if
+       end function refract_shift_zmm16r4
+
+
+       pure function refract_shift_zmm8r8(i1,delta,alfa,gamma,n)  result(l)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_zmm8r8
+            !dir$ forceinline ::  refract_shift_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refract_shift_zmm8r8
+            use mod_fpcompare, only : zmm8r8_equalto_zmm8r8
+            use mod_vectypes,  only : Mask16_t
+            type(ZMM8r8_t),   intent(in) :: i1
+            type(ZMM8r8_t),   intent(in) :: delta
+            type(ZMM8r8_t),   intent(in) :: alfa
+            type(ZMM8r8_t),   intent(in) :: gamma
+            type(ZMM8r8_t),   intent(in) :: n
+            type(ZMM8r8_t) :: l
+            type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
+            type(ZMM8r8_t), parameter :: zer = ZMM8r8_t(0.0_dp)
+            type(ZMM8r8_t), automatic :: ag,num,den,sin2,sag,t0,t1
+            !dir$ attributes align : 64 :: ag,num,den,sin2,sag,t0,t1
+            type(Mask8_t), automatic :: m1,m2
+            ag  = alfa.v-gamma.v
+            m1  = zmm8r8_equalto_zmm8r8(i1,ag)
+            m2  = zmm8r8_equalto_zmm8r8(alfa,zer) 
+            if(all(m1)) then
+               sag  = sin(ag.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sag.v
+               den  = n.v*n.v*sag.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else if(all(m2)) then
+               sag  = sin(gamma.v)
+               t0   = -delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else
+               sag  = sin(i1.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            end if
+        end function refract_shift_zmm8r8  
+
+          
+
+          
+       
+
+      !Formula 1, p. 108
+      subroutine project_xy_axis_r4(l,alpha,xl,yl)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_xy_axis_r4
+         !dir$ forceinline :: project_xy_axis_r4
+         real(kind=sp),  intent(in)  :: l
+         real(kind=sp),  intent(in)  :: alpha
+         real(kind=sp),  intent(out) :: xl
+         real(kind=sp),  intent(out) :: yl
+         real(kind=sp), automatic :: absl
+         absl = abs(l)
+         xl = absl*cos(alpha)
+         yl = absl*sin(alpha)
+      end subroutine project_xy_axis_r4
+ 
+
+      subroutine project_xy_axis_r8(l,alpha,xl,yl)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_xy_axis_r8
+         !dir$ forceinline :: project_xy_axis_r8
+         real(kind=dp),  intent(in)  :: l
+         real(kind=dp),  intent(in)  :: alpha
+         real(kind=dp),  intent(out) :: xl
+         real(kind=dp),  intent(out) :: yl
+         real(kind=dp), automatic :: absl
+         absl = abs(l)
+         xl = absl*cos(alpha)
+         yl = absl*sin(alpha)
+     end subroutine project_xy_axis_r8
+
+
+     subroutine project_xy_axis_zmm16r4(l,alpha,xl,yl)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::  project_xy_axis_zmm16r4
+         !dir$ forceinline ::  project_xy_axis_zmm16r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  project_xy_axis_zmm16r4
+         type(ZMM16r4_t),  intent(in) :: l
+         type(ZMM16r4_t),  intent(in) :: alpha
+         type(ZMM16r4_t),  intent(in) :: xl
+         type(ZMM16r4_t),  intent(in) :: yl
+         type(ZMM16r4_t), automatic :: absl
+         !dir$ attributes align : 64 :: absl
+         absl = abs(l.v)
+         xl   = absl.v*sin(alpha.v)
+         yl   = absl.v*cos(alpha.v)
+     end subroutine project_xy_axis_zmm16r4
+
+     
+     subroutine project_xy_axis_zmm8r8(l,alpha,xl,yl)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::  project_xy_axis_zmm8r8
+         !dir$ forceinline ::  project_xy_axis_zmm8r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  project_xy_axis_zmm8r8
+         type(ZMM8r8_t),  intent(in) :: l
+         type(ZMM8r8_t),  intent(in) :: alpha
+         type(ZMM8r8_t),  intent(in) :: xl
+         type(ZMM8r8_t),  intent(in) :: yl
+         type(ZMM8r8_t), automatic :: absl
+         !dir$ attributes align : 64 :: absl
+         absl = abs(l.v)
+         xl   = absl.v*sin(alpha.v)
+         yl   = absl.v*cos(alpha.v)
+      end subroutine project_xy_axis_zmm8r8
+
+       
+      !Величину смещения луча s вдоль перпендикуляра к 
+      !поверхности пластинки
+      ! Formula 2, p. 108
+      pure elemental function s_shift_r4(l,alpha,gamma) result(s)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::s_shift_r4
+         !dir$ forceinline :: s_shift_r4
+         real(kind=sp),   intent(in) :: l
+         real(kind=sp),   intent(in) :: alpha
+         real(kind=sp),   intent(in) :: gamma
+         real(kind=sp) :: s
+         real(kind=sp), automatic :: ag,sag
+         ag = alpha-gamma
+         sag= sin(ag)
+         s  = l/sag
+      end function s_shift_r4
+
+
+      pure elemental function s_shift_r8(l,alpha,gamma) result(s)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::s_shift_r8
+         !dir$ forceinline :: s_shift_r8
+         real(kind=dp),   intent(in) :: l
+         real(kind=dp),   intent(in) :: alpha
+         real(kind=dp),   intent(in) :: gamma
+         real(kind=dp) :: s
+         real(kind=dp), automatic :: ag,sag
+         ag = alpha-gamma
+         sag= sin(ag)
+         s  = l/sag
+      end function s_shift_r8
+
+
+      pure function s_shift_zmm16r4(l,alpha,gamma) result(s)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::  s_shift_zmm16r4
+         !dir$ forceinline ::  s_shift_zmm16r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  s_shift_zmm16r4
+         type(ZMM16r4_t),  intent(in) :: l
+         type(ZMM16r4_t),  intent(in) :: alpha
+         type(ZMM16r4_t),  intent(in) :: gamma
+         type(ZMM16r4_t) :: s
+         type(ZMM16r4_t), automatic :: ag,sag
+         !dir$ attributes align : 64 :: ag,sag
+         ag  = alpha.v-gamma.v
+         sag = sin(ag.v)
+         s   = l.v/sag.v
+      end function s_shift_zmm16r4
+
+
+      pure function s_shift_zmm8r8(l,alpha,gamma) result(s)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 ::  s_shift_zmm8r8
+         !dir$ forceinline ::  s_shift_zmm8r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  s_shift_zmm8r8
+         type(ZMM8r8_t),  intent(in) :: l
+         type(ZMM8r8_t),  intent(in) :: alpha
+         type(ZMM8r8_t),  intent(in) :: gamma
+         type(ZMM8r8_t) :: s
+         type(ZMM8r8_t), automatic :: ag,sag
+         !dir$ attributes align : 64 :: ag,sag
+         ag  = alpha.v-gamma.v
+         sag = sin(ag.v)
+         s   = l.v/sag.v
+      end function s_shift_zmm8r8
+
+      ! Проекции s на оси координат равны
+      ! Formula 4, p. 108
+      subroutine project_s_xy_r4(s,gamma,xs,ys)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_s_xy_r4
+         !dir$ forceinline :: project_s_xy_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   intent(in)  :: gamma
+         real(kind=sp),   intent(out) :: xs
+         real(kind=sp),   intent(in)  :: ys
+         xs = s*cos(gamma)
+         ys = s*sin(gamma)
+      end subroutine project_s_xy_r4
+
+
+      subroutine project_s_xy_r8(s,gamma,xs,ys)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_s_xy_r8
+         !dir$ forceinline :: project_s_xy_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   intent(in)  :: gamma
+         real(kind=dp),   intent(out) :: xs
+         real(kind=dp),   intent(in)  :: ys
+         xs = s*cos(gamma)
+         ys = s*sin(gamma)
+      end subroutine project_s_xy_r8
+
+
+      subroutine project_s_xy_zmm16r4(s,gamma,xs,ys)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_s_xy_zmm16r4
+         !dir$ forceinline ::  project_s_xy_zmm16r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  project_s_xy_zmm16r4
+         type(ZMM16r4_t),   intent(in)  :: s
+         type(ZMM16r4_t),   intent(in)  :: gamma
+         type(ZMM16r4_t),   intent(out) :: xs
+         type(ZMM16r4_t),   intent(in)  :: ys
+         xs = s.v*cos(gamma.v)
+         ys = s.v*sin(gamma.v)
+      end subroutine project_s_xy_zmm16r4 
+
+      subroutine project_s_xy_zmm8r8(s,gamma,xs,ys)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: project_s_xy_zmm8r8
+         !dir$ forceinline ::  project_s_xy_zmm8r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  project_s_xy_zmm8r8
+         type(ZMM8r8_t),   intent(in)  :: s
+         type(ZMM8r8_t),   intent(in)  :: gamma
+         type(ZMM8r8_t),   intent(out) :: xs
+         type(ZMM8r8_t),   intent(in)  :: ys
+         xs = s.v*cos(gamma.v)
+         ys = s.v*sin(gamma.v)
+      end subroutine project_s_xy_zmm8r8
+
+
+      ! что расстояния от начала координат О до точек
+      ! пересечения лучей, образующих с горизонталью угла ±а, с 
+      ! перпендикуляром к пластинке
+      
 
 
        
- 
-    
 
 
     
