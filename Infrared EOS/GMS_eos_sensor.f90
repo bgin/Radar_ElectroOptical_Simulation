@@ -1494,17 +1494,456 @@ module eos_sensor
       ! что расстояния от начала координат О до точек
       ! пересечения лучей, образующих с горизонталью угла ±а, с 
       ! перпендикуляром к пластинке
-      
+      ! Formula 1, p. 110
+      pure elemental function ray_intercept_pa_r4(delta,alpha,gamma,n) result(sp)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: ray_intercept_pa_r4
+         !dir$ forceinline :: ray_intercept_pa_r4
+         real(kind=sp),   intent(in) :: delta
+         real(kind=sp),   intent(in) :: alpha
+         real(kind=sp),   intent(in) :: gamma
+         real(kind=sp),   intent(in) :: n
+         real(kind=sp) :: sp
+         real(kind=sp), automatic :: ag,num,den,n2,sag,sin2
+         ag  = abs(alpha)-gamma
+         n2  = n*n
+         num = cos(ag)
+         sag = sin(ag)
+         sin2= sag*sag
+         den = sqrt(n2-sin2)
+         sp  = delta*1.0_sp-(num/den)
+      end function ray_intercept_pa_r4
 
 
-       
+      pure elemental function ray_intercept_pa_r8(delta,alpha,gamma,n) result(sp)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: ray_intercept_pa_r8
+         !dir$ forceinline :: ray_intercept_pa_r8
+         real(kind=dp),   intent(in) :: delta
+         real(kind=dp),   intent(in) :: alpha
+         real(kind=dp),   intent(in) :: gamma
+         real(kind=dp),   intent(in) :: n
+         real(kind=dp) :: sp
+         real(kind=dp), automatic :: ag,num,den,n2,sag,sin2
+         ag  = abs(alpha)-gamma
+         n2  = n*n
+         num = cos(ag)
+         sag = sin(ag)
+         sin2= sag*sag
+         den = sqrt(n2-sin2)
+         sp  = delta*1.0_dp-(num/den)
+      end function ray_intercept_pa_r8
 
+
+      pure function ray_intercept_pa_zmm16r4(delta,alpha,gamma,n) result(sp)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_zmm16r4
+           !dir$ forceinline ::  ray_intercept_pa_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_intercept_pa_zmm16r4
+           type(ZMM16r4_t),  intent(in) :: delta
+           type(ZMM16r4_t),  intent(in) :: alpha
+           type(ZMM16r4_t),  intent(in) :: gamma
+           type(ZMM16r4_t),  intent(in) :: n
+           type(ZMM16r4_t) :: sp
+           type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
+           type(ZMM16r4_t), automatic :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           ag  = abs(alpha.v)-gamma.v
+           n2  = n.v*n.v
+           num = cos(ag.v)
+           sag = sin(ag.v)
+           sin2= sag.v*sag.v
+           den = sqrt(n2.v-sin2.v)
+           sp  = delta.v*one.v-(num.v/den.v)
+      end function ray_intercept_pa_zmm16r4
+
+ 
+      pure function ray_intercept_pa_zmm8r8(delta,alpha,gamma,n) result(sp)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_zmm8r8
+           !dir$ forceinline ::  ray_intercept_pa_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_intercept_pa_zmm8r8
+           type(ZMM8r8_t),  intent(in) :: delta
+           type(ZMM8r8_t),  intent(in) :: alpha
+           type(ZMM8r8_t),  intent(in) :: gamma
+           type(ZMM8r8_t),  intent(in) :: n
+           type(ZMM8r8_t) :: sp
+           type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
+           type(ZMM8r8_t), automatic :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           ag  = abs(alpha.v)-gamma.v
+           n2  = n.v*n.v
+           num = cos(ag.v)
+           sag = sin(ag.v)
+           sin2= sag.v*sag.v
+           den = sqrt(n2.v-sin2.v)
+           sp  = delta.v*one.v-(num.v/den.v)
+       end function ray_intercept_pa_zmm8r8
+
+
+      pure elemental function ray_intercept_na_r4(delta,alpha,gamma,n) result(sn)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: ray_intercept_na_r4
+         !dir$ forceinline :: ray_intercept_na_r4
+         real(kind=sp),   intent(in) :: delta
+         real(kind=sp),   intent(in) :: alpha
+         real(kind=sp),   intent(in) :: gamma
+         real(kind=sp),   intent(in) :: n
+         real(kind=sp) :: sn
+         real(kind=sp), automatic :: ag,num,den,n2,sag,sin2
+         ag  = abs(alpha)+gamma
+         n2  = n*n
+         num = cos(ag)
+         sag = sin(ag)
+         sin2= sag*sag
+         den = sqrt(n2-sin2)
+         sn  = delta*1.0_sp-(num/den)
+      end function ray_intercept_na_r4
+
+
+      pure elemental function ray_intercept_na_r8(delta,alpha,gamma,n) result(sn)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: ray_intercept_na_r8
+         !dir$ forceinline :: ray_intercept_na_r8
+         real(kind=dp),   intent(in) :: delta
+         real(kind=dp),   intent(in) :: alpha
+         real(kind=dp),   intent(in) :: gamma
+         real(kind=dp),   intent(in) :: n
+         real(kind=dp) :: sn
+         real(kind=dp), automatic :: ag,num,den,n2,sag,sin2
+         ag  = abs(alpha)+gamma
+         n2  = n*n
+         num = cos(ag)
+         sag = sin(ag)
+         sin2= sag*sag
+         den = sqrt(n2-sin2)
+         sn  = delta*1.0_dp-(num/den)
+      end function ray_intercept_na_r8
+
+
+      pure function ray_intercept_na_zmm16r4(delta,alpha,gamma,n) result(sn)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_zmm16r4
+           !dir$ forceinline ::  ray_intercept_pa_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_intercept_na_zmm16r4
+           type(ZMM16r4_t),  intent(in) :: delta
+           type(ZMM16r4_t),  intent(in) :: alpha
+           type(ZMM16r4_t),  intent(in) :: gamma
+           type(ZMM16r4_t),  intent(in) :: n
+           type(ZMM16r4_t) :: sn
+           type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
+           type(ZMM16r4_t), automatic :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           ag  = abs(alpha.v)+gamma.v
+           n2  = n.v*n.v
+           num = cos(ag.v)
+           sag = sin(ag.v)
+           sin2= sag.v*sag.v
+           den = sqrt(n2.v-sin2.v)
+           sn  = delta.v*one.v-(num.v/den.v)
+      end function ray_intercept_na_zmm16r4
+ 
+ 
+      pure function ray_intercept_na_zmm8r8(delta,alpha,gamma,n) result(sn)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_zmm8r8
+           !dir$ forceinline ::  ray_intercept_na_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_intercept_na_zmm8r8
+           type(ZMM8r8_t),  intent(in) :: delta
+           type(ZMM8r8_t),  intent(in) :: alpha
+           type(ZMM8r8_t),  intent(in) :: gamma
+           type(ZMM8r8_t),  intent(in) :: n
+           type(ZMM8r8_t) :: sn
+           type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
+           type(ZMM8r8_t), automatic :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           ag  = abs(alpha.v)+gamma.v
+           n2  = n.v*n.v
+           num = cos(ag.v)
+           sag = sin(ag.v)
+           sin2= sag.v*sag.v
+           den = sqrt(n2.v-sin2.v)
+           sn  = delta.v*one.v-(num.v/den.v)
+       end function ray_intercept_na_zmm8r8
+
+
+       ! Formula 3, p. 110
+       pure function ray_diff_r4(delta,alpha,gamma,n,u) result(ds)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_diff_r4
+           !dir$ forceinline :: ray_diff_r4
+           real(kind=sp),   intent(in) :: delta
+           real(kind=sp),   intent(in) :: alpha
+           real(kind=sp),   intent(in) :: gamma
+           real(kind=sp),   intent(in) :: n
+           real(kind=sp),   intent(in) :: u
+           real(kind=sp) :: ds
+           real(kind=sp), automatic :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           n   = n*n
+           u2  = u*0.5_sp
+           u2g = u2-gamma
+           t2  = sin(u2g)
+           su2 = t2*t2
+           if(n2>=su2) then
+              t3 = (-2.0_sp*delta)/n
+              t4 = sin(u2)
+              t5 = sin(gamma)
+              ds = t3*t4*t5
+           else
+              t0  = ray_intercept_pa_r4(delta,alpha,gamma,n)
+              t1  = ray_intercept_na_r4(delta,alpha,gamma,n)
+              ds  = t0-t1
+           end if
+       end function ray_diff_r4
+
+         
+       pure function ray_diff_r8(delta,alpha,gamma,n,u) result(ds)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_diff_r8
+           !dir$ forceinline :: ray_diff_r8
+           real(kind=dp),   intent(in) :: delta
+           real(kind=dp),   intent(in) :: alpha
+           real(kind=dp),   intent(in) :: gamma
+           real(kind=dp),   intent(in) :: n
+           real(kind=dp),   intent(in) :: u
+           real(kind=dp) :: ds
+           real(kind=dp), automatic :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           n   = n*n
+           u2  = u*0.5_dp
+           u2g = u2-gamma
+           t2  = sin(u2g)
+           su2 = t2*t2
+           if(n2>=su2) then
+              t3 = (-2.0_dp*delta)/n
+              t4 = sin(u2)
+              t5 = sin(gamma)
+              ds = t3*t4*t5
+           else
+           t0  = ray_intercept_pa_r8(delta,alpha,gamma,n)
+           t1  = ray_intercept_na_r8(delta,alpha,gamma,n)
+           ds  = t0-t1
+        end function ray_diff_r8
+
+
+        pure function ray_diff_zmm16r4(delta,alpha,gamma,n,u) result(ds)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_diff_zmm16r4
+           !dir$ forceinline ::  ray_diff_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_diff_zmm16r4
+           use mod_fpcompare, only :  zmm16r4_rgt_zmm16r4
+           type(ZMM16r4_t),  intent(in) :: delta
+           type(ZMM16r4_t),  intent(in) :: alpha
+           type(ZMM16r4_t),  intent(in) :: gamma
+           type(ZMM16r4_t),  intent(in) :: n
+           type(ZMM16r4_t),  intent(in) :: u
+           type(ZMM16r4_t) :: ds
+           type(ZMM16r4_t), parameter :: two  = ZMM16r4_t(2.0_sp)
+           type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+           type(ZMM16r4_t), automatic :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           !dir$ attributes align : 64 :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           type(Mask16_t), automatic :: m
+           n   = n.v*n.v
+           u2  = u.v*half.v
+           u2g = u2.v-gamma.v
+           t2  = sin(u2g.v)
+           su2 = t2.v*t2.v
+           m   = zmm16r4_rgt_zmm16r4(n2,su2)
+           if(all(m)) then
+              t3 = (-two.v*delta.v)/n.v
+              t4 = sin(u2.v)
+              t5 = sin(gamma.v)
+              ds = t3.v*t4.v*t5.v
+           else
+              t0 = ray_intercept_pa_zmm16r4(delta,alpha,gamma,n)
+              t1 = ray_intercept_na_zmm16r4(delta,alpha,gamma,n)
+              ds = t0.v-t1.v
+           end if
+        end function ray_diff_zmm16r4
+
+
+        pure function ray_diff_zmm8r8(delta,alpha,gamma,n,u) result(ds)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_diff_zmm8r8
+           !dir$ forceinline ::  ray_diff_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ray_diff_zmm8r8
+           use mod_fpcompare, only :  zmm8r8_rgt_zmm8r8
+           type(ZMM8r8_t),  intent(in) :: delta
+           type(ZMM8r8_t),  intent(in) :: alpha
+           type(ZMM8r8_t),  intent(in) :: gamma
+           type(ZMM8r8_t),  intent(in) :: n
+           type(ZMM8r8_t),  intent(in) :: u
+           type(ZMM8r8_t) :: ds
+           type(ZMM8r8_t), parameter :: two  = ZMM8r8_t(2.0_dp)
+           type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+           type(ZMM8r8_t), automatic :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           !dir$ attributes align : 64 :: t0,t1,u2,u2g,su2,sg,t2,n2,t3,t4,t5
+           type(Mask8_t), automatic :: m
+           n   = n.v*n.v
+           u2  = u.v*half.v
+           u2g = u2.v-gamma.v
+           t2  = sin(u2g.v)
+           su2 = t2.v*t2.v
+           m   = zmm8r8_rgt_zmm8r8(n2,su2)
+           if(all(m)) then
+              t3 = (-two.v*delta.v)/n.v
+              t4 = sin(u2.v)
+              t5 = sin(gamma.v)
+              ds = t3.v*t4.v*t5.v
+           else
+              t0 = ray_intercept_pa_zmm8r8(delta,alpha,gamma,n)
+              t1 = ray_intercept_na_zmm8r8(delta,alpha,gamma,n)
+              ds = t0.v-t1.v
+           end if
+        end function ray_diff_zmm8r8
+
+         
+        !Поле точек пересечения лучей, преломленных пластинкой,
+        !относительно оси Ох (рис. 87) имеет симметрию, поэтому 
+        !упростим обозначения и выполним расчет соответствующих 
+        !координат на основании
+        ! Formula 6,7, p. 111
+        subroutine compute_dxdy_r4(alpha,beta,delta,gamma,n,u,dx,dy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_dxdy_r4
+           !dir$ forceinline ::  compute_dxdy_r4
+           real(kind=sp),    intent(in)  :: alpha
+           real(kind=sp),    intent(in)  :: beta
+           real(kind=sp),    intent(in)  :: delta
+           real(kind=sp),    intent(in)  :: gamma
+           real(kind=sp),    intent(in)  :: n
+           real(kind=sp),    intent(in)  :: u
+           real(kind=sp),    intent(out) :: dx
+           real(kind=sp),    intent(out) :: dy
+           real(kind=sp), automatic :: ag,ds,t0,t1,t2
+           ag  = alpha+gamma
+           ds  = ray_diff_r4(delta,alfa,gamma,n,u)
+           t0  = sin(ag)
+           t1  = 2.0_sp*sin(alpha)
+           t2  = 2.0_sp*cos(alpha)
+           dx  = t0/t1*ds
+           dy  = t0/t2*ds
+        end subroutine compute_dxdy_r4
+
+
+        subroutine compute_dxdy_r8(alpha,beta,delta,gamma,n,u,dx,dy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_dxdy_r8
+           !dir$ forceinline ::  compute_dxdy_r8
+           real(kind=dp),    intent(in)  :: alpha
+           real(kind=dp),    intent(in)  :: beta
+           real(kind=dp),    intent(in)  :: delta
+           real(kind=dp),    intent(in)  :: gamma
+           real(kind=dp),    intent(in)  :: n
+           real(kind=dp),    intent(in)  :: u
+           real(kind=dp),    intent(out) :: dx
+           real(kind=dp),    intent(out) :: dy
+           real(kind=dp), automatic :: ag,ds,t0,t1,t2
+           ag  = alpha+gamma
+           ds  = ray_diff_r8(delta,alfa,gamma,n,u)
+           t0  = sin(ag)
+           t1  = 2.0_dp*sin(alpha)
+           t2  = 2.0_dp*cos(alpha)
+           dx  = t0/t1*ds
+           dy  = t0/t2*ds
+       end subroutine compute_dxdy_r8
+
+
+       subroutine compute_dxdy_zmm16r4(alpha,beta,delta,gamma,n,u,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_dxdy_zmm16r4
+            !dir$ forceinline ::  compute_dxdy_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_dxdy_zmm16r4
+            type(ZMM16r4_t),   intent(in)  :: alpha
+            type(ZMM16r4_t),   intent(in)  :: beta
+            type(ZMM16r4_t),   intent(in)  :: delta
+            type(ZMM16r4_t),   intent(in)  :: gamma
+            type(ZMM16r4_t),   intent(in)  :: n
+            type(ZMM16r4_t),   intent(in)  :: u
+            type(ZMM16r4_t),   intent(out) :: dx
+            type(ZMM16r4_t),   intent(out) :: dy
+            type(ZMM16r4_t), parameter :: two = ZMM16r4_t(2.0_sp)
+            type(ZMM16r4_t), automatic ::  ag,ds,t0,t1,t2
+            ag  = alpha.v+gamma.v
+            ds  = ray_diff_zmm16r4(delta,alfa,gamma,n,u)
+            t0  = sin(ag.v)
+            t1  = two.v*sin(alpha.v)
+            t2  = two.v*cos(alpha.v)
+            dx  = t0.v/t1.v*ds.v
+            dy  = t0.v/t2.v*ds.v
+        end subroutine compute_dxdy_zmm16r4
+
+
+        subroutine compute_dxdy_zmm8r8(alpha,beta,delta,gamma,n,u,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_dxdy_zmm8r8
+            !dir$ forceinline ::  compute_dxdy_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_dxdy_zmm8r8
+            type(ZMM8r8_t),   intent(in)  :: alpha
+            type(ZMM8r8_t),   intent(in)  :: beta
+            type(ZMM8r8_t),   intent(in)  :: delta
+            type(ZMM8r8_t),   intent(in)  :: gamma
+            type(ZMM8r8_t),   intent(in)  :: n
+            type(ZMM8r8_t),   intent(in)  :: u
+            type(ZMM8r8_t),   intent(out) :: dx
+            type(ZMM8r8_t),   intent(out) :: dy
+            type(ZMM8r8_t), parameter :: two = ZMM8r8_t(2.0_dp)
+            type(ZMM8r8_t), automatic ::  ag,ds,t0,t1,t2
+            ag  = alpha.v+gamma.v
+            ds  = ray_diff_zmm8r8(delta,alfa,gamma,n,u)
+            t0  = sin(ag.v)
+            t1  = two.v*sin(alpha.v)
+            t2  = two.v*cos(alpha.v)
+            dx  = t0.v/t1.v*ds.v
+            dy  = t0.v/t2.v*ds.v
+        end subroutine compute_dxdy_zmm8r8
+
+        ! Formula 7,8  p. 111
+        subroutine compute_xy_r4(alpha,beta,delta,gamma,n,u,x,y)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_xy_r4
+           !dir$ forceinline ::  compute_xy_r4
+           real(kind=sp),    intent(in)  :: alpha
+           real(kind=sp),    intent(in)  :: beta
+           real(kind=sp),    intent(in)  :: delta
+           real(kind=sp),    intent(in)  :: gamma
+           real(kind=sp),    intent(in)  :: n
+           real(kind=sp),    intent(in)  :: u
+           real(kind=sp),    intent(out) :: x
+           real(kind=sp),    intent(out) :: y
+           real(kind=sp), automatic :: sag,cag,pa,dx,dy,xs,ys
+           sag  = sin(gamma)
+           cag  = cos(gamma)
+           pa   = ray_intercept_pa_r4(delta,alpha,gamma,n)
+           xs   = pa*sag
+           ys   = pa*cag
+           call compute_dxdy_r4(alpha,beta,delta,gamma,n,u,dx,dy)
+           x    = xs+dx
+           y    = ys+dx
+        end subroutine compute_xy_r4
 
     
-
-
-    
-     
+        subroutine compute_xy_r8(alpha,beta,delta,gamma,n,u,x,y)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_xy_r8
+           !dir$ forceinline ::  compute_xy_r8
+           real(kind=dp),    intent(in)  :: alpha
+           real(kind=dp),    intent(in)  :: beta
+           real(kind=dp),    intent(in)  :: delta
+           real(kind=dp),    intent(in)  :: gamma
+           real(kind=dp),    intent(in)  :: n
+           real(kind=dp),    intent(in)  :: u
+           real(kind=dp),    intent(out) :: x
+           real(kind=dp),    intent(out) :: y
+           real(kind=dp), automatic :: sag,cag,pa,dx,dy,xs,ys
+           sag  = sin(gamma)
+           cag  = cos(gamma)
+           pa   = ray_intercept_pa_r8(delta,alpha,gamma,n)
+           xs   = pa*sag
+           ys   = pa*cag
+           call compute_dxdy_r8(alpha,beta,delta,gamma,n,u,dx,dy)
+           x    = xs+dx
+           y    = ys+dx
+        end subroutine compute_xy_r8
      
 
 
