@@ -1944,7 +1944,237 @@ module eos_sensor
            x    = xs+dx
            y    = ys+dx
         end subroutine compute_xy_r8
-     
 
+
+        subroutine compute_xy_zmm16r4(alpha,beta,delta,gamma,n,u,x,y)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xy_zmm16r4
+            !dir$ forceinline ::  compute_xy_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xy_zmm16r4
+            type(ZMM16r4_t),   intent(in)  :: alpha
+            type(ZMM16r4_t),   intent(in)  :: beta
+            type(ZMM16r4_t),   intent(in)  :: delta
+            type(ZMM16r4_t),   intent(in)  :: gamma
+            type(ZMM16r4_t),   intent(in)  :: n
+            type(ZMM16r4_t),   intent(in)  :: u
+            type(ZMM16r4_t),   intent(out) :: x
+            type(ZMM16r4_t),   intent(out) :: y
+            type(ZMM16r4_t), automatic :: sag,cag,pa,dx,dy,xs,ys
+            !dir$ attributes align : 64 :: sag,cag,pa,dx,dy,xs,ys
+            sag  = sin(gamma.v)
+            cag  = cos(gamma.v)
+            pa   = ray_intercept_pa_zmm16r4(delta,alpha,gamma,n)
+            xs   = pa.v*sag.v
+            ys   = pa.v*cag.v
+            call compute_dxdy_zmm16r4(alpha,beta,delta,gamma,n,u,dx,dy)
+            x    = xs.v+dx.v
+            y    = ys.v+dx.v
+        end subroutine compute_xy_zmm16r4
+
+
+        subroutine compute_xy_zmm8r8(alpha,beta,delta,gamma,n,u,x,y)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xy_zmm8r8
+            !dir$ forceinline ::  compute_xy_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xy_zmm8r8
+            type(ZMM8r8_t),   intent(in)  :: alpha
+            type(ZMM8r8_t),   intent(in)  :: beta
+            type(ZMM8r8_t),   intent(in)  :: delta
+            type(ZMM8r8_t),   intent(in)  :: gamma
+            type(ZMM8r8_t),   intent(in)  :: n
+            type(ZMM8r8_t),   intent(in)  :: u
+            type(ZMM8r8_t),   intent(out) :: x
+            type(ZMM8r8_t),   intent(out) :: y
+            type(ZMM8r8_t), automatic :: sag,cag,pa,dx,dy,xs,ys
+            !dir$ attributes align : 64 :: sag,cag,pa,dx,dy,xs,ys
+            sag  = sin(gamma.v)
+            cag  = cos(gamma.v)
+            pa   = ray_intercept_pa_zmm8r8(delta,alpha,gamma,n)
+            xs   = pa.v*sag.v
+            ys   = pa.v*cag.v
+            call compute_dxdy_zmm8r8(alpha,beta,delta,gamma,n,u,dx,dy)
+            x    = xs.v+dx.v
+            y    = ys.v+dx.v
+        end subroutine compute_xy_zmm8r8
+
+
+        subroutine compute_xdyd_r4(gamma,u,n,xd,yd)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_xdyd_r4
+           !dir$ forceinline ::  compute_xdyd_r4
+           real(kind=sp),  intent(in)  :: gamma
+           real(kind=sp),  intent(in)  :: u
+           real(kind=sp),  intent(in)  :: n
+           real(kind=sp),  intent(out) :: xd
+           real(kind=sp),  intent(out) :: yd
+           real(kind=sp), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+           cosg = cos(gamma)
+           sing = sin(gamma)
+           u2   = u*0.5_sp
+           n2   = n*n
+           u2gs = u2+gamma
+           ungd = u2-gamma
+           t0   = sin(u2gs)
+           sin2s= t0*t0
+           t1   = sin(u2gd)
+           sin2d= t1*t1
+           t2   = 1.0_sp/(4.0_sp*sin(u2))
+           t3   = sqrt(n2-sin2s)
+           t0   = sin2s/t3
+           t4   = sqrt(n2-sin2d)
+           t1   = sin2d/t4
+           dx   = cosg-t2*(t0+t1)
+           t2   = 1.0_sp/(4.0_sp*cos(u2)
+           dy   = sing-t2*(t0-t1)
+        end subroutine compute_xdyd_r4
+
+
+       subroutine compute_xdyd_r8(gamma,u,n,xd,yd)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_xdyd_r8
+           !dir$ forceinline ::  compute_xdyd_r8
+           real(kind=dp),  intent(in)  :: gamma
+           real(kind=dp),  intent(in)  :: u
+           real(kind=dp),  intent(in)  :: n
+           real(kind=dp),  intent(out) :: xd
+           real(kind=dp),  intent(out) :: yd
+           real(kind=dp), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+           cosg = cos(gamma)
+           sing = sin(gamma)
+           u2   = u*0.5_dp
+           n2   = n*n
+           u2gs = u2+gamma
+           ungd = u2-gamma
+           t0   = sin(u2gs)
+           sin2s= t0*t0
+           t1   = sin(u2gd)
+           sin2d= t1*t1
+           t2   = 1.0_dp/(4.0_dp*sin(u2))
+           t3   = sqrt(n2-sin2s)
+           t0   = sin2s/t3
+           t4   = sqrt(n2-sin2d)
+           t1   = sin2d/t4
+           dx   = cosg-t2*(t0+t1)
+           t2   = 1.0_dp/(4.0_dp*cos(u2)
+           dy   = sing-t2*(t0-t1)
+        end subroutine compute_xdyd_r8
+
+
+        subroutine compute_xdyd_zmm16r4(gamma,u,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xdyd_zmm16r4
+            !dir$ forceinline ::  compute_xdyd_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xdyd_zmm16r4
+            type(ZMM16r4_t),  intent(in)  :: gamma
+            type(ZMM16r4_t),  intent(in)  :: u
+            type(ZMM16r4_t),  intent(in)  :: n
+            type(ZMM16r4_t),  intent(out) :: xd
+            type(ZMM16r4_t),  intent(out) :: yd
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t), parameter :: four = ZMM16r4_t(4.0_sp)
+            type(ZMM16r4_t), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+            cosg = cos(gamma.v)
+            sing = sin(gamma.v)
+            u2   = u.v*half.v
+            n2   = n.v*n.v
+            u2gs = u2.v+gamma.v
+            ungd = u2.v-gamma.v
+            t0   = sin(u2gs.v)
+            sin2s= t0.v*t0.v
+            t1   = sin(u2gd.v)
+            sin2d= t1.v*t1.v
+            t2   = one.v/(four.v*sin(u2.v))
+            t3   = sqrt(n2.v-sin2s.v)
+            t0   = sin2s.v/t3.v
+            t4   = sqrt(n2.v-sin2d.v)
+            t1   = sin2d.v/t4.v
+            dx   = cosg.v-t2.v*(t0.v+t1.v)
+            t2   = one.v/(four.v*cos(u2.v)
+            dy   = sing.v-t2.v*(t0.v-t1.v)
+        end subroutine compute_xdyd_zmm16r4
+
+
+        subroutine compute_xdyd_zmm8r8(gamma,u,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xdyd_zmm8r8
+            !dir$ forceinline ::  compute_xdyd_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xdyd_zmm8r8
+            type(ZMM8r8_t),  intent(in)  :: gamma
+            type(ZMM8r8_t),  intent(in)  :: u
+            type(ZMM8r8_t),  intent(in)  :: n
+            type(ZMM8r8_t),  intent(out) :: xd
+            type(ZMM8r8_t),  intent(out) :: yd
+            type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+            type(ZMM8r8_t), parameter :: one  = ZMM8r8_t(1.0_dp)
+            type(ZMM8r8_t), parameter :: four = ZMM8r8_t(4.0_dp)
+            type(ZMM8r8_t), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+            cosg = cos(gamma.v)
+            sing = sin(gamma.v)
+            u2   = u.v*half.v
+            n2   = n.v*n.v
+            u2gs = u2.v+gamma.v
+            ungd = u2.v-gamma.v
+            t0   = sin(u2gs.v)
+            sin2s= t0.v*t0.v
+            t1   = sin(u2gd.v)
+            sin2d= t1.v*t1.v
+            t2   = one.v/(four.v*sin(u2.v))
+            t3   = sqrt(n2.v-sin2s.v)
+            t0   = sin2s.v/t3.v
+            t4   = sqrt(n2.v-sin2d.v)
+            t1   = sin2d.v/t4.v
+            dx   = cosg.v-t2.v*(t0.v+t1.v)
+            t2   = one.v/(four.v*cos(u2.v)
+            dy   = sing.v-t2.v*(t0.v-t1.v)
+        end subroutine compute_xdyd_zmm8r8
+
+
+        subroutine paraxial_xdyd_r4(gamma,alpha,n,xd,yd)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  paraxial_xdyd_r4
+           !dir$ forceinline ::  paraxial_xdyd_r4 
+           real(kind=sp),  intent(in)  :: gamma
+           real(kind=sp),  intent(in)  :: alpha
+           real(kind=sp),  intent(in)  :: n
+           real(kind=sp),  intent(out) :: xd
+           real(kind=sp),  intent(out) :: yd
+           real(kind=sp), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
+           n2    = n*n
+           cosg  = cos(gamma)
+           cos2g = cos(gamma+gamma)
+           sing  = sin(gamma)
+           sin4g = sing*sing*sing*sing
+           num   = n2*cos2g+sin4g
+           den   = (n2-sing*sing)**1.5_sp
+           xd    = cosg-num/den
+           t0    = sqrt(n2-sing*sing)
+           t1    = 1.0_sp-cosg/t0
+           yd    = sing*t1
+        end subroutine paraxial_xdyd_r4
+
+     
+        subroutine paraxial_xdyd_r8(gamma,alpha,n,xd,yd)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  paraxial_xdyd_r8
+           !dir$ forceinline ::  paraxial_xdyd_r8
+           real(kind=dp),  intent(in)  :: gamma
+           real(kind=dp),  intent(in)  :: alpha
+           real(kind=dp),  intent(in)  :: n
+           real(kind=dp),  intent(out) :: xd
+           real(kind=dp),  intent(out) :: yd
+           real(kind=dp), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
+           n2    = n*n
+           cosg  = cos(gamma)
+           cos2g = cos(gamma+gamma)
+           sing  = sin(gamma)
+           sin4g = sing*sing*sing*sing
+           num   = n2*cos2g+sin4g
+           den   = (n2-sing*sing)**1.5_dp
+           xd    = cosg-num/den
+           t0    = sqrt(n2-sing*sing)
+           t1    = 1.0_dp-cosg/t0
+           yd    = sing*t1
+        end subroutine paraxial_xdyd_r8
 
 end module eos_sensor
