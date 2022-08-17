@@ -2177,4 +2177,266 @@ module eos_sensor
            yd    = sing*t1
         end subroutine paraxial_xdyd_r8
 
+
+        subroutine paraxial_xdyd_zmm16r4(gamma,alpha,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: paraxial_xdyd_zmm16r4
+            !dir$ forceinline ::  paraxial_xdyd_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  paraxial_xdyd_zmm16r4
+            type(ZMM16r4_t),   intent(in)  :: gamma
+            type(ZMM16r4_t),   intent(in)  :: alpha
+            type(ZMM16r4_t),   intent(in)  :: n
+            type(ZMM16r4_t),   intent(out) :: xd
+            type(ZMM16r4_t),   intent(out) :: yd
+            type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
+            n2    = n.v*n.v
+            cosg  = cos(gamma.v)
+            cos2g = cos(gamma.v+gamma.v)
+            sing  = sin(gamma.v)
+            sin4g = sing.v*sing.v*sing.v*sing.v
+            num   = n2.v*cos2g.v+sin4g.v
+            den   = (n2.v-sing.v*sing.v)**1.5_sp
+            xd    = cosg.v-num.v/den.v
+            t0    = sqrt(n2.v-sing.v*sing.v)
+            t1    = one.v-cosg.v/t0.v
+            yd    = sing.v*t1.v
+        end subroutine paraxial_xdyd_zmm16r4
+        
+        
+        subroutine paraxial_xdyd_zmm8r8(gamma,alpha,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: paraxial_xdyd_zmm8r8
+            !dir$ forceinline ::  paraxial_xdyd_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  paraxial_xdyd_zmm8r8
+            type(ZMM8r8_t),   intent(in)  :: gamma
+            type(ZMM8r8_t),   intent(in)  :: alpha
+            type(ZMM8r8_t),   intent(in)  :: n
+            type(ZMM8r8_t),   intent(out) :: xd
+            type(ZMM8r8_t),   intent(out) :: yd
+            type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
+            type(ZMM8r8_t), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
+            n2    = n.v*n.v
+            cosg  = cos(gamma.v)
+            cos2g = cos(gamma.v+gamma.v)
+            sing  = sin(gamma.v)
+            sin4g = sing.v*sing.v*sing.v*sing.v
+            num   = n2.v*cos2g.v+sin4g.v
+            den   = (n2.v-sing.v*sing.v)**1.5_dp
+            xd    = cosg.v-num.v/den.v
+            t0    = sqrt(n2.v-sing.v*sing.v)
+            t1    = one.v-cosg.v/t0.v
+            yd    = sing.v*t1.v
+        end subroutine paraxial_xdyd_zmm8r8
+
+
+        !СКАНИРОВАНИЕ ВРАЩАЮЩИМИСЯ ОБЪЕКТИВАМИ
+        !Formula 1, p. 121
+        subroutine fov_axay_r4(H,delx,dely,phi,ax,ay)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  fov_axay_r4
+           !dir$ forceinline ::  fov_axay_r4  
+           real(kind=sp),  intent(in) :: H
+           real(kind=sp),  intent(in) :: delx
+           real(kind=sp),  intent(in) :: dely
+           real(kind=sp),  intent(in) :: phi
+           real(kind=sp),  intent(out):: ax
+           real(kind=sp),  intent(out):: ay
+           real(kind=sp), automatic :: sec2,phi2,t0,t1,sec
+           phi2  = 0.5_sp*phi
+           sec   = 1.0_sp/cos(phi2)
+           sec2  = sec*sec
+           ax    = H*delx*sec2
+           ay    = H*dely*sec
+        end subroutine fov_axay_r4
+        
+        
+        subroutine fov_axay_r8(H,delx,dely,phi,ax,ay)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  fov_axay_r8
+           !dir$ forceinline ::  fov_axay_r8  
+           real(kind=dp),  intent(in) :: H
+           real(kind=dp),  intent(in) :: delx
+           real(kind=dp),  intent(in) :: dely
+           real(kind=dp),  intent(in) :: phi
+           real(kind=dp),  intent(out):: ax
+           real(kind=dp),  intent(out):: ay
+           real(kind=dp), automatic :: sec2,phi2,t0,t1,sec
+           phi2  = 0.5_dp*phi
+           sec   = 1.0_dp/cos(phi2)
+           sec2  = sec*sec
+           ax    = H*delx*sec2
+           ay    = H*dely*sec
+        end subroutine fov_axay_r8
+        
+        
+        subroutine fov_axay_zmm16r4(H,delx,dely,phi,ax,ay)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_axay_zmm16r4
+            !dir$ forceinline ::  fov_axay_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_axay_zmm16r4
+            type(ZMM16r4_t),  intent(in) :: H
+            type(ZMM16r4_t),  intent(in) :: delx
+            type(ZMM16r4_t),  intent(in) :: dely
+            type(ZMM16r4_t),  intent(in) :: phi
+            type(ZMM16r4_t),  intent(out):: ax
+            type(ZMM16r4_t),  intent(out):: ay
+            type(ZMM16r4_t),  parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t),  parameter :: one  = ZMM16r4_t(1.0_sp)
+            type(ZMM16r4_t),  automatic :: sec2,phi2,t0,t1,sec
+            phi2  = half.v*phi.v
+            sec   = one.v/cos(phi2.v)
+            sec2  = sec.v*sec.v
+            ax    = H.v*delx.v*sec2.v
+            ay    = H.v*dely.v*sec.v
+        end subroutine fov_axay_zmm16r4
+        
+        
+        subroutine fov_axay_zmm8r8(H,delx,dely,phi,ax,ay)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_axay_zmm8r8
+            !dir$ forceinline ::  fov_axay_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_axay_zmm8r8
+            type(ZMM8r8_t),  intent(in) :: H
+            type(ZMM8r8_t),  intent(in) :: delx
+            type(ZMM8r8_t),  intent(in) :: dely
+            type(ZMM8r8_t),  intent(in) :: phi
+            type(ZMM8r8_t),  intent(out):: ax
+            type(ZMM8r8_t),  intent(out):: ay
+            type(ZMM8r8_t),  parameter :: half = ZMM8r8_t(0.5_dp)
+            type(ZMM8r8_t),  parameter :: one  = ZMM8r8_t(1.0_dp)
+            type(ZMM8r8_t),  automatic :: sec2,phi2,t0,t1,sec
+            phi2  = half.v*phi.v
+            sec   = one.v/cos(phi2.v)
+            sec2  = sec.v*sec.v
+            ax    = H.v*delx.v*sec2.v
+            ay    = H.v*dely.v*sec.v
+        end subroutine fov_axay_zmm8r8
+        
+        
+        subroutine  fov_dxdy_r4(x,y,F,phi,dx,dy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  fov_dxdy_r4
+           !dir$ forceinline ::  fov_dxdy_r4  
+           real(kind=sp),   intent(in) :: x
+           real(kind=sp),   intent(in) :: y
+           real(kind=sp),   intent(in) :: F
+           real(kind=sp),   intent(in) :: phi
+           real(kind=sp),   intent(out):: dx
+           real(kind=sp),   intent(out):: dy
+           real(kind=sp), automatic :: d0x,d0y,phi2
+           d0y   = y/F
+           phi2  = 0.5_sp*phi
+           d0x   = x/F
+           dy    = d0y
+           dx    = d0x*cos(phi2)
+        end subroutine fov_dxdy_r4
+        
+        
+        subroutine  fov_dxdy_r8(x,y,F,phi,dx,dy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  fov_dxdy_r8
+           !dir$ forceinline ::  fov_dxdy_r8  
+           real(kind=dp),   intent(in) :: x
+           real(kind=dp),   intent(in) :: y
+           real(kind=dp),   intent(in) :: F
+           real(kind=dp),   intent(in) :: phi
+           real(kind=dp),   intent(out):: dx
+           real(kind=dp),   intent(out):: dy
+           real(kind=dp), automatic :: d0x,d0y,phi2
+           d0y   = y/F
+           phi2  = 0.5_dp*phi
+           d0x   = x/F
+           dy    = d0y
+           dx    = d0x*cos(phi2)
+        end subroutine fov_dxdy_r8
+        
+        
+        subroutine  fov_dxdy_zmm16r4(x,y,F,phi,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_dxdy_zmm16r4
+            !dir$ forceinline ::  fov_dxdy_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_dxdy_zmm16r4
+            type(ZMM16r4_t),   intent(in) :: x
+            type(ZMM16r4_t),   intent(in) :: y
+            type(ZMM16r4_t),   intent(in) :: F
+            type(ZMM16r4_t),   intent(in) :: phi
+            type(ZMM16r4_t),   intent(out):: dx
+            type(ZMM16r4_t),   intent(out):: dy
+            type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
+            type(ZMM16r4_t), automatic :: d0x,d0y,phi2
+            !dir$ attributes align : 64 :: d0x,d0y,phi2
+            d0y    = y.v/F.v
+            phi2   = half.v*phi.v
+            d0x    = x.v/F.v
+            dy     = d0y.v
+            dx     = d0x.v*cos(phi2.v)
+        end subroutine fov_dxdy_zmm16r4
+        
+        
+        subroutine  fov_dxdy_zmm8r8(x,y,F,phi,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_dxdy_zmm8r8
+            !dir$ forceinline ::  fov_dxdy_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_dxdy_zmm8r8
+            type(ZMM8r8_t),   intent(in) :: x
+            type(ZMM8r8_t),   intent(in) :: y
+            type(ZMM8r8_t),   intent(in) :: F
+            type(ZMM8r8_t),   intent(in) :: phi
+            type(ZMM8r8_t),   intent(out):: dx
+            type(ZMM8r8_t),   intent(out):: dy
+            type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
+            type(ZMM8r8_t), automatic :: d0x,d0y,phi2
+            !dir$ attributes align : 64 :: d0x,d0y,phi2
+            d0y    = y.v/F.v
+            phi2   = half.v*phi.v
+            d0x    = x.v/F.v
+            dy     = d0y.v
+            dx     = d0x.v*cos(phi2.v)
+        end subroutine fov_dxdy_zmm8r8
+        
+        
+        subroutine volt_impulse_uxuy_r4(u,om1,om2,t,ux,uy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  volt_impulse_uxuy_r4
+           !dir$ forceinline ::  volt_impulse_uxuy_r4
+           real(kind=sp),   intent(in) :: u
+           real(kind=sp),   intent(in) :: om1
+           real(kind=sp),   intent(in) :: om2
+           real(kind=sp),   intent(in) :: t
+           real(kind=sp),   intent(out):: ux
+           real(kind=sp),   intent(out):: uy
+           real(kind=sp), automatic :: om1t,om2t,t0,t1
+           om1t = om1*t
+           om2t = om2*t
+           t0   = sin(om1t)+sin(om2t)
+           t1   = cos(om1t)+cos(om2t)
+           ux   = u*t0
+           uy   = u*t1
+        end subroutine volt_impulse_uxuy_r4
+        
+        
+        subroutine volt_impulse_uxuy_r8(u,om1,om2,t,ux,uy)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  volt_impulse_uxuy_r8
+           !dir$ forceinline ::  volt_impulse_uxuy_r8
+           real(kind=dp),   intent(in) :: u
+           real(kind=dp),   intent(in) :: om1
+           real(kind=dp),   intent(in) :: om2
+           real(kind=dp),   intent(in) :: t
+           real(kind=dp),   intent(out):: ux
+           real(kind=dp),   intent(out):: uy
+           real(kind=dp), automatic :: om1t,om2t,t0,t1
+           om1t = om1*t
+           om2t = om2*t
+           t0   = sin(om1t)+sin(om2t)
+           t1   = cos(om1t)+cos(om2t)
+           ux   = u*t0
+           uy   = u*t1
+        end subroutine volt_impulse_uxuy_r8
+        
+        
+        
+        
+
 end module eos_sensor
