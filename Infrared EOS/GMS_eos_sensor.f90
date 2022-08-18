@@ -2434,7 +2434,176 @@ module eos_sensor
            ux   = u*t0
            uy   = u*t1
         end subroutine volt_impulse_uxuy_r8
-        
+
+
+        subroutine volt_impulse_uxuy_zmm16r4(u,om1,om2,t,ux,uy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: volt_impulse_uxuy_zmm16r4
+            !dir$ forceinline ::  volt_impulse_uxuy_zmm16r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  volt_impulse_uxuy_zmm16r4
+            type(ZMM16r4_t),   intent(in) :: u
+            type(ZMM16r4_t),   intent(in) :: om1
+            type(ZMM16r4_t),   intent(in) :: om2
+            type(ZMM16r4_t),   intent(in) :: t
+            type(ZMM16r4_t),   intent(out):: ux
+            type(ZMM16r4_t),   intent(out):: uy
+            type(ZMM16r4_t), automatic :: om1t,om2t,t0,t1
+            om1t = om1.v*t.v
+            om2t = om2.v*t.v
+            t0   = sin(om1t.v)+sin(om2t.v)
+            t1   = cos(om1t.v)+cos(om2t.v)
+            ux   = u.v*t0.v
+            uy   = u.v*t1.v
+        end subroutine volt_impulse_uxuy_zmm16r4
+
+
+        subroutine volt_impulse_uxuy_zmm8r8(u,om1,om2,t,ux,uy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: volt_impulse_uxuy_zmm8r8
+            !dir$ forceinline ::  volt_impulse_uxuy_zmm8r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  volt_impulse_uxuy_zmm8r8
+            type(ZMM8r8_t),   intent(in) :: u
+            type(ZMM8r8_t),   intent(in) :: om1
+            type(ZMM8r8_t),   intent(in) :: om2
+            type(ZMM8r8_t),   intent(in) :: t
+            type(ZMM8r8_t),   intent(out):: ux
+            type(ZMM8r8_t),   intent(out):: uy
+            type(ZMM8r8_t), automatic :: om1t,om2t,t0,t1
+            om1t = om1.v*t.v
+            om2t = om2.v*t.v
+            t0   = sin(om1t.v)+sin(om2t.v)
+            t1   = cos(om1t.v)+cos(om2t.v)
+            ux   = u.v*t0.v
+            uy   = u.v*t1.v
+        end subroutine volt_impulse_uxuy_zmm8r8
+
+
+        ! Phase Modulation
+        ! Formula 1, p. 143
+        ! растрового анализатора со 
+        !скрещивающимися осями, выполненного в виде надетой на вращающийся 
+        !барабан тонкой пленки, прозрачность которой изменяется по 
+        !синусоидальному закону 
+        pure elemental function raster_transparency_r4(rho_avg,rho_max,    &
+                                                       rho_min,l,L,N) result(rho)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_transparency_r4
+           !dir$ forceinline ::  raster_transparency_r4
+           real(kind=sp),    intent(in) :: rho_avg
+           real(kind=sp),    intent(in) :: rho_max
+           real(kind=sp),    intent(in) :: rho_min
+           real(kind=sp),    intent(in) :: l
+           real(kind=sp),    intent(in) :: L
+           real(kind=sp),    intent(in) :: N
+           real(kind=sp) :: rho
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: t0,t1,t2
+           t0  = 0.5_sp*(rho_max-rho_min)
+           t1  = L/N
+           t2  = sin(twopi*l*t1)
+           rho = rho_avg+t0*t2
+        end function raster_transparency_r4
+
+
+       pure elemental function raster_transparency_r8(rho_avg,rho_max,    &
+                                                       rho_min,l,L,N) result(rho)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_transparency_r8
+           !dir$ forceinline ::  raster_transparency_r8
+           real(kind=dp),    intent(in) :: rho_avg
+           real(kind=dp),    intent(in) :: rho_max
+           real(kind=dp),    intent(in) :: rho_min
+           real(kind=dp),    intent(in) :: l
+           real(kind=dp),    intent(in) :: L
+           real(kind=dp),    intent(in) :: N
+           real(kind=dp) :: rho
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: t0,t1,t2
+           t0  = 0.5_dp*(rho_max-rho_min)
+           t1  = L/N
+           t2  = sin(twopi*l*t1)
+           rho = rho_avg+t0*t2
+        end function raster_transparency_r8
+
+
+        !СТРУКТУРА И СПЕКТР МОДУЛИРОВАННОГО ПОТОКА
+        !ИЗЛУЧЕНИЯ
+        !Formula 1, p. 178
+        ! Ф(*) = Int rp(z,t)E(z,t) dsig
+        subroutine raster_flux_integral_omp(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+                                            Phit_x,Phit_y,ier_x,ier_y)
+                                        
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_integral_omp
+           use quadpack, only : davint
+           real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_x
+           real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_y
+           real(kind=dp),    dimension(1:n),   intent(in) :: absc
+           integer(kind=i4),                   intent(in) :: n
+           integer(kind=i4),                   intent(in) :: t
+           real(kind=dp),                      intent(in) :: xlo
+           real(kind=dp),                      intent(in) :: xup
+           real(kind=dp),    dimension(t),     intent(out):: Phit_x
+           real(kind=dp),    dimension(t),     intent(out):: Phit_y
+           integer(kind=i4), dimension(t),     intent(out):: ier_x
+           integer(kind=i4), dimension(t),     intent(out):: ier_y
+           real(kind=dp) :: ans_x,ans_y
+           integer(kind=i4)  :: i
+           integer(kind=i4)  :: err_x,err_y 
+           !dir$ assume_aligned rhoE_x:64
+           !dir$ assume_aligned rhoE_y:64
+           !dir$ assume_aligned Phit_x:64
+           !dir$ assume_aligned Phit_y:64
+!$omp parallel do schedule(runtime) default(none) &
+!$omp private(i,ans_x,ans_y,err_x,err_y)          &
+!$omp shared(t,rhoE_x,rhoE_y,absc,n,xlo,xup)
+           do i=1, t ! for 't' time of scanning of radiance field
+              call davint(rhoE_x(:,i),absc,n,xlo,xup,ans_x,err_x)
+              Phit_x(i) = ans_x
+              ier_x(i)  = err_x
+              call davint(rhoE_y(:,i),absc,n,xlo,xup,ans_y,err_y)
+              Phit_y(i) = ans_y
+              ier_x(i)  = err_y
+           end do
+!$omp end parallel do
+        end subroutine raster_flux_integral_omp
+
+
+        subroutine raster_flux_integral(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+                                            Phit_x,Phit_y,ier_x,ier_y)
+                                        
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_integral
+           use quadpack, only : davint
+           real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_x
+           real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_y
+           real(kind=dp),    dimension(1:n),   intent(in) :: absc
+           integer(kind=i4),                   intent(in) :: n
+           integer(kind=i4),                   intent(in) :: t
+           real(kind=dp),                      intent(in) :: xlo
+           real(kind=dp),                      intent(in) :: xup
+           real(kind=dp),    dimension(t),     intent(out):: Phit_x
+           real(kind=dp),    dimension(t),     intent(out):: Phit_y
+           integer(kind=i4), dimension(t),     intent(out):: ier_x
+           integer(kind=i4), dimension(t),     intent(out):: ier_y
+           real(kind=dp) :: ans_x,ans_y
+           integer(kind=i4)  :: i
+           integer(kind=i4)  :: err_x,err_y 
+           !dir$ assume_aligned rhoE_x:64
+           !dir$ assume_aligned rhoE_y:64
+           !dir$ assume_aligned Phit_x:64
+           !dir$ assume_aligned Phit_y:64
+
+           do i=1, t ! for 't' time of scanning of radiance field
+              call davint(rhoE_x(:,i),absc,n,xlo,xup,ans_x,err_x)
+              Phit_x(i) = ans_x
+              ier_x(i)  = err_x
+              call davint(rhoE_y(:,i),absc,n,xlo,xup,ans_y,err_y)
+              Phit_y(i) = ans_y
+              ier_x(i)  = err_y
+           end do
+
+        end subroutine raster_flux_integral
         
         
         
