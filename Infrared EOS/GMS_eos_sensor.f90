@@ -2604,6 +2604,186 @@ module eos_sensor
            end do
 
         end subroutine raster_flux_integral
+
+
+        ! Formula 3, p. 180
+        subroutine raster_opacity_integral_omp(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+                                               xup,rho_x,rho_y,ier_x,ier_y)
+
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral_omp
+            use quadpack, only : davint
+            real(kind=dp),                      intent(in) :: invs
+            real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_x
+            real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_y
+            real(kind=dp), dimension(1:n),      intent(in) :: absc
+            integer(kind=i4),                   intent(in) :: n
+            integer(kind=i4),                   intent(in) :: t
+            real(kind=dp),                      intent(in) :: xlo
+            real(kind=dp),                      intent(in) :: xup
+            real(kind=dp),    dimension(t),     intent(out):: rho_x
+            real(kind=dp),    dimension(t),     intent(out):: rho_y
+            integer(kind=i4), dimension(t),     intent(out):: ier_x
+            integer(kind=i4), dimension(t),     intent(out):: ier_y
+            real(kind=dp) :: ans_x,ans_y
+            integer(kind=i4)  :: i
+            integer(kind=i4)  :: err_x,err_y 
+            !dir$ assume_aligned rhophi_x:64
+            !dir$ assume_aligned rhophi_y:64
+            !dir$ assume_aligned absc:64
+            !dir$ assume_aligned rho_x:64
+            !dir$ assume_aligned rho_y:64
+
+
+!$omp parallel do schedule(runtime)default(none) &
+!$omp private(i,ans_x,err_x,ans_y,err_y)         &
+!$omp shared(t,rhophi_x,rhophi_y,ansc,n,xlo,xup) &
+!$omp shared(rho_x,rho_y,ier_x,ier_y)
+            do i=1, t
+               call davint(rhophi_x(:,t),absc,n,xlo,xup,ans_x,err_x)
+               rho_x(i) = invs*ans_x
+               ier_x(i) = err_x
+               call davint(rhophi_y(:,t),absc,n,xlo,xup,ans_y,err_y)
+               rho_y(i) = invs*ans_y
+               ier_y(i) = err_y
+            end do
+!$omp end parallel do
+       end subroutine raster_opacity_integral_omp
+
+
+       subroutine raster_opacity_integral(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+                                               xup,rho_x,rho_y,ier_x,ier_y)
+
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral
+            use quadpack, only : davint
+            real(kind=dp),                      intent(in) :: invs
+            real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_x
+            real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_y
+            real(kind=dp), dimension(1:n),      intent(in) :: absc
+            integer(kind=i4),                   intent(in) :: n
+            integer(kind=i4),                   intent(in) :: t
+            real(kind=dp),                      intent(in) :: xlo
+            real(kind=dp),                      intent(in) :: xup
+            real(kind=dp),    dimension(t),     intent(out):: rho_x
+            real(kind=dp),    dimension(t),     intent(out):: rho_y
+            integer(kind=i4), dimension(t),     intent(out):: ier_x
+            integer(kind=i4), dimension(t),     intent(out):: ier_y
+            real(kind=dp) :: ans_x,ans_y
+            integer(kind=i4)  :: i
+            integer(kind=i4)  :: err_x,err_y 
+            !dir$ assume_aligned rhophi_x:64
+            !dir$ assume_aligned rhophi_y:64
+            !dir$ assume_aligned absc:64
+            !dir$ assume_aligned rho_x:64
+            !dir$ assume_aligned rho_y:64
+
+            do i=1, t
+               call davint(rhophi_x(:,t),absc,n,xlo,xup,ans_x,err_x)
+               rho_x(i) = invs*ans_x
+               ier_x(i) = err_x
+               call davint(rhophi_y(:,t),absc,n,xlo,xup,ans_y,err_y)
+               rho_y(i) = invs*ans_y
+               ier_y(i) = err_y
+            end do
+
+       end subroutine raster_opacity_integral
+
+
+       subroutine cos_series_r4(om0,n,coss,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  cos_series_r4
+           !dir$ forceinline ::  cos_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r4
+           use omp_lib
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: coss
+           real(kind=sp),                 intent(in)  :: k
+           real(kind=sp) :: arg
+           integer(kind=i4) :: i
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !$omp simd simdlen(4)
+           do i=1, n
+              t   = real(i,kind=sp)
+              arg = k*om0*t
+              coss(i) = cos(arg)
+           end do
+       end subroutine cos_series_r4
+
+
+       subroutine cos_series_r8(om0,n,coss,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  cos_series_r8
+           !dir$ forceinline ::  cos_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r8
+           use omp_lib
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: coss
+           real(kind=dp),                 intent(in)  :: k
+           real(kind=dp) :: arg
+           integer(kind=i4) :: i
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !$omp simd simdlen(8)
+           do i=1, n
+              t   = real(i,kind=sp)
+              arg = k*om0*t
+              coss(i) = cos(arg)
+           end do
+       end subroutine cos_series_r8
+
+
+       subroutine sin_series_r4(om0,n,sins,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_r4
+           !dir$ forceinline ::  sin_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r4
+           use omp_lib
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: sins
+           real(kind=sp),                 intent(in)  :: k
+           real(kind=sp) :: arg
+           integer(kind=i4) :: i
+            !dir$ assume_aligned sins:64
+            !dir$ vector aligned
+            !$omp simd simdlen(4)
+           do i=1, n
+              t   = real(i,kind=sp)
+              arg = k*om0*t
+              sins(i) = sin(arg)
+           end do
+       end subroutine sin_series_r4
+
+
+       subroutine sin_series_r8(om0,n,sins,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_r8
+           !dir$ forceinline ::  sin_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r8
+           use omp_lib
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: sins
+           real(kind=dp),                 intent(in)  :: k
+           real(kind=dp) :: arg
+           integer(kind=i4) :: i
+            !dir$ assume_aligned sins:64
+            !dir$ vector aligned
+            !$omp simd simdlen(8)
+           do i=1, n
+              t   = real(i,kind=sp)
+              arg = k*om0*t
+              sins(i) = sin(arg)
+           end do
+       end subroutine sin_series_r8
+
+
+
+       
         
         
         
