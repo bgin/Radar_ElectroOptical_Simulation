@@ -2530,11 +2530,11 @@ module eos_sensor
         !ИЗЛУЧЕНИЯ
         !Formula 1, p. 178
         ! Ф(*) = Int rp(z,t)E(z,t) dsig
-        subroutine raster_flux_integral_omp(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
-                                            Phit_x,Phit_y,ier_x,ier_y)
+        subroutine raster_flux_integral_omp_r8(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+                                               Phit_x,Phit_y,ier_x,ier_y)
                                         
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  raster_flux_integral_omp
+           !dir$ attributes code_align : 32 ::  raster_flux_integral_omp_r8
            use quadpack, only : davint
            real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_x
            real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_y
@@ -2566,14 +2566,14 @@ module eos_sensor
               ier_x(i)  = err_y
            end do
 !$omp end parallel do
-        end subroutine raster_flux_integral_omp
+        end subroutine raster_flux_integral_omp_r8
 
 
-        subroutine raster_flux_integral(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+        subroutine raster_flux_integral_r8(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
                                             Phit_x,Phit_y,ier_x,ier_y)
                                         
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  raster_flux_integral
+           !dir$ attributes code_align : 32 ::  raster_flux_integral_r8
            use quadpack, only : davint
            real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_x
            real(kind=dp),    dimension(1:n,t), intent(in) :: rhoE_y
@@ -2603,15 +2603,92 @@ module eos_sensor
               ier_x(i)  = err_y
            end do
 
-        end subroutine raster_flux_integral
+         end subroutine raster_flux_integral_r8
+
+
+         subroutine raster_flux_integral_omp_r4(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+                                               Phit_x,Phit_y,ier_x,ier_y)
+                                        
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_integral_omp_r4
+           use quadpack, only : savint
+           real(kind=sp),    dimension(1:n,t), intent(in) :: rhoE_x
+           real(kind=sp),    dimension(1:n,t), intent(in) :: rhoE_y
+           real(kind=sp),    dimension(1:n),   intent(in) :: absc
+           integer(kind=i4),                   intent(in) :: n
+           integer(kind=i4),                   intent(in) :: t
+           real(kind=sp),                      intent(in) :: xlo
+           real(kind=sp),                      intent(in) :: xup
+           real(kind=sp),    dimension(t),     intent(out):: Phit_x
+           real(kind=sp),    dimension(t),     intent(out):: Phit_y
+           integer(kind=i4), dimension(t),     intent(out):: ier_x
+           integer(kind=i4), dimension(t),     intent(out):: ier_y
+           real(kind=sp) :: ans_x,ans_y
+           integer(kind=i4)  :: i
+           integer(kind=i4)  :: err_x,err_y 
+           !dir$ assume_aligned rhoE_x:64
+           !dir$ assume_aligned rhoE_y:64
+           !dir$ assume_aligned Phit_x:64
+           !dir$ assume_aligned Phit_y:64
+!$omp parallel do schedule(runtime) default(none) &
+!$omp private(i,ans_x,ans_y,err_x,err_y)          &
+!$omp shared(t,rhoE_x,rhoE_y,absc,n,xlo,xup)
+           do i=1, t ! for 't' time of scanning of radiance field
+              call savint(rhoE_x(:,i),absc,n,xlo,xup,ans_x,err_x)
+              Phit_x(i) = ans_x
+              ier_x(i)  = err_x
+              call savint(rhoE_y(:,i),absc,n,xlo,xup,ans_y,err_y)
+              Phit_y(i) = ans_y
+              ier_x(i)  = err_y
+           end do
+!$omp end parallel do
+        end subroutine raster_flux_integral_omp_r4
+
+
+        subroutine raster_flux_integral_r4(rhoE_x,rhoE_y,absc,n,t,xlo,xup,
+                                            Phit_x,Phit_y,ier_x,ier_y)
+                                        
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_integral_r4
+           use quadpack, only : savint
+           real(kind=sp),    dimension(1:n,t), intent(in) :: rhoE_x
+           real(kind=sp),    dimension(1:n,t), intent(in) :: rhoE_y
+           real(kind=sp),    dimension(1:n),   intent(in) :: absc
+           integer(kind=i4),                   intent(in) :: n
+           integer(kind=i4),                   intent(in) :: t
+           real(kind=sp),                      intent(in) :: xlo
+           real(kind=sp),                      intent(in) :: xup
+           real(kind=sp),    dimension(t),     intent(out):: Phit_x
+           real(kind=sp),    dimension(t),     intent(out):: Phit_y
+           integer(kind=i4), dimension(t),     intent(out):: ier_x
+           integer(kind=i4), dimension(t),     intent(out):: ier_y
+           real(kind=sp) :: ans_x,ans_y
+           integer(kind=i4)  :: i
+           integer(kind=i4)  :: err_x,err_y 
+           !dir$ assume_aligned rhoE_x:64
+           !dir$ assume_aligned rhoE_y:64
+           !dir$ assume_aligned Phit_x:64
+           !dir$ assume_aligned Phit_y:64
+
+           do i=1, t ! for 't' time of scanning of radiance field
+              call savint(rhoE_x(:,i),absc,n,xlo,xup,ans_x,err_x)
+              Phit_x(i) = ans_x
+              ier_x(i)  = err_x
+              call savint(rhoE_y(:,i),absc,n,xlo,xup,ans_y,err_y)
+              Phit_y(i) = ans_y
+              ier_x(i)  = err_y
+           end do
+
+        end subroutine raster_flux_integral_r4
+
 
 
         ! Formula 3, p. 180
-        subroutine raster_opacity_integral_omp(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+        subroutine raster_opacity_integral_omp_r8(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
                                                xup,rho_x,rho_y,ier_x,ier_y)
 
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 ::  raster_opacity_integral_omp
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral_omp_r8
             use quadpack, only : davint
             real(kind=dp),                      intent(in) :: invs
             real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_x
@@ -2648,14 +2725,14 @@ module eos_sensor
                ier_y(i) = err_y
             end do
 !$omp end parallel do
-       end subroutine raster_opacity_integral_omp
+       end subroutine raster_opacity_integral_omp_r8
 
 
-       subroutine raster_opacity_integral(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+       subroutine raster_opacity_integral_r8(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
                                                xup,rho_x,rho_y,ier_x,ier_y)
 
             !dir$ optimize:3
-            !dir$ attributes code_align : 32 ::  raster_opacity_integral
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral_r8
             use quadpack, only : davint
             real(kind=dp),                      intent(in) :: invs
             real(kind=dp), dimension(1:n,t),    intent(in) :: rhophi_x
@@ -2687,7 +2764,90 @@ module eos_sensor
                ier_y(i) = err_y
             end do
 
-       end subroutine raster_opacity_integral
+       end subroutine raster_opacity_integral_r8
+
+
+       subroutine raster_opacity_integral_omp_r4(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+                                               xup,rho_x,rho_y,ier_x,ier_y)
+
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral_omp_r4
+            use quadpack, only : savint
+            real(kind=sp),                      intent(in) :: invs
+            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_x
+            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_y
+            real(kind=sp), dimension(1:n),      intent(in) :: absc
+            integer(kind=i4),                   intent(in) :: n
+            integer(kind=i4),                   intent(in) :: t
+            real(kind=sp),                      intent(in) :: xlo
+            real(kind=sp),                      intent(in) :: xup
+            real(kind=sp),    dimension(t),     intent(out):: rho_x
+            real(kind=sp),    dimension(t),     intent(out):: rho_y
+            integer(kind=i4), dimension(t),     intent(out):: ier_x
+            integer(kind=i4), dimension(t),     intent(out):: ier_y
+            real(kind=sp) :: ans_x,ans_y
+            integer(kind=i4)  :: i
+            integer(kind=i4)  :: err_x,err_y 
+            !dir$ assume_aligned rhophi_x:64
+            !dir$ assume_aligned rhophi_y:64
+            !dir$ assume_aligned absc:64
+            !dir$ assume_aligned rho_x:64
+            !dir$ assume_aligned rho_y:64
+
+
+!$omp parallel do schedule(runtime)default(none) &
+!$omp private(i,ans_x,err_x,ans_y,err_y)         &
+!$omp shared(t,rhophi_x,rhophi_y,ansc,n,xlo,xup) &
+!$omp shared(rho_x,rho_y,ier_x,ier_y)
+            do i=1, t
+               call savint(rhophi_x(:,t),absc,n,xlo,xup,ans_x,err_x)
+               rho_x(i) = invs*ans_x
+               ier_x(i) = err_x
+               call savint(rhophi_y(:,t),absc,n,xlo,xup,ans_y,err_y)
+               rho_y(i) = invs*ans_y
+               ier_y(i) = err_y
+            end do
+!$omp end parallel do
+       end subroutine raster_opacity_integral_omp_r4
+
+
+       subroutine raster_opacity_integral_r4(invs,rhophi_x,rhophi_y,absc,n,t,xlo, &
+                                               xup,rho_x,rho_y,ier_x,ier_y)
+
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  raster_opacity_integral_r4
+            use quadpack, only : savint
+            real(kind=sp),                      intent(in) :: invs
+            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_x
+            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_y
+            real(kind=sp), dimension(1:n),      intent(in) :: absc
+            integer(kind=i4),                   intent(in) :: n
+            integer(kind=i4),                   intent(in) :: t
+            real(kind=sp),                      intent(in) :: xlo
+            real(kind=sp),                      intent(in) :: xup
+            real(kind=sp),    dimension(t),     intent(out):: rho_x
+            real(kind=sp),    dimension(t),     intent(out):: rho_y
+            integer(kind=i4), dimension(t),     intent(out):: ier_x
+            integer(kind=i4), dimension(t),     intent(out):: ier_y
+            real(kind=sp) :: ans_x,ans_y
+            integer(kind=i4)  :: i
+            integer(kind=i4)  :: err_x,err_y 
+            !dir$ assume_aligned rhophi_x:64
+            !dir$ assume_aligned rhophi_y:64
+            !dir$ assume_aligned absc:64
+            !dir$ assume_aligned rho_x:64
+            !dir$ assume_aligned rho_y:64
+
+            do i=1, t
+               call savint(rhophi_x(:,t),absc,n,xlo,xup,ans_x,err_x)
+               rho_x(i) = invs*ans_x
+               ier_x(i) = err_x
+               call savint(rhophi_y(:,t),absc,n,xlo,xup,ans_y,err_y)
+               rho_y(i) = invs*ans_y
+               ier_y(i) = err_y
+            end do
+
+       end subroutine raster_opacity_integral_r4
 
 
        subroutine cos_series_r4(om0,n,coss,k)
