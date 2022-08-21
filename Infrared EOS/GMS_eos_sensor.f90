@@ -2815,104 +2815,853 @@ module eos_sensor
        end subroutine raster_opacity_integral_r4
 
 
-       subroutine cos_series_r4(om0,n,coss,k)
+       subroutine cos_series_unroll8x_r4(om0,n,coss,k)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  cos_series_r4
-           !dir$ forceinline ::  cos_series_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r4
-           use omp_lib
+           !dir$ attributes code_align : 32 ::  cos_series_unroll8x_r4
+           !dir$ forceinline ::  cos_series_unroll8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_unroll8x_r4
            real(kind=sp),                 intent(in)  :: om0
            integer(kind=i4),              intent(in)  :: n
            real(kind=sp), dimension(1:n), intent(out) :: coss
            real(kind=sp),                 intent(in)  :: k
-           real(kind=sp) :: arg
-           integer(kind=i4) :: i
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=sp) :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp) :: kom0
+           integer(kind=i4) :: i,j
+           kom0 = k*om0
             !dir$ assume_aligned coss:64
             !dir$ vector aligned
-            !$omp simd simdlen(4)
-           do i=1, n
-              t   = real(i,kind=sp)
-              arg = k*om0*t
-              coss(i) = cos(arg)
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              t0        = real(i+0,kind=sp)
+              arg0      = kom0*t0
+              coss(i+0) = cos(arg0)
+              t1        = real(i+1,kind=sp)
+              arg1      = kom0*t1
+              coss(i+1) = cos(arg1)
+              t2        = real(i+2,kind=sp)
+              arg2      = kom0*t2
+              coss(i+2) = cos(arg2)
+              t3        = real(i+3,kind=sp)
+              arg3      = kom0*t3
+              coss(i+3) = cos(arg3)
+              t4        = real(i+4,kind=sp)
+              arg4      = kom0*t4
+              coss(i+4) = cos(arg4)
+              t5        = real(i+5,kind=sp)
+              arg5      = kom0*t5
+              coss(i+5) = cos(arg5)
+              t6        = real(i+6,kind=sp)
+              arg6      = kom0*t6
+              coss(i+6) = cos(arg6)
+              t7        = real(i+7,kind=sp)
+              arg7      = kom0*t7
+              coss(i+7) = cos(arg7)
            end do
-       end subroutine cos_series_r4
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+              t1        = real(j+1,kind=sp)
+              arg1      = kom0*t1
+              coss(j+1) = cos(arg1)
+              t2        = real(j+2,kind=sp)
+              arg2      = kom0*t2
+              coss(j+2) = cos(arg2)
+              t3        = real(j+3,kind=sp)
+              arg3      = kom0*t3
+              coss(j+3) = cos(arg3)
+           end do
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+              t1        = real(j+1,kind=sp)
+              arg1      = kom0*t1
+              coss(j+1) = cos(arg1)
+           end do
+           do j=i, n
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+           end do
+       end subroutine cos_series_unroll8x_r4
 
 
-       subroutine cos_series_r8(om0,n,coss,k)
+       subroutine cos_series_unroll8x_r8(om0,n,coss,k)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  cos_series_r8
-           !dir$ forceinline ::  cos_series_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r8
-           use omp_lib
+           !dir$ attributes code_align : 32 ::  cos_series_unroll8x_r8
+           !dir$ forceinline ::  cos_series_unroll8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_unroll8x_r8
            real(kind=dp),                 intent(in)  :: om0
            integer(kind=i4),              intent(in)  :: n
            real(kind=dp), dimension(1:n), intent(out) :: coss
            real(kind=dp),                 intent(in)  :: k
-           real(kind=dp) :: arg
-           integer(kind=i4) :: i
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=dp) :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp) :: kom0
+           integer(kind=i4) :: i,j
+           kom0 = k*om0
             !dir$ assume_aligned coss:64
             !dir$ vector aligned
-            !$omp simd simdlen(8)
-           do i=1, n
-              t   = real(i,kind=sp)
-              arg = k*om0*t
-              coss(i) = cos(arg)
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              t0        = real(i+0,kind=dp)
+              arg0      = kom0*t0
+              coss(i+0) = cos(arg0)
+              t1        = real(i+1,kind=dp)
+              arg1      = kom0*t1
+              coss(i+1) = cos(arg1)
+              t2        = real(i+2,kind=dp)
+              arg2      = kom0*t2
+              coss(i+2) = cos(arg2)
+              t3        = real(i+3,kind=dp)
+              arg3      = kom0*t3
+              coss(i+3) = cos(arg3)
+              t4        = real(i+4,kind=dp)
+              arg4      = kom0*t4
+              coss(i+4) = cos(arg4)
+              t5        = real(i+5,kind=dp)
+              arg5      = kom0*t5
+              coss(i+5) = cos(arg5)
+              t6        = real(i+6,kind=dp)
+              arg6      = kom0*t6
+              coss(i+6) = cos(arg6)
+              t7        = real(i+7,kind=dp)
+              arg7      = kom0*t7
+              coss(i+7) = cos(arg7)
            end do
-       end subroutine cos_series_r8
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+              t1        = real(j+1,kind=dp)
+              arg1      = kom0*t1
+              coss(j+1) = cos(arg1)
+              t2        = real(j+2,kind=dp)
+              arg2      = kom0*t2
+              coss(j+2) = cos(arg2)
+              t3        = real(j+3,kind=dp)
+              arg3      = kom0*t3
+              coss(j+3) = cos(arg3)
+           end do
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+              t1        = real(j+1,kind=dp)
+              arg1      = kom0*t1
+              coss(j+1) = cos(arg1)
+           end do
+           do j=i, n
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              coss(j+0) = cos(arg0)
+           end do
+       end subroutine cos_series_unroll8x_r8
+  
 
-
-       subroutine sin_series_r4(om0,n,sins,k)
+       !==========================================================================================
+       
+         subroutine sin_series_unroll8x_r4(om0,n,sins,k)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  sin_series_r4
-           !dir$ forceinline ::  sin_series_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r4
-           use omp_lib
+           !dir$ attributes code_align : 32 ::  sin_series_unroll8x_r4
+           !dir$ forceinline ::  sin_series_unroll8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_unroll8x_r4
            real(kind=sp),                 intent(in)  :: om0
            integer(kind=i4),              intent(in)  :: n
            real(kind=sp), dimension(1:n), intent(out) :: sins
            real(kind=sp),                 intent(in)  :: k
-           real(kind=sp) :: arg
-           integer(kind=i4) :: i
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=sp) :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp) :: kom0
+           integer(kind=i4) :: i,j
+           kom0 = k*om0
             !dir$ assume_aligned sins:64
             !dir$ vector aligned
-            !$omp simd simdlen(4)
-           do i=1, n
-              t   = real(i,kind=sp)
-              arg = k*om0*t
-              sins(i) = sin(arg)
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              t0        = real(i+0,kind=sp)
+              arg0      = kom0*t0
+              sins(i+0) = sin(arg0)
+              t1        = real(i+1,kind=sp)
+              arg1      = kom0*t1
+              sins(i+1) = sin(arg1)
+              t2        = real(i+2,kind=sp)
+              arg2      = kom0*t2
+              sins(i+2) = sin(arg2)
+              t3        = real(i+3,kind=sp)
+              arg3      = kom0*t3
+              sins(i+3) = sin(arg3)
+              t4        = real(i+4,kind=sp)
+              arg4      = kom0*t4
+              sins(i+4) = sin(arg4)
+              t5        = real(i+5,kind=sp)
+              arg5      = kom0*t5
+              sins(i+5) = sin(arg5)
+              t6        = real(i+6,kind=sp)
+              arg6      = kom0*t6
+              sins(i+6) = sin(arg6)
+              t7        = real(i+7,kind=sp)
+              arg7      = kom0*t7
+              sins(i+7) = sin(arg7)
            end do
-       end subroutine sin_series_r4
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+              t1        = real(j+1,kind=sp)
+              arg1      = kom0*t1
+              sins(j+1) = sin(arg1)
+              t2        = real(j+2,kind=sp)
+              arg2      = kom0*t2
+              sins(j+2) = sin(arg2)
+              t3        = real(j+3,kind=sp)
+              arg3      = kom0*t3
+              sins(j+3) = sin(arg3)
+           end do
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+              t1        = real(j+1,kind=sp)
+              arg1      = kom0*t1
+              sins(j+1) = sin(arg1)
+           end do
+           do j=i, n
+              t0        = real(j+0,kind=sp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+           end do
+       end subroutine sin_series_unroll8x_r4
 
 
-       subroutine sin_series_r8(om0,n,sins,k)
+       subroutine sin_series_unroll8x_r8(om0,n,sins,k)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  sin_series_r8
-           !dir$ forceinline ::  sin_series_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r8
-           use omp_lib
+           !dir$ attributes code_align : 32 ::  sin_series_unroll8x_r8
+           !dir$ forceinline ::  sin_series_unroll8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_unroll8x_r8
            real(kind=dp),                 intent(in)  :: om0
            integer(kind=i4),              intent(in)  :: n
            real(kind=dp), dimension(1:n), intent(out) :: sins
            real(kind=dp),                 intent(in)  :: k
-           real(kind=dp) :: arg
-           integer(kind=i4) :: i
-            !dir$ assume_aligned sins:64
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=dp) :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp) :: kom0
+           integer(kind=i4) :: i,j
+           kom0 = k*om0
+            !dir$ assume_aligned coss:64
             !dir$ vector aligned
-            !$omp simd simdlen(8)
-           do i=1, n
-              t   = real(i,kind=sp)
-              arg = k*om0*t
-              sins(i) = sin(arg)
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              t0        = real(i+0,kind=dp)
+              arg0      = kom0*t0
+              sins(i+0) = sin(arg0)
+              t1        = real(i+1,kind=dp)
+              arg1      = kom0*t1
+              sins(i+1) = sin(arg1)
+              t2        = real(i+2,kind=dp)
+              arg2      = kom0*t2
+              sins(i+2) = sin(arg2)
+              t3        = real(i+3,kind=dp)
+              arg3      = kom0*t3
+              sins(i+3) = sin(arg3)
+              t4        = real(i+4,kind=dp)
+              arg4      = kom0*t4
+              sins(i+4) = sin(arg4)
+              t5        = real(i+5,kind=dp)
+              arg5      = kom0*t5
+              sins(i+5) = sin(arg5)
+              t6        = real(i+6,kind=dp)
+              arg6      = kom0*t6
+              sins(i+6) = sin(arg6)
+              t7        = real(i+7,kind=dp)
+              arg7      = kom0*t7
+              sins(i+7) = sin(arg7)
            end do
-       end subroutine sin_series_r8
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+              t1        = real(j+1,kind=dp)
+              arg1      = kom0*t1
+              sins(j+1) = sin(arg1)
+              t2        = real(j+2,kind=dp)
+              arg2      = kom0*t2
+              sins(j+2) = sin(arg2)
+              t3        = real(j+3,kind=dp)
+              arg3      = kom0*t3
+              sins(j+3) = sin(arg3)
+           end do
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+              t1        = real(j+1,kind=dp)
+              arg1      = kom0*t1
+              sins(j+1) = sin(arg1)
+           end do
+           do j=i, n
+              t0        = real(j+0,kind=dp)
+              arg0      = kom0*t0
+              sins(j+0) = sin(arg0)
+           end do
+       end subroutine sin_series_unroll8x_r8
+  
 
-         
+    
+
+
      
 
+         
+       !Спектр модулированного потока излучения можно вычислить
+       !с помощью прямого преобразования Фурье
+       ! Last formula, p. 181
+       subroutine radiation_flux_spectrum(Phi_in,Phi_out,dim_len,data_len,status)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  radiation_flux_spectrum
+           use mkl_dfti
+           use mkl_fft_wrappers, only : create_desc_r_c_1D,  &
+                                        exec_fft_r_c_1D
+           real(kind=dp),    dimension(data_len),  intent(in)  :: Phi_in
+           complex(kind=sp), dimension(data_len),  intent(out) :: Phi_out
+           integer(kind=i4),                       intent(in)  :: dim_len
+           integer(kind=i4),                       intent(in)  :: data_len
+           integer(kind=i4),                       intent(out) :: status
+           type(DFTI_DESCRIPTOR), pointer :: handle
+           logical(kind=i4), automatic :: callstack
+           callstack = .true.
+           call create_desc_r_c_1D(handle,dim_len,data_len,callstack,status)
+           if(0 == status) then
+              call exec_fft_r_c_1D(handle,Phi_in,Phi_out,data_len,1,callstack,status)
+           end if
+        end subroutine radiation_flux_spectrum
+
+
+        ! форма импульса потока излучения описывается,
+        ! например, косинус-квадратной зависимостью
+        ! Formula 3, p. 184
+        subroutine squared_cos_flux_unroll8x_r4(Phi0t,Phi0,n,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  squared_cos_flux_unroll8x_r4
+           !dir$ forceinline ::   squared_cos_flux_unroll8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  squared_cos_flux_unroll8x_r4
+           
+           real(kind=sp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=sp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4) :: i,j
+           real(kind=sp), parameter :: hpi = 1.57079632679489661923132169164_sp
+           real(kind=sp), automatic :: tin2,t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           tin2 = 0.5_sp*tin
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,iand(n,not(7)),8
+              t0         = real(i+0,kind=sp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(i+0) = c0*c0
+              t1         = real(i+1,kind=sp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(i+1) = c1*c1
+              t2         = real(i+2,kind=sp)
+              arg2       = hpi*t2/tin2
+              c2         = cos(arg2)
+              Phi0t(i+2) = c2*c2
+              t3         = real(i+3,kind=sp)
+              arg3       = hpi*t3/tin2
+              c3         = cos(arg3)
+              Phi0t(i+3) = c3*c3
+              t4         = real(i+4,kind=sp)
+              arg4       = hpi*t4/tin2
+              c4         = cos(arg4)
+              Phi0t(i+4) = c4*c4
+              t5         = real(i+5,kind=sp)
+              arg5       = hpi*t5/tin2
+              c5         = cos(arg5)
+              Phi0t(i+5) = c5*c5
+              t6         = real(i+6,kind=sp)
+              arg6       = hpi*t6/tin2
+              c6         = cos(arg6)
+              Phi0t(i+6) = c6*c6
+              t7         = real(i+7,kind=sp)
+              arg7       = hpi*t7/tin2
+              c7         = cos(arg7)
+              Phi0t(i+7) = c7*c7
+           end do
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i,iand(n,not(3)),4
+              t0         = real(j+0,kind=sp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+              t1         = real(j+1,kind=sp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(j+1) = c1*c1
+              t2         = real(j+2,kind=sp)
+              arg2       = hpi*t2/tin2
+              c2         = cos(arg2)
+              Phi0t(j+2) = c2*c2
+              t3         = real(j+3,kind=sp)
+              arg3       = hpi*t3/tin2
+              c3         = cos(arg3)
+              Phi0t(j+3) = c3*c3
+           end do
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i,iand(n,not(1)),2
+              t0         = real(j+0,kind=sp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+              t1         = real(j+1,kind=sp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(j+1) = c1*c1
+           end do
+           do j=i, n
+              t0         = real(j+0,kind=sp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+           end do
+        end subroutine squared_cos_flux_unroll8x_r4
 
        
-        
-        
+        subroutine squared_cos_flux_unroll8x_r8(Phi0t,Phi0,n,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  squared_cos_flux_unroll8x_r8
+           !dir$ forceinline ::   squared_cos_flux_unroll8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  squared_cos_flux_unroll8x_r8
+           
+           real(kind=dp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=dp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4) :: i,j
+           real(kind=dp), parameter :: hpi = 1.57079632679489661923132169164_dp
+           real(kind=dp), automatic :: tin2,t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=dp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           tin2 = 0.5_dp*tin
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,iand(n,not(7)),8
+              t0         = real(i+0,kind=dp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(i+0) = c0*c0
+              t1         = real(i+1,kind=dp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(i+1) = c1*c1
+              t2         = real(i+2,kind=dp)
+              arg2       = hpi*t2/tin2
+              c2         = cos(arg2)
+              Phi0t(i+2) = c2*c2
+              t3         = real(i+3,kind=dp)
+              arg3       = hpi*t3/tin2
+              c3         = cos(arg3)
+              Phi0t(i+3) = c3*c3
+              t4         = real(i+4,kind=dp)
+              arg4       = hpi*t4/tin2
+              c4         = cos(arg4)
+              Phi0t(i+4) = c4*c4
+              t5         = real(i+5,kind=dp)
+              arg5       = hpi*t5/tin2
+              c5         = cos(arg5)
+              Phi0t(i+5) = c5*c5
+              t6         = real(i+6,kind=dp)
+              arg6       = hpi*t6/tin2
+              c6         = cos(arg6)
+              Phi0t(i+6) = c6*c6
+              t7         = real(i+7,kind=dp)
+              arg7       = hpi*t7/tin2
+              c7         = cos(arg7)
+              Phi0t(i+7) = c7*c7
+           end do
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i,iand(n,not(3)),4
+              t0         = real(j+0,kind=dp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+              t1         = real(j+1,kind=dp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(j+1) = c1*c1
+              t2         = real(j+2,kind=dp)
+              arg2       = hpi*t2/tin2
+              c2         = cos(arg2)
+              Phi0t(j+2) = c2*c2
+              t3         = real(j+3,kind=dp)
+              arg3       = hpi*t3/tin2
+              c3         = cos(arg3)
+              Phi0t(j+3) = c3*c3
+           end do
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i,iand(n,not(1)),2
+              t0         = real(j+0,kind=dp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+              t1         = real(j+1,kind=dp)
+              arg1       = hpi*t1/tin2
+              c1         = cos(arg1)
+              Phi0t(j+1) = c1*c1
+           end do
+           do j=i, n
+              t0         = real(j+0,kind=dp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(j+0) = c0*c0
+           end do
+        end subroutine squared_cos_flux_unroll8x_r8
+
+
+        subroutine const_flux_spectr_unroll8x_r4(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll8x_r4
+           !dir$ forceinline ::   const_flux_spectr_unroll8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll8x_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp) :: f0,f1,f2,f3,f4,f5,f6,f7
+           real(kind=sp) :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=sp) :: sa0,sa1,sa2,sa3,sa4,sa,sa6,sa7
+           real(kind=sp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i,j
+           hT    = 0.5_sp*T
+           Phi0T = Phi0*hT
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+              f1         = freq(i+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(i+1) = Phi0T*(sa1/arg1)
+              f2         = freq(i+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_sp-(f2*hT*f2*hT)
+              Phi0f(i+2) = Phi0T*(sa2/arg2)
+              f3         = freq(i+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_sp-(f3*hT*f3*hT)
+              Phi0f(i+3) = Phi0T*(sa3/arg3)
+              f4         = freq(i+4)
+              c4         = twopi*f4*hT
+              sa4        = sin(c4)/c4
+              arg4       = 1.0_sp-(f4*hT*f4*hT)
+              Phi0f(i+4) = Phi0T*(sa4/arg4)
+              f5         = freq(i+5)
+              c5         = twopi*f5*hT
+              sa5        = sin(c5)/c5
+              arg5       = 1.0_sp-(f5*hT*f5*hT)
+              Phi0f(i+5) = Phi0T*(sa5/arg5)
+              f6         = freq(i+6)
+              c6         = twopi*f6*hT
+              sa6        = sin(c6)/c6
+              arg6       = 1.0_sp-(f6*hT*f6*hT)
+              Phi0f(i+6) = Phi0T*(sa6/arg6)
+              f7         = freq(i+7)
+              c7         = twopi*f7*hT
+              sa7        = sin(c7)/c7
+              arg7       = 1.0_sp-(f7*hT*f7*hT)
+              Phi0f(i+7) = Phi0T*(sa7/arg7)
+           end do
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+              f1         = freq(j+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(j+1) = Phi0T*(sa1/arg1)
+              f2         = freq(j+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_sp-(f2*hT*f2*hT)
+              Phi0f(j+2) = Phi0T*(sa2/arg2)
+              f3         = freq(j+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_sp-(f3*hT*f3*hT)
+              Phi0f(j+3) = Phi0T*(sa3/arg3)
+           end do
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+              f1         = freq(j+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(j+1) = Phi0T*(sa1/arg1)
+           end do
+           do j=i, n
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+           end do
+       end subroutine const_flux_spectr_unroll8x_r4
+
+
+       subroutine const_flux_spectr_unroll8x_r8(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll8x_r8
+           !dir$ forceinline ::   const_flux_spectr_unroll8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll8x_r8
+           real(kind=dp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp),                  intent(in)  :: Phi0
+           real(kind=dp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=dp) :: f0,f1,f2,f3,f4,f5,f6,f7
+           real(kind=dp) :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=dp) :: sa0,sa1,sa2,sa3,sa4,sa,sa6,sa7
+           real(kind=dp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i,j
+           hT    = 0.5_dp*T
+           Phi0T = Phi0*hT
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1, iand(n,not(7)),8
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_dp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+              f1         = freq(i+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_dp-(f1*hT*f1*hT)
+              Phi0f(i+1) = Phi0T*(sa1/arg1)
+              f2         = freq(i+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_dp-(f2*hT*f2*hT)
+              Phi0f(i+2) = Phi0T*(sa2/arg2)
+              f3         = freq(i+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_dp-(f3*hT*f3*hT)
+              Phi0f(i+3) = Phi0T*(sa3/arg3)
+              f4         = freq(i+4)
+              c4         = twopi*f4*hT
+              sa4        = sin(c4)/c4
+              arg4       = 1.0_dp-(f4*hT*f4*hT)
+              Phi0f(i+4) = Phi0T*(sa4/arg4)
+              f5         = freq(i+5)
+              c5         = twopi*f5*hT
+              sa5        = sin(c5)/c5
+              arg5       = 1.0_dp-(f5*hT*f5*hT)
+              Phi0f(i+5) = Phi0T*(sa5/arg5)
+              f6         = freq(i+6)
+              c6         = twopi*f6*hT
+              sa6        = sin(c6)/c6
+              arg6       = 1.0_dp-(f6*hT*f6*hT)
+              Phi0f(i+6) = Phi0T*(sa6/arg6)
+              f7         = freq(i+7)
+              c7         = twopi*f7*hT
+              sa7        = sin(c7)/c7
+              arg7       = 1.0_dp-(f7*hT*f7*hT)
+              Phi0f(i+7) = Phi0T*(sa7/arg7)
+           end do
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i, iand(n,not(3)), 4
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_dp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+              f1         = freq(j+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_dp-(f1*hT*f1*hT)
+              Phi0f(j+1) = Phi0T*(sa1/arg1)
+              f2         = freq(j+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_dp-(f2*hT*f2*hT)
+              Phi0f(j+2) = Phi0T*(sa2/arg2)
+              f3         = freq(j+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_dp-(f3*hT*f3*hT)
+              Phi0f(j+3) = Phi0T*(sa3/arg3)
+           end do
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do j=i, iand(n,not(1)), 2
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_dp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+              f1         = freq(j+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_dp-(f1*hT*f1*hT)
+              Phi0f(j+1) = Phi0T*(sa1/arg1)
+           end do
+           do j=i, n
+              f0         = freq(j+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_dp-(f0*hT*f0*hT)
+              Phi0f(j+0) = Phi0T*(sa0/arg0)
+           end do
+        end subroutine const_flux_spectr_unroll8x_r8 
         
 
 end module eos_sensor
