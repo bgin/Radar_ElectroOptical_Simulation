@@ -4202,14 +4202,217 @@ module eos_sensor
         
        end subroutine ideal_modulator_unroll_4x_r4
 
-! To be correctly reimplemented.
-#if 0        
 
-       subroutine ideal_modulator_unroll8x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+       subroutine ideal_modulator_unroll_2x_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll8x_r8
-           !dir$ attributes forceinline ::   ideal_modulator_unroll8x_r8
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll8x_r8
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_2x_r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_2x_r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: f0
+           real(kind=sp),                 intent(in)  :: phi0
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: t0,t1
+           real(kind=sp) :: s0,s1
+           real(kind=sp) :: c0,c1
+           real(kind=sp) :: psi0,psi1
+           real(kind=sp) :: om0
+           integer(kind=i4) :: i,m,m1
+           om0 = twopi*f0
+           m=mod(n,2)
+           if(m /= 0) then
+              do i=1, m
+                 t0        = real(i,kind=sp)
+                 psi0      = om0*t0+phi0
+                 s0        = rho0+rho1*sin(psi0)
+                 rhot_s(i) = s0
+                 c0        = rho0+rho1*cos(psi0)
+                 rhot_c(i) = c0
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned rhot_s:64           
+           !dir$ assume_aligned rhot_c:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,m1,2
+              t0          = real(i+0,kind=sp)
+              psi0        = om0*t0+phi0
+              s0          = rho0+rho1*sin(psi0)
+              rhot_s(i+0) = s0
+              c0          = rho0+rho1*cos(psi0)
+              rhot_c(i+0) = c0
+              t1          = real(i+1,kind=sp)
+              psi1        = om0*t1+phi0
+              s1          = rho0+rho1*sin(psi1)
+              rhot_s(i+1) = s1
+              c0          = rho0+rho1*cos(psi1)
+              rhot_c(i+1) = c1
+           end do
+        
+       end subroutine ideal_modulator_unroll_2x_r4
+
+
+       subroutine ideal_modulator_unroll_16x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_16x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: f0
+           real(kind=dp),                 intent(in)  :: phi0
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp) :: t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=dp) :: s0,s1,s2,s3,s4,s5,s6,s7
+           real(kind=dp) :: s8,s9,s10,s11,s12,s13,s14,s15
+           real(kind=dp) :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=dp) :: c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=dp) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           real(kind=dp) :: psi8,psi9,psi10,psi11,psi12,psi13,psi14,psi15
+           real(kind=dp) :: om0
+           integer(kind=i4) :: i,m,m1
+           om0 = twopi*f0
+           m=mod(n,16)
+           if(m /= 0) then
+              do i=1, m
+                 t0        = real(i,kind=sp)
+                 psi0      = om0*t0+phi0
+                 s0        = rho0+rho1*sin(psi0)
+                 rhot_s(i) = s0
+                 c0        = rho0+rho1*cos(psi0)
+                 rhot_c(i) = c0
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned rhot_s:64           
+           !dir$ assume_aligned rhot_c:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,m1,16
+              t0          = real(i+0,kind=dp)
+              psi0        = om0*t0+phi0
+              s0          = rho0+rho1*sin(psi0)
+              rhot_s(i+0) = s0
+              c0          = rho0+rho1*cos(psi0)
+              rhot_c(i+0) = c0
+              t1          = real(i+1,kind=dp)
+              psi1        = om0*t1+phi0
+              s1          = rho0+rho1*sin(psi1)
+              rhot_s(i+1) = s1
+              c0          = rho0+rho1*cos(psi1)
+              rhot_c(i+1) = c1
+              t2          = real(i+2,kind=dp)
+              psi2        = om0*t2+phi0
+              s2          = rho0+rho1*sin(psi2)
+              rhot_s(i+2) = s2
+              c2          = rho0+rho1*cos(psi2)
+              rhot_c(i+2) = c2
+              t3          = real(i+3,kind=dp)
+              psi3        = om0*t3+phi0
+              s3          = rho0+rho1*sin(psi3)
+              rhot_s(i+3) = s3
+              c3          = rho0+rho1*cos(psi3)
+              rhot_c(i+3) = c3
+              t4          = real(i+4,kind=dp)
+              psi4        = om0*t4+phi0
+              s4          = rho0+rho1*sin(psi4)
+              rhot_s(i+4) = s4
+              c4          = rho0+rho1*cos(psi4)
+              rhot_c(i+4) = c4
+              t5          = real(i+5,kind=dp)
+              psi5        = om0*t5+phi0
+              s5          = rho0+rho1*sin(psi5)
+              rhot_s(i+5) = s5
+              c5          = rho0+rho1*cos(psi5)
+              rhot_c(i+5) = c5
+              t6          = real(i+6,kind=dp)
+              psi6        = om0*t6+phi0
+              s6          = rho0+rho1*sin(psi6)
+              rhot_s(i+6) = s6
+              c6          = rho0+rho1*cos(psi6)
+              rhot_c(i+6) = c6
+              t7          = real(i+7,kind=dp)
+              psi7        = om0*t7+phi0
+              s7          = rho0+rho1*sin(psi7)
+              rhot_s(i+7) = s7
+              c7          = rho0+rho1*cos(psi7)
+              rhot_c(i+7) = c7
+              t8          = real(i+8,kind=dp)
+              psi8        = om0*t8+phi0
+              s8          = rho0+rho1*sin(psi8)
+              rhot_s(i+8) = s8
+              c8          = rho0+rho1*cos(psi8)
+              rhot_c(i+8) = c8
+              t9          = real(i+9,kind=dp)
+              psi9        = om0*t9+phi0
+              s9          = rho0+rho1*sin(psi9)
+              rhot_s(i+9) = s9
+              c9          = rho0+rho1*cos(psi9)
+              rhot_c(i+9) = c9
+              t10         = real(i+10,kind=dp)
+              psi10       = om0*t10+phi0
+              s10         = rho0+rho1*sin(psi10)
+              rhot_s(i+10)= s10
+              c10         = rho0+rho1*cos(psi10)
+              rhot_c(i+10)= c10
+              t11         = real(i+11,kind=dp)
+              psi11       = om0*t11+phi0
+              s11         = rho0+rho1*sin(psi11)
+              rhot_s(i+11)= s11
+              c11         = rho0+rho1*cos(psi11)
+              rhot_c(i+11)= c11
+              t12         = real(i+12,kind=dp)
+              psi12       = om0*t12+phi0
+              s12         = rho0+rho1*sin(psi12)
+              rhot_s(i+12)= s12
+              c4          = rho0+rho1*cos(psi12)
+              rhot_c(i+12)= c12
+              t13         = real(i+13,kind=dp)
+              psi13       = om0*t13+phi0
+              s13         = rho0+rho1*sin(psi13)
+              rhot_s(i+13)= s13
+              c13         = rho0+rho1*cos(psi13)
+              rhot_c(i+13)= c13
+              t14         = real(i+14,kind=dp)
+              psi14       = om0*t14+phi0
+              s14         = rho0+rho1*sin(psi14)
+              rhot_s(i+14)= s14
+              c14         = rho0+rho1*cos(psi14)
+              rhot_c(i+14)= c14
+              t15         = real(i+15,kind=dp)
+              psi15       = om0*t15+phi0
+              s15         = rho0+rho1*sin(psi15)
+              rhot_s(i+15)= s15
+              c15         = rho0+rho1*cos(psi15)
+              rhot_c(i+15)= c15
+              
+           end do
+        
+       end subroutine ideal_modulator_unroll_16x_r8
+
+
+       subroutine ideal_modulator_unroll_8x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_8x_r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_8x_r8
            real(kind=dp), dimension(1:n), intent(out) :: rhot_s
            real(kind=dp), dimension(1:n), intent(out) :: rhot_c
            integer(kind=i4),              intent(in)  :: n
@@ -4223,8 +4426,21 @@ module eos_sensor
            real(kind=dp) :: c0,c1,c2,c3,c4,c5,c6,c7
            real(kind=dp) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
            real(kind=dp) :: om0
-           integer(kind=i4) :: i,j
+           integer(kind=i4) :: i,m,m1
            om0 = twopi*f0
+           m=mod(n,8)
+           if(m /= 0) then
+              do i=1, m
+                 t0        = real(i,kind=dp)
+                 psi0      = om0*t0+phi0
+                 s0        = rho0+rho1*sin(psi0)
+                 rhot_s(i) = s0
+                 c0        = rho0+rho1*cos(psi0)
+                 rhot_c(i) = c0
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned rhot_s:64           
            !dir$ assume_aligned rhot_c:64
            !dir$ vector aligned
@@ -4232,7 +4448,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,iand(n,not(7)),8
+           do i=1,m1,8
               t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4282,6 +4498,43 @@ module eos_sensor
               c7          = rho0+rho1*cos(psi7)
               rhot_c(i+7) = c7
            end do
+        
+       end subroutine ideal_modulator_unroll_8x_r8
+
+
+       subroutine ideal_modulator_unroll_4x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_4x_r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_4x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: f0
+           real(kind=dp),                 intent(in)  :: phi0
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: t0,t1,t2,t3
+           real(kind=dp) :: s0,s1,s2,s3
+           real(kind=dp) :: c0,c1,c2,c3
+           real(kind=dp) :: psi0,psi1,psi2,psi3
+           real(kind=dp) :: om0
+           integer(kind=i4) :: i,m,m1
+           om0 = twopi*f0
+           m=mod(n,4)
+           if(m /= 0) then
+              do i=1, m
+                 t0        = real(i,kind=dp)
+                 psi0      = om0*t0+phi0
+                 s0        = rho0+rho1*sin(psi0)
+                 rhot_s(i) = s0
+                 c0        = rho0+rho1*cos(psi0)
+                 rhot_c(i) = c0
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned rhot_s:64           
            !dir$ assume_aligned rhot_c:64
            !dir$ vector aligned
@@ -4289,32 +4542,69 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i,iand(n,not(3)),4
-              t0          = real(j+0,kind=dp)
+           do i=1,m1,4
+              t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
-              rhot_s(j+0) = s0
+              rhot_s(i+0) = s0
               c0          = rho0+rho1*cos(psi0)
-              rhot_c(j+0) = c0
-              t1          = real(j+1,kind=dp)
+              rhot_c(i+0) = c0
+              t1          = real(i+1,kind=dp)
               psi1        = om0*t1+phi0
               s1          = rho0+rho1*sin(psi1)
-              rhot_s(j+1) = s1
+              rhot_s(i+1) = s1
               c0          = rho0+rho1*cos(psi1)
-              rhot_c(j+1) = c1
-              t2          = real(j+2,kind=dp)
+              rhot_c(i+1) = c1
+              t2          = real(i+2,kind=dp)
               psi2        = om0*t2+phi0
               s2          = rho0+rho1*sin(psi2)
-              rhot_s(j+2) = s2
+              rhot_s(i+2) = s2
               c2          = rho0+rho1*cos(psi2)
-              rhot_c(j+2) = c2
-              t3          = real(j+3,kind=dp)
+              rhot_c(i+2) = c2
+              t3          = real(i+3,kind=dp)
               psi3        = om0*t3+phi0
               s3          = rho0+rho1*sin(psi3)
-              rhot_s(j+3) = s3
+              rhot_s(i+3) = s3
               c3          = rho0+rho1*cos(psi3)
-              rhot_c(j+3) = c3
-           end do
+              rhot_c(i+3) = c3
+            end do
+        
+       end subroutine ideal_modulator_unroll_4x_r8
+
+
+       subroutine ideal_modulator_unroll_2x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_2x_r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_2x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: f0
+           real(kind=dp),                 intent(in)  :: phi0
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: t0,t1
+           real(kind=dp) :: s0,s1
+           real(kind=dp) :: c0,c1
+           real(kind=dp) :: psi0,psi1
+           real(kind=dp) :: om0
+           integer(kind=i4) :: i,m,m1
+           om0 = twopi*f0
+           m=mod(n,2)
+           if(m /= 0) then
+              do i=1, m
+                 t0        = real(i,kind=dp)
+                 psi0      = om0*t0+phi0
+                 s0        = rho0+rho1*sin(psi0)
+                 rhot_s(i) = s0
+                 c0        = rho0+rho1*cos(psi0)
+                 rhot_c(i) = c0
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned rhot_s:64           
            !dir$ assume_aligned rhot_c:64
            !dir$ vector aligned
@@ -4322,39 +4612,151 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i,iand(n,not(1)),2
-              t0          = real(j+0,kind=dp)
+           do i=1,m1,2
+              t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
-              rhot_s(j+0) = s0
+              rhot_s(i+0) = s0
               c0          = rho0+rho1*cos(psi0)
-              rhot_c(j+0) = c0
-              t1          = real(j+1,kind=dp)
+              rhot_c(i+0) = c0
+              t1          = real(i+1,kind=dp)
               psi1        = om0*t1+phi0
               s1          = rho0+rho1*sin(psi1)
-              rhot_s(j+1) = s1
+              rhot_s(i+1) = s1
               c0          = rho0+rho1*cos(psi1)
-              rhot_c(j+1) = c1
+              rhot_c(i+1) = c1
            end do
-           do j=i, n
-              t0          = real(j+0,kind=dp)
-              psi0        = om0*t0+phi0
-              s0          = rho0+rho1*sin(psi0)
-              rhot_s(j+0) = s0
-              c0          = rho0+rho1*cos(psi0)
-              rhot_c(j+0) = c0
-           end do
-        end subroutine ideal_modulator_unroll8x_r8
+        
+       end subroutine ideal_modulator_unroll_2x_r8
 
+
+
+
+
+       
+
+! To be correctly reimplemented.
+       
+
+    
 
         !Ошибни изготовления растра —
         !модулятора излучения
         !Formula 2, p. 189
-        subroutine rect_pulse_flux_unroll8x_r4(Phik,fk,Phi0,n,Tin)
+        subroutine rect_pulse_flux_unroll_16x_r4(Phik,fk,Phi0,n,Tin)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll8x_r4
-           !dir$ attributes forceinline ::   rect_pulse_flux_unroll8x_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll8x_r4
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_16x_r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_16x_r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           real(kind=sp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Tin
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
+           real(kind=sp) :: fk8,fk9,fk10,fk11,fk12,fk13,fk14,fk15
+           real(kind=sp) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=sp) :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=sp) :: arg1,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=sp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_sp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,16)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i+0)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i+0) = Phi0fk*sinc0
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned Phik:64
+           !dir$ assume_aligned fk:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,m1,16
+                fk0       = fk(i+0)
+                arg0      = twopi*fk0*hTin
+                sinc0     = sin(arg0)/arg0
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
+                arg1      = twopi*fk1*hTin
+                sinc1     = sin(arg1)/arg1
+                Phik(i+1) = Phi0fk*sinc1
+                fk2       = fk(i+2)
+                arg2      = twopi*fk2*hTin
+                sinc2     = sin(arg2)/arg2
+                Phik(i+2) = Phi0fk*sinc2
+                fk3       = fk(i+3)
+                arg3      = twopi*fk3*hTin
+                sinc3     = sin(arg3)/arg3
+                Phik(i+3) = Phi0fk*sinc3
+                fk4       = fk(i+4)
+                arg4      = twopi*fk4*hTin
+                sinc4     = sin(arg4)/arg4
+                Phik(i+4) = Phi0fk*sinc4
+                fk5       = fk(i+5)
+                arg5      = twopi*fk5*hTin
+                sinc5     = sin(arg5)/arg5
+                Phik(i+5) = Phi0fk*sinc5
+                fk6       = fk(i+6)
+                arg6      = twopi*fk6*hTin
+                sinc6     = sin(arg6)/arg6
+                Phik(i+6) = Phi0fk*sinc6
+                fk7       = fk(i+7)
+                arg7      = twopi*fk7*hTin
+                sinc7     = sin(arg7)/arg7
+                Phik(i+7) = Phi0fk*sinc7
+                fk8       = fk(i+8)
+                arg8      = twopi*fk8*hTin
+                sinc8     = sin(arg8)/arg8
+                Phik(i+8) = Phi0fk*sinc8
+                fk9       = fk(i+9)
+                arg9      = twopi*fk9*hTin
+                sinc9     = sin(arg9)/arg9
+                Phik(i+9) = Phi0fk*sinc1
+                fk10      = fk(i+10)
+                arg10     = twopi*fk10*hTin
+                sinc10    = sin(arg10)/arg10
+                Phik(i+10)= Phi0fk*sinc10
+                fk11      = fk(i+11)
+                arg11     = twopi*fk11*hTin
+                sinc11    = sin(arg11)/arg11
+                Phik(i+11)= Phi0fk*sinc3
+                fk12      = fk(i+12)
+                arg12     = twopi*fk12*hTin
+                sinc12    = sin(arg12)/arg12
+                Phik(i+12)= Phi0fk*sinc12
+                fk13      = fk(i+13)
+                arg13     = twopi*fk13*hTin
+                sinc13    = sin(arg13)/arg13
+                Phik(i+13)= Phi0fk*sinc13
+                fk14      = fk(i+14)
+                arg14     = twopi*fk14*hTin
+                sinc14    = sin(arg14)/arg14
+                Phik(i+14)= Phi0fk*sinc14
+                fk15      = fk(i+15)
+                arg15     = twopi*fk15*hTin
+                sinc15    = sin(arg15)/arg15
+                Phik(i+15)= Phi0fk*sinc15
+           end do
+          
+        end subroutine rect_pulse_flux_unroll_16x_r4
+
+
+        subroutine rect_pulse_flux_unroll_8x_r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_8x_r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_8x_r4
            real(kind=sp), dimension(1:n), intent(out) :: Phik
            real(kind=sp), dimension(1:n), intent(in)  :: fk
            real(kind=sp),                 intent(in)  :: Phi0
@@ -4365,9 +4767,20 @@ module eos_sensor
            real(kind=sp) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
            real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
            real(kind=sp) :: hTin,Phi0fk
-           integer(kind=i4) :: i,j
+           integer(kind=i4) :: i,m,m1
            hTin   = 0.5_sp*Tin
            Phi0fk = Phi0*Tin 
+           m=mod(n,8)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i) = Phi0fk*sinc0
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4375,7 +4788,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1, iand(n,not(7)),8
+           do i=1,m1,8
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4408,7 +4821,40 @@ module eos_sensor
                 arg7      = twopi*fk7*hTin
                 sinc7     = sin(arg7)/arg7
                 Phik(i+7) = Phi0fk*sinc7
-           end do
+             end do
+          
+        end subroutine rect_pulse_flux_unroll_8x_r4
+
+
+        subroutine rect_pulse_flux_unroll_4x_r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_4x_r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_4x_r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           real(kind=sp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Tin
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: fk0,fk1,fk2,fk3
+           real(kind=sp) :: sinc0,sinc1,sinc2,sinc3
+           real(kind=sp) :: arg0,arg1,arg2,arg3
+           real(kind=sp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_sp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,4)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i) = Phi0fk*sinc0
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4416,24 +4862,57 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i, iand(n,not(3)),4
-                fk0       = fk(j+0)
+           do i=1,m1,4
+                fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
-                fk1       = fk(j+1)
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
                 arg1      = twopi*fk1*hTin
                 sinc1     = sin(arg1)/arg1
-                Phik(j+1) = Phi0fk*sinc1
-                fk2       = fk(j+2)
+                Phik(i+1) = Phi0fk*sinc1
+                fk2       = fk(i+2)
                 arg2      = twopi*fk2*hTin
                 sinc2     = sin(arg2)/arg2
-                Phik(j+2) = Phi0fk*sinc2
-                fk3       = fk(j+3)
+                Phik(i+2) = Phi0fk*sinc2
+                fk3       = fk(i+3)
                 arg3      = twopi*fk3*hTin
                 sinc3     = sin(arg3)/arg3
-                Phik(j+3) = Phi0fk*sinc3
-           end do
+                Phik(i+3) = Phi0fk*sinc3
+             end do
+          
+        end subroutine rect_pulse_flux_unroll_4x_r4
+
+
+        subroutine rect_pulse_flux_unroll_2x_r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_2x_r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_2x_r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           real(kind=sp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Tin
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: fk0,fk1
+           real(kind=sp) :: sinc0,sinc1
+           real(kind=sp) :: arg0,arg1
+           real(kind=sp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_sp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,2)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i) = Phi0fk*sinc0
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4441,30 +4920,136 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i, iand(n,not(1)),2
-                fk0       = fk(j+0)
+           do i=1,m1,2
+                fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
-                fk1       = fk(j+1)
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
                 arg1      = twopi*fk1*hTin
                 sinc1     = sin(arg1)/arg1
-                Phik(j+1) = Phi0fk*sinc1
-           end do
-           do j=i, n
-                fk0       = fk(j+0)
+                Phik(i+1) = Phi0fk*sinc1
+     
+             end do
+          
+        end subroutine rect_pulse_flux_unroll_2x_r4
+
+
+        
+       subroutine rect_pulse_flux_unroll_16x_r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_16x_r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_16x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           real(kind=dp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Tin
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
+           real(kind=dp) :: fk8,fk9,fk10,fk11,fk12,fk13,fk14,fk15
+           real(kind=dp) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=dp) :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           real(kind=dp) :: arg1,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=dp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_dp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,16)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i)   = Phi0fk*sinc0
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned Phik:64
+           !dir$ assume_aligned fk:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,m1,16
+                fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
+                arg1      = twopi*fk1*hTin
+                sinc1     = sin(arg1)/arg1
+                Phik(i+1) = Phi0fk*sinc1
+                fk2       = fk(i+2)
+                arg2      = twopi*fk2*hTin
+                sinc2     = sin(arg2)/arg2
+                Phik(i+2) = Phi0fk*sinc2
+                fk3       = fk(i+3)
+                arg3      = twopi*fk3*hTin
+                sinc3     = sin(arg3)/arg3
+                Phik(i+3) = Phi0fk*sinc3
+                fk4       = fk(i+4)
+                arg4      = twopi*fk4*hTin
+                sinc4     = sin(arg4)/arg4
+                Phik(i+4) = Phi0fk*sinc4
+                fk5       = fk(i+5)
+                arg5      = twopi*fk5*hTin
+                sinc5     = sin(arg5)/arg5
+                Phik(i+5) = Phi0fk*sinc5
+                fk6       = fk(i+6)
+                arg6      = twopi*fk6*hTin
+                sinc6     = sin(arg6)/arg6
+                Phik(i+6) = Phi0fk*sinc6
+                fk7       = fk(i+7)
+                arg7      = twopi*fk7*hTin
+                sinc7     = sin(arg7)/arg7
+                Phik(i+7) = Phi0fk*sinc7
+                fk8       = fk(i+8)
+                arg8      = twopi*fk8*hTin
+                sinc8     = sin(arg8)/arg8
+                Phik(i+8) = Phi0fk*sinc8
+                fk9       = fk(i+9)
+                arg9      = twopi*fk9*hTin
+                sinc9     = sin(arg9)/arg9
+                Phik(i+9) = Phi0fk*sinc1
+                fk10      = fk(i+10)
+                arg10     = twopi*fk10*hTin
+                sinc10    = sin(arg10)/arg10
+                Phik(i+10)= Phi0fk*sinc10
+                fk11      = fk(i+11)
+                arg11     = twopi*fk11*hTin
+                sinc11    = sin(arg11)/arg11
+                Phik(i+11)= Phi0fk*sinc3
+                fk12      = fk(i+12)
+                arg12     = twopi*fk12*hTin
+                sinc12    = sin(arg12)/arg12
+                Phik(i+12)= Phi0fk*sinc12
+                fk13      = fk(i+13)
+                arg13     = twopi*fk13*hTin
+                sinc13    = sin(arg13)/arg13
+                Phik(i+13)= Phi0fk*sinc13
+                fk14      = fk(i+14)
+                arg14     = twopi*fk14*hTin
+                sinc14    = sin(arg14)/arg14
+                Phik(i+14)= Phi0fk*sinc14
+                fk15      = fk(i+15)
+                arg15     = twopi*fk15*hTin
+                sinc15    = sin(arg15)/arg15
+                Phik(i+15)= Phi0fk*sinc15
            end do
-        end subroutine rect_pulse_flux_unroll8x_r4
+          
+        end subroutine rect_pulse_flux_unroll_16x_r8
 
- 
-        subroutine rect_pulse_flux_unroll8x_r8(Phik,fk,Phi0,n,Tin)
+
+        subroutine rect_pulse_flux_unroll_8x_r8(Phik,fk,Phi0,n,Tin)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll8x_r8
-           !dir$ attributes forceinline ::   rect_pulse_flux_unroll8x_r8
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll8x_r8
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_8x_r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_8x_r8
            real(kind=dp), dimension(1:n), intent(out) :: Phik
            real(kind=dp), dimension(1:n), intent(in)  :: fk
            real(kind=dp),                 intent(in)  :: Phi0
@@ -4475,9 +5060,20 @@ module eos_sensor
            real(kind=dp) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
            real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
            real(kind=dp) :: hTin,Phi0fk
-           integer(kind=i4) :: i,j
+           integer(kind=i4) :: i,m,m1
            hTin   = 0.5_dp*Tin
            Phi0fk = Phi0*Tin 
+           m=mod(n,8)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i)   = Phi0fk*sinc0
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4485,7 +5081,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1, iand(n,not(7)),8
+           do i=1,m1,8
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4518,7 +5114,42 @@ module eos_sensor
                 arg7      = twopi*fk7*hTin
                 sinc7     = sin(arg7)/arg7
                 Phik(i+7) = Phi0fk*sinc7
+              
            end do
+          
+        end subroutine rect_pulse_flux_unroll_8x_r8
+
+
+
+        subroutine rect_pulse_flux_unroll_4x_r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_4x_r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_4x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           real(kind=dp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Tin
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: fk0,fk1,fk2,fk3
+           real(kind=dp) :: sinc0,sinc1,sinc2,sinc3
+           real(kind=dp) :: arg0,arg1,arg2,arg3
+           real(kind=dp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_dp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,4)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i)   = Phi0fk*sinc0
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4526,24 +5157,58 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i, iand(n,not(3)),4
-                fk0       = fk(j+0)
+           do i=1,m1,4
+                fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
-                fk1       = fk(j+1)
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
                 arg1      = twopi*fk1*hTin
                 sinc1     = sin(arg1)/arg1
-                Phik(j+1) = Phi0fk*sinc1
-                fk2       = fk(j+2)
+                Phik(i+1) = Phi0fk*sinc1
+                fk2       = fk(i+2)
                 arg2      = twopi*fk2*hTin
                 sinc2     = sin(arg2)/arg2
-                Phik(j+2) = Phi0fk*sinc2
-                fk3       = fk(j+3)
+                Phik(i+2) = Phi0fk*sinc2
+                fk3       = fk(i+3)
                 arg3      = twopi*fk3*hTin
                 sinc3     = sin(arg3)/arg3
-                Phik(j+3) = Phi0fk*sinc3
+                Phik(i+3) = Phi0fk*sinc3
+                            
            end do
+          
+        end subroutine rect_pulse_flux_unroll_4x_r8
+
+
+        subroutine rect_pulse_flux_unroll_2x_r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_2x_r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_2x_r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           real(kind=dp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Tin
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: fk0,fk1
+           real(kind=dp) :: sinc0,sinc1
+           real(kind=dp) :: arg0,arg1
+           real(kind=dp) :: hTin,Phi0fk
+           integer(kind=i4) :: i,m,m1
+           hTin   = 0.5_dp*Tin
+           Phi0fk = Phi0*Tin 
+           m=mod(n,2)
+           if(m /= 0) then
+              do i=1, m
+                 fk0       = fk(i)
+                 arg0      = twopi*fk0*hTin
+                 sinc0     = sin(arg0)/arg0
+                 Phik(i)   = Phi0fk*sinc0
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
            !dir$ assume_aligned Phik:64
            !dir$ assume_aligned fk:64
            !dir$ vector aligned
@@ -4551,30 +5216,27 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do j=i, iand(n,not(1)),2
-                fk0       = fk(j+0)
+           do i=1,m1,4
+                fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
-                fk1       = fk(j+1)
+                Phik(i+0) = Phi0fk*sinc0
+                fk1       = fk(i+1)
                 arg1      = twopi*fk1*hTin
                 sinc1     = sin(arg1)/arg1
-                Phik(j+1) = Phi0fk*sinc1
+                Phik(i+1) = Phi0fk*sinc1
+                                          
            end do
-           do j=i, n
-                fk0       = fk(j+0)
-                arg0      = twopi*fk0*hTin
-                sinc0     = sin(arg0)/arg0
-                Phik(j+0) = Phi0fk*sinc0
-           end do
-        end subroutine rect_pulse_flux_unroll8x_r8
+          
+        end subroutine rect_pulse_flux_unroll_2x_r8
 
+      
 
-        subroutine rect_pulse_amp_unroll8x_r4(Ak,Phik,Phi0,n,T,k,tin)
+        subroutine rect_pulse_amp_unroll_16x_r4(Ak,Phik,Phi0,n,T,k,tin)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll8x_r4
-           !dir$ attributes forceinline ::   rect_pulse_amp_unroll8x_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll8x_r4
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_16x_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_16x_r4
            use mod_fpcompare, only : Compare_Float
            real(kind=sp), dimension(1:n),  intent(out) :: Ak
            real(kind=sp), dimension(1:n),  intent(in)  :: Phik
@@ -4585,12 +5247,25 @@ module eos_sensor
            real(kind=sp),                  intent(in)  :: tin
            real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
            real(kind=sp) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           real(kind=sp) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
            real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
            real(kind=sp) :: k0,k1,k2,k3,k4,k5,k6,k7
+           real(kind=sp) :: k8,k9,k10,k11,k12,k13,k14,k15
            real(kind=sp) :: twoT,kpi2
-           integer(kind=i4) :: j,i
+           integer(kind=i4) :: i,m,m1
            twoT = 2.0_sp/T
            if(Compare_Float(tin,twoT)) then
+               m=mod(n,16)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<16) return
+                end if
+                m1 = m+1
                !dir$ assume_aligned Ak:64
                !dir$ assume_aligned k:64
                !dir$ vector aligned
@@ -4598,7 +5273,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1, iand(n,not(7)),8
+               do i=1,m1,16
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -4623,49 +5298,42 @@ module eos_sensor
                     k7      = k(i+7)
                     arg7    = k7*pi2
                     Ak(i+7) = Phi0*(sin(arg7)/arg7)   
+                    k08     = k(i+8)
+                    arg8    = k8*pi2
+                    Ak(i+8) = Phi0*(sin(arg8)/arg8) 
+                    k9      = k(i+9)
+                    arg9    = k9*pi2
+                    Ak(i+9) = Phi0*(sin(arg9)/arg9) 
+                    k10     = k(i+10)
+                    arg10   = k10*pi2
+                    Ak(i+10)= Phi0*(sin(arg10)/arg10) 
+                    k11     = k(i+11)
+                    arg11   = k11*pi2
+                    Ak(i+11)= Phi0*(sin(arg11)/arg11) 
+                    k12     = k(i+12)
+                    arg12   = k12*pi2
+                    Ak(i+12)= Phi0*(sin(arg12)/arg12) 
+                    k13     = k(i+13)
+                    arg13   = k13*pi2
+                    Ak(i+13)= Phi0*(sin(arg13)/arg13) 
+                    k14     = k(i+14)
+                    arg14   = k14*pi2
+                    Ak(i+14)= Phi0*(sin(arg14)/arg14)
+                    k15     = k(i+15)
+                    arg155  = k15*pi2
+                    Ak(i+15)= Phi0*(sin(arg15)/arg15)   
                end do
-               !dir$ assume_aligned Ak:64
-               !dir$ assume_aligned k:64
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector multiple_gather_scatter_by_shuffles 
-               !dir$ vector always
-               do j=i, iand(n,not(3)),4
-                    k0      = k(j+0)
-                    arg0    = k0*pi2
-                    Ak(j+0) = Phi0*(sin(arg0)/arg0) 
-                    k1      = k(j+1)
-                    arg1    = k1*pi2
-                    Ak(j+1) = Phi0*(sin(arg1)/arg1) 
-                    k2      = k(j+2)
-                    arg2    = k2*pi2
-                    Ak(j+2) = Phi0*(sin(arg2)/arg2) 
-                    k3      = k(j+3)
-                    arg3    = k3*pi2
-                    Ak(j+3) = Phi0*(sin(arg3)/arg3) 
-               end do
-               !dir$ assume_aligned Ak:64
-               !dir$ assume_aligned k:64
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector multiple_gather_scatter_by_shuffles 
-               !dir$ vector always
-               do j=i, iand(n,not(1)),2
-                    k0      = k(j+0)
-                    arg0    = k0*pi2
-                    Ak(j+0) = Phi0*(sin(arg0)/arg0) 
-                    k1      = k(j+1)
-                    arg1    = k1*pi2
-                    Ak(j+1) = Phi0*(sin(arg1)/arg1) 
-               end do
-               do j=i, n
-                   k0      = k(j+0)
-                   arg0    = k0*pi2
-                   Ak(j+0) = Phi0*(sin(arg0)/arg0) 
-               end do
+             
            else
+               m=mod(n,16)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<16) return
+                end if
+               m1 = m+1
                !dir$ assume_aligned Ak:64
                !dir$ assume_aligned Phik:64
                !dir$ vector aligned
@@ -4673,7 +5341,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1, iand(n,not(7)),8
+               do i=1,m1,16
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -4690,44 +5358,714 @@ module eos_sensor
                     Ak(i+6) = twoT*phik6
                     phik7   = Phik(i+7)
                     Ak(i+7) = twoT*phik7
+                    phik8   = Phik(i+8)
+                    Ak(i+8) = twoT*phik8
+                    phik9   = Phik(i+9)
+                    Ak(i+9) = twoT*phik9
+                    phik10  = Phik(i+10)
+                    Ak(i+10)= twoT*phik10
+                    phik11  = Phik(i+11)
+                    Ak(i+11)= twoT*phik11
+                    phik12  = Phik(i+12)
+                    Ak(i+12)= twoT*phik12
+                    phik13  = Phik(i+13)
+                    Ak(i+13)= twoT*phik13
+                    phik14  = Phik(i+14)
+                    Ak(i+14)= twoT*phik14
+                    phik15  = Phik(i+15)
+                    Ak(i+15) = twoT*phik15
               end do
-              !dir$ assume_aligned Ak:64
-              !dir$ assume_aligned Phik:64
-              !dir$ vector aligned
-              !dir$ ivdep
-              !dir$ vector vectorlength(4)
-              !dir$ vector multiple_gather_scatter_by_shuffles 
-              !dir$ vector always
-              do j=i, iand(n,not(3)), 4
-                   phik0   = Phik(i+0)
-                   Ak(i+0) = twoT*phik0
-                   phik1   = Phik(i+1)
-                   Ak(i+1) = twoT*phik1
-                   phik2   = Phik(i+2)
-                   Ak(i+2) = twoT*phik2
-                   phik3   = Phik(i+3)
-                   Ak(i+3) = twoT*phik3
-              end do
-              !dir$ assume_aligned Ak:64
-              !dir$ assume_aligned Phik:64
-              !dir$ vector aligned
-              !dir$ ivdep
-              !dir$ vector vectorlength(4)
-              !dir$ vector multiple_gather_scatter_by_shuffles 
-              !dir$ vector always
-              do j=i, iand(n,not(1)),2
-                   phik0   = Phik(i+0)
-                   Ak(i+0) = twoT*phik0
-                   phik1   = Phik(i+1)
-                   Ak(i+1) = twoT*phik1
-              end do
-              do j=i, n
-                   phik0   = Phik(i+0)
-                   Ak(i+0) = twoT*phik0
-              end do
+             
           end if
-       end subroutine rect_pulse_amp_unroll8x_r4
-#endif
+       end subroutine rect_pulse_amp_unroll_16x_r4
+
+
+       subroutine rect_pulse_amp_unroll_8x_r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_8x_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_8x_r4
+           use mod_fpcompare, only : Compare_Float
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
+           real(kind=sp) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp) :: k0,k1,k2,k3,k4,k5,k6,k7
+           real(kind=sp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_sp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,8)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<8) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,8
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                    k2      = k(i+2)
+                    arg2    = k2*pi2
+                    Ak(i+2) = Phi0*(sin(arg2)/arg2) 
+                    k3      = k(i+3)
+                    arg3    = k3*pi2
+                    Ak(i+3) = Phi0*(sin(arg3)/arg3) 
+                    k4      = k(i+4)
+                    arg4    = k4*pi2
+                    Ak(i+4) = Phi0*(sin(arg4)/arg4) 
+                    k5      = k(i+5)
+                    arg5    = k5*pi2
+                    Ak(i+5) = Phi0*(sin(arg5)/arg5) 
+                    k6      = k(i+6)
+                    arg6    = k6*pi2
+                    Ak(i+6) = Phi0*(sin(arg6)/arg6)
+                    k7      = k(i+7)
+                    arg7    = k7*pi2
+                    Ak(i+7) = Phi0*(sin(arg7)/arg7)   
+                end do
+             
+           else
+               m=mod(n,8)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<8) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,8
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                    phik2   = Phik(i+2)
+                    Ak(i+2) = twoT*phik2
+                    phik3   = Phik(i+3)
+                    Ak(i+3) = twoT*phik3
+                    phik4   = Phik(i+4)
+                    Ak(i+4) = twoT*phik4
+                    phik5   = Phik(i+5)
+                    Ak(i+5) = twoT*phik5
+                    phik6   = Phik(i+6)
+                    Ak(i+6) = twoT*phik6
+                    phik7   = Phik(i+7)
+                    Ak(i+7) = twoT*phik7
+                   
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_8x_r4
+
+
+       subroutine rect_pulse_amp_unroll_4x_r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_4x_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_4x_r4
+           use mod_fpcompare, only : Compare_Float
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
+           real(kind=sp) :: phik0,phik1,phik2,phik3
+           real(kind=sp) :: arg0,arg1,arg2,arg3
+           real(kind=sp) :: k0,k1,k2,k3
+           real(kind=sp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_sp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,4)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<4) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,4
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                    k2      = k(i+2)
+                    arg2    = k2*pi2
+                    Ak(i+2) = Phi0*(sin(arg2)/arg2) 
+                    k3      = k(i+3)
+                    arg3    = k3*pi2
+                    Ak(i+3) = Phi0*(sin(arg3)/arg3) 
+                 
+                end do
+             
+           else
+               m=mod(n,4)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<4) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,4
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                    phik2   = Phik(i+2)
+                    Ak(i+2) = twoT*phik2
+                    phik3   = Phik(i+3)
+                    Ak(i+3) = twoT*phik3
+                                     
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_4x_r4
+
+
+       subroutine rect_pulse_amp_unroll_2x_r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_2x_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_2x_r4
+           use mod_fpcompare, only : Compare_Float
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
+           real(kind=sp) :: phik0,phik1
+           real(kind=sp) :: arg0,arg1
+           real(kind=sp) :: k0,k1
+           real(kind=sp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_sp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<2) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,2
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+               end do
+             
+           else
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<2) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,2
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                                                        
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_2x_r4
+
+
+
+       subroutine rect_pulse_amp_unroll_16x_r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_16x_r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_16x_r8
+           use mod_fpcompare, only : Compare_Float
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           real(kind=dp), parameter :: pi2 = 1.5707963267948966192313216916398_dp
+           real(kind=dp) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           real(kind=dp) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=dp) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=dp) :: k0,k1,k2,k3,k4,k5,k6,k7
+           real(kind=dp) :: k8,k9,k10,k11,k12,k13,k14,k15
+           real(kind=dp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_dp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,16)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<16) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,16
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                    k2      = k(i+2)
+                    arg2    = k2*pi2
+                    Ak(i+2) = Phi0*(sin(arg2)/arg2) 
+                    k3      = k(i+3)
+                    arg3    = k3*pi2
+                    Ak(i+3) = Phi0*(sin(arg3)/arg3) 
+                    k4      = k(i+4)
+                    arg4    = k4*pi2
+                    Ak(i+4) = Phi0*(sin(arg4)/arg4) 
+                    k5      = k(i+5)
+                    arg5    = k5*pi2
+                    Ak(i+5) = Phi0*(sin(arg5)/arg5) 
+                    k6      = k(i+6)
+                    arg6    = k6*pi2
+                    Ak(i+6) = Phi0*(sin(arg6)/arg6)
+                    k7      = k(i+7)
+                    arg7    = k7*pi2
+                    Ak(i+7) = Phi0*(sin(arg7)/arg7)   
+                    k08     = k(i+8)
+                    arg8    = k8*pi2
+                    Ak(i+8) = Phi0*(sin(arg8)/arg8) 
+                    k9      = k(i+9)
+                    arg9    = k9*pi2
+                    Ak(i+9) = Phi0*(sin(arg9)/arg9) 
+                    k10     = k(i+10)
+                    arg10   = k10*pi2
+                    Ak(i+10)= Phi0*(sin(arg10)/arg10) 
+                    k11     = k(i+11)
+                    arg11   = k11*pi2
+                    Ak(i+11)= Phi0*(sin(arg11)/arg11) 
+                    k12     = k(i+12)
+                    arg12   = k12*pi2
+                    Ak(i+12)= Phi0*(sin(arg12)/arg12) 
+                    k13     = k(i+13)
+                    arg13   = k13*pi2
+                    Ak(i+13)= Phi0*(sin(arg13)/arg13) 
+                    k14     = k(i+14)
+                    arg14   = k14*pi2
+                    Ak(i+14)= Phi0*(sin(arg14)/arg14)
+                    k15     = k(i+15)
+                    arg155  = k15*pi2
+                    Ak(i+15)= Phi0*(sin(arg15)/arg15)   
+               end do
+             
+           else
+               m=mod(n,16)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<16) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,16
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                    phik2   = Phik(i+2)
+                    Ak(i+2) = twoT*phik2
+                    phik3   = Phik(i+3)
+                    Ak(i+3) = twoT*phik3
+                    phik4   = Phik(i+4)
+                    Ak(i+4) = twoT*phik4
+                    phik5   = Phik(i+5)
+                    Ak(i+5) = twoT*phik5
+                    phik6   = Phik(i+6)
+                    Ak(i+6) = twoT*phik6
+                    phik7   = Phik(i+7)
+                    Ak(i+7) = twoT*phik7
+                    phik8   = Phik(i+8)
+                    Ak(i+8) = twoT*phik8
+                    phik9   = Phik(i+9)
+                    Ak(i+9) = twoT*phik9
+                    phik10  = Phik(i+10)
+                    Ak(i+10)= twoT*phik10
+                    phik11  = Phik(i+11)
+                    Ak(i+11)= twoT*phik11
+                    phik12  = Phik(i+12)
+                    Ak(i+12)= twoT*phik12
+                    phik13  = Phik(i+13)
+                    Ak(i+13)= twoT*phik13
+                    phik14  = Phik(i+14)
+                    Ak(i+14)= twoT*phik14
+                    phik15  = Phik(i+15)
+                    Ak(i+15) = twoT*phik15
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_16x_r8
+
+
+       subroutine rect_pulse_amp_unroll_8x_r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_8x_r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_8x_r8
+           use mod_fpcompare, only : Compare_Float
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           real(kind=dp), parameter :: pi2 = 1.5707963267948966192313216916398_dp
+           real(kind=dp) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           real(kind=dp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=dp) :: k0,k1,k2,k3,k4,k5,k6,k7
+           real(kind=dp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_dp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,8)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<8) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,8
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                    k2      = k(i+2)
+                    arg2    = k2*pi2
+                    Ak(i+2) = Phi0*(sin(arg2)/arg2) 
+                    k3      = k(i+3)
+                    arg3    = k3*pi2
+                    Ak(i+3) = Phi0*(sin(arg3)/arg3) 
+                    k4      = k(i+4)
+                    arg4    = k4*pi2
+                    Ak(i+4) = Phi0*(sin(arg4)/arg4) 
+                    k5      = k(i+5)
+                    arg5    = k5*pi2
+                    Ak(i+5) = Phi0*(sin(arg5)/arg5) 
+                    k6      = k(i+6)
+                    arg6    = k6*pi2
+                    Ak(i+6) = Phi0*(sin(arg6)/arg6)
+                    k7      = k(i+7)
+                    arg7    = k7*pi2
+                    Ak(i+7) = Phi0*(sin(arg7)/arg7)   
+                end do
+             
+           else
+               m=mod(n,8)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<8) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,8
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                    phik2   = Phik(i+2)
+                    Ak(i+2) = twoT*phik2
+                    phik3   = Phik(i+3)
+                    Ak(i+3) = twoT*phik3
+                    phik4   = Phik(i+4)
+                    Ak(i+4) = twoT*phik4
+                    phik5   = Phik(i+5)
+                    Ak(i+5) = twoT*phik5
+                    phik6   = Phik(i+6)
+                    Ak(i+6) = twoT*phik6
+                    phik7   = Phik(i+7)
+                    Ak(i+7) = twoT*phik7
+                   
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_8x_r8
+
+
+       subroutine rect_pulse_amp_unroll_4x_r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_4x_r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_4x_r8
+           use mod_fpcompare, only : Compare_Float
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           real(kind=dp), parameter :: pi2 = 1.5707963267948966192313216916398_dp
+           real(kind=dp) :: phik0,phik1,phik2,phik3
+           real(kind=dp) :: arg0,arg1,arg2,arg3
+           real(kind=dp) :: k0,k1,k2,k3
+           real(kind=dp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_dp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,4)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<4) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,4
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                    k2      = k(i+2)
+                    arg2    = k2*pi2
+                    Ak(i+2) = Phi0*(sin(arg2)/arg2) 
+                    k3      = k(i+3)
+                    arg3    = k3*pi2
+                    Ak(i+3) = Phi0*(sin(arg3)/arg3) 
+                end do
+             
+           else
+               m=mod(n,4)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<4) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,4
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                    phik2   = Phik(i+2)
+                    Ak(i+2) = twoT*phik2
+                    phik3   = Phik(i+3)
+                    Ak(i+3) = twoT*phik3
+                                    
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_4x_r8
+
+
+       subroutine rect_pulse_amp_unroll_2x_r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_2x_r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_2x_r8
+           use mod_fpcompare, only : Compare_Float
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           real(kind=dp), parameter :: pi2 = 1.5707963267948966192313216916398_dp
+           real(kind=dp) :: phik0,phik1
+           real(kind=dp) :: arg0,arg1
+           real(kind=dp) :: k0,k1
+           real(kind=dp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_dp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<2) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,2
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                end do
+             
+           else
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<2) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,m1,2
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                                                      
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_2x_r8
+
+
 
         
 
