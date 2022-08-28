@@ -72,7 +72,158 @@ module eos_sensor_simd
      ! Short description
      character(*),        parameter :: EOS_SENSOR_SIMD_SYNOPSIS    = "EO Sensors characteristics and models explicitly vectorized (SIMD)."
 
+
+     !
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc0 = [1.0_sp,2.0_sp,3.0_sp,4.0_sp, &
+                                                              5.0_sp,6.0_sp,7.0_sp,8.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc1 = [9.0_sp,10.0_sp,11.0_sp,12.0_sp, &
+                                                              13.0_sp,14.0_sp,15.0_sp,16.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc2 = [17.0_sp,18.0_sp,19.0_sp,20.0_sp, &
+                                                              21.0_sp,22.0_sp,23.0_sp,24.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc3 = [25.0_sp,26.0_sp,27.0_sp,28.0_sp, &
+                                                              29.0_sp,30.0_sp,31.0_sp,32.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc4 = [33.0_sp,34.0_sp,35.0_sp,36.0_sp, &
+                                                              37.0_sp,38.0_sp,39.0_sp,40.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc5 = [41.0_sp,42.0_sp,43.0_sp,44.0_sp, &
+                                                              45.0_sp,46.0_sp,47.0_sp,48.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc6 = [49.0_sp,50.0_sp,51.0_sp,52.0_sp, &
+                                                              53.0_sp,54.0_sp,55.0_sp,56.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc7 = [57.0_sp,58.0_sp,59.0_sp,60.0_sp, &
+                                                              61.0_sp,62.0_sp,63.0_sp,64.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc8 = [65.0_sp,66.0_sp,67.0_sp,68.0_sp, &
+                                                              69.0_sp,70.0_sp,71.0_sp,72.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc9 = [73.0_sp,74.0_sp,75.0_sp,76.0_sp, &
+                                                              77.0_sp,78.0_sp,79.0_sp,80.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc10= [81.0_sp,82.0_sp,83.0_sp,84.0_sp, &
+                                                              85.0_sp,86.0_sp,87.0_sp,88.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc11= [89.0_sp,90.0_sp,91.0_sp,92.0_sp, &
+                                                              93.0_sp,94.0_sp,95.0_sp,96.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc12= [97.0_sp,98.0_sp,99.0_sp,100.0_sp, &
+                                                              101.0_sp,102.0_sp,103.0_sp,104.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc13= [105.0_sp,106.0_sp,107.0_sp,108.0_sp, &
+                                                              109.0_sp,110.0_sp,111.0_sp,112.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc14= [113.0_sp,114.0_sp,115.0_sp,116.0_sp, &
+                                                              117.0_sp,118.0_sp,119.0_sp,120.0_sp]
+     real(kind=sp), dimension(0:7), parameter :: ymm8vinc15= [121.0_sp,122.0_sp,123.0_sp,124.0_sp, &
+                                                              125.0_sp,126.0_sp,127.0_sp,128.0_sp]
      
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc0 = [1.0_dp,2.0_dp,3.0_dp,4.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc1 = [5.0_dp,6.0_dp,7.0_dp,8.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc2 = [9.0_dp,10.0_dp,11.0_dp,12.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc3 = [13.0_dp,14.0_dp,15.0_dp,16.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc4 = [17.0_dp,18.0_dp,19.0_dp,20.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc5 = [21.0_dp,22.0_dp,23.0_dp,24.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc6 = [25.0_dp,26.0_dp,27.0_dp,28.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc7 = [29.0_dp,30.0_dp,31.0_dp,32.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc8 = [33.0_dp,34.0_dp,35.0_dp,36.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc9 = [37.0_dp,38.0_dp,39.0_dp,40.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc10= [41.0_dp,42.0_dp,43.0_dp,44.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc11= [45.0_dp,46.0_dp,47.0_dp,48.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc12= [49.0_dp,50.0_dp,51.0_dp,52.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc13= [53.0_dp,54.0_dp,55.0_dp,56.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc14= [57.0_dp,58.0_dp,59.0_dp,60.0_dp]
+     real(kind=dp), dimension(0:3), parameter :: ymm4vinc15= [61.0_dp,62.0_dp,63.0_dp,64.0_dp]
+
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc0 = [1.0_sp,2.0_sp,3.0_sp,4.0_sp,   &
+		                                                5.0_sp,6.0_sp,7.0_sp,8.0_sp,   &
+							        9.0_sp,10.0_sp,11.0_sp,12.0_sp,&
+							        13.0_sp,14.0_sp,15.0_sp,16.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc1 = [17.0_sp,18.0_sp,19.0_sp,20.0_sp, &
+		                                                21.0_sp,22.0_sp,23.0_sp,24.0_sp, &
+							        25.0_sp,26.0_sp,27.0_sp,28.0_sp, &
+							        29.0_sp,30.0_sp,31.0_sp,32.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc2 = [33.0_sp,34.0_sp,35.0_sp,36.0_sp, &
+		                                                37.0_sp,38.0_sp,39.0_sp,40.0_sp, &
+							        41.0_sp,42.0_sp,43.0_sp,44.0_sp, &
+							        45.0_sp,46.0_sp,47.0_sp,48.0_sp]
+  
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc3 = [49.0_sp,50.0_sp,51.0_sp,52.0_sp, &
+		                                                53.0_sp,54.0_sp,55.0_sp,56.0_sp, &
+							        57.0_sp,58.0_sp,59.0_sp,60.0_sp, &
+							        61.0_sp,62.0_sp,63.0_sp,64.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc4 = [65.0_sp,66.0_sp,67.0_sp,68.0_sp, &
+                                                                69.0_sp,70.0_sp,71.0_sp,72.0_sp, &
+                                                                73.0_sp,74.0_sp,75.0_sp,76.0_sp, &
+                                                                77.0_sp,78.0_sp,79.0_sp,80.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc5 = [81.0_sp,82.0_sp,83.0_sp,84.0_sp, &
+                                                                85.0_sp,86.0_sp,87.0_sp,88.0_sp, &
+                                                                89.0_sp,90.0_sp,91.0_sp,92.0_sp, &
+                                                                93.0_sp,94.0_sp,95.0_sp,96.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc6 = [97.0_sp,98.0_sp,99.0_sp,100.0_sp, &
+                                                                101.0_sp,102.0_sp,103.0_sp,104.0_sp, &
+                                                                105.0_sp,106.0_sp,107.0_sp,108.0_sp, &
+                                                                109.0_sp,110.0_sp,111.0_sp,112.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc7 = [113.0_sp,114.0_sp,115.0_sp,116.0_sp, &
+                                                                117.0_sp,118.0_sp,119.0_sp,120.0_sp, &
+                                                                121.0_sp,122.0_sp,123.0_sp,124.0_sp, &
+                                                                125.0_sp,126.0_sp,127.0_sp,128.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc8 = [129.0_sp,130.0_sp,131.0_sp,132.0_sp, &
+                                                                133.0_sp,134.0_sp,135.0_sp,136.0_sp, &
+                                                                137.0_sp,138.0_sp,139.0_sp,140.0_sp, &
+                                                                141.0_sp,142.0_sp,143.0_sp,144.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc9 = [145.0_sp,146.0_sp,147.0_sp,148.0_sp, &
+                                                                149.0_sp,150.0_sp,151.0_sp,152.0_sp, &
+                                                                153.0_sp,154.0_sp,155.0_sp,156.0_sp, &
+                                                                157.0_sp,158.0_sp,159.0_sp,160.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc10= [161.0_sp,162.0_sp,163.0_sp,164.0_sp, &
+                                                                165.0_sp,166.0_sp,167.0_sp,168.0_sp, &
+                                                                169.0_sp,170.0_sp,171.0_sp,172.0_sp, &
+                                                                173.0_sp,174.0_sp,175.0_sp,176.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc11= [177.0_sp,178.0_sp,179.0_sp,180.0_sp,  &
+                                                                181.0_sp,182.0_sp,183.0_sp,184.0_sp,  &
+                                                                185.0_sp,186.0_sp,187.0_sp,188.0_sp,  &
+                                                                189.0_sp,190.0_sp,191.0_sp,192.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc12= [193.0_sp,194.0_sp,195.0_sp,196.0_sp,  &
+                                                                197.0_sp,198.0_sp,199.0_sp,200.0_sp, &
+                                                                201.0_sp,202.0_sp,203.0_sp,204.0_sp, &
+                                                                205.0_sp,206.0_sp,207.0_sp,208.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc13= [209.0_sp,210.0_sp,211.0_sp,212.0_sp, &
+                                                                213.0_sp,214.0_sp,215.0_sp,216.0_sp, &
+                                                                217.0_sp,218.0_sp,219.0_sp,220.0_sp, &
+                                                                221.0_sp,222.0_sp,223.0_sp,224.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc14= [225.0_sp,226.0_sp,227.0_sp,228.0_sp, &
+                                                                229.0_sp,230.0_sp,231.0_sp,232.0_sp, &
+                                                                233.0_sp,234.0_sp,235.0_sp,236.0_sp, &
+                                                                237.0_sp,238.0_sp,239.0_sp,240.0_sp]
+     real(kind=dp), dimension(0:15), parameter :: zmm16vinc15= [241.0_sp,242.0_sp,243.0_sp,244.0_sp, &
+                                                                245.0_sp,246.0_sp,247.0_sp,248.0_sp, &
+                                                                249.0_sp,250.0_sp,251.0_sp,252.0_sp, &
+                                                                253.0_sp,254.0_sp,255.0_sp,256.0_sp]
+     
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc0 = [1.0_dp,2.0_dp,3.0_dp,4.0_dp, &
+                                                              5.0_dp,6.0_dp,7.0_dp,8.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc1 = [9.0_dp,10.0_dp,11.0_dp,12.0_dp, &
+                                                              13.0_dp,14.0_dp,15.0_dp,16.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc2 = [17.0_dp,18.0_dp,19.0_dp,20.0_dp, &
+                                                              21.0_dp,22.0_dp,23.0_dp,24.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc3 = [25.0_dp,26.0_dp,27.0_dp,28.0_dp, &
+                                                              29.0_dp,30.0_dp,31.0_dp,32.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc4 = [33.0_dp,34.0_dp,35.0_dp,36.0_dp, &
+                                                              37.0_dp,38.0_dp,39.0_dp,40.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc5 = [41.0_dp,42.0_dp,43.0_dp,44.0_dp, &
+                                                              45.0_dp,46.0_dp,47.0_dp,48.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc6 = [49.0_dp,50.0_dp,51.0_dp,52.0_dp, &
+                                                              53.0_dp,54.0_dp,55.0_dp,56.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc7 = [57.0_dp,58.0_dp,59.0_dp,60.0_dp, &
+                                                              61.0_dp,62.0_dp,63.0_dp,64.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc8 = [65.0_dp,66.0_dp,67.0_dp,68.0_dp, &
+                                                              69.0_dp,70.0_dp,71.0_dp,72.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc9 = [73.0_dp,74.0_dp,75.0_dp,76.0_dp, &
+                                                              77.0_dp,78.0_dp,79.0_dp,80.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc10= [81.0_dp,82.0_dp,83.0_dp,84.0_dp, &
+                                                              85.0_dp,86.0_dp,87.0_dp,88.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc11= [89.0_dp,90.0_dp,91.0_dp,92.0_dp, &
+                                                              93.0_dp,94.0_dp,95.0_dp,96.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc12= [97.0_dp,98.0_dp,99.0_dp,100.0_dp, &
+                                                              101.0_dp,102.0_dp,103.0_dp,104.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc13= [105.0_dp,106.0_dp,107.0_dp,108.0_dp, &
+                                                              109.0_dp,110.0_dp,111.0_dp,112.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc14= [113.0_dp,114.0_dp,115.0_dp,116.0_dp, &
+                                                              117.0_dp,118.0_dp,119.0_dp,120.0_dp]
+     real(kind=dp), dimension(0:7), parameter :: zmm8vinc15= [121.0_dp,122.0_dp,123.0_dp,124.0_dp, &
+                                                              125.0_dp,126.0_dp,127.0_dp,128.0_dp]
+    
+
      contains
 
       ! Formula 1, p.54
@@ -2827,8 +2978,196 @@ module eos_sensor_simd
        end subroutine const_flux_spectr_unroll_4x_zmm8r8
 
 
+       !Идеальный гармонический модулятор
+       !Formula 1,2 p. 187
        
-
+       subroutine ideal_modulator_unroll_16x_zmm16r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_zmm16r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_16x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_16x_zmm16r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM16r4_t),               intent(in)  :: f0
+           type(ZMM16r4_t),               intent(in)  :: phi0
+           type(ZMM16r4_t),               intent(in)  :: rho0
+           type(ZMM16r4_t),               intent(in)  :: rho1
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(ZMM16r4_t) :: t8,t9,t10,t11,t12,t13,t14,t15
+           type(ZMM16r4_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(ZMM16r4_t) :: s8,s9,s10,s11,s12,s13,s14,s15
+           type(ZMM16r4_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(ZMM16r4_t) :: c8,c9,c10,c11,c12,c13,c14,c15
+           type(ZMM16r4_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(ZMM16r4_t) :: psi8,psi9,psi10,psi11,psi12,psi13,psi14,psi15
+           type(ZMM16r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<16) then
+              return
+           else if(n==16) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>16 .and. n<=256) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),16
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,15
+                     t0.v(ii)     = zmm16vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>256) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),256
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,15
+                       idx             = i+ii
+                       ri              = real(i,kind=sp)
+                       t0.v(ii)        = ri*zmm16vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri*zmm16vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+16)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+16)  = c1.v(ii)
+                       t2.v(ii)        = ri*zmm16vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+32)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+32)  = c2.v(ii)
+                       t3.v(ii)        = ri*zmm16vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+48)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+48)  = c3.v(ii)
+                       t4.v(ii)        = ri*zmm16vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+64)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+64)  = c4.v(ii)
+                       t5.v(ii)        = ri*zmm16vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+80)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+80)  = c5.v(ii)
+                       t6.v(ii)        = ri*zmm16vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+96)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+96)  = c6.v(ii)
+                       t7.v(ii)        = ri*zmm16vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+112) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+112) = c7.v(ii) 
+                       t8.v(ii)        = ri*zmm16vinc8(ii)
+                       psi8.v(ii)      = om0.v(ii)*t8.v(ii)+phi0.v(ii)
+                       s8.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi8.v(ii))
+                       rhot_s(idx+128) = s8.v(ii)
+                       c8.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi8.v(ii))
+                       rhot_c(idx+128) = c8.v(ii)
+                       t9.v(ii)        = ri*zmm16vinc9(ii)
+                       psi9.v(ii)      = om0.v(ii)*t9.v(ii)+phi0.v(ii)
+                       s9.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi9.v(ii))
+                       rhot_s(idx+144) = s9.v(ii)
+                       c9.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi9.v(ii))
+                       rhot_c(idx+144) = c9.v(ii)
+                       t10.v(ii)       = ri*zmm16vinc10(ii)
+                       psi10.v(ii)     = om0.v(ii)*t10.v(ii)+phi0.v(ii)
+                       s10.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi10.v(ii))
+                       rhot_s(idx+160) = s10.v(ii)
+                       c10.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi10.v(ii))
+                       rhot_c(idx+160) = c10.v(ii)
+                       t11.v(ii)       = ri*zmm16vinc11(ii)
+                       psi11.v(ii)     = om0.v(ii)*t11.v(ii)+phi0.v(ii)
+                       s11.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi11.v(ii))
+                       rhot_s(idx+176) = s11.v(ii)
+                       c11.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi11.v(ii))
+                       rhot_c(idx+176) = c11.v(ii)
+                       t12.v(ii)       = ri*zmm16vinc12(ii)
+                       psi12.v(ii)     = om0.v(ii)*t12.v(ii)+phi0.v(ii)
+                       s12.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi12.v(ii))
+                       rhot_s(idx+194) = s12.v(ii)
+                       c12.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi12.v(ii))
+                       rhot_c(idx+194) = c12.v(ii)
+                       t13.v(ii)       = ri*zmm16vinc13(ii)
+                       psi13.v(ii)     = om0.v(ii)*t13.v(ii)+phi0.v(ii)
+                       s13.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi13.v(ii))
+                       rhot_s(idx+210) = s13.v(ii)
+                       c13.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi13.v(ii))
+                       rhot_c(idx+210) = c13.v(ii)
+                       t14.v(ii)       = ri*zmm16vinc14(ii)
+                       psi14.v(ii)     = om0.v(ii)*t14.v(ii)+phi0.v(ii)
+                       s14.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi14.v(ii))
+                       rhot_s(idx+226) = s14.v(ii)
+                       c14.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi14.v(ii))
+                       rhot_c(idx+226) = c14.v(ii)
+                       t15.v(ii)       = ri*zmm16vinc15(ii)
+                       psi15.v(ii)     = om0.v(ii)*t15.v(ii)+phi0.v(ii)
+                       s15.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi15.v(ii))
+                       rhot_s(idx+240) = s15.v(ii)
+                       c15.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi15.v(ii))
+                       rhot_c(idx+240) = c15.v(ii)
+                   end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_16x_zmm16r4
 
 
 
