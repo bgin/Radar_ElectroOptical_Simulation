@@ -1334,9 +1334,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -1362,84 +1362,84 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
                     arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+32+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+40+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+40+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+48+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
                     arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+56+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+56+ii) = Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                     f8.v(ii)       = freq(i+64+ii)
-                    c8.v(ii)       = twopi.v*f8.v*hT.v
+                    c8.v(ii)       = twopi.v(ii)*f8.v(ii)*hT.v(ii)
                     sa8.v(ii)      = sin(c8.v(ii))/c8.v(ii)
-                    arg8.v(ii)     = one.v-(f8.v*hT.v*f8.v*hT.v)
+                    arg8.v(ii)     = one.v(ii)-(f8.v(ii)*hT.v(ii)*f8.v(ii)*hT.v(ii))
                     Phi0f(i+64+ii) = Phi0T.v(ii)*(sa8.v(ii)/arg8.v(ii))
                     f9.v(ii)       = freq(i+72+ii)
-                    c9.v(ii)       = twopi.v*f9.v*hT.v
+                    c9.v(ii)       = twopi.v(ii)*f9.v(ii)*hT.v(ii)
                     sa9.v(ii)      = sin(c9.v(ii))/c9.v(ii)
-                    arg9.v(ii)     = one.v-(f9.v*hT.v*f9.v*hT.v)
+                    arg9.v(ii)     = one.v(ii)-(f9.v(ii)*hT.v(ii)*f9.v(ii)*hT.v(ii))
                     Phi0f(i+72+ii) = Phi0T.v(ii)*(sa9.v(ii)/arg9.v(ii)) 
                     f10.v(ii)      = freq(i+80+ii)
-                    c10.v(ii)      = twopi.v*f10.v*hT.v
+                    c10.v(ii)      = twopi.v(ii)*f10.v(ii)*hT.v(ii)
                     sa10.v(ii)     = sin(c10.v(ii))/c10.v(ii)
-                    arg10.v(ii)    = one.v-(f10.v*hT.v*f10.v*hT.v)
+                    arg10.v(ii)    = one.v(ii)-(f10.v(ii)*hT.v(ii)*f10.v(ii)*hT.v(ii))
                     Phi0f(i+80+ii) = Phi0T.v(ii)*(sa10.v(ii)/arg10.v(ii))
                     f11.v(ii)      = freq(i+88+ii)
-                    c11.v(ii)      = twopi.v*f11.v*hT.v
+                    c11.v(ii)      = twopi.v(ii)*f11.v(ii)*hT.v(ii)
                     sa11.v(ii)     = sin(c11.v(ii))/c11.v(ii)
-                    arg11.v(ii)    = one.v-(f11.v*hT.v*f11.v*hT.v)
+                    arg11.v(ii)    = one.v(ii)-(f11.v(ii)*hT.v(ii)*f11.v(ii)*hT.v(ii))
                     Phi0f(i+88+ii) = Phi0T.v(ii)*(sa11.v(ii)/arg11.v(ii))
                     f12.v(ii)      = freq(i+96+ii)
-                    c12.v(ii)      = twopi.v*f12.v*hT.v
+                    c12.v(ii)      = twopi.v(ii)*f12.v(ii)*hT.v(ii)
                     sa12.v(ii)     = sin(c12.v(ii))/c12.v(ii)
-                    arg12.v(ii)    = one.v-(f12.v*hT.v*f12.v*hT.v)
+                    arg12.v(ii)    = one.v(ii)-(f12.v(ii)*hT.v(ii)*f12.v(ii)*hT.v(ii))
                     Phi0f(i+96+ii) = Phi0T.v(ii)*(sa12.v(ii)/arg12.v(ii))
                     f13.v(ii)      = freq(i+104+ii)
-                    c13.v(ii)      = twopi.v*f13.v*hT.v
+                    c13.v(ii)      = twopi.v(ii)*f13.v(ii)*hT.v(ii)
                     sa13.v(ii)     = sin(c13.v(ii))/c13.v(ii)
-                    arg13.v(ii)    = one.v-(f13.v*hT.v*f13.v*hT.v)
+                    arg13.v(ii)    = one.v(ii)-(f13.v(ii)*hT.v(ii)*f13.v(ii)*hT.v(ii))
                     Phi0f(i+104+ii)= Phi0T.v(ii)*(sa13.v(ii)/arg13.v(ii))
                     f14.v(ii)      = freq(i+112+ii)
-                    c14.v(ii)      = twopi.v*f14.v*hT.v
+                    c14.v(ii)      = twopi.v(ii)*f14.v(ii)*hT.v(ii)
                     sa14.v(ii)     = sin(c14.v(ii))/c14.v(ii)
-                    arg14.v(ii)    = one.v-(f14.v*hT.v*f14.v*hT.v)
+                    arg14.v(ii)    = one.v(ii)-(f14.v(ii)*hT.v(ii)*f14.v(ii)*hT.v(ii))
                     Phi0f(i+112+ii)= Phi0T.v(ii)*(sa14.v(ii)/arg14.v(ii))
                     f15.v(ii)      = freq(i+120+ii)
-                    c15.v(ii)      = twopi.v*f15.v*hT.v
+                    c15.v(ii)      = twopi.v(ii)*f15.v(ii)*hT.v(ii)
                     sa15.v(ii)     = sin(c15.v(ii))/c15.v(ii)
-                    arg15.v(ii)    = one.v-(f15.v*hT.v*f15.v*hT.v)
+                    arg15.v(ii)    = one.v(ii)-(f15.v(ii)*hT.v(ii)*f15.v(ii)*hT.v(ii))
                     Phi0f(i+120+ii)= Phi0T.v(ii)*(sa15.v(ii)/arg15.v(ii))
                   end do
                end do
@@ -1506,9 +1506,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -1534,44 +1534,44 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
                     arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+32+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+40+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+40+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+48+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
                     arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
-                    f7.v(ii)       = freq(i+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    f7.v(ii)       = freq(i+56+ii)
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+56+ii) = Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
               
                   end do
@@ -1640,9 +1640,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -1668,24 +1668,24 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
                     arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                                
                   end do
@@ -1709,9 +1709,9 @@ module eos_sensor_simd
            !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_16x_ymm4r8
            !dir$ attributes forceinline ::   const_flux_spectr_unroll_16x_ymm4r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_16x_ymm4r8
-           real(kind=sp), dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp), dimension(1:n), intent(out) :: Phi0f
            type(YMM4r8_t),                intent(in)  :: Phi0   !vector enhanced i.e. broadcast
-           real(kind=sp), dimension(1:n), intent(in)  :: freq
+           real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
            type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
@@ -1761,9 +1761,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -1789,49 +1789,49 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+4+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+4+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+8+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+12+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+12+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+16+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+20+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+20+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+24+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
                     arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+28+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+28+ii) = Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                     f8.v(ii)       = freq(i+32+ii)
-                    c8.v(ii)       = twopi.v*f8.v*hT.v
+                    c8.v(ii)       = twopi.v(ii)*f8.v(ii)*hT.v(ii)
                     sa8.v(ii)      = sin(c8.v(ii))/c8.v(ii)
-                    arg8.v(ii)     = one.v-(f8.v*hT.v*f8.v*hT.v)
+                    arg8.v(ii)     = one.v(ii)-(f8.v(ii)*hT.v(ii)*f8.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa8.v(ii)/arg8.v(ii))
                     f9.v(ii)       = freq(i+36+ii)
                     c9.v(ii)       = twopi.v*f9.v*hT.v
@@ -1839,35 +1839,35 @@ module eos_sensor_simd
                     arg9.v(ii)     = one.v-(f9.v*hT.v*f9.v*hT.v)
                     Phi0f(i+36+ii) = Phi0T.v(ii)*(sa9.v(ii)/arg9.v(ii)) 
                     f10.v(ii)      = freq(i+40+ii)
-                    c10.v(ii)      = twopi.v*f10.v*hT.v
+                    c10.v(ii)      = twopi.v(ii)*f10.v(ii)*hT.v(ii)
                     sa10.v(ii)     = sin(c10.v(ii))/c10.v(ii)
-                    arg10.v(ii)    = one.v-(f10.v*hT.v*f10.v*hT.v)
+                    arg10.v(ii)    = one.v(ii)-(f10.v(ii)*hT.v(ii)*f10.v(ii)*hT.v(ii))
                     Phi0f(i+40+ii) = Phi0T.v(ii)*(sa10.v(ii)/arg10.v(ii))
                     f11.v(ii)      = freq(i+44+ii)
-                    c11.v(ii)      = twopi.v*f11.v*hT.v
+                    c11.v(ii)      = twopi.v(ii)*f11.v(ii)*hT.v(ii)
                     sa11.v(ii)     = sin(c11.v(ii))/c11.v(ii)
-                    arg11.v(ii)    = one.v-(f11.v*hT.v*f11.v*hT.v)
+                    arg11.v(ii)    = one.v(ii)-(f11.v(ii)*hT.v(ii)*f11.v(ii)*hT.v(ii))
                     Phi0f(i+44+ii) = Phi0T.v(ii)*(sa11.v(ii)/arg11.v(ii))
                     f12.v(ii)      = freq(i+48+ii)
-                    c12.v(ii)      = twopi.v*f12.v*hT.v
+                    c12.v(ii)      = twopi.v(ii)*f12.v(ii)*hT.v(ii)
                     sa12.v(ii)     = sin(c12.v(ii))/c12.v(ii)
-                    arg12.v(ii)    = one.v-(f12.v*hT.v*f12.v*hT.v)
+                    arg12.v(ii)    = one.v(ii)-(f12.v(ii)*hT.v(ii)*f12.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa12.v(ii)/arg12.v(ii))
                     f13.v(ii)      = freq(i+52+ii)
-                    c13.v(ii)      = twopi.v*f13.v*hT.v
+                    c13.v(ii)      = twopi.v(ii)*f13.v(ii)*hT.v(ii)
                     sa13.v(ii)     = sin(c13.v(ii))/c13.v(ii)
-                    arg13.v(ii)    = one.v-(f13.v*hT.v*f13.v*hT.v)
-                    Phi0f(i+52+ii)= Phi0T.v(ii)*(sa13.v(ii)/arg13.v(ii))
+                    arg13.v(ii)    = one.v(ii)-(f13.v(ii)*hT.v(ii)*f13.v(ii)*hT.v(ii))
+                    Phi0f(i+52+ii) = Phi0T.v(ii)*(sa13.v(ii)/arg13.v(ii))
                     f14.v(ii)      = freq(i+56+ii)
-                    c14.v(ii)      = twopi.v*f14.v*hT.v
+                    c14.v(ii)      = twopi.v(ii)*f14.v(ii)*hT.v(ii)
                     sa14.v(ii)     = sin(c14.v(ii))/c14.v(ii)
-                    arg14.v(ii)    = one.v-(f14.v*hT.v*f14.v*hT.v)
+                    arg14.v(ii)    = one.v(ii)-(f14.v(ii)*hT.v(ii)*f14.v(ii)*hT.v(ii))
                     Phi0f(i+56+ii)= Phi0T.v(ii)*(sa14.v(ii)/arg14.v(ii))
                     f15.v(ii)      = freq(i+60+ii)
-                    c15.v(ii)      = twopi.v*f15.v*hT.v
+                    c15.v(ii)      = twopi.v(ii)*f15.v(ii)*hT.v(ii)
                     sa15.v(ii)     = sin(c15.v(ii))/c15.v(ii)
-                    arg15.v(ii)    = one.v-(f15.v*hT.v*f15.v*hT.v)
-                    Phi0f(i+60+ii)= Phi0T.v(ii)*(sa15.v(ii)/arg15.v(ii))
+                    arg15.v(ii)    = one.v(ii)-(f15.v(ii)*hT.v(ii)*f15.v(ii)*hT.v(ii))
+                    Phi0f(i+60+ii) = Phi0T.v(ii)*(sa15.v(ii)/arg15.v(ii))
                   end do
                end do
               ! Remainder loop
@@ -1881,7 +1881,7 @@ module eos_sensor_simd
               end do
               return
             end if
-       end subroutine const_flux_spectr_unroll_16x_ymm8r4
+       end subroutine const_flux_spectr_unroll_16x_ymm4r8
 
 
       subroutine const_flux_spectr_unroll_8x_ymm4r8(Phi0f,Phi0,freq,n,T)
@@ -1889,9 +1889,9 @@ module eos_sensor_simd
            !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_8x_ymm4r8
            !dir$ attributes forceinline ::   const_flux_spectr_unroll_8x_ymm4r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_8x_ymm4r8
-           real(kind=sp), dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp), dimension(1:n), intent(out) :: Phi0f
            type(YMM4r8_t),                intent(in)  :: Phi0   !vector enhanced i.e. broadcast
-           real(kind=sp), dimension(1:n), intent(in)  :: freq
+           real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
            type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
@@ -1933,9 +1933,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -1961,46 +1961,45 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+4+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+4+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+8+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+12+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+12+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+16+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+20+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+20+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+24+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
                     arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+28+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+28+ii) = Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
-                   
                   end do
                end do
               ! Remainder loop
@@ -2014,7 +2013,7 @@ module eos_sensor_simd
               end do
               return
             end if
-       end subroutine const_flux_spectr_unroll_8x_ymm8r4
+       end subroutine const_flux_spectr_unroll_8x_ymm4r8
 
 
        
@@ -2023,9 +2022,9 @@ module eos_sensor_simd
            !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_4x_ymm4r8
            !dir$ attributes forceinline ::   const_flux_spectr_unroll_4x_ymm4r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_4x_ymm4r8
-           real(kind=sp), dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp), dimension(1:n), intent(out) :: Phi0f
            type(YMM4r8_t),                intent(in)  :: Phi0   !vector enhanced i.e. broadcast
-           real(kind=sp), dimension(1:n), intent(in)  :: freq
+           real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
            type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
@@ -2067,9 +2066,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2095,24 +2094,24 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,3
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+4+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+4+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+8+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+8+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+12+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+12+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                   end do
                end do
@@ -2187,9 +2186,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,15
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2215,84 +2214,84 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,15
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+16+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+32+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+48+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+64+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+64+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+80+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+80+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+96+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
-                    arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
+                    arg6.v(ii)     = one.v(ii)-(f6.v(ii)*hT.v(ii)*f6.v(ii)*hT.v(ii))
                     Phi0f(i+96+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+112+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+112+ii)= Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                     f8.v(ii)       = freq(i+128+ii)
-                    c8.v(ii)       = twopi.v*f8.v*hT.v
+                    c8.v(ii)       = twopi.v(ii)*f8.v(ii)*hT.v(ii)
                     sa8.v(ii)      = sin(c8.v(ii))/c8.v(ii)
-                    arg8.v(ii)     = one.v-(f8.v*hT.v*f8.v*hT.v)
+                    arg8.v(ii)     = one.v(ii)-(f8.v(ii)*hT.v(ii)*f8.v(ii)*hT.v(ii))
                     Phi0f(i+128+ii)= Phi0T.v(ii)*(sa8.v(ii)/arg8.v(ii))
                     f9.v(ii)       = freq(i+144+ii)
-                    c9.v(ii)       = twopi.v*f9.v*hT.v
+                    c9.v(ii)       = twopi.v(ii)*f9.v(ii)*hT.v(ii)
                     sa9.v(ii)      = sin(c9.v(ii))/c9.v(ii)
-                    arg9.v(ii)     = one.v-(f9.v*hT.v*f9.v*hT.v)
+                    arg9.v(ii)     = one.v(ii)-(f9.v(ii)*hT.v(ii)*f9.v(ii)*hT.v(ii))
                     Phi0f(i+144+ii)= Phi0T.v(ii)*(sa9.v(ii)/arg9.v(ii)) 
                     f10.v(ii)      = freq(i+160+ii)
-                    c10.v(ii)      = twopi.v*f10.v*hT.v
+                    c10.v(ii)      = twopi.v(ii)*f10.v(ii)*hT.v(ii)
                     sa10.v(ii)     = sin(c10.v(ii))/c10.v(ii)
-                    arg10.v(ii)    = one.v-(f10.v*hT.v*f10.v*hT.v)
+                    arg10.v(ii)    = one.v(ii)-(f10.v(ii)*hT.v(ii)*f10.v(ii)*hT.v(ii))
                     Phi0f(i+160+ii)= Phi0T.v(ii)*(sa10.v(ii)/arg10.v(ii))
                     f11.v(ii)      = freq(i+176+ii)
                     c11.v(ii)      = twopi.v*f11.v*hT.v
                     sa11.v(ii)     = sin(c11.v(ii))/c11.v(ii)
-                    arg11.v(ii)    = one.v-(f11.v*hT.v*f11.v*hT.v)
+                    arg11.v(ii)    = one.v(ii)-(f11.v(ii)*hT.v(ii)*f11.v(ii)*hT.v(ii))
                     Phi0f(i+176+ii)= Phi0T.v(ii)*(sa11.v(ii)/arg11.v(ii))
                     f12.v(ii)      = freq(i+192+ii)
-                    c12.v(ii)      = twopi.v*f12.v*hT.v
+                    c12.v(ii)      = twopi.v(ii)*f12.v(ii)*hT.v(ii)
                     sa12.v(ii)     = sin(c12.v(ii))/c12.v(ii)
-                    arg12.v(ii)    = one.v-(f12.v*hT.v*f12.v*hT.v)
+                    arg12.v(ii)    = one.v(ii)-(f12.v(ii)*hT.v(ii)*f12.v(ii)*hT.v(ii))
                     Phi0f(i+192+ii) = Phi0T.v(ii)*(sa12.v(ii)/arg12.v(ii))
                     f13.v(ii)      = freq(i+208+ii)
-                    c13.v(ii)      = twopi.v*f13.v*hT.v
+                    c13.v(ii)      = twopi.v(ii)*f13.v(ii)*hT.v(ii)
                     sa13.v(ii)     = sin(c13.v(ii))/c13.v(ii)
-                    arg13.v(ii)    = one.v-(f13.v*hT.v*f13.v*hT.v)
+                    arg13.v(ii)    = one.v(ii)-(f13.v(ii)*hT.v(ii)*f13.v(ii)*hT.v(ii))
                     Phi0f(i+208+ii)= Phi0T.v(ii)*(sa13.v(ii)/arg13.v(ii))
                     f14.v(ii)      = freq(i+224+ii)
-                    c14.v(ii)      = twopi.v*f14.v*hT.v
+                    c14.v(ii)      = twopi.v(ii)*f14.v(ii)*hT.v(ii)
                     sa14.v(ii)     = sin(c14.v(ii))/c14.v(ii)
-                    arg14.v(ii)    = one.v-(f14.v*hT.v*f14.v*hT.v)
+                    arg14.v(ii)    = one.v(ii)-(f14.v(ii)*hT.v(ii)*f14.v(ii)*hT.v(ii))
                     Phi0f(i+224+ii)= Phi0T.v(ii)*(sa14.v(ii)/arg14.v(ii))
                     f15.v(ii)      = freq(i+240+ii)
-                    c15.v(ii)      = twopi.v*f15.v*hT.v
+                    c15.v(ii)      = twopi.v(ii)*f15.v(ii)*hT.v(ii)
                     sa15.v(ii)     = sin(c15.v(ii))/c15.v(ii)
-                    arg15.v(ii)    = one.v-(f15.v*hT.v*f15.v*hT.v)
+                    arg15.v(ii)    = one.v(ii)-(f15.v(ii)*hT.v(ii)*f15.v(ii)*hT.v(ii))
                     Phi0f(i+240+ii)= Phi0T.v(ii)*(sa15.v(ii)/arg15.v(ii))
                   end do
                end do
@@ -2361,7 +2360,7 @@ module eos_sensor_simd
                     f0.v(ii)   = freq(i+ii)
                     c0.v(ii)   = twopi.v*f0.v*hT.v
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2387,44 +2386,44 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,15
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+16+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+32+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+48+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+64+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+64+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+80+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+80+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+96+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
-                    arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
+                    arg6.v(ii)     = one.v(ii)-(f6.v(ii)*hT.v(ii)*f6.v(ii)*hT.v(ii))
                     Phi0f(i+96+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+112+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+112+ii)= Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                   end do
                end do
@@ -2491,9 +2490,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,15
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2519,24 +2518,24 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,15
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+16+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
+                    arg1.v(ii)     = one.v(ii)-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+32+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+48+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                   end do
                end do
@@ -2611,9 +2610,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2639,84 +2638,84 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
-                    Phi0f(i+8+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
+                    arg1.v(ii)     = one.v-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
+                    Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+32+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+40+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+40+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+48+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
-                    arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
+                    arg6.v(ii)     = one.v(ii)-(f6.v(ii)*hT.v(ii)*f6.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+56+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+56+ii)= Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                     f8.v(ii)       = freq(i+64+ii)
-                    c8.v(ii)       = twopi.v*f8.v*hT.v
+                    c8.v(ii)       = twopi.v(ii)*f8.v(ii)*hT.v(ii)
                     sa8.v(ii)      = sin(c8.v(ii))/c8.v(ii)
-                    arg8.v(ii)     = one.v-(f8.v*hT.v*f8.v*hT.v)
+                    arg8.v(ii)     = one.v(ii)-(f8.v(ii)*hT.v(ii)*f8.v(ii)*hT.v(ii))
                     Phi0f(i+64+ii)= Phi0T.v(ii)*(sa8.v(ii)/arg8.v(ii))
                     f9.v(ii)       = freq(i+72+ii)
-                    c9.v(ii)       = twopi.v*f9.v*hT.v
+                    c9.v(ii)       = twopi.v(ii)*f9.v(ii)*hT.v(ii)
                     sa9.v(ii)      = sin(c9.v(ii))/c9.v(ii)
-                    arg9.v(ii)     = one.v-(f9.v*hT.v*f9.v*hT.v)
+                    arg9.v(ii)     = one.v(ii)-(f9.v(ii)*hT.v(ii)*f9.v(ii)*hT.v(ii))
                     Phi0f(i+72+ii)= Phi0T.v(ii)*(sa9.v(ii)/arg9.v(ii)) 
                     f10.v(ii)      = freq(i+80+ii)
-                    c10.v(ii)      = twopi.v*f10.v*hT.v
+                    c10.v(ii)      = twopi.v(ii)*f10.v(ii)*hT.v(ii)
                     sa10.v(ii)     = sin(c10.v(ii))/c10.v(ii)
-                    arg10.v(ii)    = one.v-(f10.v*hT.v*f10.v*hT.v)
+                    arg10.v(ii)    = one.v(ii)-(f10.v(ii)*hT.v(ii)*f10.v(ii)*hT.v(ii))
                     Phi0f(i+80+ii)= Phi0T.v(ii)*(sa10.v(ii)/arg10.v(ii))
                     f11.v(ii)      = freq(i+88+ii)
-                    c11.v(ii)      = twopi.v*f11.v*hT.v
+                    c11.v(ii)      = twopi.v(ii)*f11.v(ii)*hT.v(ii)
                     sa11.v(ii)     = sin(c11.v(ii))/c11.v(ii)
-                    arg11.v(ii)    = one.v-(f11.v*hT.v*f11.v*hT.v)
+                    arg11.v(ii)    = one.v(ii)-(f11.v(ii)*hT.v(ii)*f11.v(ii)*hT.v(ii))
                     Phi0f(i+88+ii)= Phi0T.v(ii)*(sa11.v(ii)/arg11.v(ii))
                     f12.v(ii)      = freq(i+96+ii)
-                    c12.v(ii)      = twopi.v*f12.v*hT.v
+                    c12.v(ii)      = twopi.v(ii)*f12.v(ii)*hT.v(ii)
                     sa12.v(ii)     = sin(c12.v(ii))/c12.v(ii)
-                    arg12.v(ii)    = one.v-(f12.v*hT.v*f12.v*hT.v)
+                    arg12.v(ii)    = one.v(ii)-(f12.v(ii)*hT.v(ii)*f12.v(ii)*hT.v(ii))
                     Phi0f(i+96+ii) = Phi0T.v(ii)*(sa12.v(ii)/arg12.v(ii))
                     f13.v(ii)      = freq(i+104+ii)
-                    c13.v(ii)      = twopi.v*f13.v*hT.v
+                    c13.v(ii)      = twopi.v(ii)*f13.v(ii)*hT.v(ii)
                     sa13.v(ii)     = sin(c13.v(ii))/c13.v(ii)
-                    arg13.v(ii)    = one.v-(f13.v*hT.v*f13.v*hT.v)
+                    arg13.v(ii)    = one.v(ii)-(f13.v(ii)*hT.v(ii)*f13.v(ii)*hT.v(ii))
                     Phi0f(i+104+ii)= Phi0T.v(ii)*(sa13.v(ii)/arg13.v(ii))
                     f14.v(ii)      = freq(i+112+ii)
                     c14.v(ii)      = twopi.v*f14.v*hT.v
                     sa14.v(ii)     = sin(c14.v(ii))/c14.v(ii)
-                    arg14.v(ii)    = one.v-(f14.v*hT.v*f14.v*hT.v)
+                    arg14.v(ii)    = one.v(ii)-(f14.v(ii)*hT.v(ii)*f14.v(ii)*hT.v(ii))
                     Phi0f(i+112+ii)= Phi0T.v(ii)*(sa14.v(ii)/arg14.v(ii))
                     f15.v(ii)      = freq(i+120+ii)
-                    c15.v(ii)      = twopi.v*f15.v*hT.v
+                    c15.v(ii)      = twopi.v(ii)*f15.v(ii)*hT.v(ii)
                     sa15.v(ii)     = sin(c15.v(ii))/c15.v(ii)
-                    arg15.v(ii)    = one.v-(f15.v*hT.v*f15.v*hT.v)
+                    arg15.v(ii)    = one.v(ii)-(f15.v(ii)*hT.v(ii)*f15.v(ii)*hT.v(ii))
                     Phi0f(i+120+ii)= Phi0T.v(ii)*(sa15.v(ii)/arg15.v(ii))
                   end do
                end do
@@ -2783,9 +2782,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2811,44 +2810,44 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
-                    Phi0f(i+8+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
+                    arg1.v(ii)     = one.v-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
+                    Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                     f4.v(ii)       = freq(i+32+ii)
-                    c4.v(ii)       = twopi.v*f4.v*hT.v
+                    c4.v(ii)       = twopi.v(ii)*f4.v(ii)*hT.v(ii)
                     sa4.v(ii)      = sin(c4.v(ii))/c4.v(ii)
-                    arg4.v(ii)     = one.v-(f4.v*hT.v*f4.v*hT.v)
+                    arg4.v(ii)     = one.v(ii)-(f4.v(ii)*hT.v(ii)*f4.v(ii)*hT.v(ii))
                     Phi0f(i+32+ii) = Phi0T.v(ii)*(sa4.v(ii)/arg4.v(ii))
                     f5.v(ii)       = freq(i+40+ii)
-                    c5.v(ii)       = twopi.v*f5.v*hT.v
+                    c5.v(ii)       = twopi.v(ii)*f5.v(ii)*hT.v(ii)
                     sa5.v(ii)      = sin(c5.v(ii))/c5.v(ii)
-                    arg5.v(ii)     = one.v-(f5.v*hT.v*f5.v*hT.v)
+                    arg5.v(ii)     = one.v(ii)-(f5.v(ii)*hT.v(ii)*f5.v(ii)*hT.v(ii))
                     Phi0f(i+40+ii) = Phi0T.v(ii)*(sa5.v(ii)/arg5.v(ii))
                     f6.v(ii)       = freq(i+48+ii)
-                    c6.v(ii)       = twopi.v*f6.v*hT.v
+                    c6.v(ii)       = twopi.v(ii)*f6.v(ii)*hT.v(ii)
                     sa6.v(ii)      = sin(c6.v(ii))/c6.v(ii)
-                    arg6.v(ii)     = one.v-(f6.v*hT.v*f6.v*hT.v)
+                    arg6.v(ii)     = one.v(ii)-(f6.v(ii)*hT.v(ii)*f6.v(ii)*hT.v(ii))
                     Phi0f(i+48+ii) = Phi0T.v(ii)*(sa6.v(ii)/arg6.v(ii))
                     f7.v(ii)       = freq(i+56+ii)
-                    c7.v(ii)       = twopi.v*f7.v*hT.v
+                    c7.v(ii)       = twopi.v(ii)*f7.v(ii)*hT.v(ii)
                     sa7.v(ii)      = sin(c7.v(ii))/c7.v(ii)
-                    arg7.v(ii)     = one.v-(f7.v*hT.v*f7.v*hT.v)
+                    arg7.v(ii)     = one.v(ii)-(f7.v(ii)*hT.v(ii)*f7.v(ii)*hT.v(ii))
                     Phi0f(i+56+ii)= Phi0T.v(ii)*(sa7.v(ii)/arg7.v(ii))
                   end do
                end do
@@ -2915,9 +2914,9 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)   = freq(i+ii)
-                    c0.v(ii)   = twopi.v*f0.v*hT.v
+                    c0.v(ii)   = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)  = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii) = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii) = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)= Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                  end do
               end do
@@ -2943,24 +2942,24 @@ module eos_sensor_simd
                  !dir$ vector always
                  do ii=0,7
                     f0.v(ii)       = freq(i+ii)
-                    c0.v(ii)       = twopi.v*f0.v*hT.v
+                    c0.v(ii)       = twopi.v(ii)*f0.v(ii)*hT.v(ii)
                     sa0.v(ii)      = sin(c0.v(ii))/c0.v(ii)
-                    arg0.v(ii)     = one.v-(f0.v*hT.v*f0.v*hT.v)
+                    arg0.v(ii)     = one.v(ii)-(f0.v(ii)*hT.v(ii)*f0.v(ii)*hT.v(ii))
                     Phi0f(i+ii)    = Phi0T.v(ii)*(sa0.v(ii)/arg0.v(ii))
                     f1.v(ii)       = freq(i+8+ii)
-                    c1.v(ii)       = twopi.v*f1.v*hT.v
+                    c1.v(ii)       = twopi.v(ii)*f1.v(ii)*hT.v(ii)
                     sa1.v(ii)      = sin(c1.v(ii))/c1.v(ii)
-                    arg1.v(ii)     = one.v-(f1.v*hT.v*f1.v*hT.v)
-                    Phi0f(i+8+ii) = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
+                    arg1.v(ii)     = one.v-(f1.v(ii)*hT.v(ii)*f1.v(ii)*hT.v(ii))
+                    Phi0f(i+8+ii)  = Phi0T.v(ii)*(sa1.v(ii)/arg1.v(ii))
                     f2.v(ii)       = freq(i+16+ii)
-                    c2.v(ii)       = twopi.v*f2.v*hT.v
+                    c2.v(ii)       = twopi.v(ii)*f2.v(ii)*hT.v(ii)
                     sa2.v(ii)      = sin(c2.v(ii))/c2.v(ii)
-                    arg2.v(ii)     = one.v-(f2.v*hT.v*f2.v*hT.v)
+                    arg2.v(ii)     = one.v(ii)-(f2.v(ii)*hT.v(ii)*f2.v(ii)*hT.v(ii))
                     Phi0f(i+16+ii) = Phi0T.v(ii)*(sa2.v(ii)/arg2.v(ii))
                     f3.v(ii)       = freq(i+24+ii)
-                    c3.v(ii)       = twopi.v*f3.v*hT.v
+                    c3.v(ii)       = twopi.v(ii)*f3.v(ii)*hT.v(ii)
                     sa3.v(ii)      = sin(c3.v(ii))/c3.v(ii)
-                    arg3.v(ii)     = one.v-(f3.v*hT.v*f3.v*hT.v)
+                    arg3.v(ii)     = one.v(ii)-(f3.v(ii)*hT.v(ii)*f3.v(ii)*hT.v(ii))
                     Phi0f(i+24+ii) = Phi0T.v(ii)*(sa3.v(ii)/arg3.v(ii))
                   end do
                end do
