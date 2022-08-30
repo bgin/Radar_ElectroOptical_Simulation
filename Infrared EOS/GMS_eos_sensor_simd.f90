@@ -3170,6 +3170,1614 @@ module eos_sensor_simd
        end subroutine ideal_modulator_unroll_16x_zmm16r4
 
 
+       subroutine ideal_modulator_unroll_8x_zmm16r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_8x_zmm16r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_8x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_8x_zmm16r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM16r4_t),               intent(in)  :: f0
+           type(ZMM16r4_t),               intent(in)  :: phi0
+           type(ZMM16r4_t),               intent(in)  :: rho0
+           type(ZMM16r4_t),               intent(in)  :: rho1
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(ZMM16r4_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(ZMM16r4_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(ZMM16r4_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(ZMM16r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<16) then
+              return
+           else if(n==16) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>16 .and. n<=128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),16
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,15
+                     t0.v(ii)     = zmm16vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),128
+	           ri              = real(i,kind=sp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,15
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+zmm16vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+zmm16vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+16)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+16)  = c1.v(ii)
+                       t2.v(ii)        = ri+zmm16vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+32)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+32)  = c2.v(ii)
+                       t3.v(ii)        = ri+zmm16vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+48)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+48)  = c3.v(ii)
+                       t4.v(ii)        = ri+zmm16vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+64)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+64)  = c4.v(ii)
+                       t5.v(ii)        = ri+zmm16vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+80)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+80)  = c5.v(ii)
+                       t6.v(ii)        = ri+zmm16vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+96)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+96)  = c6.v(ii)
+                       t7.v(ii)        = ri+zmm16vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+112) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+112) = c7.v(ii) 
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_8x_zmm16r4
+
+
+       subroutine ideal_modulator_unroll_4x_zmm16r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_4x_zmm16r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_4x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_4x_zmm16r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM16r4_t),               intent(in)  :: f0
+           type(ZMM16r4_t),               intent(in)  :: phi0
+           type(ZMM16r4_t),               intent(in)  :: rho0
+           type(ZMM16r4_t),               intent(in)  :: rho1
+           type(ZMM16r4_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_sp)
+           type(ZMM16r4_t) :: t0,t1,t2,t3
+           type(ZMM16r4_t) :: s0,s1,s2,s3
+           type(ZMM16r4_t) :: c0,c1,c2,c3
+           type(ZMM16r4_t) :: psi0,psi1,psi2,psi3
+           type(ZMM16r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<16) then
+              return
+           else if(n==16) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>16 .and. n<=64) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),16
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,15
+                     t0.v(ii)     = zmm16vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>64) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(15)),64
+	           ri              = real(i,kind=sp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,15
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+zmm16vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+zmm16vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+16)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+16)  = c1.v(ii)
+                       t2.v(ii)        = ri+zmm16vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+32)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+32)  = c2.v(ii)
+                       t3.v(ii)        = ri+zmm16vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+48)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+48)  = c3.v(ii)
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=16,min=1,avg=8
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_4x_zmm16r4
+
+
+       subroutine ideal_modulator_unroll_16x_zmm8r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_zmm8r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_16x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_16x_zmm8r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM8r8_t),               intent(in)  :: f0
+           type(ZMM8r8_t),               intent(in)  :: phi0
+           type(ZMM8r8_t),               intent(in)  :: rho0
+           type(ZMM8r8_t),               intent(in)  :: rho1
+           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(ZMM8r8_t) :: t8,t9,t10,t11,t12,t13,t14,t15
+           type(ZMM8r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(ZMM8r8_t) :: s8,s9,s10,s11,s12,s13,s14,s15
+           type(ZMM8r8_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(ZMM8r8_t) :: c8,c9,c10,c11,c12,c13,c14,c15
+           type(ZMM8r8_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(ZMM8r8_t) :: psi8,psi9,psi10,psi11,psi12,psi13,psi14,psi15
+           type(ZMM8r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = zmm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),128
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+zmm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+zmm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+zmm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+zmm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                       t4.v(ii)        = ri+zmm8vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+32)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+32)  = c4.v(ii)
+                       t5.v(ii)        = ri+zmm8vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+40)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+40)  = c5.v(ii)
+                       t6.v(ii)        = ri+zmm8vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+48)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+48)  = c6.v(ii)
+                       t7.v(ii)        = ri+zmm8vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+56) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+56) = c7.v(ii) 
+                       t8.v(ii)        = ri+zmm8vinc8(ii)
+                       psi8.v(ii)      = om0.v(ii)*t8.v(ii)+phi0.v(ii)
+                       s8.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi8.v(ii))
+                       rhot_s(idx+64) = s8.v(ii)
+                       c8.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi8.v(ii))
+                       rhot_c(idx+64) = c8.v(ii)
+                       t9.v(ii)        = ri+zmm8vinc9(ii)
+                       psi9.v(ii)      = om0.v(ii)*t9.v(ii)+phi0.v(ii)
+                       s9.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi9.v(ii))
+                       rhot_s(idx+72) = s9.v(ii)
+                       c9.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi9.v(ii))
+                       rhot_c(idx+72) = c9.v(ii)
+                       t10.v(ii)       = ri+zmm8vinc10(ii)
+                       psi10.v(ii)     = om0.v(ii)*t10.v(ii)+phi0.v(ii)
+                       s10.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi10.v(ii))
+                       rhot_s(idx+80) = s10.v(ii)
+                       c10.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi10.v(ii))
+                       rhot_c(idx+80) = c10.v(ii)
+                       t11.v(ii)       = ri+zmm8vinc11(ii)
+                       psi11.v(ii)     = om0.v(ii)*t11.v(ii)+phi0.v(ii)
+                       s11.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi11.v(ii))
+                       rhot_s(idx+88) = s11.v(ii)
+                       c11.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi11.v(ii))
+                       rhot_c(idx+88) = c11.v(ii)
+                       t12.v(ii)       = ri+zmm8vinc12(ii)
+                       psi12.v(ii)     = om0.v(ii)*t12.v(ii)+phi0.v(ii)
+                       s12.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi12.v(ii))
+                       rhot_s(idx+96) = s12.v(ii)
+                       c12.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi12.v(ii))
+                       rhot_c(idx+96) = c12.v(ii)
+                       t13.v(ii)       = ri+zmm8vinc13(ii)
+                       psi13.v(ii)     = om0.v(ii)*t13.v(ii)+phi0.v(ii)
+                       s13.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi13.v(ii))
+                       rhot_s(idx+104) = s13.v(ii)
+                       c13.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi13.v(ii))
+                       rhot_c(idx+104) = c13.v(ii)
+                       t14.v(ii)       = ri+zmm8vinc14(ii)
+                       psi14.v(ii)     = om0.v(ii)*t14.v(ii)+phi0.v(ii)
+                       s14.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi14.v(ii))
+                       rhot_s(idx+112) = s14.v(ii)
+                       c14.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi14.v(ii))
+                       rhot_c(idx+112) = c14.v(ii)
+                       t15.v(ii)       = ri+zmm8vinc15(ii)
+                       psi15.v(ii)     = om0.v(ii)*t15.v(ii)+phi0.v(ii)
+                       s15.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi15.v(ii))
+                       rhot_s(idx+120) = s15.v(ii)
+                       c15.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi15.v(ii))
+                       rhot_c(idx+120) = c15.v(ii)
+                   end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_16x_zmm8r8
+
+
+       subroutine ideal_modulator_unroll_8x_zmm8r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_8x_zmm8r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_8x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_8x_zmm8r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM8r8_t),               intent(in)  :: f0
+           type(ZMM8r8_t),               intent(in)  :: phi0
+           type(ZMM8r8_t),               intent(in)  :: rho0
+           type(ZMM8r8_t),               intent(in)  :: rho1
+           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(ZMM8r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(ZMM8r8_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(ZMM8r8_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(ZMM8r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=64) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = zmm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),64
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+zmm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+zmm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+zmm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+zmm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                       t4.v(ii)        = ri+zmm8vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+32)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+32)  = c4.v(ii)
+                       t5.v(ii)        = ri+zmm8vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+40)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+40)  = c5.v(ii)
+                       t6.v(ii)        = ri+zmm8vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+48)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+48)  = c6.v(ii)
+                       t7.v(ii)        = ri+zmm8vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+56) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+56) = c7.v(ii) 
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_8x_zmm8r8
+
+
+       subroutine ideal_modulator_unroll_4x_zmm8r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_4x_zmm8r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_4x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_4x_zmm8r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM8r8_t),               intent(in)  :: f0
+           type(ZMM8r8_t),               intent(in)  :: phi0
+           type(ZMM8r8_t),               intent(in)  :: rho0
+           type(ZMM8r8_t),               intent(in)  :: rho1
+           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t) :: t0,t1,t2,t3
+           type(ZMM8r8_t) :: s0,s1,s2,s3
+           type(ZMM8r8_t) :: c0,c1,c2,c3
+           type(ZMM8r8_t) :: psi0,psi1,psi2,psi3
+           type(ZMM8r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=64) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = zmm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>128) then
+              !dir$ assume_aligned rhot_s:64           
+              !dir$ assume_aligned rhot_c:64
+              do i=1,iand(n,not(7)),32
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+zmm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+zmm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+zmm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+zmm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_4x_zmm8r8
+
+
+  
+       subroutine ideal_modulator_unroll_16x_ymm8r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_ymm8r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_16x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_16x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: f0
+           type(YMM8r4_t),                intent(in)  :: phi0
+           type(YMM8r4_t),                intent(in)  :: rho0
+           type(YMM8r4_t),                intent(in)  :: rho1
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(YMM8r4_t) :: t8,t9,t10,t11,t12,t13,t14,t15
+           type(YMM8r4_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(YMM8r4_t) :: s8,s9,s10,s11,s12,s13,s14,s15
+           type(YMM8r4_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(YMM8r4_t) :: c8,c9,c10,c11,c12,c13,c14,c15
+           type(YMM8r4_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(YMM8r4_t) :: psi8,psi9,psi10,psi11,psi12,psi13,psi14,psi15
+           type(YMM8r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=128) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = ymm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>128) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),128
+	           ri              = real(i,kind=sp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                       t4.v(ii)        = ri+ymm8vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+32)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+32)  = c4.v(ii)
+                       t5.v(ii)        = ri+ymm8vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+40)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+40)  = c5.v(ii)
+                       t6.v(ii)        = ri+ymm8vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+48)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+48)  = c6.v(ii)
+                       t7.v(ii)        = ri+ymm8vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+56) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+56) = c7.v(ii) 
+                       t8.v(ii)        = ri+ymm8vinc8(ii)
+                       psi8.v(ii)      = om0.v(ii)*t8.v(ii)+phi0.v(ii)
+                       s8.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi8.v(ii))
+                       rhot_s(idx+64) = s8.v(ii)
+                       c8.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi8.v(ii))
+                       rhot_c(idx+64) = c8.v(ii)
+                       t9.v(ii)        = ri+ymm8vinc9(ii)
+                       psi9.v(ii)      = om0.v(ii)*t9.v(ii)+phi0.v(ii)
+                       s9.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi9.v(ii))
+                       rhot_s(idx+72) = s9.v(ii)
+                       c9.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi9.v(ii))
+                       rhot_c(idx+72) = c9.v(ii)
+                       t10.v(ii)       = ri+ymm8vinc10(ii)
+                       psi10.v(ii)     = om0.v(ii)*t10.v(ii)+phi0.v(ii)
+                       s10.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi10.v(ii))
+                       rhot_s(idx+80) = s10.v(ii)
+                       c10.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi10.v(ii))
+                       rhot_c(idx+80) = c10.v(ii)
+                       t11.v(ii)       = ri+ymm8vinc11(ii)
+                       psi11.v(ii)     = om0.v(ii)*t11.v(ii)+phi0.v(ii)
+                       s11.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi11.v(ii))
+                       rhot_s(idx+88) = s11.v(ii)
+                       c11.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi11.v(ii))
+                       rhot_c(idx+88) = c11.v(ii)
+                       t12.v(ii)       = ri+ymm8vinc12(ii)
+                       psi12.v(ii)     = om0.v(ii)*t12.v(ii)+phi0.v(ii)
+                       s12.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi12.v(ii))
+                       rhot_s(idx+96) = s12.v(ii)
+                       c12.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi12.v(ii))
+                       rhot_c(idx+96) = c12.v(ii)
+                       t13.v(ii)       = ri+ymm8vinc13(ii)
+                       psi13.v(ii)     = om0.v(ii)*t13.v(ii)+phi0.v(ii)
+                       s13.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi13.v(ii))
+                       rhot_s(idx+104) = s13.v(ii)
+                       c13.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi13.v(ii))
+                       rhot_c(idx+104) = c13.v(ii)
+                       t14.v(ii)       = ri+ymm8vinc14(ii)
+                       psi14.v(ii)     = om0.v(ii)*t14.v(ii)+phi0.v(ii)
+                       s14.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi14.v(ii))
+                       rhot_s(idx+112) = s14.v(ii)
+                       c14.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi14.v(ii))
+                       rhot_c(idx+112) = c14.v(ii)
+                       t15.v(ii)       = ri+ymm8vinc15(ii)
+                       psi15.v(ii)     = om0.v(ii)*t15.v(ii)+phi0.v(ii)
+                       s15.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi15.v(ii))
+                       rhot_s(idx+120) = s15.v(ii)
+                       c15.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi15.v(ii))
+                       rhot_c(idx+120) = c15.v(ii)
+                   end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_16x_ymm8r4
+
+
+
+      subroutine ideal_modulator_unroll_8x_ymm8r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_8x_ymm8r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_8x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_8x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: f0
+           type(YMM8r4_t),                intent(in)  :: phi0
+           type(YMM8r4_t),                intent(in)  :: rho0
+           type(YMM8r4_t),                intent(in)  :: rho1
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(YMM8r4_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(YMM8r4_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(YMM8r4_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(YMM8r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=64) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = ymm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>64) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),64
+	           ri              = real(i,kind=sp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                       t4.v(ii)        = ri+ymm8vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+32)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+32)  = c4.v(ii)
+                       t5.v(ii)        = ri+ymm8vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+40)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+40)  = c5.v(ii)
+                       t6.v(ii)        = ri+ymm8vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+48)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+48)  = c6.v(ii)
+                       t7.v(ii)        = ri+ymm8vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+56) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+56) = c7.v(ii) 
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_8x_ymm8r4
+
+
+       subroutine ideal_modulator_unroll_4x_ymm8r4(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_4x_ymm8r4
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_4x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_4x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: f0
+           type(YMM8r4_t),                intent(in)  :: phi0
+           type(YMM8r4_t),                intent(in)  :: rho0
+           type(YMM8r4_t),                intent(in)  :: rho1
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t) :: t0,t1,t2,t3
+           type(YMM8r4_t) :: s0,s1,s2,s3
+           type(YMM8r4_t) :: c0,c1,c2,c3
+           type(YMM8r4_t) :: psi0,psi1,psi2,psi3
+           type(YMM8r4_t) :: om0
+           real(kind=sp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>8 .and. n<=32) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),8
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(4)
+                  !dir$ vector always
+                  do ii=0,7
+                     t0.v(ii)     = ymm8vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                   t        = real(i,kind=sp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>32) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(7)),32
+	           ri              = real(i,kind=sp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm8vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm8vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+8)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+8)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm8vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+16)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+16)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm8vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+24)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+24)  = c3.v(ii)
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i, n
+                 t        = real(i,kind=sp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_4x_ymm8r4
+
+
+       subroutine ideal_modulator_unroll_16x_ymm4r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_ymm4r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_16x_ymm4r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_16x_ymm4r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM4r8_t),                intent(in)  :: f0
+           type(YMM4r8_t),                intent(in)  :: phi0
+           type(YMM4r8_t),                intent(in)  :: rho0
+           type(YMM4r8_t),                intent(in)  :: rho1
+           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(YMM4r8_t) :: t8,t9,t10,t11,t12,t13,t14,t15
+           type(YMM4r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(YMM4r8_t) :: s8,s9,s10,s11,s12,s13,s14,s15
+           type(YMM4r8_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(YMM4r8_t) :: c8,c9,c10,c11,c12,c13,c14,c15
+           type(YMM4r8_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(YMM4r8_t) :: psi8,psi9,psi10,psi11,psi12,psi13,psi14,psi15
+           type(YMM4r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<4) then
+              return
+           else if(n==4) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>4 .and. n<=64) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),4
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(8)
+                  !dir$ vector always
+                  do ii=0,3
+                     t0.v(ii)     = ymm4vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>64) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),64
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm4vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm4vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+4)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+4)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm4vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+8)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+8)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm4vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+12)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+12)  = c3.v(ii)
+                       t4.v(ii)        = ri+ymm4vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+16)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+16)  = c4.v(ii)
+                       t5.v(ii)        = ri+ymm4vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+20)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+20)  = c5.v(ii)
+                       t6.v(ii)        = ri+ymm4vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+24)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+24)  = c6.v(ii)
+                       t7.v(ii)        = ri+ymm4vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+28) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+28) = c7.v(ii) 
+                       t8.v(ii)        = ri+ymm4vinc8(ii)
+                       psi8.v(ii)      = om0.v(ii)*t8.v(ii)+phi0.v(ii)
+                       s8.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi8.v(ii))
+                       rhot_s(idx+32) = s8.v(ii)
+                       c8.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi8.v(ii))
+                       rhot_c(idx+32) = c8.v(ii)
+                       t9.v(ii)        = ri+ymm4vinc9(ii)
+                       psi9.v(ii)      = om0.v(ii)*t9.v(ii)+phi0.v(ii)
+                       s9.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi9.v(ii))
+                       rhot_s(idx+36) = s9.v(ii)
+                       c9.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi9.v(ii))
+                       rhot_c(idx+36) = c9.v(ii)
+                       t10.v(ii)       = ri+ymm4vinc10(ii)
+                       psi10.v(ii)     = om0.v(ii)*t10.v(ii)+phi0.v(ii)
+                       s10.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi10.v(ii))
+                       rhot_s(idx+40) = s10.v(ii)
+                       c10.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi10.v(ii))
+                       rhot_c(idx+40) = c10.v(ii)
+                       t11.v(ii)       = ri+ymm4vinc11(ii)
+                       psi11.v(ii)     = om0.v(ii)*t11.v(ii)+phi0.v(ii)
+                       s11.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi11.v(ii))
+                       rhot_s(idx+44) = s11.v(ii)
+                       c11.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi11.v(ii))
+                       rhot_c(idx+44) = c11.v(ii)
+                       t12.v(ii)       = ri+ymm4vinc12(ii)
+                       psi12.v(ii)     = om0.v(ii)*t12.v(ii)+phi0.v(ii)
+                       s12.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi12.v(ii))
+                       rhot_s(idx+48) = s12.v(ii)
+                       c12.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi12.v(ii))
+                       rhot_c(idx+48) = c12.v(ii)
+                       t13.v(ii)       = ri+ymm4vinc13(ii)
+                       psi13.v(ii)     = om0.v(ii)*t13.v(ii)+phi0.v(ii)
+                       s13.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi13.v(ii))
+                       rhot_s(idx+52) = s13.v(ii)
+                       c13.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi13.v(ii))
+                       rhot_c(idx+52) = c13.v(ii)
+                       t14.v(ii)       = ri+ymm4vinc14(ii)
+                       psi14.v(ii)     = om0.v(ii)*t14.v(ii)+phi0.v(ii)
+                       s14.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi14.v(ii))
+                       rhot_s(idx+56) = s14.v(ii)
+                       c14.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi14.v(ii))
+                       rhot_c(idx+56) = c14.v(ii)
+                       t15.v(ii)       = ri+ymm4vinc15(ii)
+                       psi15.v(ii)     = om0.v(ii)*t15.v(ii)+phi0.v(ii)
+                       s15.v(ii)       = rho0.v(ii)+rho1.v(ii)*sin(psi15.v(ii))
+                       rhot_s(idx+60) = s15.v(ii)
+                       c15.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi15.v(ii))
+                       rhot_c(idx+60) = c15.v(ii)
+                   end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_16x_ymm4r8
+
+
+
+       subroutine ideal_modulator_unroll_8x_ymm4r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_8x_ymm4r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_8x_ymm4r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_8x_ymm4r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM4r8_t),                intent(in)  :: f0
+           type(YMM4r8_t),                intent(in)  :: phi0
+           type(YMM4r8_t),                intent(in)  :: rho0
+           type(YMM4r8_t),                intent(in)  :: rho1
+           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t) :: t0,t1,t2,t3,t4,t5,t6,t7
+           type(YMM4r8_t) :: s0,s1,s2,s3,s4,s5,s6,s7
+           type(YMM4r8_t) :: c0,c1,c2,c3,c4,c5,c6,c7
+           type(YMM4r8_t) :: psi0,psi1,psi2,psi3,psi4,psi5,psi6,psi7
+           type(YMM4r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<4) then
+              return
+           else if(n==4) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>4 .and. n<=32) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),4
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(8)
+                  !dir$ vector always
+                  do ii=0,3
+                     t0.v(ii)     = ymm4vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>32) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),32
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm4vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm4vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+4)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+4)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm4vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+8)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+8)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm4vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+12)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+12)  = c3.v(ii)
+                       t4.v(ii)        = ri+ymm4vinc4(ii)
+                       psi4.v(ii)      = om0.v(ii)*t4.v(ii)+phi0.v(ii)
+                       s4.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi4.v(ii))
+                       rhot_s(idx+16)  = s4.v(ii)
+                       c4.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi4.v(ii))
+                       rhot_c(idx+16)  = c4.v(ii)
+                       t5.v(ii)        = ri+ymm4vinc5(ii)
+                       psi5.v(ii)      = om0.v(ii)*t5.v(ii)+phi0.v(ii)
+                       s5.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi5.v(ii))
+                       rhot_s(idx+20)  = s5.v(ii)
+                       c5.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi5.v(ii))
+                       rhot_c(idx+20)  = c5.v(ii)
+                       t6.v(ii)        = ri+ymm4vinc6(ii)
+                       psi6.v(ii)      = om0.v(ii)*t6.v(ii)+phi0.v(ii)
+                       s6.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi6.v(ii))
+                       rhot_s(idx+24)  = s6.v(ii)
+                       c6.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi6.v(ii))
+                       rhot_c(idx+24)  = c6.v(ii)
+                       t7.v(ii)        = ri+ymm4vinc7(ii)
+                       psi7.v(ii)      = om0.v(ii)*t7.v(ii)+phi0.v(ii)
+                       s7.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi7.v(ii))
+                       rhot_s(idx+28) = s7.v(ii)
+                       c7.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi7.v(ii))
+                       rhot_c(idx+28) = c7.v(ii) 
+                  end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_8x_ymm4r8
+
+
+       subroutine ideal_modulator_unroll_4x_ymm4r8(rhot_s,rhot_c, &
+                                                     n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_4x_ymm4r8
+           !dir$ attributes forceinline ::   ideal_modulator_unroll_4x_ymm4r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_unroll_4x_ymm4r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM4r8_t),                intent(in)  :: f0
+           type(YMM4r8_t),                intent(in)  :: phi0
+           type(YMM4r8_t),                intent(in)  :: rho0
+           type(YMM4r8_t),                intent(in)  :: rho1
+           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t) :: t0,t1,t2,t3
+           type(YMM4r8_t) :: s0,s1,s2,s3
+           type(YMM4r8_t) :: c0,c1,c2,c3
+           type(YMM4r8_t) :: psi0,psi1,psi2,psi3
+           type(YMM4r8_t) :: om0
+           real(kind=dp) :: t,psi,s,c,ri
+           integer(kind=i4) :: i,ii,j,idx
+           om0 = twopi.v*f0.v
+           if(n<4) then
+              return
+           else if(n==4) then
+              do i=1,n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           else if(n>4 .and. n<=16) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),4
+                  !dir$ vector aligned
+                  !dir$ ivdep
+                  !dir$ vector vectorlength(8)
+                  !dir$ vector always
+                  do ii=0,3
+                     t0.v(ii)     = ymm4vinc0(ii)
+                     psi0.v(ii)   = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                     s0.v(ii)     = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                     rhot_s(i+ii) = s0.v(ii)
+                     c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                     rhot_c(i+ii) = c0.v(ii)
+                  end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                   t        = real(i,kind=dp)
+                   psi      = om0.v(0)*t+phi0.v(0)
+                   s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                   rhot_s(i)= s
+                   c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                   rhot_c(i)= c  
+              end do 
+              return
+           else if(n>16) then
+              !dir$ assume_aligned rhot_s:32           
+              !dir$ assume_aligned rhot_c:32
+              do i=1,iand(n,not(3)),16
+	           ri              = real(i,kind=dp)
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                       idx             = i+ii
+                      
+                       t0.v(ii)        = ri+ymm4vinc0(ii)
+                       psi0.v(ii)      = om0.v(ii)*t0.v(ii)+phi0.v(ii)
+                       s0.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi0.v(ii))
+                       rhot_s(idx)     = s0.v(ii)
+                       c0.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
+                       rhot_c(idx)     = c0.v(ii)
+                       t1.v(ii)        = ri+ymm4vinc1(ii)
+                       psi1.v(ii)      = om0.v(ii)*t1.v(ii)+phi0.v(ii)
+                       s1.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi1.v(ii))
+                       rhot_s(idx+4)  = s1.v(ii)
+                       c01.v(ii)       = rho0.v(ii)+rho1.v(ii)*cos(psi1.v(ii))
+                       rhot_c(idx+4)  = c1.v(ii)
+                       t2.v(ii)        = ri+ymm4vinc2(ii)
+                       psi2.v(ii)      = om0.v(ii)*t2.v(ii)+phi0.v(ii)
+                       s2.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi2.v(ii))
+                       rhot_s(idx+8)  = s2.v(ii)
+                       c2.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi2.v(ii))
+                       rhot_c(idx+8)  = c2.v(ii)
+                       t3.v(ii)        = ri+ymm4vinc3(ii)
+                       psi3.v(ii)      = om0.v(ii)*t3.v(ii)+phi0.v(ii)
+                       s3.v(ii)        = rho0.v(ii)+rho1.v(ii)*sin(psi3.v(ii))
+                       rhot_s(idx+12)  = s3.v(ii)
+                       c3.v(ii)        = rho0.v(ii)+rho1.v(ii)*cos(psi3.v(ii))
+                       rhot_c(idx+12)  = c3.v(ii)
+                   end do
+              end do
+              ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i, n
+                 t        = real(i,kind=dp)
+                 psi      = om0.v(0)*t+phi0.v(0)
+                 s        = rho0.v(0)+rho1.v(0)*sin(psi)
+                 rhot_s(i)= s
+                 c        = rho0.v(0)+rho1.v(0)*cos(psi0)
+                 rhot_c(i)= c
+              end do
+              return
+           end if
+       end subroutine ideal_modulator_unroll_4x_ymm4r8
+
+ 
+
+
+
+
+       
+
+
+
+       
+
+
+
+
+
+       
+ 
+   
+
+
+
+       
+
+
+
+
+
+
 
        
 
