@@ -264,6 +264,43 @@ module eos_sensor_simd
         end if
      end function compute_SN_zmm8r8
 
+  
+     pure function compute_SN_ymm8r4(R,phi,gamma) result(SN)
+
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SN_ymm8r4
+        !dir$ attributes forceinline :: compute_SN_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  intent(in), optional :: phi
+        type(YMM8r4_t),  intent(in), optional :: gamma
+        type(YMM8r4_t) :: SN
+        if(present(phi)) then
+            SN.v = R.v*sin(phi.v)
+        else if(present(gamma)) then
+            SN.v = R.v*cos(gamma.v)
+        end if
+     end function compute_SN_ymm8r4
+
+     
+     pure function compute_SN_ymm4r8(R,phi,gamma) result(SN)
+
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SN_ymm4r8
+        !dir$ attributes forceinline :: compute_SN_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  intent(in), optional :: phi
+        type(YMM4r8_t),  intent(in), optional :: gamma
+        type(YMM4r8_t) :: SN
+        if(present(phi)) then
+            SN.v = R.v*sin(phi.v)
+        else if(present(gamma)) then
+            SN.v = R.v*cos(gamma.v)
+        end if
+     end function compute_SN_ymm4r8
+
+
       ! Formula 2, p. 54
      ! расстояние SM от светящейся точки до ее изображения
      pure function compute_SM_zmm16r4(R,phi,gamma) result(SM)
@@ -291,11 +328,44 @@ module eos_sensor_simd
         type(ZMM8r8_t),  intent(in), optional :: phi
         type(ZMM8r8_t),  intent(in), optional :: gamma
         type(ZMM8r8_t) :: SM
-        type(ZMM88r8_t), automatic :: SN
+        type(ZMM8r8_t), automatic :: SN
         !dir$ attributes align : 64 :: SN
         SN = compute_SN_zmm8r8(R,phi,gamma)
         SM = 2.0_sp*SN.v
      end function compute_SM_zmm8r8
+
+
+     !AVX/AVX2 versions
+     pure function compute_SM_ymm8r4(R,phi,gamma) result(SM)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  intent(in), optional :: phi
+        type(YMM8r4_t),  intent(in), optional :: gamma
+        type(YMM8r4_t) :: SM
+        type(YMM8r4_t), automatic :: SN
+        !dir$ attributes align : 64 :: SN
+        SN = compute_SN_ymm8r4(R,phi,gamma)
+        SM = 2.0_sp*SN.v
+     end function compute_SM_ymm8r4
+
+
+     pure function compute_SM_ymm4r8(R,phi,gamma) result(SM)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_ymmyr8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  intent(in), optional :: phi
+        type(YMM4r8_t),  intent(in), optional :: gamma
+        type(YMM4r8_t) :: SM
+        type(YMM4r8_t), automatic :: SN
+        !dir$ attributes align : 64 :: SN
+        SN = compute_SN_ymm4r8(R,phi,gamma)
+        SM = 2.0_sp*SN.v
+     end function compute_SM_ymm4r8
 
 
      !Сканирующее зеркало для обеспечения осмотра всего поля
@@ -334,6 +404,38 @@ module eos_sensor_simd
         hphi = half.v*phi.v
         FH   = tan(hpsi.v)/tan(hphi.v)
      end function ratio_FH_zmm8r8
+
+     !AVX/AVX2 versions.
+     pure function ratio_FH_ymm8r4(psi,phi) result(FH)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_ymm8r4
+        !dir$ attributes forceinline :: ratio_FH_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_ymm8r4
+        type(YMM8r4_t),  intent(in) :: psi
+        type(YMM8r4_t),  intent(in) :: phi
+        type(YMM8r4_t) :: FH
+        type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+        type(YMM8r4_t), automatic :: hpsi,hphi
+        hpsi = half.v*psi.v
+        hphi = half.v*phi.v
+        FH   = tan(hpsi.v)/tan(hphi.v)
+     end function ratio_FH_ymm8r4
+
+
+     pure function ratio_FH_ymm4r8(psi,phi) result(FH)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_ymm4r8
+        type(YMM4r8_t),  intent(in) :: psi
+        type(YMM4r8_t),  intent(in) :: phi
+        type(YMM4r8_t) :: FH
+        type(YMM4r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+        type(YMM4r8_t), automatic :: hpsi,hphi
+        hpsi = half.v*psi.v
+        hphi = half.v*phi.v
+        FH   = tan(hpsi.v)/tan(hphi.v)
+     end function ratio_FH_ymm4r8
 
      ! следовательно, угол установки сканирующего зеркала
      ! Formula 4, p. 56
@@ -384,6 +486,56 @@ module eos_sensor_simd
         end if
      end function scan_mirror_ang_zmm8r8
 
+
+     !AVX/AVX2 versions
+     pure function scan_mirror_ang_ymm8r4(gam0,psi,phi,dir) result(gamma)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_ymm8r4
+        !dir$ attributes forceinline :: scan_mirror_ang_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_ymm8r4
+        type(YMM8r4_t),  intent(in) :: gam0
+        type(YMM8r4_t),  intent(in) :: psi
+        type(YMM8r4_t),  intent(in) :: phi
+        character(len=3), intent(in) :: dir
+        type(YMM8r4_t) :: gamma
+        type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+        type(YMM8r4_t), automatic :: t0,t1
+        if(dir=="pos") then
+            t0 = gam0.v+half.v*phi.v*half.v
+            t1 = ratio_FH_ymm8r4(psi,phi)
+            gamma = t0.v*t1.v
+        else if(dir=="neg") then
+            t0 = gam0.v-half.v*phi.v*half.v
+            t1 = ratio_FH_ymm8r4(psi,phi)
+            gamma = t0.v*t1.v
+        end if
+     end function scan_mirror_ang_ymm8r4
+
+
+     pure function scan_mirror_ang_ymm4r8(gam0,psi,phi,dir) result(gamma)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_ymm4r8
+        !dir$ attributes forceinline :: scan_mirror_ang_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_ymm4r8
+        type(YMM4r8_t),  intent(in) :: gam0
+        type(YMM4r8_t),  intent(in) :: psi
+        type(YMM4r8_t),  intent(in) :: phi
+        character(len=3), intent(in) :: dir
+        type(YMM4r8_t) :: gamma
+        type(YMM4r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+        type(YMM4r8_t), automatic :: t0,t1
+        if(dir=="pos") then
+            t0 = gam0.v+half.v*phi.v*half.v
+            t1 = ratio_FH_ymm4r8(psi,phi)
+            gamma = t0.v*t1.v
+        else if(dir=="neg") then
+            t0 = gam0.v-half.v*phi.v*half.v
+            t1 = ratio_FH_ymm4r8(psi,phi)
+            gamma = t0.v*t1.v
+        end if
+     end function scan_mirror_ang_ymm4r8
+
+
       !величина расфокусировки
       !Formula 1, p. 59
      pure function defocus_cof_zmm16r4(l2,alpha,O,inf) result(dc)
@@ -429,6 +581,51 @@ module eos_sensor_simd
         end if
     end function defocus_cof_zmm8r8
 
+
+    !AVX/AVX2 versions
+    pure function defocus_cof_ymm8r4(l2,alpha,O,inf) result(dc)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_ymm8r4
+        type(YMM8r4_t),  intent(in) :: l2
+        type(YMM8r4_t),  intent(in) :: alpha
+        type(YMM8r4_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(YMM8r4_t) :: dc
+        type(YMM8r4_t), automatic :: cos2a,icos
+        type(YMM8r4_t), parameter :: one = YMM8r4_t(1.0_sp)
+        cos2a = cos(alpha.v+alpha.v)
+        icos  = one.v/cos2a.v
+        if(inf) then
+           df    = l2.v/(icos.v-one.v)*O
+        else
+           df    = l2.v/(icos.v-one.v)
+        end if
+    end function defocus_cof_ymm8r4
+
+
+    pure function defocus_cof_ym4r8(l2,alpha,O,inf) result(dc)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_ymm4r8
+        !dir$ attributes forceinline :: defocus_cof_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_ymm4r8
+        type(YMM4r8_t),   intent(in) :: l2
+        type(YMM4r8_t),   intent(in) :: alpha
+        type(YMM4r8_t),   intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(YMM4r8_t) :: dc
+        type(YMM4r8_t), automatic :: cos2a,icos
+        type(YMM4r8_t), parameter :: one = YMM4r8_t(1.0_dp)
+        cos2a = cos(alpha.v+alpha.v)
+        icos  = one.v/cos2a.v
+        if(inf) then
+           df    = l2.v/(icos.v-one.v)*O
+        else
+           df    = l2.v/(icos.v-one.v)
+        end if
+    end function defocus_cof_ymm4r8
+
     ! Диаметр кружка рассеяния р
     ! Formula 3, p.59
     pure function circle_dispersion_zmm16r4(d,l1,l2,alpha,O,inf) result(rho)
@@ -470,6 +667,48 @@ module eos_sensor_simd
         rho= t0.v*t1.v
      end function circle_dispersion_zmm8r8
 
+
+     !AVX/AVX2 versions
+     pure function circle_dispersion_ymm8r4(d,l1,l2,alpha,O,inf) result(rho)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_ymm8r4
+        !dir$ attributes forceinline :: circle_dispersion_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_ymm8r4
+        type(YMM8r4_t),  intent(in) :: d
+        type(YMM8r4_t),  intent(in) :: l1
+        type(YMM8r4_t),  intent(in) :: l2
+        type(YMM8r4_t),  intent(in) :: alpha
+        type(YMM8r4_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(YMM8r4_t) :: rho
+        type(YMM8r4_t), automatic :: t0,t1
+        !dir$ attributes align : 32 :: t0,t1
+        t0 = d.v/(l1.v+l2.v)
+        t1 = defocus_cof_ymm8r4(l2,alpha,O,inf)
+        rho= t0.v*t1.v
+    end function circle_dispersion_ymm8r4
+
+
+    pure function circle_dispersion_ymm4r8(d,l1,l2,alpha,O,inf) result(rho)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_ymm4r8
+        !dir$ attributes forceinline :: circle_dispersion_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_ymm4r8
+        type(YMM4r8_t),  intent(in) :: d
+        type(YMM4r8_t),  intent(in) :: l1
+        type(YMM4r8_t),  intent(in) :: l2
+        type(YMM4r8_t),  intent(in) :: alpha
+        type(YMM4r8_t),  intent(in) :: O
+        logical(kind=i4), intent(in) :: inf
+        type(YMM4r8_t) :: rho
+        type(YMM4r8_t), automatic :: t0,t1
+        !dir$ attributes align : 32 :: t0,t1
+        t0 = d.v/(l1.v+l2.v)
+        t1 = defocus_cof_ymm4r8(l2,alpha,O,inf)
+        rho= t0.v*t1.v
+     end function circle_dispersion_ymm4r8
+
+
      !Formula 2, p. 59
      pure function circ_dispers_diam_zmm16r4(l1,l2,alpha,O,inf) result(ratio)
         !dir$ optimize:3
@@ -507,6 +746,45 @@ module eos_sensor_simd
         t1    = defocus_cof_zmm8r8(l2,alpha,O,inf)
         ratio = t1.v/t0.v
      end function circ_dispers_diam_zmm8r8
+
+
+     !AVX/AVX2 versions
+     pure function circ_dispers_diam_ymm8r4(l1,l2,alpha,O,inf) result(ratio)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circ_dispers_diam_ymm8r4
+        !dir$ attributes forceinline :: circ_dispers_diam_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_ymm8r4
+        type(YMM8r4_t),     intent(in) :: l1
+        type(YMM8r4_t),     intent(in) :: l2
+        type(YMM8r4_t),     intent(in) :: alpha
+        type(YMM8r4_t),     intent(in) :: O
+        logical(kind=i4),    intent(in) :: inf
+        type(YMM8r4_t) :: ratio
+        type(YMM8r4_t), automatic :: t0,t1
+        !dir$ attributes align : 32 :: t0,t1
+        t0    = l1.v+l2.v
+        t1    = defocus_cof_ymm8r4(l2,alpha,O,inf)
+        ratio = t1.v/t0.v
+     end function circ_dispers_diam_ymm8r4
+
+
+     pure function circ_dispers_diam_ymm4r8(l1,l2,alpha,O,inf) result(ratio)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circ_dispers_diam_ymm4r8
+        !dir$ attributes forceinline :: circ_dispers_diam_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_ymm4r8
+        type(YMM4r8_t),     intent(in) :: l1
+        type(YMM4r8_t),     intent(in) :: l2
+        type(YMM4r8_t),     intent(in) :: alpha
+        type(YMM4r8_t),     intent(in) :: O
+        logical(kind=i4),   intent(in) :: inf
+        type(YMM4r8_t) :: ratio
+        type(YMM4r8_t), automatic :: t0,t1
+        !dir$ attributes align : 32 :: t0,t1
+        t0    = l1.v+l2.v
+        t1    = defocus_cof_ymm4r8(l2,alpha,O,inf)
+        ratio = t1.v/t0.v
+     end function circ_dispers_diam_ymm4r8
 
       ! СКАНИРОВАНИЕ ЗЕРКАЛОМ, ВРАЩАЮЩИМСЯ
       ! ВОКРУГ ОСИ, НЕПЕРПЕНДИКУЛЯРНОЙ К НЕМУ
@@ -547,6 +825,42 @@ module eos_sensor_simd
          ax    = H.v*tdel.v/cos(gamm2.v)
       end function fov_x_axis_zmm8r8
 
+
+      !AVX/AVX2 versions.
+      pure function fov_x_axis_ymm8r4(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_ymm8r4
+         !dir$ attributes forceinline :: fov_x_axis_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_ymm8r4
+         type(YMM8r4_t),   intent(in) :: H
+         type(YMM8r4_t),   intent(in) :: delta
+         type(YMM8r4_t),   intent(in) :: gamma
+         type(YMM8r4_t) :: ax
+         type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+         type(YMM8r4_t), automatic :: gamm2,tdel
+         !dir$ attributes align : 32 :: gamm2,tdel
+         gamm2 = half.v*gamma.v
+         tdel  = tan(delta.v)
+         ax    = H.v*tdel.v/cos(gamm2.v)
+      end function fov_x_axis_ymm8r4
+
+
+     pure function fov_x_axis_ymm4r8(H,delta,gamma) result(ax)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: fov_x_axis_ymm4r8
+         !dir$ attributes forceinline :: fov_x_axis_ymm4r8
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_ymm4r8
+         type(YMM4r8_t),   intent(in) :: H
+         type(YMM4r8_t),   intent(in) :: delta
+         type(YMM4r8_t),   intent(in) :: gamma
+         type(YMM4r8_t) :: ax
+         type(YMM4r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+         type(YMM4r8_t), automatic :: gamm2,tdel
+         !dir$ attributes align : 32 :: gamm2,tdel
+         gamm2 = half.v*gamma.v
+         tdel  = tan(delta.v)
+         ax    = H.v*tdel.v/cos(gamm2.v)
+      end function fov_x_axis_ymm4r8
 
        !Если рабочая зона сканирования ограничена углом G, то
       !ширина захвата
@@ -591,6 +905,45 @@ module eos_sensor_simd
         B     = (H.v+H.v)*t0.v*t1.v
       end function scan_width_zmm8r8
 
+      !AVX/AVX2 versions
+      pure function scan_width_ymm8r4(H,gamma,theta) result(B)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_width_ymm8r4
+        !dir$ attributes forceinline :: scan_width_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_ymm8r4
+        type(YMM8r4_t),  intent(in) :: H
+        type(YMM8r4_t),  intent(in) :: gamma
+        type(YMM8r4_t),  intent(in) :: theta
+        type(YMM8r4_t) :: B
+        type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+        type(YMM8r4_t), automatic :: gam2,th2,t0,t1
+        !dir$ attributes align : 32 :: gam2,th2,t0,t1
+        gam2  = half.v*gamma.v
+        th2   = half.v*theta.v
+        t0    = tan(gam2.v)
+        t1    = sin(th2.v)
+        B     = (H.v+H.v)*t0.v*t1.v
+      end function scan_width_ymm8r4
+
+
+      pure function scan_width_ymm4r8(H,gamma,theta) result(B)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_width_ymm4r8
+        !dir$ attributes forceinline :: scan_width_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_ymm4r8
+        type(YMM4r8_t),  intent(in) :: H
+        type(YMM4r8_t),  intent(in) :: gamma
+        type(YMM4r8_t),  intent(in) :: theta
+        type(YMM4r8_t) :: B
+        type(YMM4r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+        type(YMM4r8_t), automatic :: gam2,th2,t0,t1
+        !dir$ attributes align : 32 :: gam2,th2,t0,t1
+        gam2  = half.v*gamma.v
+        th2   = half.v*theta.v
+        t0    = tan(gam2.v)
+        t1    = sin(th2.v)
+        B     = (H.v+H.v)*t0.v*t1.v
+      end function scan_width_ymm4r8 
 
       !Плоскопараллельная пластинка, установленная за 
       !объективом, изменяет ход лучей таким образом, что изображение
@@ -693,6 +1046,107 @@ module eos_sensor_simd
                l    = t0.v*t1.v
             end if
      end function refract_shift_zmm8r8  
+
+
+     !AVX/AVX2 version
+     pure function refract_shift_ymm8r4(i1,delta,alfa,gamma,n)  result(l)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_ymm8r4
+            !dir$ attributes forceinline ::  refract_shift_ymm8r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refract_shift_ymm8r4
+            use mod_fpcompare, only : ymm8r4_equalto_ymm8r4
+            use mod_vectypes,  only : Mask8_t
+            type(YMM8r4_t),   intent(in) :: i1
+            type(YMM8r4_t),   intent(in) :: delta
+            type(YMM8r4_t),   intent(in) :: alfa
+            type(YMM8r4_t),   intent(in) :: gamma
+            type(YMM8r4_t),   intent(in) :: n
+            type(YMM8r4_t) :: l
+            type(YMM8r4_t), parameter :: one = YMM8r4_t(1.0_sp)
+            type(YMM8r4_t), parameter :: zer = YMM8r4_t(0.0_sp)
+            type(YMM8r4_t), automatic :: ag,num,den,sin2,sag,t0,t1
+            !dir$ attributes align : 32 :: ag,num,den,sin2,sag,t0,t1
+            type(Mask8_t), automatic :: m1,m2
+            ag  = alfa.v-gamma.v
+            m1  = ymm8r4_equalto_ymm8r4(i1,ag)
+            m2  = ymm8r4_equalto_ymm8r4(alfa,zer) 
+            if(all(m1)) then
+               sag  = sin(ag.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sag.v
+               den  = n.v*n.v*sag.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else if(all(m2)) then
+               sag  = sin(gamma.v)
+               t0   = -delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else
+               sag  = sin(i1.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            end if
+       end function refract_shift_ymm8r4
+
+
+       pure function refract_shift_ymm4r8(i1,delta,alfa,gamma,n)  result(l)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  refract_shift_ymm4r8
+            use mod_fpcompare, only : ymm4r8_equalto_ymm4r8
+            use mod_vectypes,  only : Mask4_t
+            type(YMM4r8_t),   intent(in) :: i1
+            type(YMM4r8_t),   intent(in) :: delta
+            type(YMM4r8_t),   intent(in) :: alfa
+            type(YMM4r8_t),   intent(in) :: gamma
+            type(YMM4r8_t),   intent(in) :: n
+            type(YMM4r8_t) :: l
+            type(YMM4r8_t), parameter :: one = YMM4r8_t(1.0_dp)
+            type(YMM4r8_t), parameter :: zer = YMM4r8_t(0.0_dp)
+            type(YMM4r8_t), automatic :: ag,num,den,sin2,sag,t0,t1
+            !dir$ attributes align : 32 :: ag,num,den,sin2,sag,t0,t1
+            type(Mask4_t), automatic :: m1,m2
+            ag  = alfa.v-gamma.v
+            m1  = ymm4r8_equalto_ymm4r8(i1,ag)
+            m2  = ymm4r8_equalto_ymm4r8(alfa,zer) 
+            if(all(m1)) then
+               sag  = sin(ag.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sag.v
+               den  = n.v*n.v*sag.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else if(all(m2)) then
+               sag  = sin(gamma.v)
+               t0   = -delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            else
+               sag  = sin(i1.v)
+               t0   = delta.v*sag.v
+               sin2 = sag.v*sag.v
+               num  = one.v-sin2.v
+               den  = n.v*n.v-sin2.v
+               t1   = one.v-sqrt(num.v/den.v)
+               l    = t0.v*t1.v
+            end if
+     end function refract_shift_ymm4r8  
+
+
 
     !Formula 1, p. 108    
     subroutine project_xy_axis_zmm16r4(l,alpha,xl,yl)
@@ -1141,6 +1595,78 @@ module eos_sensor_simd
             dy   = sing.v-t2.v*(t0.v-t1.v)
      end subroutine compute_xdyd_zmm8r8
 
+
+     !AVX/AVX2 versions
+     subroutine compute_xdyd_ymm8r4(gamma,u,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xdyd_ymm8r4
+            !dir$ attributes forceinline ::  compute_xdyd_ymm8r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xdyd_ymm8r4
+            type(YMM8r4_t),  intent(in)  :: gamma
+            type(YMM8r4_t),  intent(in)  :: u
+            type(YMM8r4_t),  intent(in)  :: n
+            type(YMM8r4_t),  intent(out) :: xd
+            type(YMM8r4_t),  intent(out) :: yd
+            type(YMM8r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+            type(YMM8r4_t), parameter :: one  = YMM8r4_t(1.0_sp)
+            type(YMM8r4_t), parameter :: four = YMM8r4_t(4.0_sp)
+            type(YMM8r4_t), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+            cosg = cos(gamma.v)
+            sing = sin(gamma.v)
+            u2   = u.v*half.v
+            n2   = n.v*n.v
+            u2gs = u2.v+gamma.v
+            ungd = u2.v-gamma.v
+            t0   = sin(u2gs.v)
+            sin2s= t0.v*t0.v
+            t1   = sin(u2gd.v)
+            sin2d= t1.v*t1.v
+            t2   = one.v/(four.v*sin(u2.v))
+            t3   = sqrt(n2.v-sin2s.v)
+            t0   = sin2s.v/t3.v
+            t4   = sqrt(n2.v-sin2d.v)
+            t1   = sin2d.v/t4.v
+            dx   = cosg.v-t2.v*(t0.v+t1.v)
+            t2   = one.v/(four.v*cos(u2.v)
+            dy   = sing.v-t2.v*(t0.v-t1.v)
+      end subroutine compute_xdyd_ymm8r4
+
+
+      subroutine compute_xdyd_ymm4r8(gamma,u,n,xd,yd)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: compute_xdyd_ymm4r8
+            !dir$ attributes forceinline ::  compute_xdyd_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  compute_xdyd_ymm4r8
+            type(YMM4r8_t),  intent(in)  :: gamma
+            type(YMM4r8_t),  intent(in)  :: u
+            type(YMM4r8_t),  intent(in)  :: n
+            type(YMM4r8_t),  intent(out) :: xd
+            type(YMM4r8_t),  intent(out) :: yd
+            type(YMM4r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+            type(YMM4r8_t), parameter :: one  = YMM4r8_t(1.0_dp)
+            type(YMM4r8_t), parameter :: four = YMM4r8_t(4.0_dp)
+            type(YMM4r8_t), automatic :: cosg,sing,sin2s,sin2d,u2,u2gs,u2gd,n2,t0,t1,t2,t3,t4
+            cosg = cos(gamma.v)
+            sing = sin(gamma.v)
+            u2   = u.v*half.v
+            n2   = n.v*n.v
+            u2gs = u2.v+gamma.v
+            ungd = u2.v-gamma.v
+            t0   = sin(u2gs.v)
+            sin2s= t0.v*t0.v
+            t1   = sin(u2gd.v)
+            sin2d= t1.v*t1.v
+            t2   = one.v/(four.v*sin(u2.v))
+            t3   = sqrt(n2.v-sin2s.v)
+            t0   = sin2s.v/t3.v
+            t4   = sqrt(n2.v-sin2d.v)
+            t1   = sin2d.v/t4.v
+            dx   = cosg.v-t2.v*(t0.v+t1.v)
+            t2   = one.v/(four.v*cos(u2.v)
+            dy   = sing.v-t2.v*(t0.v-t1.v)
+     end subroutine compute_xdyd_ymm4r8
+
+
      !СКАНИРОВАНИЕ ВРАЩАЮЩИМИСЯ ОБЪЕКТИВАМИ
      !Formula 1, p. 121
      subroutine fov_axay_zmm16r4(H,delx,dely,phi,ax,ay)
@@ -1187,6 +1713,51 @@ module eos_sensor_simd
      end subroutine fov_axay_zmm8r8
 
 
+     !AVX/AVX2 versions.
+     subroutine fov_axay_ymm8r4(H,delx,dely,phi,ax,ay)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_axay_ymm8r4
+            !dir$ attributes forceinline ::  fov_axay_ymm8r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_axay_ymm8r4
+            type(YMM8r4_t),  intent(in) :: H
+            type(YMM8r4_t),  intent(in) :: delx
+            type(YMM8r4_t),  intent(in) :: dely
+            type(YMM8r4_t),  intent(in) :: phi
+            type(YMM8r4_t),  intent(out):: ax
+            type(YMM8r4_t),  intent(out):: ay
+            type(YMM8r4_t),  parameter :: half = YMM8r4_t(0.5_sp)
+            type(YMM8r4_t),  parameter :: one  = YMM8r4_t(1.0_sp)
+            type(YMM8r4_t),  automatic :: sec2,phi2,t0,t1,sec
+            phi2  = half.v*phi.v
+            sec   = one.v/cos(phi2.v)
+            sec2  = sec.v*sec.v
+            ax    = H.v*delx.v*sec2.v
+            ay    = H.v*dely.v*sec.v
+      end subroutine fov_axay_ymm8r4
+        
+        
+      subroutine fov_axay_ymm4r8(H,delx,dely,phi,ax,ay)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_axay_ymm4r8
+            !dir$ attributes forceinline ::  fov_axay_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_axay_ymm4r8
+            type(YMM4r8_t),  intent(in) :: H
+            type(YMM4r8_t),  intent(in) :: delx
+            type(YMM4r8_t),  intent(in) :: dely
+            type(YMM4r8_t),  intent(in) :: phi
+            type(YMM4r8_t),  intent(out):: ax
+            type(YMM4r8_t),  intent(out):: ay
+            type(YMM4r8_t),  parameter :: half = YMM4r8_t(0.5_dp)
+            type(YMM4r8_t),  parameter :: one  = YMM4r8_t(1.0_dp)
+            type(YMM4r8_t),  automatic :: sec2,phi2,t0,t1,sec
+            phi2  = half.v*phi.v
+            sec   = one.v/cos(phi2.v)
+            sec2  = sec.v*sec.v
+            ax    = H.v*delx.v*sec2.v
+            ay    = H.v*dely.v*sec.v
+     end subroutine fov_axay_ymm4r8
+
+
      subroutine  fov_dxdy_zmm16r4(x,y,F,phi,dx,dy)
             !dir$ optimize:3
             !dir$ attributes code_align : 32 :: fov_dxdy_zmm16r4
@@ -1229,6 +1800,51 @@ module eos_sensor_simd
             dy     = d0y.v
             dx     = d0x.v*cos(phi2.v)
      end subroutine fov_dxdy_zmm8r8
+
+
+     !AVX/AVX2 versions
+     subroutine  fov_dxdy_ymm8r4(x,y,F,phi,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_dxdy_ymm8r4
+            !dir$ attributes forceinline ::  fov_dxdy_ymm8r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_dxdy_ymm8r4
+            type(YMM16r4_t),   intent(in) :: x
+            type(YMM16r4_t),   intent(in) :: y
+            type(YMM16r4_t),   intent(in) :: F
+            type(YMM16r4_t),   intent(in) :: phi
+            type(YMM16r4_t),   intent(out):: dx
+            type(YMM16r4_t),   intent(out):: dy
+            type(YMM16r4_t), parameter :: half = YMM8r4_t(0.5_sp)
+            type(YMM16r4_t), automatic :: d0x,d0y,phi2
+            !dir$ attributes align : 32 :: d0x,d0y,phi2
+            d0y    = y.v/F.v
+            phi2   = half.v*phi.v
+            d0x    = x.v/F.v
+            dy     = d0y.v
+            dx     = d0x.v*cos(phi2.v)
+      end subroutine fov_dxdy_ymm8r4
+        
+        
+      subroutine  fov_dxdy_ymm4r8(x,y,F,phi,dx,dy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: fov_dxdy_ymm4r8
+            !dir$ attributes forceinline ::  fov_dxdy_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  fov_dxdy_ymm4r8
+            type(YMM8r8_t),   intent(in) :: x
+            type(YMM8r8_t),   intent(in) :: y
+            type(YMM8r8_t),   intent(in) :: F
+            type(YMM8r8_t),   intent(in) :: phi
+            type(YMM8r8_t),   intent(out):: dx
+            type(YMM8r8_t),   intent(out):: dy
+            type(YMM8r8_t), parameter :: half = YMM4r8_t(0.5_dp)
+            type(YMM8r8_t), automatic :: d0x,d0y,phi2
+            !dir$ attributes align : 64 :: d0x,d0y,phi2
+            d0y    = y.v/F.v
+            phi2   = half.v*phi.v
+            d0x    = x.v/F.v
+            dy     = d0y.v
+            dx     = d0x.v*cos(phi2.v)
+     end subroutine fov_dxdy_ymm4r8
 
     
      subroutine volt_impulse_uxuy_zmm16r4(u,om1,om2,t,ux,uy)
@@ -1273,7 +1889,48 @@ module eos_sensor_simd
      end subroutine volt_impulse_uxuy_zmm8r8
 
 
-       
+     !AVX/AVX2
+     subroutine volt_impulse_uxuy_ymm8r4(u,om1,om2,t,ux,uy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: volt_impulse_uxuy_ymm8r4
+            !dir$ attributes forceinline ::  volt_impulse_uxuy_ymm8r4
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  volt_impulse_uxuy_ymm8r4
+            type(YMM8r4_t),   intent(in) :: u
+            type(YMM8r4_t),   intent(in) :: om1
+            type(YMM8r4_t),   intent(in) :: om2
+            type(YMM8r4_t),   intent(in) :: t
+            type(YMM8r4_t),   intent(out):: ux
+            type(YMM8r4_t),   intent(out):: uy
+            type(YMM8r4_t), automatic :: om1t,om2t,t0,t1
+            om1t = om1.v*t.v
+            om2t = om2.v*t.v
+            t0   = sin(om1t.v)+sin(om2t.v)
+            t1   = cos(om1t.v)+cos(om2t.v)
+            ux   = u.v*t0.v
+            uy   = u.v*t1.v
+       end subroutine volt_impulse_uxuy_ymm8r4
+
+
+       subroutine volt_impulse_uxuy_ymm4r8(u,om1,om2,t,ux,uy)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: volt_impulse_uxuy_ymm4r8
+            !dir$ attributes forceinline ::  volt_impulse_uxuy_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  volt_impulse_uxuy_ymm4r8
+            type(YMM4r8_t),   intent(in) :: u
+            type(YMM4r8_t),   intent(in) :: om1
+            type(YMM4r8_t),   intent(in) :: om2
+            type(YMM4r8_t),   intent(in) :: t
+            type(YMM4r8_t),   intent(out):: ux
+            type(YMM4r8_t),   intent(out):: uy
+            type(YMM4r8_t), automatic :: om1t,om2t,t0,t1
+            om1t = om1.v*t.v
+            om2t = om2.v*t.v
+            t0   = sin(om1t.v)+sin(om2t.v)
+            t1   = cos(om1t.v)+cos(om2t.v)
+            ux   = u.v*t0.v
+            uy   = u.v*t1.v
+     end subroutine volt_impulse_uxuy_ymm4r8
+  
       
         
  
@@ -5124,8 +5781,8 @@ module eos_sensor_simd
            type(ZMM8r8_t),                intent(in)  :: Phi0
            integer(kind=i4),              intent(in)  :: n
            type(ZMM8r8_t),                intent(in)  :: Tin
-           type(ZMM8r8_t), parameter :: twopi = ZMM16r4_t(6.283185307179586476925286766559_dp)
-           type(ZMM8r8_t), parameter :: half  = ZMM16r4_t(0.5_dp)
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t), parameter :: half  = ZMM8r8_t(0.5_dp)
            type(ZMM8r8_t) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
            type(ZMM8r8_t) :: fk8,fk9,fk10,fk11,fk12,fk13,fk14,fk15
            type(ZMM8r8_t) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
@@ -5260,6 +5917,472 @@ module eos_sensor_simd
               return
            end if
        end subroutine rect_pulse_flux_unroll_16x_zmm8r8
+
+
+       subroutine rect_pulse_flux_unroll_4x_zmm8r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_4x_zmm8r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_4x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_4x_zmm8r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           type(ZMM8r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(ZMM8r8_t),                intent(in)  :: Tin
+           type(ZMM8r8_t), parameter :: twopi = ZMM8r8_t(6.283185307179586476925286766559_dp)
+           type(ZMM8r8_t), parameter :: half  = ZMM8r8_t(0.5_dp)
+           type(ZMM8r8_t) :: fk0,fk1,fk2,fk3
+           type(ZMM8r8_t) :: sinc0,sinc1,sinc2,sinc3
+           type(ZMM8r8_t) :: arg0,arg1,arg2,arg3
+           type(ZMM8r8_t) :: hTin,Phi0fk
+           real(kind=dp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>8 .and. n<=32) then
+              !dir$ assume_aligned fk:64           
+              !dir$ assume_aligned Phik:64
+              do i=1,iand(n,not(7)),8
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,7
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=8,min=1,avg=4
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>32) then
+              !dir$ assume_aligned fk:64           
+              !dir$ assume_aligned Phik:64
+              do i=1,iand(n,not(7)),32
+                  call mm_prefetch(freq(i*32),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,7
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+8)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+16)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+16) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+24)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+24) = Phi0fk.v(ii)*sinc3.v(ii)  
+                      fk4          = fk(idx+32)
+                      arg4         = twopi.v(ii)*fk4.v(ii)*hThin.v(ii)
+                      sinc4        = sin(arg4.v(ii))/arg4.v(ii)
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_4x_zmm8r8
+
+
+       subroutine rect_pulse_flux_unroll_16x_ymm8r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_16x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_16x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_16x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           type(YMM8r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: Tin
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
+           type(YMM8r4_t) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
+           type(YMM8r4_t) :: fk8,fk9,fk10,fk11,fk12,fk13,fk14,fk15
+           type(YMM8r4_t) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           type(YMM8r4_t) :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           type(YMM8r4_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(YMM8r4_t) :: hTin,Phi0fk
+           real(kind=sp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>8 .and. n<=128) then
+              !dir$ assume_aligned fk:32          
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),8
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=8,min=1,avg=4
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>128) then
+              !dir$ assume_aligned fk:32           
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),128
+                  call mm_prefetch(freq(i*128),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+8)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+16)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+16) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+24)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+24) = Phi0fk.v(ii)*sinc3.v(ii)  
+                      fk4          = fk(idx+32)
+                      arg4         = twopi.v(ii)*fk4.v(ii)*hThin.v(ii)
+                      sinc4        = sin(arg4.v(ii))/arg4.v(ii)
+                      Phik(idx+32) = Phi0fk.v(ii)*sinc4.v(ii) 
+                      fk5          = fk(idx+40)
+                      arg5         = twopi.v(ii)*fk5.v(ii)*hThin.v(ii)
+                      sinc5        = sin(arg5.v(ii))/arg5.v(ii)
+                      Phik(idx+40) = Phi0fk.v(ii)*sinc5.v(ii)
+                      fk6          = fk(idx+48)
+                      arg6         = twopi.v(ii)*fk6.v(ii)*hThin.v(ii)
+                      sinc6        = sin(arg6.v(ii))/arg6.v(ii)
+                      Phik(idx+48) = Phi0fk.v(ii)*sinc6.v(ii)  
+                      fk7          = fk(idx+56)
+                      arg7         = twopi.v(ii)*fk7.v(ii)*hThin.v(ii)
+                      sinc7        = sin(arg7.v(ii))/arg7.v(ii)
+                      Phik(idx+56)= Phi0fk.v(ii)*sinc7.v(ii) 
+                      fk8          = fk(idx+64)
+                      arg8         = twopi.v(ii)*fk8.v(ii)*hThin.v(ii)
+                      sinc8        = sin(arg8.v(ii))/arg8.v(ii)
+                      Phik(idx+64)= Phi0fk.v(ii)*sinc8.v(ii) 
+                      fk9          = fk(idx+72)
+                      arg9         = twopi.v(ii)*fk9.v(ii)*hThin.v(ii)
+                      sinc9        = sin(arg9.v(ii))/arg9.v(ii)
+                      Phik(idx+72)= Phi0fk.v(ii)*sinc9.v(ii) 
+                      fk10         = fk(idx+80)
+                      arg10        = twopi.v(ii)*fk10.v(ii)*hThin.v(ii)
+                      sinc10       = sin(arg10.v(ii))/arg10.v(ii)
+                      Phik(idx+80)= Phi0fk.v(ii)*sinc10.v(ii) 
+                      fk11         = fk(idx+88)
+                      arg11        = twopi.v(ii)*fk11.v(ii)*hThin.v(ii)
+                      sinc11       = sin(arg11.v(ii))/arg11.v(ii)
+                      Phik(idx+88)= Phi0fk.v(ii)*sinc11.v(ii) 
+                      fk12         = fk(idx+96)
+                      arg12        = twopi.v(ii)*fk12.v(ii)*hThin.v(ii)
+                      sinc12       = sin(arg12.v(ii))/arg12.v(ii)
+                      Phik(idx+96)= Phi0fk.v(ii)*sinc12.v(ii)
+                      fk13         = fk(idx+104)
+                      arg13        = twopi.v(ii)*fk13.v(ii)*hThin.v(ii)
+                      sinc13       = sin(arg13.v(ii))/arg13.v(ii)
+                      Phik(idx+104)= Phi0fk.v(ii)*sinc13.v(ii)  
+                      fk14         = fk(idx+112)
+                      arg14        = twopi.v(ii)*fk14.v(ii)*hThin.v(ii)
+                      sinc14       = sin(arg14.v(ii))/arg14.v(ii)
+                      Phik(idx+112)= Phi0fk.v(ii)*sinc14.v(ii)  
+                      fk15         = fk(idx+120)
+                      arg15        = twopi.v(ii)*fk15.v(ii)*hThin.v(ii)
+                      sinc15       = sin(arg15.v(ii))/arg15.v(ii)
+                      Phik(idx+120)= Phi0fk.v(ii)*sinc15.v(ii) 
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_16x_ymm8r4
+
+
+       subroutine rect_pulse_flux_unroll_8x_ymm8r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_8x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_8x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_8x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           type(YMM8r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: Tin
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
+           type(YMM8r4_t) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
+           type(YMM8r4_t) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           type(YMM8r4_t) :: hTin,Phi0fk
+           real(kind=sp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>8 .and. n<=64) then
+              !dir$ assume_aligned fk:32          
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),8
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=8,min=1,avg=4
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>64) then
+              !dir$ assume_aligned fk:32           
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),64
+                  call mm_prefetch(freq(i*64),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+8)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+16)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+16) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+24)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+24) = Phi0fk.v(ii)*sinc3.v(ii)  
+                      fk4          = fk(idx+32)
+                      arg4         = twopi.v(ii)*fk4.v(ii)*hThin.v(ii)
+                      sinc4        = sin(arg4.v(ii))/arg4.v(ii)
+                      Phik(idx+32) = Phi0fk.v(ii)*sinc4.v(ii) 
+                      fk5          = fk(idx+40)
+                      arg5         = twopi.v(ii)*fk5.v(ii)*hThin.v(ii)
+                      sinc5        = sin(arg5.v(ii))/arg5.v(ii)
+                      Phik(idx+40) = Phi0fk.v(ii)*sinc5.v(ii)
+                      fk6          = fk(idx+48)
+                      arg6         = twopi.v(ii)*fk6.v(ii)*hThin.v(ii)
+                      sinc6        = sin(arg6.v(ii))/arg6.v(ii)
+                      Phik(idx+48) = Phi0fk.v(ii)*sinc6.v(ii)  
+                      fk7          = fk(idx+56)
+                      arg7         = twopi.v(ii)*fk7.v(ii)*hThin.v(ii)
+                      sinc7        = sin(arg7.v(ii))/arg7.v(ii)
+                      Phik(idx+56)= Phi0fk.v(ii)*sinc7.v(ii) 
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_8x_ymm8r4
+
+
+       subroutine rect_pulse_flux_unroll_4x_ymm8r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_4x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_4x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_4x_ymm8r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           type(YMM8r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM8r4_t),                intent(in)  :: Tin
+           type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
+           type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
+           type(YMM8r4_t) :: fk0,fk1,fk2,fk3
+           type(YMM8r4_t) :: sinc0,sinc1,sinc2,sinc3
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3
+           type(YMM8r4_t) :: hTin,Phi0fk
+           real(kind=sp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<8) then
+              return
+           else if(n==8) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>8 .and. n<=32) then
+              !dir$ assume_aligned fk:32          
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),8
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=8,min=1,avg=4
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>32) then
+              !dir$ assume_aligned fk:32           
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(7)),32
+                  call mm_prefetch(freq(i*32),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do ii=0,7
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+8)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+16)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+16) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+24)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+24) = Phi0fk.v(ii)*sinc3.v(ii)  
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=8,min=1,avg=4
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_4x_ymm8r4
+
+
+
+
+
+      
+
+
 
  
 
