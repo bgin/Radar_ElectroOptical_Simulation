@@ -4066,6 +4066,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=16,min=1,avg=8
               do j=i, n
@@ -4252,6 +4253,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=16,min=1,avg=8
               do j=i, n
@@ -4390,6 +4392,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=16,min=1,avg=8
               do j=i, n
@@ -4508,6 +4511,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -4694,6 +4698,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -4832,6 +4837,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -4951,6 +4957,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -5138,6 +5145,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -5276,6 +5284,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=8,min=1,avg=4
               do j=i, n
@@ -5394,6 +5403,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=4,min=1,avg=2
               do j=i, n
@@ -5581,6 +5591,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+              end do
               ! Remainder loop
               !dir$ loop_count max=4,min=1,avg=2
               do j=i, n
@@ -5719,6 +5730,7 @@ module eos_sensor_simd
                      c0.v(ii)     = rho0.v(ii)+rho1.v(ii)*cos(psi0.v(ii))
                      rhot_c(i+ii) = c0.v(ii)
                   end do
+               end do
               ! Remainder loop
               !dir$ loop_count max=4,min=1,avg=2
               do j=i, n
@@ -7109,6 +7121,79 @@ module eos_sensor_simd
               return
            end if
        end subroutine rect_pulse_flux_unroll_4x_ymm4r8
+
+
+
+       subroutine rect_pulse_amp_unroll_16x_zmm16r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_16x_zmm16r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_16x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_16x_zmm16r4
+           use mod_fpcompare, only : zmm16r4_equalto_zmm16r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM16r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM16r4_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM16r4_t),                intent(in)  :: tin
+           type(ZMM16r4_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_sp)
+           type(ZMM16r4_t), parameter :: two = ZMM16r4_t(2.0_sp)
+           type(ZMM16r4_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(ZMM16r4_t) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           !dir$ attributes align : 64 :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           type(ZMM16r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(ZMM16r4_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(ZMM16r4_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(ZMM16r4_t) :: k8,k9,k10,k11,k12,k13,k14,k15
+           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(ZMM16r4_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask16_t) :: m
+           real(kind=sp)  :: k,arg,phik
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<16) return
+           twoT = two.v/T.v
+           m = zmm16r4_equalto_zmm16r4(tin,twoT)
+           if(all(m)) then
+              if(n==16) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>16 .and. n<=256) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>256) then
+
+             
+       end subroutine rect_pulse_amp_unroll_16x_zmm16r4
 
  
 
