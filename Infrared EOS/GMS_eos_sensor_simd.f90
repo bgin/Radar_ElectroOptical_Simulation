@@ -7148,13 +7148,13 @@ module eos_sensor_simd
            type(ZMM16r4_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
            !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
            type(ZMM16r4_t) :: k0,k1,k2,k3,k4,k5,k6,k7
-           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           !dir$ attributes align : 64 :: k0,k1,k2,k3,k4,k5,k6,k7
            type(ZMM16r4_t) :: k8,k9,k10,k11,k12,k13,k14,k15
-           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           !dir$ attributes align : 64 :: k8,k9,k10,k11,k12,k13,k14,k15
            type(ZMM16r4_t) :: twoT,kpi2
            !dir$ attributes align : 64 :: twoT,kpi2
            type(Mask16_t) :: m
-           real(kind=sp)  :: k,arg,phik
+           real(kind=sp)  :: k,arg,phikx
            integer(kind=i4) :: i,ii,j,idx
            if(n<16) return
            twoT = two.v/T.v
@@ -7191,9 +7191,1605 @@ module eos_sensor_simd
                  end do
                  return
              else if(n>256) then
-
-             
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),256
+                    call mm_prefetch(k(i*256),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+16)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+32)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+48)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+64)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+64) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+80)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+80) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+96)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+96) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+112)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+112)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                         k8.v(ii)   = k(idx+128)
+                         arg8.v(ii) = k8.v(ii)*pi2.v(ii)
+                         Ak(idx+128)= Phi0.v(ii)*(sin(arg8.v(ii))/arg8.v(ii))
+                         k9.v(ii)   = k(idx+144)
+                         arg9.v(ii) = k9.v(ii)*pi2.v(ii)
+                         Ak(idx+144)= Phi0.v(ii)*(sin(arg9.v(ii))/arg9.v(ii))
+                         k10.v(ii)  = k(idx+160)
+                         arg10.v(ii)= k10.v(ii)*pi2.v(ii)
+                         Ak(idx+160)= Phi0.v(ii)*(sin(arg10.v(ii))/arg10.v(ii))
+                         k11.v(ii)  = k(idx+176)
+                         arg11.v(ii)= k11.v(ii)*pi2.v(ii)
+                         Ak(idx+176)= Phi0.v(ii)*(sin(arg11.v(ii))/arg11.v(ii))
+                         k12.v(ii)  = k(idx+192)
+                         arg12.v(ii)= k12.v(ii)*pi2.v(ii)
+                         Ak(idx+192)= Phi0.v(ii)*(sin(arg12.v(ii))/arg12.v(ii))
+                         k13.v(ii)  = k(idx+208)
+                         arg13.v(ii)= k13.v(ii)*pi2.v(ii)
+                         Ak(idx+208)= Phi0.v(ii)*(sin(arg13.v(ii))/arg13.v(ii))
+                         k14.v(ii)  = k(idx+224)
+                         arg14.v(ii)= k14.v(ii)*pi2.v(ii)
+                         Ak(idx+224)= Phi0.v(ii)*(sin(arg14.v(ii))/arg14.v(ii))
+                         k15.v(ii)  = k(idx+240)
+                         arg15.v(ii)= k15.v(ii)*pi2.v(ii)
+                         Ak(idx+240)= Phi0.v(ii)*(sin(arg15.v(ii))/arg15.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==16) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>16 .and. n<=256) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>256) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),256
+                    call mm_prefetch(Phik(i*256),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+64)
+                         Ak(idx+64)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+80)
+                         Ak(idx+80)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+96)
+                         Ak(idx+96)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+112)
+                         Ak(idx+112) = twoT.v(ii)*phik7.v(ii)
+                         phik8.v(ii) = Phik(idx+128)
+                         Ak(idx+128) = twoT.v(ii)*phik8.v(ii)
+                         phik9.v(ii) = Phik(idx+144)
+                         Ak(idx+144) = twoT.v(ii)*phik9.v(ii)
+                         phik10.v(ii)= Phik(idx+160)
+                         Ak(idx+160) = twoT.v(ii)*phik10.v(ii)
+                         phik11.v(ii)= Phik(idx+176)
+                         Ak(idx+176) = twoT.v(ii)*phik11.v(ii)
+                         phik12.v(ii)= Phik(idx+192)
+                         Ak(idx+192) = twoT.v(ii)*phik12.v(ii)
+                         phik13.v(ii)= Phik(idx+208)
+                         Ak(idx+208) = twoT.v(ii)*phik13.v(ii) 
+                         phik14.v(ii)= Phik(idx+224)
+                         Ak(idx+224) = twoT.v(ii)*phik14.v(ii)
+                         phik15.v(ii)= Phik(idx+240)
+                         Ak(idx+240) = twoT.v(ii)*phik15.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
        end subroutine rect_pulse_amp_unroll_16x_zmm16r4
+
+
+       subroutine rect_pulse_amp_unroll_8x_zmm16r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_8x_zmm16r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_8x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_8x_zmm16r4
+           use mod_fpcompare, only : zmm16r4_equalto_zmm16r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM16r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM16r4_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM16r4_t),                intent(in)  :: tin
+           type(ZMM16r4_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_sp)
+           type(ZMM16r4_t), parameter :: two = ZMM16r4_t(2.0_sp)
+           type(ZMM16r4_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(ZMM16r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(ZMM16r4_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 64 :: k0,k1,k2,k3,k4,k5,k6,k7
+           type(ZMM16r4_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask16_t) :: m
+           real(kind=sp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<16) return
+           twoT = two.v/T.v
+           m = zmm16r4_equalto_zmm16r4(tin,twoT)
+           if(all(m)) then
+              if(n==16) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>16 .and. n<=128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),128
+                    call mm_prefetch(k(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+16)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+32)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+48)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+64)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+64) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+80)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+80) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+96)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+96) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+112)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+112)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==16) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>16 .and. n<=128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),128
+                    call mm_prefetch(Phik(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+64)
+                         Ak(idx+64)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+80)
+                         Ak(idx+80)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+96)
+                         Ak(idx+96)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+112)
+                         Ak(idx+112) = twoT.v(ii)*phik7.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_8x_zmm16r4
+
+
+       subroutine rect_pulse_amp_unroll_4x_zmm16r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_4x_zmm16r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_4x_zmm16r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_4x_zmm16r4
+           use mod_fpcompare, only : zmm16r4_equalto_zmm16r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM16r4_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM16r4_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM16r4_t),                intent(in)  :: tin
+           type(ZMM16r4_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_sp)
+           type(ZMM16r4_t), parameter :: two = ZMM16r4_t(2.0_sp)
+           type(ZMM16r4_t) :: phik0,phik1,phik2,phik3
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3
+           type(ZMM16r4_t) :: arg0,arg1,arg2,arg3
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3
+           type(ZMM16r4_t) :: k0,k1,k2,k3
+           !dir$ attributes align : 64 :: k0,k1,k2,k3
+           type(ZMM16r4_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask16_t) :: m
+           real(kind=sp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<16) return
+           twoT = two.v/T.v
+           m = zmm16r4_equalto_zmm16r4(tin,twoT)
+           if(all(m)) then
+              if(n==16) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>16 .and. n<=64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(15)),64
+                    call mm_prefetch(k(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+16)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+32)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+48)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==16) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>16 .and. n<=64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),16
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(15)),64
+                    call mm_prefetch(Phik(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,15
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik3.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=16,min=1,avg=8
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_4x_zmm16r4
+
+
+
+       subroutine rect_pulse_amp_unroll_16x_zmm8r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_16x_zmm8r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_16x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_16x_zmm8r8
+           use mod_fpcompare, only : zmm8r8_equalto_zmm8r8
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM8r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM8r8_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM8r8_t),                intent(in)  :: tin
+           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(ZMM8r8_t) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           !dir$ attributes align : 64 :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           type(ZMM8r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(ZMM8r8_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           !dir$ attributes align : 64 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(ZMM8r8_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 64 :: k0,k1,k2,k3,k4,k5,k6,k7
+           type(ZMM8r8_t) :: k8,k9,k10,k11,k12,k13,k14,k15
+           !dir$ attributes align : 64 :: k8,k9,k10,k11,k12,k13,k14,k15
+           type(ZMM8r8_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=dp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = zmm8r8_equalto_zmm8r8(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),128
+                    call mm_prefetch(k(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+32)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+40)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+40) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+48)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+56)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+56)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                         k8.v(ii)   = k(idx+64)
+                         arg8.v(ii) = k8.v(ii)*pi2.v(ii)
+                         Ak(idx+64)= Phi0.v(ii)*(sin(arg8.v(ii))/arg8.v(ii))
+                         k9.v(ii)   = k(idx+72)
+                         arg9.v(ii) = k9.v(ii)*pi2.v(ii)
+                         Ak(idx+72)= Phi0.v(ii)*(sin(arg9.v(ii))/arg9.v(ii))
+                         k10.v(ii)  = k(idx+80)
+                         arg10.v(ii)= k10.v(ii)*pi2.v(ii)
+                         Ak(idx+80)= Phi0.v(ii)*(sin(arg10.v(ii))/arg10.v(ii))
+                         k11.v(ii)  = k(idx+88)
+                         arg11.v(ii)= k11.v(ii)*pi2.v(ii)
+                         Ak(idx+88)= Phi0.v(ii)*(sin(arg11.v(ii))/arg11.v(ii))
+                         k12.v(ii)  = k(idx+96)
+                         arg12.v(ii)= k12.v(ii)*pi2.v(ii)
+                         Ak(idx+96)= Phi0.v(ii)*(sin(arg12.v(ii))/arg12.v(ii))
+                         k13.v(ii)  = k(idx+104)
+                         arg13.v(ii)= k13.v(ii)*pi2.v(ii)
+                         Ak(idx+104)= Phi0.v(ii)*(sin(arg13.v(ii))/arg13.v(ii))
+                         k14.v(ii)  = k(idx+112)
+                         arg14.v(ii)= k14.v(ii)*pi2.v(ii)
+                         Ak(idx+112)= Phi0.v(ii)*(sin(arg14.v(ii))/arg14.v(ii))
+                         k15.v(ii)  = k(idx+120)
+                         arg15.v(ii)= k15.v(ii)*pi2.v(ii)
+                         Ak(idx+120)= Phi0.v(ii)*(sin(arg15.v(ii))/arg15.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),128
+                    call mm_prefetch(Phik(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+40)
+                         Ak(idx+40)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+56)
+                         Ak(idx+56) = twoT.v(ii)*phik7.v(ii)
+                         phik8.v(ii) = Phik(idx+64)
+                         Ak(idx+64) = twoT.v(ii)*phik8.v(ii)
+                         phik9.v(ii) = Phik(idx+72)
+                         Ak(idx+72) = twoT.v(ii)*phik9.v(ii)
+                         phik10.v(ii)= Phik(idx+80)
+                         Ak(idx+80) = twoT.v(ii)*phik10.v(ii)
+                         phik11.v(ii)= Phik(idx+88)
+                         Ak(idx+88) = twoT.v(ii)*phik11.v(ii)
+                         phik12.v(ii)= Phik(idx+96)
+                         Ak(idx+96) = twoT.v(ii)*phik12.v(ii)
+                         phik13.v(ii)= Phik(idx+104)
+                         Ak(idx+104) = twoT.v(ii)*phik13.v(ii) 
+                         phik14.v(ii)= Phik(idx+112)
+                         Ak(idx+112) = twoT.v(ii)*phik14.v(ii)
+                         phik15.v(ii)= Phik(idx+120)
+                         Ak(idx+120) = twoT.v(ii)*phik15.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_16x_zmm8r8
+
+
+       
+       subroutine rect_pulse_amp_unroll_8x_zmm8r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_8x_zmm8r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_8x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_8x_zmm8r8
+           use mod_fpcompare, only : zmm8r8_equalto_zmm8r8
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM8r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM8r8_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM8r8_t),                intent(in)  :: tin
+           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(ZMM8r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(ZMM8r8_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 64 :: k0,k1,k2,k3,k4,k5,k6,k7
+           type(ZMM8r8_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=dp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = zmm8r8_equalto_zmm8r8(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),64
+                    call mm_prefetch(k(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+32)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+40)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+40) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+48)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+56)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+56)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>64) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),64
+                    call mm_prefetch(Phik(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+40)
+                         Ak(idx+40)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+56)
+                         Ak(idx+56) = twoT.v(ii)*phik7.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_8x_zmm8r8
+
+
+
+       subroutine rect_pulse_amp_unroll_4x_zmm8r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_4x_zmm8r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_4x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_4x_zmm8r8
+           use mod_fpcompare, only : zmm8r8_equalto_zmm8r8
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           type(ZMM8r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(ZMM8r8_t),                intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(ZMM8r8_t),                intent(in)  :: tin
+           type(ZMM8r8_t), parameter :: pi2 = ZMM16r4_t(1.5707963267948966192313216916398_dp)
+           type(ZMM8r8_t), parameter :: two = ZMM16r4_t(2.0_dp)
+           type(ZMM8r8_t) :: phik0,phik1,phik2,phik3
+           !dir$ attributes align : 64 :: phik0,phik1,phik2,phik3
+           type(ZMM8r8_t) :: arg0,arg1,arg2,arg3
+           !dir$ attributes align : 64 :: arg0,arg1,arg2,arg3
+           type(ZMM8r8_t) :: k0,k1,k2,k3
+           !dir$ attributes align : 64 :: k0,k1,k2,k3
+           type(ZMM8r8_t) :: twoT,kpi2
+           !dir$ attributes align : 64 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=dp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = zmm8r8_equalto_zmm8r8(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=32) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>32) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned k:64
+                 do i=1,iand(n,not(7)),32
+                    call mm_prefetch(k(i*32),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=32) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>32) then
+                 !dir$ assume_aligned Ak:64           
+                 !dir$ assume_aligned Phik:64
+                 do i=1,iand(n,not(7)),32
+                    call mm_prefetch(Phik(i*32),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_4x_zmm8r8
+
+
+
+       
+       subroutine rect_pulse_amp_unroll_16x_ymm8r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_16x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_16x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_16x_ymm8r4
+           use mod_fpcompare, only : ymm8r4_equalto_ymm8r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(YMM8r4_t),                 intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(YMM8r4_t),                 intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(YMM8r4_t),                 intent(in)  :: tin
+           type(YMM8r4_t), parameter :: pi2 = YMM8r4_t(1.5707963267948966192313216916398_sp)
+           type(YMM8r4_t), parameter :: two = YMM8r4_t(2.0_sp)
+           type(YMM8r4_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 32 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(YMM8r4_t) :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           !dir$ attributes align : 32 :: phik8,phik9,phik10,phik11,phik12,phik13,phik14,phik15
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(YMM8r4_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           !dir$ attributes align : 32 :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           type(YMM8r4_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 32 :: k0,k1,k2,k3,k4,k5,k6,k7
+           type(YMM8r4_t) :: k8,k9,k10,k11,k12,k13,k14,k15
+           !dir$ attributes align : 32 :: k8,k9,k10,k11,k12,k13,k14,k15
+           type(YMM8r4_t) :: twoT,kpi2
+           !dir$ attributes align : 32 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=sp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = ymm8r4_equalto_ymm8r4(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=128) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:32          
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),128
+                    call mm_prefetch(k(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+32)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+40)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+40) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+48)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+56)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+56)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                         k8.v(ii)   = k(idx+64)
+                         arg8.v(ii) = k8.v(ii)*pi2.v(ii)
+                         Ak(idx+64)= Phi0.v(ii)*(sin(arg8.v(ii))/arg8.v(ii))
+                         k9.v(ii)   = k(idx+72)
+                         arg9.v(ii) = k9.v(ii)*pi2.v(ii)
+                         Ak(idx+72)= Phi0.v(ii)*(sin(arg9.v(ii))/arg9.v(ii))
+                         k10.v(ii)  = k(idx+80)
+                         arg10.v(ii)= k10.v(ii)*pi2.v(ii)
+                         Ak(idx+80)= Phi0.v(ii)*(sin(arg10.v(ii))/arg10.v(ii))
+                         k11.v(ii)  = k(idx+88)
+                         arg11.v(ii)= k11.v(ii)*pi2.v(ii)
+                         Ak(idx+88)= Phi0.v(ii)*(sin(arg11.v(ii))/arg11.v(ii))
+                         k12.v(ii)  = k(idx+96)
+                         arg12.v(ii)= k12.v(ii)*pi2.v(ii)
+                         Ak(idx+96)= Phi0.v(ii)*(sin(arg12.v(ii))/arg12.v(ii))
+                         k13.v(ii)  = k(idx+104)
+                         arg13.v(ii)= k13.v(ii)*pi2.v(ii)
+                         Ak(idx+104)= Phi0.v(ii)*(sin(arg13.v(ii))/arg13.v(ii))
+                         k14.v(ii)  = k(idx+112)
+                         arg14.v(ii)= k14.v(ii)*pi2.v(ii)
+                         Ak(idx+112)= Phi0.v(ii)*(sin(arg14.v(ii))/arg14.v(ii))
+                         k15.v(ii)  = k(idx+120)
+                         arg15.v(ii)= k15.v(ii)*pi2.v(ii)
+                         Ak(idx+120)= Phi0.v(ii)*(sin(arg15.v(ii))/arg15.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=128) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>128) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),128
+                    call mm_prefetch(Phik(i*128),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+40)
+                         Ak(idx+40)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+56)
+                         Ak(idx+56) = twoT.v(ii)*phik7.v(ii)
+                         phik8.v(ii) = Phik(idx+64)
+                         Ak(idx+64) = twoT.v(ii)*phik8.v(ii)
+                         phik9.v(ii) = Phik(idx+72)
+                         Ak(idx+72) = twoT.v(ii)*phik9.v(ii)
+                         phik10.v(ii)= Phik(idx+80)
+                         Ak(idx+80) = twoT.v(ii)*phik10.v(ii)
+                         phik11.v(ii)= Phik(idx+88)
+                         Ak(idx+88) = twoT.v(ii)*phik11.v(ii)
+                         phik12.v(ii)= Phik(idx+96)
+                         Ak(idx+96) = twoT.v(ii)*phik12.v(ii)
+                         phik13.v(ii)= Phik(idx+104)
+                         Ak(idx+104) = twoT.v(ii)*phik13.v(ii) 
+                         phik14.v(ii)= Phik(idx+112)
+                         Ak(idx+112) = twoT.v(ii)*phik14.v(ii)
+                         phik15.v(ii)= Phik(idx+120)
+                         Ak(idx+120) = twoT.v(ii)*phik15.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_16x_ymm8r4
+
+
+
+       subroutine rect_pulse_amp_unroll_8x_ymm8r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_8x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_8x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_8x_ymm8r4
+           use mod_fpcompare, only : ymm8r4_equalto_ymm8r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(YMM8r4_t),                 intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(YMM8r4_t),                 intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(YMM8r4_t),                 intent(in)  :: tin
+           type(YMM8r4_t), parameter :: pi2 = YMM8r4_t(1.5707963267948966192313216916398_sp)
+           type(YMM8r4_t), parameter :: two = YMM8r4_t(2.0_sp)
+           type(YMM8r4_t) :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           !dir$ attributes align : 32 :: phik0,phik1,phik2,phik3,phik4,phik5,phik6,phik7
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           type(YMM8r4_t) :: k0,k1,k2,k3,k4,k5,k6,k7
+           !dir$ attributes align : 32 :: k0,k1,k2,k3,k4,k5,k6,k7
+           type(YMM8r4_t) :: twoT,kpi2
+           !dir$ attributes align : 32 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=sp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = ymm8r4_equalto_ymm8r4(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=64) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>64) then
+                 !dir$ assume_aligned Ak:32          
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),64
+                    call mm_prefetch(k(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                         k4.v(ii)   = k(idx+32)
+                         arg4.v(ii) = k4.v(ii)*pi2.v(ii)
+                         Ak(idx+32) = Phi0.v(ii)*(sin(arg4.v(ii))/arg4.v(ii))
+                         k5.v(ii)   = k(idx+40)
+                         arg5.v(ii) = k5.v(ii)*pi2.v(ii)
+                         Ak(idx+40) = Phi0.v(ii)*(sin(arg5.v(ii))/arg5.v(ii))
+                         k6.v(ii)   = k(idx+48)
+                         arg6.v(ii) = k6.v(ii)*pi2.v(ii)
+                         Ak(idx+48) = Phi0.v(ii)*(sin(arg6.v(ii))/arg6.v(ii))
+                         k7.v(ii)   = k(idx+56)
+                         arg7.v(ii) = k7.v(ii)*pi2.v(ii)
+                         Ak(idx+56)= Phi0.v(ii)*(sin(arg7.v(ii))/arg7.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=64) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>64) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),64
+                    call mm_prefetch(Phik(i*64),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                         phik4.v(ii) = Phik(idx+32)
+                         Ak(idx+32)  = twoT.v(ii)*phik4.v(ii)
+                         phik5.v(ii) = Phik(idx+40)
+                         Ak(idx+40)  = twoT.v(ii)*phik5.v(ii)
+                         phik6.v(ii) = Phik(idx+48)
+                         Ak(idx+48)  = twoT.v(ii)*phik6.v(ii)
+                         phik7.v(ii) = Phik(idx+56)
+                         Ak(idx+56) = twoT.v(ii)*phik7.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_8x_ymm8r4
+
+
+
+       subroutine rect_pulse_amp_unroll_4x_ymm8r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_4x_ymm8r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_4x_ymm8r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_4x_ymm8r4
+           use mod_fpcompare, only : ymm8r4_equalto_ymm8r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           type(YMM8r4_t),                 intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           type(YMM8r4_t),                 intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           type(YMM8r4_t),                 intent(in)  :: tin
+           type(YMM8r4_t), parameter :: pi2 = YMM8r4_t(1.5707963267948966192313216916398_sp)
+           type(YMM8r4_t), parameter :: two = YMM8r4_t(2.0_sp)
+           type(YMM8r4_t) :: phik0,phik1,phik2,phik3
+           !dir$ attributes align : 32 :: phik0,phik1,phik2,phik3
+           type(YMM8r4_t) :: arg0,arg1,arg2,arg3
+           !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3
+           type(YMM8r4_t) :: k0,k1,k2,k3
+           !dir$ attributes align : 32 :: k0,k1,k2,k3
+           type(YMM8r4_t) :: twoT,kpi2
+           !dir$ attributes align : 32 :: twoT,kpi2
+           type(Mask8_t) :: m
+           real(kind=sp)  :: k,arg,phikx
+           integer(kind=i4) :: i,ii,j,idx
+           if(n<8) return
+           twoT = two.v/T.v
+           m = ymm8r4_equalto_ymm8r4(tin,twoT)
+           if(all(m)) then
+              if(n==8) then
+                 do i=1,n
+                    k     = k(i)
+                    arg   = k0*pi2.v(0)
+                    Ak(i) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+              else if(n>8 .and. n<=32) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx        = ii+i
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+             else if(n>32) then
+                 !dir$ assume_aligned Ak:32          
+                 !dir$ assume_aligned k:32
+                 do i=1,iand(n,not(7)),32
+                    call mm_prefetch(k(i*32),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         k0.v(ii)   = k(idx)
+                         arg0.v(ii) = k0.v(ii)*pi2.v(ii)
+                         Ak(idx)    = Phi0.v(ii)*(sin(arg0.v(ii))/arg0.v(ii))
+                         k1.v(ii)   = k(idx+8)
+                         arg1.v(ii) = k1.v(ii)*pi2.v(ii)
+                         Ak(idx+8) = Phi0.v(ii)*(sin(arg1.v(ii))/arg1.v(ii))
+                         k2.v(ii)   = k(idx+16)
+                         arg2.v(ii) = k2.v(ii)*pi2.v(ii)
+                         Ak(idx+16) = Phi0.v(ii)*(sin(arg2.v(ii))/arg2.v(ii))
+                         k3.v(ii)   = k(idx+24)
+                         arg3.v(ii) = k3.v(ii)*pi2.v(ii)
+                         Ak(idx+24) = Phi0.v(ii)*(sin(arg3.v(ii))/arg3.v(ii))
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                    k     = k(j)
+                    arg   = k0*pi2.v(0)
+                    Ak(j) = Phi0.v(0)*(sin(arg0)/arg0)
+                 end do
+                 return
+            else
+              if(n==8) then
+                 do i=1,n
+                    phikx = Phik(i)
+                    Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              else if(n>8 .and. n<=32) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),8
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx         = ii+i
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                      end do
+                  end do
+                  ! Remainder loop
+                  !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+             else if(n>32) then
+                 !dir$ assume_aligned Ak:32           
+                 !dir$ assume_aligned Phik:32
+                 do i=1,iand(n,not(7)),32
+                    call mm_prefetch(Phik(i*32),FOR_K_PREFETCH_T1)
+                      !dir$ vector aligned
+                      !dir$ ivdep
+                      !dir$ vector vectorlength(8)
+                      !dir$ vector always
+                      do ii=0,7
+                         idx = i+ii
+                         phik0.v(ii) = Phik(idx)
+                         Ak(idx)     = twoT.v(ii)*phik0.v(ii)
+                         phik1.v(ii) = Phik(idx+8)
+                         Ak(idx+8)  = twoT.v(ii)*phik1.v(ii)
+                         phik2.v(ii) = Phik(idx+16)
+                         Ak(idx+16)  = twoT.v(ii)*phik2.v(ii)
+                         phik3.v(ii) = Phik(idx+24)
+                         Ak(idx+24)  = twoT.v(ii)*phik3.v(ii)
+                      end do
+                  end do
+                   ! Remainder loop
+                   !dir$ loop_count max=8,min=1,avg=4
+                  do j=i,n
+                     phikx = Phik(i)
+                     Ak(i) = twoT.v(0)*phikx
+                 end do
+                 return
+              end if
+           end if
+       end subroutine rect_pulse_amp_unroll_4x_ymm8r4
+
+
+
+
+
+       
+
+
+
+       
+
+
+
+
+
+       
+
 
  
 
