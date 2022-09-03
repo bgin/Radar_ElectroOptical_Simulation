@@ -6899,6 +6899,221 @@ module eos_sensor_simd
               return
            end if
        end subroutine rect_pulse_flux_unroll_16x_ymm4r8
+
+
+       subroutine rect_pulse_flux_unroll_8x_ymm4r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_8x_ymm4r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_8x_ymm4r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_8x_ymm4r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           type(YMM4r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM4r8_t),                intent(in)  :: Tin
+           type(YMM4r8_t), parameter :: twopi = YMM4r8_t(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t), parameter :: half  = YMM4r8_t(0.5_dp)
+           type(YMM4r8_t) :: fk0,fk1,fk2,fk3,fk4,fk5,fk6,fk7
+           type(YMM4r8_t) :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           type(YMM4r8_t) :: arg0,arg1,arg2,arg3,arg4,arg,arg6,arg7
+           type(YMM4r8_t) :: hTin,Phi0fk
+           real(kind=sp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<4) then
+              return
+           else if(n==4) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>4 .and. n<=32) then
+              !dir$ assume_aligned fk:32          
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(3)),4
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=4,min=1,avg=2
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>64) then
+              !dir$ assume_aligned fk:32           
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(3)),32
+                  call mm_prefetch(freq(i*32),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+4)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+4) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+8)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+12)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+12) = Phi0fk.v(ii)*sinc3.v(ii)  
+                      fk4          = fk(idx+16)
+                      arg4         = twopi.v(ii)*fk4.v(ii)*hThin.v(ii)
+                      sinc4        = sin(arg4.v(ii))/arg4.v(ii)
+                      Phik(idx+16) = Phi0fk.v(ii)*sinc4.v(ii) 
+                      fk5          = fk(idx+20)
+                      arg5         = twopi.v(ii)*fk5.v(ii)*hThin.v(ii)
+                      sinc5        = sin(arg5.v(ii))/arg5.v(ii)
+                      Phik(idx+20) = Phi0fk.v(ii)*sinc5.v(ii)
+                      fk6          = fk(idx+24)
+                      arg6         = twopi.v(ii)*fk6.v(ii)*hThin.v(ii)
+                      sinc6        = sin(arg6.v(ii))/arg6.v(ii)
+                      Phik(idx+24) = Phi0fk.v(ii)*sinc6.v(ii)  
+                      fk7          = fk(idx+28)
+                      arg7         = twopi.v(ii)*fk7.v(ii)*hThin.v(ii)
+                      sinc7        = sin(arg7.v(ii))/arg7.v(ii)
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_8x_ymm4r8
+
+
+
+       subroutine rect_pulse_flux_unroll_4x_ymm4r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_4x_ymm4r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_unroll_4x_ymm4r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_unroll_4x_ymm4r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           type(YMM4r8_t),                intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           type(YMM4r8_t),                intent(in)  :: Tin
+           type(YMM4r8_t), parameter :: twopi = YMM4r8_t(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t), parameter :: half  = YMM4r8_t(0.5_dp)
+           type(YMM4r8_t) :: fk0,fk1,fk2,fk3
+           type(YMM4r8_t) :: sinc0,sinc1,sinc2,sinc3
+           type(YMM4r8_t) :: arg0,arg1,arg2,arg3
+           type(YMM4r8_t) :: hTin,Phi0fk
+           real(kind=sp)   :: fk,sinc,arg
+           integer(kind=i4) :: i,ii,j,idx
+           hTin.v   = half.v*Tin.v
+           Phi0fk.v = Phi0.v*Tin.v
+           if(n<4) then
+              return
+           else if(n==4) then
+              do i=1,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           else if(n>4 .and. n<=16) then
+              !dir$ assume_aligned fk:32          
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(3)),4
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                      fk0   = fk(ii+i)
+                      arg0  = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0 = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i) = Phi0fk.v(ii)*sinc0.v(ii) 
+                   end do
+               end do
+               ! Remainder loop
+               !dir$ loop_count max=4,min=1,avg=2
+               do j=i,n
+                  fk       = fk(j)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(j)  = Phi0fk.v(0)*sinc
+               end do
+               return
+           else if(n>64) then
+              !dir$ assume_aligned fk:32           
+              !dir$ assume_aligned Phik:32
+              do i=1,iand(n,not(3)),16
+                  call mm_prefetch(freq(i*16),FOR_K_PREFETCH_T1)
+                
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(8)
+                   !dir$ vector always
+                   do ii=0,3
+                      idx          = ii+i
+                      fk0          = fk(ii+i)
+                      arg0         = twopi.v(ii)*fk0.v(ii)*hThin.v(ii)
+                      sinc0        = sin(arg0.v(ii))/arg0.v(ii)
+                      Phik(ii+i)   = Phi0fk.v(ii)*sinc0.v(ii) 
+                      fk1          = fk(idx+4)
+                      arg1         = twopi.v(ii)*fk1.v(ii)*hThin.v(ii)
+                      sinc1        = sin(arg1.v(ii))/arg1.v(ii)
+                      Phik(idx+4) = Phi0fk.v(ii)*sinc1.v(ii) 
+                      fk2          = fk(idx+8)
+                      arg2         = twopi.v(ii)*fk2.v(ii)*hThin.v(ii)
+                      sinc2        = sin(arg2.v(ii))/arg2.v(ii)
+                      Phik(idx+8) = Phi0fk.v(ii)*sinc2.v(ii)
+                      fk3          = fk(idx+12)
+                      arg3         = twopi.v(ii)*fk3.v(ii)*hThin.v(ii)
+                      sinc3        = sin(arg3.v(ii))/arg3.v(ii)
+                      Phik(idx+12) = Phi0fk.v(ii)*sinc3.v(ii)  
+                   end do
+               end do
+                ! Remainder loop
+              !dir$ loop_count max=4,min=1,avg=2
+              do j=i,n
+                  fk       = fk(i)
+                  arg      = twopi.v(0)*fk*hTin.v(0)
+                  sinc     = sin(arg)/arg
+                  Phik(i)  = Phi0fk.v(0)*sinc
+              end do
+              return
+           end if
+       end subroutine rect_pulse_flux_unroll_4x_ymm4r8
+
+ 
+
+
+       
   
 
       
