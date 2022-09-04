@@ -46,7 +46,7 @@ module quadpack
 
     abstract interface
 
-        real(kind=dp) function func(x,)
+        real(kind=dp) function func(x)
         !! interface for user-supplied function.
             import :: dp
             implicit none
@@ -95,7 +95,7 @@ module quadpack
 !  * QUADPACK: date written 800101, revision date 830518 (yymmdd)
 
     recursive subroutine dqag(f, a, b, Epsabs, Epsrel, Key, Result, Abserr, Neval, Ier, &
-                    Limit, Lenw, Last, Iwork, Work,)
+                    Limit, Lenw, Last, Iwork, Work)
 
         implicit none
 
@@ -236,7 +236,7 @@ module quadpack
 !  * QUADPACK: date written 800101, revision date 830518 (yymmdd)
 
     recursive subroutine dqage(f, a, b, Epsabs, Epsrel, Key, Limit, Result, Abserr, &
-                     Neval, Ier, Alist, Blist, Rlist, Elist, Iord, Last,)
+                     Neval, Ier, Alist, Blist, Rlist, Elist, Iord, Last)
         implicit none
 
         procedure(func) :: f !! function subprogram defining the integrand function `f(x)`.
