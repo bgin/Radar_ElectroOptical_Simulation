@@ -635,7 +635,7 @@ module eos_sensor
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: traj_scan_dydt_r4
          !dir$ attributes forceinline :: traj_scan_dydt_r4
-         real(kind=sp), dimension(0:1), intent(in) :: dx=y
+         real(kind=sp), dimension(0:1), intent(in) :: dy
          real(kind=sp), dimension(0:1), intent(in) :: dt
          real(kind=sp) :: dydt
          dxdt = dy(1)-dy(0)/(dt(1)-dt(0))
