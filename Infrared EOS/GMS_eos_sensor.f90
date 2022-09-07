@@ -719,38 +719,10 @@ module eos_sensor
    
 
 
-      pure function fov_y_axis_zmm16r4(H,delta,gamma) result(ay)
-         !dir$ optimize:3
-         !dir$ attributes code_align : 32 :: fov_y_axis_zmm16r4
-         !dir$ attributes forceinline :: fov_y_axis_zmm16r4
-         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_y_axis_zmm16r4
-         type(ZMM16r4_t),   intent(in) :: H
-         type(ZMM16r4_t),   intent(in) :: delta
-         type(ZMM16r4_t),   intent(in) :: gamma
-         type(ZMM16r4_t) :: ay
-         type(ZMM16r4_t), parameter :: half = ZMM16r4_t(0.5_sp)
-         type(ZMM16r4_t), automatic :: ax,t0
-         t0  = half.v*gamma
-         ax  = fov_x_axis_zmm16r4(H,delta,gamma)
-         ay  = ax.v*cos(t0.v)
-      end function fov_y_axis_zmm16r4
+     
        
 
-      pure function fov_y_axis_zmm8r8(H,delta,gamma) result(ay)
-         !dir$ optimize:3
-         !dir$ attributes code_align : 32 :: fov_y_axis_zmm8r8
-         !dir$ attributes forceinline :: fov_y_axis_zmm8r8
-         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_y_axis_zmm8r8
-         type(ZMM8r8_t),   intent(in) :: H
-         type(ZMM8r8_t),   intent(in) :: delta
-         type(ZMM8r8_t),   intent(in) :: gamma
-         type(ZMM8r8_t) :: ay
-         type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5_dp)
-         type(ZMM8r8_t), automatic :: ax,t0
-         t0  = half.v*gamma
-         ax  = fov_x_axis_zmm16r4(H,delta,gamma)
-         ay  = ax.v*cos(t0.v)
-      end function fov_y_axis_zmm8r8
+     
 
 
       !Если рабочая зона сканирования ограничена углом G, то
