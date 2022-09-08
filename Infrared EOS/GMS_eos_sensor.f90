@@ -1323,56 +1323,10 @@ module eos_sensor
         end subroutine paraxial_xdyd_r8
 
 
-        subroutine paraxial_xdyd_zmm16r4(gamma,alpha,n,xd,yd)
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: paraxial_xdyd_zmm16r4
-            !dir$ attributes forceinline ::  paraxial_xdyd_zmm16r4
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  paraxial_xdyd_zmm16r4
-            type(ZMM16r4_t),   intent(in)  :: gamma
-            type(ZMM16r4_t),   intent(in)  :: alpha
-            type(ZMM16r4_t),   intent(in)  :: n
-            type(ZMM16r4_t),   intent(out) :: xd
-            type(ZMM16r4_t),   intent(out) :: yd
-            type(ZMM16r4_t), parameter :: one = ZMM16r4_t(1.0_sp)
-            type(ZMM16r4_t), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
-            n2    = n.v*n.v
-            cosg  = cos(gamma.v)
-            cos2g = cos(gamma.v+gamma.v)
-            sing  = sin(gamma.v)
-            sin4g = sing.v*sing.v*sing.v*sing.v
-            num   = n2.v*cos2g.v+sin4g.v
-            den   = (n2.v-sing.v*sing.v)**1.5_sp
-            xd    = cosg.v-num.v/den.v
-            t0    = sqrt(n2.v-sing.v*sing.v)
-            t1    = one.v-cosg.v/t0.v
-            yd    = sing.v*t1.v
-        end subroutine paraxial_xdyd_zmm16r4
+       
         
         
-        subroutine paraxial_xdyd_zmm8r8(gamma,alpha,n,xd,yd)
-            !dir$ optimize:3
-            !dir$ attributes code_align : 32 :: paraxial_xdyd_zmm8r8
-            !dir$ attributes forceinline ::  paraxial_xdyd_zmm8r8
-            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  paraxial_xdyd_zmm8r8
-            type(ZMM8r8_t),   intent(in)  :: gamma
-            type(ZMM8r8_t),   intent(in)  :: alpha
-            type(ZMM8r8_t),   intent(in)  :: n
-            type(ZMM8r8_t),   intent(out) :: xd
-            type(ZMM8r8_t),   intent(out) :: yd
-            type(ZMM8r8_t), parameter :: one = ZMM8r8_t(1.0_dp)
-            type(ZMM8r8_t), automatic :: n2,cosg,sing,sin4g,sin2g,num,den,cos2g,t0,t1
-            n2    = n.v*n.v
-            cosg  = cos(gamma.v)
-            cos2g = cos(gamma.v+gamma.v)
-            sing  = sin(gamma.v)
-            sin4g = sing.v*sing.v*sing.v*sing.v
-            num   = n2.v*cos2g.v+sin4g.v
-            den   = (n2.v-sing.v*sing.v)**1.5_dp
-            xd    = cosg.v-num.v/den.v
-            t0    = sqrt(n2.v-sing.v*sing.v)
-            t1    = one.v-cosg.v/t0.v
-            yd    = sing.v*t1.v
-        end subroutine paraxial_xdyd_zmm8r8
+       
 
 
         !СКАНИРОВАНИЕ ВРАЩАЮЩИМИСЯ ОБЪЕКТИВАМИ
