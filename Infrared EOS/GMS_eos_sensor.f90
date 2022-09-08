@@ -1237,7 +1237,7 @@ module eos_sensor
            t4   = sqrt(n2-sin2d)
            t1   = sin2d/t4
            dx   = cosg-t2*(t0+t1)
-           t2   = 1.0_sp/(4.0_sp*cos(u2)
+           t2   = 1.0_sp/(4.0_sp*cos(u2))
            dy   = sing-t2*(t0-t1)
         end subroutine compute_xdyd_r4
 
@@ -1268,7 +1268,7 @@ module eos_sensor
            t4   = sqrt(n2-sin2d)
            t1   = sin2d/t4
            dx   = cosg-t2*(t0+t1)
-           t2   = 1.0_dp/(4.0_dp*cos(u2)
+           t2   = 1.0_dp/(4.0_dp*cos(u2))
            dy   = sing-t2*(t0-t1)
         end subroutine compute_xdyd_r8
 
