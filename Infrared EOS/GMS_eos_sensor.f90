@@ -1522,9 +1522,9 @@ module eos_sensor
            real(kind=dp),    dimension(t),     intent(out):: Phit
            integer(kind=i4), dimension(t),     intent(out):: ier
           
-           real(kind=dp) :: ans_x
+           real(kind=dp) :: ans
            integer(kind=i4)  :: i
-           integer(kind=i4)  :: err_x
+           integer(kind=i4)  :: err
            !dir$ assume_aligned rhoE:64
            !dir$ assume_aligned absc:64
            !dir$ assume_aligned Phit:64
