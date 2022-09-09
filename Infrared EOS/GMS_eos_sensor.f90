@@ -1659,7 +1659,7 @@ module eos_sensor
             
             real(kind=dp) :: ans
             integer(kind=i4)  :: i
-            integer(kind=i4)  :: err_x
+            integer(kind=i4)  :: err
             !dir$ assume_aligned rhophi:64
             !dir$ assume_aligned absc:64
             !dir$ assume_aligned ier:64
@@ -1667,7 +1667,7 @@ module eos_sensor
 
 
 !$omp parallel do schedule(runtime)default(none) &
-!$omp private(i,ans,err,ans)         &
+!$omp private(i,ans,err)         &
 !$omp shared(t,rhophi,absc,n,xlo,xup) &
 !$omp shared(rho,ier)
             do i=1, t
@@ -1721,38 +1721,30 @@ module eos_sensor
             !dir$ attributes code_align : 32 ::  raster_opacity_integral_omp_r4
             use quadpack, only : savint
             real(kind=sp),                      intent(in) :: invs
-            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_x
-            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi_y
+            real(kind=sp), dimension(1:n,t),    intent(in) :: rhophi
             real(kind=sp), dimension(1:n),      intent(in) :: absc
             integer(kind=i4),                   intent(in) :: n
             integer(kind=i4),                   intent(in) :: t
             real(kind=sp),                      intent(in) :: xlo
             real(kind=sp),                      intent(in) :: xup
-            real(kind=sp),    dimension(t),     intent(out):: rho_x
-            real(kind=sp),    dimension(t),     intent(out):: rho_y
-            integer(kind=i4), dimension(t),     intent(out):: ier_x
-            integer(kind=i4), dimension(t),     intent(out):: ier_y
-            real(kind=sp) :: ans_x,ans_y
+            real(kind=sp),    dimension(t),     intent(out):: rho
+  
+            integer(kind=i4), dimension(t),     intent(out):: ier
+         
+            real(kind=sp) :: ans
             integer(kind=i4)  :: i
-            integer(kind=i4)  :: err_x,err_y 
-            !dir$ assume_aligned rhophi_x:64
-            !dir$ assume_aligned rhophi_y:64
+            integer(kind=i4)  :: err
+            !dir$ assume_aligned rhophi:64
             !dir$ assume_aligned absc:64
-            !dir$ assume_aligned rho_x:64
-            !dir$ assume_aligned rho_y:64
+            !dir$ assume_aligned rho:64
 
 
 !$omp parallel do schedule(runtime)default(none) &
-!$omp private(i,ans_x,err_x,ans_y,err_y)         &
-!$omp shared(t,rhophi_x,rhophi_y,ansc,n,xlo,xup) &
-!$omp shared(rho_x,rho_y,ier_x,ier_y)
+!$omp private(i,ans,err) shared(t,rhophi,absc,n,xlo,xup)        &
             do i=1, t
-               call savint(rhophi_x(:,t),absc,n,xlo,xup,ans_x,err_x)
-               rho_x(i) = invs*ans_x
-               ier_x(i) = err_x
-               call savint(rhophi_y(:,t),absc,n,xlo,xup,ans_y,err_y)
-               rho_y(i) = invs*ans_y
-               ier_y(i) = err_y
+               call savint(rhophi(:,t),absc,n,xlo,xup,ans,err)
+               rho(i) = invs*ans
+               ier(i) = err
             end do
 !$omp end parallel do
        end subroutine raster_opacity_integral_omp_r4
