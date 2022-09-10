@@ -2473,7 +2473,7 @@ module eos_sensor
             !dir$ vector vectorlength(4)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0        = real(i+0,kind=sp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2533,7 +2533,7 @@ module eos_sensor
             !dir$ vector vectorlength(8)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0        = real(i+0,kind=dp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2593,7 +2593,7 @@ module eos_sensor
             !dir$ vector vectorlength(4)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               t0        = real(i+0,kind=sp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2641,7 +2641,7 @@ module eos_sensor
             !dir$ vector vectorlength(4)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,4
+           do i=1m,n,4
               t0        = real(i+0,kind=dp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2690,7 +2690,7 @@ module eos_sensor
             !dir$ vector vectorlength(4)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0        = real(i+0,kind=sp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2733,7 +2733,7 @@ module eos_sensor
             !dir$ vector vectorlength(4)
             !dir$ vector multiple_gather_scatter_by_shuffles 
             !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0        = real(i+0,kind=dp)
               arg0      = kom0*t0
               sins(i+0) = sin(arg0)
@@ -2810,7 +2810,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               t0         = real(i+0,kind=sp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -2916,7 +2916,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               t0         = real(i+0,kind=dp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3020,7 +3020,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0         = real(i+0,kind=sp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3093,7 +3093,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0         = real(i+0,kind=dp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3166,7 +3166,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               t0         = real(i+0,kind=sp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3222,7 +3222,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               t0         = real(i+0,kind=dp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3279,7 +3279,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0         = real(i+0,kind=sp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3328,7 +3328,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0         = real(i+0,kind=dp)
               arg0       = hpi*t0/tin2
               c0         = cos(arg0)
@@ -3387,7 +3387,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               f0         = freq(i+0)
               c0         = twopi*f0*hT
               sa0        = sin(c0)/c0
@@ -3515,7 +3515,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               f0         = freq(i+0)
               c0         = twopi*f0*hT
               sa0        = sin(c0)/c0
@@ -3639,7 +3639,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               f0         = freq(i+0)
               c0         = twopi*f0*hT
               sa0        = sin(c0)/c0
@@ -3723,7 +3723,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               f0         = freq(i+0)
               c0         = twopi*f0*hT
               sa0        = sin(c0)/c0
@@ -3787,7 +3787,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               f0         = freq(i+0)
               c0         = twopi*f0*hT
               sa0        = sin(c0)/c0
@@ -3854,7 +3854,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               t0          = real(i+0,kind=sp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -3997,7 +3997,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0          = real(i+0,kind=sp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4091,7 +4091,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               t0          = real(i+0,kind=sp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4161,7 +4161,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0          = real(i+0,kind=sp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4223,7 +4223,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
               t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4366,7 +4366,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
               t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4460,7 +4460,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
               t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4530,7 +4530,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
               t0          = real(i+0,kind=dp)
               psi0        = om0*t0+phi0
               s0          = rho0+rho1*sin(psi0)
@@ -4600,7 +4600,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4706,7 +4706,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4780,7 +4780,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4838,7 +4838,7 @@ module eos_sensor
            !dir$ vector vectorlength(4)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,2
+           do i=m1,n,2
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4893,7 +4893,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,16
+           do i=m1,n,16
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -4999,7 +4999,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,8
+           do i=m1,n,8
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -5075,7 +5075,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -5134,7 +5134,7 @@ module eos_sensor
            !dir$ vector vectorlength(8)
            !dir$ vector multiple_gather_scatter_by_shuffles 
            !dir$ vector always
-           do i=1,m1,4
+           do i=m1,n,4
                 fk0       = fk(i+0)
                 arg0      = twopi*fk0*hTin
                 sinc0     = sin(arg0)/arg0
@@ -5191,7 +5191,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,16
+               do i=m1,n,16
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5259,7 +5259,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,16
+               do i=m1,n,16
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5336,7 +5336,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,8
+               do i=m1,n,8
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5380,7 +5380,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,8
+               do i=m1,n,8
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5442,7 +5442,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,4
+               do i=m1,n,4
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5475,7 +5475,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,4
+               do i=m1,n,4
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5529,7 +5529,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,2
+               do i=m1,n,2
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5555,7 +5555,7 @@ module eos_sensor
                !dir$ vector vectorlength(4)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,2
+               do i=m1,n,2
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5609,7 +5609,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,16
+               do i=m1,n,16
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5677,7 +5677,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,16
+               do i=m1,n,16
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5754,7 +5754,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,8
+               do i=m1,n,8
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5798,7 +5798,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,8
+               do i=m1,n,8
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5860,7 +5860,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,4
+               do i=m1,n,4
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5892,7 +5892,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,4
+               do i=m1,n,4
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
@@ -5946,7 +5946,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,2
+               do i=m1,n,2
                     k0      = k(i+0)
                     arg0    = k0*pi2
                     Ak(i+0) = Phi0*(sin(arg0)/arg0) 
@@ -5972,7 +5972,7 @@ module eos_sensor
                !dir$ vector vectorlength(8)
                !dir$ vector multiple_gather_scatter_by_shuffles 
                !dir$ vector always
-               do i=1,m1,2
+               do i=m1,n,2
                     phik0   = Phik(i+0)
                     Ak(i+0) = twoT*phik0
                     phik1   = Phik(i+1)
