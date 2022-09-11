@@ -3931,7 +3931,7 @@ module eos_sensor
               psi12       = om0*t12+phi0
               s12         = rho0+rho1*sin(psi12)
               rhot_s(i+12)= s12
-              c4          = rho0+rho1*cos(psi12)
+              c12          = rho0+rho1*cos(psi12)
               rhot_c(i+12)= c12
               t13         = real(i+13,kind=sp)
               psi13       = om0*t13+phi0
