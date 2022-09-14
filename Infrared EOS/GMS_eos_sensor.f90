@@ -5983,8 +5983,401 @@ module eos_sensor
           end if
        end subroutine rect_pulse_amp_unroll_2x_r8
 
+  
+       !разность полярных углов ф и ф', 
+       !характеризующих положение центра отверстия растра относительно
+       !точек О и О',
+       !Formula 6, p. 191
+       pure elemental function polar_ang_diff_r4(a,R0,phi1,phi2) result(dft)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  polar_ang_diff_r4
+           !dir$ attributes forceinline ::   polar_ang_diff_r4
+           real(kind=sp),    intent(in) :: a
+           real(kind=sp),    intent(in) :: R0
+           real(kind=sp),    intent(in) :: phi1
+           real(kind=sp),    intent(in) :: phi2
+           real(kind=sp) :: dft
+           real(kind=sp),automatic :: t0,t1
+           t0 = a/R0
+           t1 = sin(phi1)-sin(phi2)
+           dft= t0*t1
+       end function polar_ang_diff_r4
+
+       
+       pure elemental function polar_ang_diff_r8(a,R0,phi1,phi2) result(dft)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  polar_ang_diff_r8
+           !dir$ attributes forceinline ::   polar_ang_diff_r8
+           real(kind=dp),    intent(in) :: a
+           real(kind=dp),    intent(in) :: R0
+           real(kind=dp),    intent(in) :: phi1
+           real(kind=dp),    intent(in) :: phi2
+           real(kind=dp) :: dft
+           real(kind=dp),automatic :: t0,t1
+           t0 = a/R0
+           t1 = sin(phi1)-sin(phi2)
+           dft= t0*t1
+       end function polar_ang_diff_r8
 
 
-        
+       pure elemental function modulation_freq_diff_r4(phi1,phi2,a,R0,f0) result(dom)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  modulation_freq_diff_r4
+             !dir$ attributes forceinline ::   modulation_freq_diff_r4
+             real(kind=sp),   intent(in) ::  phi1
+             real(kind=sp),   intent(in) ::  phi2
+             real(kind=sp),   intent(in) ::  a
+             real(kind=sp),   intent(in) ::  R0
+             real(kind=sp),   intent(in) ::  f0
+             real(kind=sp) :: dom
+             real(kind=sp), automatic :: t0,t1,t2
+             t0 = 0.5_sp*(phi1+phi2)
+             t1 = f0*(a/R0)
+             t2 = cos(t0)
+             dom= t1*t2
+       end function modulation_freq_diff_r4
+
+
+       pure elemental function modulation_freq_diff_r8(phi1,phi2,a,R0,f0) result(dom)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  modulation_freq_diff_r8
+             !dir$ attributes forceinline ::   modulation_freq_diff_r8
+             real(kind=dp),   intent(in) ::  phi1
+             real(kind=dp),   intent(in) ::  phi2
+             real(kind=dp),   intent(in) ::  a
+             real(kind=dp),   intent(in) ::  R0
+             real(kind=dp),   intent(in) ::  f0
+             real(kind=dp) :: dom
+             real(kind=dp), automatic :: t0,t1,t2
+             t0 = 0.5_dp*(phi1+phi2)
+             t1 = f0*(a/R0)
+             t2 = cos(t0)
+             dom= t1*t2
+       end function modulation_freq_diff_r8
+
+
+       !Formula 12, p. 191
+       pure elemental function instantenous_freq_r4(phi1,phi2,a,R0,f0) result(omt)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  instantenous_freq_r4
+             !dir$ attributes forceinline ::   instantenous_freq_r4
+             real(kind=sp),   intent(in) ::  phi1
+             real(kind=sp),   intent(in) ::  phi2
+             real(kind=sp),   intent(in) ::  a
+             real(kind=sp),   intent(in) ::  R0
+             real(kind=sp),   intent(in) ::  f0
+             real(kind=sp) :: omt
+             real(kind=sp),automatic :: t0
+             t0 = modulation_freq_diff_r4(phi1,phi2,a,R0,f0)
+             omt= f0+t0
+       end function instantenous_freq_r4
+
+
+       pure elemental function instantenous_freq_r8(phi1,phi2,a,R0,f0) result(omt)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  instantenous_freq_r8
+             !dir$ attributes forceinline ::   instantenous_freq_r8
+             real(kind=dp),   intent(in) ::  phi1
+             real(kind=dp),   intent(in) ::  phi2
+             real(kind=dp),   intent(in) ::  a
+             real(kind=dp),   intent(in) ::  R0
+             real(kind=dp),   intent(in) ::  f0
+             real(kind=dp) :: omt
+             real(kind=dp),automatic :: t0
+             t0 = modulation_freq_diff_r8(phi1,phi2,a,R0,f0)
+             omt= f0+t0
+       end function instantenous_freq_r8
+
+
+       !то набег полной фазы за время t
+       !Formula 3, p. 192
+       ! Omega0 = 2*PI*n
+       ! omd    = 2*PI*fd
+       ! 
+       pure elemental function full_phase_analytic_r4(om0,t,omd,Omega0) result(phase)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  full_phase_analytic_r4
+             !dir$ attributes forceinline ::   full_phase_analytic_r4
+             real(kind=sp),  intent(in) :: om0
+             real(kind=sp),  intent(in) :: t,
+             real(kind=sp),  intent(in) :: omd
+             real(kind=sp),  intent(in) :: Omega0
+             real(kind=sp) :: phase
+             real(kind=sp), automatic :: t0,t1,t2,rterm
+             t0    = om0*t
+             t1    = omd/Omega0
+             t2    = sin(Omega0*t)
+             rterm = t0+t1*t2
+             phase = rterm
+       end function full_phase_analytic_r4
+
+
+       
+       pure elemental function full_phase_analytic_r8(om0,t,omd,Omega0) result(phase)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  full_phase_analytic_r8
+             !dir$ attributes forceinline ::   full_phase_analytic_r8
+             real(kind=dp),  intent(in) :: om0
+             real(kind=dp),  intent(in) :: t,
+             real(kind=dp),  intent(in) :: omd
+             real(kind=dp),  intent(in) :: Omega0
+             real(kind=dp) :: phase
+             real(kind=dp), automatic :: t0,t1,t2,rterm
+             t0    = om0*t
+             t1    = omd/Omega0
+             t2    = sin(Omega0*t)
+             rterm = t0+t1*t2
+             phase = rterm
+       end function full_phase_analytic_r8
+
+
+       !коэффициент пропускания 
+       !Formula 4, p. 192
+       subroutine transmit_coef_unroll_16x_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmit_coef_unroll_16x_r4
+           !dir$ attributes forceinline ::   transmit_coef_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmit_coef_unroll_16x_r4
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           real(kind=sp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Beta
+           real(kind=sp),                 intent(in)  :: Omega0
+           real(kind=sp),                 intent(in)  :: om0
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=sp), automatic :: arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp), automatic :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=sp), automatic :: sin0,sin1,sin2,sin3,sin4,sin5,sin6,sin7
+           real(kind=sp), automatic :: sin8,sin9,sin10,sin11,sin12,sin13,sin14,sin15
+           real(kind=sp), automatic :: tmp0,tmp1,tmp2,tmp3,tmp4,tmp,tmp6,tmp7
+           real(kind=sp), automatic :: tmp8,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 t0      = real(i,kind=sp)
+                 arg0    = om0*t0
+                 sin0    = Beta*sin(Omega0*t0)
+                 tmp0    = sin(arg0+sin0)
+                 rhot(i) = rho0+rho1*tmp0
+              end do
+              if(n<16) return
+            end if 
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                t0        = real(i,kind=sp)
+                arg0      = om0*t0
+                sin0      = Beta*sin(Omega0*t0)
+                tmp0      = sin(arg0+sin0)
+                rhot(i)   = rho0+rho1*tmp0
+                t1        = real(i+1,kind=sp)
+                arg1      = om0*t1
+                sin1      = Beta*sin(Omega0*t1)
+                tmp1      = sin(arg1+sin1)
+                rhot(i+1) = rho0+rho1*tmp1
+                t2        = real(i+2,kind=sp)
+                arg2      = om0*t2
+                sin2      = Beta*sin(Omega0*t2)
+                tmp0      = sin(arg2+sin2)
+                rhot(i+2) = rho0+rho1*tmp2
+                t3        = real(i+3,kind=sp)
+                arg3      = om0*t3
+                sin3      = Beta*sin(Omega0*t3)
+                tmp0      = sin(arg3+sin3)
+                rhot(i+3) = rho0+rho1*tmp3
+                t4        = real(i+4,kind=sp)
+                arg4      = om0*t4
+                sin4      = Beta*sin(Omega0*t4)
+                tmp4      = sin(arg4+sin4)
+                rhot(i+4) = rho0+rho1*tmp4
+                t5        = real(i+5,kind=sp)
+                arg5      = om0*t5
+                sin5      = Beta*sin(Omega0*t5)
+                tmp5      = sin(arg5+sin5)
+                rhot(i+5) = rho0+rho1*tmp5
+                t6        = real(i+6,kind=sp)
+                arg6      = om0*t6
+                sin5      = Beta*sin(Omega0*t6)
+                tmp6      = sin(arg6+sin6)
+                rhot(i+6) = rho0+rho1*tmp6
+                t7        = real(i+7,kind=sp)
+                arg7      = om0*t7
+                sin7      = Beta*sin(Omega0*t7)
+                tmp7      = sin(arg7+sin7)
+                rhot(i+7) = rho0+rho1*tmp7
+                t8        = real(i+8,kind=sp)
+                arg8      = om0*t8
+                sin8      = Beta*sin(Omega0*t8)
+                tmp8      = sin(arg8+sin8)
+                rhot(i+8) = rho0+rho1*tmp8
+                t9        = real(i+9,kind=sp)
+                arg9      = om0*t9
+                sin9      = Beta*sin(Omega0*t9)
+                tmp9      = sin(arg9+sin9)
+                rhot(i+9) = rho0+rho1*tmp9
+                t10       = real(i+10,kind=sp)
+                arg10     = om0*t10
+                sin10     = Beta*sin(Omega0*t10)
+                tmp10     = sin(arg10+sin10)
+                rhot(i+10)= rho0+rho1*tmp10
+                t11       = real(i+11,kind=sp)
+                arg11     = om0*t11
+                sin11     = Beta*sin(Omega0*t11)
+                tmp11     = sin(arg11+sin11)
+                rhot(i+11)= rho0+rho1*tmp11
+                t12       = real(i+12,kind=sp)
+                arg12     = om0*t12
+                sin12     = Beta*sin(Omega0*t12)
+                tmp12     = sin(arg12+sin12)
+                rhot(i+12)= rho0+rho1*tmp12
+                t13       = real(i+13,kind=sp)
+                arg13     = om0*t13
+                sin13     = Beta*sin(Omega0*t13)
+                tmp13     = sin(arg13+sin13)
+                rhot(i+13)= rho0+rho1*tmp13
+                t14       = real(i+14,kind=sp)
+                arg14     = om0*t14
+                sin14     = Beta*sin(Omega0*t14)
+                tmp14     = sin(arg14+sin14)
+                rhot(i+14)= rho0+rho1*tmp14
+                t15       = real(i+15,kind=sp)
+                arg15     = om0*t15
+                sin15     = Beta*sin(Omega0*t15)
+                tmp15     = sin(arg15+sin15)
+                rhot(i+15)= rho0+rho1*tmp15
+            end do
+       end subroutine transmit_coeff_unroll_16x_r4
+
+
+       subroutine transmit_coef_unroll_16x_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmit_coef_unroll_16x_r8
+           !dir$ attributes forceinline ::   transmit_coef_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmit_coef_unroll_16x_r8
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Beta
+           real(kind=dp),                 intent(in)  :: Omega0
+           real(kind=dp),                 intent(in)  :: om0
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=dp), automatic :: arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=dp), automatic :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=dp), automatic :: sin0,sin1,sin2,sin3,sin4,sin5,sin6,sin7
+           real(kind=dp), automatic :: sin8,sin9,sin10,sin11,sin12,sin13,sin14,sin15
+           real(kind=dp), automatic :: tmp0,tmp1,tmp2,tmp3,tmp4,tmp,tmp6,tmp7
+           real(kind=dp), automatic :: tmp8,tmp9,tmp10,tmp11,tmp12,tmp13,tmp14,tmp15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 t0      = real(i,kind=dp)
+                 arg0    = om0*t0
+                 sin0    = Beta*sin(Omega0*t0)
+                 tmp0    = sin(arg0+sin0)
+                 rhot(i) = rho0+rho1*tmp0
+              end do
+              if(n<16) return
+            end if 
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                t0        = real(i,kind=dp)
+                arg0      = om0*t0
+                sin0      = Beta*sin(Omega0*t0)
+                tmp0      = sin(arg0+sin0)
+                rhot(i)   = rho0+rho1*tmp0
+                t1        = real(i+1,kind=dp)
+                arg1      = om0*t1
+                sin1      = Beta*sin(Omega0*t1)
+                tmp1      = sin(arg1+sin1)
+                rhot(i+1) = rho0+rho1*tmp1
+                t2        = real(i+2,kind=dp)
+                arg2      = om0*t2
+                sin2      = Beta*sin(Omega0*t2)
+                tmp0      = sin(arg2+sin2)
+                rhot(i+2) = rho0+rho1*tmp2
+                t3        = real(i+3,kind=dp)
+                arg3      = om0*t3
+                sin3      = Beta*sin(Omega0*t3)
+                tmp0      = sin(arg3+sin3)
+                rhot(i+3) = rho0+rho1*tmp3
+                t4        = real(i+4,kind=dp)
+                arg4      = om0*t4
+                sin4      = Beta*sin(Omega0*t4)
+                tmp4      = sin(arg4+sin4)
+                rhot(i+4) = rho0+rho1*tmp4
+                t5        = real(i+5,kind=dp)
+                arg5      = om0*t5
+                sin5      = Beta*sin(Omega0*t5)
+                tmp5      = sin(arg5+sin5)
+                rhot(i+5) = rho0+rho1*tmp5
+                t6        = real(i+6,kind=dp)
+                arg6      = om0*t6
+                sin5      = Beta*sin(Omega0*t6)
+                tmp6      = sin(arg6+sin6)
+                rhot(i+6) = rho0+rho1*tmp6
+                t7        = real(i+7,kind=dp)
+                arg7      = om0*t7
+                sin7      = Beta*sin(Omega0*t7)
+                tmp7      = sin(arg7+sin7)
+                rhot(i+7) = rho0+rho1*tmp7
+                t8        = real(i+8,kind=dp)
+                arg8      = om0*t8
+                sin8      = Beta*sin(Omega0*t8)
+                tmp8      = sin(arg8+sin8)
+                rhot(i+8) = rho0+rho1*tmp8
+                t9        = real(i+9,kind=dp)
+                arg9      = om0*t9
+                sin9      = Beta*sin(Omega0*t9)
+                tmp9      = sin(arg9+sin9)
+                rhot(i+9) = rho0+rho1*tmp9
+                t10       = real(i+10,kind=dp)
+                arg10     = om0*t10
+                sin10     = Beta*sin(Omega0*t10)
+                tmp10     = sin(arg10+sin10)
+                rhot(i+10)= rho0+rho1*tmp10
+                t11       = real(i+11,kind=dp)
+                arg11     = om0*t11
+                sin11     = Beta*sin(Omega0*t11)
+                tmp11     = sin(arg11+sin11)
+                rhot(i+11)= rho0+rho1*tmp11
+                t12       = real(i+12,kind=dp)
+                arg12     = om0*t12
+                sin12     = Beta*sin(Omega0*t12)
+                tmp12     = sin(arg12+sin12)
+                rhot(i+12)= rho0+rho1*tmp12
+                t13       = real(i+13,kind=dp)
+                arg13     = om0*t13
+                sin13     = Beta*sin(Omega0*t13)
+                tmp13     = sin(arg13+sin13)
+                rhot(i+13)= rho0+rho1*tmp13
+                t14       = real(i+14,kind=dp)
+                arg14     = om0*t14
+                sin14     = Beta*sin(Omega0*t14)
+                tmp14     = sin(arg14+sin14)
+                rhot(i+14)= rho0+rho1*tmp14
+                t15       = real(i+15,kind=dp)
+                arg15     = om0*t15
+                sin15     = Beta*sin(Omega0*t15)
+                tmp15     = sin(arg15+sin15)
+                rhot(i+15)= rho0+rho1*tmp15
+            end do
+       end subroutine transmit_coeff_unroll_16x_r8
 
 end module eos_sensor
