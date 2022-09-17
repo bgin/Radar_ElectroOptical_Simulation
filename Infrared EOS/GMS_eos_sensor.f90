@@ -7833,6 +7833,1097 @@ module eos_sensor
        end subroutine transmitt_hfreq_mod_unroll_16x_r4
  
 
+       subroutine transmitt_hfreq_mod_unroll_16x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_16x_r8
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_16x_r8
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=dp), automatic :: omt8,omt9,omt10,omt11,omt12,omt13,omt14,omt15
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=dp), automatic :: somt7,somt8,somt9,somt10,somt11,somt12,somt13,somt14,somt15
+           real(kind=dp), automatic :: tB0,tB1,tB2,tB3,tB4,tB5,tB6,tB7
+           real(kind=dp), automatic :: tB8,tB9,tB10,tB11,tB12,tB13,tB14,tB15
+           real(kind=dp), automatic :: term0,term1,tetm2,term3,term4,term5,term6,term7
+           real(kind=dp), automatic :: term8,term9,term10,term11,term12,term13,term14,term15
+           real(kind=dp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=dp), automatic :: c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=dp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_dp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_dp+somt0+term0*c0)
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                 t0         = real(i,kind=dp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_dp+somt0+term0*c0)
+                 t1         = real(i+1,kind=dp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_dp+somt1+term1*c1)
+                 t2         = real(i+2,kind=dp)
+                 omt2       = om0*t2
+                 somt2      = sin(omt2)
+                 tB2        = t2-B2
+                 term2      = B2*soma*tB2
+                 c2         = soms-t2
+                 Phiom(i+2) = Phir0*(1.0_dp+somt2+term2*c2)
+                 t3         = real(i+3,kind=dp)
+                 omt3       = om0*t3
+                 somt3      = sin(omt3)
+                 tB3        = t3-B2
+                 term3      = B2*soma*tB3
+                 c3         = soms-t3
+                 Phiom(i+3) = Phir0*(1.0_dp+somt3+term3*c3)
+                 t4         = real(i+4,kind=dp)
+                 omt4       = om0*t4
+                 somt4      = sin(omt4)
+                 tB4        = t4-B2
+                 term4      = B2*soma*tB4
+                 c4         = soms-t4
+                 Phiom(i+4) = Phir0*(1.0_dp+somt4+term4*c4)
+                 t5         = real(i+5,kind=dp)
+                 omt5       = om0*t5
+                 somt5      = sin(omt5)
+                 tB5        = t5-B2
+                 term5      = B2*soma*tB5
+                 c5         = soms-t5
+                 Phiom(i+5) = Phir0*(1.0_dp+somt5+term5*c5)
+                 t6         = real(i+6,kind=dp)
+                 omt6       = om0*t6
+                 somt6      = sin(omt6)
+                 tB6        = t6-B2
+                 term6      = B2*soma*tB6
+                 c6         = soms-t6
+                 Phiom(i+6) = Phir0*(1.0_dp+somt6+term6*c6)
+                 t7         = real(i+7,kind=dp)
+                 omt7       = om0*t7
+                 somt7      = sin(omt7)
+                 tB7        = t7-B2
+                 term7      = B2*soma*tB7
+                 c7         = soms-t7
+                 Phiom(i+7) = Phir0*(1.0_dp+somt7+term7*c7)
+                 t8         = real(i+8,kind=dp)
+                 omt8       = om0*t8
+                 somt8      = sin(omt8)
+                 tB8        = t8-B2
+                 term8      = B2*soma*tB8
+                 c8         = soms-t8
+                 Phiom(i+8) = Phir0*(1.0_dp+somt8+term8*c8) 
+                 t9         = real(i+9,kind=dp)
+                 omt9       = om0*t9
+                 somt9      = sin(omt9)
+                 tB9        = t9-B2
+                 term9      = B2*soma*tB9
+                 c9         = soms-t9
+                 Phiom(i+9) = Phir0*(1.0_dp+somt9+term9*c9)
+                 t10        = real(i+10,kind=dp)
+                 omt10      = om0*t10
+                 somt10     = sin(omt10)
+                 tB10       = t10-B2
+                 term10     = B2*soma*tB10
+                 c10        = soms-t10
+                 Phiom(i+10)= Phir0*(1.0_dp+somt10+term10*c10)
+                 t11        = real(i+11,kind=dp)
+                 omt11      = om0*t11
+                 somt11     = sin(omt11)
+                 tB11       = t11-B2
+                 term11     = B2*soma*tB11
+                 c11        = soms-t11
+                 Phiom(i+11)= Phir0*(1.0_dp+somt11+term11*c11)
+                 t12        = real(i+12,kind=dp)
+                 omt12      = om0*t12
+                 somt12     = sin(omt12)
+                 tB12       = t12-B2
+                 term12     = B2*soma*tB12
+                 c12        = soms-t12
+                 Phiom(i+12)= Phir0*(1.0_dp+somt12+term12*c12)
+                 t13        = real(i+13,kind=dp)
+                 omt13      = om0*t13
+                 somt13     = sin(omt13)
+                 tB13       = t13-B2
+                 term13     = B2*soma*tB13
+                 c13        = soms-t13
+                 Phiom(i+13)= Phir0*(1.0_dp+somt13+term13*c13) 
+                 t14        = real(i+14,kind=dp)
+                 omt14      = om0*t14
+                 somt14     = sin(omt14)
+                 tB14       = t14-B2
+                 term14     = B2*soma*tB14
+                 c14        = soms-t14
+                 Phiom(i+14)= Phir0*(1.0_dp+somt14+term14*c14)
+                 t15        = real(i+15,kind=dp)
+                 omt15      = om0*t15
+                 somt15     = sin(omt15)
+                 tB15       = t15-B2
+                 term15     = B2*soma*tB15
+                 c15        = soms-t15
+                 Phiom(i+15)= Phir0*(1.0_dp+somt15+term15*c15)
+            end do
+       end subroutine transmitt_hfreq_mod_unroll_16x_r8
+
+
+       subroutine transmitt_hfreq_mod_unroll_8x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_8x_r4
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_8x_r4
+           real(kind=sp),                     intent(in) :: Phi0
+           real(kind=sp),                     intent(in) :: rho0
+           real(kind=sp),                     intent(in) :: om0
+           real(kind=sp),                     intent(in) :: Beta
+           real(kind=sp),                     intent(in) :: Omega0
+           real(kind=sp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=sp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=sp), automatic :: tB0,tB1,tB2,tB3,tB4,tB5,tB6,tB7
+           real(kind=sp), automatic :: term0,term1,tetm2,term3,term4,term5,term6,term7
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=sp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_sp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_sp+somt0+term0*c0)
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                 t0         = real(i,kind=sp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_sp+somt0+term0*c0)
+                 t1         = real(i+1,kind=sp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_sp+somt1+term1*c1)
+                 t2         = real(i+2,kind=sp)
+                 omt2       = om0*t2
+                 somt2      = sin(omt2)
+                 tB2        = t2-B2
+                 term2      = B2*soma*tB2
+                 c2         = soms-t2
+                 Phiom(i+2) = Phir0*(1.0_sp+somt2+term2*c2)
+                 t3         = real(i+3,kind=sp)
+                 omt3       = om0*t3
+                 somt3      = sin(omt3)
+                 tB3        = t3-B2
+                 term3      = B2*soma*tB3
+                 c3         = soms-t3
+                 Phiom(i+3) = Phir0*(1.0_sp+somt3+term3*c3)
+                 t4         = real(i+4,kind=sp)
+                 omt4       = om0*t4
+                 somt4      = sin(omt4)
+                 tB4        = t4-B2
+                 term4      = B2*soma*tB4
+                 c4         = soms-t4
+                 Phiom(i+4) = Phir0*(1.0_sp+somt4+term4*c4)
+                 t5         = real(i+5,kind=sp)
+                 omt5       = om0*t5
+                 somt5      = sin(omt5)
+                 tB5        = t5-B2
+                 term5      = B2*soma*tB5
+                 c5         = soms-t5
+                 Phiom(i+5) = Phir0*(1.0_sp+somt5+term5*c5)
+                 t6         = real(i+6,kind=sp)
+                 omt6       = om0*t6
+                 somt6      = sin(omt6)
+                 tB6        = t6-B2
+                 term6      = B2*soma*tB6
+                 c6         = soms-t6
+                 Phiom(i+6) = Phir0*(1.0_sp+somt6+term6*c6)
+                 t7         = real(i+7,kind=sp)
+                 omt7       = om0*t7
+                 somt7      = sin(omt7)
+                 tB7        = t7-B2
+                 term7      = B2*soma*tB7
+                 c7         = soms-t7
+                 Phiom(i+7) = Phir0*(1.0_sp+somt7+term7*c7)
+             end do
+       end subroutine transmitt_hfreq_mod_unroll_8x_r4
+
+
+       subroutine transmitt_hfreq_mod_unroll_8x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_8x_r8
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_8x_r8
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=dp), automatic :: tB0,tB1,tB2,tB3,tB4,tB5,tB6,tB7
+           real(kind=dp), automatic :: term0,term1,tetm2,term3,term4,term5,term6,term7
+           real(kind=dp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=dp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_dp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_dp+somt0+term0*c0)
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                 t0         = real(i,kind=dp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_dp+somt0+term0*c0)
+                 t1         = real(i+1,kind=dp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_dp+somt1+term1*c1)
+                 t2         = real(i+2,kind=dp)
+                 omt2       = om0*t2
+                 somt2      = sin(omt2)
+                 tB2        = t2-B2
+                 term2      = B2*soma*tB2
+                 c2         = soms-t2
+                 Phiom(i+2) = Phir0*(1.0_dp+somt2+term2*c2)
+                 t3         = real(i+3,kind=dp)
+                 omt3       = om0*t3
+                 somt3      = sin(omt3)
+                 tB3        = t3-B2
+                 term3      = B2*soma*tB3
+                 c3         = soms-t3
+                 Phiom(i+3) = Phir0*(1.0_dp+somt3+term3*c3)
+                 t4         = real(i+4,kind=dp)
+                 omt4       = om0*t4
+                 somt4      = sin(omt4)
+                 tB4        = t4-B2
+                 term4      = B2*soma*tB4
+                 c4         = soms-t4
+                 Phiom(i+4) = Phir0*(1.0_dp+somt4+term4*c4)
+                 t5         = real(i+5,kind=dp)
+                 omt5       = om0*t5
+                 somt5      = sin(omt5)
+                 tB5        = t5-B2
+                 term5      = B2*soma*tB5
+                 c5         = soms-t5
+                 Phiom(i+5) = Phir0*(1.0_dp+somt5+term5*c5)
+                 t6         = real(i+6,kind=dp)
+                 omt6       = om0*t6
+                 somt6      = sin(omt6)
+                 tB6        = t6-B2
+                 term6      = B2*soma*tB6
+                 c6         = soms-t6
+                 Phiom(i+6) = Phir0*(1.0_dp+somt6+term6*c6)
+                 t7         = real(i+7,kind=dp)
+                 omt7       = om0*t7
+                 somt7      = sin(omt7)
+                 tB7        = t7-B2
+                 term7      = B2*soma*tB7
+                 c7         = soms-t7
+                 Phiom(i+7) = Phir0*(1.0_dp+somt7+term7*c7)
+                   
+            end do
+       end subroutine transmitt_hfreq_mod_unroll_8x_r8
+
+
+       
+       subroutine transmitt_hfreq_mod_unroll_4x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_4x_r4
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_4x_r4
+           real(kind=sp),                     intent(in) :: Phi0
+           real(kind=sp),                     intent(in) :: rho0
+           real(kind=sp),                     intent(in) :: om0
+           real(kind=sp),                     intent(in) :: Beta
+           real(kind=sp),                     intent(in) :: Omega0
+           real(kind=sp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=sp), automatic :: omt0,omt1,omt2,omt3
+           real(kind=sp), automatic :: t0,t1,t2,t3
+           real(kind=sp), automatic :: somt0,somt1,somt2,somt3
+           real(kind=sp), automatic :: tB0,tB1,tB2,tB3
+           real(kind=sp), automatic :: term0,term1,tetm2,term3
+           real(kind=sp), automatic :: c0,c1,c2,c3
+           real(kind=sp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_sp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_sp+somt0+term0*c0)
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                 t0         = real(i,kind=sp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_sp+somt0+term0*c0)
+                 t1         = real(i+1,kind=sp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_sp+somt1+term1*c1)
+                 t2         = real(i+2,kind=sp)
+                 omt2       = om0*t2
+                 somt2      = sin(omt2)
+                 tB2        = t2-B2
+                 term2      = B2*soma*tB2
+                 c2         = soms-t2
+                 Phiom(i+2) = Phir0*(1.0_sp+somt2+term2*c2)
+                 t3         = real(i+3,kind=sp)
+                 omt3       = om0*t3
+                 somt3      = sin(omt3)
+                 tB3        = t3-B2
+                 term3      = B2*soma*tB3
+                 c3         = soms-t3
+                 Phiom(i+3) = Phir0*(1.0_sp+somt3+term3*c3)
+            
+             end do
+       end subroutine transmitt_hfreq_mod_unroll_4x_r4
+
+
+       subroutine transmitt_hfreq_mod_unroll_4x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_4x_r8
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_4x_r8
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3
+           real(kind=dp), automatic :: t0,t1,t2,t3
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3
+           real(kind=dp), automatic :: tB0,tB1,tB2,tB3
+           real(kind=dp), automatic :: term0,term1,tetm2,term3
+           real(kind=dp), automatic :: c0,c1,c2,c3
+           real(kind=dp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_dp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_dp+somt0+term0*c0)
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                 t0         = real(i,kind=dp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_dp+somt0+term0*c0)
+                 t1         = real(i+1,kind=dp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_dp+somt1+term1*c1)
+                 t2         = real(i+2,kind=dp)
+                 omt2       = om0*t2
+                 somt2      = sin(omt2)
+                 tB2        = t2-B2
+                 term2      = B2*soma*tB2
+                 c2         = soms-t2
+                 Phiom(i+2) = Phir0*(1.0_dp+somt2+term2*c2)
+                 t3         = real(i+3,kind=dp)
+                 omt3       = om0*t3
+                 somt3      = sin(omt3)
+                 tB3        = t3-B2
+                 term3      = B2*soma*tB3
+                 c3         = soms-t3
+                 Phiom(i+3) = Phir0*(1.0_dp+somt3+term3*c3)                
+            end do
+       end subroutine transmitt_hfreq_mod_unroll_4x_r8
+
+
+         subroutine transmitt_hfreq_mod_unroll_2x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_2x_r4
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_2x_r4
+           real(kind=sp),                     intent(in) :: Phi0
+           real(kind=sp),                     intent(in) :: rho0
+           real(kind=sp),                     intent(in) :: om0
+           real(kind=sp),                     intent(in) :: Beta
+           real(kind=sp),                     intent(in) :: Omega0
+           real(kind=sp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=sp), automatic :: omt0,omt1
+           real(kind=sp), automatic :: t0,t1
+           real(kind=sp), automatic :: somt0,somt1
+           real(kind=sp), automatic :: tB0,tB1
+           real(kind=sp), automatic :: term0,term1
+           real(kind=sp), automatic :: c0,c1
+           real(kind=sp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_sp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_sp+somt0+term0*c0)
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                 t0         = real(i,kind=sp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_sp+somt0+term0*c0)
+                 t1         = real(i+1,kind=sp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_sp+somt1+term1*c1)
+                           
+             end do
+       end subroutine transmitt_hfreq_mod_unroll_2x_r4
+
+
+       subroutine transmitt_hfreq_mod_unroll_2x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_2x_r8
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_unroll_2x_r8
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=dp), automatic :: omt0,omt1
+           real(kind=dp), automatic :: t0,t1
+           real(kind=dp), automatic :: somt0,somt1
+           real(kind=dp), automatic :: tB0,tB1
+           real(kind=dp), automatic :: term0,term1
+           real(kind=dp), automatic :: c0,c1
+           real(kind=dp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i,m,m1
+           B2    = Beta*0.5_dp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+           m  = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0
+                 somt0  = sin(omt0)
+                 tB0    = t0-B2
+                 term0  = B2*soma*tB0
+                 c0     = soms-t0
+                 Phiom(i) = Phir0*(1.0_dp+somt0+term0*c0)
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                 t0         = real(i,kind=dp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_dp+somt0+term0*c0)
+                 t1         = real(i+1,kind=dp)
+                 omt1       = om0*t1
+                 somt1      = sin(omt1)
+                 tB1        = t1-B2
+                 term1      = B2*soma*tB1
+                 c1         = soms-t1
+                 Phiom(i+1) = Phir0*(1.0_dp+somt1+term1*c1)
+                      
+            end do
+       end subroutine transmitt_hfreq_mod_unroll_2x_r8
+
+
+       !Helper subroutine for computing of Bessel j_n values.
+       subroutine bessel_jn_beta_r4(bjb,n,Beta)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  bessel_jn_beta_r4
+           !dir$ attributes forceinline ::   bessel_jn_beta_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  bessel_jn_beta_r4
+           real(kind=sp), dimension(1:n), intent(out) :: bjb
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Beta
+           integer(kind=i4) :: i
+           !dir$ assume_aligned bjb:64
+           do i=1,n
+              bjb(i) = bessel_jn(n,Beta)
+           end do
+       end subroutine bessel_jn_beta_r4
+
+
+       subroutine bessel_jn_beta_r8(bjb,n,Beta)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  bessel_jn_beta_r8
+           !dir$ attributes forceinline ::   bessel_jn_beta_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  bessel_jn_beta_r8
+           real(kind=dp), dimension(1:n), intent(out) :: bjb
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Beta
+           integer(kind=i4) :: i
+           !dir$ assume_aligned bjb:64
+           do i=1,n
+              bjb(i) = bessel_jn(n,Beta)
+           end do
+       end subroutine bessel_jn_beta_r8
+  
+       !Если соотношение р < 1 не выполняется, то исходное 
+       !уравнение должно быть применено в общем виде
+       !Formula 1, p. 197
+       subroutine transmittance_spectr_unroll_16x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_16x_r4
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_16x_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=sp),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           
+           real(kind=sp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=sp), automatic :: omt8,omt9,omt10,omt11,omt12,omt13,omt14,omt15
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=sp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=sp), automatic :: somt8,somt9,somt10,somt11,somt12,somt13,somt14,somt15
+           real(kind=sp), automatic :: soma0,soma1,soma2,soma3,soma4,soma5,soma6,soma7
+           real(kind=sp), automatic :: soma8,soma9,soma10,soma11,soma12,soma13,soma14,soma15
+           real(kind=sp), automatic :: soms0,soms1,soms2,soms3,soms4,soms5,soms6,soms7
+           real(kind=sp), automatic :: soms8,soms9,soms10,soms11,soms12,soms13,soms14,soms15
+           real(kind=sp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_sp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_sp+bj0b*somt0+c0)
+               end do
+               if(len<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,16
+                 c0     = 0.0_sp
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_sp
+                 t1     = real(i+1,kind=sp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_sp
+                 t2     = real(i+2,kind=sp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_sp
+                 t3     = real(i+3,kind=sp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 c4     = 0.0_sp
+                 t4     = real(i+4,kind=sp) 
+                 omt4   = om0*t4 
+                 somt4  = sin(omt4)
+                 c5     = 0.0_sp
+                 t5     = real(i+5,kind=sp)
+                 omt5   = om0*t5 
+                 somt5  = sin(omt5)
+                 c6     = 0.0_sp
+                 t6     = real(i+6,kind=sp)
+                 omt6   = om0*t6 
+                 somt6  = sin(omt6)
+                 c7     = 0.0_sp
+                 t7     = real(i+7,kind=sp)
+                 omt7   = om0*t7 
+                 somt7  = sin(omt7)
+                 c8     = 0.0_sp
+                 t8     = real(i+8,kind=sp)
+                 omt8   = om0*t8 
+                 somt8  = sin(omt8)
+                 c9     = 0.0_sp
+                 t9     = real(i+9,kind=sp)
+                 omt9   = om0*t9 
+                 somt9  = sin(omt9)
+                 c10    = 0.0_sp
+                 t10    = real(i+10,kind=sp)
+                 omt10  = om0*t10 
+                 somt10 = sin(omt10)
+                 c11    = 0.0_sp
+                 t11    = real(i+11,kind=sp)
+                 omt11  = om0*t11 
+                 somt11 = sin(omt11) 
+                 c12    = 0.0_sp
+                 t12    = real(i+12,kind=sp)
+                 omt12  = om0*t12 
+                 somt12 = sin(omt12)
+                 c13    = 0.0_sp
+                 t13    = real(i+13,kind=sp)
+                 omt13  = om0*t13
+                 somt13 = sin(omt13)
+                 c14    = 0.0_sp
+                 t14    = real(i+14,kind=sp)
+                 omt14  = om0*t14 
+                 somt14 = sin(omt14)
+                 c15    = 0.0_sp
+                 t15    = real(i+15,kind=sp)
+                 omt15  = om0*t15 
+                 somt15 = sin(omt15)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                    soma4 = sin(om0+n*Omega0)*t4
+                    soms4 = onep*sin(om0-n*Omega0)*t4
+                    c4    = c4 + bjn*(soma4+soms4)
+                    soma5 = sin(om0+n*Omega0)*t5
+                    soms5 = onep*sin(om0-n*Omega0)*t5
+                    c5    = c5 + bjn*(soma5+soms5)
+                    soma6 = sin(om0+n*Omega0)*t6
+                    soms6 = onep*sin(om0-n*Omega0)*t6
+                    c6    = c6 + bjn*(soma6+soms6)
+                    soma7 = sin(om0+n*Omega0)*t7
+                    soms7 = onep*sin(om0-n*Omega0)*t7
+                    c7    = c7 + bjn*(soma7+soms7)
+                    soma8 = sin(om0+n*Omega0)*t8
+                    soms8 = onep*sin(om0-n*Omega0)*t8
+                    c8    = c8 + bjn*(soma8+soms8)
+                    soma9 = sin(om0+n*Omega0)*t9
+                    soms9 = onep*sin(om0-n*Omega0)*t9
+                    c9    = c9 + bjn*(soma9+soms9)
+                    soma10= sin(om0+n*Omega0)*t10
+                    soms10= onep*sin(om0-n*Omega0)*t10
+                    c10   = c10 + bjn*(soma10+soms10)
+                    soma11= sin(om0+n*Omega0)*t11
+                    soms11= onep*sin(om0-n*Omega0)*t11
+                    c11   = c11 + bjn*(soma11+soms11) 
+                    soma12= sin(om0+n*Omega0)*t12
+                    soms4 = onep*sin(om0-n*Omega0)*t12
+                    c12   = c12 + bjn*(soma12+soms12)
+                    soma13= sin(om0+n*Omega0)*t13
+                    soms13= onep*sin(om0-n*Omega0)*t13
+                    c13   = c13 + bjn*(soma13+soms13)
+                    soma14= sin(om0+n*Omega0)*t14
+                    soms14= onep*sin(om0-n*Omega0)*t14
+                    c14   = c14 + bjn*(soma14+soms14)
+                    soma15= sin(om0+n*Omega0)*t15
+                    soms15= onep*sin(om0-n*Omega0)*t15
+                    c15   = c15 + bjn*(soma15+soms15)
+                 end do
+                 rhot(i)    = rho0*(1.0_sp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_sp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_sp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_sp+bj0b*somt3+c3)
+                 rhot(i+4)  = rho0*(1.0_sp+bj0b*somt4+c4)
+                 rhot(i+5)  = rho0*(1.0_sp+bj0b*somt5+c5)
+                 rhot(i+6)  = rho0*(1.0_sp+bj0b*somt6+c6)
+                 rhot(i+7)  = rho0*(1.0_sp+bj0b*somt7+c7)
+                 rhot(i+8)  = rho0*(1.0_sp+bj0b*somt8+c8)
+                 rhot(i+9)  = rho0*(1.0_sp+bj0b*somt9+c9)
+                 rhot(i+10) = rho0*(1.0_sp+bj0b*somt10+c10)
+                 rhot(i+11) = rho0*(1.0_sp+bj0b*somt11+c11)
+                 rhot(i+12) = rho0*(1.0_sp+bj0b*somt12+c12)
+                 rhot(i+13) = rho0*(1.0_sp+bj0b*somt13+c13)
+                 rhot(i+14) = rho0*(1.0_sp+bj0b*somt14+c14)
+                 rhot(i+15) = rho0*(1.0_sp+bj0b*somt15+c15)
+            end do
+       end subroutine transmittance_spectr_unroll_16x_r4
+
+
+      
+       subroutine transmittance_spectr_unroll_16x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_16x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr__unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr__unroll_16x_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=dp),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=dp), automatic :: omt8,omt9,omt10,omt11,omt12,omt13,omt14,omt15
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=dp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=dp), automatic :: somt8,somt9,somt10,somt11,somt12,somt13,somt14,somt15
+           real(kind=dp), automatic :: soma0,soma1,soma2,soma3,soma4,soma5,soma6,soma7
+           real(kind=dp), automatic :: soma8,soma9,soma10,soma11,soma12,soma13,soma14,soma15
+           real(kind=dp), automatic :: soms0,soms1,soms2,soms3,soms4,soms5,soms6,soms7
+           real(kind=dp), automatic :: soms8,soms9,soms10,soms11,soms12,soms13,soms14,soms15
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_dp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0_dp**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_dp+bj0b*somt0+c0)
+               end do
+               if(len<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,16
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_dp
+                 t1     = real(i+1,kind=dp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_dp
+                 t2     = real(i+2,kind=dp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_dp
+                 t3     = real(i+3,kind=dp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 c4     = 0.0_dp
+                 t4     = real(i+4,kind=dp) 
+                 omt4   = om0*t4 
+                 somt4  = sin(omt4)
+                 c5     = 0.0_dp
+                 t5     = real(i+5,kind=dp)
+                 omt5   = om0*t5 
+                 somt5  = sin(omt5)
+                 c6     = 0.0_dp
+                 t6     = real(i+6,kind=dp)
+                 omt6   = om0*t6 
+                 somt6  = sin(omt6)
+                 c7     = 0.0_dp
+                 t7     = real(i+7,kind=dp)
+                 omt7   = om0*t7 
+                 somt7  = sin(omt7)
+                 c8     = 0.0_dp
+                 t8     = real(i+8,kind=dp)
+                 omt8   = om0*t8 
+                 somt8  = sin(omt8)
+                 c9     = 0.0_dp
+                 t9     = real(i+9,kind=dp)
+                 omt9   = om0*t9 
+                 somt9  = sin(omt9)
+                 c10    = 0.0_dp
+                 t10    = real(i+10,kind=dp)
+                 omt10  = om0*t10 
+                 somt10 = sin(omt10)
+                 c11    = 0.0_dp
+                 t11    = real(i+11,kind=dp)
+                 omt11  = om0*t11 
+                 somt11 = sin(omt11) 
+                 c12    = 0.0_dp
+                 t12    = real(i+12,kind=dp)
+                 omt12  = om0*t12 
+                 somt12 = sin(omt12)
+                 c13    = 0.0_dp
+                 t13    = real(i+13,kind=dp)
+                 omt13  = om0*t13
+                 somt13 = sin(omt13)
+                 c14    = 0.0_dp
+                 t14    = real(i+14,kind=dp)
+                 omt14  = om0*t14 
+                 somt14 = sin(omt14)
+                 c15    = 0.0_dp
+                 t15    = real(i+15,kind=dp)
+                 omt15  = om0*t15 
+                 somt15 = sin(omt15)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                    soma4 = sin(om0+n*Omega0)*t4
+                    soms4 = onep*sin(om0-n*Omega0)*t4
+                    c4    = c4 + bjn*(soma4+soms4)
+                    soma5 = sin(om0+n*Omega0)*t5
+                    soms5 = onep*sin(om0-n*Omega0)*t5
+                    c5    = c5 + bjn*(soma5+soms5)
+                    soma6 = sin(om0+n*Omega0)*t6
+                    soms6 = onep*sin(om0-n*Omega0)*t6
+                    c6    = c6 + bjn*(soma6+soms6)
+                    soma7 = sin(om0+n*Omega0)*t7
+                    soms7 = onep*sin(om0-n*Omega0)*t7
+                    c7    = c7 + bjn*(soma7+soms7)
+                    soma8 = sin(om0+n*Omega0)*t8
+                    soms8 = onep*sin(om0-n*Omega0)*t8
+                    c8    = c8 + bjn*(soma8+soms8)
+                    soma9 = sin(om0+n*Omega0)*t9
+                    soms9 = onep*sin(om0-n*Omega0)*t9
+                    c9    = c9 + bjn*(soma9+soms9)
+                    soma10= sin(om0+n*Omega0)*t10
+                    soms10= onep*sin(om0-n*Omega0)*t10
+                    c10   = c10 + bjn*(soma10+soms10)
+                    soma11= sin(om0+n*Omega0)*t11
+                    soms11= onep*sin(om0-n*Omega0)*t11
+                    c11   = c11 + bjn*(soma11+soms11) 
+                    soma12= sin(om0+n*Omega0)*t12
+                    soms4 = onep*sin(om0-n*Omega0)*t12
+                    c12   = c12 + bjn*(soma12+soms12)
+                    soma13= sin(om0+n*Omega0)*t13
+                    soms13= onep*sin(om0-n*Omega0)*t13
+                    c13   = c13 + bjn*(soma13+soms13)
+                    soma14= sin(om0+n*Omega0)*t14
+                    soms14= onep*sin(om0-n*Omega0)*t14
+                    c14   = c14 + bjn*(soma14+soms14)
+                    soma15= sin(om0+n*Omega0)*t15
+                    soms15= onep*sin(om0-n*Omega0)*t15
+                    c15   = c15 + bjn*(soma15+soms15)
+                 end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_dp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_dp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_dp+bj0b*somt3+c3)
+                 rhot(i+4)  = rho0*(1.0_dp+bj0b*somt4+c4)
+                 rhot(i+5)  = rho0*(1.0_dp+bj0b*somt5+c5)
+                 rhot(i+6)  = rho0*(1.0_dp+bj0b*somt6+c6)
+                 rhot(i+7)  = rho0*(1.0_dp+bj0b*somt7+c7)
+                 rhot(i+8)  = rho0*(1.0_dp+bj0b*somt8+c8)
+                 rhot(i+9)  = rho0*(1.0_dp+bj0b*somt9+c9)
+                 rhot(i+10) = rho0*(1.0_dp+bj0b*somt10+c10)
+                 rhot(i+11) = rho0*(1.0_dp+bj0b*somt11+c11)
+                 rhot(i+12) = rho0*(1.0_dp+bj0b*somt12+c12)
+                 rhot(i+13) = rho0*(1.0_dp+bj0b*somt13+c13)
+                 rhot(i+14) = rho0*(1.0_dp+bj0b*somt14+c14)
+                 rhot(i+15) = rho0*(1.0_dp+bj0b*somt15+c15)
+            end do
+       end subroutine transmittance_spectr_unroll_16x_r8
+
+
+
+ 
  
 
 
