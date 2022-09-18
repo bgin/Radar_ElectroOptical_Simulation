@@ -8736,8 +8736,8 @@ module eos_sensor
        subroutine transmittance_spectr_unroll_16x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_16x_r8
-           !dir$ attributes forceinline ::   transmittance_spectr__unroll_16x_r8
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr__unroll_16x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_16x_r8
            real(kind=dp), dimension(1:len), intent(out) :: rhot
            integer(kind=dp),                intent(in)  :: len
            real(kind=dp), dimension(1:n),   intent(in)  :: bjb
@@ -8923,8 +8923,776 @@ module eos_sensor
 
 
 
- 
- 
+       subroutine transmittance_spectr_unroll_8x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_8x_r4
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_8x_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=sp),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           
+           real(kind=sp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=sp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=sp), automatic :: soma0,soma1,soma2,soma3,soma4,soma5,soma6,soma7
+           real(kind=sp), automatic :: soms0,soms1,soms2,soms3,soms4,soms5,soms6,soms7
+           real(kind=sp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_sp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_sp+bj0b*somt0+c0)
+               end do
+               if(len<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,8
+                 c0     = 0.0_sp
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_sp
+                 t1     = real(i+1,kind=sp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_sp
+                 t2     = real(i+2,kind=sp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_sp
+                 t3     = real(i+3,kind=sp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 c4     = 0.0_sp
+                 t4     = real(i+4,kind=sp) 
+                 omt4   = om0*t4 
+                 somt4  = sin(omt4)
+                 c5     = 0.0_sp
+                 t5     = real(i+5,kind=sp)
+                 omt5   = om0*t5 
+                 somt5  = sin(omt5)
+                 c6     = 0.0_sp
+                 t6     = real(i+6,kind=sp)
+                 omt6   = om0*t6 
+                 somt6  = sin(omt6)
+                 c7     = 0.0_sp
+                 t7     = real(i+7,kind=sp)
+                 omt7   = om0*t7 
+                 somt7  = sin(omt7)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                    soma4 = sin(om0+n*Omega0)*t4
+                    soms4 = onep*sin(om0-n*Omega0)*t4
+                    c4    = c4 + bjn*(soma4+soms4)
+                    soma5 = sin(om0+n*Omega0)*t5
+                    soms5 = onep*sin(om0-n*Omega0)*t5
+                    c5    = c5 + bjn*(soma5+soms5)
+                    soma6 = sin(om0+n*Omega0)*t6
+                    soms6 = onep*sin(om0-n*Omega0)*t6
+                    c6    = c6 + bjn*(soma6+soms6)
+                    soma7 = sin(om0+n*Omega0)*t7
+                    soms7 = onep*sin(om0-n*Omega0)*t7
+                    c7    = c7 + bjn*(soma7+soms7)
+                 end do
+                 rhot(i)    = rho0*(1.0_sp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_sp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_sp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_sp+bj0b*somt3+c3)
+                 rhot(i+4)  = rho0*(1.0_sp+bj0b*somt4+c4)
+                 rhot(i+5)  = rho0*(1.0_sp+bj0b*somt5+c5)
+                 rhot(i+6)  = rho0*(1.0_sp+bj0b*somt6+c6)
+                 rhot(i+7)  = rho0*(1.0_sp+bj0b*somt7+c7)
+             end do
+       end subroutine transmittance_spectr_unroll_8x_r4
+
+
+  
+       subroutine transmittance_spectr_unroll_8x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_8x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_8x_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=dp),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3,omt4,omt5,omt6,omt7
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3,somt4,somt5,somt6,somt7
+           real(kind=dp), automatic :: soma0,soma1,soma2,soma3,soma4,soma5,soma6,soma7
+           real(kind=dp), automatic :: soms0,soms1,soms2,soms3,soms4,soms5,soms6,soms7
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_dp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0_dp**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_dp+bj0b*somt0+c0)
+               end do
+               if(len<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,8
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_dp
+                 t1     = real(i+1,kind=dp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_dp
+                 t2     = real(i+2,kind=dp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_dp
+                 t3     = real(i+3,kind=dp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 c4     = 0.0_dp
+                 t4     = real(i+4,kind=dp) 
+                 omt4   = om0*t4 
+                 somt4  = sin(omt4)
+                 c5     = 0.0_dp
+                 t5     = real(i+5,kind=dp)
+                 omt5   = om0*t5 
+                 somt5  = sin(omt5)
+                 c6     = 0.0_dp
+                 t6     = real(i+6,kind=dp)
+                 omt6   = om0*t6 
+                 somt6  = sin(omt6)
+                 c7     = 0.0_dp
+                 t7     = real(i+7,kind=dp)
+                 omt7   = om0*t7 
+                 somt7  = sin(omt7)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                    soma4 = sin(om0+n*Omega0)*t4
+                    soms4 = onep*sin(om0-n*Omega0)*t4
+                    c4    = c4 + bjn*(soma4+soms4)
+                    soma5 = sin(om0+n*Omega0)*t5
+                    soms5 = onep*sin(om0-n*Omega0)*t5
+                    c5    = c5 + bjn*(soma5+soms5)
+                    soma6 = sin(om0+n*Omega0)*t6
+                    soms6 = onep*sin(om0-n*Omega0)*t6
+                    c6    = c6 + bjn*(soma6+soms6)
+                    soma7 = sin(om0+n*Omega0)*t7
+                    soms7 = onep*sin(om0-n*Omega0)*t7
+                    c7    = c7 + bjn*(soma7+soms7)
+                end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_dp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_dp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_dp+bj0b*somt3+c3)
+                 rhot(i+4)  = rho0*(1.0_dp+bj0b*somt4+c4)
+                 rhot(i+5)  = rho0*(1.0_dp+bj0b*somt5+c5)
+                 rhot(i+6)  = rho0*(1.0_dp+bj0b*somt6+c6)
+                 rhot(i+7)  = rho0*(1.0_dp+bj0b*somt7+c7)
+             end do
+       end subroutine transmittance_spectr_unroll_8x_r8
+
+
+
+       subroutine transmittance_spectr_unroll_4x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_4x_r4
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_4x_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=sp),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           
+           real(kind=sp), automatic :: omt0,omt1,omt2,omt3
+           real(kind=sp), automatic :: t0,t1,t2,t3
+           real(kind=sp), automatic :: c0,c1,c2,c3
+           real(kind=sp), automatic :: somt0,somt1,somt2,somt3
+           real(kind=sp), automatic :: soma0,soma1,soma2,soma3
+           real(kind=sp), automatic :: soms0,soms1,soms2,soms3
+           real(kind=sp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_sp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_sp+bj0b*somt0+c0)
+               end do
+               if(len<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,4
+                 c0     = 0.0_sp
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_sp
+                 t1     = real(i+1,kind=sp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_sp
+                 t2     = real(i+2,kind=sp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_sp
+                 t3     = real(i+3,kind=sp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                 end do
+                 rhot(i)    = rho0*(1.0_sp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_sp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_sp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_sp+bj0b*somt3+c3)
+                
+             end do
+       end subroutine transmittance_spectr_unroll_4x_r4
+
+
+       subroutine transmittance_spectr_unroll_4x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_4x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_4x_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=dp),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0,omt1,omt2,omt3
+           real(kind=dp), automatic :: t0,t1,t2,t3
+           real(kind=dp), automatic :: c0,c1,c2,c3
+           real(kind=dp), automatic :: somt0,somt1,somt2,somt3
+           real(kind=dp), automatic :: soma0,soma1,soma2,soma3
+           real(kind=dp), automatic :: soms0,soms1,soms2,soms3
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_dp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0_dp**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_dp+bj0b*somt0+c0)
+               end do
+               if(len<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,4
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_dp
+                 t1     = real(i+1,kind=dp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 c2     = 0.0_dp
+                 t2     = real(i+2,kind=dp)
+                 omt2   = om0*t2 
+                 somt2  = sin(omt2)
+                 c3     = 0.0_dp
+                 t3     = real(i+3,kind=dp)
+                 omt3   = om0*t3 
+                 somt3  = sin(omt3)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                    soma2 = sin(om0+n*Omega0)*t2
+                    soms2 = onep*sin(om0-n*Omega0)*t2
+                    c2    = c2 + bjn*(soma2+soms2)
+                    soma3 = sin(om0+n*Omega0)*t3
+                    soms3 = onep*sin(om0-n*Omega0)*t3
+                    c3    = c3 + bjn*(soma3+soms3)
+                 end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_dp+bj0b*somt1+c1)
+                 rhot(i+2)  = rho0*(1.0_dp+bj0b*somt2+c2)
+                 rhot(i+3)  = rho0*(1.0_dp+bj0b*somt3+c3)
+             end do
+       end subroutine transmittance_spectr_unroll_4x_r8
+
+
+       subroutine transmittance_spectr_unroll_2x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_2x_r4
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_2x_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=sp),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           
+           real(kind=sp), automatic :: omt0,omt1
+           real(kind=sp), automatic :: t0,t1
+           real(kind=sp), automatic :: c0,c1
+           real(kind=sp), automatic :: somt0,somt1
+           real(kind=sp), automatic :: soma0,soma1
+           real(kind=sp), automatic :: soms0,soms1
+           real(kind=sp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_sp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_sp+bj0b*somt0+c0)
+               end do
+               if(len<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,2
+                 c0     = 0.0_sp
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_sp
+                 t1     = real(i+1,kind=sp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                 end do
+                 rhot(i)    = rho0*(1.0_sp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_sp+bj0b*somt1+c1)
+                               
+             end do
+       end subroutine transmittance_spectr_unroll_2x_r4
+
+
+       subroutine transmittance_spectr_unroll_2x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_2x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_2x_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=dp),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0,omt1
+           real(kind=dp), automatic :: t0,t1
+           real(kind=dp), automatic :: c0,c1
+           real(kind=dp), automatic :: somt0,somt1
+           real(kind=dp), automatic :: soma0,soma1
+           real(kind=dp), automatic :: soms0,soms1
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_dp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0_dp**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_dp+bj0b*somt0+c0)
+               end do
+               if(len<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,2
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_dp
+                 t1     = real(i+1,kind=dp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                 end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_dp+bj0b*somt1+c1)
+                
+             end do
+       end subroutine transmittance_spectr_unroll_2x_r8
+
+
+       !МОДУЛЯЦИЯ ИЗЛУЧЕНИЯ
+       !ВРАЩАЮЩИМСЯ СЕКТОРНЫМ РАСТРОМ
+       !Formula 5, p. 205
+       subroutine raster_transmitt_fft_r_c(rhophi_in,rhophi_out,dim_len,data_len,status)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_transmitt_fft_r_c 
+           use mkl_dfti
+           use mkl_fft_wrappers, only : create_desc_r_c_1D,  &
+                                        exec_fft_r_c_1D
+           real(kind=dp),    dimension(data_len),  intent(in)  :: rhophi_in
+           complex(kind=dp), dimension(data_len),  intent(out) :: rhophi_out
+           integer(kind=i4),                       intent(in)  :: dim_len
+           integer(kind=i4),                       intent(in)  :: data_len
+           integer(kind=i4),                       intent(out) :: status
+           type(DFTI_DESCRIPTOR), pointer :: handle
+           logical(kind=i4), automatic :: callstack
+           callstack = .true.
+           call create_desc_r_c_1D(handle,dim_len,data_len,callstack,status)
+           if(0 == status) then
+              call exec_fft_r_c_1D(handle,rhophi_in,rhophi_out,data_len,1,callstack,status)
+           end if
+       end subroutine raster_transmitt_fft_r_c
+
+
+       subroutine fourier_coeff_ak_r4(rhophi,cosphi,N,k,ak,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_ak_r4 
+           !dir$ attributes code_align : 32 :: fourier_coeff_ak_r4
+           use quadpack, only : savint
+           real(kind=sp),  dimension(1:64),      intent(in)    :: rhophi
+           real(kind=sp),  dimension(1:64),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: k
+           real(kind=sp),                        intent(out)   :: ak
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=sp), dimension(1:64) :: rpc,absc
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), parameter :: step  = 64.0_sp
+           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           integer(kind=i4) :: i,ier
+           phit = twopi/real(N,kind=sp) 
+           hphit= phit*0.5_sp
+           dphi = hphit/step
+           ndphi= -dphi
+           twopik = twopi*k
+           fac  = 2.0_sp/phit
+           incr = 0.0_sp
+           do i=1, 32
+              incr      = incr - ndphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = cos(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           incr = 0.0_sp
+           do i=32, 64
+              incr      = incr + dphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = cos(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           call savint(rpc,absc,64,ndphi,dphi,ak,ier)
+           ak = ak*phit
+       end subroutine fourier_coeff_ak_r4
+
+
+       subroutine fourier_coeff_ak_r8(rhophi,cosphi,N,k,ak,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_ak_r8 
+           !dir$ attributes code_align : 32 :: fourier_coeff_ak_r8
+           use quadpack, only : davint
+           real(kind=dp),  dimension(1:64),      intent(in)    :: rhophi
+           real(kind=dp),  dimension(1:64),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: k
+           real(kind=dp),                        intent(out)   :: ak
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=dp), dimension(1:64) :: rpc,absc
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), parameter :: step  = 64.0_dp
+           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           integer(kind=i4) :: i,ier
+           phit = twopi/real(N,kind=sp) 
+           hphit= phit*0.5_dp
+           dphi = hphit/step
+           ndphi= -dphi
+           twopik = twopi*k
+           fac  = 2.0_dp/phit
+           incr = 0.0_dp
+           do i=1, 32
+              incr      = incr - ndphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = cos(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           incr = 0.0_dp
+           do i=32, 64
+              incr      = incr + dphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = cos(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           call davint(rpc,absc,64,ndphi,dphi,ak,ier)
+           ak = ak*phit
+       end subroutine fourier_coeff_ak_r8
+
+
+       subroutine fourier_coeff_bk_r4(rhophi,cosphi,N,k,ak,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_bk_r4 
+           !dir$ attributes code_align : 32 :: fourier_coeff_bk_r4
+           use quadpack, only : savint
+           real(kind=sp),  dimension(1:64),      intent(in)    :: rhophi
+           real(kind=sp),  dimension(1:64),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: k
+           real(kind=sp),                        intent(out)   :: ak
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=sp), dimension(1:64) :: rpc,absc
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), parameter :: step  = 64.0_sp
+           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           integer(kind=i4) :: i,ier
+           phit = twopi/real(N,kind=sp) 
+           hphit= phit*0.5_sp
+           dphi = hphit/step
+           ndphi= -dphi
+           twopik = twopi*k
+           fac  = 2.0_sp/phit
+           incr = 0.0_sp
+           do i=1, 32
+              incr      = incr - ndphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = sin(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           incr = 0.0_sp
+           do i=32, 64
+              incr      = incr + dphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = sin(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           call savint(rpc,absc,64,ndphi,dphi,ak,ier)
+           ak = ak*phit
+       end subroutine fourier_coeff_bk_r4
+
+
+       subroutine fourier_coeff_bk_r8(rhophi,cosphi,N,k,ak,ier)
+           !dir$ optimize:3
+            !dir$ attributes forceinline :: fourier_coeff_bk_r8 
+           !dir$ attributes code_align : 32 :: fourier_coeff_bk_r8
+           use quadpack, only : davint
+           real(kind=dp),  dimension(1:64),      intent(in)    :: rhophi
+           real(kind=dp),  dimension(1:64),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: k
+           real(kind=dp),                        intent(out)   :: ak
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=dp), dimension(1:64) :: rpc,absc
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), parameter :: step  = 64.0_dp
+           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           integer(kind=i4) :: i,ier
+           phit = twopi/real(N,kind=sp) 
+           hphit= phit*0.5_dp
+           dphi = hphit/step
+           ndphi= -dphi
+           twopik = twopi*k
+           fac  = 2.0_dp/phit
+           incr = 0.0_dp
+           do i=1, 32
+              incr      = incr - ndphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = sin(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           incr = 0.0_dp
+           do i=32, 64
+              incr      = incr + dphi
+              absc(i)   = incr
+              ratio     = incr/phit
+              cosphi(i) = sin(twopik*ratio)
+              rpc(i)    = rhophi(i)*cosphi(i)
+           end do
+           call davint(rpc,absc,64,ndphi,dphi,ak,ier)
+           ak = ak*phit
+       end subroutine fourier_coeff_bk_r8
+
+
+
+
+
 
 
 
