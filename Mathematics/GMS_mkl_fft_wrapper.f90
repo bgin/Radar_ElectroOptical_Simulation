@@ -392,7 +392,7 @@ module mkl_fft_wrappers
 
         type(DFTI_DESCRIPTOR), pointer,        intent(inout) :: handle
         complex(kind=dp), dimension(data_len), intent(in)    :: data_in
-        complex(kind=sp), dimension(data_len), intent(out)   :: data_out
+        complex(kind=dp), dimension(data_len), intent(out)   :: data_out
         integer(kind=i4),                      intent(in)    :: data_len
         logical(kind=i4),                      intent(in)    :: callstack
         integer(kind=i4),                      intent(inout) :: status
@@ -425,7 +425,7 @@ module mkl_fft_wrappers
                                     data_len,fftype,callstack,status)
 
         type(DFTI_DESCRIPTOR), pointer,        intent(inout) :: handle
-        complex(kind=sp), dimension(data_len), intent(out)   :: data_inout
+        complex(kind=dp), dimension(data_len), intent(out)   :: data_inout
         integer(kind=i4),                      intent(in)    :: data_len
         logical(kind=i4),                      intent(in)    :: callstack
         integer(kind=i4),                      intent(inout) :: status
@@ -460,7 +460,7 @@ module mkl_fft_wrappers
 
         type(DFTI_DESCRIPTOR), pointer,                   intent(inout) :: handle
         complex(kind=dp), dimension(data_len1,data_len2), intent(in)    :: data_in
-        complex(kind=sp), dimension(data_len1,data_len2), intent(out)   :: data_out
+        complex(kind=dp), dimension(data_len1,data_len2), intent(out)   :: data_out
         integer(kind=i4),                                 intent(in)    :: data_len1
         integer(kind=i4),                                 intent(in)    :: data_len2
         logical(kind=i4),                                 intent(in)    :: callstack
@@ -529,7 +529,7 @@ module mkl_fft_wrappers
 
         type(DFTI_DESCRIPTOR), pointer,                             intent(inout) :: handle
         complex(kind=dp), dimension(data_len1,data_len2,data_len3), intent(in)    :: data_in
-        complex(kind=sp), dimension(data_len1,data_len2,data_len3), intent(out)   :: data_out
+        complex(kind=dp), dimension(data_len1,data_len2,data_len3), intent(out)   :: data_out
         integer(kind=i4),                                           intent(in)    :: data_len1
         integer(kind=i4),                                           intent(in)    :: data_len2
         integer(kind=i4),                                           intent(in)    :: data_len3
@@ -600,7 +600,7 @@ module mkl_fft_wrappers
 
         type(DFTI_DESCRIPTOR), pointer,        intent(inout) :: handle
         real(kind=dp),    dimension(data_len), intent(in)    :: data_in
-        complex(kind=sp), dimension(data_len), intent(out)   :: data_out
+        complex(kind=dp), dimension(data_len), intent(out)   :: data_out
         integer(kind=i4),                      intent(in)    :: data_len
         logical(kind=i4),                      intent(in)    :: callstack
         integer(kind=i4),                      intent(inout) :: status
@@ -634,7 +634,7 @@ module mkl_fft_wrappers
 
         type(DFTI_DESCRIPTOR), pointer,                   intent(inout) :: handle
         real(kind=dp),    dimension(data_len1,data_len2), intent(in)    :: data_in
-        complex(kind=sp), dimension(data_len1,data_len2), intent(out)   :: data_out
+        complex(kind=dp), dimension(data_len1,data_len2), intent(out)   :: data_out
         integer(kind=i4),                                 intent(in)    :: data_len1
         integer(kind=i4),                                 intent(in)    :: data_len2
         logical(kind=i4),                                 intent(in)    :: callstack
