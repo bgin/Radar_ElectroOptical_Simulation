@@ -9532,8 +9532,8 @@ module eos_sensor
            real(kind=sp), dimension(1:128) :: rpc,absc
            real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
            real(kind=sp), parameter :: step  = 128.0_sp
-           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
-           integer(kind=i4) :: i,ier
+           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac,ndphi
+           integer(kind=i4) :: i
            phit = twopi/real(N,kind=sp) 
            hphit= phit*0.5_sp
            dphi = hphit/step
@@ -9561,6 +9561,46 @@ module eos_sensor
        end subroutine fourier_coeff_ak_r4
 
 
+       subroutine fourier_coeff_a0k_r4(rhod,cosphi,N,k,a0k,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_a0k_r4 
+           !dir$ attributes code_align : 32 :: fourier_coeff_a0k_r4
+           use quadpack, only : savint
+           real(kind=sp), dimension(1:128),      intent(in)    :: rhod
+           real(kind=sp), dimension(1:128),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: k
+           real(kind=sp),                        intent(out)   :: a0k
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=sp), dimension(1:128) :: rpc,absc
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), parameter :: pi2   = 1.57079632679489661923132169164_sp
+           real(kind=sp), parameter :: step  = 64.0_sp
+           real(kind=sp), automatic :: phit,ratio,twopik,dphi,incr,ndphi
+           integer(kind=i4) :: i
+           phit   = twopi/real(N,kind=sp)
+           dphi   = pi2/step
+           ndphi  = -pi2/step
+           twopik = twopi*k
+           incr   = 0.0_sp
+           ratio  = twopik/phit
+           do i=1, 64
+              incr      = incr-ndphi
+              absc(i)   = incr
+              cosphi(i) = cos(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i) 
+           end do
+           incr = 0.0_sp
+           do i = 65, 128
+              incr = incr+dphi
+              absc(i)  = incr
+              cosphi(i) = cos(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i)
+           end do
+           call savint(rpc,absc,128,ndphi,dphi,a0k,ier)
+       end subroutine fourier_coeff_a0k_r4
+
+
        subroutine fourier_coeff_ak_r8(rhophi,cosphi,N,k,ak,ier)
            !dir$ optimize:3
            !dir$ attributes forceinline :: fourier_coeff_ak_r8 
@@ -9575,7 +9615,7 @@ module eos_sensor
            real(kind=dp), dimension(1:128) :: rpc,absc
            real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
            real(kind=dp), parameter :: step  = 128.0_dp
-           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac,ndphi
            integer(kind=i4) :: i,ier
            phit = twopi/real(N,kind=sp) 
            hphit= phit*0.5_dp
@@ -9604,6 +9644,46 @@ module eos_sensor
        end subroutine fourier_coeff_ak_r8
 
 
+       subroutine fourier_coeff_a0k_r8(rhod,cosphi,N,k,a0k,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_a0k_r8
+           !dir$ attributes code_align : 32 :: fourier_coeff_a0k_r8
+           use quadpack, only : davint
+           real(kind=dp), dimension(1:128),      intent(in)    :: rhod
+           real(kind=dp), dimension(1:128),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: k
+           real(kind=dp),                        intent(out)   :: a0k
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=dp), dimension(1:128) :: rpc,absc
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), parameter :: pi2   = 1.57079632679489661923132169164_dp
+           real(kind=dp), parameter :: step  = 64.0_dp
+           real(kind=dp), automatic :: phit,ratio,twopik,dphi,incr,ndphi
+           integer(kind=i4) :: i
+           phit   = twopi/real(N,kind=dp)
+           dphi   = pi2/step
+           ndphi  = -pi2/step
+           twopik = twopi*k
+           incr   = 0.0_dp
+           ratio  = twopik/phit
+           do i=1, 64
+              incr      = incr-ndphi
+              absc(i)   = incr
+              cosphi(i) = cos(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i) 
+           end do
+           incr = 0.0_dp
+           do i = 65, 128
+              incr = incr+dphi
+              absc(i)  = incr
+              cosphi(i) = cos(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i)
+           end do
+           call davint(rpc,absc,128,ndphi,dphi,a0k,ier)
+       end subroutine fourier_coeff_a0k_r8
+
+
        subroutine fourier_coeff_bk_r4(rhophi,cosphi,N,k,ak,ier)
            !dir$ optimize:3
            !dir$ attributes forceinline :: fourier_coeff_bk_r4 
@@ -9618,7 +9698,7 @@ module eos_sensor
            real(kind=sp), dimension(1:128) :: rpc,absc
            real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
            real(kind=sp), parameter :: step  = 128.0_sp
-           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           real(kind=sp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac,ndphi
            integer(kind=i4) :: i,ier
            phit = twopi/real(N,kind=sp) 
            hphit= phit*0.5_sp
@@ -9647,6 +9727,46 @@ module eos_sensor
        end subroutine fourier_coeff_bk_r4
 
 
+       subroutine fourier_coeff_b0k_r4(rhod,cosphi,N,k,a0k,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_b0k_r4 
+           !dir$ attributes code_align : 32 :: fourier_coeff_b0k_r4
+           use quadpack, only : savint
+           real(kind=sp), dimension(1:128),      intent(in)    :: rhod
+           real(kind=sp), dimension(1:128),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: k
+           real(kind=sp),                        intent(out)   :: a0k
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=sp), dimension(1:128) :: rpc,absc
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), parameter :: pi2   = 1.57079632679489661923132169164_sp
+           real(kind=sp), parameter :: step  = 64.0_sp
+           real(kind=sp), automatic :: phit,ratio,twopik,dphi,incr,ndphi
+           integer(kind=i4) :: i
+           phit   = twopi/real(N,kind=sp)
+           dphi   = pi2/step
+           ndphi  = -pi2/step
+           twopik = twopi*k
+           incr   = 0.0_sp
+           ratio  = twopik/phit
+           do i=1, 64
+              incr      = incr-ndphi
+              absc(i)   = incr
+              cosphi(i) = sin(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i) 
+           end do
+           incr = 0.0_sp
+           do i = 65, 128
+              incr = incr+dphi
+              absc(i)  = incr
+              cosphi(i) = sin(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i)
+           end do
+           call savint(rpc,absc,128,ndphi,dphi,a0k,ier)
+       end subroutine fourier_coeff_b0k_r4
+
+
        subroutine fourier_coeff_bk_r8(rhophi,cosphi,absc,N,k,ak,ier)
            !dir$ optimize:3
            !dir$ attributes forceinline :: fourier_coeff_bk_r8 
@@ -9663,7 +9783,7 @@ module eos_sensor
            real(kind=dp), dimension(1:128) :: rpc
            real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
            real(kind=dp), parameter :: step  = 128.0_dp
-           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac
+           real(kind=dp), automatic :: phit,hphit,dphi,carg,ratio,twopik,incr,fac,ndphi
            integer(kind=i4) :: i,ier
            phit = twopi/real(N,kind=sp) 
            hphit= phit*0.5_dp
@@ -9690,6 +9810,49 @@ module eos_sensor
            call davint(rpc,absc,128,ndphi,dphi,ak,ier)
            ak = ak*phit
        end subroutine fourier_coeff_bk_r8
+
+
+       subroutine fourier_coeff_b0k_r8(rhod,cosphi,N,k,a0k,ier)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: fourier_coeff_b0k_r8
+           !dir$ attributes code_align : 32 :: fourier_coeff_b0k_r8
+           use quadpack, only : davint
+           real(kind=dp), dimension(1:128),      intent(in)    :: rhod
+           real(kind=dp), dimension(1:128),      intent(inout) :: cosphi
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: k
+           real(kind=dp),                        intent(out)   :: a0k
+           integer(kind=i4),                     intent(inout) :: ier
+           real(kind=dp), dimension(1:128) :: rpc,absc
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), parameter :: pi2   = 1.57079632679489661923132169164_dp
+           real(kind=dp), parameter :: step  = 64.0_dp
+           real(kind=dp), automatic :: phit,ratio,twopik,dphi,incr,ndphi
+           integer(kind=i4) :: i
+           phit   = twopi/real(N,kind=dp)
+           dphi   = pi2/step
+           ndphi  = -pi2/step
+           twopik = twopi*k
+           incr   = 0.0_dp
+           ratio  = twopik/phit
+           do i=1, 64
+              incr      = incr-ndphi
+              absc(i)   = incr
+              cosphi(i) = sin(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i) 
+           end do
+           incr = 0.0_dp
+           do i = 65, 128
+              incr = incr+dphi
+              absc(i)  = incr
+              cosphi(i) = sin(ratio*incr)
+              rpc(i)    = rhod(i)*cosphi(i)
+           end do
+           call davint(rpc,absc,128,ndphi,dphi,a0k,ier)
+       end subroutine fourier_coeff_b0k_r8
+
+
+       subroutine rhod_integral_r4(rhod,n,phi1,phi2,
 
 
        subroutine fourier_coeff_a0_r4(rhophi,absc,phit,xlo,xup,ans,ier)
@@ -9730,10 +9893,10 @@ module eos_sensor
        end subroutine fourier_coeff_a0_r8
 
 
-       subroutine raster_transmitt_fft_phi_t_r4(rhophit,len,rhophi,cosphi, &
+       subroutine raster_transmitt_fourier_phi_t_r4(rhophit,len,rhophi,cosphi, &
                                                 absc,N,ans,r,klim,xlo,xup)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: raster_transmitt_fft_phi_t_r4
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_phi_t_r4
            real(kind=sp),  dimension(1:len),     intent(out)   :: rhophit
            integer(kind=i4),                     intent(in)    :: len
            real(kind=sp),  dimension(1:128),     intent(in)    :: rhophi
@@ -9771,8 +9934,8 @@ module eos_sensor
                  arg2    = arg1*phi
                  cterm   = cos(arg2)
                  sterm   = sin(arg2)
-                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k,akc,ierc)
-                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k,aks,iers)
+                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k0,aks,iers)
                  arg3    = arg1*omt
                  stom    = sin(arg3)
                  ctom    = cos(arg3)
@@ -9785,13 +9948,72 @@ module eos_sensor
                end do
                rhophit(i) = a0*sum
            end do
-       end subroutine raster_transmitt_fft_phi_t_r4
+       end subroutine raster_transmitt_fourier_phi_t_r4
+
+
+       subroutine raster_transmitt_fourier_t_r4(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
+                                                absc2,N,xlo,xup,r,klim,phi1,phi2)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_t_r4
+           use quadpack, only : savint
+           real(kind=sp), dimension(1:len),      intent(out)   :: rhot
+           integer(kind=i4),                     intent(in)    :: len
+           real(kind=sp),  dimension(1:128),     intent(in)    :: rhophi
+           real(kind=sp),  dimension(1:128),     intent(in)    :: rhod
+           real(kind=sp),  dimension(1:128),     intent(inout) :: cosphi1
+           real(kind=sp),  dimension(1:128),     intent(inout) :: cosphi2
+           real(kind=sp),  dimension(1:128),     intent(in)    :: absc
+           real(kind=sp),  dimension(1:128),     intent(in)    :: absc2 ! abscissas for rhod integration
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: xlo
+           real(kind=sp),                        intent(in)    :: xup
+           integer(kind=i4),                     intent(in)    :: r   ! number of raster rotations
+           integer(kind=i4),                     intent(in)    :: klim
+           real(kind=sp),                        intent(in)    :: phi1
+           real(kind=sp),                        intent(in)    :: phi2
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: k0,t0,aks,akc,phit,Omega0,x1,x2, &
+                                       ratio,arg1, cterm,sterm,         &
+                                       sum,ak0s,ak0c,ier0s,ier0c,iers,ierc,   &
+                                       c0,x0,omt,stom,ctom,a0,rd,fac
+           integer(kind=i4) :: i,k,ier
+           phit  = twopi/real(N,kind=sp)
+           Omega0= twopi*real(r,kind=sp)
+           call fourier_coeff_a0_r4(rhophi,absc,phit,xlo,xup,a0,ier)
+           a0 = 0.5_sp*a0
+           ier = 0
+           call savint(rhod,absc2,128,phi1,phi2,rd,ier)
+           fac = a0*rd
+           do i=1, len
+              t0  = real(i,kind=sp)
+              omt = Omega0*t0
+              sum = 0.0_sp
+              do k=1, klim
+                 k0 = real(k,kind=sp)
+                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k0,aks,iers)
+                 ratio = twopi*k0/phit
+                 arg1  = ratio*omt
+                 ctom  = cos(arg1)
+                 stom  = sin(arg1)
+                 call fourier_coeff_a0k_r4(rhod,cosphi,N,k0,ak0c,ier0c)
+                 call fourier_coeff_b0k_r4(rhod,cosphi,N,k0,ak0s,ier0s)
+                 x1    = akc*ak0c+aks*ak0s
+                 x2    = akc*ak0c-aks*ak0s  
+                 cterm = x1*ctom
+                 sterm = x2*stom
+                 c0    = cterm+sterm
+                 sum   = sum+c0
+              end do
+              rhot(i) = fac*sum
+           end do
+       end subroutine raster_transmitt_fourier_t_r4
                                                 
 
-       subroutine raster_transmitt_fft_phi_t_r8(rhophit,len,rhophi,cosphi, &
+       subroutine raster_transmitt_fourier_phi_t_r8(rhophit,len,rhophi,cosphi, &
                                                 absc,N,ans,r,klim,xlo,xup)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: raster_transmitt_fft_phi_t_r8
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_phi_t_r8
            real(kind=dp),  dimension(1:len),     intent(out)   :: rhophit
            integer(kind=i4),                     intent(in)    :: len
            real(kind=dp),  dimension(1:128),     intent(in)    :: rhophi
@@ -9829,8 +10051,8 @@ module eos_sensor
                  arg2    = arg1*phi
                  cterm   = cos(arg2)
                  sterm   = sin(arg2)
-                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k,akc,ierc)
-                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k,aks,iers)
+                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k0,aks,iers)
                  arg3    = arg1*omt
                  stom    = sin(arg3)
                  ctom    = cos(arg3)
@@ -9843,13 +10065,73 @@ module eos_sensor
                end do
                rhophit(i) = a0*sum
            end do
-       end subroutine raster_transmitt_fft_phi_t_r8
+       end subroutine raster_transmitt_fourier_phi_t_r8
 
 
-       subroutine raster_transmitt_fft_phi_t_r4_omp(rhophit,len,rhophi,cosphi, &
+       subroutine raster_transmitt_fourier_t_r8(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
+                                                absc2,N,xlo,xup,r,klim,phi1,phi2)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_t_r8
+           use quadpack, only : davint
+           real(kind=dp), dimension(1:len),      intent(out)   :: rhot
+           integer(kind=i4),                     intent(in)    :: len
+           real(kind=dp),  dimension(1:128),     intent(in)    :: rhophi
+           real(kind=dp),  dimension(1:128),     intent(in)    :: rhod
+           real(kind=dp),  dimension(1:128),     intent(inout) :: cosphi1
+           real(kind=dp),  dimension(1:128),     intent(inout) :: cosphi2
+           real(kind=dp),  dimension(1:128),     intent(in)    :: absc
+           real(kind=dp),  dimension(1:128),     intent(in)    :: absc2 ! abscissas for rhod integration
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: xlo
+           real(kind=dp),                        intent(in)    :: xup
+           integer(kind=i4),                     intent(in)    :: r   ! number of raster rotations
+           integer(kind=i4),                     intent(in)    :: klim
+           real(kind=dp),                        intent(in)    :: phi1
+           real(kind=dp),                        intent(in)    :: phi2
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: k0,t0,aks,akc,phit,Omega0,x1,x2, &
+                                       ratio,arg1, cterm,sterm,         &
+                                       sum,ak0s,ak0c,ier0s,ier0c,iers,ierc,   &
+                                       c0,x0,omt,stom,ctom,a0,rd,fac
+           integer(kind=i4) :: i,k,ier
+           phit  = twopi/real(N,kind=dp)
+           Omega0= twopi*real(r,kind=dp)
+           call fourier_coeff_a0_r8(rhophi,absc,phit,xlo,xup,a0,ier)
+           a0 = 0.5_dp*a0
+           ier = 0
+           call davint(rhod,absc2,128,phi1,phi2,rd,ier)
+           fac = a0*rd
+           do i=1, len
+              t0  = real(i,kind=dp)
+              omt = Omega0*t0
+              sum = 0.0_dp
+              do k=1, klim
+                 k0 = real(k,kind=dp)
+                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k0,aks,iers)
+                 ratio = twopi*k0/phit
+                 arg1  = ratio*omt
+                 ctom  = cos(arg1)
+                 stom  = sin(arg1)
+                 call fourier_coeff_a0k_r8(rhod,cosphi,N,k0,ak0c,ier0c)
+                 call fourier_coeff_b0k_r8(rhod,cosphi,N,k0,ak0s,ier0s)
+                 x1    = akc*ak0c+aks*ak0s
+                 x2    = akc*ak0c-aks*ak0s  
+                 cterm = x1*ctom
+                 sterm = x2*stom
+                 c0    = cterm+sterm
+                 sum   = sum+c0
+              end do
+              rhot(i) = fac*sum
+           end do
+       end subroutine raster_transmitt_fourier_t_r8
+                                                
+
+
+       subroutine raster_transmitt_fourier_phi_t_r4_omp(rhophit,len,rhophi,cosphi, &
                                                    absc,N,ans,r,klim,xlo,xup)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: raster_transmitt_fft_phi_t_r4
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_phi_t_r4
            use omp_lib
            real(kind=sp),  dimension(1:len),     intent(out)   :: rhophit
            integer(kind=i4),                     intent(in)    :: len
@@ -9894,8 +10176,8 @@ module eos_sensor
                  arg2    = arg1*phi
                  cterm   = cos(arg2)
                  sterm   = sin(arg2)
-                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k,akc,ierc)
-                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k,aks,iers)
+                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k0,aks,iers)
                  arg3    = arg1*omt
                  stom    = sin(arg3)
                  ctom    = cos(arg3)
@@ -9909,13 +10191,13 @@ module eos_sensor
                rhophit(i) = a0*sum
            end do
 !$omp end parallel do
-       end subroutine raster_transmitt_fft_phi_t_r4
+       end subroutine raster_transmitt_fourier_phi_t_r4
 
 
-       subroutine raster_transmitt_fft_phi_t_r8_omp(rhophit,len,rhophi,cosphi, &
+       subroutine raster_transmitt_fourier_phi_t_r8_omp(rhophit,len,rhophi,cosphi, &
                                                    absc,N,ans,r,klim,xlo,xup)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: raster_transmitt_fft_phi_t_r8
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_phi_t_r8
            use omp_lib
            real(kind=dp),  dimension(1:len),     intent(out)   :: rhophit
            integer(kind=i4),                     intent(in)    :: len
@@ -9960,8 +10242,8 @@ module eos_sensor
                  arg2    = arg1*phi
                  cterm   = cos(arg2)
                  sterm   = sin(arg2)
-                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k,akc,ierc)
-                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k,aks,iers)
+                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k0,aks,iers)
                  arg3    = arg1*omt
                  stom    = sin(arg3)
                  ctom    = cos(arg3)
@@ -9975,13 +10257,48 @@ module eos_sensor
                rhophit(i) = a0*sum
            end do
 !$omp end parallel do
-       end subroutine raster_transmitt_fft_phi_t_r8
+       end subroutine raster_transmitt_fourier_phi_t_r8
+
+       
+       !Formula 1, p. 208                                         
+       pure elemental function rho_diaphr_integral_r4(p2phi,p1phi,rhophi,sigma) result(rhod)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: rho_diaphr_integral_r4
+           !dir$ attributes code_align : 32 :: rho_diaphr_integral_r4
+           real(kind=sp),      intent(in) :: p2phi
+           real(kind=sp),      intent(in) :: p1phi
+           real(kind=sp),      intent(in) :: rhophi
+           real(kind=sp),      intent(in) :: sigma
+           real(kind=sp) :: rhod
+           real(kind=sp), automatic :: t0,t1,t2,t3
+           t0   = p2phi*p2phi
+           t1   = p1phi*p1phi
+           t2   = 2.0_sp/sigma
+           t3   = t0-t1
+           rhod = t3*rhophi*t2     
+       end function rho_diaphr_integral_r4                                          
+     
+
+       pure elemental function rho_diaphr_integral_r8(p2phi,p1phi,rhophi,sigma) result(rhod)
+           !dir$ optimize:3
+           !dir$ attributes forceinline :: rho_diaphr_integral_r8
+           !dir$ attributes code_align : 32 :: rho_diaphr_integral_r8
+           real(kind=dp),      intent(in) :: p2phi
+           real(kind=dp),      intent(in) :: p1phi
+           real(kind=dp),      intent(in) :: rhophi
+           real(kind=dp),      intent(in) :: sigma
+           real(kind=dp) :: rhod
+           real(kind=dp), automatic :: t0,t1,t2,t3
+           t0   = p2phi*p2phi
+           t1   = p1phi*p1phi
+           t2   = 2.0_dp/sigma
+           t3   = t0-t1
+           rhod = t3*rhophi*t2     
+       end function rho_diaphr_integral_r8
+
 
                                                 
-                                                
-
-
-
+     
 
 
 
