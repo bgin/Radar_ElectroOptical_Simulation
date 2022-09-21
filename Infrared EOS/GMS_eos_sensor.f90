@@ -9950,7 +9950,8 @@ module eos_sensor
            end do
        end subroutine raster_transmitt_fourier_phi_t_r4
 
-
+       !
+       !Formula 2, p. 208
        subroutine raster_transmitt_fourier_t_r4(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
                                                 absc2,N,xlo,xup,r,klim,phi1,phi2)
            !dir$ optimize:3
@@ -10008,6 +10009,73 @@ module eos_sensor
               rhot(i) = fac*sum
            end do
        end subroutine raster_transmitt_fourier_t_r4
+
+
+       subroutine raster_transmitt_fourier_t_r4_omp(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
+                                                    absc2,N,xlo,xup,r,klim,phi1,phi2)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_t_r4_omp
+           use quadpack, only : savint
+           real(kind=sp), dimension(1:len),      intent(out)   :: rhot
+           integer(kind=i4),                     intent(in)    :: len
+           real(kind=sp),  dimension(1:128),     intent(in)    :: rhophi
+           real(kind=sp),  dimension(1:128),     intent(in)    :: rhod
+           real(kind=sp),  dimension(1:128),     intent(inout) :: cosphi1
+           real(kind=sp),  dimension(1:128),     intent(inout) :: cosphi2
+           real(kind=sp),  dimension(1:128),     intent(in)    :: absc
+           real(kind=sp),  dimension(1:128),     intent(in)    :: absc2 ! abscissas for rhod integration
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=sp),                        intent(in)    :: xlo
+           real(kind=sp),                        intent(in)    :: xup
+           integer(kind=i4),                     intent(in)    :: r   ! number of raster rotations
+           integer(kind=i4),                     intent(in)    :: klim
+           real(kind=sp),                        intent(in)    :: phi1
+           real(kind=sp),                        intent(in)    :: phi2
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: k0,t0,aks,akc,phit,Omega0,x1,x2, &
+                                       ratio,arg1, cterm,sterm,         &
+                                       sum,ak0s,ak0c,ier0s,ier0c,iers,ierc,   &
+                                       c0,x0,omt,stom,ctom,a0,rd,fac
+           integer(kind=i4) :: i,k,ier
+           phit  = twopi/real(N,kind=sp)
+           Omega0= twopi*real(r,kind=sp)
+           call fourier_coeff_a0_r4(rhophi,absc,phit,xlo,xup,a0,ier)
+           a0 = 0.5_sp*a0
+           ier = 0
+           call savint(rhod,absc2,128,phi1,phi2,rd,ier)
+           fac = a0*rd
+!$omp parallel do default(none) schedule(runtime)     &
+!$omp private(i,t0,omt,sum,k,k0,ratio,arg1,ctom,stom) &
+!$omp private(x1,x2,cterm,sterm,c0,akc,aks,ak0c,ak0s) &
+!$omp private(ierc,iers,ier0c,ier0s,rhophi,cosphi,rhod)
+!$omp shared(rhot,len,klim,Omega0,N,twopi,phit,ratio,fac)
+           do i=1, len
+              t0  = real(i,kind=sp)
+              omt = Omega0*t0
+              sum = 0.0_sp
+              do k=1, klim
+                 k0 = real(k,kind=sp)
+                 call fourier_coeff_ak_r4(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r4(rhophi,cosphi,N,k0,aks,iers)
+                 ratio = twopi*k0/phit
+                 arg1  = ratio*omt
+                 ctom  = cos(arg1)
+                 stom  = sin(arg1)
+                 call fourier_coeff_a0k_r4(rhod,cosphi,N,k0,ak0c,ier0c)
+                 call fourier_coeff_b0k_r4(rhod,cosphi,N,k0,ak0s,ier0s)
+                 x1    = akc*ak0c+aks*ak0s
+                 x2    = akc*ak0c-aks*ak0s  
+                 cterm = x1*ctom
+                 sterm = x2*stom
+                 c0    = cterm+sterm
+                 sum   = sum+c0
+              end do
+              rhot(i) = fac*sum
+           end do
+!$omp end parallel do
+       end subroutine raster_transmitt_fourier_t_r4_omp
+                                                
+
                                                 
 
        subroutine raster_transmitt_fourier_phi_t_r8(rhophit,len,rhophi,cosphi, &
@@ -10068,6 +10136,9 @@ module eos_sensor
        end subroutine raster_transmitt_fourier_phi_t_r8
 
 
+       
+
+
        subroutine raster_transmitt_fourier_t_r8(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
                                                 absc2,N,xlo,xup,r,klim,phi1,phi2)
            !dir$ optimize:3
@@ -10125,6 +10196,73 @@ module eos_sensor
               rhot(i) = fac*sum
            end do
        end subroutine raster_transmitt_fourier_t_r8
+
+
+       subroutine raster_transmitt_fourier_t_r8_omp(rhot,len,rhophi,rhod,cosphi1,cosphi2,absc, &
+                                                    absc2,N,xlo,xup,r,klim,phi1,phi2)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_transmitt_fourier_t_r8_omp
+           use quadpack, only : davint
+           real(kind=dp), dimension(1:len),      intent(out)   :: rhot
+           integer(kind=i4),                     intent(in)    :: len
+           real(kind=dp),  dimension(1:128),     intent(in)    :: rhophi
+           real(kind=dp),  dimension(1:128),     intent(in)    :: rhod
+           real(kind=dp),  dimension(1:128),     intent(inout) :: cosphi1
+           real(kind=dp),  dimension(1:128),     intent(inout) :: cosphi2
+           real(kind=dp),  dimension(1:128),     intent(in)    :: absc
+           real(kind=dp),  dimension(1:128),     intent(in)    :: absc2 ! abscissas for rhod integration
+           integer(kind=i4),                     intent(in)    :: N
+           real(kind=dp),                        intent(in)    :: xlo
+           real(kind=dp),                        intent(in)    :: xup
+           integer(kind=i4),                     intent(in)    :: r   ! number of raster rotations
+           integer(kind=i4),                     intent(in)    :: klim
+           real(kind=dp),                        intent(in)    :: phi1
+           real(kind=dp),                        intent(in)    :: phi2
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: k0,t0,aks,akc,phit,Omega0,x1,x2, &
+                                       ratio,arg1, cterm,sterm,         &
+                                       sum,ak0s,ak0c,ier0s,ier0c,iers,ierc,   &
+                                       c0,x0,omt,stom,ctom,a0,rd,fac
+           integer(kind=i4) :: i,k,ier
+           phit  = twopi/real(N,kind=dp)
+           Omega0= twopi*real(r,kind=dp)
+           call fourier_coeff_a0_r8(rhophi,absc,phit,xlo,xup,a0,ier)
+           a0 = 0.5_dp*a0
+           ier = 0
+           call davint(rhod,absc2,128,phi1,phi2,rd,ier)
+           fac = a0*rd
+!$omp parallel do default(none) schedule(runtime)     &
+!$omp private(i,t0,omt,sum,k,k0,ratio,arg1,ctom,stom) &
+!$omp private(x1,x2,cterm,sterm,c0,akc,aks,ak0c,ak0s) &
+!$omp private(ierc,iers,ier0c,ier0s,rhophi,cosphi,rhod)
+!$omp shared(rhot,len,klim,Omega0,N,twopi,phit,ratio,fac)
+           do i=1, len
+              t0  = real(i,kind=dp)
+              omt = Omega0*t0
+              sum = 0.0_dp
+              do k=1, klim
+                 k0 = real(k,kind=dp)
+                 call fourier_coeff_ak_r8(rhophi,cosphi,N,k0,akc,ierc)
+                 call fourier_coeff_bk_r8(rhophi,cosphi,N,k0,aks,iers)
+                 ratio = twopi*k0/phit
+                 arg1  = ratio*omt
+                 ctom  = cos(arg1)
+                 stom  = sin(arg1)
+                 call fourier_coeff_a0k_r8(rhod,cosphi,N,k0,ak0c,ier0c)
+                 call fourier_coeff_b0k_r8(rhod,cosphi,N,k0,ak0s,ier0s)
+                 x1    = akc*ak0c+aks*ak0s
+                 x2    = akc*ak0c-aks*ak0s  
+                 cterm = x1*ctom
+                 sterm = x2*stom
+                 c0    = cterm+sterm
+                 sum   = sum+c0
+              end do
+              rhot(i) = fac*sum
+           end do
+!$omp end parallel do
+       end subroutine raster_transmitt_fourier_t_r8
+                                                
+
                                                 
 
 
@@ -10297,8 +10435,874 @@ module eos_sensor
        end function rho_diaphr_integral_r8
 
 
-                                                
-     
+       !Спектр падающего на растр потока излучения равен
+       !Formula 3, p. 202 
+       subroutine raster_flux_sinc_unroll_16x_r4(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_16x_r4
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_16x_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=sp), automatic :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=sp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
+           real(kind=sp), automatic :: arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,16)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=sp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<16) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-16
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+              t4         = real(i-4,kind=sp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i-4) = sinc4 
+              t5         = real(i-5,kind=sp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg0 5
+              phi0f(i-5) = sinc5
+              t6         = real(i-6,kind=sp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i-6) = sinc6
+              t7         = real(i-7,kind=sp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i-7) = sinc7
+              t8         = real(i-8,kind=sp)
+              arg8       = twopi*f*t8
+              sinc8      = sin(arg8)/arg8
+              phi0f(i-8) = sinc8
+              t9         = real(i-9,kind=sp)
+              arg9       = twopi*f*t9
+              sinc9      = sin(arg9)/arg9
+              phi0f(i-9) = sinc9
+              t10        = real(i-10,kind=sp)
+              arg10      = twopi*f*t10
+              sinc10     = sin(arg10)/arg10
+              phi0f(i-10)= sinc10
+              t11        = real(i-11,kind=sp)
+              arg11      = twopi*f*t11
+              sinc11     = sin(arg11)/arg11
+              phi0f(i-11)= sinc11
+              t12        = real(i-12,kind=sp)
+              arg12      = twopi*f*t12
+              sinc0      = sin(arg12)/arg12
+              phi0f(i-12)= sinc12
+              t13        = real(i-13,kind=sp)
+              arg13      = twopi*f*t13
+              sinc13     = sin(arg13)/arg13
+              phi0f(i-13)= sinc13
+              t14        = real(i-14,kind=sp)
+              arg14      = twopi*f*t14
+              sinc14     = sin(arg14)/arg14
+              phi0f(i-14)= sinc14
+              t15        = real(i-15,kind=sp)
+              arg15      = twopi*f*t15
+              sinc15     = sin(arg15)/arg15
+              phi0f(i-15)= sinc15
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,16
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+              t4         = real(i+4,kind=sp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i+4) = sinc4 
+              t5         = real(i+5,kind=sp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg0 5
+              phi0f(i+5) = sinc5
+              t6         = real(i+6,kind=sp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i+6) = sinc6
+              t7         = real(i+7,kind=sp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i+7) = sinc7
+              t8         = real(i+8,kind=sp)
+              arg8       = twopi*f*t8
+              sinc8      = sin(arg8)/arg8
+              phi0f(i+8) = sinc8
+              t9         = real(i+9,kind=sp)
+              arg9       = twopi*f*t9
+              sinc9      = sin(arg9)/arg9
+              phi0f(i+9) = sinc9
+              t10        = real(i+10,kind=sp)
+              arg10      = twopi*f*t10
+              sinc10     = sin(arg10)/arg10
+              phi0f(i+10)= sinc10
+              t11        = real(i+11,kind=sp)
+              arg11      = twopi*f*t11
+              sinc11     = sin(arg11)/arg11
+              phi0f(i+11)= sinc11
+              t12        = real(i+12,kind=sp)
+              arg12      = twopi*f*t12
+              sinc0      = sin(arg12)/arg12
+              phi0f(i+12)= sinc12
+              t13        = real(i+13,kind=sp)
+              arg13      = twopi*f*t13
+              sinc13     = sin(arg13)/arg13
+              phi0f(i+13)= sinc13
+              t14        = real(i+14,kind=sp)
+              arg14      = twopi*f*t14
+              sinc14     = sin(arg14)/arg14
+              phi0f(i+14)= sinc14
+              t15        = real(i+15,kind=sp)
+              arg15      = twopi*f*t15
+              sinc15     = sin(arg15)/arg15
+              phi0f(i+15)= sinc15
+           end do
+       end subroutine raster_flux_sinc_unroll_16x_r4
+
+
+       subroutine raster_flux_sinc_unroll_16x_r8(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_16x_r8
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_16x_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=dp), automatic :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=dp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
+           real(kind=dp), automatic :: arg9,arg10,arg11,arg12,arg13,arg14,arg15
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,16)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=dp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<16) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-16
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+              t4         = real(i-4,kind=dp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i-4) = sinc4 
+              t5         = real(i-5,kind=dp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5
+              phi0f(i-5) = sinc5
+              t6         = real(i-6,kind=dp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i-6) = sinc6
+              t7         = real(i-7,kind=dp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i-7) = sinc7
+              t8         = real(i-8,kind=dp)
+              arg8       = twopi*f*t8
+              sinc8      = sin(arg8)/arg8
+              phi0f(i-8) = sinc8
+              t9         = real(i-9,kind=dp)
+              arg9       = twopi*f*t9
+              sinc9      = sin(arg9)/arg9
+              phi0f(i-9) = sinc9
+              t10        = real(i-10,kind=dp)
+              arg10      = twopi*f*t10
+              sinc10     = sin(arg10)/arg10
+              phi0f(i-10)= sinc10
+              t11        = real(i-11,kind=dp)
+              arg11      = twopi*f*t11
+              sinc11     = sin(arg11)/arg11
+              phi0f(i-11)= sinc11
+              t12        = real(i-12,kind=dp)
+              arg12      = twopi*f*t12
+              sinc0      = sin(arg12)/arg12
+              phi0f(i-12)= sinc12
+              t13        = real(i-13,kind=dp)
+              arg13      = twopi*f*t13
+              sinc13     = sin(arg13)/arg13
+              phi0f(i-13)= sinc13
+              t14        = real(i-14,kind=dp)
+              arg14      = twopi*f*t14
+              sinc14     = sin(arg14)/arg14
+              phi0f(i-14)= sinc14
+              t15        = real(i-15,kind=dp)
+              arg15      = twopi*f*t15
+              sinc15     = sin(arg15)/arg15
+              phi0f(i-15)= sinc15
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,16
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+              t4         = real(i+4,kind=dp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i+4) = sinc4 
+              t5         = real(i+5,kind=dp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5 
+              phi0f(i+5) = sinc5
+              t6         = real(i+6,kind=dp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i+6) = sinc6
+              t7         = real(i+7,kind=dp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i+7) = sinc7
+              t8         = real(i+8,kind=dp)
+              arg8       = twopi*f*t8
+              sinc8      = sin(arg8)/arg8
+              phi0f(i+8) = sinc8
+              t9         = real(i+9,kind=dp)
+              arg9       = twopi*f*t9
+              sinc9      = sin(arg9)/arg9
+              phi0f(i+9) = sinc9
+              t10        = real(i+10,kind=dp)
+              arg10      = twopi*f*t10
+              sinc10     = sin(arg10)/arg10
+              phi0f(i+10)= sinc10
+              t11        = real(i+11,kind=dp)
+              arg11      = twopi*f*t11
+              sinc11     = sin(arg11)/arg11
+              phi0f(i+11)= sinc11
+              t12        = real(i+12,kind=dp)
+              arg12      = twopi*f*t12
+              sinc0      = sin(arg12)/arg12
+              phi0f(i+12)= sinc12
+              t13        = real(i+13,kind=dp)
+              arg13      = twopi*f*t13
+              sinc13     = sin(arg13)/arg13
+              phi0f(i+13)= sinc13
+              t14        = real(i+14,kind=dp)
+              arg14      = twopi*f*t14
+              sinc14     = sin(arg14)/arg14
+              phi0f(i+14)= sinc14
+              t15        = real(i+15,kind=dp)
+              arg15      = twopi*f*t15
+              sinc15     = sin(arg15)/arg15
+              phi0f(i+15)= sinc15
+           end do
+       end subroutine raster_flux_sinc_unroll_16x_r8
+
+
+       subroutine raster_flux_sinc_unroll_8x_r4(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_8x_r4
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_8x_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=sp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,8)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=sp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<8) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-8
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+              t4         = real(i-4,kind=sp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i-4) = sinc4 
+              t5         = real(i-5,kind=sp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5
+              phi0f(i-5) = sinc5
+              t6         = real(i-6,kind=sp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i-6) = sinc6
+              t7         = real(i-7,kind=sp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i-7) = sinc7
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,8
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+              t4         = real(i+4,kind=sp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i+4) = sinc4 
+              t5         = real(i+5,kind=sp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5 
+              phi0f(i+5) = sinc5
+              t6         = real(i+6,kind=sp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i+6) = sinc6
+              t7         = real(i+7,kind=sp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i+7) = sinc7
+           end do
+       end subroutine raster_flux_sinc_unroll_8x_r4
+
+
+       subroutine raster_flux_sinc_unroll_8x_r8(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_8x_r8
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_8x_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=dp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,8)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=dp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<8) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-8
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+              t4         = real(i-4,kind=dp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i-4) = sinc4 
+              t5         = real(i-5,kind=dp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5 
+              phi0f(i-5) = sinc5
+              t6         = real(i-6,kind=dp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i-6) = sinc6
+              t7         = real(i-7,kind=dp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i-7) = sinc7
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,8
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+              t4         = real(i+4,kind=dp)
+              arg4       = twopi*f*t4
+              sinc4      = sin(arg4)/arg4
+              phi0f(i+4) = sinc4 
+              t5         = real(i+5,kind=dp)
+              arg5       = twopi*f*t5
+              sinc5      = sin(arg5)/arg5 
+              phi0f(i+5) = sinc5
+              t6         = real(i+6,kind=dp)
+              arg6       = twopi*f*t6
+              sinc6      = sin(arg6)/arg6
+              phi0f(i+6) = sinc6
+              t7         = real(i+7,kind=dp)
+              arg7       = twopi*f*t7
+              sinc7      = sin(arg7)/arg7
+              phi0f(i+7) = sinc7
+           end do
+       end subroutine raster_flux_sinc_unroll_8x_r8
+
+
+       subroutine raster_flux_sinc_unroll_4x_r4(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_4x_r4
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_4x_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3
+           real(kind=sp), automatic :: arg0,arg1,arg2,arg3
+           real(kind=sp), automatic :: t0,t1,t2,t3
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,4)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=sp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<4) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-4
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,4
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=sp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=sp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+           end do
+       end subroutine raster_flux_sinc_unroll_4x_r4
+
+
+       subroutine raster_flux_sinc_unroll_4x_r8(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_4x_r8
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_4x_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: sinc0,sinc1,sinc2,sinc3
+           real(kind=dp), automatic :: arg0,arg1,arg2,arg3
+           real(kind=dp), automatic :: t0,t1,t2,t3
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,4)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=dp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<4) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-4
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+              t2         = real(i-2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i-2) = sinc2
+              t3         = real(i-3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i-3) = sinc3
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,4
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+              t2         = real(i+2,kind=dp)
+              arg2       = twopi*f*t2
+              sinc2      = sin(arg2)/arg2
+              phi0f(i+2) = sinc2
+              t3         = real(i+3,kind=dp)
+              arg3       = twopi*f*t3
+              sinc3      = sin(arg3)/arg3
+              phi0f(i+3) = sinc3
+           
+           end do
+       end subroutine raster_flux_sinc_unroll_4x_r8
+
+
+       subroutine raster_flux_sinc_unroll_2x_r4(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_2x_r4
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_2x_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp), automatic :: sinc0,sinc1
+           real(kind=sp), automatic :: arg0,arg1
+           real(kind=sp), automatic :: t0,t1
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,2)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=sp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<2) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-2
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,2
+              t0         = real(i,kind=sp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=sp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+             
+           end do
+       end subroutine raster_flux_sinc_unroll_2x_r4
+
+
+       subroutine raster_flux_sinc_unroll_2x_r8(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_unroll_2x_r8
+           !dir$ attributes forceinline ::   raster_flux_sinc_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_unroll_2x_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), automatic :: sinc0,sinc1
+           real(kind=dp), automatic :: arg0,arg1
+           real(kind=dp), automatic :: t0,t1
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           m = n(tin,2)
+           if(m /= 0) then
+              do i=1, m
+                 t0       = real(i,kind=dp)
+                 arg0     = twopi*f*t0
+                 sinc0    = sin(arg0)/arg0
+                 phi0f(i) = sinc0 
+              end do
+              if(tin<2) return
+           end if
+           m1 = m+1
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,m,-2
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i-1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i-1) = sinc1
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m,htin,2
+              t0         = real(i,kind=dp)
+              arg0       = twopi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = sinc0
+              t1         = real(i+1,kind=dp)
+              arg1       = twopi*f*t1
+              sinc1      = sin(arg1)/arg1
+              phi0f(i+1) = sinc1
+                      
+           end do
+       end subroutine raster_flux_sinc_unroll_2x_r8
+
+
+
+                                         
+       
 
 
 
