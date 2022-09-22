@@ -10629,9 +10629,8 @@ module eos_sensor
            real(kind=dp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
            real(kind=dp), automatic :: arg9,arg10,arg11,arg12,arg13,arg14,arg15
            real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
-           integer(kind=i4) :: i,m,m1,tin,nhtin,fac
+           integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,16)
            if(m /= 0) then
@@ -10639,7 +10638,7 @@ module eos_sensor
                  t0       = real(i,kind=dp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi*t0*sinc0 
               end do
               if(tin<16) return
            end if
@@ -10655,67 +10654,67 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
               t2         = real(i-2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i-2) = fac*sinc2
+              phi0f(i-2) = phi0*t2*sinc2
               t3         = real(i-3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i-3) = fac*sinc3
+              phi0f(i-3) = phi0*t3*sinc3
               t4         = real(i-4,kind=dp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i-4) = fac*sinc4 
+              phi0f(i-4) = phi0*t4*sinc4 
               t5         = real(i-5,kind=dp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5
-              phi0f(i-5) = fac*sinc5
+              phi0f(i-5) = phi0*t5*sinc5
               t6         = real(i-6,kind=dp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i-6) = fac*sinc6
+              phi0f(i-6) = phi0*t6*sinc6
               t7         = real(i-7,kind=dp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i-7) = fac*sinc7
+              phi0f(i-7) = phi0*t7*sinc7
               t8         = real(i-8,kind=dp)
               arg8       = pi*f*t8
               sinc8      = sin(arg8)/arg8
-              phi0f(i-8) = fac*sinc8
+              phi0f(i-8) = phi0*t8*sinc8
               t9         = real(i-9,kind=dp)
               arg9       = pi*f*t9
               sinc9      = sin(arg9)/arg9
-              phi0f(i-9) = fac*sinc9
+              phi0f(i-9) = phi0*t9*sinc9
               t10        = real(i-10,kind=dp)
               arg10      = pi*f*t10
               sinc10     = sin(arg10)/arg10
-              phi0f(i-10)= fac*sinc10
+              phi0f(i-10)= phi0*t10*sinc10
               t11        = real(i-11,kind=dp)
               arg11      = pi*f*t11
               sinc11     = sin(arg11)/arg11
-              phi0f(i-11)= fac*sinc11
+              phi0f(i-11)= phi0*t11*sinc11
               t12        = real(i-12,kind=dp)
               arg12      = pi*f*t12
               sinc0      = sin(arg12)/arg12
-              phi0f(i-12)= fac*sinc12
+              phi0f(i-12)= phi0*t12*sinc12
               t13        = real(i-13,kind=dp)
               arg13      = pi*f*t13
               sinc13     = sin(arg13)/arg13
-              phi0f(i-13)= fac*sinc13
+              phi0f(i-13)= phi0*t13*sinc13
               t14        = real(i-14,kind=dp)
               arg14      = pi*f*t14
               sinc14     = sin(arg14)/arg14
-              phi0f(i-14)= fac*sinc14
+              phi0f(i-14)= phi0*t13*sinc14
               t15        = real(i-15,kind=dp)
               arg15      = pi*f*t15
               sinc15     = sin(arg15)/arg15
-              phi0f(i-15)= fac*sinc15
+              phi0f(i-15)= phi0*t14*sinc15
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -10727,67 +10726,67 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = twopi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
               t2         = real(i+2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i+2) = fac*sinc2
+              phi0f(i+2) = phi0*t2*sinc2
               t3         = real(i+3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i+3) = fac*sinc3
+              phi0f(i+3) = phi0*t3*sinc3
               t4         = real(i+4,kind=dp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i+4) = fac*sinc4 
+              phi0f(i+4) = phi0*t4*sinc4 
               t5         = real(i+5,kind=dp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5 
-              phi0f(i+5) = fac*sinc5
+              phi0f(i+5) = phi0*t5*sinc5
               t6         = real(i+6,kind=dp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i+6) = fac*sinc6
+              phi0f(i+6) = phi0*t6*sinc6
               t7         = real(i+7,kind=dp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i+7) = fac*sinc7
+              phi0f(i+7) = phi0*t7*sinc7
               t8         = real(i+8,kind=dp)
               arg8       = pi*f*t8
               sinc8      = sin(arg8)/arg8
-              phi0f(i+8) = fac*sinc8
+              phi0f(i+8) = phi0*t8*sinc8
               t9         = real(i+9,kind=dp)
               arg9       = pi*f*t9
               sinc9      = sin(arg9)/arg9
-              phi0f(i+9) = fac*sinc9
+              phi0f(i+9) = phi0*t9*sinc9
               t10        = real(i+10,kind=dp)
               arg10      = pi*f*t10
               sinc10     = sin(arg10)/arg10
-              phi0f(i+10)= fac*sinc10
+              phi0f(i+10)= phi0*t10*sinc10
               t11        = real(i+11,kind=dp)
               arg11      = pi*f*t11
               sinc11     = sin(arg11)/arg11
-              phi0f(i+11)= fac*sinc11
+              phi0f(i+11)= phi0*t11*sinc11
               t12        = real(i+12,kind=dp)
               arg12      = pi*f*t12
               sinc0      = sin(arg12)/arg12
-              phi0f(i+12)= fac*sinc12
+              phi0f(i+12)= phi0*t12*sinc12
               t13        = real(i+13,kind=dp)
               arg13      = pi*f*t13
               sinc13     = sin(arg13)/arg13
-              phi0f(i+13)= fac*sinc13
+              phi0f(i+13)= phi0*t13*sinc13
               t14        = real(i+14,kind=dp)
               arg14      = pi*f*t14
               sinc14     = sin(arg14)/arg14
-              phi0f(i+14)= fac*sinc14
+              phi0f(i+14)= phi0*t14*sinc14
               t15        = real(i+15,kind=dp)
               arg15      = pi*f*t15
               sinc15     = sin(arg15)/arg15
-              phi0f(i+15)= fac*sinc15
+              phi0f(i+15)= phi0*t15*sinc15
            end do
        end subroutine raster_flux_sinc_unroll_16x_r8
 
@@ -10815,7 +10814,7 @@ module eos_sensor
                  t0       = real(i,kind=sp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<8) return
            end if
@@ -10831,35 +10830,35 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
               t2         = real(i-2,kind=sp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i-2) = fac*sinc2
+              phi0f(i-2) = phi0*t2*sinc2
               t3         = real(i-3,kind=sp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i-3) = fac*sinc3
+              phi0f(i-3) = phi0*t3*sinc3
               t4         = real(i-4,kind=sp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i-4) = fac*sinc4 
+              phi0f(i-4) = phi0*t4*sinc4 
               t5         = real(i-5,kind=sp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5
-              phi0f(i-5) = fac*sinc5
+              phi0f(i-5) = phi0*t5*sinc5
               t6         = real(i-6,kind=sp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i-6) = fac*sinc6
+              phi0f(i-6) = phi0*t6*sinc6
               t7         = real(i-7,kind=sp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i-7) = fac*sinc7
+              phi0f(i-7) = phi0*t7*sinc7
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -10871,35 +10870,35 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
               t2         = real(i+2,kind=sp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i+2) = fac*sinc2
+              phi0f(i+2) = phi0*t2*sinc2
               t3         = real(i+3,kind=sp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i+3) = fac*sinc3
+              phi0f(i+3) = phi0*t3*sinc3
               t4         = real(i+4,kind=sp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i+4) = fac*sinc4 
+              phi0f(i+4) = phi0*t4*sinc4 
               t5         = real(i+5,kind=sp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5 
-              phi0f(i+5) = fac*sinc5
+              phi0f(i+5) = phi0*t5*sinc5
               t6         = real(i+6,kind=sp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i+6) = fac*sinc6
+              phi0f(i+6) = phi0*t6*sinc6
               t7         = real(i+7,kind=sp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i+7) = fac*sinc7
+              phi0f(i+7) = phi0*t7*sinc7
            end do
        end subroutine raster_flux_sinc_unroll_8x_r4
 
@@ -10916,10 +10915,9 @@ module eos_sensor
            real(kind=dp), parameter :: pi = 3.14159265358979323846264338328_dp
            real(kind=dp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
            real(kind=dp), automatic :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8
-           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,fac
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
            integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,8)
            if(m /= 0) then
@@ -10927,7 +10925,7 @@ module eos_sensor
                  t0       = real(i,kind=dp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<8) return
            end if
@@ -10943,35 +10941,35 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
               t2         = real(i-2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i-2) = fac*sinc2
+              phi0f(i-2) = phi0*t2*sinc2
               t3         = real(i-3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i-3) = fac*sinc3
+              phi0f(i-3) = phi0*t3*sinc3
               t4         = real(i-4,kind=dp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i-4) = fac*sinc4 
+              phi0f(i-4) = phi0*t4*sinc4 
               t5         = real(i-5,kind=dp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5 
-              phi0f(i-5) = fac*sinc5
+              phi0f(i-5) = phi0*t5*sinc5
               t6         = real(i-6,kind=dp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i-6) = fac*sinc6
+              phi0f(i-6) = phi0*t6*sinc6
               t7         = real(i-7,kind=dp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i-7) = fac*sinc7
+              phi0f(i-7) = phi0*t7*sinc7
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -10983,35 +10981,35 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
               t2         = real(i+2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i+2) = fac*sinc2
+              phi0f(i+2) = phi0*t2*sinc2
               t3         = real(i+3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i+3) = fac*sinc3
+              phi0f(i+3) = phi0*t3*sinc3
               t4         = real(i+4,kind=dp)
               arg4       = pi*f*t4
               sinc4      = sin(arg4)/arg4
-              phi0f(i+4) = fac*sinc4 
+              phi0f(i+4) = phi0*t4*sinc4 
               t5         = real(i+5,kind=dp)
               arg5       = pi*f*t5
               sinc5      = sin(arg5)/arg5 
-              phi0f(i+5) = fac*sinc5
+              phi0f(i+5) = phi0*t5*sinc5
               t6         = real(i+6,kind=dp)
               arg6       = pi*f*t6
               sinc6      = sin(arg6)/arg6
-              phi0f(i+6) = fac*sinc6
+              phi0f(i+6) = phi0*t6*sinc6
               t7         = real(i+7,kind=dp)
               arg7       = pi*f*t7
               sinc7      = sin(arg7)/arg7
-              phi0f(i+7) = fac*sinc7
+              phi0f(i+7) = phi0*t7*sinc7
            end do
        end subroutine raster_flux_sinc_unroll_8x_r8
 
@@ -11028,10 +11026,9 @@ module eos_sensor
            real(kind=sp), parameter :: pi = 3.14159265358979323846264338328_sp
            real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3
            real(kind=sp), automatic :: arg0,arg1,arg2,arg3
-           real(kind=sp), automatic :: t0,t1,t2,t3,fac
+           real(kind=sp), automatic :: t0,t1,t2,t3
            integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,4)
            if(m /= 0) then
@@ -11039,7 +11036,7 @@ module eos_sensor
                  t0       = real(i,kind=sp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<4) return
            end if
@@ -11055,19 +11052,19 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
               t2         = real(i-2,kind=sp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i-2) = fac*sinc2
+              phi0f(i-2) = phi0*t2*sinc2
               t3         = real(i-3,kind=sp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i-3) = fac*sinc3
+              phi0f(i-3) = phi0*t3*sinc3
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -11079,19 +11076,19 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
               t2         = real(i+2,kind=sp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i+2) = fac*sinc2
+              phi0f(i+2) = phi0*t2*sinc2
               t3         = real(i+3,kind=sp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i+3) = fac*sinc3
+              phi0f(i+3) = phi0*t3*sinc3
            end do
        end subroutine raster_flux_sinc_unroll_4x_r4
 
@@ -11108,10 +11105,9 @@ module eos_sensor
            real(kind=dp), parameter :: pi = 3.14159265358979323846264338328_dp
            real(kind=dp), automatic :: sinc0,sinc1,sinc2,sinc3
            real(kind=dp), automatic :: arg0,arg1,arg2,arg3
-           real(kind=dp), automatic :: t0,t1,t2,t3,fac
+           real(kind=dp), automatic :: t0,t1,t2,t3
            integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,4)
            if(m /= 0) then
@@ -11119,7 +11115,7 @@ module eos_sensor
                  t0       = real(i,kind=dp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<4) return
            end if
@@ -11135,19 +11131,19 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
               t2         = real(i-2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i-2) = fac*sinc2
+              phi0f(i-2) = phi0*t2*sinc2
               t3         = real(i-3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i-3) = fac*sinc3
+              phi0f(i-3) = phi0*t3*sinc3
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -11159,19 +11155,19 @@ module eos_sensor
               t0         = real(i,kind=dp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=dp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
               t2         = real(i+2,kind=dp)
               arg2       = pi*f*t2
               sinc2      = sin(arg2)/arg2
-              phi0f(i+2) = fac*sinc2
+              phi0f(i+2) = phi0*t2*sinc2
               t3         = real(i+3,kind=dp)
               arg3       = pi*f*t3
               sinc3      = sin(arg3)/arg3
-              phi0f(i+3) = fac*sinc3
+              phi0f(i+3) = phi0*t3*sinc3
            
            end do
        end subroutine raster_flux_sinc_unroll_4x_r8
@@ -11189,10 +11185,9 @@ module eos_sensor
            real(kind=sp), parameter :: pi = 3.14159265358979323846264338328_sp
            real(kind=sp), automatic :: sinc0,sinc1
            real(kind=sp), automatic :: arg0,arg1
-           real(kind=sp), automatic :: t0,t1,fac
+           real(kind=sp), automatic :: t0,t1
            integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,2)
            if(m /= 0) then
@@ -11200,7 +11195,7 @@ module eos_sensor
                  t0       = real(i,kind=sp)
                  arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<2) return
            end if
@@ -11216,11 +11211,11 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t0*sinc1
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -11232,11 +11227,11 @@ module eos_sensor
               t0         = real(i,kind=sp)
               arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=sp)
               arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
              
            end do
        end subroutine raster_flux_sinc_unroll_2x_r4
@@ -11251,21 +11246,20 @@ module eos_sensor
            integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
            real(kind=dp),                      intent(in)  :: f
            real(kind=dp),                      intent(in)  :: phi0
-           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp), parameter :: pi = 3.14159265358979323846264338328_dp
            real(kind=dp), automatic :: sinc0,sinc1
            real(kind=dp), automatic :: arg0,arg1
-           real(kind=dp), automatic :: t0,t1,fac
+           real(kind=dp), automatic :: t0,t1
            integer(kind=i4) :: i,m,m1,tin,nhtin
            tin = htin*2
-           fac = real(tin,kind=sp)*phi0
            nhtin = -htin
            m = n(tin,2)
            if(m /= 0) then
               do i=1, m
                  t0       = real(i,kind=dp)
-                 arg0     = twopi*f*t0
+                 arg0     = pi*f*t0
                  sinc0    = sin(arg0)/arg0
-                 phi0f(i) = fac*sinc0 
+                 phi0f(i) = phi0*t0*sinc0 
               end do
               if(tin<2) return
            end if
@@ -11279,13 +11273,13 @@ module eos_sensor
            !dir$ vector always
            do i=nhtin,m,-2
               t0         = real(i,kind=dp)
-              arg0       = twopi*f*t0
+              arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i-1,kind=dp)
-              arg1       = twopi*f*t1
+              arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i-1) = fac*sinc1
+              phi0f(i-1) = phi0*t1*sinc1
            end do
            !dir$ assume_aligned phi0f:64
            !dir$ vector aligned
@@ -11295,13 +11289,13 @@ module eos_sensor
            !dir$ vector always
            do i=m,htin,2
               t0         = real(i,kind=dp)
-              arg0       = twopi*f*t0
+              arg0       = pi*f*t0
               sinc0      = sin(arg0)/arg0
-              phi0f(i)   = fac*sinc0
+              phi0f(i)   = phi0*t0*sinc0
               t1         = real(i+1,kind=dp)
-              arg1       = twopi*f*t1
+              arg1       = pi*f*t1
               sinc1      = sin(arg1)/arg1
-              phi0f(i+1) = fac*sinc1
+              phi0f(i+1) = phi0*t1*sinc1
                       
            end do
        end subroutine raster_flux_sinc_unroll_2x_r8
@@ -11321,7 +11315,421 @@ module eos_sensor
            real(kind=sp),                         intent(in)  :: phi0
            real(kind=sp),                         intent(in)  :: f0
            real(kind=sp),                         intent(in)  :: rho0
-           
+           real(kind=sp), parameter :: pi = 3.14159265358979323846264338328_sp
+           real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=sp), automatic :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=sp), automatic :: sinc10,sinc11,sinc12,sinc13,sinc14,sinc15,sinc16,sinc17
+           real(kind=sp), automatic :: sinc18,sinc19,sinc110,sinc111,sinc112,sinc113,sinc114,sinc115
+           real(kind=sp), automatic :: sinc20,sinc21,sinc22,sinc23,sinc24,sinc25,sinc26,sinc27
+           real(kind=sp), automatic :: sinc28,sinc29,sinc210,sinc211,sinc212,sinc213,sinc214,sinc215
+           real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=sp), automatic :: b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=sp), automatic :: sum0,sum1,sum2,sum3,sum4,sum5,sum6,sum7
+           real(kind=sp), automatic :: sum8,sum9,sum10,sum11,sum12,sum13,sum14,sum15
+           real(kind=sp), automatic :: f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=sp), automatic :: fdif,fsum,phi02,phi04
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           fdif  = f-f0
+           fsum  = f+f0
+           phi02 = 0.5_sp*phi0
+           phi04 = 0.25_sp*phi0
+           if(rho0/=0.5_sp) then
+              call raster_flux_sinc_unroll_16x_r4(phif,htin,f,phi0)
+              return
+           else
+              m = n(tin,16)
+              if(m /= 0) then
+                 do i=1,m
+                    t0      = real(i,kind=sp)
+                    a0      = pi*f*t0
+                    f0      = phi02*t0
+                    sinc0   = f0*sin(a0)/a0
+                    b0      = pi*fdif*t0
+                    sinc10  = sin(b0)/b0
+                    c0      = pi*fsum*t0
+                    g0      = phi04*t0
+                    sinc20  = sin(c0)/c0
+                    sum0    = g0*(sinc0+sinc20)
+                   phif(i) = sinc0+sum0
+                 end do
+                 if(tin<16) return
+              end if
+              m1 = m+1
+              ! Negative half first
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,m,-16
+                   t0        = real(i,kind=sp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+                   t1        = real(i-1,kind=sp)
+                   a1        = pi*f*t1
+                   f1        = phi02*t1
+                   sinc1     = f1*sin(a1)/a1
+                   b1        = pi*fdif*t1
+                   sinc11    = sin(b1)/b1
+                   c1        = pi*fsum*t1
+                   g1        = phi04*t1
+                   sinc21    = sin(c1)/c1
+                   sum1      = g1*(sinc1+sinc21)
+                   phif(i-1) = sinc1+sum1
+                   t2        = real(i-2,kind=sp)
+                   a2        = pi*f*t2
+                   f2        = phi02*t2
+                   sinc2     = f2*sin(a2)/a2
+                   b2        = pi*fdif*t2
+                   sinc12    = sin(b2)/b2
+                   c2        = pi*fsum*t2
+                   g2        = phi04*t2
+                   sinc22    = sin(c2)/c2
+                   sum2      = g2*(sinc2+sinc22)
+                   phif(i-2) = sinc2+sum2
+                   t3        = real(i-3,kind=sp)
+                   a3        = pi*f*t3
+                   f3        = phi02*t3
+                   sinc3     = f3*sin(a3)/a3
+                   b3        = pi*fdif*t3
+                   sinc13    = sin(b3)/b3
+                   c3        = pi*fsum*t3
+                   g3        = phi04*t3
+                   sinc23    = sin(c3)/c3
+                   sum3      = g3*(sinc3+sinc23)
+                   phif(i-3) = sinc3+sum3
+                   t4        = real(i-4,kind=sp)
+                   a4        = pi*f*t4
+                   f4        = phi02*t4
+                   sinc4     = f4*sin(a4)/a4
+                   b4        = pi*fdif*t4
+                   sinc11    = sin(b1)/b1
+                   c4        = pi*fsum*t4
+                   g4        = phi04*t4
+                   sinc24    = sin(c4)/c4
+                   sum4      = g4*(sinc4+sinc24)
+                   phif(i-4) = sinc4+sum4
+                   t5        = real(i-5,kind=sp)
+                   a5        = pi*f*t5
+                   f5        = phi02*t5
+                   sinc5     = f5*sin(a5)/a5
+                   b5        = pi*fdif*t5
+                   sinc15    = sin(b5)/b5
+                   c5        = pi*fsum*t5
+                   g5        = phi04*t5
+                   sinc25    = sin(c5)/c5
+                   sum5      = g1*(sinc5+sinc25)
+                   phif(i-5) = sinc5+sum5
+                   t6        = real(i-6,kind=sp)
+                   a6        = pi*f*t6
+                   f6        = phi02*t6
+                   sinc6     = f6*sin(a6)/a6
+                   b6        = pi*fdif*t1
+                   sinc16    = sin(b6)/b6
+                   c6        = pi*fsum*t6
+                   g6        = phi04*t6
+                   sinc26    = sin(c6)/c6
+                   sum6      = g6*(sinc6+sinc26)
+                   phif(i-6) = sinc6+sum6
+                   t7        = real(i-7,kind=sp)
+                   a7        = pi*f*t7
+                   f7        = phi02*t7
+                   sinc7     = f7*sin(a7)/a7
+                   b7        = pi*fdif*t7
+                   sinc17    = sin(b7)/b7
+                   c7        = pi*fsum*t7
+                   g7        = phi04*t7
+                   sinc27    = sin(c7)/c7
+                   sum7      = g7*(sinc7+sinc27)
+                   phif(i-7) = sinc7+sum7
+                   t8        = real(i-8,kind=sp)
+                   a8        = pi*f*t8
+                   f8        = phi02*t8
+                   sinc8      = f8*sin(a8)/a8
+                   b8         = pi*fdif*t8
+                   sinc18     = sin(b8)/b8
+                   c8         = pi*fsum*t8
+                   g8         = phi04*t8
+                   sinc28     = sin(c8)/c8
+                   sum8       = g8*(sinc8+sinc28)
+                   phif(i-8)  = sinc8+sum8
+                   t9         = real(i-9,kind=sp)
+                   a9         = pi*f*t9
+                   f9         = phi02*t9
+                   sinc9      = f9*sin(a9)/a9
+                   b9         = pi*fdif*t9
+                   sinc19     = sin(b9)/b9
+                   c9         = pi*fsum*t9
+                   g9         = phi04*t9
+                   sinc29     = sin(c9)/c9
+                   sum9       = g9*(sinc9+sinc29)
+                   phif(i-9)  = sinc9+sum9
+                   t10        = real(i-10,kind=sp)
+                   a10        = pi*f*t10
+                   f10        = phi02*t10
+                   sinc10     = f1*sin(a10)/a10
+                   b10        = pi*fdif*t10
+                   sinc110    = sin(b10)/b10
+                   c10        = pi*fsum*t10
+                   g10        = phi04*t10
+                   sinc210    = sin(c10)/c10
+                   sum10      = g10*(sinc10+sinc210)
+                   phif(i-10) = sinc10+sum10
+                   t11        = real(i-11,kind=sp)
+                   a11        = pi*f*t11
+                   f11        = phi02*t11
+                   sinc11     = f11*sin(a11)/a11
+                   b11        = pi*fdif*t11
+                   sinc111    = sin(b11)/b11
+                   c11        = pi*fsum*t11
+                   g11        = phi04*t11
+                   sinc211    = sin(c11)/c11
+                   sum11      = g11*(sinc11+sinc211)
+                   phif(i-11) = sinc11+sum11
+                   t12        = real(i-12,kind=sp)
+                   a12        = pi*f*t12
+                   f12        = phi02*t12
+                   sinc12     = f12*sin(a12)/a12
+                   b12        = pi*fdif*t12
+                   sinc112    = sin(b12)/b12
+                   c12        = pi*fsum*t12
+                   g12        = phi04*t12
+                   sinc212    = sin(c12)/c12
+                   sum12      = g12*(sinc12+sinc212)
+                   phif(i-12) = sinc12+sum12
+                   t13        = real(i-13,kind=sp)
+                   a13        = pi*f*t13
+                   f13        = phi02*t13
+                   sinc13     = f1*sin(a13)/a13
+                   b13        = pi*fdif*t13
+                   sinc113    = sin(b13)/b13
+                   c13        = pi*fsum*t13
+                   g13        = phi04*t13
+                   sinc213    = sin(c13)/c13
+                   sum13      = g13*(sinc13+sinc213)
+                   phif(i-13) = sinc13+sum13
+                   t14        = real(i-14,kind=sp)
+                   a14        = pi*f*t14
+                   f14        = phi02*t14
+                   sinc14     = f1*sin(a14)/a14
+                   b14        = pi*fdif*t14
+                   sinc114    = sin(b14)/b14
+                   c14        = pi*fsum*t14
+                   g14        = phi04*t14
+                   sinc214    = sin(c14)/c14
+                   sum14      = g1*(sinc14+sinc214)
+                   phif(i-14) = sinc14+sum14
+                   t15        = real(i-15,kind=sp)
+                   a15        = pi*f*t15
+                   f15        = phi02*t15
+                   sinc15     = f15*sin(a15)/a15
+                   b15        = pi*fdif*t15
+                   sinc115    = sin(b15)/b15
+                   c15        = pi*fsum*t15
+                   g15        = phi04*t15
+                   sinc215    = sin(c15)/c15
+                   sum15      = g15*(sinc15+sinc215)
+                   phif(i-15) = sinc15+sum15 
+               end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=m,htin,16
+                   t0        = real(i,kind=sp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+                   t1        = real(i+1,kind=sp)
+                   a1        = pi*f*t1
+                   f1        = phi02*t1
+                   sinc1     = f1*sin(a1)/a1
+                   b1        = pi*fdif*t1
+                   sinc11    = sin(b1)/b1
+                   c1        = pi*fsum*t1
+                   g1        = phi04*t1
+                   sinc21    = sin(c1)/c1
+                   sum1      = g1*(sinc1+sinc21)
+                   phif(i+1) = sinc1+sum1
+                   t2        = real(i+2,kind=sp)
+                   a2        = pi*f*t2
+                   f2        = phi02*t2
+                   sinc2     = f2*sin(a2)/a2
+                   b2        = pi*fdif*t2
+                   sinc12    = sin(b2)/b2
+                   c2        = pi*fsum*t2
+                   g2        = phi04*t2
+                   sinc22    = sin(c2)/c2
+                   sum2      = g2*(sinc2+sinc22)
+                   phif(i+2) = sinc2+sum2
+                   t3        = real(i+3,kind=sp)
+                   a3        = pi*f*t3
+                   f3        = phi02*t3
+                   sinc3     = f3*sin(a3)/a3
+                   b3        = pi*fdif*t3
+                   sinc13    = sin(b3)/b3
+                   c3        = pi*fsum*t3
+                   g3        = phi04*t3
+                   sinc23    = sin(c3)/c3
+                   sum3      = g3*(sinc3+sinc23)
+                   phif(i+3) = sinc3+sum3
+                   t4        = real(i+4,kind=sp)
+                   a4        = pi*f*t4
+                   f4        = phi02*t4
+                   sinc4     = f4*sin(a4)/a4
+                   b4        = pi*fdif*t4
+                   sinc11    = sin(b1)/b1
+                   c4        = pi*fsum*t4
+                   g4        = phi04*t4
+                   sinc24    = sin(c4)/c4
+                   sum4      = g4*(sinc4+sinc24)
+                   phif(i+4) = sinc4+sum4
+                   t5        = real(i+5,kind=sp)
+                   a5        = pi*f*t5
+                   f5        = phi02*t5
+                   sinc5     = f5*sin(a5)/a5
+                   b5        = pi*fdif*t5
+                   sinc15    = sin(b5)/b5
+                   c5        = pi*fsum*t5
+                   g5        = phi04*t5
+                   sinc25    = sin(c5)/c5
+                   sum5      = g1*(sinc5+sinc25)
+                   phif(i+5) = sinc5+sum5
+                   t6        = real(i+6,kind=sp)
+                   a6        = pi*f*t6
+                   f6        = phi02*t6
+                   sinc6     = f6*sin(a6)/a6
+                   b6        = pi*fdif*t1
+                   sinc16    = sin(b6)/b6
+                   c6        = pi*fsum*t6
+                   g6        = phi04*t6
+                   sinc26    = sin(c6)/c6
+                   sum6      = g6*(sinc6+sinc26)
+                   phif(i+6)  = sinc6+sum6
+                   t7         = real(i+7,kind=sp)
+                   a7         = pi*f*t7
+                   f7         = phi02*t7
+                   sinc7      = f7*sin(a7)/a7
+                   b7         = pi*fdif*t7
+                   sinc17     = sin(b7)/b7
+                   c7         = pi*fsum*t7
+                   g7         = phi04*t7
+                   sinc27     = sin(c7)/c7
+                   sum7       = g7*(sinc7+sinc27)
+                   phif(i+7)  = sinc7+sum7
+                   t8         = real(i+8,kind=sp)
+                   a8         = pi*f*t8
+                   f8         = phi02*t8
+                   sinc8      = f8*sin(a8)/a8
+                   b8         = pi*fdif*t8
+                   sinc18     = sin(b8)/b8
+                   c8         = pi*fsum*t8
+                   g8         = phi04*t8
+                   sinc28     = sin(c8)/c8
+                   sum8       = g8*(sinc8+sinc28)
+                   phif(i+8)  = sinc8+sum8
+                   t9         = real(i+9,kind=sp)
+                   a9         = pi*f*t9
+                   f9         = phi02*t9
+                   sinc9      = f9*sin(a9)/a9
+                   b9         = pi*fdif*t9
+                   sinc19     = sin(b9)/b9
+                   c9         = pi*fsum*t9
+                   g9         = phi04*t9
+                   sinc29     = sin(c9)/c9
+                   sum9       = g9*(sinc9+sinc29)
+                   phif(i+9)  = sinc9+sum9
+                   t10        = real(i+10,kind=sp)
+                   a10        = pi*f*t10
+                   f10        = phi02*t10
+                   sinc10     = f1*sin(a10)/a10
+                   b10        = pi*fdif*t10
+                   sinc110    = sin(b10)/b10
+                   c10        = pi*fsum*t10
+                   g10        = phi04*t10
+                   sinc210    = sin(c10)/c10
+                   sum10      = g10*(sinc10+sinc210)
+                   phif(i+10) = sinc10+sum10
+                   t11        = real(i+11,kind=sp)
+                   a11        = pi*f*t11
+                   f11        = phi02*t11
+                   sinc11     = f11*sin(a11)/a11
+                   b11        = pi*fdif*t11
+                   sinc111    = sin(b11)/b11
+                   c11        = pi*fsum*t11
+                   g11        = phi04*t11
+                   sinc211    = sin(c11)/c11
+                   sum11      = g11*(sinc11+sinc211)
+                   phif(i+11) = sinc11+sum11
+                   t12        = real(i+12,kind=sp)
+                   a12        = pi*f*t12
+                   f12        = phi02*t12
+                   sinc12     = f12*sin(a12)/a12
+                   b12        = pi*fdif*t12
+                   sinc112    = sin(b12)/b12
+                   c12        = pi*fsum*t12
+                   g12        = phi04*t12
+                   sinc212    = sin(c12)/c12
+                   sum12      = g12*(sinc12+sinc212)
+                   phif(i+12) = sinc12+sum12
+                   t13        = real(i+13,kind=sp)
+                   a13        = pi*f*t13
+                   f13        = phi02*t13
+                   sinc13     = f1*sin(a13)/a13
+                   b13        = pi*fdif*t13
+                   sinc113    = sin(b13)/b13
+                   c13        = pi*fsum*t13
+                   g13        = phi04*t13
+                   sinc213    = sin(c13)/c13
+                   sum13      = g13*(sinc13+sinc213)
+                   phif(i+13) = sinc13+sum13
+                   t14        = real(i+14,kind=sp)
+                   a14        = pi*f*t14
+                   f14        = phi02*t14
+                   sinc14     = f1*sin(a14)/a14
+                   b14        = pi*fdif*t14
+                   sinc114    = sin(b14)/b14
+                   c14        = pi*fsum*t14
+                   g14        = phi04*t14
+                   sinc214    = sin(c14)/c14
+                   sum14      = g1*(sinc14+sinc214)
+                   phif(i+14) = sinc14+sum14
+                   t15        = real(i+15,kind=sp)
+                   a15        = pi*f*t15
+                   f15        = phi02*t15
+                   sinc15     = f15*sin(a15)/a15
+                   b15        = pi*fdif*t15
+                   sinc115    = sin(b15)/b15
+                   c15        = pi*fsum*t15
+                   g15        = phi04*t15
+                   sinc215    = sin(c15)/c15
+                   sum15      = g15*(sinc15+sinc215)
+                   phif(i+15) = sinc15+sum15 
+               end do
+           end if
        end subroutine raster_flux_mod_sinc_unroll_16_r4
 
 
