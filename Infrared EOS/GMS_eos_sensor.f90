@@ -13226,8 +13226,547 @@ module eos_sensor
        end subroutine raster_flux_mod_sinc_unroll_2x_r8
 
 
-       
-
+       !Если момент времени, соответствующий центру импульса 
+       !падающего потока излучения, сдвинут относительно момента 
+       !времени, соответствующего максимуму пропускания растра, на 
+       !величину Д£, то спектр модулированного излучения окажется равным
+       !Formula (the last one), p. 202
+       subroutine raster_mod_sinc_shifted_unroll_16x_r4(phif,htin,f,phi0,f0,rho0,dt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_mod_sinc_shifted_unroll_16x_r4
+           !dir$ attributes forceinline ::   raster_mod_sinc_shifted_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_mod_sinc_shifted_unroll_16x_r4
+           real(kind=sp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                         intent(in)  :: f
+           real(kind=sp),                         intent(in)  :: phi0
+           real(kind=sp),                         intent(in)  :: f0
+           real(kind=sp),                         intent(in)  :: rho0
+           real(kind=sp),                         intent(in)  :: dt
+           real(kind=sp), parameter :: pi    = 3.14159265358979323846264338328_sp
+           real(kind=sp), parameter :: twopi = 2.0_sp*pi
+           real(kind
+           real(kind=sp), automatic :: sinc0,sinc1,sinc2,sinc3,sinc4,sinc5,sinc6,sinc7
+           real(kind=sp), automatic :: sinc8,sinc9,sinc10,sinc11,sinc12,sinc13,sinc14,sinc15
+           real(kind=sp), automatic :: sinc10,sinc11,sinc12,sinc13,sinc14,sinc15,sinc16,sinc17
+           real(kind=sp), automatic :: sinc18,sinc19,sinc110,sinc111,sinc112,sinc113,sinc114,sinc115
+           real(kind=sp), automatic :: sinc20,sinc21,sinc22,sinc23,sinc24,sinc25,sinc26,sinc27
+           real(kind=sp), automatic :: sinc28,sinc29,sinc210,sinc211,sinc212,sinc213,sinc214,sinc215
+           real(kind=sp), automatic :: cos0,cos1,cos2,cos3,cos4,cos5,cos6,cos7
+           real(kind=sp), automatic :: cos8,cos9,cos10,cos11,cos12,cos13,cos14,cos15
+           real(kind=sp), automatic :: cos10,cos11,cos12,cos13,cos14,cos15,cos16,cos17
+           real(kind=sp), automatic :: cos18,cos19,cos110,cos111,cos112,cos113,cos114,cos115
+            real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=sp), automatic :: b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15
+           real(kind=sp), automatic :: c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15
+           real(kind=sp), automatic :: sum0,sum1,sum2,sum3,sum4,sum5,sum6,sum7
+           real(kind=sp), automatic :: sum8,sum9,sum10,sum11,sum12,sum13,sum14,sum15
+           real(kind=sp), automatic :: f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=sp), automatic :: dt0,dt1,dt2,dt3,dt4,dt5,dt6,dt7
+           real(kind=sp), automatic :: dt8,dt9,dt10,dt11,dt12,dt13,dt14,dt15
+           real(kind=sp), automatic :: fdif,fsum,phi02,phi04,twopif,twopif0
+           integer(kind=i4) :: i,m,m1,tin,nhtin
+           tin    = htin*2
+           nhtin  = -htin
+           fdif   = f-f0
+           fsum   = f+f0
+           phi02  = 0.5_dp*phi0
+           phi04  = 0.25_dp*phi0
+           twopif = twopi*f
+           twopif0=twopi*f0
+           if(rho0/=0.5_dp) then
+              call raster_flux_sinc_unroll_16x_r4(phif,htin,f,phi0)
+              return
+           else
+              m = mod(tin,16)
+              if(m /= 0) then
+                 do i=1,m
+                    t0      = real(i,kind=dp)
+                    dt0     = dt+t0
+                    a0      = pi*f*t0
+                    f0      = phi02*t0
+                    sinc0   = f0*sin(a0)/a0
+                    cos0    = cos(twopif0*dt0)
+                    b0      = pi*fdif*t0
+                    sinc10  = cos0*sin(b0)/b0
+                    c0      = pi*fsum*t0
+                    g0      = phi04*t0
+                    cos10   = cos(-twopif0*dt0)
+                    sinc20  = cos10*sin(c0)/c0
+                    sum0    = g0*(sinc0+sinc20)
+                    phif(i) = (sinc0+sum0)*cos(-twopif*dt0)
+                 end do
+                 if(tin<16) return
+              end if
+              m1 = m+1
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,m,-16
+                    t0        = real(i,kind=sp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                    t1        = real(i-1,kind=sp)
+                    dt1       = dt+t1
+                    a1        = pi*f*t1
+                    f1        = phi02*t1
+                    sinc1     = f1*sin(a1)/a1
+                    cos1      = cos(twopif0*dt1)
+                    b1        = pi*fdif*t1
+                    sinc11    = cos1*sin(b1)/b1
+                    c1        = pi*fsum*t1
+                    g1        = phi04*t1
+                    cos11     = cos(-twopif0*dt1)
+                    sinc21    = cos11*sin(c1)/c1
+                    sum1      = g1*(sinc1+sinc21)
+                    phif(i-1) = (sinc1+sum1)*cos(-twopif*dt1)
+                    t2        = real(i-2,kind=sp)
+                    dt2       = dt+t2
+                    a2        = pi*f*t2
+                    f2        = phi02*t2
+                    sinc2     = f2*sin(a2)/a2
+                    cos2      = cos(twopif0*dt2)
+                    b2        = pi*fdif*t2
+                    sinc12    = cos2*sin(b2)/b2
+                    c2        = pi*fsum*t2
+                    g2        = phi04*t2
+                    cos12     = cos(-twopif0*dt2)
+                    sinc22    = cos12*sin(c2)/c2
+                    sum2      = g2*(sinc2+sinc22)
+                    phif(i-2) = (sinc2+sum2)*cos(-twopif*dt2)
+                    t3        = real(i-3,kind=sp)
+                    dt3       = dt+t3
+                    a3        = pi*f*t3
+                    f3        = phi02*t3
+                    sinc3     = f3*sin(a3)/a3
+                    cos3      = cos(twopif0*dt3)
+                    b3        = pi*fdif*t3
+                    sinc13    = cos3*sin(b3)/b3
+                    c3        = pi*fsum*t3
+                    g3        = phi04*t3
+                    cos13     = cos(-twopif0*dt3)
+                    sinc23    = cos13*sin(c3)/c3
+                    sum3      = g3*(sinc3+sinc23)
+                    phif(i-3) = (sinc3+sum3)*cos(-twopif*dt3)
+                    t4        = real(i-4,kind=sp)
+                    dt4       = dt+t4
+                    a4        = pi*f*t4
+                    f4        = phi02*t4
+                    sinc4     = f4*sin(a4)/a4
+                    cos4      = cos(twopif0*dt4)
+                    b4        = pi*fdif*t4
+                    sinc14    = cos4*sin(b4)/b4
+                    c4        = pi*fsum*t4
+                    g4        = phi04*t4
+                    cos14     = cos(-twopif0*dt4)
+                    sinc24    = cos14*sin(c4)/c4
+                    sum4      = g4*(sinc4+sinc24)
+                    phif(i-4) = (sinc4+sum4)*cos(-twopif*dt4)
+                    t5        = real(i-5,kind=sp)
+                    dt5       = dt+t5
+                    a5        = pi*f*t5
+                    f5        = phi02*t5
+                    sinc5     = f5*sin(a5)/a5
+                    cos5      = cos(twopif0*dt5)
+                    b5        = pi*fdif*t5
+                    sinc15    = cos5*sin(b5)/b5
+                    c5        = pi*fsum*t5
+                    g5        = phi04*t5
+                    cos15     = cos(-twopif0*dt5)
+                    sinc25    = cos15*sin(c5)/c5
+                    sum5      = g5*(sinc5+sinc25)
+                    phif(i-5) = (sinc5+sum5)*cos(-twopif*dt5)
+                    t6        = real(i-6,kind=sp)
+                    dt6       = dt+t6
+                    a6        = pi*f*t6
+                    f6        = phi02*t6
+                    sinc6     = f6*sin(a6)/a6
+                    cos6      = cos(twopif0*dt6)
+                    b6        = pi*fdif*t6
+                    sinc16    = cos6*sin(b6)/b6
+                    c6        = pi*fsum*t6
+                    g6        = phi04*t6
+                    cos16     = cos(-twopif0*dt6)
+                    sinc26    = cos16*sin(c6)/c6
+                    sum6      = g6*(sinc6+sinc26)
+                    phif(i-6) = (sinc6+sum6)*cos(-twopif*dt6)
+                    t7        = real(i-7,kind=sp)
+                    dt7       = dt+t7
+                    a7        = pi*f*t7
+                    f7        = phi02*t7
+                    sinc7     = f7*sin(a7)/a7
+                    cos7      = cos(twopif0*dt7)
+                    b7        = pi*fdif*t7
+                    sinc17    = cos7*sin(b7)/b7
+                    c7        = pi*fsum*t7
+                    g7        = phi04*t7
+                    cos17     = cos(-twopif0*dt7)
+                    sinc27    = cos17*sin(c7)/c7
+                    sum7      = g7*(sinc7+sinc27)
+                    phif(i-7) = (sinc7+sum7)*cos(-twopif*dt7)
+                    t8        = real(i-8,kind=sp)
+                    dt8       = dt+t8
+                    a8        = pi*f*t8
+                    f8        = phi02*t8
+                    sinc8     = f8*sin(a8)/a8
+                    cos8      = cos(twopif0*dt8)
+                    b8        = pi*fdif*t8
+                    sinc18    = cos8*sin(b8)/b8
+                    c8        = pi*fsum*t8
+                    g8        = phi04*t8
+                    cos18     = cos(-twopif0*dt8)
+                    sinc28    = cos18*sin(c8)/c8
+                    sum8      = g8*(sinc8+sinc28)
+                    phif(i-8) = (sinc8+sum8)*cos(-twopif*dt8) 
+                    t9        = real(i-9,kind=sp)
+                    dt9       = dt+t9
+                    a9        = pi*f*t9
+                    f9        = phi02*t9
+                    sinc9     = f9*sin(a9)/a9
+                    cos9      = cos(twopif0*dt9)
+                    b9        = pi*fdif*t9
+                    sinc19    = cos1*sin(b9)/b9
+                    c9        = pi*fsum*t9
+                    g9        = phi04*t9
+                    cos19     = cos(-twopif0*dt9)
+                    sinc29    = cos19*sin(c9)/c9
+                    sum9      = g9*(sinc9+sinc29)
+                    phif(i-9) = (sinc9+sum9)*cos(-twopif*dt9)
+                    t10       = real(i-10,kind=sp)
+                    dt10      = dt+t10
+                    a10       = pi*f*t10
+                    f10       = phi02*t10
+                    sinc10    = f10*sin(a10)/a10
+                    cos10     = cos(twopif0*dt10)
+                    b10       = pi*fdif*t10
+                    sinc110   = cos10*sin(b10)/b10
+                    c10       = pi*fsum*t10
+                    g10       = phi04*t10
+                    cos110    = cos(-twopif0*dt10)
+                    sinc210   = cos110*sin(c10)/c10
+                    sum10     = g10*(sinc10+sinc210)
+                    phif(i-10)= (sinc10+sum10)*cos(-twopif*dt10)
+                    t11       = real(i-11,kind=sp)
+                    dt11      = dt+t11
+                    a11       = pi*f*t11
+                    f11       = phi02*t11
+                    sinc11    = f11*sin(a11)/a11
+                    cos11     = cos(twopif0*dt11)
+                    b11       = pi*fdif*t11
+                    sinc111   = cos11*sin(b11)/b11
+                    c11       = pi*fsum*t11
+                    g11       = phi04*t11
+                    cos111    = cos(-twopif0*dt11)
+                    sinc211   = cos111*sin(c11)/c11
+                    sum11     = g11*(sinc11+sinc211)
+                    phif(i-11)= (sinc11+sum11)*cos(-twopif*dt11)
+                    t12       = real(i-12,kind=sp)
+                    dt12      = dt+t12
+                    a12       = pi*f*t12
+                    f12       = phi02*t12
+                    sinc12    = f12*sin(a12)/a12
+                    cos12     = cos(twopif0*dt12)
+                    b12       = pi*fdif*t12
+                    sinc112   = cos12*sin(b12)/b12
+                    c12       = pi*fsum*t12
+                    g12       = phi04*t12
+                    cos12     = cos(-twopif0*dt12)
+                    sinc212   = cos12*sin(c12)/c12
+                    sum12     = g12*(sinc12+sinc212)
+                    phif(i-12)= (sinc12+sum12)*cos(-twopif*dt12)
+                    t13       = real(i-13,kind=sp)
+                    dt13      = dt+t1
+                    a13       = pi*f*t1
+                    f13       = phi02*t1
+                    sinc13    = f0*sin(a1)/a1
+                    cos13     = cos(twopif0*dt1)
+                    b13       = pi*fdif*t1
+                    sinc113   = cos1*sin(b1)/b1
+                    c13       = pi*fsum*t1
+                    g13       = phi04*t1
+                    cos113    = cos(-twopif0*dt1)
+                    sinc213   = cos11*sin(c1)/c1
+                    sum13     = g0*(sinc1+sinc21)
+                    phif(i-13)= (sinc1+sum1)*cos(-twopif*dt1)
+                    t14       = real(i-14,kind=sp)
+                    dt14      = dt+t14
+                    a14       = pi*f*t14
+                    f14       = phi02*t14
+                    sinc14    = f14*sin(a14)/a14
+                    cos14     = cos(twopif0*dt14)
+                    b14       = pi*fdif*t14
+                    sinc114   = cos14*sin(b14)/b14
+                    c14       = pi*fsum*t14
+                    g14       = phi04*t14
+                    cos114    = cos(-twopif0*dt14)
+                    sinc214   = cos14*sin(c14)/c14
+                    sum14     = g14*(sinc14+sinc214)
+                    phif(i-14)= (sinc14+sum14)*cos(-twopif*dt14)
+                    t15       = real(i-15,kind=sp)
+                    dt15      = dt+t15
+                    a15       = pi*f*t15
+                    f15       = phi02*t15
+                    sinc15    = f15*sin(a15)/a15
+                    cos15     = cos(twopif0*dt15)
+                    b15       = pi*fdif*t15
+                    sinc115   = cos15*sin(b15)/b15
+                    c15       = pi*fsum*t15
+                    g15       = phi04*t15
+                    cos115    = cos(-twopif0*dt15)
+                    sinc215   = cos15*sin(c15)/c15
+                    sum15     = g15*(sinc15+sinc215)
+                    phif(i-15)= (sinc15+sum15)*cos(-twopif*dt15)
+              end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=m,htin,16
+                    t0        = real(i,kind=sp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                    t1        = real(i+1,kind=sp)
+                    dt1       = dt+t1
+                    a1        = pi*f*t1
+                    f1        = phi02*t1
+                    sinc1     = f1*sin(a1)/a1
+                    cos1      = cos(twopif0*dt1)
+                    b1        = pi*fdif*t1
+                    sinc11    = cos1*sin(b1)/b1
+                    c1        = pi*fsum*t1
+                    g1        = phi04*t1
+                    cos11     = cos(-twopif0*dt1)
+                    sinc21    = cos11*sin(c1)/c1
+                    sum1      = g1*(sinc1+sinc21)
+                    phif(i+1) = (sinc1+sum1)*cos(-twopif*dt1)
+                    t2        = real(i+2,kind=sp)
+                    dt2       = dt+t2
+                    a2        = pi*f*t2
+                    f2        = phi02*t2
+                    sinc2     = f2*sin(a2)/a2
+                    cos2      = cos(twopif0*dt2)
+                    b2        = pi*fdif*t2
+                    sinc12    = cos2*sin(b2)/b2
+                    c2        = pi*fsum*t2
+                    g2        = phi04*t2
+                    cos12     = cos(-twopif0*dt2)
+                    sinc22    = cos12*sin(c2)/c2
+                    sum2      = g2*(sinc2+sinc22)
+                    phif(i+2) = (sinc2+sum2)*cos(-twopif*dt2)
+                    t3        = real(i+3,kind=sp)
+                    dt3       = dt+t3
+                    a3        = pi*f*t3
+                    f3        = phi02*t3
+                    sinc3     = f3*sin(a3)/a3
+                    cos3      = cos(twopif0*dt3)
+                    b3        = pi*fdif*t3
+                    sinc13    = cos3*sin(b3)/b3
+                    c3        = pi*fsum*t3
+                    g3        = phi04*t3
+                    cos13     = cos(-twopif0*dt3)
+                    sinc23    = cos13*sin(c3)/c3
+                    sum3      = g3*(sinc3+sinc23)
+                    phif(i+3) = (sinc3+sum3)*cos(-twopif*dt3)
+                    t4        = real(i+4,kind=sp)
+                    dt4       = dt+t4
+                    a4        = pi*f*t4
+                    f4        = phi02*t4
+                    sinc4     = f4*sin(a4)/a4
+                    cos4      = cos(twopif0*dt4)
+                    b4        = pi*fdif*t4
+                    sinc14    = cos4*sin(b4)/b4
+                    c4        = pi*fsum*t4
+                    g4        = phi04*t4
+                    cos14     = cos(-twopif0*dt4)
+                    sinc24    = cos14*sin(c4)/c4
+                    sum4      = g4*(sinc4+sinc24)
+                    phif(i+4) = (sinc4+sum4)*cos(-twopif*dt4)
+                    t5        = real(i+5,kind=sp)
+                    dt5       = dt+t5
+                    a5        = pi*f*t5
+                    f5        = phi02*t5
+                    sinc5     = f5*sin(a5)/a5
+                    cos5      = cos(twopif0*dt5)
+                    b5        = pi*fdif*t5
+                    sinc15    = cos5*sin(b5)/b5
+                    c5        = pi*fsum*t5
+                    g5        = phi04*t5
+                    cos15     = cos(-twopif0*dt5)
+                    sinc25    = cos15*sin(c5)/c5
+                    sum5      = g5*(sinc5+sinc25)
+                    phif(i+5) = (sinc5+sum5)*cos(-twopif*dt5)
+                    t6        = real(i+6,kind=sp)
+                    dt6       = dt+t6
+                    a6        = pi*f*t6
+                    f6        = phi02*t6
+                    sinc6     = f6*sin(a6)/a6
+                    cos6      = cos(twopif0*dt6)
+                    b6        = pi*fdif*t6
+                    sinc16    = cos6*sin(b6)/b6
+                    c6        = pi*fsum*t6
+                    g6        = phi04*t6
+                    cos16     = cos(-twopif0*dt6)
+                    sinc26    = cos16*sin(c6)/c6
+                    sum6      = g6*(sinc6+sinc26)
+                    phif(i+6) = (sinc6+sum6)*cos(-twopif*dt6)
+                    t7        = real(i+7,kind=sp)
+                    dt7       = dt+t7
+                    a7        = pi*f*t7
+                    f7        = phi02*t7
+                    sinc7     = f7*sin(a7)/a7
+                    cos7      = cos(twopif0*dt7)
+                    b7        = pi*fdif*t7
+                    sinc17    = cos7*sin(b7)/b7
+                    c7        = pi*fsum*t7
+                    g7        = phi04*t7
+                    cos17     = cos(-twopif0*dt7)
+                    sinc27    = cos17*sin(c7)/c7
+                    sum7      = g7*(sinc7+sinc27)
+                    phif(i+7) = (sinc7+sum7)*cos(-twopif*dt7)
+                    t8        = real(i+8,kind=sp)
+                    dt8       = dt+t8
+                    a8        = pi*f*t8
+                    f8        = phi02*t8
+                    sinc8     = f8*sin(a8)/a8
+                    cos8      = cos(twopif0*dt8)
+                    b8        = pi*fdif*t8
+                    sinc18    = cos8*sin(b8)/b8
+                    c8        = pi*fsum*t8
+                    g8        = phi04*t8
+                    cos18     = cos(-twopif0*dt8)
+                    sinc28    = cos18*sin(c8)/c8
+                    sum8      = g8*(sinc8+sinc28)
+                    phif(i+8) = (sinc8+sum8)*cos(-twopif*dt8) 
+                    t9        = real(i+9,kind=sp)
+                    dt9       = dt+t9
+                    a9        = pi*f*t9
+                    f9        = phi02*t9
+                    sinc9     = f9*sin(a9)/a9
+                    cos9      = cos(twopif0*dt9)
+                    b9        = pi*fdif*t9
+                    sinc19    = cos1*sin(b9)/b9
+                    c9        = pi*fsum*t9
+                    g9        = phi04*t9
+                    cos19     = cos(-twopif0*dt9)
+                    sinc29    = cos19*sin(c9)/c9
+                    sum9      = g9*(sinc9+sinc29)
+                    phif(i+9) = (sinc9+sum9)*cos(-twopif*dt9)
+                    t10       = real(i+10,kind=sp)
+                    dt10      = dt+t10
+                    a10       = pi*f*t10
+                    f10       = phi02*t10
+                    sinc10    = f10*sin(a10)/a10
+                    cos10     = cos(twopif0*dt10)
+                    b10       = pi*fdif*t10
+                    sinc110   = cos10*sin(b10)/b10
+                    c10       = pi*fsum*t10
+                    g10       = phi04*t10
+                    cos110    = cos(-twopif0*dt10)
+                    sinc210   = cos110*sin(c10)/c10
+                    sum10     = g10*(sinc10+sinc210)
+                    phif(i+10)= (sinc10+sum10)*cos(-twopif*dt10)
+                    t11       = real(i+11,kind=sp)
+                    dt11      = dt+t11
+                    a11       = pi*f*t11
+                    f11       = phi02*t11
+                    sinc11    = f11*sin(a11)/a11
+                    cos11     = cos(twopif0*dt11)
+                    b11       = pi*fdif*t11
+                    sinc111   = cos11*sin(b11)/b11
+                    c11       = pi*fsum*t11
+                    g11       = phi04*t11
+                    cos111    = cos(-twopif0*dt11)
+                    sinc211   = cos111*sin(c11)/c11
+                    sum11     = g11*(sinc11+sinc211)
+                    phif(i+11)= (sinc11+sum11)*cos(-twopif*dt11)
+                    t12       = real(i+12,kind=sp)
+                    dt12      = dt+t12
+                    a12       = pi*f*t12
+                    f12       = phi02*t12
+                    sinc12    = f12*sin(a12)/a12
+                    cos12     = cos(twopif0*dt12)
+                    b12       = pi*fdif*t12
+                    sinc112   = cos12*sin(b12)/b12
+                    c12       = pi*fsum*t12
+                    g12       = phi04*t12
+                    cos12     = cos(-twopif0*dt12)
+                    sinc212   = cos12*sin(c12)/c12
+                    sum12     = g12*(sinc12+sinc212)
+                    phif(i+12)= (sinc12+sum12)*cos(-twopif*dt12)
+                    t13       = real(i+13,kind=sp)
+                    dt13      = dt+t1
+                    a13       = pi*f*t1
+                    f13       = phi02*t1
+                    sinc13    = f0*sin(a1)/a1
+                    cos13     = cos(twopif0*dt1)
+                    b13       = pi*fdif*t1
+                    sinc113   = cos1*sin(b1)/b1
+                    c13       = pi*fsum*t1
+                    g13       = phi04*t1
+                    cos113    = cos(-twopif0*dt1)
+                    sinc213   = cos11*sin(c1)/c1
+                    sum13     = g0*(sinc1+sinc21)
+                    phif(i+13)= (sinc1+sum1)*cos(-twopif*dt1)
+                    t14       = real(i+14,kind=sp)
+                    dt14      = dt+t14
+                    a14       = pi*f*t14
+                    f14       = phi02*t14
+                    sinc14    = f14*sin(a14)/a14
+                    cos14     = cos(twopif0*dt14)
+                    b14       = pi*fdif*t14
+                    sinc114   = cos14*sin(b14)/b14
+                    c14       = pi*fsum*t14
+                    g14       = phi04*t14
+                    cos114    = cos(-twopif0*dt14)
+                    sinc214   = cos14*sin(c14)/c14
+                    sum14     = g14*(sinc14+sinc214)
+                    phif(i+14)= (sinc14+sum14)*cos(-twopif*dt14)
+                    t15       = real(i+15,kind=sp)
+                    dt15      = dt+t15
+                    a15       = pi*f*t15
+                    f15       = phi02*t15
+                    sinc15    = f15*sin(a15)/a15
+                    cos15     = cos(twopif0*dt15)
+                    b15       = pi*fdif*t15
+                    sinc115   = cos15*sin(b15)/b15
+                    c15       = pi*fsum*t15
+                    g15       = phi04*t15
+                    cos115    = cos(-twopif0*dt15)
+                    sinc215   = cos15*sin(c15)/c15
+                    sum15     = g15*(sinc15+sinc215)
+                    phif(i+15)= (sinc15+sum15)*cos(-twopif*dt15)
+              end do
+           end if
+       end subroutine raster_mod_sinc_shifted_unroll_16x_r4 
 
 
 
