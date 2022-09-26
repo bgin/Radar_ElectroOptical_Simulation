@@ -8508,6 +8508,9 @@ module eos_sensor
        end subroutine transmitt_hfreq_mod_unroll_2x_r8
 
 
+       
+
+
        !Helper subroutine for computing of Bessel j_n values.
        subroutine bessel_jn_beta_r4(bjb,n,Beta)
            !dir$ optimize:3
@@ -9492,6 +9495,241 @@ module eos_sensor
                 
              end do
        end subroutine transmittance_spectr_unroll_2x_r8
+
+
+       subroutine transmittance_spectr_unroll_2x_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_unroll_2x_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_unroll_2x_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=dp),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0,omt1
+           real(kind=dp), automatic :: t0,t1
+           real(kind=dp), automatic :: c0,c1
+           real(kind=dp), automatic :: somt0,somt1
+           real(kind=dp), automatic :: soma0,soma1
+           real(kind=dp), automatic :: soms0,soms1
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i,m,m1
+          
+           bj0b = bessel_jn(0,Beta)
+           m    = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 c0   = 0.0_dp
+                 t0   = real(i,kind=sp)
+                 omt0 = om0*t0 
+                 do j=1,n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = -1.0_dp**n*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjb(j)*(soma0+soms0)
+                 end do
+                 somt0 = sin(omt0)
+                 rhot(i) = rho0*(1.0_dp+bj0b*somt0+c0)
+               end do
+               if(len<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,len,2
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 c1     = 0.0_dp
+                 t1     = real(i+1,kind=dp)
+                 omt1   = om0*t1 
+                 somt1  = sin(omt1)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                    soma1 = sin(om0+n*Omega0)*t1
+                    soms1 = onep*sin(om0-n*Omega0)*t1
+                    c1    = c1 + bjn*(soma1+soms1)
+                 end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                 rhot(i+1)  = rho0*(1.0_dp+bj0b*somt1+c1)
+                
+             end do
+       end subroutine transmittance_spectr_unroll_2x_r8
+
+
+       subroutine transmittance_spectr_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_r4
+           !dir$ attributes forceinline ::   transmittance_spectr_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           
+           real(kind=sp), automatic :: omt0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: c0
+           real(kind=sp), automatic :: somt0
+           real(kind=sp), automatic :: soma0
+           real(kind=sp), automatic :: soms0
+           real(kind=sp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i
+          
+           bj0b = bessel_jn(0,Beta)
+          
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,len
+                 c0     = 0.0_sp
+                 t0     = real(i,kind=sp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0_sp**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                 end do
+                 rhot(i)    = rho0*(1.0_sp+bj0b*somt0+c0)
+                       
+             end do
+       end subroutine transmittance_spectr_r4
+
+
+       subroutine transmittance_spectr_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_r8
+           !dir$ attributes forceinline ::   transmittance_spectr_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmittance_spectr_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           
+           real(kind=dp), automatic :: omt0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: c0
+           real(kind=dp), automatic :: somt0
+           real(kind=dp), automatic :: soma0
+           real(kind=dp), automatic :: soms0
+           real(kind=dp), automatic :: bj0b,bjn,onep
+           integer(kind=i4) :: j,i
+          
+           bj0b = bessel_jn(0,Beta)
+          
+            !dir$ assume_aligned rhot:64
+            !dir$ assume_aligned bjb:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,len
+                 c0     = 0.0_dp
+                 t0     = real(i,kind=dp)
+                 omt0   = om0*t0 
+                 somt0  = sin(omt0)
+                 do j=1,n
+                    bjn   = bjb(j)
+                    onep  = -1.0_dp**n
+                    soma0 = sin(om0+n*Omega0)*t0
+                    soms0 = onep*sin(om0-n*Omega0)*t0
+                    c0    = c0 + bjn*(soma0+soms0)
+                 end do
+                 rhot(i)    = rho0*(1.0_dp+bj0b*somt0+c0)
+                       
+             end do
+       end subroutine transmittance_spectr_r8
+
+
+       subroutine transmittance_spectr_exec_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_exec_r4
+           real(kind=sp), dimension(1:len), intent(out) :: rhot
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=sp),                   intent(in)  :: rho0
+           real(kind=sp),                   intent(in)  :: Beta
+           real(kind=sp),                   intent(in)  :: om0
+           real(kind=sp),                   intent(in)  :: Omega0
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call transmittance_spectr_unroll_16x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (8)
+                 call transmittance_spectr_unroll_8x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (4)
+                 call transmittance_spectr_unroll_4x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (2)
+                 call transmittance_spectr_unroll_2x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (0)
+                 call transmittance_spectr_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case default
+                 return
+              end select
+       end subroutine transmittance_spectr_exec_r4
+
+
+       subroutine transmittance_spectr_exec_r8(rhot,len,bjb,n,rho0,Beta,om0,Omega0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmittance_spectr_exec_r8
+           real(kind=dp), dimension(1:len), intent(out) :: rhot
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), dimension(1:n),   intent(in)  :: bjb
+           integer(kind=i4),                intent(in)  :: n
+           real(kind=dp),                   intent(in)  :: rho0
+           real(kind=dp),                   intent(in)  :: Beta
+           real(kind=dp),                   intent(in)  :: om0
+           real(kind=dp),                   intent(in)  :: Omega0
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call transmittance_spectr_unroll_16x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (8)
+                 call transmittance_spectr_unroll_8x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (4)
+                 call transmittance_spectr_unroll_4x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (2)
+                 call transmittance_spectr_unroll_2x_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case (0)
+                 call transmittance_spectr_r4(rhot,len,bjb,n,rho0,Beta,om0,Omega0)
+              case default
+                 return
+              end select
+       end subroutine transmittance_spectr_exec_r8
+
+
+
 
 
        !МОДУЛЯЦИЯ ИЗЛУЧЕНИЯ
@@ -11299,6 +11537,149 @@ module eos_sensor
                       
            end do
        end subroutine raster_flux_sinc_unroll_2x_r8
+
+       
+       subroutine raster_flux_sinc_r4(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_r4
+           !dir$ attributes forceinline ::   raster_flux_sinc_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           real(kind=sp), parameter :: pi = 3.14159265358979323846264338328_sp
+           real(kind=sp), automatic :: sinc0
+           real(kind=sp), automatic :: arg0
+           real(kind=sp), automatic :: t0
+           integer(kind=i4) :: i,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+                   
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,0
+              t0         = real(i,kind=sp)
+              arg0       = pi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = phi0*t0*sinc0
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,htin
+              t0         = real(i,kind=sp)
+              arg0       = pi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = phi0*t0*sinc0
+                         
+           end do
+       end subroutine raster_flux_sinc_r4
+
+
+       subroutine raster_flux_sinc_r8(phi0f,htin,f,phi0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_r8
+           !dir$ attributes forceinline ::   raster_flux_sinc_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_sinc_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           real(kind=dp), parameter :: pi = 3.14159265358979323846264338328_dp
+           real(kind=dp), automatic :: sinc0
+           real(kind=dp), automatic :: arg0
+           real(kind=dp), automatic :: t0
+           integer(kind=i4) :: i,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+                   
+           ! Negative half first
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=nhtin,0
+              t0         = real(i,kind=dp)
+              arg0       = pi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = phi0*t0*sinc0
+           end do
+           !dir$ assume_aligned phi0f:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,htin
+              t0         = real(i,kind=dp)
+              arg0       = pi*f*t0
+              sinc0      = sin(arg0)/arg0
+              phi0f(i)   = phi0*t0*sinc0
+                         
+           end do
+       end subroutine raster_flux_sinc_r8
+
+
+       subroutine raster_flux_sinc_exec_r4(phi0f,htin,f,phi0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_exec_r4
+           real(kind=sp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                      intent(in)  :: f
+           real(kind=sp),                      intent(in)  :: phi0
+           integer(kind=i4),                   intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call raster_flux_sinc_unroll_16x_r4(phi0f,htin,f,phi0)
+              case (8)
+                call raster_flux_sinc_unroll_8x_r4(phi0f,htin,f,phi0)
+              case (4)
+                call raster_flux_sinc_unroll_4x_r4(phi0f,htin,f,phi0)
+              case (2)
+                call raster_flux_sinc_unroll_2x_r4(phi0f,htin,f,phi0) 
+              case (0)
+                call raster_flux_sinc_r4(phi0f,htin,f,phi0)
+              case default
+                return
+           end select
+       end subroutine raster_flux_sinc_exec_r4
+
+
+       subroutine raster_flux_sinc_exec_r8(phi0f,htin,f,phi0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_sinc_exec_r8
+           real(kind=dp),   dimension(-htin:htin),  intent(out) :: phi0f
+           integer(kind=i4),                   intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                      intent(in)  :: f
+           real(kind=dp),                      intent(in)  :: phi0
+           integer(kind=i4),                   intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call raster_flux_sinc_unroll_16x_r8(phi0f,htin,f,phi0)
+              case (8)
+                call raster_flux_sinc_unroll_8x_r8(phi0f,htin,f,phi0)
+              case (4)
+                call raster_flux_sinc_unroll_4x_r8(phi0f,htin,f,phi0)
+              case (2)
+                call raster_flux_sinc_unroll_2x_r8(phi0f,htin,f,phi0) 
+              case (0)
+                call raster_flux_sinc_r8(phi0f,htin,f,phi0)
+              case default
+                return
+           end select
+       end subroutine raster_flux_sinc_exec_r8
+
 
 
        !Спектр модулированного потока излучения при максимальной
@@ -13226,6 +13607,218 @@ module eos_sensor
        end subroutine raster_flux_mod_sinc_unroll_2x_r8
 
 
+       subroutine raster_flux_mod_sinc_r4(phif,htin,f,phi0,f0,rho0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_mod_sinc_r4
+           !dir$ attributes forceinline ::   raster_flux_mod_sinc_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_mod_sinc_r4
+           real(kind=sp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                         intent(in)  :: f
+           real(kind=sp),                         intent(in)  :: phi0
+           real(kind=sp),                         intent(in)  :: f0
+           real(kind=sp),                         intent(in)  :: rho0
+           real(kind=sp), parameter :: pi = 3.14159265358979323846264338328_sp
+           real(kind=sp), automatic :: sinc0
+           real(kind=sp), automatic :: sinc10
+           real(kind=sp), automatic :: sinc20
+           real(kind=sp), automatic :: a0
+           real(kind=sp), automatic :: b0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: c0
+           real(kind=sp), automatic :: sum0
+           real(kind=sp), automatic :: f0
+           real(kind=sp), automatic :: g0
+           real(kind=sp), automatic :: fdif,fsum,phi02,phi04
+           integer(kind=i4) :: i,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           fdif  = f-f0
+           fsum  = f+f0
+           phi02 = 0.5_sp*phi0
+           phi04 = 0.25_sp*phi0
+           if(rho0/=0.5_sp) then
+              call raster_flux_sinc_r4(phif,htin,f,phi0)
+              return
+           else
+             
+              ! Negative half first
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,0
+                   t0        = real(i,kind=sp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+              end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=1,htin
+                   t0        = real(i,kind=sp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+                                                    
+               end do
+           end if
+       end subroutine raster_flux_mod_sinc_r4
+
+
+       subroutine raster_flux_mod_sinc_r8(phif,htin,f,phi0,f0,rho0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_flux_mod_sinc_r8
+           !dir$ attributes forceinline ::   raster_flux_mod_sinc_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_flux_mod_sinc_r8
+           real(kind=dp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                         intent(in)  :: f
+           real(kind=dp),                         intent(in)  :: phi0
+           real(kind=dp),                         intent(in)  :: f0
+           real(kind=dp),                         intent(in)  :: rho0
+           real(kind=dp), parameter :: pi = 3.14159265358979323846264338328_dp
+           real(kind=dp), automatic :: sinc0
+           real(kind=dp), automatic :: sinc10
+           real(kind=dp), automatic :: sinc20
+           real(kind=dp), automatic :: a0
+           real(kind=dp), automatic :: b0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: c0
+           real(kind=dp), automatic :: sum0
+           real(kind=dp), automatic :: f0
+           real(kind=dp), automatic :: g0
+           real(kind=dp), automatic :: fdif,fsum,phi02,phi04
+           integer(kind=i4) :: i,tin,nhtin
+           tin = htin*2
+           nhtin = -htin
+           fdif  = f-f0
+           fsum  = f+f0
+           phi02 = 0.5_dp*phi0
+           phi04 = 0.25_dp*phi0
+           if(rho0/=0.5_dp) then
+              call raster_flux_sinc_r8(phif,htin,f,phi0)
+              return
+           else
+             
+              ! Negative half first
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(8)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,0
+                   t0        = real(i,kind=dp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+              end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(8)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=1,htin
+                   t0        = real(i,kind=dp)
+                   a0        = pi*f*t0
+                   f0        = phi02*t0
+                   sinc0     = f0*sin(a0)/a0
+                   b0        = pi*fdif*t0
+                   sinc10    = sin(b0)/b0
+                   c0        = pi*fsum*t0
+                   g0        = phi04*t0
+                   sinc20    = sin(c0)/c0
+                   sum0      = g0*(sinc0+sinc20)
+                   phif(i)   = sinc0+sum0
+                                                    
+               end do
+           end if
+       end subroutine raster_flux_mod_sinc_r8
+
+
+       subroutine raster_flux_mod_sinc_exec_r4(phif,htin,f,phi0,f0,rho0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_flux_mod_sinc_exec_r4
+           real(kind=sp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                         intent(in)  :: f
+           real(kind=sp),                         intent(in)  :: phi0
+           real(kind=sp),                         intent(in)  :: f0
+           real(kind=sp),                         intent(in)  :: rho0
+           integer(kind=i4),                      intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call raster_flux_mod_sinc_unroll_16x_r4(phif,htin,f,phi0,f0,rho0)
+              case (8)
+                 call raster_flux_mod_sinc_unroll_8x_r4(phif,htin,f,phi0,f0,rho0)
+              case (4)
+                 call raster_flux_mod_sinc_unroll_4x_r4(phif,htin,f,phi0,f0,rho0)
+              case (2)
+                 call raster_flux_mod_sinc_unroll_2x_r4(phif,htin,f,phi0,f0,rho0)
+              case (0)
+                 call raster_flux_mod_sinc_r4(phif,htin,f,phi0,f0,rho0)
+              case default
+                 return
+              end select 
+       end subroutine raster_flux_mod_sinc_exec_r4
+
+
+       subroutine raster_flux_mod_sinc_exec_r8(phif,htin,f,phi0,f0,rho0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_flux_mod_sinc_exec_r8
+           real(kind=dp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                         intent(in)  :: f
+           real(kind=dp),                         intent(in)  :: phi0
+           real(kind=dp),                         intent(in)  :: f0
+           real(kind=dp),                         intent(in)  :: rho0
+           integer(kind=i4),                      intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call raster_flux_mod_sinc_unroll_16x_r8(phif,htin,f,phi0,f0,rho0)
+              case (8)
+                 call raster_flux_mod_sinc_unroll_8x_r8(phif,htin,f,phi0,f0,rho0)
+              case (4)
+                 call raster_flux_mod_sinc_unroll_4x_r8(phif,htin,f,phi0,f0,rho0)
+              case (2)
+                 call raster_flux_mod_sinc_unroll_2x_r8(phif,htin,f,phi0,f0,rho0)
+              case (0)
+                 call raster_flux_mod_sinc_r8(phif,htin,f,phi0,f0,rho0)
+              case default
+                 return
+              end select 
+       end subroutine raster_flux_mod_sinc_exec_r8
+
+
        !Если момент времени, соответствующий центру импульса 
        !падающего потока излучения, сдвинут относительно момента 
        !времени, соответствующего максимуму пропускания растра, на 
@@ -13307,7 +13900,7 @@ module eos_sensor
               !dir$ vector vectorlength(4)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-16
+              do i=nhtin,m,16
                     t0        = real(i,kind=sp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -13845,7 +14438,7 @@ module eos_sensor
               !dir$ vector vectorlength(8)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-16
+              do i=nhtin,m,16
                     t0        = real(i,kind=dp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -14376,7 +14969,7 @@ module eos_sensor
               !dir$ vector vectorlength(4)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-8
+              do i=nhtin,m,8
                     t0        = real(i,kind=sp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -14683,7 +15276,7 @@ module eos_sensor
               !dir$ vector vectorlength(8)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-8
+              do i=nhtin,m,8
                     t0        = real(i,kind=dp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -14990,7 +15583,7 @@ module eos_sensor
               !dir$ vector vectorlength(4)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-4
+              do i=nhtin,m,4
                     t0        = real(i,kind=sp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -15186,7 +15779,7 @@ module eos_sensor
               !dir$ vector vectorlength(8)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-4
+              do i=nhtin,m,4
                     t0        = real(i,kind=dp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -15383,7 +15976,7 @@ module eos_sensor
               !dir$ vector vectorlength(4)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-2
+              do i=nhtin,m,2
                     t0        = real(i,kind=sp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -15525,7 +16118,7 @@ module eos_sensor
               !dir$ vector vectorlength(8)
               !dir$ vector multiple_gather_scatter_by_shuffles 
               !dir$ vector always
-              do i=nhtin,m,-2
+              do i=nhtin,m,2
                     t0        = real(i,kind=dp)
                     dt0       = dt+t0
                     a0        = pi*f*t0
@@ -15595,6 +16188,258 @@ module eos_sensor
                end do
            end if
        end subroutine raster_mod_sinc_shifted_unroll_2x_r8 
+
+
+       subroutine raster_mod_sinc_shifted_r4(phif,htin,f,phi0,fx,rho0,dt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_mod_sinc_shifted_r4
+           !dir$ attributes forceinline ::   raster_mod_sinc_shifted_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_mod_sinc_shifted_unroll_r4
+           real(kind=sp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                         intent(in)  :: f
+           real(kind=sp),                         intent(in)  :: phi0
+           real(kind=sp),                         intent(in)  :: fx
+           real(kind=sp),                         intent(in)  :: rho0
+           real(kind=sp),                         intent(in)  :: dt
+           real(kind=sp), parameter :: pi    = 3.14159265358979323846264338328_sp
+           real(kind=sp), parameter :: twopi = 2.0_sp*pi
+          
+           real(kind=sp), automatic :: sinc0
+           real(kind=sp), automatic :: sinc10
+           real(kind=sp), automatic :: sinc20
+           real(kind=sp), automatic :: cos0
+           real(kind=sp), automatic :: cos10
+           real(kind=sp), automatic :: a0
+           real(kind=sp), automatic :: b0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: c0
+           real(kind=sp), automatic :: sum0
+           real(kind=sp), automatic :: f0
+           real(kind=sp), automatic :: g0
+           real(kind=sp), automatic :: dt0
+           real(kind=sp), automatic :: fdif,fsum,phi02,phi04,twopif,twopif0
+           integer(kind=i4) :: i,tin,nhtin
+           tin    = htin*2
+           nhtin  = -htin
+           fdif   = f-fx
+           fsum   = f+fx
+           phi02  = 0.5_sp*phi0
+           phi04  = 0.25_sp*phi0
+           twopif = twopi*f
+           twopif0=twopi*fx
+           if(rho0/=0.5_sp) then
+              call raster_flux_sinc_unroll_r4(phif,htin,f,phi0)
+              return
+           else
+             
+              
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,0
+                    t0        = real(i,kind=sp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                                     
+              end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=1,htin
+                    t0        = real(i,kind=sp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                                     
+                   
+               end do
+           end if
+       end subroutine raster_mod_sinc_shifted_r4 
+
+
+       subroutine raster_mod_sinc_shifted_r8(phif,htin,f,phi0,fx,rho0,dt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_mod_sinc_shifted_r8
+           !dir$ attributes forceinline ::   raster_mod_sinc_shifted_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_mod_sinc_shifted_unroll_r8
+           real(kind=dp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                         intent(in)  :: f
+           real(kind=dp),                         intent(in)  :: phi0
+           real(kind=dp),                         intent(in)  :: fx
+           real(kind=dp),                         intent(in)  :: rho0
+           real(kind=dp),                         intent(in)  :: dt
+           real(kind=dp), parameter :: pi    = 3.14159265358979323846264338328_dp
+           real(kind=dp), parameter :: twopi = 2.0_dp*pi
+          
+           real(kind=dp), automatic :: sinc0
+           real(kind=dp), automatic :: sinc10
+           real(kind=dp), automatic :: sinc20
+           real(kind=dp), automatic :: cos0
+           real(kind=dp), automatic :: cos10
+           real(kind=dp), automatic :: a0
+           real(kind=dp), automatic :: b0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: c0
+           real(kind=dp), automatic :: sum0
+           real(kind=dp), automatic :: f0
+           real(kind=dp), automatic :: g0
+           real(kind=dp), automatic :: dt0
+           real(kind=dp), automatic :: fdif,fsum,phi02,phi04,twopif,twopif0
+           integer(kind=i4) :: i,tin,nhtin
+           tin    = htin*2
+           nhtin  = -htin
+           fdif   = f-fx
+           fsum   = f+fx
+           phi02  = 0.5_dp*phi0
+           phi04  = 0.25_dp*phi0
+           twopif = twopi*f
+           twopif0=twopi*fx
+           if(rho0/=0.5_dp) then
+              call raster_flux_sinc_unroll_r8(phif,htin,f,phi0)
+              return
+           else
+             
+              
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(4)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=nhtin,0
+                    t0        = real(i,kind=dp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                                     
+              end do
+              !dir$ assume_aligned phif:64
+              !dir$ vector aligned
+              !dir$ ivdep
+              !dir$ vector vectorlength(8)
+              !dir$ vector multiple_gather_scatter_by_shuffles 
+              !dir$ vector always
+              do i=1,htin
+                    t0        = real(i,kind=dp)
+                    dt0       = dt+t0
+                    a0        = pi*f*t0
+                    f0        = phi02*t0
+                    sinc0     = f0*sin(a0)/a0
+                    cos0      = cos(twopif0*dt0)
+                    b0        = pi*fdif*t0
+                    sinc10    = cos0*sin(b0)/b0
+                    c0        = pi*fsum*t0
+                    g0        = phi04*t0
+                    cos10     = cos(-twopif0*dt0)
+                    sinc20    = cos10*sin(c0)/c0
+                    sum0      = g0*(sinc0+sinc20)
+                    phif(i)   = (sinc0+sum0)*cos(-twopif*dt0)
+                                     
+                   
+               end do
+           end if
+       end subroutine raster_mod_sinc_shifted_r8 
+
+       ! The choose of specific unrolled version shall be based upon
+       ! the prior performance measurement and assesment.
+       subroutine raster_mod_sinc_shifted_exec_r4(phif,htin,f,phi0,fx,rho0,dt,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_mod_sinc_shifted_exec_r4 
+           real(kind=sp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=sp),                         intent(in)  :: f
+           real(kind=sp),                         intent(in)  :: phi0
+           real(kind=sp),                         intent(in)  :: fx
+           real(kind=sp),                         intent(in)  :: rho0
+           real(kind=sp),                         intent(in)  :: dt
+           integer(kind=i4),                      intent(in)  :: unroll_cnt
+          
+           select case (unroll_cnt)
+              case (16)
+                 call raster_mod_sinc_shifted_unroll_16x_r4(phif,htin,f,phi0,fx,rho0,dt)
+              case (8)
+                 call raster_mod_sinc_shifted_unroll_8x_r4(phif,htin,f,phi0,fx,rho0,dt)
+              case (4)
+                 call raster_mod_sinc_shifted_unroll_4x_r4(phif,htin,f,phi0,fx,rho0,dt)
+              case (2)
+                 call raster_mod_sinc_shifted_unroll_2x_r4(phif,htin,f,phi0,fx,rho0,dt)
+              case (0)
+                 call raster_mod_sinc_shifted_r4(phif,htin,f,phi0,fx,rho0,dt)
+              case default
+                 return
+            end select
+      end subroutine raster_mod_sinc_shifted_exec_r4
+
+
+      subroutine raster_mod_sinc_shifted_exec_r8(phif,htin,f,phi0,fx,rho0,dt,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: raster_mod_sinc_shifted_exec_r8 
+           real(kind=dp), dimension(-htin:htin),  intent(out) :: phif
+           integer(kind=i4),                      intent(in)  :: htin !shall be divisable by 2
+           real(kind=dp),                         intent(in)  :: f
+           real(kind=dp),                         intent(in)  :: phi0
+           real(kind=dp),                         intent(in)  :: fx
+           real(kind=dp),                         intent(in)  :: rho0
+           real(kind=dp),                         intent(in)  :: dt
+           integer(kind=i4),                      intent(in)  :: unroll_cnt
+          
+           select case (unroll_cnt)
+              case (16)
+                 call raster_mod_sinc_shifted_unroll_16x_r8(phif,htin,f,phi0,fx,rho0,dt)
+              case (8)
+                 call raster_mod_sinc_shifted_unroll_8x_r8(phif,htin,f,phi0,fx,rho0,dt)
+              case (4)
+                 call raster_mod_sinc_shifted_unroll_4x_r8(phif,htin,f,phi0,fx,rho0,dt)
+              case (2)
+                 call raster_mod_sinc_shifted_unroll_2x_r8(phif,htin,f,phi0,fx,rho0,dt)
+              case (0)
+                 call raster_mod_sinc_shifted_r8(phif,htin,f,phi0,fx,rho0,dt)
+              case default
+                 return
+            end select
+      end subroutine raster_mod_sinc_shifted_exec_r8
+
+
+
 
 
 end module eos_sensor
