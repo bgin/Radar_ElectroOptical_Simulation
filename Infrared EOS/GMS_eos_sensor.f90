@@ -4853,6 +4853,45 @@ module eos_sensor
         end subroutine rect_pulse_flux_unroll_2x_r4
 
 
+        subroutine rect_pulse_flux_r4(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_r4
+           !dir$ attributes forceinline ::   rect_pulse_flux_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           real(kind=sp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Tin
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: fk0
+           real(kind=sp) :: sinc0
+           real(kind=sp) :: arg0
+           real(kind=sp) :: hTin,Phi0fk
+           integer(kind=i4) :: i
+           hTin   = 0.5_sp*Tin
+           Phi0fk = Phi0*Tin 
+          
+           !dir$ assume_aligned Phik:64
+           !dir$ assume_aligned fk:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                fk0       = fk(i+0)
+                arg0      = twopi*fk0*hTin
+                sinc0     = sin(arg0)/arg0
+                Phik(i+0) = Phi0fk*sinc0
+             
+           end do
+          
+        end subroutine rect_pulse_flux_r4
+
+
+
+
         
        subroutine rect_pulse_flux_unroll_16x_r8(Phik,fk,Phi0,n,Tin)
            !dir$ optimize:3
@@ -5098,6 +5137,9 @@ module eos_sensor
         end subroutine rect_pulse_flux_unroll_4x_r8
 
 
+        
+
+
         subroutine rect_pulse_flux_unroll_2x_r8(Phik,fk,Phi0,n,Tin)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  rect_pulse_flux_unroll_2x_r8
@@ -5147,6 +5189,95 @@ module eos_sensor
            end do
           
         end subroutine rect_pulse_flux_unroll_2x_r8
+
+
+        subroutine rect_pulse_flux_r8(Phik,fk,Phi0,n,Tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_flux_r8
+           !dir$ attributes forceinline ::   rect_pulse_flux_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_flux_r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           real(kind=dp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Tin
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: fk0
+           real(kind=dp) :: sinc0
+           real(kind=dp) :: arg0
+           real(kind=dp) :: hTin,Phi0fk
+           integer(kind=i4) :: i
+           hTin   = 0.5_dp*Tin
+           Phi0fk = Phi0*Tin 
+          
+           !dir$ assume_aligned Phik:64
+           !dir$ assume_aligned fk:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                fk0       = fk(i+0)
+                arg0      = twopi*fk0*hTin
+                sinc0     = sin(arg0)/arg0
+                Phik(i+0) = Phi0fk*sinc0
+             
+           end do
+          
+        end subroutine rect_pulse_flux_r8 
+
+
+        subroutine rect_pulse_flux_exec_r4(Phik,fk,Phi0,n,Tin,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: rect_pulse_flux_exec_r4
+           real(kind=sp), dimension(1:n), intent(out) :: Phik
+           real(kind=sp), dimension(1:n), intent(in)  :: fk
+           real(kind=sp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Tin
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call rect_pulse_flux_unroll_16x_r4(Phik,fk,Phi0,n,Tin)
+              case (8)
+                call rect_pulse_flux_unroll_8x_r4(Phik,fk,Phi0,n,Tin)
+              case (4)
+                call rect_pulse_flux_unroll_4x_r4(Phik,fk,Phi0,n,Tin)
+              case (2)
+                call rect_pulse_flux_unroll_2x_r4(Phik,fk,Phi0,n,Tin)
+              case (0)
+                call rect_pulse_flux_r4(Phik,fk,Phi0,n,Tin)
+              case default
+                return
+              end select
+        end subroutine rect_pulse_flux_exec_r4
+
+
+        subroutine rect_pulse_flux_exec_r8(Phik,fk,Phi0,n,Tin,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: rect_pulse_flux_exec_r8
+           real(kind=dp), dimension(1:n), intent(out) :: Phik
+           real(kind=dp), dimension(1:n), intent(in)  :: fk
+           real(kind=dp),                 intent(in)  :: Phi0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Tin
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call rect_pulse_flux_unroll_16x_r8(Phik,fk,Phi0,n,Tin)
+              case (8)
+                call rect_pulse_flux_unroll_8x_r8(Phik,fk,Phi0,n,Tin)
+              case (4)
+                call rect_pulse_flux_unroll_4x_r8(Phik,fk,Phi0,n,Tin)
+              case (2)
+                call rect_pulse_flux_unroll_2x_r8(Phik,fk,Phi0,n,Tin)
+              case (0)
+                call rect_pulse_flux_r8(Phik,fk,Phi0,n,Tin)
+              case default
+                return
+              end select
+        end subroutine rect_pulse_flux_exec_r8
 
       
 
@@ -5908,6 +6039,84 @@ module eos_sensor
        end subroutine rect_pulse_amp_unroll_4x_r8
 
 
+       subroutine rect_pulse_amp_unroll_2x_r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_2x_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_unroll_2x_r4
+           use mod_fpcompare, only : Compare_Float
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
+           real(kind=sp) :: phik0,phik1
+           real(kind=sp) :: arg0,arg1
+           real(kind=sp) :: k0,k1
+           real(kind=sp) :: twoT,kpi2
+           integer(kind=i4) :: i,m,m1
+           twoT = 2.0_sp/T
+           if(Compare_Float(tin,twoT)) then
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      k0    = k(i)
+                      arg0  = k0*pi2
+                      Ak(i) = Phi0*(sin(arg0)/arg0) 
+                  end do
+                  if(n<2) return
+                end if
+                m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=m1,n,2
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+                    k1      = k(i+1)
+                    arg1    = k1*pi2
+                    Ak(i+1) = Phi0*(sin(arg1)/arg1) 
+                end do
+             
+           else
+               m=mod(n,2)
+               if(m /= 0) then
+                  do i=1,m
+                      phik0 = Phik(i)
+                      Ak(i) = twoT*phik0
+                  end do
+                  if(n<2) return
+                end if
+               m1 = m+1
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=m1,n,2
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                    phik1   = Phik(i+1)
+                    Ak(i+1) = twoT*phik1
+                                                      
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_unroll_2x_r4
+
+
+
+
        subroutine rect_pulse_amp_unroll_2x_r8(Ak,Phik,Phi0,n,T,k,tin)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  rect_pulse_amp_unroll_2x_r8
@@ -5983,6 +6192,172 @@ module eos_sensor
           end if
        end subroutine rect_pulse_amp_unroll_2x_r8
 
+
+       subroutine rect_pulse_amp_r4(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_r4
+           !dir$ attributes forceinline ::   rect_pulse_amp_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_r4
+           use mod_fpcompare, only : Compare_Float
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           real(kind=sp), parameter :: pi2 = 1.5707963267948966192313216916398_sp
+           real(kind=sp) :: phik0
+           real(kind=sp) :: arg0
+           real(kind=sp) :: k0
+           real(kind=sp) :: twoT,kpi2
+           integer(kind=i4) :: i
+           twoT = 2.0_sp/T
+           if(Compare_Float(tin,twoT)) then
+            
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,n
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+               end do
+             
+           else
+              
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,n
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                                                                         
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_r4
+
+
+      
+
+
+       subroutine rect_pulse_amp_r8(Ak,Phik,Phi0,n,T,k,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  rect_pulse_amp_r8
+           !dir$ attributes forceinline ::   rect_pulse_amp_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  rect_pulse_amp_r8
+           use mod_fpcompare, only : Compare_Float
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           real(kind=dp), parameter :: pi2 = 1.5707963267948966192313216916398_dp
+           real(kind=dp) :: phik0
+           real(kind=dp) :: arg0
+           real(kind=dp) :: k0
+           real(kind=dp) :: twoT,kpi2
+           integer(kind=i4) :: i
+           twoT = 2.0_dp/T
+           if(Compare_Float(tin,twoT)) then
+            
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned k:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,n
+                    k0      = k(i+0)
+                    arg0    = k0*pi2
+                    Ak(i+0) = Phi0*(sin(arg0)/arg0) 
+               end do
+             
+           else
+              
+               !dir$ assume_aligned Ak:64
+               !dir$ assume_aligned Phik:64
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(8)
+               !dir$ vector multiple_gather_scatter_by_shuffles 
+               !dir$ vector always
+               do i=1,n
+                    phik0   = Phik(i+0)
+                    Ak(i+0) = twoT*phik0
+                                                                         
+              end do
+             
+          end if
+       end subroutine rect_pulse_amp_r8
+
+
+       subroutine rect_pulse_amp_r4(Ak,Phik,Phi0,n,T,k,tin,unroll_cnt)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: rect_pulse_amp_r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Ak
+           real(kind=sp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=sp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), dimension(1:n),  intent(in)  :: k
+           real(kind=sp),                  intent(in)  :: tin
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call rect_pulse_amp_unroll_16x_r4(Ak,Phik,Phi0,n,T,k,tin)
+              case (8)
+                call rect_pulse_amp_unroll_8x_r4(Ak,Phik,Phi0,n,T,k,tin)
+              case (4)
+                call rect_pulse_amp_unroll_4x_r4(Ak,Phik,Phi0,n,T,k,tin)
+              case (2)
+                call rect_pulse_amp_unroll_2x_r4(Ak,Phik,Phi0,n,T,k,tin)
+              case (0)
+                call rect_pulse_amp_r4(Ak,Phik,Phi0,n,T,k,tin)
+              case default
+                return
+              end select
+       end subroutine rect_pulse_amp_exec_r4
+
+
+       subroutine rect_pulse_amp_r8(Ak,Phik,Phi0,n,T,k,tin,unroll_cnt)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: rect_pulse_amp_r8
+           real(kind=dp), dimension(1:n),  intent(out) :: Ak
+           real(kind=dp), dimension(1:n),  intent(in)  :: Phik
+           real(kind=dp),                  intent(in)  :: Phi0
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), dimension(1:n),  intent(in)  :: k
+           real(kind=dp),                  intent(in)  :: tin
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call rect_pulse_amp_unroll_16x_r8(Ak,Phik,Phi0,n,T,k,tin)
+              case (8)
+                call rect_pulse_amp_unroll_8x_r8(Ak,Phik,Phi0,n,T,k,tin)
+              case (4)
+                call rect_pulse_amp_unroll_4x_r8(Ak,Phik,Phi0,n,T,k,tin)
+              case (2)
+                call rect_pulse_amp_unroll_2x_r8(Ak,Phik,Phi0,n,T,k,tin)
+              case (0)
+                call rect_pulse_amp_r8(Ak,Phik,Phi0,n,T,k,tin)
+              case default
+                return
+              end select
+       end subroutine rect_pulse_amp_exec_r8
   
        !разность полярных углов ф и ф', 
        !характеризующих положение центра отверстия растра относительно
@@ -6766,6 +7141,134 @@ module eos_sensor
                           
             end do
        end subroutine transmit_coeff_unroll_2x_r8
+
+
+       subroutine transmit_coef_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmit_coef_r4
+           !dir$ attributes forceinline ::   transmit_coef_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmit_coef_r4
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           real(kind=sp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Beta
+           real(kind=sp),                 intent(in)  :: Omega0
+           real(kind=sp),                 intent(in)  :: om0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: arg1
+           real(kind=sp), automatic :: sin0
+           real(kind=sp), automatic :: tmp0
+           integer(kind=i4) :: i
+          
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                t0        = real(i,kind=sp)
+                arg0      = om0*t0
+                sin0      = Beta*sin(Omega0*t0)
+                tmp0      = sin(arg0+sin0)
+                rhot(i)   = rho0+rho1*tmp0
+                                                           
+            end do
+       end subroutine transmit_coeff_r4
+
+
+       
+       subroutine transmit_coef_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmit_coef_r8
+           !dir$ attributes forceinline ::   transmit_coef_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmit_coef_r8
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Beta
+           real(kind=dp),                 intent(in)  :: Omega0
+           real(kind=dp),                 intent(in)  :: om0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: arg1
+           real(kind=dp), automatic :: sin0
+           real(kind=dp), automatic :: tmp0
+           integer(kind=i4) :: i
+          
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                t0        = real(i,kind=dp)
+                arg0      = om0*t0
+                sin0      = Beta*sin(Omega0*t0)
+                tmp0      = sin(arg0+sin0)
+                rhot(i)   = rho0+rho1*tmp0
+                                                           
+            end do
+       end subroutine transmit_coeff_r8
+
+
+       subroutine transmit_coeff_exec_r4(rho0,rho1,rhot,n,Beta,Omega0,om0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: transmit_coeff_exec_r4
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           real(kind=sp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: Beta
+           real(kind=sp),                 intent(in)  :: Omega0
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                 call transmit_coeff_unroll_16x_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (8)
+                 call transmit_coeff_unroll_8x_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (4)
+                 call transmit_coeff_unroll_4x_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (2)
+                 call transmit_coeff_unroll_2x_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (0)
+                 call transmit_coeff_r4(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case default
+                 return
+           end select
+       end subroutine transmit_coeff_exec_r4
+
+
+       subroutine transmit_coeff_exec_r8(rho0,rho1,rhot,n,Beta,Omega0,om0,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: transmit_coeff_exec_r8
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: Beta
+           real(kind=dp),                 intent(in)  :: Omega0
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                 call transmit_coeff_unroll_16x_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (8)
+                 call transmit_coeff_unroll_8x_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (4)
+                 call transmit_coeff_unroll_4x_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (2)
+                 call transmit_coeff_unroll_2x_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case (0)
+                 call transmit_coeff_r8(rho0,rho1,rhot,n,Beta,Omega0,om0)
+               case default
+                 return
+           end select
+       end subroutine transmit_coeff_exec_r8
+
 
 
 
@@ -7662,6 +8165,157 @@ module eos_sensor
        end subroutine raster_transmittance_unroll_2x_r8
 
 
+       subroutine raster_transmittance_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_transmittance_r4
+           !dir$ attributes forceinline ::   raster_transmittance_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_transmittance_r4
+           real(kind=sp),                 intent(in)  :: a
+           real(kind=sp),                 intent(in)  :: r
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: Omega0
+           real(kind=sp),                 intent(in)  :: Beta
+           real(kind=sp),                 intent(in)  :: R0
+           real(kind=sp),                 intent(in)  :: om0
+           real(kind=sp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), parameter :: c0 = 0.63661977236758134307553505349_sp
+           real(kind=sp), automatic :: rho00
+           real(kind=sp), automatic :: th0
+           real(kind=sp), automatic :: cos0
+           real(kind=sp), automatic :: sin0
+           real(kind=sp), automatic :: omt0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: gamt0
+           real(kind=sp) :: M
+           integer(kind=i4) :: i
+           M = c0*(a/(r+r))
+         
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                 t0        = real(i,kind=sp)
+                 th0       = -abs(cos(Omega0*t0))
+                 rh00      = rho0*(1.0_sp+M*th0)
+                 omt0      = om0*t0
+                 gamt0     = sin(Omega0*t0)
+                 sin0      = sin(omt0+Beta*gamt0)
+                 rhot(i)   = sin0
+                            
+            end do
+       end subroutine raster_transmittance_r4
+
+
+       subroutine raster_transmittance_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  raster_transmittance_r8
+           !dir$ attributes forceinline ::   raster_transmittance_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  raster_transmittance_r8
+           real(kind=dp),                 intent(in)  :: a
+           real(kind=dp),                 intent(in)  :: r
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: Omega0
+           real(kind=dp),                 intent(in)  :: Beta
+           real(kind=dp),                 intent(in)  :: R0
+           real(kind=dp),                 intent(in)  :: om0
+           real(kind=dp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), parameter :: c0 = 0.63661977236758134307553505349_dp
+           real(kind=dp), automatic :: rho00
+           real(kind=dp), automatic :: th0
+           real(kind=dp), automatic :: cos0
+           real(kind=dp), automatic :: sin0
+           real(kind=dp), automatic :: omt0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: gamt0
+           real(kind=dp) :: M
+           integer(kind=i4) :: i
+           M = c0*(a/(r+r))
+         
+            !dir$ assume_aligned rhot:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                 t0        = real(i,kind=dp)
+                 th0       = -abs(cos(Omega0*t0))
+                 rh00      = rho0*(1.0_dp+M*th0)
+                 omt0      = om0*t0
+                 gamt0     = sin(Omega0*t0)
+                 sin0      = sin(omt0+Beta*gamt0)
+                 rhot(i)   = sin0
+                            
+            end do
+       end subroutine raster_transmittance_r8
+
+
+       subroutine raster_transmittance_exec_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: raster_transmittance_exec_r4
+           real(kind=sp),                 intent(in)  :: a
+           real(kind=sp),                 intent(in)  :: r
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: Omega0
+           real(kind=sp),                 intent(in)  :: Beta
+           real(kind=sp),                 intent(in)  :: R0
+           real(kind=sp),                 intent(in)  :: om0
+           real(kind=sp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call raster_transmittance_unroll_16x_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (8)
+                call raster_transmittance_unroll_8x_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (4)
+                call raster_transmittance_unroll_4x_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (2)
+                call raster_transmittance_unroll_2x_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (0)
+                call raster_transmittance_r4(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case default
+                return
+              end select
+       end subroutine raster_transmittance_exec_r4
+
+
+       subroutine raster_transmittance_exec_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: raster_transmittance_exec_r8
+           real(kind=dp),                 intent(in)  :: a
+           real(kind=dp),                 intent(in)  :: r
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: Omega0
+           real(kind=dp),                 intent(in)  :: Beta
+           real(kind=dp),                 intent(in)  :: R0
+           real(kind=dp),                 intent(in)  :: om0
+           real(kind=dp), dimension(1:n), intent(out) :: rhot
+           integer(kind=i4),              intent(in)  :: n
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call raster_transmittance_unroll_16x_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (8)
+                call raster_transmittance_unroll_8x_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (4)
+                call raster_transmittance_unroll_4x_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (2)
+                call raster_transmittance_unroll_2x_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case (0)
+                call raster_transmittance_r8(a,r,rho0,Omega0,Beta,R0,om0,rhot,n)
+              case default
+                return
+              end select
+       end subroutine raster_transmittance_exec_r8
+
+
+
        !Гармоническая частотная модуляция коэффициента 
        !пропускания.
        !Formula 1, p. 196
@@ -8376,7 +9030,7 @@ module eos_sensor
        end subroutine transmitt_hfreq_mod_unroll_4x_r8
 
 
-         subroutine transmitt_hfreq_mod_unroll_2x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+       subroutine transmitt_hfreq_mod_unroll_2x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_unroll_2x_r4
            !dir$ attributes forceinline ::   transmitt_hfreq_mod_unroll_2x_r4
@@ -8508,8 +9162,152 @@ module eos_sensor
        end subroutine transmitt_hfreq_mod_unroll_2x_r8
 
 
-       
+       subroutine transmitt_hfreq_mod_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_r4
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_r4
+           real(kind=sp),                     intent(in) :: Phi0
+           real(kind=sp),                     intent(in) :: rho0
+           real(kind=sp),                     intent(in) :: om0
+           real(kind=sp),                     intent(in) :: Beta
+           real(kind=sp),                     intent(in) :: Omega0
+           real(kind=sp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=sp), automatic :: omt0
+           real(kind=sp), automatic :: t0
+           real(kind=sp), automatic :: somt0
+           real(kind=sp), automatic :: tB0
+           real(kind=sp), automatic :: term0
+           real(kind=sp), automatic :: c0
+           real(kind=sp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i
+           B2    = Beta*0.5_sp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+          
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                 t0         = real(i,kind=sp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_sp+somt0+term0*c0)
+                                          
+             end do
+       end subroutine transmitt_hfreq_mod_r4
 
+
+       subroutine transmitt_hfreq_mod_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  transmitt_hfreq_mod_r8
+           !dir$ attributes forceinline ::   transmitt_hfreq_mod_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  transmitt_hfreq_mod_r8
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           real(kind=dp), automatic :: omt0
+           real(kind=dp), automatic :: t0
+           real(kind=dp), automatic :: somt0
+           real(kind=dp), automatic :: tB0
+           real(kind=dp), automatic :: term0
+           real(kind=dp), automatic :: c0
+           real(kind=dp) :: B2,oma,oms,Phiro,soma,soms
+           integer(kind=sp) :: i
+           B2    = Beta*0.5_dp
+           oma   = om0+Omega0
+           soma  = sin(oma)
+           oms   = om0-Omega0
+           soms  = sin(oms)
+           Phiro = Phi0*rho0
+          
+            !dir$ assume_aligned Phiom:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                 t0         = real(i,kind=dp)
+                 omt0       = om0*t0
+                 somt0      = sin(omt0)
+                 tB0        = t0-B2
+                 term0      = B2*soma*tB0
+                 c0         = soms-t0
+                 Phiom(i)   = Phir0*(1.0_dp+somt0+term0*c0)
+                                          
+             end do
+       end subroutine transmitt_hfreq_mod_r8
+
+
+       subroutine transmitt_hfreq_mod_exec_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: transmitt_hfreq_mod_exec_r4 
+           real(kind=sp),                     intent(in) :: Phi0
+           real(kind=sp),                     intent(in) :: rho0
+           real(kind=sp),                     intent(in) :: om0
+           real(kind=sp),                     intent(in) :: Beta
+           real(kind=sp),                     intent(in) :: Omega0
+           real(kind=sp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           integer(kind=i4),                  intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call transmitt_hfreq_mod_unroll_16x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (8)
+                  call transmitt_hfreq_mod_unroll_8x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (4)
+                  call transmitt_hfreq_mod_unroll_4x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (2)
+                  call transmitt_hfreq_mod_unroll_2x_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (0)
+                  call transmitt_hfreq_mod_r4(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case default
+                  return
+               end select
+       end subroutine transmitt_hfreq_mod_exec_r4
+
+
+       subroutine transmitt_hfreq_mod_exec_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: transmitt_hfreq_mod_exec_r8 
+           real(kind=dp),                     intent(in) :: Phi0
+           real(kind=dp),                     intent(in) :: rho0
+           real(kind=dp),                     intent(in) :: om0
+           real(kind=dp),                     intent(in) :: Beta
+           real(kind=dp),                     intent(in) :: Omega0
+           real(kind=dp), dimension(1:n),     intent(out):: Phiom
+           integer(kind=i4),                  intent(in) :: n
+           integer(kind=i4),                  intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call transmitt_hfreq_mod_unroll_16x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (8)
+                  call transmitt_hfreq_mod_unroll_8x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (4)
+                  call transmitt_hfreq_mod_unroll_4x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (2)
+                  call transmitt_hfreq_mod_unroll_2x_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case (0)
+                  call transmitt_hfreq_mod_r8(Phi0,rho0,om0,Beta,Omega0,Phiom,n)
+               case default
+                  return
+               end select
+       end subroutine transmitt_hfreq_mod_exec_r8
 
        !Helper subroutine for computing of Bessel j_n values.
        subroutine bessel_jn_beta_r4(bjb,n,Beta)
