@@ -3341,6 +3341,127 @@ module eos_sensor
          
         end subroutine squared_cos_flux_unroll_2x_r8
 
+
+        subroutine squared_cos_flux_r8(Phi0t,Phi0,n,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  squared_cos_flux_r8
+           !dir$ attributes forceinline ::   squared_cos_flux_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  squared_cos_flux_r8
+           
+           real(kind=dp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=dp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4) :: i,m,m1
+           real(kind=dp), parameter :: hpi = 1.57079632679489661923132169164_dp
+           real(kind=dp), automatic :: tin2,t0
+           real(kind=dp), automatic :: arg0
+           real(kind=dp), automatic :: c0
+          
+           tin2 = 0.5_dp*tin
+          
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              t0         = real(i+0,kind=dp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(i+0) = c0*c0
+             
+           end do
+         
+        end subroutine squared_cos_flux_r8
+
+
+        subroutine squared_cos_flux_r4(Phi0t,Phi0,n,tin)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  squared_cos_flux_r4
+           !dir$ attributes forceinline ::   squared_cos_flux_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  squared_cos_flux_r4
+           
+           real(kind=sp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=sp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4) :: i,m,m1
+           real(kind=sp), parameter :: hpi = 1.57079632679489661923132169164_sp
+           real(kind=sp), automatic :: tin2,t0
+           real(kind=sp), automatic :: arg0
+           real(kind=sp), automatic :: c0
+          
+           tin2 = 0.5_sp*tin
+          
+           !dir$ assume_aligned Phi0t:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              t0         = real(i+0,kind=sp)
+              arg0       = hpi*t0/tin2
+              c0         = cos(arg0)
+              Phi0t(i+0) = c0*c0
+             
+           end do
+         
+        end subroutine squared_cos_flux_r4
+
+
+
+        subroutine squared_cos_flux_exec_r4(Phi0t,Phi0,n,tin,unroll_cnt)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  squared_cos_flux_exec_r4
+           real(kind=sp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=sp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call squared_cos_flux_unroll_16x_r4(Phi0t,Phi0,n,tin)
+              case (8)
+                call squared_cos_flux_unroll_8x_r4(Phi0t,Phi0,n,tin)
+              case (4)
+                call squared_cos_flux_unroll_4x_r4(Phi0t,Phi0,n,tin)
+              case (2)
+                call squared_cos_flux_unroll_2x_r4(Phi0t,Phi0,n,tin)
+              case (0)
+                call squared_cos_flux_r4(Phi0t,Phi0,n,tin)
+              case default
+                return
+           end select
+        end subroutine squared_cos_flux_exec_r4
+
+
+        subroutine squared_cos_flux_exec_r8(Phi0t,Phi0,n,tin,unroll_cnt)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 ::  squared_cos_flux_exec_r8
+           real(kind=dp), dimension(1:n),  intent(out) :: Phi0t
+           real(kind=dp),                  intent(in)  :: Phi0 !radiation flux of constant intensity
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: tin  ! pulse length
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call squared_cos_flux_unroll_16x_r8(Phi0t,Phi0,n,tin)
+              case (8)
+                call squared_cos_flux_unroll_8x_r8(Phi0t,Phi0,n,tin)
+              case (4)
+                call squared_cos_flux_unroll_4x_r8(Phi0t,Phi0,n,tin)
+              case (2)
+                call squared_cos_flux_unroll_2x_r8(Phi0t,Phi0,n,tin)
+              case (0)
+                call squared_cos_flux_r8(Phi0t,Phi0,n,tin)
+              case default
+                return
+           end select
+        end subroutine squared_cos_flux_exec_r8
+
        
        
 
@@ -3471,6 +3592,254 @@ module eos_sensor
            end do
           
        end subroutine const_flux_spectr_unroll_16x_r4
+
+
+       subroutine const_flux_spectr_unroll_8x_r4(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_8x_r4
+           !dir$ attributes forceinline ::   const_flux_spectr_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_8x_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
+           real(kind=sp) :: f0,f1,f2,f3,f4,f5,f6,f7
+           real(kind=sp) :: c0,c1,c2,c3,c4,c5,c6,c7
+           real(kind=sp) :: sa0,sa1,sa2,sa3,sa4,sa,sa6,sa7
+           real(kind=sp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i,m,m1
+           hT    = 0.5_sp*T
+           Phi0T = Phi0*hT
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1, m
+                 f0         = freq(i+0)
+                 c0         = twopi*f0*hT
+                 sa0        = sin(c0)/c0
+                 arg0       = 1.0_sp-(f0*hT*f0*hT)
+                 Phi0f(i+0) = Phi0T*(sa0/arg0)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+              f1         = freq(i+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(i+1) = Phi0T*(sa1/arg1)
+              f2         = freq(i+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_sp-(f2*hT*f2*hT)
+              Phi0f(i+2) = Phi0T*(sa2/arg2)
+              f3         = freq(i+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_sp-(f3*hT*f3*hT)
+              Phi0f(i+3) = Phi0T*(sa3/arg3)
+              f4         = freq(i+4)
+              c4         = twopi*f4*hT
+              sa4        = sin(c4)/c4
+              arg4       = 1.0_sp-(f4*hT*f4*hT)
+              Phi0f(i+4) = Phi0T*(sa4/arg4)
+              f5         = freq(i+5)
+              c5         = twopi*f5*hT
+              sa5        = sin(c5)/c5
+              arg5       = 1.0_sp-(f5*hT*f5*hT)
+              Phi0f(i+5) = Phi0T*(sa5/arg5)
+              f6         = freq(i+6)
+              c6         = twopi*f6*hT
+              sa6        = sin(c6)/c6
+              arg6       = 1.0_sp-(f6*hT*f6*hT)
+              Phi0f(i+6) = Phi0T*(sa6/arg6)
+              f7         = freq(i+7)
+              c7         = twopi*f7*hT
+              sa7        = sin(c7)/c7
+              arg7       = 1.0_sp-(f7*hT*f7*hT)
+              Phi0f(i+7) = Phi0T*(sa7/arg7)
+          end do
+          
+       end subroutine const_flux_spectr_unroll_8x_r4
+
+
+       subroutine const_flux_spectr_unroll_4x_r4(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_4x_r4
+           !dir$ attributes forceinline ::   const_flux_spectr_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_4x_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: arg0,arg1,arg2,arg3
+           real(kind=sp) :: f0,f1,f2,f3
+           real(kind=sp) :: c0,c1,c2,c3
+           real(kind=sp) :: sa0,sa1,sa2,sa3
+           real(kind=sp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i,m,m1
+           hT    = 0.5_sp*T
+           Phi0T = Phi0*hT
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1, m
+                 f0         = freq(i+0)
+                 c0         = twopi*f0*hT
+                 sa0        = sin(c0)/c0
+                 arg0       = 1.0_sp-(f0*hT*f0*hT)
+                 Phi0f(i+0) = Phi0T*(sa0/arg0)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+              f1         = freq(i+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(i+1) = Phi0T*(sa1/arg1)
+              f2         = freq(i+2)
+              c2         = twopi*f2*hT
+              sa2        = sin(c2)/c2
+              arg2       = 1.0_sp-(f2*hT*f2*hT)
+              Phi0f(i+2) = Phi0T*(sa2/arg2)
+              f3         = freq(i+3)
+              c3         = twopi*f3*hT
+              sa3        = sin(c3)/c3
+              arg3       = 1.0_sp-(f3*hT*f3*hT)
+              Phi0f(i+3) = Phi0T*(sa3/arg3)
+           end do
+          
+       end subroutine const_flux_spectr_unroll_4x_r4
+
+
+
+       subroutine const_flux_spectr_unroll_2x_r4(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_unroll_2x_r4
+           !dir$ attributes forceinline ::   const_flux_spectr_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_unroll_2x_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: arg0,arg1
+           real(kind=sp) :: f0,f1
+           real(kind=sp) :: c0,c1
+           real(kind=sp) :: sa0,sa1
+           real(kind=sp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i,m,m1
+           hT    = 0.5_sp*T
+           Phi0T = Phi0*hT
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1, m
+                 f0         = freq(i+0)
+                 c0         = twopi*f0*hT
+                 sa0        = sin(c0)/c0
+                 arg0       = 1.0_sp-(f0*hT*f0*hT)
+                 Phi0f(i+0) = Phi0T*(sa0/arg0)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+              f1         = freq(i+1)
+              c1         = twopi*f1*hT
+              sa1        = sin(c1)/c1
+              arg1       = 1.0_sp-(f1*hT*f1*hT)
+              Phi0f(i+1) = Phi0T*(sa1/arg1)
+            end do
+          
+       end subroutine const_flux_spectr_unroll_2x_r4
+
+
+       subroutine const_flux_spectr_r4(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_r4
+           !dir$ attributes forceinline ::   const_flux_spectr_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: arg0
+           real(kind=sp) :: f0
+           real(kind=sp) :: c0
+           real(kind=sp) :: sa0
+           real(kind=sp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i
+           hT    = 0.5_sp*T
+           Phi0T = Phi0*hT
+          
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_sp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+           end do
+          
+       end subroutine const_flux_spectr_r4
+
+
+
+
+
+       
+
 
 
        subroutine const_flux_spectr_unroll_16x_r8(Phi0f,Phi0,freq,n,T)
@@ -3768,7 +4137,7 @@ module eos_sensor
            integer(kind=i4) :: i,m,m1
            hT    = 0.5_dp*T
            Phi0T = Phi0*hT
-           m = mod(n,4)
+           m = mod(n,2)
            if(m /= 0) then
               do i=1, m
                  f0         = freq(i+0)
@@ -3804,8 +4173,95 @@ module eos_sensor
 
        
 
-       
+       subroutine const_flux_spectr_r8(Phi0f,Phi0,freq,n,T)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_r8
+           !dir$ attributes forceinline ::   const_flux_spectr_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  const_flux_spectr_r8
+           real(kind=dp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp),                  intent(in)  :: Phi0
+           real(kind=dp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: arg0
+           real(kind=dp) :: f0
+           real(kind=dp) :: c0
+           real(kind=dp) :: sa0
+           real(kind=dp), automatic :: hT,Phi0T
+           integer(kind=i4) :: i
+           hT    = 0.5_dp*T
+           Phi0T = Phi0*hT
+         
+           !dir$ assume_aligned Phi0f:64
+           !dir$ assume_aligned freq:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              f0         = freq(i+0)
+              c0         = twopi*f0*hT
+              sa0        = sin(c0)/c0
+              arg0       = 1.0_dp-(f0*hT*f0*hT)
+              Phi0f(i+0) = Phi0T*(sa0/arg0)
+            
+           end do
+          
+       end subroutine const_flux_spectr_unroll_r8
 
+       
+       subroutine const_flux_spectr_exec_r4(Phi0f,Phi0,freq,n,T,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_exec_r4
+           real(kind=sp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=sp),                  intent(in)  :: Phi0
+           real(kind=sp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=sp),                  intent(in)  :: T
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call const_flux_spectr_unroll_16x_r4(Phi0f,Phi0,freq,n,T)
+              case (8)
+                call const_flux_spectr_unroll_8x_r4(Phi0f,Phi0,freq,n,T)
+              case (4)
+                call const_flux_spectr_unroll_4x_r4(Phi0f,Phi0,freq,n,T)
+              case (2)
+                call const_flux_spectr_unroll_2x_r4(Phi0f,Phi0,freq,n,T) 
+              case (0)
+                call const_flux_spectr_r4(Phi0f,Phi0,freq,n,T)
+              case default
+                return
+           end select
+       end subroutine const_flux_spectr_exec_r4
+
+
+       subroutine const_flux_spectr_exec_r8(Phi0f,Phi0,freq,n,T,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  const_flux_spectr_exec_r8
+           real(kind=dp),  dimension(1:n), intent(out) :: Phi0f
+           real(kind=dp),                  intent(in)  :: Phi0
+           real(kind=dp),  dimension(1:n), intent(in)  :: freq
+           integer(kind=i4),               intent(in)  :: n
+           real(kind=dp),                  intent(in)  :: T
+           integer(kind=i4),               intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call const_flux_spectr_unroll_16x_r8(Phi0f,Phi0,freq,n,T)
+              case (8)
+                call const_flux_spectr_unroll_8x_r8(Phi0f,Phi0,freq,n,T)
+              case (4)
+                call const_flux_spectr_unroll_4x_r8(Phi0f,Phi0,freq,n,T)
+              case (2)
+                call const_flux_spectr_unroll_2x_r8(Phi0f,Phi0,freq,n,T) 
+              case (0)
+                call const_flux_spectr_r8(Phi0f,Phi0,freq,n,T)
+              case default
+                return
+           end select
+       end subroutine const_flux_spectr_exec_r8
       
      
         !Идеальный гармонический модулятор
@@ -4179,6 +4635,47 @@ module eos_sensor
        end subroutine ideal_modulator_unroll_2x_r4
 
 
+       subroutine ideal_modulator_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_r4
+           !dir$ attributes forceinline ::   ideal_modulator_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: f0
+           real(kind=sp),                 intent(in)  :: phi0
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           real(kind=sp), parameter :: twopi = 6.283185307179586476925286766559_sp
+           real(kind=sp) :: t0
+           real(kind=sp) :: s0
+           real(kind=sp) :: c0
+           real(kind=sp) :: psi0
+           real(kind=sp) :: om0
+           integer(kind=i4) :: i
+           om0 = twopi*f0
+        
+           !dir$ assume_aligned rhot_s:64           
+           !dir$ assume_aligned rhot_c:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              t0          = real(i+0,kind=sp)
+              psi0        = om0*t0+phi0
+              s0          = rho0+rho1*sin(psi0)
+              rhot_s(i+0) = s0
+              c0          = rho0+rho1*cos(psi0)
+              rhot_c(i+0) = c0
+           end do
+        
+       end subroutine ideal_modulator_r4
+
+
+
        subroutine ideal_modulator_unroll_16x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  ideal_modulator_unroll_16x_r8
@@ -4547,6 +5044,101 @@ module eos_sensor
         
        end subroutine ideal_modulator_unroll_2x_r8
 
+
+       subroutine ideal_modulator_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ideal_modulator_r8
+           !dir$ attributes forceinline ::   ideal_modulator_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" ::  ideal_modulator_r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: f0
+           real(kind=dp),                 intent(in)  :: phi0
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           real(kind=dp), parameter :: twopi = 6.283185307179586476925286766559_dp
+           real(kind=dp) :: t0
+           real(kind=dp) :: s0
+           real(kind=dp) :: c0
+           real(kind=dp) :: psi0
+           real(kind=dp) :: om0
+           integer(kind=i4) :: i
+           om0 = twopi*f0
+         
+           !dir$ assume_aligned rhot_s:64           
+           !dir$ assume_aligned rhot_c:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+              t0          = real(i+0,kind=dp)
+              psi0        = om0*t0+phi0
+              s0          = rho0+rho1*sin(psi0)
+              rhot_s(i+0) = s0
+              c0          = rho0+rho1*cos(psi0)
+              rhot_c(i+0) = c0
+           end do
+        
+       end subroutine ideal_modulator_r8
+
+
+       subroutine ideal_modulator_exec_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1,unroll_cnt)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: ideal_modulator_exec_r4
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=sp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp),                 intent(in)  :: f0
+           real(kind=sp),                 intent(in)  :: phi0
+           real(kind=sp),                 intent(in)  :: rho0
+           real(kind=sp),                 intent(in)  :: rho1
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call ideal_modulator_unroll_16x_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (8)
+                call ideal_modulator_unroll_8x_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (4)
+                call ideal_modulator_unroll_4x_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (2)
+                call ideal_modulator_unroll_2x_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1) 
+              case (0)
+                call ideal_modulator_r4(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case default
+                return
+            end select
+       end subroutine ideal_modulator_exec_r4
+
+
+       subroutine ideal_modulator_exec_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1,unroll_cnt)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: ideal_modulator_exec_r8
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_s
+           real(kind=dp), dimension(1:n), intent(out) :: rhot_c
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp),                 intent(in)  :: f0
+           real(kind=dp),                 intent(in)  :: phi0
+           real(kind=dp),                 intent(in)  :: rho0
+           real(kind=dp),                 intent(in)  :: rho1
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call ideal_modulator_unroll_16x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (8)
+                call ideal_modulator_unroll_8x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (4)
+                call ideal_modulator_unroll_4x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case (2)
+                call ideal_modulator_unroll_2x_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1) 
+              case (0)
+                call ideal_modulator_r8(rhot_s,rhot_c,n,f0,phi0,rho0,rho1)
+              case default
+                return
+            end select
+       end subroutine ideal_modulator_exec_r8
 
 
 
