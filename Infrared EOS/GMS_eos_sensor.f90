@@ -72,30 +72,282 @@ module eos_sensor
 
      ! Scanning mirror derived type
      
-     type, public :: scanning_mirror
-
-           sequence
-           real(kind=sp) :: gamma ! angle of mirror position relative to obiective optical axis (p. 53, 1.2)
-           real(kind=sp) :: gamma0 ! angle of fixing
-           real(kind=sp) :: phi   ! sensor fov
-           real(kind=sp) :: F     ! Focal length
-           real(kind=sp) :: H     ! distance from the focal length to target image
-           real(kind=sp) :: Dmax  ! size of mirror vertical plane
-           real(kind=sp) :: Dmin  ! size of mirror horizontal plane
-           
-     end type scanning_mirror
+    ! type, public :: scanning_mirror
+    !
+    !      sequence
+    !       real(kind=sp) :: gamma ! angle of mirror position relative to obiective optical axis (p. 53, 1.2)
+    !       real(kind=sp) :: gamma0 ! angle of fixing
+    !       real(kind=sp) :: phi   ! sensor fov
+    !       real(kind=sp) :: F     ! Focal length
+    !       real(kind=sp) :: H     ! distance from the focal length to target image
+    !       real(kind=sp) :: Dmax  ! size of mirror vertical plane
+    !       real(kind=sp) :: Dmin  ! size of mirror horizontal plane
+    !       
+    ! end type scanning_mirror
 
 
      contains
 
      
-     subroutine param_gamma_r4(sm)
+     subroutine param_gamma_r4(phi,gamma)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: param_gamma_r4
         !dir$ attributes forceinline :: param_gamma_r4
-        type(scanning_mirror), intent(inout) :: sm
-        sm.gamma = 0.5_sp*sm.phi*0.5_sp
+        real(kind=sp), intent(in)    :: phi
+        real(kind=sp), intent(out)   :: gama
+        gamma = 0.5_sp*phi*0.5_sp
      end subroutine param_gamma_r4
+
+
+     subroutine param_gamma_unroll_16x_r4(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_16x_r4
+           !dir$ attributes forceinline ::  param_gamma_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_16x_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=sp), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+        
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r4(phi(i),gamma(i))
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+               t0 = phi(i)
+               call param_gamma_r4(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r4(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r4(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r4(t3,gamma(i+3))
+               t4 = phi(i+4)
+               call param_gamma_r4(t4,gamma(i+4))
+               t5 = phi(i+5)
+               call param_gamma_r4(t5,gamma(i+5))
+               t6 = phi(i+6)
+               call param_gamma_r4(t6,gamma(i+6))
+               t7 = phi(i+7)
+               call param_gamma_r4(t7,gamma(i+7))
+               t8 = phi(i+8)
+               call param_gamma_r4(t8,gamma(i+8))
+               t9 = phi(i+9)
+               call param_gamma_r4(t9,gamma(i+9))
+               t10= phi(i+10)
+               call param_gamma_r4(t10,gamma(i+10))
+               t11= phi(i+11)
+               call param_gamma_r4(t11,gamma(i+11))
+               t12= phi(i+12)
+               call param_gamma_r4(t12,gamma(i+12))
+               t13= phi(i+13)
+               call param_gamma_r4(t13,gamma(i+13))
+               t14= phi(i+14)
+               call param_gamma_r4(t14,gamma(i+14))
+               t15= phi(i+15)
+               call param_gamma_r4(t15,gamma(i+15))
+             end do
+     end subroutine param_gamma_unroll_16x_r4
+
+
+     subroutine param_gamma_unroll_8x_r4(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_8x_r4
+           !dir$ attributes forceinline ::  param_gamma_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_8x_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r4(phi(i),gamma(i))
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+               t0 = phi(i)
+               call param_gamma_r4(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r4(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r4(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r4(t3,gamma(i+3))
+               t4 = phi(i+4)
+               call param_gamma_r4(t4,gamma(i+4))
+               t5 = phi(i+5)
+               call param_gamma_r4(t5,gamma(i+5))
+               t6 = phi(i+6)
+               call param_gamma_r4(t6,gamma(i+6))
+               t7 = phi(i+7)
+               call param_gamma_r4(t7,gamma(i+7))
+             end do
+     end subroutine param_gamma_unroll_8x_r4
+
+
+     subroutine param_gamma_unroll_4x_r4(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_4x_r4
+           !dir$ attributes forceinline ::  param_gamma_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_4x_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), automatic :: t0,t1,t2,t3
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r4(phi(i),gamma(i))
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+               t0 = phi(i)
+               call param_gamma_r4(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r4(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r4(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r4(t3,gamma(i+3))
+           end do
+     end subroutine param_gamma_unroll_4x_r4
+
+
+     
+    subroutine param_gamma_unroll_2x_r4(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_2x_r4
+           !dir$ attributes forceinline ::  param_gamma_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_2x_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), automatic :: t0,t1
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r4(phi(i),gamma(i))
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+               t0 = phi(i)
+               call param_gamma_r4(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r4(t1,gamma(i+1))
+            
+           end do
+     end subroutine param_gamma_unroll_2x_r4
+
+
+     subroutine param_gamma_rolled_r4(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_rolled_r4
+           !dir$ attributes forceinline ::  param_gamma_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_rolled_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), automatic :: t0
+                 
+           integer(kind=i4) :: i
+       
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+               t0 = phi(i)
+               call param_gamma_r4(t0,gamma(i))
+            end do
+     end subroutine param_gamma_rolled_r4
+
+
+     subroutine param_gamma_dispatch_r4(phi,gamma,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: param_gamma_dispatch_r4
+           real(kind=sp), dimension(1:n), intent(in)  :: phi
+           real(kind=sp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call param_gamma_unroll_16x_r4(phi,gamma,n)
+              case (8)
+                call param_gamma_unroll_8x_r4(phi,gamma,n)
+              case (4)
+                call param_gamma_unroll_4x_r4(phi,gamma,n)
+              case (2)
+                call param_gamma_unroll_2x_r4(phi,gamma,n)
+              case (0)
+                call param_gamma_rolled_r4(phi,gamma,n)
+              case default
+                return
+            end select
+     end subroutine param_gamma_dispatch_r4
+     
+
+
+
+
+   
+     subroutine param_gamma_r8(phi,gamma)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: param_gamma_r8
+        !dir$ attributes forceinline :: param_gamma_r8
+        real(kind=dp), intent(in)    :: phi
+        real(kind=dp), intent(out)   :: gama
+        gamma = 0.5_dp*phi*0.5_dp
+     end subroutine param_gamma_r8
 
      ! Formula 1, p.54
      !Тогда длина перпендикуляра SN, опущенного из 
