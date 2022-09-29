@@ -2216,6 +2216,39 @@ module eos_sensor
        end subroutine cos_series_unroll_2x_r4
 
 
+       subroutine cos_series_r4(om0,n,coss,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  cos_series_r4
+           !dir$ attributes forceinline ::  cos_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r4
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: coss
+           real(kind=sp),                 intent(in)  :: k
+           real(kind=sp) :: arg0
+           real(kind=sp) :: t0
+           real(kind=sp) :: kom0
+           integer(kind=i4) :: i
+           kom0 = k*om0
+          
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+              t0        = real(i+0,kind=sp)
+              arg0      = kom0*t0
+              coss(i+0) = cos(arg0)
+           end do
+           
+       end subroutine cos_series_r4
+
+
+       
+
+
        subroutine cos_series_unroll_2x_r8(om0,n,coss,k)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  cos_series_unroll_2x_r8
@@ -2259,9 +2292,85 @@ module eos_sensor
        end subroutine cos_series_unroll_2x_r8
 
 
-       
+       subroutine cos_series_r8(om0,n,coss,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  cos_series_r8
+           !dir$ attributes forceinline ::  cos_series_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: cos_series_r8
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: coss
+           real(kind=dp),                 intent(in)  :: k
+           real(kind=dp) :: arg0
+           real(kind=dp) :: t0
+           real(kind=dp) :: kom0
+           integer(kind=i4) :: i
+           kom0 = k*om0
+          
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+              t0        = real(i+0,kind=dp)
+              arg0      = kom0*t0
+              coss(i+0) = cos(arg0)
+           end do
+           
+       end subroutine cos_series_r8
 
 
+       subroutine cos_series_exec_r4(om0,n,coss,k,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  cos_series_exec_r4
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: coss
+           real(kind=sp),                 intent(in)  :: k
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call cos_series_unroll_16x_r4(om0,n,coss,k)
+              case (8)
+                call cos_series_unroll_8x_r4(om0,n,coss,k)
+              case (4)
+                call cos_series_unroll_4x_r4(om0,n,coss,k)
+              case (2)
+                call cos_series_unroll_2x_r4(om0,n,coss,k)
+              case (0)
+                call cos_series_r4(om0,n,coss,k)
+              case default
+                return
+            end select
+       end subroutine cos_series_exec_r4
+
+
+       subroutine cos_series_exec_r8(om0,n,coss,k,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  cos_series_exec_r8
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: coss
+           real(kind=dp),                 intent(in)  :: k
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call cos_series_unroll_16x_r8(om0,n,coss,k)
+              case (8)
+                call cos_series_unroll_8x_r8(om0,n,coss,k)
+              case (4)
+                call cos_series_unroll_4x_r8(om0,n,coss,k)
+              case (2)
+                call cos_series_unroll_2x_r8(om0,n,coss,k)
+              case (0)
+                call cos_series_r8(om0,n,coss,k)
+              case default
+                return
+            end select
+       end subroutine cos_series_exec_r8
+      
       
 
        !==========================================================================================
@@ -2703,6 +2812,37 @@ module eos_sensor
        end subroutine sin_series_unroll_2x_r4
 
 
+       subroutine sin_series_r4(om0,n,sins,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_r4
+           !dir$ attributes forceinline ::  sin_series_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r4
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: sins
+           real(kind=sp),                 intent(in)  :: k
+           real(kind=sp) :: arg0,
+           real(kind=sp) :: t0
+           real(kind=sp) :: kom0
+           integer(kind=i4) :: i
+           kom0 = k*om0
+          
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+              t0        = real(i+0,kind=sp)
+              arg0      = kom0*t0
+              sins(i+0) = sin(arg0)
+                        
+           end do
+           
+       end subroutine sin_series_r4
+
+
        subroutine sin_series_unroll_2x_r8(om0,n,sins,k)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  sin_series_unroll_2x_r8
@@ -2744,6 +2884,87 @@ module eos_sensor
            end do
            
        end subroutine sin_series_unroll_2x_r8
+
+
+       subroutine sin_series_r8(om0,n,sins,k)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_r8
+           !dir$ attributes forceinline ::  sin_series_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: sin_series_r8
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: sins
+           real(kind=dp),                 intent(in)  :: k
+           real(kind=dp) :: arg0,
+           real(kind=dp) :: t0
+           real(kind=dp) :: kom0
+           integer(kind=i4) :: i
+           kom0 = k*om0
+          
+            !dir$ assume_aligned coss:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+              t0        = real(i+0,kind=dp)
+              arg0      = kom0*t0
+              sins(i+0) = sin(arg0)
+                        
+           end do
+           
+       end subroutine sin_series_r8
+
+
+       subroutine sin_series_exec_r4(om0,n,sins,k,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_exec_r4
+           real(kind=sp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=sp), dimension(1:n), intent(out) :: sins
+           real(kind=sp),                 intent(in)  :: k
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call sin_series_unroll_16x_r4(om0,n,sins,k)
+              case (8)
+                call sin_series_unroll_8x_r4(om0,n,sins,k)
+              case (4)
+                call sin_series_unroll_4x_r4(om0,n,sins,k)
+              case (2)
+                call sin_series_unroll_2x_r4(om0,n,sins,k)
+              case (0)
+                call sin_series_r4(om0,n,sins,k)
+              case default
+                return
+            end select
+       end subroutine sin_series_exec_r4
+
+
+       subroutine sin_series_exec_r8(om0,n,sins,k,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  sin_series_exec_r8
+           real(kind=dp),                 intent(in)  :: om0
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), dimension(1:n), intent(out) :: sins
+           real(kind=dp),                 intent(in)  :: k
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call sin_series_unroll_16x_r8(om0,n,sins,k)
+              case (8)
+                call sin_series_unroll_8x_r8(om0,n,sins,k)
+              case (4)
+                call sin_series_unroll_4x_r8(om0,n,sins,k)
+              case (2)
+                call sin_series_unroll_2x_r8(om0,n,sins,k)
+              case (0)
+                call sin_series_r8(om0,n,sins,k)
+              case default
+                return
+            end select
+       end subroutine sin_series_exec_r8
      
 
          
