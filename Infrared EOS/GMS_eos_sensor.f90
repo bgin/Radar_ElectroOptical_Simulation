@@ -337,7 +337,7 @@ module eos_sensor
      
 
 
-
+     
 
    
      subroutine param_gamma_r8(phi,gamma)
@@ -348,6 +348,245 @@ module eos_sensor
         real(kind=dp), intent(out)   :: gama
         gamma = 0.5_dp*phi*0.5_dp
      end subroutine param_gamma_r8
+
+
+     subroutine param_gamma_unroll_16x_r8(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_16x_r8
+           !dir$ attributes forceinline ::  param_gamma_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_16x_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+           real(kind=dp), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+        
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r8(phi(i),gamma(i))
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+               t0 = phi(i)
+               call param_gamma_r8(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r8(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r8(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r8(t3,gamma(i+3))
+               t4 = phi(i+4)
+               call param_gamma_r8(t4,gamma(i+4))
+               t5 = phi(i+5)
+               call param_gamma_r8(t5,gamma(i+5))
+               t6 = phi(i+6)
+               call param_gamma_r8(t6,gamma(i+6))
+               t7 = phi(i+7)
+               call param_gamma_r8(t7,gamma(i+7))
+               t8 = phi(i+8)
+               call param_gamma_r8(t8,gamma(i+8))
+               t9 = phi(i+9)
+               call param_gamma_r8(t9,gamma(i+9))
+               t10= phi(i+10)
+               call param_gamma_r8(t10,gamma(i+10))
+               t11= phi(i+11)
+               call param_gamma_r8(t11,gamma(i+11))
+               t12= phi(i+12)
+               call param_gamma_r8(t12,gamma(i+12))
+               t13= phi(i+13)
+               call param_gamma_r8(t13,gamma(i+13))
+               t14= phi(i+14)
+               call param_gamma_r8(t14,gamma(i+14))
+               t15= phi(i+15)
+               call param_gamma_r8(t15,gamma(i+15))
+             end do
+     end subroutine param_gamma_unroll_16x_r8
+
+
+     subroutine param_gamma_unroll_8x_r8(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_8x_r8
+           !dir$ attributes forceinline ::  param_gamma_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_8x_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r8(phi(i),gamma(i))
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+               t0 = phi(i)
+               call param_gamma_r8(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r8(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r8(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r8(t3,gamma(i+3))
+               t4 = phi(i+4)
+               call param_gamma_r8(t4,gamma(i+4))
+               t5 = phi(i+5)
+               call param_gamma_r8(t5,gamma(i+5))
+               t6 = phi(i+6)
+               call param_gamma_r8(t6,gamma(i+6))
+               t7 = phi(i+7)
+               call param_gamma_r8(t7,gamma(i+7))
+             end do
+     end subroutine param_gamma_unroll_8x_r8
+
+
+     subroutine param_gamma_unroll_4x_r8(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_4x_r8
+           !dir$ attributes forceinline ::  param_gamma_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_4x_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), automatic :: t0,t1,t2,t3
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r8(phi(i),gamma(i))
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+               t0 = phi(i)
+               call param_gamma_r8(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r8(t1,gamma(i+1))
+               t2 = phi(i+2)
+               call param_gamma_r8(t2,gamma(i+2))
+               t3 = phi(i+3)
+               call param_gamma_r8(t3,gamma(i+3))
+           end do
+     end subroutine param_gamma_unroll_4x_r8
+
+
+     
+    subroutine param_gamma_unroll_2x_r8(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_unroll_2x_r8
+           !dir$ attributes forceinline ::  param_gamma_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_unroll_2x_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), automatic :: t0,t1
+                 
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 call param_gamma_r8(phi(i),gamma(i))
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+               t0 = phi(i)
+               call param_gamma_r8(t0,gamma(i))
+               t1 = phi(i+1)
+               call param_gamma_r8(t1,gamma(i+1))
+            
+           end do
+     end subroutine param_gamma_unroll_2x_r8
+
+
+     subroutine param_gamma_rolled_r8(phi,gamma,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  param_gamma_rolled_r8
+           !dir$ attributes forceinline ::  param_gamma_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: param_gamma_rolled_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           real(kind=dp), automatic :: t0
+                 
+           integer(kind=i4) :: i
+       
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+               t0 = phi(i)
+               call param_gamma_r8(t0,gamma(i))
+            end do
+     end subroutine param_gamma_rolled_r8
+
+
+     subroutine param_gamma_dispatch_r8(phi,gamma,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: param_gamma_dispatch_r8
+           real(kind=dp), dimension(1:n), intent(in)  :: phi
+           real(kind=dp), dimension(1:n), intent(out) :: gamma
+           integer(kind=i4),              intent(in)  :: n
+           integer(kind=i4),              intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                call param_gamma_unroll_16x_r8(phi,gamma,n)
+              case (8)
+                call param_gamma_unroll_8x_r8(phi,gamma,n)
+              case (4)
+                call param_gamma_unroll_4x_r8(phi,gamma,n)
+              case (2)
+                call param_gamma_unroll_2x_r8(phi,gamma,n)
+              case (0)
+                call param_gamma_rolled_r8(phi,gamma,n)
+              case default
+                return
+            end select
+     end subroutine param_gamma_dispatch_r8
+     
+
 
      ! Formula 1, p.54
      !Тогда длина перпендикуляра SN, опущенного из 
@@ -368,6 +607,350 @@ module eos_sensor
      end function compute_SN_r4
 
 
+     subroutine compute_SN_unroll_16x_r4(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_16x_r4
+           !dir$ attributes forceinline ::  compute_SN_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_16x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           real(kind=sp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=sp), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=sp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           real(kind=sp), automatic :: s8,s9,s10,s11,s12,s13,s14,s15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r4(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SN_r4(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SN_r4(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SN_r4(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SN_r4(R,p7,g7)
+                SN(i+7) = s7
+                p8      = phi(i+8)
+                g8      = gamma(i+8)
+                s8      = compute_SN_r4(R,p8,g8)
+                SN(i+8) = s8
+                p9      = phi(i+9)
+                g9      = gamma(i+9)
+                s9      = compute_SN_r4(R,p9,g9)
+                SN(i+9) = s9
+                p10     = phi(i+10)
+                g10     = gamma(i+10)
+                s10     = compute_SN_r4(R,p10,g10)
+                SN(i+10)= s10
+                p11     = phi(i+11)
+                g11     = gamma(i+11)
+                s11     = compute_SN_r4(R,p11,g11)
+                SN(i+11)= s11
+                p12     = phi(i+12)
+                g12     = gamma(i+12)
+                s12     = compute_SN_r4(R,p12,g12)
+                SN(i+12)= s12
+                p13     = phi(i+13)
+                g13     = gamma(i+13)
+                s13     = compute_SN_r4(R,p13,g13)
+                SN(i+13)= s13
+                p14     = phi(i+14)
+                g14     = gamma(i+14)
+                s14     = compute_SN_r4(R,p14,g14)
+                SN(i+14)= s14
+                p15     = phi(i+15)
+                g15     = gamma(i+15)
+                s15     = compute_SN_r4(R,p15,g15)
+                SN(i+15)= s15
+            end do
+     end subroutine compute_SN_unroll_16x_r4
+
+
+     subroutine compute_SN_unroll_8x_r4(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_8x_r4
+           !dir$ attributes forceinline ::  compute_SN_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_8x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           real(kind=sp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r4(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SN_r4(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SN_r4(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SN_r4(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SN_r4(R,p7,g7)
+                SN(i+7) = s7
+              end do
+     end subroutine compute_SN_unroll_8x_r4
+
+
+     subroutine compute_SN_unroll_4x_r4(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_4x_r4
+           !dir$ attributes forceinline ::  compute_SN_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_4x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           real(kind=sp), automatic :: p0,p1,p2,p3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           real(kind=sp), automatic :: s0,s1,s2,s3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r4(R,p3,g3)
+                SN(i+3) = s3
+              end do
+     end subroutine compute_SN_unroll_4x_r4
+
+
+     subroutine compute_SN_unroll_2x_r4(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_2x_r4
+           !dir$ attributes forceinline ::  compute_SN_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_2x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           real(kind=sp), automatic :: p0,p1
+           real(kind=sp), automatic :: g0,g1
+           real(kind=sp), automatic :: s0,s1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r4(R,p1,g1)
+                SN(i+1) = s1
+               
+              end do
+     end subroutine compute_SN_unroll_2x_r4
+
+
+     subroutine compute_SN_rolled_r4(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_rolled_r4
+           !dir$ attributes forceinline ::  compute_SN_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_rolled_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           real(kind=sp), automatic :: p0
+           real(kind=sp), automatic :: g0
+           real(kind=sp), automatic :: s0
+           integer(kind=i4) :: i
+          
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r4(R,p1,g1)
+                SN(i+1) = s1
+               
+              end do
+     end subroutine compute_SN_rolled_r4
+
+
+     subroutine compute_SN_dispatch_r4(R,phi,gamma,n,SN,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_SN_dispatch_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SN
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call compute_SN_unroll_16x_r4(R,phi,gamma,n,SN)
+              case (8)
+                 call compute_SN_unroll_8x_r4(R,phi,gamma,n,SN)
+              case (4)
+                 call compute_SN_unroll_4x_r4(R,phi,gamma,n,SN)
+              case (2)
+                 call compute_SN_unroll_2x_r4(R,phi,gamma,n,SN)
+              case (0)
+                 call compute_SN_rolled_r4(R,phi,gamma,n,SN)
+              case default
+                 return
+           end select
+     end subroutine compute_SN_dispatch_r4
+
+     
+ 
+
+
+
+
+     
+
+
+
+
+     
+
+
      pure elemental function compute_SN_r8(R,phi,gamma) result(SN)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: compute_SN_r8
@@ -384,6 +967,338 @@ module eos_sensor
      end function compute_SN_r8
 
 
+     subroutine compute_SN_unroll_16x_r8(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_16x_r8
+           !dir$ attributes forceinline ::  compute_SN_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_16x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           real(kind=dp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=dp), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=dp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           real(kind=dp), automatic :: s8,s9,s10,s11,s12,s13,s14,s15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r8(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SN_r8(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SN_r8(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SN_r8(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SN_r8(R,p7,g7)
+                SN(i+7) = s7
+                p8      = phi(i+8)
+                g8      = gamma(i+8)
+                s8      = compute_SN_r8(R,p8,g8)
+                SN(i+8) = s8
+                p9      = phi(i+9)
+                g9      = gamma(i+9)
+                s9      = compute_SN_r8(R,p9,g9)
+                SN(i+9) = s9
+                p10     = phi(i+10)
+                g10     = gamma(i+10)
+                s10     = compute_SN_r8(R,p10,g10)
+                SN(i+10)= s10
+                p11     = phi(i+11)
+                g11     = gamma(i+11)
+                s11     = compute_SN_r8(R,p11,g11)
+                SN(i+11)= s11
+                p12     = phi(i+12)
+                g12     = gamma(i+12)
+                s12     = compute_SN_r8(R,p12,g12)
+                SN(i+12)= s12
+                p13     = phi(i+13)
+                g13     = gamma(i+13)
+                s13     = compute_SN_r8(R,p13,g13)
+                SN(i+13)= s13
+                p14     = phi(i+14)
+                g14     = gamma(i+14)
+                s14     = compute_SN_r8(R,p14,g14)
+                SN(i+14)= s14
+                p15     = phi(i+15)
+                g15     = gamma(i+15)
+                s15     = compute_SN_r8(R,p15,g15)
+                SN(i+15)= s15
+            end do
+     end subroutine compute_SN_unroll_16x_r8
+
+
+     subroutine compute_SN_unroll_8x_r8(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_8x_r8
+           !dir$ attributes forceinline ::  compute_SN_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_8x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           real(kind=dp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r8(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SN_r8(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SN_r8(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SN_r8(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SN_r8(R,p7,g7)
+                SN(i+7) = s7
+              end do
+     end subroutine compute_SN_unroll_8x_r8
+
+
+     subroutine compute_SN_unroll_4x_r8(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_4x_r8
+           !dir$ attributes forceinline ::  compute_SN_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_4x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           real(kind=dp), automatic :: p0,p1,p2,p3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           real(kind=dp), automatic :: s0,s1,s2,s3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SN_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SN_r8(R,p3,g3)
+                SN(i+3) = s3
+              end do
+     end subroutine compute_SN_unroll_4x_r8
+
+
+     subroutine compute_SN_unroll_2x_r8(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_unroll_2x_r8
+           !dir$ attributes forceinline ::  compute_SN_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_2x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           real(kind=dp), automatic :: p0,p1
+           real(kind=dp), automatic :: g0,g1
+           real(kind=dp), automatic :: s0,s1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SN_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r8(R,p1,g1)
+                SN(i+1) = s1
+               
+              end do
+     end subroutine compute_SN_unroll_2x_r8
+
+
+     subroutine compute_SN_rolled_r8(R,phi,gamma,n,SN)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SN_rolled_r8
+           !dir$ attributes forceinline ::  compute_SN_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_rolled_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           real(kind=dp), automatic :: p0
+           real(kind=dp), automatic :: g0
+           real(kind=dp), automatic :: s0
+           integer(kind=i4) :: i
+          
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SN:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SN_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SN_r8(R,p1,g1)
+                SN(i+1) = s1
+               
+              end do
+     end subroutine compute_SN_rolled_r8
+
+
+     subroutine compute_SN_dispatch_r8(R,phi,gamma,n,SN,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_SN_dispatch_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SN
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call compute_SN_unroll_16x_r8(R,phi,gamma,n,SN)
+              case (8)
+                 call compute_SN_unroll_8x_r8(R,phi,gamma,n,SN)
+              case (4)
+                 call compute_SN_unroll_4x_r8(R,phi,gamma,n,SN)
+              case (2)
+                 call compute_SN_unroll_2x_r8(R,phi,gamma,n,SN)
+              case (0)
+                 call compute_SN_rolled_r8(R,phi,gamma,n,SN)
+              case default
+                 return
+           end select
+     end subroutine compute_SN_dispatch_r8
+
+
+
    
 
      ! Formula 2, p. 54
@@ -398,6 +1313,337 @@ module eos_sensor
         real(kind=sp) :: SM
         SM = 2.0_sp*compute_SN_r4(R,phi,gamma)
      end function compute_SM_r4
+
+
+     subroutine compute_SM_unroll_16x_r4(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_16x_r4
+           !dir$ attributes forceinline ::  compute_SM_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SM
+           real(kind=sp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=sp), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=sp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           real(kind=sp), automatic :: s8,s9,s10,s11,s12,s13,s14,s15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r4(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SM_r4(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SM_r4(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SM_r4(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SM_r4(R,p7,g7)
+                SN(i+7) = s7
+                p8      = phi(i+8)
+                g8      = gamma(i+8)
+                s8      = compute_SM_r4(R,p8,g8)
+                SN(i+8) = s8
+                p9      = phi(i+9)
+                g9      = gamma(i+9)
+                s9      = compute_SM_r4(R,p9,g9)
+                SN(i+9) = s9
+                p10     = phi(i+10)
+                g10     = gamma(i+10)
+                s10     = compute_SM_r4(R,p10,g10)
+                SN(i+10)= s10
+                p11     = phi(i+11)
+                g11     = gamma(i+11)
+                s11     = compute_SM_r4(R,p11,g11)
+                SN(i+11)= s11
+                p12     = phi(i+12)
+                g12     = gamma(i+12)
+                s12     = compute_SM_r4(R,p12,g12)
+                SN(i+12)= s12
+                p13     = phi(i+13)
+                g13     = gamma(i+13)
+                s13     = compute_SM_r4(R,p13,g13)
+                SN(i+13)= s13
+                p14     = phi(i+14)
+                g14     = gamma(i+14)
+                s14     = compute_SM_r4(R,p14,g14)
+                SN(i+14)= s14
+                p15     = phi(i+15)
+                g15     = gamma(i+15)
+                s15     = compute_SM_r4(R,p15,g15)
+                SN(i+15)= s15
+            end do
+     end subroutine compute_SM_unroll_16x_r4
+
+
+     subroutine compute_SM_unroll_8x_r4(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_8x_r4
+           !dir$ attributes forceinline ::  compute_SM_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SM
+           real(kind=sp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r4(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SM_r4(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SM_r4(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SM_r4(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SM_r4(R,p7,g7)
+                SN(i+7) = s7
+               end do
+     end subroutine compute_SM_unroll_8x_r4
+
+
+     subroutine compute_SM_unroll_4x_r4(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_4x_r4
+           !dir$ attributes forceinline ::  compute_SM_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SM
+           real(kind=sp), automatic :: p0,p1,p2,p3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           real(kind=sp), automatic :: s0,s1,s2,s3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r4(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r4(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r4(R,p3,g3)
+                SN(i+3) = s3
+             end do
+     end subroutine compute_SM_unroll_4x_r4
+
+
+     subroutine compute_SM_unroll_2x_r4(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_2x_r4
+           !dir$ attributes forceinline ::  compute_SM_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SM
+           real(kind=sp), automatic :: p0,p1
+           real(kind=sp), automatic :: g0,g1
+           real(kind=sp), automatic :: s0,s1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r4(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r4(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r4(R,p1,g1)
+                SN(i+1) = s1
+            end do
+     end subroutine compute_SM_unroll_2x_r4
+
+
+     
+     subroutine compute_SM_rolled_r4(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_rolled_r4
+           !dir$ attributes forceinline ::  compute_SM_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_r4
+           real(kind=sp),                 intent(in) :: R
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), dimension(1:n), intent(out):: SM
+           real(kind=sp), automatic :: p0
+           real(kind=sp), automatic :: g0
+           real(kind=sp), automatic :: s0
+           integer(kind=i4) :: i
+         
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r4(R,p0,g0)
+                SN(i)   = s0
+               
+            end do
+     end subroutine compute_SM_rolled_r4
+
+
+     subroutine compute_SM_dispatch_r4(R,phi,gamma,n,SM,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_SM_dispatch_r4
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call compute_SM_unroll_16x_r4(R,phi,gamma,n,SN)
+              case (8)
+                 call compute_SM_unroll_8x_r4(R,phi,gamma,n,SN)
+              case (4)
+                 call compute_SM_unroll_4x_r4(R,phi,gamma,n,SN)
+              case (2)
+                 call compute_SM_unroll_2x_r4(R,phi,gamma,n,SN)
+              case (0)
+                 call compute_SM_rolled_r4(R,phi,gamma,n,SN)
+              case default
+                 return
+           end select
+     end subroutine compute_SM_dispatch_r4
+
+
+     
+
  
 
      pure elemental function compute_SM_r8(R,phi,gamma) result(SM)
@@ -410,6 +1656,336 @@ module eos_sensor
         real(kind=dp) :: SM
         SM = 2.0_sp*compute_SN_r8(R,phi,gamma)
      end function compute_SM_r8
+
+
+     subroutine compute_SM_unroll_16x_r8(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_16x_r8
+           !dir$ attributes forceinline ::  compute_SM_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           real(kind=dp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=dp), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           real(kind=dp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           real(kind=dp), automatic :: s8,s9,s10,s11,s12,s13,s14,s15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<16) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,16
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r8(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SM_r8(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SM_r8(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SM_r8(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SM_r8(R,p7,g7)
+                SN(i+7) = s7
+                p8      = phi(i+8)
+                g8      = gamma(i+8)
+                s8      = compute_SM_r8(R,p8,g8)
+                SN(i+8) = s8
+                p9      = phi(i+9)
+                g9      = gamma(i+9)
+                s9      = compute_SM_r8(R,p9,g9)
+                SN(i+9) = s9
+                p10     = phi(i+10)
+                g10     = gamma(i+10)
+                s10     = compute_SM_r8(R,p10,g10)
+                SN(i+10)= s10
+                p11     = phi(i+11)
+                g11     = gamma(i+11)
+                s11     = compute_SM_r8(R,p11,g11)
+                SN(i+11)= s11
+                p12     = phi(i+12)
+                g12     = gamma(i+12)
+                s12     = compute_SM_r8(R,p12,g12)
+                SN(i+12)= s12
+                p13     = phi(i+13)
+                g13     = gamma(i+13)
+                s13     = compute_SM_r8(R,p13,g13)
+                SN(i+13)= s13
+                p14     = phi(i+14)
+                g14     = gamma(i+14)
+                s14     = compute_SM_r8(R,p14,g14)
+                SN(i+14)= s14
+                p15     = phi(i+15)
+                g15     = gamma(i+15)
+                s15     = compute_SM_r8(R,p15,g15)
+                SN(i+15)= s15
+            end do
+     end subroutine compute_SM_unroll_16x_r8
+
+
+     subroutine compute_SM_unroll_8x_r8(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_8x_r8
+           !dir$ attributes forceinline ::  compute_SM_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           real(kind=dp), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: s0,s1,s2,s3,s4,s5,s6,s7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<8) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,8
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r8(R,p3,g3)
+                SN(i+3) = s3
+                p4      = phi(i+4)
+                g4      = gamma(i+4)
+                s4      = compute_SM_r8(R,p4,g4)
+                SN(i+4) = s4
+                p5      = phi(i+5)
+                g5      = gamma(i+5)
+                s5      = compute_SM_r8(R,p5,g5)
+                SN(i+5) = s5
+                p6      = phi(i+6)
+                g6      = gamma(i+6)
+                s6      = compute_SM_r8(R,p6,g6)
+                SN(i+6) = s6
+                p7      = phi(i+7)
+                g7      = gamma(i+7)
+                s7      = compute_SM_r8(R,p7,g7)
+                SN(i+7) = s7
+               end do
+     end subroutine compute_SM_unroll_8x_r8
+
+
+     subroutine compute_SM_unroll_4x_r8(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_4x_r8
+           !dir$ attributes forceinline ::  compute_SM_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           real(kind=dp), automatic :: p0,p1,p2,p3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           real(kind=dp), automatic :: s0,s1,s2,s3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<4) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,4
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r8(R,p1,g1)
+                SN(i+1) = s1
+                p2      = phi(i+2)
+                g2      = gamma(i+2)
+                s2      = compute_SM_r8(R,p2,g2)
+                SN(i+2) = s2
+                p3      = phi(i+3)
+                g3      = gamma(i+3)
+                s3      = compute_SM_r8(R,p3,g3)
+                SN(i+3) = s3
+             end do
+     end subroutine compute_SM_unroll_4x_r8
+
+
+     subroutine compute_SM_unroll_2x_r8(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_unroll_2x_r8
+           !dir$ attributes forceinline ::  compute_SM_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           real(kind=dp), automatic :: p0,p1
+           real(kind=dp), automatic :: g0,g1
+           real(kind=dp), automatic :: s0,s1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 s0 = compute_SM_r8(R,phi(i),gamma(i))
+                 SN(i) = s0
+              end do
+              if(n<2) return
+            end if
+            m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=m1,n,2
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r8(R,p0,g0)
+                SN(i)   = s0
+                p1      = phi(i+1)
+                g1      = gamma(i+1)
+                s1      = compute_SM_r8(R,p1,g1)
+                SN(i+1) = s1
+            end do
+     end subroutine compute_SM_unroll_2x_r8
+
+
+     
+     subroutine compute_SM_rolled_r8(R,phi,gamma,n,SM)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  compute_SM_rolled_r8
+           !dir$ attributes forceinline ::  compute_SM_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           real(kind=dp), automatic :: p0
+           real(kind=dp), automatic :: g0
+           real(kind=dp), automatic :: s0
+           integer(kind=i4) :: i
+         
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned SM:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+            do i=1,n
+                p0      = phi(i)
+                g0      = gamma(i)
+                s0      = compute_SM_r8(R,p0,g0)
+                SN(i)   = s0
+               
+            end do
+     end subroutine compute_SM_rolled_r8
+
+
+     subroutine compute_SM_dispatch_r8(R,phi,gamma,n,SM,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_SM_dispatch_r8
+           real(kind=dp),                 intent(in) :: R
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), dimension(1:n), intent(out):: SM
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call compute_SM_unroll_16x_r8(R,phi,gamma,n,SN)
+              case (8)
+                 call compute_SM_unroll_8x_r8(R,phi,gamma,n,SN)
+              case (4)
+                 call compute_SM_unroll_4x_r8(R,phi,gamma,n,SN)
+              case (2)
+                 call compute_SM_unroll_2x_r8(R,phi,gamma,n,SN)
+              case (0)
+                 call compute_SM_rolled_r8(R,phi,gamma,n,SN)
+              case default
+                 return
+           end select
+     end subroutine compute_SM_dispatch_r8
+
+
+     
 
      
    
