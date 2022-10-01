@@ -2011,6 +2011,307 @@ module eos_sensor
      end function ratio_FH_r4
 
 
+     subroutine ratio_FH_unroll_16x_r4(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_16x_r4
+           !dir$ attributes forceinline ::  ratio_FH_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=sp), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=sp), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r4(ps0,ph0)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,16
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r4(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r4(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r4(ps3,ph3)
+               ps4     = psi(i+4)
+               ph4     = phi(i+4)
+               FH(i+4) = ratio_FH_r4(ps4,ph4)
+               ps5     = psi(i+5)
+               ph5     = phi(i+5)
+               FH(i+5) = ratio_FH_r4(ps5,ph5)
+               ps6     = psi(i+6)
+               ph6     = phi(i+6)
+               FH(i+6) = ratio_FH_r4(ps6,ph6)
+               ps7     = psi(i+7)
+               ph7     = phi(i+7)
+               FH(i+7) = ratio_FH_r4(ps7,ph7)
+               ps8     = psi(i+8)
+               ph8     = phi(i+8)
+               FH(i+8) = ratio_FH_r4(ps8,ph8)
+               ps9     = psi(i+9)
+               ph9     = phi(i+9)
+               FH(i+9) = ratio_FH_r4(ps9,ph9)
+               ps10    = psi(i+10)
+               ph10    = phi(i+10)
+               FH(i+10)= ratio_FH_r4(ps10,ph10)
+               ps11    = psi(i+11)
+               ph11    = phi(i+11)
+               FH(i+11)= ratio_FH_r4(ps11,ph11)
+               ps12    = psi(i+12)
+               ph12    = phi(i+12)
+               FH(i+12)= ratio_FH_r4(ps12,ph12)
+               ps13    = psi(i+13)
+               ph13    = phi(i+13)
+               FH(i+13)= ratio_FH_r4(ps13,ph13)
+               ps14    = psi(i+14)
+               ph14    = phi(i+14)
+               FH(i+14)= ratio_FH_r4(ps14,ph14)
+               ps15    = psi(i+15)
+               ph15    = phi(i+15)
+               FH(i+15)= ratio_FH_r4(ps15,ph15)
+           end do
+     end subroutine ratio_FH_unroll_16x_r4
+
+
+         
+     subroutine ratio_FH_unroll_8x_r4(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_8x_r4
+           !dir$ attributes forceinline ::  ratio_FH_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r4(ps0,ph0)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,8
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r4(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r4(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r4(ps3,ph3)
+               ps4     = psi(i+4)
+               ph4     = phi(i+4)
+               FH(i+4) = ratio_FH_r4(ps4,ph4)
+               ps5     = psi(i+5)
+               ph5     = phi(i+5)
+               FH(i+5) = ratio_FH_r4(ps5,ph5)
+               ps6     = psi(i+6)
+               ph6     = phi(i+6)
+               FH(i+6) = ratio_FH_r4(ps6,ph6)
+               ps7     = psi(i+7)
+               ph7     = phi(i+7)
+               FH(i+7) = ratio_FH_r4(ps7,ph7)
+            end do
+      end subroutine ratio_FH_unroll_8x_r4
+
+
+
+   
+            
+
+
+          
+      subroutine ratio_FH_unroll_4x_r4(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_4x_r4
+           !dir$ attributes forceinline ::  ratio_FH_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r4(ps0,ph0)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,4
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r4(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r4(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r4(ps3,ph3)
+            
+            end do
+      end subroutine ratio_FH_unroll_4x_r4
+
+
+          
+     subroutine ratio_FH_unroll_2x_r4(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_2x_r4
+           !dir$ attributes forceinline ::  ratio_FH_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), automatic :: ps0,ps1
+           real(kind=sp), automatic :: ph0,ph1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r4(ps0,ph0)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,2
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r4(ps1,ph1)
+             
+            
+            end do
+     end subroutine ratio_FH_unroll_2x_r4
+
+
+          
+     subroutine ratio_FH_rolled_r4(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_rolled_r4
+           !dir$ attributes forceinline ::  ratio_FH_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=sp), automatic :: ps0
+           real(kind=sp), automatic :: ph0
+           integer(kind=i4) :: i
+         
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+                         
+           end do
+      end subroutine ratio_FH_rolled_r4
+
+
+      subroutine ratio_FH_dispatch_r4(psi,phi,FH,n,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: ratio_FH_dispatch_r4
+           real(kind=sp), dimension(1:n), intent(in) :: psi
+           real(kind=sp), dimension(1:n), intent(in) :: phi
+           real(kind=sp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call ratio_FH_unroll_16x_r4(psi,phi,FH,n)
+              case (8)
+                 call ratio_FH_unroll_8x_r4(psi,phi,FH,n)
+              case (4)
+                 call ratio_FH_unroll_4x_r4(psi,phi,FH,n)
+              case (2)
+                 call ratio_FH_unroll_2x_r4(psi,phi,FH,n)
+              case (0)
+                 call ratio_FH_rolled_r4(psi,phi,FH,n)
+              case default
+                 return
+           end select
+      end subroutine ratio_FH_dispatch_r4
+
+         
+
+
      pure elemental function ratio_FH_r8(psi,phi) result(FH)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: ratio_FH_r8
@@ -2025,12 +2326,311 @@ module eos_sensor
      end function ratio_FH_r8
 
 
+
+      
+
+     subroutine ratio_FH_unroll_16x_r8(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_16x_r8
+           !dir$ attributes forceinline ::  ratio_FH_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=dp), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=dp), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r8(ps0,ph0)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,16
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r8(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r8(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r8(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r8(ps3,ph3)
+               ps4     = psi(i+4)
+               ph4     = phi(i+4)
+               FH(i+4) = ratio_FH_r8(ps4,ph4)
+               ps5     = psi(i+5)
+               ph5     = phi(i+5)
+               FH(i+5) = ratio_FH_r8(ps5,ph5)
+               ps6     = psi(i+6)
+               ph6     = phi(i+6)
+               FH(i+6) = ratio_FH_r8(ps6,ph6)
+               ps7     = psi(i+7)
+               ph7     = phi(i+7)
+               FH(i+7) = ratio_FH_r8(ps7,ph7)
+               ps8     = psi(i+8)
+               ph8     = phi(i+8)
+               FH(i+8) = ratio_FH_r8(ps8,ph8)
+               ps9     = psi(i+9)
+               ph9     = phi(i+9)
+               FH(i+9) = ratio_FH_r8(ps9,ph9)
+               ps10    = psi(i+10)
+               ph10    = phi(i+10)
+               FH(i+10)= ratio_FH_r8(ps10,ph10)
+               ps11    = psi(i+11)
+               ph11    = phi(i+11)
+               FH(i+11)= ratio_FH_r8(ps11,ph11)
+               ps12    = psi(i+12)
+               ph12    = phi(i+12)
+               FH(i+12)= ratio_FH_r8(ps12,ph12)
+               ps13    = psi(i+13)
+               ph13    = phi(i+13)
+               FH(i+13)= ratio_FH_r8(ps13,ph13)
+               ps14    = psi(i+14)
+               ph14    = phi(i+14)
+               FH(i+14)= ratio_FH_r8(ps14,ph14)
+               ps15    = psi(i+15)
+               ph15    = phi(i+15)
+               FH(i+15)= ratio_FH_r8(ps15,ph15)
+           end do
+     end subroutine ratio_FH_unroll_16x_r8
+
+
+         
+     subroutine ratio_FH_unroll_8x_r8(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_8x_r8
+           !dir$ attributes forceinline ::  ratio_FH_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r8(ps0,ph0)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,8
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r8(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r8(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r8(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r8(ps3,ph3)
+               ps4     = psi(i+4)
+               ph4     = phi(i+4)
+               FH(i+4) = ratio_FH_r8(ps4,ph4)
+               ps5     = psi(i+5)
+               ph5     = phi(i+5)
+               FH(i+5) = ratio_FH_r8(ps5,ph5)
+               ps6     = psi(i+6)
+               ph6     = phi(i+6)
+               FH(i+6) = ratio_FH_r8(ps6,ph6)
+               ps7     = psi(i+7)
+               ph7     = phi(i+7)
+               FH(i+7) = ratio_FH_r8(ps7,ph7)
+            end do
+      end subroutine ratio_FH_unroll_8x_r8
+
+
+
+
+          
+      subroutine ratio_FH_unroll_4x_r8(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_4x_r8
+           !dir$ attributes forceinline ::  ratio_FH_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r8(ps0,ph0)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,4
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r8(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r8(ps1,ph1)
+               ps2     = psi(i+2)
+               ph2     = phi(i+2)
+               FH(i+2) = ratio_FH_r8(ps2,ph2)
+               ps3     = psi(i+3)
+               ph3     = phi(i+3)
+               FH(i+3) = ratio_FH_r8(ps3,ph3)
+            
+            end do
+      end subroutine ratio_FH_unroll_4x_r8
+
+
+          
+     subroutine ratio_FH_unroll_2x_r8(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_unroll_2x_r8
+           !dir$ attributes forceinline ::  ratio_FH_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), automatic :: ps0,ps1
+           real(kind=dp), automatic :: ph0,ph1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 ps0 = psi(i)
+                 ph0 = phi(i)
+                 FH(i) = ratio_FH_r8(ps0,ph0)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=m1,n,2
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r8(ps0,ph0)
+               ps1     = psi(i+1)
+               ph1     = phi(i+1)
+               FH(i+1) = ratio_FH_r8(ps1,ph1)
+             
+            
+            end do
+     end subroutine ratio_FH_unroll_2x_r8
+
+
+          
+     subroutine ratio_FH_rolled_r8(psi,phi,FH,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::  ratio_FH_rolled_r8
+           !dir$ attributes forceinline ::  ratio_FH_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           real(kind=dp), automatic :: ps0
+           real(kind=dp), automatic :: ph0
+           integer(kind=i4) :: i
+         
+            !dir$ assume_aligned phi:64
+            !dir$ assume_aligned psi:64
+            !dir$ assume_aligned FH:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always
+           do i=1,n
+               ps0     = psi(i)
+               ph0     = phi(i)
+               FH(i)   = ratio_FH_r4(ps0,ph0)
+                         
+           end do
+      end subroutine ratio_FH_rolled_r8
+
+
+      subroutine ratio_FH_dispatch_r8(psi,phi,FH,n,unroll_cnt)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 :: ratio_FH_dispatch_r8
+           real(kind=dp), dimension(1:n), intent(in) :: psi
+           real(kind=dp), dimension(1:n), intent(in) :: phi
+           real(kind=dp), dimension(1:n), intent(out):: FH
+           integer(kind=i4),              intent(in) :: n
+           integer(kind=i4),              intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call ratio_FH_unroll_16x_r8(psi,phi,FH,n)
+              case (8)
+                 call ratio_FH_unroll_8x_r8(psi,phi,FH,n)
+              case (4)
+                 call ratio_FH_unroll_4x_r8(psi,phi,FH,n)
+              case (2)
+                 call ratio_FH_unroll_2x_r8(psi,phi,FH,n)
+              case (0)
+                 call ratio_FH_rolled_r8(psi,phi,FH,n)
+              case default
+                 return
+           end select
+      end subroutine ratio_FH_dispatch_r8
+
+
    
 
 
      ! следовательно, угол установки сканирующего зеркала
      ! Formula 4, p. 56
-     pure elemental function scan_mirror_ang_r4(gam0,psi,phi,dir) result(gamma)
+    pure elemental function scan_mirror_ang_r4(gam0,psi,phi,dir) result(gamma)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_mirror_ang_r4
         !dir$ attributes forceinline :: scan_mirror_ang_r4
@@ -2048,6 +2648,355 @@ module eos_sensor
            gamma = t0*ratio_FH_r4(psi,phi)
         end if
      end function scan_mirror_ang_r4
+
+
+     subroutine scan_mirror_ang_unroll_16x_r4(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_r4 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=sp), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=sp), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r4(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r4(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r4(g3,ps3,ph3,dir)
+                 g4         = gam0(i+4)
+                 ps4        = psi(i+4)
+                 ph4        = phi(i+4)
+                 gamma(i+4) = scan_mirror_ang_r4(g4,ps4,ph4,dir)
+                 g5         = gam0(i+5)
+                 ps5        = psi(i+5)
+                 ph5        = phi(i+5)
+                 gamma(i+5) = scan_mirror_ang_r4(g5,ps,ph5,dir)
+                 g6         = gam0(i+6)
+                 ps6        = psi(i+6)
+                 ph6        = phi(i+6)
+                 gamma(i+6) = scan_mirror_ang_r4(g6,ps6,ph6,dir)
+                 g7         = gam0(i+7)
+                 ps7        = psi(i+7)
+                 ph7        = phi(i+7)
+                 gamma(i+7) = scan_mirror_ang_r4(g7,ps7,ph7,dir)
+                 g8         = gam0(i+8)
+                 ps8        = psi(i+8)
+                 ph8        = phi(i+8)
+                 gamma(i+8) = scan_mirror_ang_r4(g8,ps8,ph8,dir)
+                 g9         = gam0(i+9)
+                 ps9        = psi(i+9)
+                 ph9        = phi(i+9)
+                 gamma(i+9) = scan_mirror_ang_r4(g9,ps9,ph9,dir)
+                 g10        = gam0(i+10)
+                 ps10       = psi(i+10)
+                 ph10       = phi(i+10)
+                 gamma(i+10)= scan_mirror_ang_r4(g10,ps10,ph10,dir)
+                 g11        = gam0(i+11)
+                 ps11       = psi(i+11)
+                 ph11       = phi(i+11)
+                 gamma(i+11)= scan_mirror_ang_r4(g11,ps11,ph11,dir)
+                 g12        = gam0(i+12)
+                 ps12       = psi(i+12)
+                 ph12       = phi(i+12)
+                 gamma(i+12)= scan_mirror_ang_r4(g12,ps12,ph12,dir)
+                 g13        = gam0(i+13)
+                 ps13       = psi(i+13)
+                 ph13       = phi(i+13)
+                 gamma(i+13)= scan_mirror_ang_r4(g13,ps13,ph13,dir)
+                 g14        = gam0(i+14)
+                 ps14       = psi(i+14)
+                 ph14       = phi(i+14)
+                 gamma(i+14)= scan_mirror_ang_r4(g14,ps14,ph14,dir)
+                 g15        = gam0(i+15)
+                 ps15       = psi(i+15)
+                 ph15       = phi(i+15)
+                 gamma(i+15)= scan_mirror_ang_r4(g15,ps15,ph15,dir)
+           end do
+     end subroutine scan_mirror_ang_unroll_16x_r4
+
+
+         
+     subroutine scan_mirror_ang_unroll_8x_r4(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_r4 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r4(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r4(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r4(g3,ps3,ph3,dir)
+                 g4         = gam0(i+4)
+                 ps4        = psi(i+4)
+                 ph4        = phi(i+4)
+                 gamma(i+4) = scan_mirror_ang_r4(g4,ps4,ph4,dir)
+                 g5         = gam0(i+5)
+                 ps5        = psi(i+5)
+                 ph5        = phi(i+5)
+                 gamma(i+5) = scan_mirror_ang_r4(g5,ps,ph5,dir)
+                 g6         = gam0(i+6)
+                 ps6        = psi(i+6)
+                 ph6        = phi(i+6)
+                 gamma(i+6) = scan_mirror_ang_r4(g6,ps6,ph6,dir)
+                 g7         = gam0(i+7)
+                 ps7        = psi(i+7)
+                 ph7        = phi(i+7)
+                 gamma(i+7) = scan_mirror_ang_r4(g7,ps7,ph7,dir)
+              end do
+      end subroutine scan_mirror_ang_unroll_8x_r4
+
+
+
+      subroutine scan_mirror_ang_unroll_4x_r4(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_r4 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=sp), automatic :: ps0,ps1,ps2,ps3
+           real(kind=sp), automatic :: ph0,ph1,ph2,ph3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r4(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r4(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r4(g3,ps3,ph3,dir)
+             end do
+     end subroutine scan_mirror_ang_unroll_4x_r4
+
+
+     subroutine scan_mirror_ang_unroll_2x_r4(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_r4 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=sp), automatic :: ps0,ps1
+           real(kind=sp), automatic :: ph0,ph1
+           real(kind=sp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r4(g1,ps1,ph1,dir)
+                
+             end do
+     end subroutine scan_mirror_ang_unroll_2x_r4
+           
+      
+     subroutine scan_mirror_ang_rolled_r4(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_r4 
+           !dir$ attributes forceinline ::  scan_mirror_ang_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=sp), automatic :: ps0
+           real(kind=sp), automatic :: ph0
+           real(kind=sp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r4(g0,ps0,ph0,dir)
+           end do
+     end subroutine scan_mirror_ang_rolled_r4
+
+
+     subroutine scan_mirror_ang_dispatch_r4(gam0,psi,phi,gamma,n,dir,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_dispatch_r4
+           real(kind=sp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=sp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=sp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=sp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call scan_mirror_ang_unroll_16x_r4(gam0,psi,phi,gamma,n,dir)
+               case (8)
+                  call scan_mirror_ang_unroll_8x_r4(gam0,psi,phi,gamma,n,dir)
+               case (4)
+                  call scan_mirror_ang_unroll_4x_r4(gam0,psi,phi,gamma,n,dir)
+               case (2)
+                  call scan_mirror_ang_unroll_2x_r4(gam0,psi,phi,gamma,n,dir)
+               case (0)
+                  call scan_mirror_ang_rolled_r4(gam0,psi,phi,gamma,n,dir)
+               case default
+                  return
+            end select
+     end subroutine scan_mirror_ang_dispatch_r4
+            
+      
 
 
      pure elemental function scan_mirror_ang_r8(gam0,psi,phi,dir) result(gamma)
