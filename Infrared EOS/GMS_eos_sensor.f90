@@ -3019,6 +3019,354 @@ module eos_sensor
      end function scan_mirror_ang_r8
 
 
+      
+      subroutine scan_mirror_ang_unroll_16x_r8(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_r8 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=dp), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=dp), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r8(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r8(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r8(g3,ps3,ph3,dir)
+                 g4         = gam0(i+4)
+                 ps4        = psi(i+4)
+                 ph4        = phi(i+4)
+                 gamma(i+4) = scan_mirror_ang_r8(g4,ps4,ph4,dir)
+                 g5         = gam0(i+5)
+                 ps5        = psi(i+5)
+                 ph5        = phi(i+5)
+                 gamma(i+5) = scan_mirror_ang_r8(g5,ps,ph5,dir)
+                 g6         = gam0(i+6)
+                 ps6        = psi(i+6)
+                 ph6        = phi(i+6)
+                 gamma(i+6) = scan_mirror_ang_r8(g6,ps6,ph6,dir)
+                 g7         = gam0(i+7)
+                 ps7        = psi(i+7)
+                 ph7        = phi(i+7)
+                 gamma(i+7) = scan_mirror_ang_r8(g7,ps7,ph7,dir)
+                 g8         = gam0(i+8)
+                 ps8        = psi(i+8)
+                 ph8        = phi(i+8)
+                 gamma(i+8) = scan_mirror_ang_r8(g8,ps8,ph8,dir)
+                 g9         = gam0(i+9)
+                 ps9        = psi(i+9)
+                 ph9        = phi(i+9)
+                 gamma(i+9) = scan_mirror_ang_r8(g9,ps9,ph9,dir)
+                 g10        = gam0(i+10)
+                 ps10       = psi(i+10)
+                 ph10       = phi(i+10)
+                 gamma(i+10)= scan_mirror_ang_r8(g10,ps10,ph10,dir)
+                 g11        = gam0(i+11)
+                 ps11       = psi(i+11)
+                 ph11       = phi(i+11)
+                 gamma(i+11)= scan_mirror_ang_r8(g11,ps11,ph11,dir)
+                 g12        = gam0(i+12)
+                 ps12       = psi(i+12)
+                 ph12       = phi(i+12)
+                 gamma(i+12)= scan_mirror_ang_r8(g12,ps12,ph12,dir)
+                 g13        = gam0(i+13)
+                 ps13       = psi(i+13)
+                 ph13       = phi(i+13)
+                 gamma(i+13)= scan_mirror_ang_r8(g13,ps13,ph13,dir)
+                 g14        = gam0(i+14)
+                 ps14       = psi(i+14)
+                 ph14       = phi(i+14)
+                 gamma(i+14)= scan_mirror_ang_r8(g14,ps14,ph14,dir)
+                 g15        = gam0(i+15)
+                 ps15       = psi(i+15)
+                 ph15       = phi(i+15)
+                 gamma(i+15)= scan_mirror_ang_r8(g15,ps15,ph15,dir)
+           end do
+     end subroutine scan_mirror_ang_unroll_16x_r8
+
+
+         
+     subroutine scan_mirror_ang_unroll_8x_r8(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_r8 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r8(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r8(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r8(g3,ps3,ph3,dir)
+                 g4         = gam0(i+4)
+                 ps4        = psi(i+4)
+                 ph4        = phi(i+4)
+                 gamma(i+4) = scan_mirror_ang_r8(g4,ps4,ph4,dir)
+                 g5         = gam0(i+5)
+                 ps5        = psi(i+5)
+                 ph5        = phi(i+5)
+                 gamma(i+5) = scan_mirror_ang_r8(g5,ps,ph5,dir)
+                 g6         = gam0(i+6)
+                 ps6        = psi(i+6)
+                 ph6        = phi(i+6)
+                 gamma(i+6) = scan_mirror_ang_r8(g6,ps6,ph6,dir)
+                 g7         = gam0(i+7)
+                 ps7        = psi(i+7)
+                 ph7        = phi(i+7)
+                 gamma(i+7) = scan_mirror_ang_r8(g7,ps7,ph7,dir)
+              end do
+      end subroutine scan_mirror_ang_unroll_8x_r8
+
+
+
+      subroutine scan_mirror_ang_unroll_4x_r8(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_r8 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=dp), automatic :: ps0,ps1,ps2,ps3
+           real(kind=dp), automatic :: ph0,ph1,ph2,ph3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r8(g1,ps1,ph1,dir)
+                 g2         = gam0(i+2)
+                 ps2        = psi(i+2)
+                 ph2        = phi(i+2)
+                 gamma(i+2) = scan_mirror_ang_r8(g2,ps2,ph2,dir)
+                 g3         = gam0(i+3)
+                 ps3        = psi(i+3)
+                 ph3        = phi(i+3)
+                 gamma(i+3) = scan_mirror_ang_r8(g3,ps3,ph3,dir)
+             end do
+     end subroutine scan_mirror_ang_unroll_4x_r8
+
+
+     subroutine scan_mirror_ang_unroll_2x_r8(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_r8 
+           !dir$ attributes forceinline ::  scan_mirror_ang_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=dp), automatic :: ps0,ps1
+           real(kind=dp), automatic :: ph0,ph1
+           real(kind=dp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 g0       = gam0(i)
+                 ps0      = psi(i)
+                 ph0      = phi(i)
+                 gamma(i) = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+                 g1         = gam0(i+1)
+                 ps1        = psi(i+1)
+                 ph1        = phi(i+1)
+                 gamma(i+1) = scan_mirror_ang_r8(g1,ps1,ph1,dir)
+                
+             end do
+     end subroutine scan_mirror_ang_unroll_2x_r8
+           
+      
+     subroutine scan_mirror_ang_rolled_r8(gam0,psi,phi,gamma,n,dir)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_r8 
+           !dir$ attributes forceinline ::  scan_mirror_ang_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           real(kind=dp), automatic :: ps0
+           real(kind=dp), automatic :: ph0
+           real(kind=dp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 g0         = gam0(i)
+                 ps0        = psi(i)
+                 ph0        = phi(i)
+                 gamma(i)   = scan_mirror_ang_r8(g0,ps0,ph0,dir)
+           end do
+     end subroutine scan_mirror_ang_rolled_r8
+
+
+     subroutine scan_mirror_ang_dispatch_r8(gam0,psi,phi,gamma,n,dir,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_mirror_ang_dispatch_r8
+           real(kind=dp),  dimension(1:n),  intent(in)  :: gam0
+           real(kind=dp),  dimension(1:n),  intent(in)  :: psi
+           real(kind=dp),  dimension(1:n),  intent(in)  :: phi
+           real(kind=dp),  dimension(1:n),  intent(out) :: gamma
+           integer(kind=i4),                intent(in)  :: n
+           character(len=3),                intent(in)  :: dir
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call scan_mirror_ang_unroll_16x_r8(gam0,psi,phi,gamma,n,dir)
+               case (8)
+                  call scan_mirror_ang_unroll_8x_r8(gam0,psi,phi,gamma,n,dir)
+               case (4)
+                  call scan_mirror_ang_unroll_4x_r8(gam0,psi,phi,gamma,n,dir)
+               case (2)
+                  call scan_mirror_ang_unroll_2x_r8(gam0,psi,phi,gamma,n,dir)
+               case (0)
+                  call scan_mirror_ang_rolled_r8(gam0,psi,phi,gamma,n,dir)
+               case default
+                  return
+            end select
+     end subroutine scan_mirror_ang_dispatch_r8
+            
+
     
 
      ! Maximum size of (verical) diameter of scanning mirror.
@@ -3055,6 +3403,361 @@ module eos_sensor
      end function compute_Dmax_r4
 
 
+     subroutine compute_Dmax_unroll_16x_r4(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_16x_r4
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_16x_r4
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           real(kind=sp), automatic :: h0,h1,h2,h3,h4,h5,h6,h7
+           real(kind=sp), automatic :: h8,h9,h10,h11,h12,h13,h14,h15
+           real(kind=sp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+           real(kind=sp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r4(h0,d0,d_ob,g0)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r4(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r4(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r4(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r4(h3,d3,d_ob,g3)
+                 h4         = h(i+4)
+                 d4         = delta(i+4)
+                 g4         = gamma(i+4)
+                 Dmax(i+4)  = compute_Dmax_r4(h4,d4,d_ob,g4)
+                 h5         = h(i+5)
+                 d5         = delta(i+5)
+                 g5         = gamma(i+5)
+                 Dmax(i+5)  = compute_Dmax_r4(h5,d5,d_ob,g5)
+                 h6         = h(i+6)
+                 d6         = delta(i+6)
+                 g6         = gamma(i+6)
+                 Dmax(i+6)  = compute_Dmax_r4(h6,d6,d_ob,g6)
+                 h7         = h(i+7)
+                 d7         = delta(i+7)
+                 g7         = gamma(i+7)
+                 Dmax(i+7)  = compute_Dmax_r4(h7,d7,d_ob,g7)
+                 h8         = h(i+8)
+                 d8         = delta(i+8)
+                 g8         = gamma(i+8)
+                 Dmax(i+8)  = compute_Dmax_r4(h8,d8,d_ob,g8)
+                 h9         = h(i+9)
+                 d9         = delta(i+9)
+                 g9         = gamma(i+9)
+                 Dmax(i+9)  = compute_Dmax_r4(h9,d9,d_ob,g9)
+                 h10        = h(i+10)
+                 d10        = delta(i+10)
+                 g10        = gamma(i+10)
+                 Dmax(i+10) = compute_Dmax_r4(h10,d10,d_ob,g10)
+                 h11        = h(i+11)
+                 d11        = delta(i+11)
+                 g11        = gamma(i+11)
+                 Dmax(i+11) = compute_Dmax_r4(h11,d11,d_ob,g11)
+                 h12        = h(i+12)
+                 d12        = delta(i+12)
+                 g12        = gamma(i+12)
+                 Dmax(i+12) = compute_Dmax_r4(h12,d12,d_ob,g12)
+                 h13        = h(i+13)
+                 d13        = delta(i+13)
+                 g13        = gamma(i+13)
+                 Dmax(i+13) = compute_Dmax_r4(h13,d13,d_ob,g13)
+                 h14        = h(i+14)
+                 d14        = delta(i+14)
+                 g14        = gamma(i+14)
+                 Dmax(i+14) = compute_Dmax_r4(h14,d14,d_ob,g14)
+                 h15        = h(i+15)
+                 d15        = delta(i+15)
+                 g15        = gamma(i+15)
+                 Dmax(i+15) = compute_Dmax_r4(h15,d15,d_ob,g15)
+            end do
+     end subroutine compute_Dmax_unroll_16x_r4
+
+
+     subroutine compute_Dmax_unroll_8x_r4(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_8x_r4
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_8x_r4
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           real(kind=sp), automatic :: h0,h1,h2,h3,h4,h5,h6,h7
+           real(kind=sp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r4(h0,d0,d_ob,g0)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r4(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r4(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r4(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r4(h3,d3,d_ob,g3)
+                 h4         = h(i+4)
+                 d4         = delta(i+4)
+                 g4         = gamma(i+4)
+                 Dmax(i+4)  = compute_Dmax_r4(h4,d4,d_ob,g4)
+                 h5         = h(i+5)
+                 d5         = delta(i+5)
+                 g5         = gamma(i+5)
+                 Dmax(i+5)  = compute_Dmax_r4(h5,d5,d_ob,g5)
+                 h6         = h(i+6)
+                 d6         = delta(i+6)
+                 g6         = gamma(i+6)
+                 Dmax(i+6)  = compute_Dmax_r4(h6,d6,d_ob,g6)
+                 h7         = h(i+7)
+                 d7         = delta(i+7)
+                 g7         = gamma(i+7)
+                 Dmax(i+7)  = compute_Dmax_r4(h7,d7,d_ob,g7)
+               
+           end do
+      end subroutine compute_Dmax_unroll_8x_r4
+
+
+           
+     subroutine compute_Dmax_unroll_4x_r4(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_4x_r4
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_4x_r4
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           real(kind=sp), automatic :: h0,h1,h2,h3
+           real(kind=sp), automatic :: d0,d1,d2,d3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r4(h0,d0,d_ob,g0)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r4(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r4(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r4(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r4(h3,d3,d_ob,g3)
+                             
+           end do
+      end subroutine compute_Dmax_unroll_4x_r4
+
+
+         
+      subroutine compute_Dmax_unroll_2x_r4(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_2x_r4
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_2x_r4
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           real(kind=sp), automatic :: h0,h1
+           real(kind=sp), automatic :: d0,d1
+           real(kind=sp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r4(h0,d0,d_ob,g0)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r4(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r4(h1,d1,d_ob,g1)
+                                            
+           end do
+      end subroutine compute_Dmax_unroll_2x_r4
+
+
+
+      subroutine compute_Dmax_rolled_r4(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_rolled_r4
+           !dir$ attributes forceinline ::  compute_Dmax_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_rolled_r4
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           real(kind=sp), automatic :: h0
+           real(kind=sp), automatic :: d0
+           real(kind=sp), automatic :: g0
+           integer(kind=i4) :: i
+          
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r4(h0,d0,d_ob,g0)
+                              
+           end do
+     end subroutine compute_Dmax_rolled_r4
+
+
+         
+     subroutine compute_Dmax_dispatch_r4(h,delta,d_ob,gamma,n,Dmax,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 ::
+           real(kind=sp),  dimension(1:n), intent(in) :: h
+           real(kind=sp),  dimension(1:n), intent(in) :: delta
+           real(kind=sp),                  intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=sp),  dimension(1:n), intent(out):: Dmax
+           integer(kind=i4),               intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call compute_Dmax_unroll_16x_r4(h,delta,d_ob_gamma,n,Dmax)
+               case (8)
+                  call compute_Dmax_unroll_8x_r4(h,delta,d_ob_gamma,n,Dmax)
+               case (4)
+                  call compute_Dmax_unroll_4x_r4(h,delta,d_ob_gamma,n,Dmax)
+               case (2)
+                  call compute_Dmax_unroll_2x_r4(h,delta,d_ob_gamma,n,Dmax)
+               case (0)
+                  call compute_Dmax_rolled_r4(h,delta,d_ob_gamma,n,Dmax)
+               case default
+                  return
+           end select
+     end subroutine compute_Dmax_dispatch_r4
+
+         
+
+
+
      pure function compute_Dmax_r8(h,delta,d_ob,gamma) result(Dmax)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: compute_Dmax_r8
@@ -3082,7 +3785,360 @@ module eos_sensor
         t4     = 2.0_dp*cosg+sing
         t5     = tant1+tant2
         Dmax   = t3*t4*t5
-     end function compute_Dmax_r8
+    end function compute_Dmax_r8
+
+
+    subroutine compute_Dmax_unroll_16x_r8(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_16x_r8
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_16x_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           real(kind=dp), automatic :: h0,h1,h2,h3,h4,h5,h6,h7
+           real(kind=dp), automatic :: h8,h9,h10,h11,h12,h13,h14,h15
+           real(kind=dp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+           real(kind=dp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r8(h0,d0,d_ob,g0)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r8(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r8(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r8(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r8(h3,d3,d_ob,g3)
+                 h4         = h(i+4)
+                 d4         = delta(i+4)
+                 g4         = gamma(i+4)
+                 Dmax(i+4)  = compute_Dmax_r8(h4,d4,d_ob,g4)
+                 h5         = h(i+5)
+                 d5         = delta(i+5)
+                 g5         = gamma(i+5)
+                 Dmax(i+5)  = compute_Dmax_r8(h5,d5,d_ob,g5)
+                 h6         = h(i+6)
+                 d6         = delta(i+6)
+                 g6         = gamma(i+6)
+                 Dmax(i+6)  = compute_Dmax_r8(h6,d6,d_ob,g6)
+                 h7         = h(i+7)
+                 d7         = delta(i+7)
+                 g7         = gamma(i+7)
+                 Dmax(i+7)  = compute_Dmax_r8(h7,d7,d_ob,g7)
+                 h8         = h(i+8)
+                 d8         = delta(i+8)
+                 g8         = gamma(i+8)
+                 Dmax(i+8)  = compute_Dmax_r8(h8,d8,d_ob,g8)
+                 h9         = h(i+9)
+                 d9         = delta(i+9)
+                 g9         = gamma(i+9)
+                 Dmax(i+9)  = compute_Dmax_r8(h9,d9,d_ob,g9)
+                 h10        = h(i+10)
+                 d10        = delta(i+10)
+                 g10        = gamma(i+10)
+                 Dmax(i+10) = compute_Dmax_r8(h10,d10,d_ob,g10)
+                 h11        = h(i+11)
+                 d11        = delta(i+11)
+                 g11        = gamma(i+11)
+                 Dmax(i+11) = compute_Dmax_r8(h11,d11,d_ob,g11)
+                 h12        = h(i+12)
+                 d12        = delta(i+12)
+                 g12        = gamma(i+12)
+                 Dmax(i+12) = compute_Dmax_r8(h12,d12,d_ob,g12)
+                 h13        = h(i+13)
+                 d13        = delta(i+13)
+                 g13        = gamma(i+13)
+                 Dmax(i+13) = compute_Dmax_r8(h13,d13,d_ob,g13)
+                 h14        = h(i+14)
+                 d14        = delta(i+14)
+                 g14        = gamma(i+14)
+                 Dmax(i+14) = compute_Dmax_r8(h14,d14,d_ob,g14)
+                 h15        = h(i+15)
+                 d15        = delta(i+15)
+                 g15        = gamma(i+15)
+                 Dmax(i+15) = compute_Dmax_r8(h15,d15,d_ob,g15)
+            end do
+     end subroutine compute_Dmax_unroll_16x_r8
+
+
+     subroutine compute_Dmax_unroll_8x_r8(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_8x_r8
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_8x_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           real(kind=dp), automatic :: h0,h1,h2,h3,h4,h5,h6,h7
+           real(kind=dp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r8(h0,d0,d_ob,g0)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r8(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r8(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r8(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r8(h3,d3,d_ob,g3)
+                 h4         = h(i+4)
+                 d4         = delta(i+4)
+                 g4         = gamma(i+4)
+                 Dmax(i+4)  = compute_Dmax_r8(h4,d4,d_ob,g4)
+                 h5         = h(i+5)
+                 d5         = delta(i+5)
+                 g5         = gamma(i+5)
+                 Dmax(i+5)  = compute_Dmax_r8(h5,d5,d_ob,g5)
+                 h6         = h(i+6)
+                 d6         = delta(i+6)
+                 g6         = gamma(i+6)
+                 Dmax(i+6)  = compute_Dmax_r8(h6,d6,d_ob,g6)
+                 h7         = h(i+7)
+                 d7         = delta(i+7)
+                 g7         = gamma(i+7)
+                 Dmax(i+7)  = compute_Dmax_r8(h7,d7,d_ob,g7)
+               
+           end do
+      end subroutine compute_Dmax_unroll_8x_r8
+
+
+           
+     subroutine compute_Dmax_unroll_4x_r8(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_4x_r8
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_4x_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           real(kind=dp), automatic :: h0,h1,h2,h3
+           real(kind=dp), automatic :: d0,d1,d2,d3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r8(h0,d0,d_ob,g0)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r8(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r8(h1,d1,d_ob,g1)
+                 h2         = h(i+2)
+                 d2         = delta(i+2)
+                 g2         = gamma(i+2)
+                 Dmax(i+2)  = compute_Dmax_r8(h2,d2,d_ob,g2)
+                 h3         = h(i+3)
+                 d3         = delta(i+3)
+                 g3         = gamma(i+3)
+                 Dmax(i+3)  = compute_Dmax_r8(h3,d3,d_ob,g3)
+                             
+           end do
+      end subroutine compute_Dmax_unroll_4x_r8
+
+
+         
+      subroutine compute_Dmax_unroll_2x_r8(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_unroll_2x_r8
+           !dir$ attributes forceinline ::  compute_Dmax_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_unroll_2x_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           real(kind=dp), automatic :: h0,h1
+           real(kind=dp), automatic :: d0,d1
+           real(kind=dp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 h0       = h(i)
+                 d0       = delta(i)
+                 g0       = gamma(i)
+                 Dmax(i)  = compute_Dmax_r8(h0,d0,d_ob,g0)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r8(h0,d0,d_ob,g0)
+                 h1         = h(i+1)
+                 d1         = delta(i+1)
+                 g1         = gamma(i+1)
+                 Dmax(i+1)  = compute_Dmax_r8(h1,d1,d_ob,g1)
+                                            
+           end do
+      end subroutine compute_Dmax_unroll_2x_r8
+
+
+
+      subroutine compute_Dmax_rolled_r8(h,delta,d_ob,gamma,n,Dmax)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_rolled_r8
+           !dir$ attributes forceinline ::  compute_Dmax_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmax_rolled_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           real(kind=dp), automatic :: h0
+           real(kind=dp), automatic :: d0
+           real(kind=dp), automatic :: g0
+           integer(kind=i4) :: i
+          
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmax:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 h0         = h(i)
+                 d0         = delta(i)
+                 g0         = gamma(i)
+                 Dmax(i)    = compute_Dmax_r8(h0,d0,d_ob,g0)
+                              
+           end do
+     end subroutine compute_Dmax_rolled_r8
+
+
+         
+     subroutine compute_Dmax_dispatch_r8(h,delta,d_ob,gamma,n,Dmax,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmax_dispatch_r8
+           real(kind=dp),  dimension(1:n), intent(in) :: h
+           real(kind=dp),  dimension(1:n), intent(in) :: delta
+           real(kind=dp),                  intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n), intent(in) :: gamma
+           integer(kind=i4),               intent(in) :: n
+           real(kind=dp),  dimension(1:n), intent(out):: Dmax
+           integer(kind=i4),               intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call compute_Dmax_unroll_16x_r8(h,delta,d_ob_gamma,n,Dmax)
+               case (8)
+                  call compute_Dmax_unroll_8x_r8(h,delta,d_ob_gamma,n,Dmax)
+               case (4)
+                  call compute_Dmax_unroll_4x_r8(h,delta,d_ob_gamma,n,Dmax)
+               case (2)
+                  call compute_Dmax_unroll_2x_r8(h,delta,d_ob_gamma,n,Dmax)
+               case (0)
+                  call compute_Dmax_rolled_r8(h,delta,d_ob_gamma,n,Dmax)
+               case default
+                  return
+           end select
+     end subroutine compute_Dmax_dispatch_r8
+  
 
 
      ! Размер зеркала в направлении, перпендикулярном плоскости
@@ -3097,7 +4153,93 @@ module eos_sensor
           real(kind=sp),  intent(in) :: d_ob
           real(kind=sp) :: Dmin
           Dmin = h*delta+d_ob
-     end function compute_Dmin_r4
+    end function compute_Dmin_r4
+
+
+    subroutine compute_Dmin_unroll_16x_r4(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_16x_r4
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_16x_r4
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=sp), automatic :: h0,h1,h2,h3,h4,h,h6,h7
+           real(kind=sp), automatic :: h8,h9,h10,h11,h12,h13,h14,h15
+           real(kind=sp), automatic :: d0,d1,d2,d3,d4,d,d6,d7
+           real(kind=sp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r4(h0,d0,d_ob)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r4(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r4(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r4(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r4(h3,d3,d_ob)
+                 h4        = h(i+4)
+                 d4        = delta(i+4)
+                 Dmin(i+4) = compute_Dmin_r4(h4,d4,d_ob)
+                 h5        = h(i+5)
+                 d5        = delta(i+5)
+                 Dmin(i+5) = compute_Dmin_r4(h5,d5,d_ob)
+                 h6        = h(i+6)
+                 d6        = delta(i+6)
+                 Dmin(i+6) = compute_Dmin_r4(h6,d6,d_ob)
+                 h7        = h(i+7)
+                 d7        = delta(i+7)
+                 Dmin(i+7) = compute_Dmin_r4(h7,d7,d_ob)
+                 h8        = h(i+8)
+                 d8        = delta(i+8)
+                 Dmin(i+8) = compute_Dmin_r4(h8,d8,d_ob)
+                 h9        = h(i+9)
+                 d9        = delta(i+9)
+                 Dmin(i+9) = compute_Dmin_r4(h9,d9,d_ob)
+                 h10       = h(i+10)
+                 d10       = delta(i+10)
+                 Dmin(i+10)= compute_Dmin_r4(h10,d10,d_ob)
+                 h11       = h(i+11)
+                 d11       = delta(i+11)
+                 Dmin(i+11)= compute_Dmin_r4(h11,d11,d_ob)
+                 h12       = h(i+12)
+                 d12       = delta(i+12)
+                 Dmin(i+12)= compute_Dmin_r4(h12,d12,d_ob)
+                 h13       = h(i+13)
+                 d13       = delta(i+13)
+                 Dmin(i+13)= compute_Dmin_r4(h13,d13,d_ob)
+                 h14       = h(i+14)
+                 d14       = delta(i+14)
+                 Dmin(i+14)= compute_Dmin_r4(h14,d14,d_ob)
+                 h15       = h(i+15)
+                 d15       = delta(i+15)
+                 Dmin(i+15)= compute_Dmin_r4(h15,d15,d_ob)
+           end do
+    end subroutine compute_Dmin_unroll_16x_r4
 
 
      pure function compute_Dmin_r8(h,delta,d_ob) result(Dmin)
