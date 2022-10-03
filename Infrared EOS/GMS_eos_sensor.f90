@@ -4239,7 +4239,218 @@ module eos_sensor
                  d15       = delta(i+15)
                  Dmin(i+15)= compute_Dmin_r4(h15,d15,d_ob)
            end do
-    end subroutine compute_Dmin_unroll_16x_r4
+     end subroutine compute_Dmin_unroll_16x_r4
+
+
+     subroutine compute_Dmin_unroll_8x_r4(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_8x_r4
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_8x_r4
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=sp), automatic :: h0,h1,h2,h3,h4,h,h6,h7
+           real(kind=sp), automatic :: d0,d1,d2,d3,d4,d,d6,d7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r4(h0,d0,d_ob)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r4(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r4(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r4(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r4(h3,d3,d_ob)
+                 h4        = h(i+4)
+                 d4        = delta(i+4)
+                 Dmin(i+4) = compute_Dmin_r4(h4,d4,d_ob)
+                 h5        = h(i+5)
+                 d5        = delta(i+5)
+                 Dmin(i+5) = compute_Dmin_r4(h5,d5,d_ob)
+                 h6        = h(i+6)
+                 d6        = delta(i+6)
+                 Dmin(i+6) = compute_Dmin_r4(h6,d6,d_ob)
+                 h7        = h(i+7)
+                 d7        = delta(i+7)
+                 Dmin(i+7) = compute_Dmin_r4(h7,d7,d_ob)
+              end do
+     end subroutine compute_Dmin_unroll_8x_r4
+
+
+
+     subroutine compute_Dmin_unroll_4x_r4(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_4x_r4
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_4x_r4
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=sp), automatic :: h0,h1,h2,h3
+           real(kind=sp), automatic :: d0,d1,d2,d3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r4(h0,d0,d_ob)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r4(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r4(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r4(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r4(h3,d3,d_ob)
+            end do
+     end subroutine compute_Dmin_unroll_4x_r4
+
+
+          
+     subroutine compute_Dmin_unroll_2x_r4(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_2x_r4
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_2x_r4
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=sp), automatic :: h0,h1
+           real(kind=sp), automatic :: d0,d1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r4(h0,d0,d_ob)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r4(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r4(h1,d1,d_ob)
+           end do
+     end subroutine compute_Dmin_unroll_2x_r4
+
+
+         
+     subroutine compute_Dmin_rolled_r4(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_rolled_r4
+           !dir$ attributes forceinline ::  compute_Dmin_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_rolled_r4
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=sp), automatic :: h0
+           real(kind=sp), automatic :: d0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r4(h0,d0,d_ob)
+           end do
+      end subroutine compute_Dmin_rolled_r4
+
+
+         
+      subroutine compute_Dmin_dispatch_r4(h,delta,d_ob,Dmin,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_dispatch_r4 
+           real(kind=sp),  dimension(1:n),  intent(in) :: h
+           real(kind=sp),  dimension(1:n),  intent(in) :: delta
+           real(kind=sp),                   intent(in) :: d_ob
+           real(kind=sp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call compute_Dmin_unroll_16x_r4(h,delta,d_ob,Dmin,n)
+               case (8)
+                  call compute_Dmin_unroll_8x_r4(h,delta,d_ob,Dmin,n)
+               case (4)
+                  call compute_Dmin_unroll_4x_r4(h,delta,d_ob,Dmin,n)
+               case (2)
+                  call compute_Dmin_unroll_2x_r4(h,delta,d_ob,Dmin,n)
+               case (0)
+                  call compute_Dmin_rolled_r4(h,delta,d_ob,Dmin,n)
+               case default
+                  return
+           end select
+      end subroutine compute_Dmin_dispatch_r4
+      
 
 
      pure function compute_Dmin_r8(h,delta,d_ob) result(Dmin)
@@ -4251,7 +4462,308 @@ module eos_sensor
           real(kind=dp),  intent(in) :: d_ob
           real(kind=dp) :: Dmin
           Dmin = h*delta+d_ob
-     end function compute_Dmin_r8
+      end function compute_Dmin_r8
+
+
+        
+      subroutine compute_Dmin_unroll_16x_r8(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_16x_r8
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_16x_r8
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=dp), automatic :: h0,h1,h2,h3,h4,h,h6,h7
+           real(kind=dp), automatic :: h8,h9,h10,h11,h12,h13,h14,h15
+           real(kind=dp), automatic :: d0,d1,d2,d3,d4,d,d6,d7
+           real(kind=dp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,16)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r8(h0,d0,d_ob)
+              end do
+              if(n<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,16
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r8(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r8(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r8(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r8(h3,d3,d_ob)
+                 h4        = h(i+4)
+                 d4        = delta(i+4)
+                 Dmin(i+4) = compute_Dmin_r8(h4,d4,d_ob)
+                 h5        = h(i+5)
+                 d5        = delta(i+5)
+                 Dmin(i+5) = compute_Dmin_r8(h5,d5,d_ob)
+                 h6        = h(i+6)
+                 d6        = delta(i+6)
+                 Dmin(i+6) = compute_Dmin_r8(h6,d6,d_ob)
+                 h7        = h(i+7)
+                 d7        = delta(i+7)
+                 Dmin(i+7) = compute_Dmin_r8(h7,d7,d_ob)
+                 h8        = h(i+8)
+                 d8        = delta(i+8)
+                 Dmin(i+8) = compute_Dmin_r8(h8,d8,d_ob)
+                 h9        = h(i+9)
+                 d9        = delta(i+9)
+                 Dmin(i+9) = compute_Dmin_r8(h9,d9,d_ob)
+                 h10       = h(i+10)
+                 d10       = delta(i+10)
+                 Dmin(i+10)= compute_Dmin_r8(h10,d10,d_ob)
+                 h11       = h(i+11)
+                 d11       = delta(i+11)
+                 Dmin(i+11)= compute_Dmin_r8(h11,d11,d_ob)
+                 h12       = h(i+12)
+                 d12       = delta(i+12)
+                 Dmin(i+12)= compute_Dmin_r8(h12,d12,d_ob)
+                 h13       = h(i+13)
+                 d13       = delta(i+13)
+                 Dmin(i+13)= compute_Dmin_r8(h13,d13,d_ob)
+                 h14       = h(i+14)
+                 d14       = delta(i+14)
+                 Dmin(i+14)= compute_Dmin_r8(h14,d14,d_ob)
+                 h15       = h(i+15)
+                 d15       = delta(i+15)
+                 Dmin(i+15)= compute_Dmin_r8(h15,d15,d_ob)
+           end do
+     end subroutine compute_Dmin_unroll_16x_r8
+
+
+     subroutine compute_Dmin_unroll_8x_r8(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_8x_r8
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_8x_r8
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=dp), automatic :: h0,h1,h2,h3,h4,h,h6,h7
+           real(kind=dp), automatic :: d0,d1,d2,d3,d4,d,d6,d7
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,8)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r8(h0,d0,d_ob)
+              end do
+              if(n<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,8
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r8(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r8(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r8(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r8(h3,d3,d_ob)
+                 h4        = h(i+4)
+                 d4        = delta(i+4)
+                 Dmin(i+4) = compute_Dmin_r8(h4,d4,d_ob)
+                 h5        = h(i+5)
+                 d5        = delta(i+5)
+                 Dmin(i+5) = compute_Dmin_r8(h5,d5,d_ob)
+                 h6        = h(i+6)
+                 d6        = delta(i+6)
+                 Dmin(i+6) = compute_Dmin_r8(h6,d6,d_ob)
+                 h7        = h(i+7)
+                 d7        = delta(i+7)
+                 Dmin(i+7) = compute_Dmin_r8(h7,d7,d_ob)
+              end do
+     end subroutine compute_Dmin_unroll_8x_r8
+
+
+
+     subroutine compute_Dmin_unroll_4x_r8(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_4x_r8
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_4x_r8
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=dp), automatic :: h0,h1,h2,h3
+           real(kind=dp), automatic :: d0,d1,d2,d3
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,4)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r8(h0,d0,d_ob)
+              end do
+              if(n<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,4
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r8(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r8(h1,d1,d_ob)
+                 h2        = h(i+2)
+                 d2        = delta(i+2)
+                 Dmin(i+2) = compute_Dmin_r8(h2,d2,d_ob)
+                 h3        = h(i+3)
+                 d3        = delta(i+3)
+                 Dmin(i+3) = compute_Dmin_r8(h3,d3,d_ob)
+            end do
+     end subroutine compute_Dmin_unroll_4x_r8
+
+
+          
+     subroutine compute_Dmin_unroll_2x_r8(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_unroll_2x_r8
+           !dir$ attributes forceinline ::  compute_Dmin_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_unroll_2x_r8
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=dp), automatic :: h0,h1
+           real(kind=dp), automatic :: d0,d1
+           integer(kind=i4) :: i,m,m1
+           m = mod(n,2)
+           if(m /= 0) then
+              do i=1,m
+                 h0      = h(i)
+                 d0      = delta(i)
+                 Dmin(i) = compute_Dmin_r8(h0,d0,d_ob)
+              end do
+              if(n<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,n,2
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r8(h0,d0,d_ob)
+                 h1        = h(i+1)
+                 d1        = delta(i+1)
+                 Dmin(i+1) = compute_Dmin_r8(h1,d1,d_ob)
+           end do
+     end subroutine compute_Dmin_unroll_2x_r8
+
+
+         
+     subroutine compute_Dmin_rolled_r8(h,delta,d_ob,Dmin,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_rolled_r8
+           !dir$ attributes forceinline ::  compute_Dmin_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_Dmin_rolled_r8
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           real(kind=dp), automatic :: h0
+           real(kind=dp), automatic :: d0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned h:64
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned Dmin:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,n
+                 h0        = h(i)
+                 d0        = delta(i)
+                 Dmin(i)   = compute_Dmin_r8(h0,d0,d_ob)
+           end do
+      end subroutine compute_Dmin_rolled_r8
+
+
+         
+      subroutine compute_Dmin_dispatch_r8(h,delta,d_ob,Dmin,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: compute_Dmin_dispatch_r8 
+           real(kind=dp),  dimension(1:n),  intent(in) :: h
+           real(kind=dp),  dimension(1:n),  intent(in) :: delta
+           real(kind=dp),                   intent(in) :: d_ob
+           real(kind=dp),  dimension(1:n),  intent(out):: Dmin
+           integer(kind=i4),                intent(in) :: n
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case (unroll_cnt)
+               case (16)
+                  call compute_Dmin_unroll_16x_r8(h,delta,d_ob,Dmin,n)
+               case (8)
+                  call compute_Dmin_unroll_8x_r8(h,delta,d_ob,Dmin,n)
+               case (4)
+                  call compute_Dmin_unroll_4x_r8(h,delta,d_ob,Dmin,n)
+               case (2)
+                  call compute_Dmin_unroll_2x_r8(h,delta,d_ob,Dmin,n)
+               case (0)
+                  call compute_Dmin_rolled_r8(h,delta,d_ob,Dmin,n)
+               case default
+                  return
+           end select
+         end subroutine compute_Dmin_dispatch_r8
+         
+
+      
+        
 
 
      !Если зеркало осуществляет сканирование в пространстве
