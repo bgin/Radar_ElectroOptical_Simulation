@@ -2431,17 +2431,17 @@ function gamma ( x )
      4.75584627752788110767815e+03_dp, &
     -1.34659959864969306392456e+05_dp, &
     -1.15132259675553483497211e+05_dp /)
-  real ( kind = 8 ), parameter :: SQRTPI = 0.9189385332046727417803297_dp
-  real ( kind = 8 ) sum1
-  real ( kind = 8 ) x
-  real ( kind = 8 ), parameter :: XBIG = 35.040_dp
-  real ( kind = 8 ) xden
-  real ( kind = 8 ), parameter :: XMININ = 1.18-38_dp
-  real ( kind = 8 ) xnum
-  real ( kind = 8 ) y
-  real ( kind = 8 ) y1
-  real ( kind = 8 ) ysq
-  real ( kind = 8 ) z
+  real ( kind = dp ), parameter :: SQRTPI = 0.9189385332046727417803297_dp
+  real ( kind = dp ) sum1
+  real ( kind = dp ) x
+  real ( kind = dp ), parameter :: XBIG = 35.040_dp
+  real ( kind = dp ) xden
+  real ( kind = dp ), parameter :: XMININ = 1.18-38_dp
+  real ( kind = dp ) xnum
+  real ( kind = dp ) y
+  real ( kind = dp ) y1
+  real ( kind = dp ) ysq
+  real ( kind = dp ) z
 
   parity = .false.
   fact = 1.0_dp
@@ -2952,8 +2952,8 @@ subroutine gaussq ( kind, norder, alpha, beta, kpts, endpts, b, xtab, &
 !
 !  The method used is a QL-type method with origin shifting.
 !
-  weight(1) = 1.0D+00
-  weight(2:norder) = 0.0D+00
+  weight(1) = 1.0_dp
+  weight(2:norder) = 0.0_dp
  
   call gausq2 ( norder, xtab, b, weight, ierr )
  
@@ -2966,7 +2966,7 @@ end subroutine gaussq
 
 
 
-subroutine hiordq ( ntab, delt, y, work, result )
+subroutine hiordq_r8( ntab, delt, y, work, result )
 
 !*****************************************************************************80
 !
@@ -3004,24 +3004,24 @@ subroutine hiordq ( ntab, delt, y, work, result )
 !
   implicit none
 
-  integer ( kind = 4 ) ntab
+  integer ( kind = i4 ) ntab
 
-  real ( kind = 8 ) delt
-  real ( kind = 8 ) fac
-  integer ( kind = 4 ) i
-  integer ( kind = 4 ) j
-  integer ( kind = 4 ) jbak
-  integer ( kind = 4 ) jj
-  integer ( kind = 4 ) k
-  real ( kind = 8 ) result
-  real ( kind = 8 ) sum2
-  real ( kind = 8 ) sum1
-  real ( kind = 8 ) work(2*(ntab-1))
-  real ( kind = 8 ) y(ntab)
+  real ( kind = dp ) delt
+  real ( kind = dp ) fac
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) j
+  integer ( kind = i4 ) jbak
+  integer ( kind = i4 ) jj
+  integer ( kind = i4 ) k
+  real ( kind = dp ) result
+  real ( kind = dp ) sum2
+  real ( kind = dp ) sum1
+  real ( kind = dp ) work(2*(ntab-1))
+  real ( kind = dp ) y(ntab)
 !
 !  Determine initial trapezoidal rule
 !
-  sum1 = ( y(1) + y(ntab) ) / 2.0D+00
+  sum1 = ( y(1) + y(ntab) ) * 0.5_dp
   j = -1
  
   do k = 1, ntab-1
@@ -3038,8 +3038,8 @@ subroutine hiordq ( ntab, delt, y, work, result )
       end do
  
       j = j + 2
-      work(j) = delt * sum2 * real ( ( ntab - 1 ) / k, kind = 8 )
-      work(j+1) = real ( ( ( ntab - 1 ) / k )**2, kind = 8 )
+      work(j) = delt * sum2 * real ( ( ntab - 1 ) / k, kind = dp )
+      work(j+1) = real ( ( ( ntab - 1 ) / k )**2, kind = dp )
 !
 !  Apply Richardson extrapolation.
 !
@@ -3060,16 +3060,109 @@ subroutine hiordq ( ntab, delt, y, work, result )
   result = work(1)
  
   return
-end subroutine hiordq
+end subroutine hiordq_r8
 
 
+
+subroutine hiordq_r4( ntab, delt, y, work, result )
+
+!*****************************************************************************80
+!
+!! HIORDQ approximates the integral of a function using equally spaced data.
+!
+!  Discussion:
+!
+!    The method applies the trapezoidal rule to various subsets of the
+!    data, and then applies Richardson extrapolation.
+!
+!  Modified:
+!
+!    10 February 2006
+!
+!  Author:
+!
+!    Alan Kaylor Cline,
+!    Department of Computer Science,
+!    University of Texas at Austin.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) NTAB, number of data points.
+!
+!    Input, real ( kind = 8 ) DELT, the spacing between the X values of the
+!    data.  The actual X values are not needed!
+!
+!    Input, real ( kind = 8 ) Y(NTAB), the Y values of the data.
+!
+!    Work array, real ( kind = 8 ) WORK(2*(NTAB-1)).  The actual minimum amount
+!    of workspace required is two times the number of integer
+!    divisors of NTAB-1.
+!
+!    Output, real ( kind = 8 ) RESULT, the approximation to the integral.
+!
+  implicit none
+
+  integer ( kind = i4 ) ntab
+
+  real ( kind = sp ) delt
+  real ( kind = sp ) fac
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) j
+  integer ( kind = i4 ) jbak
+  integer ( kind = i4 ) jj
+  integer ( kind = i4 ) k
+  real ( kind = sp ) result
+  real ( kind = sp ) sum2
+  real ( kind = sp ) sum1
+  real ( kind = sp ) work(2*(ntab-1))
+  real ( kind = sp ) y(ntab)
+!
+!  Determine initial trapezoidal rule
+!
+  sum1 = ( y(1) + y(ntab) ) * 0.5_sp
+  j = -1
  
+  do k = 1, ntab-1
+!
+!  Check if K divides NTAB-1
+!
+    if ( ( ( ntab - 1 ) / k ) * k == ntab - 1 ) then
+!
+!  Determine the K-point trapezoidal rule.
+!
+      sum2 = -sum1
+      do i = 1, ntab, (ntab-1)/k
+        sum2 = sum2 + y(i)
+      end do
+ 
+      j = j + 2
+      work(j) = delt * sum2 * real ( ( ntab - 1 ) / k, kind = dp )
+      work(j+1) = real ( ( ( ntab - 1 ) / k )**2, kind = dp )
+!
+!  Apply Richardson extrapolation.
+!
+      if ( k /= 1 ) then
+ 
+        do jj = 3, j, 2
+          jbak = j+1-jj
+          fac = work(j+1) / ( work(j+1) - work(jbak+1) )
+          work(jbak) = work(jbak+2) + fac * ( work(jbak) - work(jbak+2) )
+        end do
+ 
+      end if
+ 
+    end if
+ 
+  end do
+ 
+  result = work(1)
+ 
+  return
+end subroutine hiordq_r4
 
 
 
-
-
-subroutine plint ( ntab, xtab, ftab, a, b, result )
+ subroutine plint_r8( ntab, xtab, ftab, a, b, result )
 
 !*****************************************************************************80
 !
@@ -3116,42 +3209,44 @@ subroutine plint ( ntab, xtab, ftab, a, b, result )
 !
   implicit none
 
-  integer ( kind = 4 ) ntab
+  integer ( kind = i4 ) ntab
 
-  real ( kind = 8 ) a
-  real ( kind = 8 ) b
-  real ( kind = 8 ) fa
-  real ( kind = 8 ) fb
-  real ( kind = 8 ) ftab(ntab)
-  integer ( kind = 4 ) i
-  integer ( kind = 4 ) ihi
-  integer ( kind = 4 ) ilo
-  integer ( kind = 4 ) ind
-  real ( kind = 8 ) result
-  real ( kind = 8 ) slope
-  real ( kind = 8 ) syl
-  real ( kind = 8 ) xtab(ntab)
+  real ( kind = dp ) a
+  real ( kind = dp ) b
+  real ( kind = dp ) fa
+  real ( kind = dp ) fb
+  real ( kind = dp ) ftab(ntab)
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) ihi
+  integer ( kind = i4 ) ilo
+  integer ( kind = i4 ) ind
+  real ( kind = dp ) result
+  real ( kind = dp ) slope
+  real ( kind = dp ) syl
+  real ( kind = dp ) xtab(ntab)
 
-  result = 0.0D+00
+  result = 0.0_dp
 !
 !  Check the parameters:
 !
   if ( ntab < 2 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PLINT - Fatal error!'
-    write ( *, '(a,i8)' ) '  NTAB < 2, NTAB = ', ntab
-    stop
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'PLINT - Fatal error!'
+    !write ( *, '(a,i8)' ) '  NTAB < 2, NTAB = ', ntab
+    !stop
+    return
   end if
  
   do i = 2, ntab
     if ( xtab(i) <= xtab(i-1) ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'PLINT - Fatal error!'
-      write ( *, '(a)' ) '  Nodes not in strict increasing order.'
-      write ( *, '(a,i8)' ) '  XTAB(I) <= XTAB(I-1) for I = ', i
-      write ( *, '(a,g14.6)' ) '  XTAB(I)   = ', xtab(i)
-      write ( *, '(a,g14.6)' ) '  XTAB(I-1) = ', xtab(i-1)
-      stop
+     ! write ( *, '(a)' ) ' '
+      !write ( *, '(a)' ) 'PLINT - Fatal error!'
+      !write ( *, '(a)' ) '  Nodes not in strict increasing order.'
+      !write ( *, '(a,i8)' ) '  XTAB(I) <= XTAB(I-1) for I = ', i
+     ! write ( *, '(a,g14.6)' ) '  XTAB(I)   = ', xtab(i)
+     ! write ( *, '(a,g14.6)' ) '  XTAB(I-1) = ', xtab(i-1)
+      !stop
+      return
     end if
   end do
 
@@ -3201,21 +3296,21 @@ subroutine plint ( ntab, xtab, ftab, a, b, result )
     slope = ( ftab(2) - ftab(1) ) / ( xtab(2) - xtab(1) )
     fa = ftab(1) + slope * ( a - xtab(1) )
     fb = ftab(1) + slope * ( b - xtab(1) )
-    result = 0.5D+00 * ( b - a ) * ( fa + fb )
+    result = 0.5_dp * ( b - a ) * ( fa + fb )
 
   else if ( ilo == ntab + 1 ) then
 
     slope = ( ftab(ntab) - ftab(ntab-1) ) / ( xtab(ntab) - xtab(ntab-1) )
     fa = ftab(ntab-1) + slope * ( a - xtab(ntab-1) )
     fb = ftab(ntab-1) + slope * ( b - xtab(ntab-1) )
-    result = 0.5D+00 * ( b - a ) * ( fa + fb )
+    result = 0.5_dp * ( b - a ) * ( fa + fb )
 
   else if ( ihi + 1 == ilo ) then
 
     slope = ( ftab(ilo) - ftab(ihi) ) / ( xtab(ilo) - xtab(ihi) )
     fa = ftab(ihi) + slope * ( a - xtab(ihi) )
     fb = ftab(ihi) + slope * ( b - xtab(ihi) )
-    result = 0.5D+00 * ( b - a ) * ( fa + fb )
+    result = 0.5_dp * ( b - a ) * ( fa + fb )
 
   else
 !
@@ -3224,9 +3319,9 @@ subroutine plint ( ntab, xtab, ftab, a, b, result )
 !  of a single XTAB(I).  That's OK, then the loop below won't be executed
 !  at all.
 !
-    result = 0.0D+00
+    result = 0.0_dp
     do i = ilo, ihi-1
-      result = result + 0.5D+00 * ( xtab(i+1) - xtab(i) ) &
+      result = result + 0.5_dp * ( xtab(i+1) - xtab(i) ) &
         * ( ftab(i) + ftab(i+1) )
     end do
 !
@@ -3236,21 +3331,21 @@ subroutine plint ( ntab, xtab, ftab, a, b, result )
     if ( ilo == 1 ) then
       slope = ( ftab(2) - ftab(1) ) / ( xtab(2) - xtab(1) )
       fa = ftab(1) + slope * ( a - xtab(1) )
-      result = result + 0.5D+00 * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
+      result = result + 0.5_dp * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
     else
       slope = ( ftab(ilo) - ftab(ilo-1) ) / ( xtab(ilo) - xtab(ilo-1) )
       fa = ftab(ilo-1) + slope * ( a - xtab(ilo-1) )
-      result = result + 0.5D+00 * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
+      result = result + 0.5_dp * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
     end if
  
     if ( ihi == ntab ) then
       slope = ( ftab(ntab) - ftab(ntab-1) ) / ( xtab(ntab) - xtab(ntab-1) )
       fb = ftab(ntab-1) + slope * ( b - xtab(ntab-1) )
-      result = result + 0.5D+00 * ( b - xtab(ntab) ) * ( fb + ftab(ntab) )
+      result = result + 0.5_dp * ( b - xtab(ntab) ) * ( fb + ftab(ntab) )
     else
       slope = ( ftab(ihi+1) - ftab(ihi) ) / ( xtab(ihi+1) - xtab(ihi) )
       fb = ftab(ihi) + slope * ( b - xtab(ihi) )
-      result = result + 0.5D+00 * ( b - xtab(ihi) ) * ( fb + ftab(ihi) )
+      result = result + 0.5_dp * ( b - xtab(ihi) ) * ( fb + ftab(ihi) )
     end if
 
   end if
@@ -3267,11 +3362,210 @@ subroutine plint ( ntab, xtab, ftab, a, b, result )
   end if
  
   return
-end subroutine plint
+end subroutine plint_r8
 
 
+subroutine plint_r4( ntab, xtab, ftab, a, b, result )
 
+!*****************************************************************************80
+!
+!! PLINT approximates the integral of unequally spaced data.
+!
+!  Discussion:
+!
+!    The method uses piecewise linear interpolation.
+!
+!  Modified:
+!
+!    10 February 2006
+!
+!  Reference:
+!
+!    Philip Davis, Philip Rabinowitz,
+!    Methods of Numerical Integration,
+!    Second Edition,
+!    Dover, 2007,
+!    ISBN: 0486453391,
+!    LC: QA299.3.D28.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) NTAB, the number of entries in FTAB and
+!    XTAB.  NTAB must be at least 2.
+!
+!    Input, real ( kind = 8 ) XTAB(NTAB), the abscissas at which the
+!    function values are given.  The XTAB's must be distinct
+!    and in ascending order.
+!
+!    Input, real ( kind = 8 ) FTAB(NTAB), the function values, 
+!    FTAB(I) = F(XTAB(I)).
+!
+!    Input, real ( kind = 8 ) A, the lower limit of integration.  A should
+!    be, but need not be, near one endpoint of the interval
+!    (X(1), X(NTAB)).
+!
+!    Input, real ( kind = 8 ) B, the upper limit of integration.  B should
+!    be, but need not be, near one endpoint of the interval
+!    (X(1), X(NTAB)).
+!
+!    Output, real ( kind = 8 ) RESULT, the approximate value of the integral.
+!
+  implicit none
+
+  integer ( kind = i4 ) ntab
+
+  real ( kind = sp ) a
+  real ( kind = sp ) b
+  real ( kind = sp ) fa
+  real ( kind = sp ) fb
+  real ( kind = sp ) ftab(ntab)
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) ihi
+  integer ( kind = i4 ) ilo
+  integer ( kind = i4 ) ind
+  real ( kind = sp ) result
+  real ( kind = sp ) slope
+  real ( kind = sp ) syl
+  real ( kind = sp ) xtab(ntab)
+
+  result = 0.0_sp
+!
+!  Check the parameters:
+!
+  if ( ntab < 2 ) then
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'PLINT - Fatal error!'
+    !write ( *, '(a,i8)' ) '  NTAB < 2, NTAB = ', ntab
+    !stop
+    return
+  end if
  
+  do i = 2, ntab
+    if ( xtab(i) <= xtab(i-1) ) then
+     ! write ( *, '(a)' ) ' '
+      !write ( *, '(a)' ) 'PLINT - Fatal error!'
+      !write ( *, '(a)' ) '  Nodes not in strict increasing order.'
+      !write ( *, '(a,i8)' ) '  XTAB(I) <= XTAB(I-1) for I = ', i
+     ! write ( *, '(a,g14.6)' ) '  XTAB(I)   = ', xtab(i)
+     ! write ( *, '(a,g14.6)' ) '  XTAB(I-1) = ', xtab(i-1)
+      !stop
+      return
+    end if
+  end do
+
+  if ( a == b ) then
+    return
+  end if
+!
+!  If B < A, temporarily switch A and B, and store sign.
+!
+  if ( b < a ) then
+    syl = b
+    b = a
+    a = syl
+    ind = -1
+  else
+    syl = a
+    ind = 1
+  end if
+!
+!  Find ILO and IHI so that A <= XTAB(ILO) <= XTAB(IHI) <= B
+!  with the possible exception that A and B may be in the same
+!  interval, or completely to the right or left of the XTAB's.
+!
+  ilo = ntab + 1
+
+  do i = 1, ntab
+    if ( a <= xtab(i) ) then
+      ilo = i
+      exit
+    end if
+  end do
+
+  ihi = 0
+
+  do i = ntab, 1, -1
+    if ( xtab(i) <= b ) then
+      ihi = i
+      exit
+    end if
+  end do
+!
+!  Treat special cases where A, B lie both to left or both to right
+!  of XTAB interval, or in between same pair of XTAB's.
+!
+  if ( ihi == 0 ) then
+
+    slope = ( ftab(2) - ftab(1) ) / ( xtab(2) - xtab(1) )
+    fa = ftab(1) + slope * ( a - xtab(1) )
+    fb = ftab(1) + slope * ( b - xtab(1) )
+    result = 0.5_dp * ( b - a ) * ( fa + fb )
+
+  else if ( ilo == ntab + 1 ) then
+
+    slope = ( ftab(ntab) - ftab(ntab-1) ) / ( xtab(ntab) - xtab(ntab-1) )
+    fa = ftab(ntab-1) + slope * ( a - xtab(ntab-1) )
+    fb = ftab(ntab-1) + slope * ( b - xtab(ntab-1) )
+    result = 0.5_sp * ( b - a ) * ( fa + fb )
+
+  else if ( ihi + 1 == ilo ) then
+
+    slope = ( ftab(ilo) - ftab(ihi) ) / ( xtab(ilo) - xtab(ihi) )
+    fa = ftab(ihi) + slope * ( a - xtab(ihi) )
+    fb = ftab(ihi) + slope * ( b - xtab(ihi) )
+    result = 0.5_sp * ( b - a ) * ( fa + fb )
+
+  else
+!
+!  Carry out approximate integration.  We know that ILO is no greater
+!  than IHI-1, but equality is possible; A and B may be on either side
+!  of a single XTAB(I).  That's OK, then the loop below won't be executed
+!  at all.
+!
+    result = 0.0_sp
+    do i = ilo, ihi-1
+      result = result + 0.5_sp * ( xtab(i+1) - xtab(i) ) &
+        * ( ftab(i) + ftab(i+1) )
+    end do
+!
+!  Add contribution from A-ILO and IHI-B.
+!  Still have to watch out if ILO = 1 or IHI=NTAB...
+!
+    if ( ilo == 1 ) then
+      slope = ( ftab(2) - ftab(1) ) / ( xtab(2) - xtab(1) )
+      fa = ftab(1) + slope * ( a - xtab(1) )
+      result = result + 0.5_sp * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
+    else
+      slope = ( ftab(ilo) - ftab(ilo-1) ) / ( xtab(ilo) - xtab(ilo-1) )
+      fa = ftab(ilo-1) + slope * ( a - xtab(ilo-1) )
+      result = result + 0.5_sp * ( xtab(ilo) - a ) * ( fa + ftab(ilo) )
+    end if
+ 
+    if ( ihi == ntab ) then
+      slope = ( ftab(ntab) - ftab(ntab-1) ) / ( xtab(ntab) - xtab(ntab-1) )
+      fb = ftab(ntab-1) + slope * ( b - xtab(ntab-1) )
+      result = result + 0.5_sp * ( b - xtab(ntab) ) * ( fb + ftab(ntab) )
+    else
+      slope = ( ftab(ihi+1) - ftab(ihi) ) / ( xtab(ihi+1) - xtab(ihi) )
+      fb = ftab(ihi) + slope * ( b - xtab(ihi) )
+      result = result + 0.5_sp * ( b - xtab(ihi) ) * ( fb + ftab(ihi) )
+    end if
+
+  end if
+!
+!  Restore original values of A and B, reverse sign of integral
+!  because of earlier switch.
+! 
+  if ( ind /= 1 ) then
+    ind = 1
+    syl = b
+    b = a
+    a = syl
+    result = -result
+  end if
+ 
+  return
+end subroutine plint_r4
 
 
 
@@ -3383,7 +3677,7 @@ end subroutine r4vec_even
   
 
 
-subroutine simpne ( ntab, x, y, result )
+subroutine simpne_r4( ntab, x, y, result )
 
 !*****************************************************************************80
 !
@@ -3421,31 +3715,32 @@ subroutine simpne ( ntab, x, y, result )
 !
   implicit none
 
-  integer ( kind = 4 ) ntab
+  integer ( kind = i4 ) ntab
 
-  real ( kind = 8 ) del(3)
-  real ( kind = 8 ) e
-  real ( kind = 8 ) f
-  real ( kind = 8 ) feints
-  real ( kind = 8 ) g(3)
-  integer ( kind = 4 ) i
-  integer ( kind = 4 ) n
-  real ( kind = 8 ) pi(3)
-  real ( kind = 8 ) result
-  real ( kind = 8 ) sum1
-  real ( kind = 8 ) x(ntab)
-  real ( kind = 8 ) x1
-  real ( kind = 8 ) x2
-  real ( kind = 8 ) x3
-  real ( kind = 8 ) y(ntab)
+  real ( kind = sp ) del(3)
+  real ( kind = sp ) e
+  real ( kind = sp ) f
+  real ( kind = sp ) feints
+  real ( kind = sp ) g(3)
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) n
+  real ( kind = sp ) pi(3)
+  real ( kind = sp ) result
+  real ( kind = sp ) sum1
+  real ( kind = sp ) x(ntab)
+  real ( kind = sp ) x1
+  real ( kind = sp ) x2
+  real ( kind = sp ) x3
+  real ( kind = sp ) y(ntab)
 
-  result = 0.0D+00
+  result = 0.0_sp
  
   if ( ntab <= 2 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'SIMPNE - Fatal error!'
-    write ( *, '(a)' ) '  NTAB <= 2.'
-    stop
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'SIMPNE - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB <= 2.'
+    !stop
+    return
   end if
  
   n = 1
@@ -3471,10 +3766,10 @@ subroutine simpne ( ntab, x, y, result )
     pi(2) = x1 * x3
     pi(3) = x1 * x2
  
-    sum1 = 0.0D+00
+    sum1 = 0.0_sp
     do i = 1, 3
       sum1 = sum1 + y(n-1+i) * del(i) &
-        * ( f / 3.0D+00 - g(i) * 0.5D+00 * e + pi(i) * feints )
+        * ( f / 3.0_sp - g(i) * 0.5_sp * e + pi(i) * feints )
     end do
     result = result - sum1 / ( del(1) * del(2) * del(3) )
  
@@ -3510,18 +3805,161 @@ subroutine simpne ( ntab, x, y, result )
   pi(2) = x1 * x3
   pi(3) = x1 * x2
  
-  sum1 = 0.0D+00
+  sum1 = 0.0_sp
   do i = 1, 3
     sum1 = sum1 + y(n-1+i) * del(i) * &
-      ( f / 3.0D+00 - g(i) * 0.5D+00 * e + pi(i) * feints )
+      ( f / 3.0_sp - g(i) * 0.5_sp * e + pi(i) * feints )
   end do
  
   result = result - sum1 / ( del(1) * del(2) * del(3) )
  
   return
-end subroutine simpne
+end subroutine simpne_r4
 
-subroutine simpsn ( ntab, h, y, result )
+
+subroutine simpne_r8( ntab, x, y, result )
+
+!*****************************************************************************80
+!
+!! SIMPNE approximates the integral of unevenly spaced data.
+!
+!  Discussion:
+!
+!    The routine repeatedly interpolates a 3-point Lagrangian polynomial 
+!    to the data and integrates that exactly.
+!
+!  Modified:
+!
+!    10 February 2006
+!
+!  Reference:
+!
+!    Philip Davis, Philip Rabinowitz,
+!    Methods of Numerical Integration,
+!    Second Edition,
+!    Dover, 2007,
+!    ISBN: 0486453391,
+!    LC: QA299.3.D28.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) NTAB, number of data points.  NTAB must be at least 3.
+!
+!    Input, real ( kind = 8 ) X(NTAB), contains the X values of the data,
+!    in order.
+!
+!    Input, real ( kind = 8 ) Y(NTAB), contains the Y values of the data.
+!
+!    Output, real ( kind = 8 ) RESULT.
+!    RESULT is the approximate value of the integral.
+!
+  implicit none
+
+  integer ( kind = i4 ) ntab
+
+  real ( kind = dp ) del(3)
+  real ( kind = dp ) e
+  real ( kind = dp ) f
+  real ( kind = dp ) feints
+  real ( kind = dp ) g(3)
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) n
+  real ( kind = dp ) pi(3)
+  real ( kind = dp ) result
+  real ( kind = dp ) sum1
+  real ( kind = dp ) x(ntab)
+  real ( kind = dp ) x1
+  real ( kind = dp ) x2
+  real ( kind = dp ) x3
+  real ( kind = dp ) y(ntab)
+
+  result = 0.0_dp
+ 
+  if ( ntab <= 2 ) then
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'SIMPNE - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB <= 2.'
+    !stop
+    return
+  end if
+ 
+  n = 1
+ 
+  do
+ 
+    x1 = x(n)
+    x2 = x(n+1)
+    x3 = x(n+2)
+    e = x3 * x3- x1 * x1
+    f = x3 * x3 * x3 - x1 * x1 * x1
+    feints = x3 - x1
+
+    del(1) = x3 - x2
+    del(2) = x1 - x3
+    del(3) = x2 - x1
+
+    g(1) = x2 + x3
+    g(2) = x1 + x3
+    g(3) = x1 + x2
+
+    pi(1) = x2 * x3
+    pi(2) = x1 * x3
+    pi(3) = x1 * x2
+ 
+    sum1 = 0.0_dp
+    do i = 1, 3
+      sum1 = sum1 + y(n-1+i) * del(i) &
+        * ( f / 3.0_dp - g(i) * 0.5_dp * e + pi(i) * feints )
+    end do
+    result = result - sum1 / ( del(1) * del(2) * del(3) )
+ 
+    n = n + 2
+
+    if ( ntab <= n + 1 ) then
+      exit
+    end if
+
+  end do
+ 
+  if ( mod ( ntab, 2 ) /= 0 ) then
+    return
+  end if
+
+  n = ntab - 2
+  x3 = x(ntab)
+  x2 = x(ntab-1)
+  x1 = x(ntab-2)
+  e = x3 * x3 - x2 * x2
+  f = x3 * x3 * x3 - x2 * x2 * x2
+  feints = x3 - x2
+
+  del(1) = x3 - x2
+  del(2) = x1 - x3
+  del(3) = x2 - x1
+
+  g(1) = x2 + x3
+  g(2) = x1 + x3
+  g(3) = x1 + x2
+
+  pi(1) = x2 * x3
+  pi(2) = x1 * x3
+  pi(3) = x1 * x2
+ 
+  sum1 = 0.0_dp
+  do i = 1, 3
+    sum1 = sum1 + y(n-1+i) * del(i) * &
+      ( f / 3.0_dp - g(i) * 0.5_dp * e + pi(i) * feints )
+  end do
+ 
+  result = result - sum1 / ( del(1) * del(2) * del(3) )
+ 
+  return
+end subroutine simpne_r8
+
+
+
+
+subroutine simpsn_r8 ( ntab, h, y, result )
 
 !*****************************************************************************80
 !
@@ -3559,26 +3997,27 @@ subroutine simpsn ( ntab, h, y, result )
 !
   implicit none
 
-  integer ( kind = 4 ) ntab
+  integer ( kind = i4 ) ntab
 
-  real ( kind = 8 ) del(3)
-  real ( kind = 8 ) f
-  real ( kind = 8 ) g(3)
-  real ( kind = 8 ) h
-  integer ( kind = 4 ) i
-  integer ( kind = 4 ) n
-  real ( kind = 8 ) pii(3)
-  real ( kind = 8 ) result
-  real ( kind = 8 ) sum1
-  real ( kind = 8 ) y(ntab)
+  real ( kind = dp ) del(3)
+  real ( kind = dp ) f
+  real ( kind = dp ) g(3)
+  real ( kind = dp ) h
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) n
+  real ( kind = dp ) pii(3)
+  real ( kind = dp ) result
+  real ( kind = dp ) sum1
+  real ( kind = dp ) y(ntab)
 
-  result = 0.0D+00
+  result = 0.0_dp
  
   if ( ntab <= 2 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'SIMPSN - Fatal error!'
-    write ( *, '(a,i8)' ) '  NTAB < 2, NTAb = ', ntab
-    stop
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'SIMPSN - Fatal error!'
+    !write ( *, '(a,i8)' ) '  NTAB < 2, NTAb = ', ntab
+    !stop
+    return
   end if
  
   if ( mod ( ntab, 2 ) == 0 ) then
@@ -3587,11 +4026,11 @@ subroutine simpsn ( ntab, h, y, result )
     n = ntab
   end if
  
-  result = y(1) + y(n) + 4.0D+00 * y(n-1)
+  result = y(1) + y(n) + 4.0_dp * y(n-1)
   do i = 2, n-2, 2
-    result = result + 4.0D+00 * y(i) + 2.0D+00 * y(i+1)
+    result = result + 4.0_dp * y(i) + 2.0_dp * y(i+1)
   end do
-  result = h * result / 3.0D+00
+  result = h * result / 3.0_dp
  
   if ( mod ( ntab, 2 ) == 1 ) then
     return
@@ -3599,26 +4038,129 @@ subroutine simpsn ( ntab, h, y, result )
  
   f = h**3
   del(1) = h
-  del(2) = -2.0D+00 * h
+  del(2) = -2.0_dp * h
   del(3) = h
   g(1) = h
-  g(2) = 0.0D+00
+  g(2) = 0.0_dp
   g(3) = -h
-  pii(1) = 0.0D+00
+  pii(1) = 0.0_dp
   pii(2) = -h**2
-  pii(3) = 0.0D+00
+  pii(3) = 0.0_dp
   n = n-1
  
-  sum1 = 0.0D+00
+  sum1 = 0.0_dp
   do i = 1, 3
     sum1 = sum1 + y(n-1+i) * del(i) * &
-      ( f / 3.0D+00 - g(i) * 0.5D+00 * h**2 + pii(i) * h )
+      ( f / 3.0_dp - g(i) * 0.5_dp * h**2 + pii(i) * h )
   end do
  
-  result = result + 0.5D+00 * sum1 / h**3
+  result = result + 0.5_dp * sum1 / h**3
  
   return
-end
+end subroutine simpsn_r8
+
+
+subroutine simpsn_r4 ( ntab, h, y, result )
+
+!*****************************************************************************80
+!
+!! SIMPSN approximates the integral of evenly spaced data.
+!
+!  Discussion:
+!
+!    Simpson's rule is used.
+!
+!  Modified:
+!
+!    10 February 2006
+!
+!  Reference:
+!
+!    Philip Davis, Philip Rabinowitz,
+!    Methods of Numerical Integration,
+!    Second Edition,
+!    Dover, 2007,
+!    ISBN: 0486453391,
+!    LC: QA299.3.D28.
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) NTAB, the number of data points.  NTAB must be at least 3.
+!
+!    Input, real ( kind = 8 ) H, specifies the increment between the
+!    X values.  Note that the actual X values are not needed,
+!    just the constant spacing!
+!
+!    Input, real ( kind = 8 ) Y(NTAB), the data.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the integral
+!    from the first to the last point.
+!
+  implicit none
+
+  integer ( kind = i4 ) ntab
+
+  real ( kind = sp ) del(3)
+  real ( kind = sp ) f
+  real ( kind = sp ) g(3)
+  real ( kind = sp ) h
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) n
+  real ( kind = sp ) pii(3)
+  real ( kind = sp ) result
+  real ( kind = sp ) sum1
+  real ( kind = sp ) y(ntab)
+
+  result = 0.0_sp
+ 
+  if ( ntab <= 2 ) then
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'SIMPSN - Fatal error!'
+    !write ( *, '(a,i8)' ) '  NTAB < 2, NTAb = ', ntab
+    !stop
+    return
+  end if
+ 
+  if ( mod ( ntab, 2 ) == 0 ) then
+    n = ntab - 1
+  else
+    n = ntab
+  end if
+ 
+  result = y(1) + y(n) + 4.0_sp * y(n-1)
+  do i = 2, n-2, 2
+    result = result + 4.0_sp * y(i) + 2.0_sp * y(i+1)
+  end do
+  result = h * result / 3.0_sp
+ 
+  if ( mod ( ntab, 2 ) == 1 ) then
+    return
+  end if
+ 
+  f = h**3
+  del(1) = h
+  del(2) = -2.0_sp * h
+  del(3) = h
+  g(1) = h
+  g(2) = 0.0_sp
+  g(3) = -h
+  pii(1) = 0.0_sp
+  pii(2) = -h**2
+  pii(3) = 0.0_sp
+  n = n-1
+ 
+  sum1 = 0.0_sp
+  do i = 1, 3
+    sum1 = sum1 + y(n-1+i) * del(i) * &
+      ( f / 3.0_sp - g(i) * 0.5_sp * h**2 + pii(i) * h )
+  end do
+ 
+  result = result + 0.5_sp * sum1 / h**3
+ 
+  return
+end subroutine simpsn_r4
+
+
 function solve ( shift, n, a, b )
 
 !*****************************************************************************80
@@ -3671,7 +4213,7 @@ function solve ( shift, n, a, b )
 end function solve
 
 
-subroutine wedint ( ntab, h, ftab, result )
+subroutine wedint_r8 ( ntab, h, ftab, result )
 
 !*****************************************************************************80
 !
@@ -3699,45 +4241,118 @@ subroutine wedint ( ntab, h, ftab, result )
 !
   implicit none
 
-  integer ( kind = 4 ) ntab
+  integer ( kind = i4 ) ntab
 
-  real ( kind = 8 ) ftab(ntab)
-  real ( kind = 8 ) h
-  integer ( kind = 4 ) i
-  real ( kind = 8 ) result
+  real ( kind = dp ) ftab(ntab)
+  real ( kind = dp ) h
+  integer ( kind = i4 ) i
+  real ( kind = dp ) result
 
-  result = 0.0D+00
+  result = 0.0_dp
  
   if ( ntab <= 1 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'WEDINT - Fatal error!'
-    write ( *, '(a)' ) '  NTAB < 2'
-    write ( *, '(a,i8)' ) '  NTAB = ', ntab
-    stop
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'WEDINT - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB < 2'
+    !write ( *, '(a,i8)' ) '  NTAB = ', ntab
+    !stop
+    return
   end if
  
   if ( mod ( ntab, 6 ) /= 1 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'WEDINT - Fatal error!'
-    write ( *, '(a)' ) '  NTAB must equal 6*N+1 for some N!'
-    stop
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'WEDINT - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB must equal 6*N+1 for some N!'
+    !stop
+    return
   end if
  
   do i = 1, ntab-6, 6
     result = result & 
       +           ftab(i)   &
-      + 5.0D+00 * ftab(i+1) &
+      + 5.0_dp  * ftab(i+1) &
       +           ftab(i+2) &
-      + 6.0D+00 * ftab(i+3) &
+      + 6.0_dp  * ftab(i+3) &
       +           ftab(i+4) &
-      + 5.0D+00 * ftab(i+5) &
+      + 5.0_dp  * ftab(i+5) &
       +           ftab(i+6)
   end do
  
-  result = 3.0D+00 * h * result / 10.0D+00
+  result = 3.0_dp * h * result / 10.0_dp
  
   return
-end subroutine wedint
+end subroutine wedint_r8
+
+
+subroutine wedint_r4 ( ntab, h, ftab, result )
+
+!*****************************************************************************80
+!
+!! WEDINT uses Weddle's rule to integrate data at equally spaced points.
+!
+!  Modified:
+!
+!    10 February 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) NTAB, is the number of data points.  
+!    (NTAB-1) must be divisible by 6.
+!
+!    Input, real ( kind = 8 ) H, is the spacing between the points at which
+!    the data was evaluated.
+!
+!    Input, real ( kind = 8 ) FTAB(NTAB), contains the tabulated data values.
+!
+!    Output, real ( kind = 8 ) RESULT, is the approximation to the integral.
+!
+  implicit none
+
+  integer ( kind = i4 ) ntab
+
+  real ( kind = sp ) ftab(ntab)
+  real ( kind = sp ) h
+  integer ( kind = i4 ) i
+  real ( kind = sp ) result
+
+  result = 0.0_sp
+ 
+  if ( ntab <= 1 ) then
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'WEDINT - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB < 2'
+    !write ( *, '(a,i8)' ) '  NTAB = ', ntab
+    !stop
+    return
+  end if
+ 
+  if ( mod ( ntab, 6 ) /= 1 ) then
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'WEDINT - Fatal error!'
+    !write ( *, '(a)' ) '  NTAB must equal 6*N+1 for some N!'
+    !stop
+    return
+  end if
+ 
+  do i = 1, ntab-6, 6
+    result = result & 
+      +           ftab(i)   &
+      + 5.0_sp  * ftab(i+1) &
+      +           ftab(i+2) &
+      + 6.0_sp  * ftab(i+3) &
+      +           ftab(i+4) &
+      + 5.0_sp  * ftab(i+5) &
+      +           ftab(i+6)
+  end do
+ 
+  result = 3.0_sp * h * result / 10.0_sp
+ 
+  return
+end subroutine wedint_r4
 
 
 end module tabulated_quad
