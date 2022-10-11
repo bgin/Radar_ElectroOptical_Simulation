@@ -168,7 +168,7 @@ module  ndiff_tabular
               call deriv_r4(x,h,d,isf,ief,y,x1,ht,ne,xe,npitl,nprts)
               if(ief==1) goto 300
               der(i) = d
-              if(i>1) del(i-1) = abs(der(i)-der(i-1)
+              if(i>1) del(i-1) = abs(der(i)-der(i-1))
               h = 0.5_sp*h
             end do
             idecr = 1
@@ -245,6 +245,7 @@ module  ndiff_tabular
                del(3) = abs(der(3)-der(4))
                h = 0._sp*h
                idecr = 1
+             end do
           280  itmany = itmany+1
                goto 340
           300  dav = d
@@ -518,6 +519,7 @@ module  ndiff_tabular
                del(3) = abs(der(3)-der(4))
                h = 0._dp*h
                idecr = 1
+            end do
           280  itmany = itmany+1
                goto 340
           300  dav = d
