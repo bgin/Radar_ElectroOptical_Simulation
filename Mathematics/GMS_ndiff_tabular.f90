@@ -245,7 +245,7 @@ module  ndiff_tabular
                del(3) = abs(der(3)-der(4))
                h = 0._sp*h
                idecr = 1
-             end do
+            end do
           280  itmany = itmany+1
                goto 340
           300  dav = d
@@ -312,7 +312,7 @@ module  ndiff_tabular
        ief = 1
        return
    20  t = x-4.0_sp*h
-       if(t<x1) goto 550
+       if(t<x1) goto 50
        t = x+4.0_sp*h
        if(t>xe) goto 30
        t0 = 3.0_sp*(f_r4(x-4.0_sp*h,x1,ht,y)-f_r4(x+4.0_sp*h,x1,ht,y))
@@ -586,7 +586,7 @@ module  ndiff_tabular
        ief = 1
        return
    20  t = x-4.0_dp*h
-       if(t<x1) goto 550
+       if(t<x1) goto 50
        t = x+4.0_dp*h
        if(t>xe) goto 30
        t0 = 3.0_dp*(f_r8(x-4.0_dp*h,x1,ht,y)-f_r8(x+4.0_dp*h,x1,ht,y))
@@ -597,8 +597,8 @@ module  ndiff_tabular
        return
    30  t = x-3.0_dp*h
        if(t<x1) goto 40
-       d = (11.0_dp*f_r4(x,x1,ht,y)-18.0_dp*f_r4(x-h,x1,ht,y)+ &
-            9.0_dp*f_r4(x-2.0_dp*h,x1,ht,y)-2.0_dp*f_r4(x-3.0_dp*h,x1,ht,y))/(6.0_dp*h)
+       d = (11.0_dp*f_r8(x,x1,ht,y)-18.0_dp*f_r8(x-h,x1,ht,y)+ &
+            9.0_dp*f_r8(x-2.0_dp*h,x1,ht,y)-2.0_dp*f_r8(x-3.0_dp*h,x1,ht,y))/(6.0_dp*h)
        return
    40  nprts = nprts+1
        h = 0.5_dp*h
@@ -606,8 +606,8 @@ module  ndiff_tabular
        goto 10
    50  t = x+3.0_dp*h
        if(t>xe) goto 60
-       d = (2.0_dp*f_r4(x+3.0_dp*h,x1,ht,y)-9.0_dp*f_r4(x+2.0_dp*h,x1,ht,y) &
-           + 18.0_dp*f_r4(x+h,x1,ht,y)-11.0_dp*f_r4(x,x1,ht,y))/(6.0_dp*h)
+       d = (2.0_dp*f_r8(x+3.0_dp*h,x1,ht,y)-9.0_dp*f_r8(x+2.0_dp*h,x1,ht,y) &
+           + 18.0_dp*f_r8(x+h,x1,ht,y)-11.0_dp*f_r8(x,x1,ht,y))/(6.0_dp*h)
        return
    60  nprts = nprts+1
        h = 0.5_dp*h
