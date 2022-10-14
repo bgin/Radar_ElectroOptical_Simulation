@@ -6022,7 +6022,268 @@ module eos_sensor
      end function circ_dispers_diam_r4
 
 
-     pure elemental function circ_dispers_diam_r4(l1,l2,alpha,O,inf) result(ratio)
+     subroutine circ_dispers_diam_unroll_16x_r4(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_r4
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r4(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r4(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r4(l1,l2,a3,O,inf)
+             a4         = alpha(i+4)
+             ratio(i+4) = circ_dispers_diam_r4(l1,l2,a4,O,inf)
+             a5         = alpha(i+5)
+             ratio(i+5) = circ_dispers_diam_r4(l1,l2,a5,O,inf)
+             a6         = alpha(i+6)
+             ratio(i+6) = circ_dispers_diam_r4(l1,l2,a6,O,inf)
+             a7         = alpha(i+7)
+             ratio(i+7) = circ_dispers_diam_r4(l1,l2,a7,O,inf)
+             a8         = alpha(i+8)
+             ratio(i+8) = circ_dispers_diam_r4(l1,l2,a8,O,inf)
+             a9         = alpha(i+9)
+             ratio(i+9) = circ_dispers_diam_r4(l1,l2,a9,O,inf)
+             a10        = alpha(i+10)
+             ratio(i+10)= circ_dispers_diam_r4(l1,l2,a10,O,inf)
+             a11        = alpha(i+11)
+             ratio(i+1) = circ_dispers_diam_r4(l1,l2,a11,O,inf)
+             a12        = alpha(i+12)
+             ratio(i+12)= circ_dispers_diam_r4(l1,l2,a12,O,inf) 
+             a13        = alpha(i+13)
+             ratio(i+13)= circ_dispers_diam_r4(l1,l2,a13,O,inf)
+             a14        = alpha(i+14)
+             ratio(i+14)= circ_dispers_diam_r4(l1,l2,a14,O,inf)
+             a15        = alpha(i+15)
+             ratio(i+15)= circ_dispers_diam_r4(l1,l2,a15,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_16x_r4
+
+
+     subroutine circ_dispers_diam_unroll_8x_r4(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_r4
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r4(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r4(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r4(l1,l2,a3,O,inf)
+             a4         = alpha(i+4)
+             ratio(i+4) = circ_dispers_diam_r4(l1,l2,a4,O,inf)
+             a5         = alpha(i+5)
+             ratio(i+5) = circ_dispers_diam_r4(l1,l2,a5,O,inf)
+             a6         = alpha(i+6)
+             ratio(i+6) = circ_dispers_diam_r4(l1,l2,a6,O,inf)
+             a7         = alpha(i+7)
+             ratio(i+7) = circ_dispers_diam_r4(l1,l2,a7,O,inf)
+          end do
+     end subroutine circ_dispers_diam_unroll_8x_r4
+
+
+     subroutine circ_dispers_diam_unroll_4x_r4(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_r4
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r4(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r4(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r4(l1,l2,a3,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_4x_r4
+
+
+    
+     subroutine circ_dispers_diam_unroll_2x_r4(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_r4
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=sp), automatic :: a0,a1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r4(l1,l2,a1,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_2x_r4
+
+
+
+     subroutine circ_dispers_diam_rolled_r4(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_r4
+           !dir$ attributes forceinline :: circ_dispers_diam_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=sp), automatic :: a0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r4(l1,l2,a0,O,inf)
+         end do
+     end subroutine circ_dispers_diam_rolled_r4
+
+
+     subroutine circ_dispers_diam_dispatch_r4(l1,l2,alpha,O,inf,ratio,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_dispatch_r4
+         real(kind=sp),                     intent(in) :: l1
+         real(kind=sp),                     intent(in) :: l2
+         real(kind=sp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=sp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         integer(kind=i4),                  intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call circ_dispers_diam_unroll_16x_r4(l1,l2,alpha,O,inf,ratio,n)
+             case (8)
+                call circ_dispers_diam_unroll_8x_r4(l1,l2,alpha,O,inf,ratio,n)
+             case (4)
+                call circ_dispers_diam_unroll_4x_r4(l1,l2,alpha,O,inf,ratio,n)
+             case (2)
+                call circ_dispers_diam_unroll_2x_r4(l1,l2,alpha,O,inf,ratio,n)
+             case (0)
+                call circ_dispers_diam_rolled_r4(l1,l2,alpha,O,inf,ratio,n) 
+             case default
+                return
+           end select
+     end subroutine circ_dispers_diam_dispatch_r4
+
+
+
+     pure elemental function circ_dispers_diam_r8(l1,l2,alpha,O,inf) result(ratio)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: circ_dispers_diam_r8
          !dir$ attributes forceinline :: circ_dispers_diam_r8
@@ -6034,9 +6295,270 @@ module eos_sensor
          real(kind=dp) :: ratio
          real(kind=dp), automatic :: t0,t1
          t0    = l1+l2
-         t1    = defocus_cos_r4(l2,alpha,O,inf)
+         t1    = defocus_cos_r8(l2,alpha,O,inf)
          ratio = t1/t0
-     end function circ_dispers_diam_r4
+     end function circ_dispers_diam_r8
+
+
+     
+     subroutine circ_dispers_diam_unroll_16x_r8(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_r8
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=dp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r8(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r8(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r8(l1,l2,a3,O,inf)
+             a4         = alpha(i+4)
+             ratio(i+4) = circ_dispers_diam_r8(l1,l2,a4,O,inf)
+             a5         = alpha(i+5)
+             ratio(i+5) = circ_dispers_diam_r8(l1,l2,a5,O,inf)
+             a6         = alpha(i+6)
+             ratio(i+6) = circ_dispers_diam_r8(l1,l2,a6,O,inf)
+             a7         = alpha(i+7)
+             ratio(i+7) = circ_dispers_diam_r8(l1,l2,a7,O,inf)
+             a8         = alpha(i+8)
+             ratio(i+8) = circ_dispers_diam_r8(l1,l2,a8,O,inf)
+             a9         = alpha(i+9)
+             ratio(i+9) = circ_dispers_diam_r8(l1,l2,a9,O,inf)
+             a10        = alpha(i+10)
+             ratio(i+10)= circ_dispers_diam_r8(l1,l2,a10,O,inf)
+             a11        = alpha(i+11)
+             ratio(i+1) = circ_dispers_diam_r8(l1,l2,a11,O,inf)
+             a12        = alpha(i+12)
+             ratio(i+12)= circ_dispers_diam_r8(l1,l2,a12,O,inf) 
+             a13        = alpha(i+13)
+             ratio(i+13)= circ_dispers_diam_r8(l1,l2,a13,O,inf)
+             a14        = alpha(i+14)
+             ratio(i+14)= circ_dispers_diam_r8(l1,l2,a14,O,inf)
+             a15        = alpha(i+15)
+             ratio(i+15)= circ_dispers_diam_r8(l1,l2,a15,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_16x_r8
+
+
+     subroutine circ_dispers_diam_unroll_8x_r8(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_r8
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r8(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r8(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r8(l1,l2,a3,O,inf)
+             a4         = alpha(i+4)
+             ratio(i+4) = circ_dispers_diam_r8(l1,l2,a4,O,inf)
+             a5         = alpha(i+5)
+             ratio(i+5) = circ_dispers_diam_r8(l1,l2,a5,O,inf)
+             a6         = alpha(i+6)
+             ratio(i+6) = circ_dispers_diam_r8(l1,l2,a6,O,inf)
+             a7         = alpha(i+7)
+             ratio(i+7) = circ_dispers_diam_r8(l1,l2,a7,O,inf)
+          end do
+     end subroutine circ_dispers_diam_unroll_8x_r8
+
+
+     subroutine circ_dispers_diam_unroll_4x_r8(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_r8
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r8(l1,l2,a1,O,inf)
+             a2         = alpha(i+2)
+             ratio(i+2) = circ_dispers_diam_r8(l1,l2,a2,O,inf)
+             a3         = alpha(i+3)
+             ratio(i+3) = circ_dispers_diam_r8(l1,l2,a3,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_4x_r8
+
+
+    
+     subroutine circ_dispers_diam_unroll_2x_r8(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_r8
+           !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=dp), automatic :: a0,a1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               a0   = alpha(i)
+               ratio(i) = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+             a1         = alpha(i+1)
+             ratio(i+1) = circ_dispers_diam_r8(l1,l2,a1,O,inf)
+         end do
+     end subroutine circ_dispers_diam_unroll_2x_r8
+
+
+
+     subroutine circ_dispers_diam_rolled_r8(l1,l2,alpha,O,inf,ratio,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_r8
+           !dir$ attributes forceinline :: circ_dispers_diam_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         real(kind=dp), automatic :: a0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned ratio:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+             a0         = alpha(i)
+             ratio(i)   = circ_dispers_diam_r8(l1,l2,a0,O,inf)
+         end do
+     end subroutine circ_dispers_diam_rolled_r8
+
+
+     subroutine circ_dispers_diam_dispatch_r8(l1,l2,alpha,O,inf,ratio,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: circ_dispers_diam_dispatch_r8
+         real(kind=dp),                     intent(in) :: l1
+         real(kind=dp),                     intent(in) :: l2
+         real(kind=dp),    dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),                     intent(in) :: O
+         logical(kind=i4),                  intent(in) :: inf
+         real(kind=dp),    dimension(1:n),  intent(out):: ratio
+         integer(kind=i4),                  intent(in) :: n
+         integer(kind=i4),                  intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call circ_dispers_diam_unroll_16x_r8(l1,l2,alpha,O,inf,ratio,n)
+             case (8)
+                call circ_dispers_diam_unroll_8x_r8(l1,l2,alpha,O,inf,ratio,n)
+             case (4)
+                call circ_dispers_diam_unroll_4x_r8(l1,l2,alpha,O,inf,ratio,n)
+             case (2)
+                call circ_dispers_diam_unroll_2x_r8(l1,l2,alpha,O,inf,ratio,n)
+             case (0)
+                call circ_dispers_diam_rolled_r8(l1,l2,alpha,O,inf,ratio,n) 
+             case default
+                return
+           end select
+     end subroutine circ_dispers_diam_dispatch_r8
 
 
     
@@ -6061,6 +6583,255 @@ module eos_sensor
          end if
          rho = tiny(1.0_sp)
       end function defocus_small_ang_r4
+
+
+      subroutine defocus_small_ang_unroll_16x_r4(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_16x_r4
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_16x_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r4(O,l2,a0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r4(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r4(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r4(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r4(O,l2,a3)
+               a4       = alpha(i+4)
+               rho(i+4) = defocus_small_ang_r4(O,l2,a4)
+               a5       = alpha(i+5)
+               rho(i+5) = defocus_small_ang_r4(O,l2,a5)
+               a6       = alpha(i+6)
+               rho(i+6) = defocus_small_ang_r4(O,l2,a6)
+               a7       = alpha(i+7)
+               rho(i+7) = defocus_small_ang_r4(O,l2,a7)
+               a8       = alpha(i+8)
+               rho(i+8) = defocus_small_ang_r4(O,l2,a8)
+               a9       = alpha(i+9)
+               rho(i+9) = defocus_small_ang_r4(O,l2,a9) 
+               a10      = alpha(i+10)
+               rho(i+10)= defocus_small_ang_r4(O,l2,a10)
+               a11      = alpha(i+11)
+               rho(i+11)= defocus_small_ang_r4(O,l2,a11) 
+               a12      = alpha(i+12)
+               rho(i+12)= defocus_small_ang_r4(O,l2,a12)
+               a13      = alpha(i+13)
+               rho(i+13)= defocus_small_ang_r4(O,l2,a13)
+               a14      = alpha(i+14)
+               rho(i+14)= defocus_small_ang_r4(O,l2,a14)
+               a15       = alpha(i+15)
+               rho(i+15) = defocus_small_ang_r4(O,l2,a15)
+          end do
+      end subroutine defocus_small_ang_unroll_16x_r4
+
+
+      subroutine defocus_small_ang_unroll_8x_r4(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_8x_r4
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_8x_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r4(O,l2,a0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r4(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r4(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r4(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r4(O,l2,a3)
+               a4       = alpha(i+4)
+               rho(i+4) = defocus_small_ang_r4(O,l2,a4)
+               a5       = alpha(i+5)
+               rho(i+5) = defocus_small_ang_r4(O,l2,a5)
+               a6       = alpha(i+6)
+               rho(i+6) = defocus_small_ang_r4(O,l2,a6)
+               a7       = alpha(i+7)
+               rho(i+7) = defocus_small_ang_r4(O,l2,a7)
+           end do
+      end subroutine defocus_small_ang_unroll_8x_r4
+
+
+
+      subroutine defocus_small_ang_unroll_4x_r4(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_4x_r4
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_4x_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r4(O,l2,a0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r4(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r4(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r4(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r4(O,l2,a3)
+          end do
+      end subroutine defocus_small_ang_unroll_4x_r4
+
+
+
+      subroutine defocus_small_ang_unroll_2x_r4(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_2x_r4
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_2x_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=sp), automatic :: a0,a1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r4(O,l2,a0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r4(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r4(O,l2,a1)
+          end do
+      end subroutine defocus_small_ang_unroll_2x_r4
+
+
+
+      subroutine defocus_small_ang_rolled_r4(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_rolled_r4
+           !dir$ attributes forceinline :: defocus_small_ang_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_rolled_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=sp), automatic :: a0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r4(O,l2,a0)
+          end do
+      end subroutine defocus_small_ang_rolled_r4
+
+
+      subroutine defocus_small_ang_dispatch_r4(O,l2,alpha,rho,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_dispatch_r4
+         real(kind=sp),                    intent(in) :: O
+         real(kind=sp),                    intent(in) :: L2
+         real(kind=sp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=sp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         integer(kind=i4),                 intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call defocus_small_ang_unroll_16x_r4(O,l2,alpha,rho,n)
+             case (8)
+                call defocus_small_ang_unroll_8x_r4(O,l2,alpha,rho,n)
+             case (4)
+                call defocus_small_ang_unroll_4x_r4(O,l2,alpha,rho,n)
+             case (2)
+                call defocus_small_ang_unroll_2x_r4(O,l2,alpha,rho,n)
+             case (0)
+                call defocus_small_ang_rolled_r4(O,l2,alpha,rho,n)
+             case default
+                return
+          end select
+      end subroutine defocus_small_ang_dispatch_r4
 
 
       pure elemental function defocus_small_ang_r8(O,l2,alpha) result(rho)
