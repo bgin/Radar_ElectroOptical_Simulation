@@ -6855,6 +6855,255 @@ module eos_sensor
       end function defocus_small_ang_r8
 
 
+      subroutine defocus_small_ang_unroll_16x_r8(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_16x_r8
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_16x_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=dp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r8(O,l2,a0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r8(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r8(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r8(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r8(O,l2,a3)
+               a4       = alpha(i+4)
+               rho(i+4) = defocus_small_ang_r8(O,l2,a4)
+               a5       = alpha(i+5)
+               rho(i+5) = defocus_small_ang_r8(O,l2,a5)
+               a6       = alpha(i+6)
+               rho(i+6) = defocus_small_ang_r8(O,l2,a6)
+               a7       = alpha(i+7)
+               rho(i+7) = defocus_small_ang_r8(O,l2,a7)
+               a8       = alpha(i+8)
+               rho(i+8) = defocus_small_ang_r8(O,l2,a8)
+               a9       = alpha(i+9)
+               rho(i+9) = defocus_small_ang_r8(O,l2,a9) 
+               a10      = alpha(i+10)
+               rho(i+10)= defocus_small_ang_r8(O,l2,a10)
+               a11      = alpha(i+11)
+               rho(i+11)= defocus_small_ang_r8(O,l2,a11) 
+               a12      = alpha(i+12)
+               rho(i+12)= defocus_small_ang_r8(O,l2,a12)
+               a13      = alpha(i+13)
+               rho(i+13)= defocus_small_ang_r8(O,l2,a13)
+               a14      = alpha(i+14)
+               rho(i+14)= defocus_small_ang_r8(O,l2,a14)
+               a15       = alpha(i+15)
+               rho(i+15) = defocus_small_ang_r8(O,l2,a15)
+          end do
+      end subroutine defocus_small_ang_unroll_16x_r8
+
+
+      subroutine defocus_small_ang_unroll_8x_r8(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_8x_r8
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_8x_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r8(O,l2,a0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r8(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r8(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r8(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r8(O,l2,a3)
+               a4       = alpha(i+4)
+               rho(i+4) = defocus_small_ang_r8(O,l2,a4)
+               a5       = alpha(i+5)
+               rho(i+5) = defocus_small_ang_r8(O,l2,a5)
+               a6       = alpha(i+6)
+               rho(i+6) = defocus_small_ang_r8(O,l2,a6)
+               a7       = alpha(i+7)
+               rho(i+7) = defocus_small_ang_r8(O,l2,a7)
+           end do
+      end subroutine defocus_small_ang_unroll_8x_r8
+
+
+
+      subroutine defocus_small_ang_unroll_4x_r8(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_4x_r8
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_4x_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=dp), automatic :: a0,a1,a2,a3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r8(O,l2,a0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r8(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r8(O,l2,a1)
+               a2       = alpha(i+2)
+               rho(i+2) = defocus_small_ang_r8(O,l2,a2)
+               a3       = alpha(i+3)
+               rho(i+3) = defocus_small_ang_r8(O,l2,a3)
+          end do
+      end subroutine defocus_small_ang_unroll_4x_r8
+
+
+
+      subroutine defocus_small_ang_unroll_2x_r8(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_unroll_2x_r8
+           !dir$ attributes forceinline :: defocus_small_ang_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_unroll_2x_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=dp), automatic :: a0,a1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alpha(i)
+               rho(i) = defocus_small_ang_r8(O,l2,a0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r8(O,l2,a0)
+               a1       = alpha(i+1)
+               rho(i+1) = defocus_small_ang_r8(O,l2,a1)
+          end do
+      end subroutine defocus_small_ang_unroll_2x_r8
+
+
+
+      subroutine defocus_small_ang_rolled_r8(O,l2,alpha,rho,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_rolled_r8
+           !dir$ attributes forceinline :: defocus_small_ang_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_small_ang_rolled_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         real(kind=dp), automatic :: a0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned rho:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               a0       = alpha(i)
+               rho(i)   = defocus_small_ang_r8(O,l2,a0)
+          end do
+      end subroutine defocus_small_ang_rolled_r8
+
+
+      subroutine defocus_small_ang_dispatch_r8(O,l2,alpha,rho,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: defocus_small_ang_dispatch_r8
+         real(kind=dp),                    intent(in) :: O
+         real(kind=dp),                    intent(in) :: L2
+         real(kind=dp),   dimension(1:n),  intent(in) :: alpha
+         real(kind=dp),   dimension(1:n),  intent(in) :: rho
+         integer(kind=i4),                 intent(in) :: n
+         integer(kind=i4),                 intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call defocus_small_ang_unroll_16x_r8(O,l2,alpha,rho,n)
+             case (8)
+                call defocus_small_ang_unroll_8x_r8(O,l2,alpha,rho,n)
+             case (4)
+                call defocus_small_ang_unroll_4x_r8(O,l2,alpha,rho,n)
+             case (2)
+                call defocus_small_ang_unroll_2x_r8(O,l2,alpha,rho,n)
+             case (0)
+                call defocus_small_ang_rolled_r8(O,l2,alpha,rho,n)
+             case default
+                return
+          end select
+      end subroutine defocus_small_ang_dispatch_r8
+
+
       pure elemental function traj_scan_dxdt_r4(dx,dt) result(dxdt)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: traj_scan_dxdt_r4
@@ -6864,6 +7113,301 @@ module eos_sensor
          real(kind=sp) :: dxdt
          dxdt = dx(1)-dx(0)/(dt(1)-dt(0))
       end function traj_scan_dxdt_r4
+
+
+      subroutine traj_scan_dxdt_unroll_16x_r4(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_16x_r4
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_16x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), dimension(0:1), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         real(kind=sp), dimension(0:1), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r4(d0,t0)
+            end do
+            if(n<16) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r4(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r4(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r4(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r4(d3,t3)
+               d4        = dx(:,i+4)
+               t4        = dt(:,i+4)
+               dxdt(i+4) = traj_scan_dxdt_r4(d4,t4) 
+               d5        = dx(:,i+5)
+               t5        = dt(:,i+5)
+               dxdt(i+5) = traj_scan_dxdt_r4(d5,t5)
+               d6        = dx(:,i+6)
+               t6        = dt(:,i+6)
+               dxdt(i+6) = traj_scan_dxdt_r4(d6,t6)
+               d7        = dx(:,i+7)
+               t7        = dt(:,i+7)
+               dxdt(i+7) = traj_scan_dxdt_r4(d7,t7)
+               d8        = dx(:,i+8)
+               t8        = dt(:,i+8)
+               dxdt(i+8) = traj_scan_dxdt_r4(d8,t8) 
+               d9        = dx(:,i+9)
+               t9        = dt(:,i+9)
+               dxdt(i+9) = traj_scan_dxdt_r4(d9,t9)
+               d10       = dx(:,i+10)
+               t10       = dt(:,i+10)
+               dxdt(i+10)= traj_scan_dxdt_r4(d10,t10)
+               d11        = dx(:,i+11)
+               t11        = dt(:,i+11)
+               dxdt(i+11) = traj_scan_dxdt_r4(d11,t11)
+               d12        = dx(:,i+12)
+               t12        = dt(:,i+12)
+               dxdt(i+12) = traj_scan_dxdt_r4(d12,t12)
+               d13        = dx(:,i+13)
+               t13        = dt(:,i+13)
+               dxdt(i+13) = traj_scan_dxdt_r4(d13,t13)
+               d14        = dx(:,i+14)
+               t14        = dt(:,i+14)
+               dxdt(i+14) = traj_scan_dxdt_r4(d14,t14)
+               d1         = dx(:,i+15)
+               t15        = dt(:,i+15)
+               dxdt(i+15) = traj_scan_dxdt_r4(d15,t15)
+          end do
+      end subroutine traj_scan_dxdt_unroll_16x_r4
+
+
+      subroutine traj_scan_dxdt_unroll_8x_r4(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_8x_r4
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_8x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r4(d0,t0)
+            end do
+            if(n<8) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r4(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r4(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r4(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r4(d3,t3)
+               d4        = dx(:,i+4)
+               t4        = dt(:,i+4)
+               dxdt(i+4) = traj_scan_dxdt_r4(d4,t4) 
+               d5        = dx(:,i+5)
+               t5        = dt(:,i+5)
+               dxdt(i+5) = traj_scan_dxdt_r4(d5,t5)
+               d6        = dx(:,i+6)
+               t6        = dt(:,i+6)
+               dxdt(i+6) = traj_scan_dxdt_r4(d6,t6)
+               d7        = dx(:,i+7)
+               t7        = dt(:,i+7)
+               dxdt(i+7) = traj_scan_dxdt_r4(d7,t7)
+            end do
+      end subroutine traj_scan_dxdt_unroll_8x_r4
+
+
+      subroutine traj_scan_dxdt_unroll_4x_r4(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_4x_r4
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_4x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r4(d0,t0)
+            end do
+            if(n<4) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r4(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r4(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r4(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r4(d3,t3)
+           end do
+      end subroutine traj_scan_dxdt_unroll_4x_r4
+
+
+
+      subroutine traj_scan_dxdt_unroll_2x_r4(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_2x_r4
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_2x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1
+         real(kind=sp), dimension(0:1), automatic :: t0,t1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r4(d0,t0)
+            end do
+            if(n<2) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r4(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r4(d1,t1)
+           end do
+      end subroutine traj_scan_dxdt_unroll_2x_r4
+
+
+
+      subroutine traj_scan_dxdt_rolled_r4(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_rolled_r4
+           !dir$ attributes forceinline :: traj_scan_dxdt_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_rolled_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0
+         real(kind=sp), dimension(0:1), automatic :: t0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r4(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r4(d1,t1)
+           end do
+      end subroutine traj_scan_dxdt_rolled_r4
+      
+
+
+      subroutine traj_scan_dxdt_dispatch_r4(dx,dt,dxdt,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_dispatch_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         integer(kind=i4),                    intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+              call traj_scan_dxdt_unroll_16x_r4(dx,dt,dxdt,n)
+            case (8)
+              call traj_scan_dxdt_unroll_8x_r4(dx,dt,dxdt,n)
+            case (4)
+              call traj_scan_dxdt_unroll_4x_r4(dx,dt,dxdt,n)
+            case (2)
+              call traj_scan_dxdt_unroll_2x_r4(dx,dt,dxdt,n)
+            case (0)
+              call traj_scan_dxdt_rolled_r4(dx,dt,dxdt,n)
+            case default
+              return
+          end select
+      end subroutine traj_scan_dxdt_dispatch_r4
+     
+
+
 
 
       pure elemental function traj_scan_dxdt_r8(dx,dt) result(dxdt)
@@ -6877,6 +7421,299 @@ module eos_sensor
       end function traj_scan_dxdt_r8
 
 
+      subroutine traj_scan_dxdt_unroll_16x_r8(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_16x_r8
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_16x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), dimension(0:1), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         real(kind=dp), dimension(0:1), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r8(d0,t0)
+            end do
+            if(n<16) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r8(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r8(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r8(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r8(d3,t3)
+               d4        = dx(:,i+4)
+               t4        = dt(:,i+4)
+               dxdt(i+4) = traj_scan_dxdt_r8(d4,t4) 
+               d5        = dx(:,i+5)
+               t5        = dt(:,i+5)
+               dxdt(i+5) = traj_scan_dxdt_r8(d5,t5)
+               d6        = dx(:,i+6)
+               t6        = dt(:,i+6)
+               dxdt(i+6) = traj_scan_dxdt_r8(d6,t6)
+               d7        = dx(:,i+7)
+               t7        = dt(:,i+7)
+               dxdt(i+7) = traj_scan_dxdt_r8(d7,t7)
+               d8        = dx(:,i+8)
+               t8        = dt(:,i+8)
+               dxdt(i+8) = traj_scan_dxdt_r8(d8,t8) 
+               d9        = dx(:,i+9)
+               t9        = dt(:,i+9)
+               dxdt(i+9) = traj_scan_dxdt_r8(d9,t9)
+               d10       = dx(:,i+10)
+               t10       = dt(:,i+10)
+               dxdt(i+10)= traj_scan_dxdt_r8(d10,t10)
+               d11        = dx(:,i+11)
+               t11        = dt(:,i+11)
+               dxdt(i+11) = traj_scan_dxdt_r8(d11,t11)
+               d12        = dx(:,i+12)
+               t12        = dt(:,i+12)
+               dxdt(i+12) = traj_scan_dxdt_r8(d12,t12)
+               d13        = dx(:,i+13)
+               t13        = dt(:,i+13)
+               dxdt(i+13) = traj_scan_dxdt_r8(d13,t13)
+               d14        = dx(:,i+14)
+               t14        = dt(:,i+14)
+               dxdt(i+14) = traj_scan_dxdt_r8(d14,t14)
+               d1         = dx(:,i+15)
+               t15        = dt(:,i+15)
+               dxdt(i+15) = traj_scan_dxdt_r8(d15,t15)
+          end do
+      end subroutine traj_scan_dxdt_unroll_16x_r8
+
+
+      subroutine traj_scan_dxdt_unroll_8x_r8(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_8x_r8
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_8x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r8(d0,t0)
+            end do
+            if(n<8) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r8(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r8(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r8(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r8(d3,t3)
+               d4        = dx(:,i+4)
+               t4        = dt(:,i+4)
+               dxdt(i+4) = traj_scan_dxdt_r8(d4,t4) 
+               d5        = dx(:,i+5)
+               t5        = dt(:,i+5)
+               dxdt(i+5) = traj_scan_dxdt_r8(d5,t5)
+               d6        = dx(:,i+6)
+               t6        = dt(:,i+6)
+               dxdt(i+6) = traj_scan_dxdt_r8(d6,t6)
+               d7        = dx(:,i+7)
+               t7        = dt(:,i+7)
+               dxdt(i+7) = traj_scan_dxdt_r8(d7,t7)
+            end do
+      end subroutine traj_scan_dxdt_unroll_8x_r8
+
+
+      subroutine traj_scan_dxdt_unroll_4x_r8(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_4x_r8
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_4x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r8(d0,t0)
+            end do
+            if(n<4) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r8(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r8(d1,t1)
+               d2        = dx(:,i+2)
+               t2        = dt(:,i+2)
+               dxdt(i+2) = traj_scan_dxdt_r8(d2,t2)
+               d3        = dx(:,i+3)
+               t3        = dt(:,i+3)
+               dxdt(i+3) = traj_scan_dxdt_r8(d3,t3)
+           end do
+      end subroutine traj_scan_dxdt_unroll_4x_r8
+
+
+
+      subroutine traj_scan_dxdt_unroll_2x_r8(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_unroll_2x_r8
+           !dir$ attributes forceinline :: traj_scan_dxdt_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_unroll_2x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1
+         real(kind=dp), dimension(0:1), automatic :: t0,t1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dx(:,i)
+               t0      = dt(:,i)
+               dxdt(i) = traj_scan_dxdt_r8(d0,t0)
+            end do
+            if(n<2) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r8(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r8(d1,t1)
+           end do
+      end subroutine traj_scan_dxdt_unroll_2x_r8
+
+
+
+      subroutine traj_scan_dxdt_rolled_r8(dx,dt,dxdt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_rolled_r8
+           !dir$ attributes forceinline :: traj_scan_dxdt_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dxdt_rolled_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0
+         real(kind=dp), dimension(0:1), automatic :: t0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned dx:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dxdt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               d0        = dx(:,i)
+               t0        = dt(:,i)
+               dxdt(i)   = traj_scan_dxdt_r8(d0,t0)
+               d1        = dx(:,i+1)
+               t1        = dt(:,i+1)
+               dxdt(i+1) = traj_scan_dxdt_r8(d1,t1)
+           end do
+      end subroutine traj_scan_dxdt_rolled_r8
+      
+
+
+      subroutine traj_scan_dxdt_dispatch_r8(dx,dt,dxdt,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dxdt_dispatch_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dx
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dxdt
+         integer(kind=i4),                    intent(in) :: n
+         integer(kind=i4),                    intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+              call traj_scan_dxdt_unroll_16x_r8(dx,dt,dxdt,n)
+            case (8)
+              call traj_scan_dxdt_unroll_8x_r8(dx,dt,dxdt,n)
+            case (4)
+              call traj_scan_dxdt_unroll_4x_r8(dx,dt,dxdt,n)
+            case (2)
+              call traj_scan_dxdt_unroll_2x_r8(dx,dt,dxdt,n)
+            case (0)
+              call traj_scan_dxdt_rolled_r8(dx,dt,dxdt,n)
+            case default
+              return
+          end select
+      end subroutine traj_scan_dxdt_dispatch_r8
+     
+
+
       pure elemental function traj_scan_dydt_r4(dy,dt) result(dydt)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: traj_scan_dydt_r4
@@ -6886,6 +7723,297 @@ module eos_sensor
          real(kind=sp) :: dydt
          dxdt = dy(1)-dy(0)/(dt(1)-dt(0))
       end function traj_scan_dydt_r4
+
+
+      subroutine traj_scan_dydt_unroll_16x_r4(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_16x_r4
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_16x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), dimension(0:1), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         real(kind=sp), dimension(0:1), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r4(d0,t0)
+            end do
+            if(n<16) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r4(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r4(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r4(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r4(d3,t3)
+               d4        = dy(:,i+4)
+               t4        = dt(:,i+4)
+               dydt(i+4) = traj_scan_dydt_r4(d4,t4) 
+               d5        = dy(:,i+5)
+               t5        = dt(:,i+5)
+               dydt(i+5) = traj_scan_dydt_r4(d5,t5)
+               d6        = dy(:,i+6)
+               t6        = dt(:,i+6)
+               dydt(i+6) = traj_scan_dydt_r4(d6,t6)
+               d7        = dy(:,i+7)
+               t7        = dt(:,i+7)
+               dydt(i+7) = traj_scan_dydt_r4(d7,t7)
+               d8        = dy(:,i+8)
+               t8        = dt(:,i+8)
+               dydt(i+8) = traj_scan_dydt_r4(d8,t8) 
+               d9        = dy(:,i+9)
+               t9        = dt(:,i+9)
+               dydt(i+9) = traj_scan_dydt_r4(d9,t9)
+               d10       = dy(:,i+10)
+               t10       = dt(:,i+10)
+               dydt(i+10)= traj_scan_dydt_r4(d10,t10)
+               d11        = dy(:,i+11)
+               t11        = dt(:,i+11)
+               dydt(i+11) = traj_scan_dydt_r4(d11,t11)
+               d12        = dy(:,i+12)
+               t12        = dt(:,i+12)
+               dydt(i+12) = traj_scan_dydt_r4(d12,t12)
+               d13        = dy(:,i+13)
+               t13        = dt(:,i+13)
+               dydt(i+13) = traj_scan_dydt_r4(d13,t13)
+               d14        = dy(:,i+14)
+               t14        = dt(:,i+14)
+               dydt(i+14) = traj_scan_dydt_r4(d14,t14)
+               d1         = dy(:,i+15)
+               t15        = dt(:,i+15)
+               dydt(i+15) = traj_scan_dydt_r4(d15,t15)
+          end do
+      end subroutine traj_scan_dydt_unroll_16x_r4
+
+
+      subroutine traj_scan_dydt_unroll_8x_r4(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_8x_r4
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_8x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r4(d0,t0)
+            end do
+            if(n<8) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r4(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r4(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r4(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r4(d3,t3)
+               d4        = dy(:,i+4)
+               t4        = dt(:,i+4)
+               dydt(i+4) = traj_scan_dydt_r4(d4,t4) 
+               d5        = dy(:,i+5)
+               t5        = dt(:,i+5)
+               dydt(i+5) = traj_scan_dydt_r4(d5,t5)
+               d6        = dy(:,i+6)
+               t6        = dt(:,i+6)
+               dydt(i+6) = traj_scan_dydt_r4(d6,t6)
+               d7        = dy(:,i+7)
+               t7        = dt(:,i+7)
+               dydt(i+7) = traj_scan_dydt_r4(d7,t7)
+            end do
+      end subroutine traj_scan_dydt_unroll_8x_r4
+
+
+      subroutine traj_scan_dydt_unroll_4x_r4(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_4x_r4
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_4x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1,d2,d3
+         real(kind=sp), dimension(0:1), automatic :: t0,t1,t2,t3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r4(d0,t0)
+            end do
+            if(n<4) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r4(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r4(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r4(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r4(d3,t3)
+           end do
+      end subroutine traj_scan_dydt_unroll_4x_r4
+
+
+
+      subroutine traj_scan_dydt_unroll_2x_r4(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_2x_r4
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_2x_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0,d1
+         real(kind=sp), dimension(0:1), automatic :: t0,t1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r4(d0,t0)
+            end do
+            if(n<2) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r4(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r4(d1,t1)
+           end do
+      end subroutine traj_scan_dydt_unroll_2x_r4
+
+
+
+      subroutine traj_scan_dydt_rolled_r4(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_rolled_r4
+           !dir$ attributes forceinline :: traj_scan_dydt_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_rolled_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=sp), dimension(0:1), automatic :: d0
+         real(kind=sp), dimension(0:1), automatic :: t0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r4(d0,t0)
+          end do
+      end subroutine traj_scan_dydt_rolled_r4
+      
+
+
+      subroutine traj_scan_dydt_dispatch_r4(dy,dt,dydt,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_dispatch_r4
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=sp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=sp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         integer(kind=i4),                    intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+              call traj_scan_dydt_unroll_16x_r4(dy,dt,dydt,n)
+            case (8)
+              call traj_scan_dydt_unroll_8x_r4(dy,dt,dydt,n)
+            case (4)
+              call traj_scan_dydt_unroll_4x_r4(dy,dt,dydt,n)
+            case (2)
+              call traj_scan_dydt_unroll_2x_r4(dy,dt,dydt,n)
+            case (0)
+              call traj_scan_dydt_rolled_r4(dy,dt,dydt,n)
+            case default
+              return
+          end select
+      end subroutine traj_scan_dydt_dispatch_r4
+     
+
 
        
       pure elemental function traj_scan_dydt_r8(dy,dt) result(dydt)
@@ -6897,6 +8025,297 @@ module eos_sensor
          real(kind=dp) :: dydt
          dxdt = dy(1)-dy(0)/(dt(1)-dt(0))
       end function traj_scan_dydt_r8
+
+
+      subroutine traj_scan_dydt_unroll_16x_r8(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_16x_r8
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_16x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), dimension(0:1), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         real(kind=dp), dimension(0:1), automatic :: t8,t9,t10,t11,t12,t13,t14,t15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r8(d0,t0)
+            end do
+            if(n<16) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,16
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r8(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r8(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r8(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r8(d3,t3)
+               d4        = dy(:,i+4)
+               t4        = dt(:,i+4)
+               dydt(i+4) = traj_scan_dydt_r8(d4,t4) 
+               d5        = dy(:,i+5)
+               t5        = dt(:,i+5)
+               dydt(i+5) = traj_scan_dydt_r8(d5,t5)
+               d6        = dy(:,i+6)
+               t6        = dt(:,i+6)
+               dydt(i+6) = traj_scan_dydt_r8(d6,t6)
+               d7        = dy(:,i+7)
+               t7        = dt(:,i+7)
+               dydt(i+7) = traj_scan_dydt_r8(d7,t7)
+               d8        = dy(:,i+8)
+               t8        = dt(:,i+8)
+               dydt(i+8) = traj_scan_dydt_r4(d8,t8) 
+               d9        = dy(:,i+9)
+               t9        = dt(:,i+9)
+               dydt(i+9) = traj_scan_dydt_r8(d9,t9)
+               d10       = dy(:,i+10)
+               t10       = dt(:,i+10)
+               dydt(i+10)= traj_scan_dydt_r8(d10,t10)
+               d11        = dy(:,i+11)
+               t11        = dt(:,i+11)
+               dydt(i+11) = traj_scan_dydt_r8(d11,t11)
+               d12        = dy(:,i+12)
+               t12        = dt(:,i+12)
+               dydt(i+12) = traj_scan_dydt_r8(d12,t12)
+               d13        = dy(:,i+13)
+               t13        = dt(:,i+13)
+               dydt(i+13) = traj_scan_dydt_r8(d13,t13)
+               d14        = dy(:,i+14)
+               t14        = dt(:,i+14)
+               dydt(i+14) = traj_scan_dydt_r8(d14,t14)
+               d1         = dy(:,i+15)
+               t15        = dt(:,i+15)
+               dydt(i+15) = traj_scan_dydt_r8(d15,t15)
+          end do
+      end subroutine traj_scan_dydt_unroll_16x_r8
+
+
+      subroutine traj_scan_dydt_unroll_8x_r8(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_8x_r8
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_8x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3,t4,t5,t6,t7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r8(d0,t0)
+            end do
+            if(n<8) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,8
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r8(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r8(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r8(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r8(d3,t3)
+               d4        = dy(:,i+4)
+               t4        = dt(:,i+4)
+               dydt(i+4) = traj_scan_dydt_r8(d4,t4) 
+               d5        = dy(:,i+5)
+               t5        = dt(:,i+5)
+               dydt(i+5) = traj_scan_dydt_r8(d5,t5)
+               d6        = dy(:,i+6)
+               t6        = dt(:,i+6)
+               dydt(i+6) = traj_scan_dydt_r8(d6,t6)
+               d7        = dy(:,i+7)
+               t7        = dt(:,i+7)
+               dydt(i+7) = traj_scan_dydt_r8(d7,t7)
+            end do
+      end subroutine traj_scan_dydt_unroll_8x_r8
+
+
+      subroutine traj_scan_dydt_unroll_4x_r8(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_4x_r8
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_4x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1,d2,d3
+         real(kind=dp), dimension(0:1), automatic :: t0,t1,t2,t3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r8(d0,t0)
+            end do
+            if(n<4) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,4
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r8(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r8(d1,t1)
+               d2        = dy(:,i+2)
+               t2        = dt(:,i+2)
+               dydt(i+2) = traj_scan_dydt_r8(d2,t2)
+               d3        = dy(:,i+3)
+               t3        = dt(:,i+3)
+               dydt(i+3) = traj_scan_dydt_r8(d3,t3)
+           end do
+      end subroutine traj_scan_dydt_unroll_4x_r8
+
+
+
+      subroutine traj_scan_dydt_unroll_2x_r8(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_unroll_2x_r8
+           !dir$ attributes forceinline :: traj_scan_dydt_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_unroll_2x_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0,d1
+         real(kind=dp), dimension(0:1), automatic :: t0,t1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0      = dy(:,i)
+               t0      = dt(:,i)
+               dydt(i) = traj_scan_dydt_r8(d0,t0)
+            end do
+            if(n<2) return
+          end if
+          m1 = m+1
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=m1,n,2
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r8(d0,t0)
+               d1        = dy(:,i+1)
+               t1        = dt(:,i+1)
+               dydt(i+1) = traj_scan_dydt_r8(d1,t1)
+           end do
+      end subroutine traj_scan_dydt_unroll_2x_r8
+
+
+
+      subroutine traj_scan_dydt_rolled_r8(dy,dt,dydt,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_rolled_r8
+           !dir$ attributes forceinline :: traj_scan_dydt_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: traj_scan_dydt_rolled_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         real(kind=dp), dimension(0:1), automatic :: d0
+         real(kind=dp), dimension(0:1), automatic :: t0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned dy:64
+           !dir$ assume_aligned dt:64
+           !dir$ assume_aligned dydt:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+          do i=1,n
+               d0        = dy(:,i)
+               t0        = dt(:,i)
+               dydt(i)   = traj_scan_dydt_r8(d0,t0)
+          end do
+      end subroutine traj_scan_dydt_rolled_r8
+      
+
+
+      subroutine traj_scan_dydt_dispatch_r8(dy,dt,dydt,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: traj_scan_dydt_dispatch_r8
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dy
+         real(kind=dp),   dimension(0:1,1:n), intent(in) :: dt
+         real(kind=dp),   dimension(1:n),     intent(out):: dydt
+         integer(kind=i4),                    intent(in) :: n
+         integer(kind=i4),                    intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+              call traj_scan_dydt_unroll_16x_r8(dy,dt,dydt,n)
+            case (8)
+              call traj_scan_dydt_unroll_8x_r8(dy,dt,dydt,n)
+            case (4)
+              call traj_scan_dydt_unroll_4x_r8(dy,dt,dydt,n)
+            case (2)
+              call traj_scan_dydt_unroll_2x_r8(dy,dt,dydt,n)
+            case (0)
+              call traj_scan_dydt_rolled_r8(dy,dt,dydt,n)
+            case default
+              return
+          end select
+      end subroutine traj_scan_dydt_dispatch_r8
+     
+
 
 
       ! СКАНИРОВАНИЕ ЗЕРКАЛОМ, ВРАЩАЮЩИМСЯ
