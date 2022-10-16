@@ -8336,6 +8336,302 @@ module eos_sensor
       end function fov_x_axis_r4
 
 
+      subroutine fov_x_axis_unroll_16x_r4(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_r4
+           !dir$ attributes forceinline :: fov_x_axis_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=sp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_r4(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_r4(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = gamma(i+8)
+            ax(i+8) = fov_x_axis_r4(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = gamma(i+9)
+            ax(i+9) = fov_x_axis_r4(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = gamma(i+10)
+            ax(i+10)= fov_x_axis_r4(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = gamma(i+11)
+            ax(i+11)= fov_x_axis_r4(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = gamma(i+12)
+            ax(i+12)= fov_x_axis_r4(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = gamma(i+13)
+            ax(i+13)= fov_x_axis_r4(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = gamma(i+14)
+            ax(i+14)= fov_x_axis_r4(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = gamma(i+15)
+            ax(i+15)= fov_x_axis_r4(H,d15,g15)
+         end do
+      end subroutine fov_x_axis_unroll_16x_r4
+
+
+      subroutine fov_x_axis_unroll_8x_r4(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_r4
+           !dir$ attributes forceinline :: fov_x_axis_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=sp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_r4(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_r4(H,d7,g7)
+         end do
+     end subroutine fov_x_axis_unroll_8x_r4
+
+
+
+     subroutine fov_x_axis_unroll_4x_r4(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_r4
+           !dir$ attributes forceinline :: fov_x_axis_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=sp), automatic :: d0,d1,d2,d3
+         real(kind=sp), automatic :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_r4(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_r4(H,d3,g3)
+         end do
+      end subroutine fov_x_axis_unroll_4x_r4
+
+
+      subroutine fov_x_axis_unroll_2x_r4(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_r4
+           !dir$ attributes forceinline :: fov_x_axis_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=sp), automatic :: d0,d1
+         real(kind=sp), automatic :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_r4(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_r4(H,d1,g1)
+         end do
+      end subroutine fov_x_axis_unroll_2x_r4
+
+
+      subroutine fov_x_axis_rolled_r4(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_rolled_r4
+           !dir$ attributes forceinline :: fov_x_axis_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=sp), automatic :: d0
+         real(kind=sp), automatic :: g0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_r4(H,d0,g0)
+         end do
+      end subroutine fov_x_axis_rolled_r4
+
+
+
+      subroutine fov_x_axis_dispatch_r4(H,delta,gamma,ax,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_dispatch_r4
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),               intent(in)  :: n
+         integer(kind=i4),               intent(in)  :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+               call fov_x_axis_unroll_16x_r4(H,delta,gamma,ax,n)
+            case (8)
+               call fov_x_axis_unroll_8x_r4(H,delta,gamma,ax,n)
+            case (4)
+               call fov_x_axis_unroll_4x_r4(H,delta,gamma,ax,n)
+            case (2)
+               call fov_x_axis_unroll_2x_r4(H,delta,gamma,ax,n)
+            case (0)
+               call fov_x_axis_rolled_r4(H,delta,gamma,ax,n)
+            case default
+               return
+         end select
+      end subroutine fov_x_axis_dispatch_r4
+      
+       
+
+
       pure elemental function fov_x_axis_r8(H,delta,gamma) result(ax)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: fov_x_axis_r8
