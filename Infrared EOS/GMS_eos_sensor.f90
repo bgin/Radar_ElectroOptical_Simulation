@@ -9735,64 +9735,8 @@ module eos_sensor
 
 
         
-    subroutine scan_width_unroll_8x_r4(H,delta,theta,B,n)
-           !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: scan_width_unroll_8x_r4
-           !dir$ attributes forceinline :: scan_width_unroll_8x_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_r4
-         real(kind=sp),  intent(in) :: H
-         real(kind=sp),  dimension(1:n), intent(in)  :: delta
-         real(kind=sp),  dimension(1:n), intent(in)  :: theta
-         real(kind=sp),  dimension(1:n), intent(out) :: B
-         integer(kind=i4),               intent(in)  :: n
-         real(kind=sp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
-         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
-         integer(kind=i4) :: i,m,m1
-         m = mod(n,8)
-         if(m /= 0) then
-            do i=1,m
-               d0    = delta(i)
-               g0    = theta(i)
-               B(i) = scan_width_r4(H,d0,g0)
-            end do
-            if(n<8) return
-         end if
-         m1 = m+1
-           !dir$ assume_aligned delta:64
-           !dir$ assume_aligned theta:64
-           !dir$ assume_aligned B:64
-           !dir$ vector aligned
-           !dir$ ivdep
-           !dir$ vector vectorlength(4)
-           !dir$ vector multiple_gather_scatter_by_shuffles 
-           !dir$ vector always
-         do i=m1,n,8
-            d0      = delta(i)
-            g0      = theta(i)
-            B(i)   = scan_width_r4(H,d0,g0)
-            d1      = delta(i+1)
-            g1      = theta(i+1)
-            B(i+1) = scan_width_r4(H,d1,g1)
-            d2      = delta(i+2)
-            g2      = theta(i+2)
-            B(i+2) = scan_width_r4(H,d2,g2)
-            d3      = delta(i+3)
-            g3      = theta(i+3)
-            B(i+3) = scan_width_r4(H,d3,g3)
-            d4      = delta(i+4)
-            g4      = theta(i+4)
-            B(i+4) = scan_width_r4(H,d4,g4)
-            d5      = delta(i+5)
-            g5      = theta(i+5)
-            B(i+5) = scan_width_r4(H,d5,g5)
-            d6      = delta(i+6)
-            g6      = theta(i+6)
-            B(i+6) = scan_width_r4(H,d6,g6)
-            d7      = delta(i+7)
-            g7      = theta(i+7)
-            B(i+7) = scan_width_r4(H,d7,g7)
-          end do
-      end subroutine scan_width_unroll_8x_r4
+  
+    
 
 
       subroutine scan_width_unroll_4x_r4(H,delta,theta,B,n)
@@ -9888,46 +9832,7 @@ module eos_sensor
 
 
        
-     subroutine scan_width_unroll_2x_r4(H,delta,theta,B,n)
-           !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: scan_width_unroll_2x_r4
-           !dir$ attributes forceinline :: scan_width_unroll_2x_r4
-           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_r4
-         real(kind=sp),  intent(in) :: H
-         real(kind=sp),  dimension(1:n), intent(in)  :: delta
-         real(kind=sp),  dimension(1:n), intent(in)  :: theta
-         real(kind=sp),  dimension(1:n), intent(out) :: B
-         integer(kind=i4),               intent(in)  :: n
-         real(kind=sp), automatic :: d0,d1
-         real(kind=sp), automatic :: g0,g1
-         integer(kind=i4) :: i,m,m1
-         m = mod(n,2)
-         if(m /= 0) then
-            do i=1,m
-               d0    = delta(i)
-               g0    = theta(i)
-               B(i) = scan_width_r4(H,d0,g0)
-            end do
-            if(n<2) return
-         end if
-         m1 = m+1
-           !dir$ assume_aligned delta:64
-           !dir$ assume_aligned theta:64
-           !dir$ assume_aligned B:64
-           !dir$ vector aligned
-           !dir$ ivdep
-           !dir$ vector vectorlength(4)
-           !dir$ vector multiple_gather_scatter_by_shuffles 
-           !dir$ vector always
-         do i=m1,n,2
-            d0      = delta(i)
-            g0      = theta(i)
-            B(i)   = scan_width_r4(H,d0,g0)
-            d1      = delta(i+1)
-            g1      = theta(i+1)
-            B(i+1) = scan_width_r4(H,d1,g1)
-         end do
-     end subroutine scan_width_unroll_2x_r4
+   
 
 
 
@@ -9966,10 +9871,10 @@ module eos_sensor
      subroutine scan_width_dispatch_r4(H,delta,theta,B,n,unroll_cnt)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 :: scan_width_dispatch_r4
-         real(kind=dp),  intent(in) :: H
-         real(kind=dp),  dimension(1:n), intent(in)  :: delta
-         real(kind=dp),  dimension(1:n), intent(in)  :: theta
-         real(kind=dp),  dimension(1:n), intent(out) :: B
+         real(kind=sp),  intent(in) :: H
+         real(kind=sp),  dimension(1:n), intent(in)  :: delta
+         real(kind=sp),  dimension(1:n), intent(in)  :: theta
+         real(kind=sp),  dimension(1:n), intent(out) :: B
          integer(kind=i4),               intent(in)  :: n
          integer(kind=i4),               intent(in)  :: unroll_cnt
          select case (unroll_cnt)
@@ -10007,6 +9912,316 @@ module eos_sensor
          B     = (H+H)*t0*t1
       end function scan_width_r8
 
+
+       
+      subroutine scan_width_unroll_16x_r8(H,delta,theta,B,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_unroll_16x_r8
+           !dir$ attributes forceinline :: scan_width_unroll_16x_r9
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_16x_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=dp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_r8(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned theta:64
+           !dir$ assume_aligned B:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_r8(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = theta(i+8)
+            B(i+8) = scan_width_r8(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = theta(i+9)
+            B(i+9) = scan_width_r8(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = theta(i+10)
+            B(i+10)= scan_width_r8(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = theta(i+11)
+            B(i+11)= scan_width_r8(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = theta(i+12)
+            B(i+12)= scan_width_r8(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = theta(i+13)
+            B(i+13)= scan_width_r8(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = theta(i+14)
+            B(i+14)= scan_width_r8(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = theta(i+15)
+            B(i+15)= scan_width_r8(H,d15,g15)
+         end do
+     end subroutine scan_width_unroll_16x_r8
+
+
+
+     subroutine scan_width_unroll_8x_r8(H,delta,theta,B,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_unroll_8x_r8
+           !dir$ attributes forceinline :: scan_width_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=dp), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_r8(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned theta:64
+           !dir$ assume_aligned B:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_r8(H,d7,g7)
+          end do
+     end subroutine scan_width_unroll_8x_r8
+
+
+        
+ 
+      
+
+
+      subroutine scan_width_unroll_4x_r8(H,delta,theta,B,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_unroll_4x_r8
+           !dir$ attributes forceinline :: scan_width_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_4x_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=dp), automatic :: d0,d1,d2,d3
+         real(kind=dp), automatic :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_r8(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned theta:64
+           !dir$ assume_aligned B:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_r8(H,d3,g3)
+         end do
+     end subroutine scan_width_unroll_4x_r8
+
+
+       
+     subroutine scan_width_unroll_2x_r8(H,delta,theta,B,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_unroll_2x_r8
+           !dir$ attributes forceinline :: scan_width_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=dp), automatic :: d0,d1
+         real(kind=dp), automatic :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_r8(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned theta:64
+           !dir$ assume_aligned B:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_r8(H,d1,g1)
+         end do
+     end subroutine scan_width_unroll_2x_r8
+
+
+
+       
+  
+   
+
+
+
+       
+     subroutine scan_width_rolled_r8(H,delta,theta,B,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_rolled_r8
+           !dir$ attributes forceinline :: scan_width_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_rolled_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         real(kind=dp), automatic :: d0
+         real(kind=dp), automatic :: g0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned theta:64
+           !dir$ assume_aligned B:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_r8(H,d0,g0)
+         end do
+     end subroutine scan_width_rolled_r8
+
+
+
+     subroutine scan_width_dispatch_r8(H,delta,theta,B,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: scan_width_dispatch_r8
+         real(kind=dp),  intent(in) :: H
+         real(kind=dp),  dimension(1:n), intent(in)  :: delta
+         real(kind=dp),  dimension(1:n), intent(in)  :: theta
+         real(kind=dp),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),               intent(in)  :: n
+         integer(kind=i4),               intent(in)  :: unroll_cnt
+         select case (unroll_cnt)
+            case (16)
+               call scan_width_unroll_16x_r8(H,delta,theta,B,n)
+            case (8)
+               call scan_width_unroll_8x_r8(H,delta,theta,B,n)
+            case (4)
+               call scan_width_unroll_4x_r8(H,delta,theta,B,n)
+            case (2)
+               call scan_width_unroll_2x_r8(H,delta,theta,B,n)
+            case (0)
+               call scan_width_rolled_r8(H,delta,theta,B,n)
+            case default
+               return
+         end select
+      end subroutine scan_width_dispatch_r8
+
+ 
 
    
 
@@ -10057,6 +10272,358 @@ module eos_sensor
       end function refract_shift_r4
 
 
+      subroutine refract_shift_unroll_16x_r4(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_16x_r4
+           !dir$ attributes forceinline :: refract_shift_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         real(kind=sp), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+         real(kind=sp), automatic :: n8,n9,n10,n11,n12,n13,n14,n15
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,16)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+            end do
+            if(len<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,16
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r4(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r4(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r4(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_r4(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_r4(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_r4(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_r4(i1,delta,a7,g7,n7)
+             a8     = alfa(i+8)
+             g8     = gamma(i+8)
+             n8     = n(i+8)
+             l(i+8) = refract_shift_r4(i1,delta,a8,g8,n8)
+             a9     = alfa(i+9)
+             g9     = gamma(i+9)
+             n9     = n(i+9)
+             l(i+9) = refract_shift_r4(i1,delta,a9,g9,n9)
+             a10    = alfa(i+10)
+             g10    = gamma(i+10)
+             n10    = n(i+10)
+             l(i+10)= refract_shift_r4(i1,delta,a10,g10,n10)
+             a11    = alfa(i+11)
+             g11    = gamma(i+11)
+             n11    = n(i+11)
+             l(i+11)= refract_shift_r4(i1,delta,a11,g11,n11)
+             a12    = alfa(i+12)
+             g12    = gamma(i+12)
+             n12    = n(i+12)
+             l(i+12)= refract_shift_r4(i1,delta,a12,g12,n12)
+             a13    = alfa(i+13)
+             g13    = gamma(i+13)
+             n13    = n(i+13)
+             l(i+13)= refract_shift_r4(i1,delta,a13,g13,n13)
+             a14    = alfa(i+14)
+             g14    = gamma(i+14)
+             n14    = n(i+14)
+             l(i+14)= refract_shift_r4(i1,delta,a14,g14,n14)
+             a15    = alfa(i+15)
+             g15    = gamma(i+15)
+             n15    = n(i+15)
+             l(i+15)= refract_shift_r4(i1,delta,a15,g15,n15)
+         end do
+     end subroutine refract_shift_unroll_16x_r4
+
+
+     subroutine refract_shift_unroll_8x_r4(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_8x_r4
+           !dir$ attributes forceinline :: refract_shift_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=sp), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,8)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+            end do
+            if(len<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,8
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r4(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r4(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r4(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_r4(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_r4(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_r4(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_r4(i1,delta,a7,g7,n7)
+          end do
+     end subroutine refract_shift_unroll_8x_r4
+  
+      
+     subroutine refract_shift_unroll_4x_r4(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_4x_r4
+           !dir$ attributes forceinline :: refract_shift_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=sp), automatic :: a0,a1,a2,a3
+         real(kind=sp), automatic :: g0,g1,g2,g3
+         real(kind=sp), automatic :: n0,n1,n2,n3
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,4)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+            end do
+            if(len<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,4
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r4(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r4(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r4(i1,delta,a3,g3,n3)
+          end do
+      end subroutine refract_shift_unroll_4x_r4
+
+
+      subroutine refract_shift_unroll_2x_r4(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_2x_r4
+           !dir$ attributes forceinline :: refract_shift_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=sp), automatic :: a0,a1
+         real(kind=sp), automatic :: g0,g1
+         real(kind=sp), automatic :: n0,n1
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,2)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+            end do
+            if(len<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,2
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r4(i1,delta,a1,g1,n1)
+         end do
+     end subroutine refract_shift_unroll_2x_r4
+
+
+     subroutine refract_shift_rolled_r4(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_rolled_r4
+           !dir$ attributes forceinline :: refract_shift_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=sp), automatic :: a0
+         real(kind=sp), automatic :: g0
+         real(kind=sp), automatic :: n0
+         integer(kind=i4) :: i
+      
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,len
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r4(i1,delta,a0,g0,n0)
+         end do
+      end subroutine refract_shift_rolled_r4
+
+
+      subroutine refract_shif_dispatch_r4(i1,delta,alfa,gamma,n,l,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shif_dispatch_r4
+         real(kind=sp),                     intent(in) :: i1
+         real(kind=sp),                     intent(in) :: delta
+         real(kind=sp), dimension(1:len),   intent(in) :: alfa
+         real(kind=sp), dimension(1:len),   intent(in) :: gamma
+         real(kind=sp), dimension(1:len),   intent(in) :: n
+         real(kind=sp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         integer(kind=i4),                  intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call refract_shift_unroll_16x_r4(i1,delta,alfa,gamma,n,l,len)
+             case (8)
+                call refract_shift_unroll_8x_r4(i1,delta,alfa,gamma,n,l,len)
+             case (4)
+                call refract_shift_unroll_4x_r4(i1,delta,alfa,gamma,n,l,len)
+             case (2)
+                call refract_shift_unroll_2x_r4(i1,delta,alfa,gamma,n,l,len)
+             case (0)
+                call refract_shift_rolled_r4(i1,delta,alfa,gamma,n,l,len)
+             case default
+                return
+         end select
+      end subroutine refract_shif_dispatch_r4
+      
+ 
+     
+
       pure elemental function refract_shift_r8(i1,delta,alfa,gamma,n) result(l)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: refract_shift_r8
@@ -10099,7 +10666,354 @@ module eos_sensor
 
        
     
+     subroutine refract_shift_unroll_16x_r8(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_16x_r8
+           !dir$ attributes forceinline :: refract_shift_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=dp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         real(kind=dp), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+         real(kind=dp), automatic :: n8,n9,n10,n11,n12,n13,n14,n15
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,16)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,16
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_r8(i1,delta,a7,g7,n7)
+             a8     = alfa(i+8)
+             g8     = gamma(i+8)
+             n8     = n(i+8)
+             l(i+8) = refract_shift_r8(i1,delta,a8,g8,n8)
+             a9     = alfa(i+9)
+             g9     = gamma(i+9)
+             n9     = n(i+9)
+             l(i+9) = refract_shift_r8(i1,delta,a9,g9,n9)
+             a10    = alfa(i+10)
+             g10    = gamma(i+10)
+             n10    = n(i+10)
+             l(i+10)= refract_shift_r8(i1,delta,a10,g10,n10)
+             a11    = alfa(i+11)
+             g11    = gamma(i+11)
+             n11    = n(i+11)
+             l(i+11)= refract_shift_r8(i1,delta,a11,g11,n11)
+             a12    = alfa(i+12)
+             g12    = gamma(i+12)
+             n12    = n(i+12)
+             l(i+12)= refract_shift_r8(i1,delta,a12,g12,n12)
+             a13    = alfa(i+13)
+             g13    = gamma(i+13)
+             n13    = n(i+13)
+             l(i+13)= refract_shift_r8(i1,delta,a13,g13,n13)
+             a14    = alfa(i+14)
+             g14    = gamma(i+14)
+             n14    = n(i+14)
+             l(i+14)= refract_shift_r8(i1,delta,a14,g14,n14)
+             a15    = alfa(i+15)
+             g15    = gamma(i+15)
+             n15    = n(i+15)
+             l(i+15)= refract_shift_r8(i1,delta,a15,g15,n15)
+         end do
+     end subroutine refract_shift_unroll_16x_r8
 
+
+     subroutine refract_shift_unroll_8x_r8(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_8x_r8
+           !dir$ attributes forceinline :: refract_shift_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=dp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         real(kind=dp), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,8)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,8
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_r8(i1,delta,a7,g7,n7)
+          end do
+     end subroutine refract_shift_unroll_8x_r8
+  
+      
+     subroutine refract_shift_unroll_4x_r8(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_4x_r8
+           !dir$ attributes forceinline :: refract_shift_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=dp), automatic :: a0,a1,a2,a3
+         real(kind=dp), automatic :: g0,g1,g2,g3
+         real(kind=dp), automatic :: n0,n1,n2,n3
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,4)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,4
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_r8(i1,delta,a3,g3,n3)
+          end do
+      end subroutine refract_shift_unroll_4x_r8
+
+
+      subroutine refract_shift_unroll_2x_r8(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_unroll_2x_r8
+           !dir$ attributes forceinline :: refract_shift_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=dp), automatic :: a0,a1
+         real(kind=dp), automatic :: g0,g1
+         real(kind=dp), automatic :: n0,n1
+         integer(kind=i4) :: i,m,m1
+         m = mod(len,2)
+         if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,len,2
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_r8(i1,delta,a1,g1,n1)
+         end do
+     end subroutine refract_shift_unroll_2x_r8
+
+
+     subroutine refract_shift_rolled_r8(i1,delta,alfa,gamma,n,l,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shift_rolled_r8
+           !dir$ attributes forceinline :: refract_shift_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         real(kind=dp), automatic :: a0
+         real(kind=dp), automatic :: g0
+         real(kind=dp), automatic :: n0
+         integer(kind=i4) :: i
+      
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,len
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_r8(i1,delta,a0,g0,n0)
+         end do
+      end subroutine refract_shift_rolled_r8
+
+
+      subroutine refract_shif_dispatch_r8(i1,delta,alfa,gamma,n,l,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: refract_shif_dispatch_r8
+         real(kind=dp),                     intent(in) :: i1
+         real(kind=dp),                     intent(in) :: delta
+         real(kind=dp), dimension(1:len),   intent(in) :: alfa
+         real(kind=dp), dimension(1:len),   intent(in) :: gamma
+         real(kind=dp), dimension(1:len),   intent(in) :: n
+         real(kind=dp), dimension(1:len),   intent(out):: l
+         integer(kind=i4),                  intent(in) :: len
+         integer(kind=i4),                  intent(in) :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call refract_shift_unroll_16x_r8(i1,delta,alfa,gamma,n,l,len)
+             case (8)
+                call refract_shift_unroll_8x_r8(i1,delta,alfa,gamma,n,l,len)
+             case (4)
+                call refract_shift_unroll_4x_r8(i1,delta,alfa,gamma,n,l,len)
+             case (2)
+                call refract_shift_unroll_2x_r8(i1,delta,alfa,gamma,n,l,len)
+             case (0)
+                call refract_shift_rolled_r8(i1,delta,alfa,gamma,n,l,len)
+             case default
+                return
+         end select
+      end subroutine refract_shif_dispatch_r8
           
        
 
@@ -10117,6 +11031,261 @@ module eos_sensor
          xl = absl*cos(alpha)
          yl = absl*sin(alpha)
       end subroutine project_xy_axis_r4
+
+
+      subroutine project_xy_axis_unroll_16x_r4(l,alpha,xl,yl,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_unroll_16x_r4
+           !dir$ attributes forceinline :: project_xy_axis_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_xy_axis_unroll_16x_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               a0  = alpha(i)
+               call project_xy_axis_r4(l,a0,xl(i),yl(i))
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned xl:64
+           !dir$ assume_aligned yl:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+             a0  = alpha(i)
+             call project_xy_axis_r4(l,a0,xl(i),yl(i))
+             a1  = alpha(i+1)
+             call project_xy_axis_r4(l,a1,xl(i+1),yl(i+1))
+             a2  = alpha(i+2)
+             call project_xy_axis_r4(l,a2,xl(i+2),yl(i+2))
+             a3  = alpha(i+3)
+             call project_xy_axis_r4(l,a3,xl(i+3),yl(i+3))
+             a4  = alpha(i+4)
+             call project_xy_axis_r4(l,a4,xl(i+4),yl(i+4))
+             a5  = alpha(i+5)
+             call project_xy_axis_r4(l,a5,xl(i+5),yl(i+5))
+             a6  = alpha(i+6)
+             call project_xy_axis_r4(l,a6,xl(i+6),yl(i+6))
+             a7  = alpha(i+7)
+             call project_xy_axis_r4(l,a7,xl(i+7),yl(i+7))
+             a8  = alpha(i+8)
+             call project_xy_axis_r4(l,a8,xl(i+8),yl(i+8))
+             a9  = alpha(i+9)
+             call project_xy_axis_r4(l,a9,xl(i+9),yl(i+9))
+             a10 = alpha(i+10)
+             call project_xy_axis_r4(l,a10,xl(i+10),yl(i+10))
+             a11 = alpha(i+11)
+             call project_xy_axis_r4(l,a11,xl(i+11),yl(i+11))
+             a12 = alpha(i+12)
+             call project_xy_axis_r4(l,a12,xl(i+12),yl(i+12))
+             a13 = alpha(i+13)
+             call project_xy_axis_r4(l,a13,xl(i+13),yl(i+13))
+             a14 = alpha(i+14)
+             call project_xy_axis_r4(l,a14,xl(i+14),yl(i+14))
+             a15 = alpha(i+15)
+             call project_xy_axis_r4(l,a15,xl(i+15),yl(i+15))
+         end do
+     end subroutine project_xy_axis_unroll_16x_r4
+
+
+     subroutine project_xy_axis_unroll_8x_r4(l,alpha,xl,yl,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_unroll_8x_r4
+           !dir$ attributes forceinline :: project_xy_axis_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_xy_axis_unroll_8x_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4), ,                   intent(in)  :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               a0  = alpha(i)
+               call project_xy_axis_r4(l,a0,xl(i),yl(i))
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned xl:64
+           !dir$ assume_aligned yl:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+             a0  = alpha(i)
+             call project_xy_axis_r4(l,a0,xl(i),yl(i))
+             a1  = alpha(i+1)
+             call project_xy_axis_r4(l,a1,xl(i+1),yl(i+1))
+             a2  = alpha(i+2)
+             call project_xy_axis_r4(l,a2,xl(i+2),yl(i+2))
+             a3  = alpha(i+3)
+             call project_xy_axis_r4(l,a3,xl(i+3),yl(i+3))
+             a4  = alpha(i+4)
+             call project_xy_axis_r4(l,a4,xl(i+4),yl(i+4))
+             a5  = alpha(i+5)
+             call project_xy_axis_r4(l,a5,xl(i+5),yl(i+5))
+             a6  = alpha(i+6)
+             call project_xy_axis_r4(l,a6,xl(i+6),yl(i+6))
+             a7  = alpha(i+7)
+             call project_xy_axis_r4(l,a7,xl(i+7),yl(i+7))
+           end do
+      end subroutine project_xy_axis_unroll_8x_r4
+
+
+      subroutine project_xy_axis_unroll_4x_r4(l,alpha,xl,yl,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_unroll_4x_r4
+           !dir$ attributes forceinline :: project_xy_axis_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_xy_axis_unroll_4x_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: a0,a1,a2,a3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               a0  = alpha(i)
+               call project_xy_axis_r4(l,a0,xl(i),yl(i))
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned xl:64
+           !dir$ assume_aligned yl:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+             a0  = alpha(i)
+             call project_xy_axis_r4(l,a0,xl(i),yl(i))
+             a1  = alpha(i+1)
+             call project_xy_axis_r4(l,a1,xl(i+1),yl(i+1))
+             a2  = alpha(i+2)
+             call project_xy_axis_r4(l,a2,xl(i+2),yl(i+2))
+             a3  = alpha(i+3)
+             call project_xy_axis_r4(l,a3,xl(i+3),yl(i+3))
+          end do
+      end subroutine project_xy_axis_unroll_4x_r4
+
+
+
+      subroutine project_xy_axis_unroll_2x_r4(l,alpha,xl,yl,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_unroll_2x_r4
+           !dir$ attributes forceinline :: project_xy_axis_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_xy_axis_unroll_2x_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: a0,a1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               a0  = alpha(i)
+               call project_xy_axis_r4(l,a0,xl(i),yl(i))
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned xl:64
+           !dir$ assume_aligned yl:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+             a0  = alpha(i)
+             call project_xy_axis_r4(l,a0,xl(i),yl(i))
+             a1  = alpha(i+1)
+             call project_xy_axis_r4(l,a1,xl(i+1),yl(i+1))
+         end do
+      end subroutine project_xy_axis_unroll_2x_r4
+
+
+       
+      subroutine project_xy_axis_rolled_r4(l,alpha,xl,yl,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_rolled_r4
+           !dir$ attributes forceinline :: project_xy_axis_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_xy_axis_rolled_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: a0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned xl:64
+           !dir$ assume_aligned yl:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m,n
+             a0  = alpha(i)
+             call project_xy_axis_r4(l,a0,xl(i),yl(i))
+         end do
+     end subroutine project_xy_axis_rolled_r4
+
+
+       
+     subroutine project_xy_axis_dispatch_r4(l,alpha,xl,yl,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_xy_axis_dispatch_r4
+         real(kind=sp),                   intent(in)  :: l
+         real(kind=sp),  dimension(1:n),  intent(in)  :: alpha
+         real(kind=sp),  dimension(1:n),  intent(out) :: xl
+         real(kind=sp),  dimension(1:n),  intent(out) :: yl
+         integer(kind=i4),                intent(in)  :: n
+         integer(kind=i4),                intent(in)  :: unroll_cnt
+         select case (unroll_cnt)
+             case (16)
+                call  project_xy_axis_unroll_16x_r4(l,alpha,xl,yl,n)
+             case (8)
+                call  project_xy_axis_unroll_8x_r4(l,alpha,xl,yl,n)
+             case (4)
+                call  project_xy_axis_unroll_4x_r4(l,alpha,xl,yl,n)
+             case (2)
+                call  project_xy_axis_unroll_2x_r4(l,alpha,xl,yl,n)
+             case (0)
+                call  project_xy_axis_rolled_r4(l,alpha,xl,yl,n)
+             case default
+                return
+         end select
+     end subroutine project_xy_axis_dispatch_r4
+     
  
 
       subroutine project_xy_axis_r8(l,alpha,xl,yl)
