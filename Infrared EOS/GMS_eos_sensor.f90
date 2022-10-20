@@ -94,7 +94,7 @@ module eos_sensor
         !dir$ attributes code_align : 32 :: param_gamma_r4
         !dir$ attributes forceinline :: param_gamma_r4
         real(kind=sp), intent(in)    :: phi
-        real(kind=sp), intent(out)   :: gama
+        real(kind=sp), intent(out)   :: gamma
         gamma = 0.5_sp*phi*0.5_sp
      end subroutine param_gamma_r4
 
@@ -12194,23 +12194,529 @@ module eos_sensor
          real(kind=sp),   intent(in)  :: s
          real(kind=sp),   intent(in)  :: gamma
          real(kind=sp),   intent(out) :: xs
-         real(kind=sp),   intent(in)  :: ys
+         real(kind=sp),   intent(out)  :: ys
          xs = s*cos(gamma)
          ys = s*sin(gamma)
       end subroutine project_s_xy_r4
 
 
-      subroutine project_s_xy_r8(s,gamma,xs,ys)
+      subroutine project_s_xy_unroll_16x_r4(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_16x_r4
+           !dir$ attributes forceinline :: project_s_xy_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_16x_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r4(s,g0,xs(i),ys(i))
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+             g0   = gamma(i)
+             call project_s_xy_r4(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r4(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r4(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+             call project_s_xy_r4(s,g3,xs(i+3),ys(i+3))
+             g4   = gamma(i+4)
+             call project_s_xy_r4(s,g4,xs(i+4),ys(i+4))
+             g5   = gamma(i+5)
+             call project_s_xy_r4(s,g5,xs(i+5),ys(i+5))
+             g6   = gamma(i+6)
+             call project_s_xy_r4(s,g6,xs(i+6),ys(i+6))
+             g7   = gamma(i+7)
+             call project_s_xy_r4(s,g7,xs(i+7),ys(i+7))
+             g8   = gamma(i+8)
+             call project_s_xy_r4(s,g8,xs(i+8),ys(i+8))
+             g9   = gamma(i+9)
+             call project_s_xy_r4(s,g9,xs(i+9),ys(i+9))
+             g10  = gamma(i+10)
+             call project_s_xy_r4(s,g10,xs(i+10),ys(i+10))
+             g11  = gamma(i+11)
+             call project_s_xy_r4(s,g11,xs(i+11),ys(i+11))
+             g12  = gamma(i+12)
+             call project_s_xy_r4(s,g12,xs(i+12),ys(i+12))
+             g13  = gamma(i+13)
+             call project_s_xy_r4(s,g13,xs(i+13),ys(i+13))
+             g14  = gamma(i+14)
+             call project_s_xy_r4(s,g14,xs(i+14),ys(i+14))
+             g15  = gamma(i+15)
+             call project_s_xy_r4(s,g15,xs(i+15),ys(i+15))
+         end do
+      end subroutine project_s_xy_unroll_16x_r4
+
+
+       
+      subroutine project_s_xy_unroll_8x_r4(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_8x_r4
+           !dir$ attributes forceinline :: project_s_xy_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_8x_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r4(s,g0,xs(i),ys(i))
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+             g0   = gamma(i)
+             call project_s_xy_r4(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r4(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r4(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+             call project_s_xy_r4(s,g3,xs(i+3),ys(i+3))
+             g4   = gamma(i+4)
+             call project_s_xy_r4(s,g4,xs(i+4),ys(i+4))
+             g5   = gamma(i+5)
+             call project_s_xy_r4(s,g5,xs(i+5),ys(i+5))
+             g6   = gamma(i+6)
+             call project_s_xy_r4(s,g6,xs(i+6),ys(i+6))
+             g7   = gamma(i+7)
+             call project_s_xy_r4(s,g7,xs(i+7),ys(i+7))
+          end do
+      end subroutine project_s_xy_unroll_8x_r4
+
+
+      subroutine project_s_xy_unroll_4x_r4(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_4x_r4
+           !dir$ attributes forceinline :: project_s_xy_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_4x_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r4(s,g0,xs(i),ys(i))
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+             g0   = gamma(i)
+             call project_s_xy_r4(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r4(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r4(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+         end do
+      end subroutine project_s_xy_unroll_4x_r4
+
+
+      subroutine project_s_xy_unroll_2x_r4(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_2x_r4
+           !dir$ attributes forceinline :: project_s_xy_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_2x_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r4(s,g0,xs(i),ys(i))
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+             g0   = gamma(i)
+             call project_s_xy_r4(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r4(s,g1,xs(i+1),ys(i+1))
+         end do
+     end subroutine project_s_xy_unroll_2x_r4
+
+
+     subroutine project_s_xy_rolled_r4(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_rolled_r4
+           !dir$ attributes forceinline :: project_s_xy_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_rolled_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+             g0   = gamma(i)
+             call project_s_xy_r4(s,g0,xs(i),ys(i))
+         end do
+      end subroutine project_s_xy_rolled_r4
+
+
+
+      subroutine project_s_xy_dispatch_r4(s,gamma,xs,ys,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_dispatch_r4
+         real(kind=sp),   intent(in)  :: s
+         real(kind=sp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=sp),   dimension(1:n), intent(out) :: xs
+         real(kind=sp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         integer(kind=i4),                intent(in)  :: unroll_cnt
+         select case (unroll_cnt)
+              case (16)
+                 call project_s_xy_unroll_16x_r4(s,gamma,xs,ys,n)
+              case (8)
+                 call project_s_xy_unroll_8x_r4(s,gamma,xs,ys,n)
+              case (4)
+                 call project_s_xy_unroll_4x_r4(s,gamma,xs,ys,n)
+              case (2)
+                 call project_s_xy_unroll_2x_r4(s,gamma,xs,ys,n)
+              case (0)
+                 call project_s_xy_rolled_r4(s,gamma,xs,ys,n)
+              case default
+                 return
+         end select
+      end subroutine project_s_xy_dispatch_r4
+      
+
+ 
+
+
+
+     subroutine project_s_xy_r8(s,gamma,xs,ys)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: project_s_xy_r8
          !dir$ attributes forceinline :: project_s_xy_r8
          real(kind=dp),   intent(in)  :: s
          real(kind=dp),   intent(in)  :: gamma
          real(kind=dp),   intent(out) :: xs
-         real(kind=dp),   intent(in)  :: ys
+         real(kind=dp),   intent(out)  :: ys
          xs = s*cos(gamma)
          ys = s*sin(gamma)
-      end subroutine project_s_xy_r8
+     end subroutine project_s_xy_r8
+
+
+
+     subroutine project_s_xy_unroll_16x_r8(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_16x_r4
+           !dir$ attributes forceinline :: project_s_xy_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_16x_r4
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r8(s,g0,xs(i),ys(i))
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,16
+             g0   = gamma(i)
+             call project_s_xy_r8(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r8(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r8(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+             call project_s_xy_r8(s,g3,xs(i+3),ys(i+3))
+             g4   = gamma(i+4)
+             call project_s_xy_r8(s,g4,xs(i+4),ys(i+4))
+             g5   = gamma(i+5)
+             call project_s_xy_r8(s,g5,xs(i+5),ys(i+5))
+             g6   = gamma(i+6)
+             call project_s_xy_r8(s,g6,xs(i+6),ys(i+6))
+             g7   = gamma(i+7)
+             call project_s_xy_r8(s,g7,xs(i+7),ys(i+7))
+             g8   = gamma(i+8)
+             call project_s_xy_r8(s,g8,xs(i+8),ys(i+8))
+             g9   = gamma(i+9)
+             call project_s_xy_r8(s,g9,xs(i+9),ys(i+9))
+             g10  = gamma(i+10)
+             call project_s_xy_r8(s,g10,xs(i+10),ys(i+10))
+             g11  = gamma(i+11)
+             call project_s_xy_r8(s,g11,xs(i+11),ys(i+11))
+             g12  = gamma(i+12)
+             call project_s_xy_r8(s,g12,xs(i+12),ys(i+12))
+             g13  = gamma(i+13)
+             call project_s_xy_r8(s,g13,xs(i+13),ys(i+13))
+             g14  = gamma(i+14)
+             call project_s_xy_r8(s,g14,xs(i+14),ys(i+14))
+             g15  = gamma(i+15)
+             call project_s_xy_r8(s,g15,xs(i+15),ys(i+15))
+         end do
+      end subroutine project_s_xy_unroll_16x_r8
+
+
+       
+      subroutine project_s_xy_unroll_8x_r8(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_8x_r8
+           !dir$ attributes forceinline :: project_s_xy_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_8x_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r8(s,g0,xs(i),ys(i))
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,8
+             g0   = gamma(i)
+             call project_s_xy_r8(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r8(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r8(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+             call project_s_xy_r8(s,g3,xs(i+3),ys(i+3))
+             g4   = gamma(i+4)
+             call project_s_xy_r8(s,g4,xs(i+4),ys(i+4))
+             g5   = gamma(i+5)
+             call project_s_xy_r8(s,g5,xs(i+5),ys(i+5))
+             g6   = gamma(i+6)
+             call project_s_xy_r8(s,g6,xs(i+6),ys(i+6))
+             g7   = gamma(i+7)
+             call project_s_xy_r8(s,g7,xs(i+7),ys(i+7))
+          end do
+      end subroutine project_s_xy_unroll_8x_r8
+
+
+      subroutine project_s_xy_unroll_4x_r8(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_4x_r8
+           !dir$ attributes forceinline :: project_s_xy_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_4x_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=dp), automatic :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r8(s,g0,xs(i),ys(i))
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,4
+             g0   = gamma(i)
+             call project_s_xy_r8(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r8(s,g1,xs(i+1),ys(i+1))
+             g2   = gamma(i+2)
+             call project_s_xy_r8(s,g2,xs(i+2),ys(i+2))
+             g3   = gamma(i+3)
+         end do
+      end subroutine project_s_xy_unroll_4x_r8
+
+
+      subroutine project_s_xy_unroll_2x_r8(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_unroll_2x_r8
+           !dir$ attributes forceinline :: project_s_xy_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_unroll_2x_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=dp), automatic :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               g0   = gamma(i)
+               call project_s_xy_r8(s,g0,xs(i),ys(i))
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=m1,n,2
+             g0   = gamma(i)
+             call project_s_xy_r8(s,g0,xs(i),ys(i))
+             g1   = gamma(i+1)
+             call project_s_xy_r8(s,g1,xs(i+1),ys(i+1))
+         end do
+     end subroutine project_s_xy_unroll_2x_r8
+
+
+     subroutine project_s_xy_rolled_r8(s,gamma,xs,ys,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_rolled_r8
+           !dir$ attributes forceinline :: project_s_xy_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: project_s_xy_rolled_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         real(kind=sp), automatic :: g0
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned xs:64
+           !dir$ assume_aligned ys:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+         do i=1,n
+             g0   = gamma(i)
+             call project_s_xy_r8(s,g0,xs(i),ys(i))
+         end do
+      end subroutine project_s_xy_rolled_r8
+
+
+
+      subroutine project_s_xy_dispatch_r8(s,gamma,xs,ys,n,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: project_s_xy_dispatch_r8
+         real(kind=dp),   intent(in)  :: s
+         real(kind=dp),   dimension(1:n), intent(in)  :: gamma
+         real(kind=dp),   dimension(1:n), intent(out) :: xs
+         real(kind=dp),   dimension(1:n), intent(out) :: ys
+         integer(kind=i4),                intent(in)  :: n
+         integer(kind=i4),                intent(in)  :: unroll_cnt
+         select case (unroll_cnt)
+              case (16)
+                 call project_s_xy_unroll_16x_r8(s,gamma,xs,ys,n)
+              case (8)
+                 call project_s_xy_unroll_8x_r8(s,gamma,xs,ys,n)
+              case (4)
+                 call project_s_xy_unroll_4x_r8(s,gamma,xs,ys,n)
+              case (2)
+                 call project_s_xy_unroll_2x_r8(s,gamma,xs,ys,n)
+              case (0)
+                 call project_s_xy_rolled_r8(s,gamma,xs,ys,n)
+              case default
+                 return
+         end select
+      end subroutine project_s_xy_dispatch_r8
+       
 
 
     
@@ -12219,7 +12725,7 @@ module eos_sensor
       ! пересечения лучей, образующих с горизонталью угла ±а, с 
       ! перпендикуляром к пластинке
       ! Formula 1, p. 110
-      pure elemental function ray_intercept_pa_r4(delta,alpha,gamma,n) result(sp)
+     pure elemental function ray_intercept_pa_r4(delta,alpha,gamma,n) result(sp)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: ray_intercept_pa_r4
          !dir$ attributes forceinline :: ray_intercept_pa_r4
@@ -12237,6 +12743,9 @@ module eos_sensor
          den = sqrt(n2-sin2)
          sp  = delta*1.0_sp-(num/den)
       end function ray_intercept_pa_r4
+
+
+      
 
 
       pure elemental function ray_intercept_pa_r8(delta,alpha,gamma,n) result(sp)
