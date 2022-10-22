@@ -17134,7 +17134,7 @@ module eos_sensor
 
        
 
-! To be correctly reimplemented.
+
        
 
     
@@ -23469,7 +23469,7 @@ module eos_sensor
        end subroutine fourier_coeff_b0k_r8
 
 
-       subroutine rhod_integral_r4(rhod,n,phi1,phi2,
+      
 
 
        subroutine fourier_coeff_a0_r4(rhophi,absc,phit,xlo,xup,ans,ier)
