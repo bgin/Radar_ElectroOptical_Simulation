@@ -713,6 +713,8 @@ module eos_sensor_types
            integer(kind=i4)                           :: status
            real(kind=dp), dimension(:),   allocatable :: phi_in
            complex(kind=sp), dimension(:),allocatable :: phi_out
+           !dir$ attributes align : 64 :: phi_in
+           !dir$ attributes align : 64 :: phi_out
      end type rad_flux_spectrum
 
 
@@ -722,6 +724,7 @@ module eos_sensor_types
            real(kind=sp)                              :: tin
            real(kind=sp)                              :: phi0
            real(kind=sp), dimension(:),   allocatable :: phi0t
+           !dir$ attributes align : 64 :: phi0t
      end type squared_cos_flux_r4_t
 
 
@@ -731,8 +734,508 @@ module eos_sensor_types
            real(kind=dp)                              :: tin
            real(kind=dp)                              :: phi0
            real(kind=dp), dimension(:),   allocatable :: phi0t
+           !dir$ attributes align : 64 :: phi0t
      end type squared_cos_flux_r8_t
 
 
+     type, public :: const_flux_spectr_r4_t
+
+           integer(kind=i4)                           :: n
+           real(kind=sp)                              :: T
+           real(kind=sp)                              :: phi0
+           real(kind=sp), dimension(:),   allocatable :: phi0f
+           real(kind=sp), dimension(:),   allocatable :: freq
+           !dir$ attributes align : 64 :: phi0f
+           !dir$ attributes align : 64 :: freq
+     end type const_flux_spectr_r4_t
+     
+
+     type, public :: const_flux_spectr_r8_t
+
+           integer(kind=i4)                           :: n
+           real(kind=dp)                              :: T
+           real(kind=dp)                              :: phi0
+           real(kind=dp), dimension(:),   allocatable :: phi0f
+           real(kind=dp), dimension(:),   allocatable :: freq
+           !dir$ attributes align : 64 :: phi0f
+           !dir$ attributes align : 64 :: freq
+     end type const_flux_spectr_r8_t
+
+
+     type, public :: ideal_modulator_r4_t
+
+           integer(kind=i4)                          :: n
+           real(kind=sp)                             :: f0
+           real(kind=sp)                             :: phi0
+           real(kind=sp)                             :: rho0
+           real(kind=sp)                             :: rho1
+           real(kind=sp), dimension(:),  allocatable :: rhot_s
+           real(kind=sp), dimension(:),  allocatable :: rhot_c
+           !dir$ attributes align : 64 :: rhot_s
+           !dir$ attributes align : 64 :: rhot_c
+     end type ideal_modulator_r4_t
+
+
+     type, public :: ideal_modulator_r8_t
+
+           integer(kind=i4)                          :: n
+           real(kind=dp)                             :: f0
+           real(kind=dp)                             :: phi0
+           real(kind=dp)                             :: rho0
+           real(kind=dp)                             :: rho1
+           real(kind=dp), dimension(:),  allocatable :: rhot_s
+           real(kind=dp), dimension(:),  allocatable :: rhot_c
+           !dir$ attributes align : 64 :: rhot_s
+           !dir$ attributes align : 64 :: rhot_c
+     end type ideal_modulator_r8_t
+
+        
+     type, public :: rect_pulse_flux_r4_t
+
+           integer(kind=i4)                          :: n
+           real(kind=sp)                             :: fk
+           real(kind=sp)                             :: Tin
+           real(kind=dp), dimension(:),  allocatable :: phik
+           real(kind=dp), dimension(:),  allocatable :: phi0
+           !dir$ attributes align : 64 :: phik
+           !dir$ attributes align : 64 :: phi0
+      end type rect_pulse_flux_r4_t
+
+        
+      type, public :: rect_pulse_flux_r8_t
+
+           integer(kind=i4)                          :: n
+           real(kind=dp)                             :: fk
+           real(kind=dp)                             :: Tin
+           real(kind=dp), dimension(:),  allocatable :: phik
+           real(kind=dp), dimension(:),  allocatable :: phi0
+           !dir$ attributes align : 64 :: phik
+           !dir$ attributes align : 64 :: phi0
+      end type rect_pulse_flux_r8_t
+
+
+      type, public :: rect_pulse_amp_r4_t
+
+            integer(kind=i4)                          :: n
+            real(kind=sp)                             :: phi0
+            real(kind=sp)                             :: tin
+            real(kind=sp)                             :: t
+            real(kind=sp), dimension(:),  allocatable :: ak
+            real(kind=sp), dimension(:),  allocatable :: phik
+            real(kind=sp), dimension(:),  allocatable :: k
+            !dir$ attributes align : 64 :: ak
+            !dir$ attributes align : 64 :: phik
+            !dir$ attributes align : 64 :: k
+       end type rect_pulse_amp_r4_t
+
+
+       type, public :: rect_pulse_amp_r8_t
+
+            integer(kind=i4)                          :: n
+            real(kind=dp)                             :: phi0
+            real(kind=dp)                             :: tin
+            real(kind=dp)                             :: t
+            real(kind=dp), dimension(:),  allocatable :: ak
+            real(kind=dp), dimension(:),  allocatable :: phik
+            real(kind=dp), dimension(:),  allocatable :: k
+            !dir$ attributes align : 64 :: ak
+            !dir$ attributes align : 64 :: phik
+            !dir$ attributes align : 64 :: k
+       end type rect_pulse_amp_r8_t
+        
+      
+       type, public :: transmit_coeff_r4_t
+
+            integer(kind=i4)                         :: n
+            real(kind=sp)                            :: rho0
+            real(kind=sp)                            :: rho1
+            real(kind=sp)                            :: beta
+            real(kind=sp)                            :: omega0
+            real(kind=sp)                            :: om0
+            real(kind=sp), dimension(:), allocatable :: rhot
+            !dir$ attributes align : 64 :: rhot
+       end type transmit_coeff_r4_t
+
+
+       type, public :: transmit_coeff_r8_t
+
+            integer(kind=i4)                         :: n
+            real(kind=dp)                            :: rho0
+            real(kind=dp)                            :: rho1
+            real(kind=dp)                            :: beta
+            real(kind=dp)                            :: omega0
+            real(kind=dp)                            :: om0
+            real(kind=dp), dimension(:), allocatable :: rhot
+            !dir$ attributes align : 64 :: rhot
+       end type transmit_coeff_r8_t
+
+
+       type, public :: integrate_FT_r4_t
+
+            integer(kind=i4)                         :: n
+            integer(kind=i4)                         :: ier
+            real(kind=sp)                            :: xup
+            real(kind=sp)                            :: np
+            real(kind=sp)                            :: gamt
+            real(kind=sp), dimension(:), allocatable :: Ft
+            real(kind=sp), dimension(:), allocatable :: absc
+            !dir$ attributes align : 64 :: Ft
+            !dir$ attributes align : 64 :: absc
+       end type integrate_FT_r4_t
+
+
+       type, public :: integrate_FT_r8_t
+
+            integer(kind=i4)                         :: n
+            integer(kind=i4)                         :: ier
+            real(kind=dp)                            :: xup
+            real(kind=dp)                            :: np
+            real(kind=dp)                            :: gamt
+            real(kind=dp), dimension(:), allocatable :: Ft
+            real(kind=dp), dimension(:), allocatable :: absc
+            !dir$ attributes align : 64 :: Ft
+            !dir$ attributes align : 64 :: absc
+       end type integrate_FT_r8_t
+
+
+       type, public :: raster_transmittance_t4_t
+
+            integer(kind=i4)                        :: n
+            real(kind=sp)                           :: a
+            real(kind=sp)                           :: r
+            real(kind=sp)                           :: rho0
+            real(kind=sp)                           :: Omega0
+            real(kind=sp)                           :: Beta
+            real(kind=sp)                           :: R0
+            real(kind=sp)                           :: om0
+            real(kind=sp), dimension(:),allocatable :: rhot
+            !dir$ attributes align : 64 :: rhot
+       end type raster_transmittance_t4_t
+
+
+       type, public :: raster_transmittance_t8_t
+
+            integer(kind=i4)                        :: n
+            real(kind=dp)                           :: a
+            real(kind=dp)                           :: r
+            real(kind=dp)                           :: rho0
+            real(kind=dp)                           :: Omega0
+            real(kind=dp)                           :: Beta
+            real(kind=dp)                           :: R0
+            real(kind=dp)                           :: om0
+            real(kind=dp), dimension(:),allocatable :: rhot
+            !dir$ attributes align : 64 :: rhot
+       end type raster_transmittance_t8_t  
+       
+  
+       type, public :: transmit_freq_modul_r4_t
+
+            integer(kind=i4)                        :: n
+            real(kind=sp)                           :: Phi0
+            real(kind=sp)                           :: rho0
+            real(kind=sp)                           :: om0
+            real(kind=sp)                           :: Beta
+            real(kind=sp)                           :: Omega0
+            real(kind=sp), dimension(:),allocatable :: Phiom
+            !dir$ attributes align : 64 :: Phiom
+       end type transmit_freq_modul_r4_t
+
+
+       type, public :: transmit_freq_modul_r8_t
+
+            integer(kind=i4)                        :: n
+            real(kind=dp)                           :: Phi0
+            real(kind=dp)                           :: rho0
+            real(kind=dp)                           :: om0
+            real(kind=dp)                           :: Beta
+            real(kind=dp)                           :: Omega0
+            real(kind=dp), dimension(:),allocatable :: Phiom
+            !dir$ attributes align : 64 :: Phiom
+       end type transmit_freq_modul_r8_t
+  
+       
+       type, public :: transmitt_spectr_r4_t
+
+            integer(kind=i4)                        :: len
+            integer(kind=i4)                        :: n
+            real(kind=sp)                           :: rho0
+            real(kind=sp)                           :: Beta
+            real(kind=sp)                           :: om0
+            real(kind=sp)                           :: Omega0
+            real(kind=sp), dimension(:),allocatable :: rhot
+            real(kind=sp), dimension(:),allocatable :: bjb
+            !dir$ attributes align : 64 :: rhot
+            !dir$ attributes align : 64 :: bjb
+        end type transmitt_spectr_r4_t
+
+
+        type, public :: transmitt_spectr_r8_t
+
+            integer(kind=i4)                        :: len
+            integer(kind=i4)                        :: n
+            real(kind=dp)                           :: rho0
+            real(kind=dp)                           :: Beta
+            real(kind=dp)                           :: om0
+            real(kind=dp)                           :: Omega0
+            real(kind=dp), dimension(:),allocatable :: rhot
+            real(kind=dp), dimension(:),allocatable :: bjb
+            !dir$ attributes align : 64 :: rhot
+            !dir$ attributes align : 64 :: bjb
+         end type transmitt_spectr_r8_t
+
+
+         type, public :: raster_transmit_fft_rc_t
+
+             integer(kind=i4)                          :: dim_len
+             integer(kind=i4)                          :: data_len
+             integer(kind=i4)                          :: status
+             real(kind=sp), dimension(:),allocatable   :: rhophi_in
+             complex(kind=dp),dimension(:),allocatable :: rhophi_out
+             !dir$ attributes align : 64 :: rhophi_in
+             !dir$ attributes align : 64 :: rhophi_out
+         end type raster_transmit_fft_rc_t
+         
+
+         type, public :: fourier_coff_ak_r4_t
+
+             integer(kind=i4)                          :: N
+             real(kind=sp)                             :: k
+             real(kind=sp)                             :: ak
+             integer(kind=i4)                          :: ier
+             real(kind=sp), dimension(1:128)           :: rhophi
+             real(kind=sp), dimension(1:128)           :: cosphi
+         end type fourier_coff_ak_r4_t
+
+
+        type, public :: fourier_coff_ak_r8_t
+
+             integer(kind=i4)                          :: N
+             real(kind=dp)                             :: k
+             real(kind=dp)                             :: ak
+             integer(kind=i4)                          :: ier
+             real(kind=dp), dimension(1:128)           :: rhophi
+             real(kind=dp), dimension(1:128)           :: cosphi
+        end type fourier_coff_ak_r8_t
+
+
+        type, public :: fourier_coff_a0k_r4_t
+
+             integer(kind=i4)                          :: N
+             real(kind=sp)                             :: k
+             real(kind=sp)                             :: a0k
+             integer(kind=i4)                          :: ier
+             real(kind=sp), dimension(1:128)           :: rhod
+             real(kind=sp), dimension(1:128)           :: cosphi
+            
+         end type fourier_coff_a0k_r4_t
+
+
+        type, public :: fourier_coff_a0k_r8_t
+
+             integer(kind=i4)                          :: N
+             real(kind=dp)                             :: k
+             real(kind=dp)                             :: a0k
+             integer(kind=i4)                          :: ier
+             real(kind=dp), dimension(1:128)           :: rhod
+             real(kind=dp), dimension(1:128)           :: cosphi
+             
+        end type fourier_coff_a0k_r8_t
+
+
+        type, public :: fourier_coff_bk_r4_t
+
+             integer(kind=i4)                          :: N
+             real(kind=sp)                             :: k
+             real(kind=sp)                             :: bk
+             integer(kind=i4)                          :: ier
+             real(kind=sp), dimension(1:128)           :: rhophi
+             real(kind=sp), dimension(1:128)           :: cosphi
+            
+        end type fourier_coff_bk_r4_t
+
+
+       type, public :: fourier_coff_bk_r8_t
+
+             integer(kind=i4)                          :: N
+             real(kind=dp)                             :: k
+             real(kind=dp)                             :: bk
+             integer(kind=i4)                          :: ier
+             real(kind=dp), dimension(1:128)           :: rhophi
+             real(kind=dp), dimension(1:128)           :: cosphi
+            
+       end type fourier_coff_bk_r8_t
+
+          
+       type, public :: fourier_coff_b0k_r4_t
+
+             integer(kind=i4)                          :: N
+             real(kind=sp)                             :: k
+             real(kind=sp)                             :: b0k
+             integer(kind=i4)                          :: ier
+             real(kind=sp), dimension(1:128)           :: rhod
+             real(kind=sp), dimension(1:128)           :: cosphi
+            
+       end type fourier_coff_b0k_r4_t
+
+
+       type, public :: fourier_coff_b0k_r8_t
+
+             integer(kind=i4)                          :: N
+             real(kind=dp)                             :: k
+             real(kind=dp)                             :: b0k
+             integer(kind=i4)                          :: ier
+             real(kind=dp), dimension(1:128)           :: rhod
+             real(kind=dp), dimension(1:128)           :: cosphi
+            
+       end type fourier_coff_b0k_r8_t
+
+
+       type, public :: fourier_coff_a0_r4_t
+
+             real(kind=sp)                              :: phit
+             real(kind=sp)                              :: xlo
+             real(kind=sp)                              :: xup
+             real(kind=sp)                              :: ans
+             integer(kind=i4)                           :: ier
+             real(kind=sp), dimension(1:128)            :: rhophi
+             real(kind=sp), dimension(1:128)            :: absc
+            
+       end type fourier_coff_a0_r4_t
+
+
+       type, public :: fourier_coff_a0_r8_t
+
+             real(kind=dp)                              :: phit
+             real(kind=dp)                              :: xlo
+             real(kind=dp)                              :: xup
+             real(kind=dp)                              :: ans
+             integer(kind=i4)                           :: ier
+             real(kind=dp), dimension(1:128)            :: rhophi
+             real(kind=dp), dimension(1:128)            :: absc
+            
+       end type fourier_coff_a0_r8_t
+
+       ! used with  raster_transmitt_fourier_phi_t_r4   
+       type, public :: raster_transmit_phit_r4_t
+
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             real(kind=sp)                              :: ans !a0
+             integer(kind=i4)                           :: r
+             integer(kind=i4)                           :: klim
+             real(kind=sp)                              :: xlo
+             real(kind=sp)                              :: xup
+             real(kind=sp),  dimension(1:128)           :: rhophi
+             real(kind=sp),  dimension(1:128)           :: cosphi
+             real(kind=sp),  dimension(1:128)           :: absc
+             real(kind=sp),  dimension(:),allocatable   :: rhophit
+             !dir$ attributes align : 64 :: rhophit
+        end type raster_transmit_phit_r4_t
+
+          
+        ! used with  raster_transmitt_fourier_phi_t_r4   
+        type, public :: raster_transmit_phit_r8_t
+
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             real(kind=dp)                              :: ans !a0
+             integer(kind=i4)                           :: r
+             integer(kind=i4)                           :: klim
+             real(kind=dp)                              :: xlo
+             real(kind=dp)                              :: xup
+             real(kind=dp),  dimension(1:128)           :: rhophi
+             real(kind=dp),  dimension(1:128)           :: cosphi
+             real(kind=dp),  dimension(1:128)           :: absc
+             real(kind=dp),  dimension(:),allocatable   :: rhophit
+             !dir$ attributes align : 64 :: rhophit
+         end type raster_transmit_phit_r8_t
+
+
+         ! used with:  raster_transmitt_fourier_t_r4 
+         type, public :: raster_transmitt_t_r4_t
+
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             real(kind=sp)                              :: xlo
+             real(kind=sp)                              :: xup
+             integer(kind=i4)                           :: r   ! number of raster rotations
+             integer(kind=i4)                           :: klim
+             real(kind=sp)                              :: phi1
+             real(kind=sp)                              :: phi2
+             real(kind=sp),  dimension(1:128)           :: rhophi
+             real(kind=sp),  dimension(1:128)           :: rhod
+             real(kind=sp),  dimension(1:128)           :: cosphi1
+             real(kind=sp),  dimension(1:128)           :: cosphi2
+             real(kind=sp),  dimension(1:128)           :: absc
+             real(kind=sp),  dimension(1:128)           :: absc2 ! abscissas for rhod integration
+             real(kind=sp),  dimension(:),allocatable   :: rhod
+             !dir$ attributes align : 64 :: rhod
+         end type raster_transmitt_t_r4_t
+
+
+         type, public :: raster_transmitt_t_r8_t
+
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             real(kind=dp)                              :: xlo
+             real(kind=dp)                              :: xup
+             integer(kind=i4)                           :: r   ! number of raster rotations
+             integer(kind=i4)                           :: klim
+             real(kind=dp)                              :: phi1
+             real(kind=dp)                              :: phi2
+             real(kind=dp),  dimension(1:128)           :: rhophi
+             real(kind=dp),  dimension(1:128)           :: rhod
+             real(kind=dp),  dimension(1:128)           :: cosphi1
+             real(kind=dp),  dimension(1:128)           :: cosphi2
+             real(kind=dp),  dimension(1:128)           :: absc
+             real(kind=dp),  dimension(1:128)           :: absc2 ! abscissas for rhod integration
+             real(kind=dp),  dimension(:),allocatable   :: rhod
+             !dir$ attributes align : 64 :: rhod
+         end type raster_transmitt_t_r8_t
+
+
+         type, public :: raster_flux_sinc_r4_t
+
+              integer(kind=i4)                          :: htin
+              real(kind=sp)                             :: f
+              real(kind=sp)                             :: phi0
+              real(kind=sp), dimension(:), allocatable  :: phi0f
+              !dir$ attributes align : 64 :: phi0f
+         end type raster_flux_sinc_r4_t
+
+
+         type, public :: raster_flux_sinc_r8_t
+
+              integer(kind=i4)                          :: htin
+              real(kind=dp)                             :: f
+              real(kind=dp)                             :: phi0
+              real(kind=dp), dimension(:), allocatable  :: phi0f
+              !dir$ attributes align : 64 :: phi0f
+         end type raster_flux_sinc_r8_t
+
+
+         type, public :: raster_flux_mod_sinc_r4_t
+
+              integer(kind=i4)                          :: htin
+              real(kind=sp)                             :: f0
+              real(kind=sp)                             :: rho0
+              real(kind=sp)                             :: phi0
+              real(kind=sp), dimension(:), allocatable  :: phif
+              !dir$ attributes align : 64 :: phif
+         end type raster_flux_mod_sinc_r4_t
+         
+         
+         type, public :: raster_flux_mod_sinc_r8_t
+
+              integer(kind=i4)                          :: htin
+              real(kind=dp)                             :: f0
+              real(kind=dp)                             :: rho0
+              real(kind=dp)                             :: phi0
+              real(kind=dp), dimension(:), allocatable  :: phif
+              !dir$ attributes align : 64 :: phif
+         end type raster_flux_mod_sinc_r8_t
+
+
+           
 
 end module eos_sensor_types
