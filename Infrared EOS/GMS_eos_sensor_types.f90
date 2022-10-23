@@ -1236,6 +1236,46 @@ module eos_sensor_types
          end type raster_flux_mod_sinc_r8_t
 
 
+         type, public :: raster_mod_sinc_shifted_r4_t
+
+               integer(kind=i4)                         :: htin !shall be divisable by 2
+               real(kind=sp)                            :: f
+               real(kind=sp)                            :: phi0
+               real(kind=sp)                            :: fx
+               real(kind=sp)                            :: rho0
+               real(kind=sp)                            :: dt
+               real(kind=sp), dimension(:), allocatable :: phif
+              !dir$ attributes align : 64 :: phif
+         end type raster_mod_sinc_shifted_r4_t
+
+
+         type, public :: raster_mod_sinc_shifted_r8_t
+
+               integer(kind=i4)                         :: htin !shall be divisable by 2
+               real(kind=dp)                            :: f
+               real(kind=dp)                            :: phi0
+               real(kind=dp)                            :: fx
+               real(kind=dp)                            :: rho0
+               real(kind=dp)                            :: dt
+               real(kind=dp), dimension(:), allocatable :: phif
+              !dir$ attributes align : 64 :: phif
+         end type raster_mod_sinc_shifted_r8_t   
+         
+
+         !Aggregation of above defeined types -- constitutes a EO sensor
+
+         type, public :: eo_sensor_r4_t
+
+               type(param_gamma_r4_t)     :: m_param_gamma
+               type(SN_r4_t)              :: m_SN
+               type(SM_r4_t)              :: m_SM
+               type(ratio_FH_r4_t)        :: m_ratio_FH
+               type(scan_mirror_ang_r4_t) :: m_scan_mirr_ang
+               type(Dmax_r4_t)            :: m_Dmax
+               type(Dmin_r4_t)            :: m_Dmin
+               type(defocus_cof_r4_t)     :: m_defocus_cof
+         end type eo_sensor_r4_t
+         
            
 
 end module eos_sensor_types
