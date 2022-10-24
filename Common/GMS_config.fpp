@@ -61,7 +61,9 @@ Compiler optimization settings.
     #define CURR_OMP_VER _OPENMP
 #endif
     
-
+#if defined(_OPENMP)
+    #define USE_OPENMP 1
+#endif
 
 #if defined (CURR_OMP_VER) || defined (_OPENMP)
     #define DERIVED_TYPE_HAS_ALLOCATABLES 1
@@ -75,9 +77,7 @@ Compiler optimization settings.
     #define USE_PROFILING 1
 #endif
 
-#if defined USE_PROFILING
-    #define SAMPLE_PMC 1
-#endif
+
 
 #if defined USE_PROFILING
     #define USE_PREC_CLOCK 1
@@ -322,12 +322,10 @@ Compiler optimization settings.
    #define CACHE_LINE_SIZE 64
 #endif
     
-#ifndef PAD_TO_CACHE_LINE
-  #define PAD_TO_CACHE_LINE(var_size) integer(kind=1), dimension(((CACHE_LINE_SIZE)-SIZEOF(var_size))) :: _pad_cache_line_
-#endif
+
 
 #ifndef PAD_TO
-  #define PAD_TO(ordinal,size) integer(kind=1), dimension((size)) :: pad##ordinal
+  #define STRUCT_PADDING(ordinal,size) integer(kind=1), dimension(size) :: pad##ordinal
 #endif
 
 #ifndef MSR_TOOLS_WRAPPERS_SHORT_VERSION
@@ -390,7 +388,9 @@ Compiler optimization settings.
 #endif
    
 
-
+#if !defined (AUTO_VECTORIZE)
+    #define   AUTO_VECTORIZE 1
+#endif
 
 
     
