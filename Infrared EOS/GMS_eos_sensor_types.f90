@@ -1,4 +1,5 @@
 
+#include "GMS_config.fpp"
 
 module eos_sensor_types
 
@@ -71,8 +72,11 @@ module eos_sensor_types
      type, public :: param_gamma_r4_t
   
            integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif
            real(kind=sp), dimension(:), allocatable ::  phi  ! input
-           real(kind=sp), dimesnion(:), allocatable :: gamma ! output    
+           real(kind=sp), dimension(:), allocatable :: gamma ! output    
            !dir$ attributes align : 64 :: phi
            !dir$ attributes align : 64 :: gamma     
      end type param_gamma_r4_t
@@ -81,8 +85,11 @@ module eos_sensor_types
      type, public :: param_gamma_r8_t
   
            integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif        
            real(kind=dp), dimension(:), allocatable ::  phi  ! input
-           real(kind=dp), dimesnion(:), allocatable :: gamma ! output    
+           real(kind=dp), dimension(:), allocatable :: gamma ! output    
            !dir$ attributes align : 64 :: phi
            !dir$ attributes align : 64 :: gamma     
      end type param_gamma_r8_t
@@ -92,6 +99,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=sp)                            :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:), allocatable :: phi
            real(kind=sp), dimension(:), allocatable :: gamma
            real(kind=sp), dimension(:), allocatable :: sn
@@ -105,6 +115,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=dp)                            :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=dp), dimension(:), allocatable :: phi
            real(kind=dp), dimension(:), allocatable :: gamma
            real(kind=dp), dimension(:), allocatable :: sn
@@ -118,6 +131,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=sp)                            :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:), allocatable :: phi
            real(kind=sp), dimension(:), allocatable :: gamma
            real(kind=sp), dimension(:), allocatable :: sm
@@ -131,6 +147,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=dp)                            :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif           
            real(kind=dp), dimension(:), allocatable :: phi
            real(kind=dp), dimension(:), allocatable :: gamma
            real(kind=dp), dimension(:), allocatable :: sm
@@ -143,6 +162,9 @@ module eos_sensor_types
      type, public :: ratio_FH_r4_t
 
            integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif         
            real(kind=sp), dimension(:), allocatable :: psi
            real(kind=sp), dimension(:), allocatable :: phi
            real(kind=sp), dimension(:), allocatable :: fh
@@ -154,7 +176,10 @@ module eos_sensor_types
 
      type, public :: ratio_FH_r8_t
 
-           integer(kind=i4)                         :: n
+          integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif         
            real(kind=dp), dimension(:), allocatable :: psi
            real(kind=dp), dimension(:), allocatable :: phi
            real(kind=dp), dimension(:), allocatable :: fh
@@ -168,6 +193,9 @@ module eos_sensor_types
  
            integer(kind=i4)                         :: n
            character(len=3)                         :: dir
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,25)
+#endif           
            real(kind=sp), dimension(:), allocatable :: gam0
            real(kind=sp), dimension(:), allocatable :: psi
            real(kind=sp), dimension(:), allocatable :: phi
@@ -183,6 +211,9 @@ module eos_sensor_types
  
            integer(kind=i4)                         :: n
            character(len=3)                         :: dir
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,25)
+#endif            
            real(kind=dp), dimension(:), allocatable :: gam0
            real(kind=dp), dimension(:), allocatable :: psi
            real(kind=dp), dimension(:), allocatable :: phi
@@ -198,6 +229,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=sp)                            :: d_ob
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif 
            real(kind=sp), dimension(:), allocatable :: h
            real(kind=sp), dimension(:), allocatable :: delta
            real(kind=sp), dimension(:), allocatable :: gamma
@@ -213,6 +247,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=dp)                            :: d_ob
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=dp), dimension(:), allocatable :: h
            real(kind=dp), dimension(:), allocatable :: delta
            real(kind=dp), dimension(:), allocatable :: gamma
@@ -228,6 +265,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=sp)                            :: d_ob
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:), allocatable :: h
            real(kind=sp), dimension(:), allocatable :: delta
            real(kind=sp), dimension(:), allocatable :: dmin
@@ -241,6 +281,9 @@ module eos_sensor_types
 
            integer(kind=i4)                         :: n
            real(kind=dp)                            :: d_ob
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=dp), dimension(:), allocatable :: h
            real(kind=dp), dimension(:), allocatable :: delta
            real(kind=dp), dimension(:), allocatable :: dmin
@@ -256,6 +299,9 @@ module eos_sensor_types
            real(kind=sp)                            :: l2
            real(kind=sp)                            :: o
            logical(kind=i4)                         :: inf
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif 
            real(kind=sp), dimension(:), allocatable :: alpha
            real(kind=sp), dimension(:), allocatable :: dc
            !dir$ attributes align : 64 :: alpha
@@ -265,10 +311,13 @@ module eos_sensor_types
 
      type, public :: defocus_cof_r8_t
 
-           integer(kind=i4)                         :: n
            real(kind=dp)                            :: l2
            real(kind=dp)                            :: o
            logical(kind=i4)                         :: inf
+           integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif        
            real(kind=dp), dimension(:), allocatable :: alpha
            real(kind=dp), dimension(:), allocatable :: dc
            !dir$ attributes align : 64 :: alpha
@@ -278,12 +327,16 @@ module eos_sensor_types
 
      type, public :: circle_dispersion_r4_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=sp)                             :: d
            real(kind=sp)                             :: l1
            real(kind=sp)                             :: l2
            real(kind=sp)                             :: o
+           integer(kind=i4)                          :: n
            logical(kind=i4)                          :: inf
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif             
            real(kind=sp), dimension(:), allocatable  :: alpha
            real(kind=sp), dimension(:), allocatable  :: rho
            !dir$ attributes align : 64 :: alpha
@@ -293,12 +346,16 @@ module eos_sensor_types
 
      type, public :: circle_dispersion_r8_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=dp)                             :: d
            real(kind=dp)                             :: l1
            real(kind=dp)                             :: l2
            real(kind=dp)                             :: o
+           integer(kind=i4)                          :: n
            logical(kind=i4)                          :: inf
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif                                 
            real(kind=dp), dimension(:), allocatable  :: alpha
            real(kind=dp), dimension(:), allocatable  :: rho
            !dir$ attributes align : 64 :: alpha
@@ -308,12 +365,16 @@ module eos_sensor_types
 
      type, public :: circ_dispers_diam_r4_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=sp)                             :: d
            real(kind=sp)                             :: l1
            real(kind=sp)                             :: l2
            real(kind=sp)                             :: o
            logical(kind=i4)                          :: inf
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif 
            real(kind=sp), dimension(:), allocatable  :: alpha
            real(kind=sp), dimension(:), allocatable  :: ratio
            !dir$ attributes align : 64 :: alpha
@@ -323,12 +384,16 @@ module eos_sensor_types
 
      type, public :: circ_dispers_diam_r8_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=dp)                             :: d
            real(kind=dp)                             :: l1
            real(kind=dp)                             :: l2
            real(kind=dp)                             :: o
            logical(kind=i4)                          :: inf
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif           
            real(kind=dp), dimension(:), allocatable  :: alpha
            real(kind=dp), dimension(:), allocatable  :: ratio
            !dir$ attributes align : 64 :: alpha
@@ -338,9 +403,13 @@ module eos_sensor_types
 
      type, public :: defocus_small_ang_r4_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=sp)                             :: l2
            real(kind=sp)                             :: o
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=sp), dimension(:), allocatable  :: alpha
            real(kind=sp), dimension(:), allocatable  :: rho
            !dir$ attributes align : 64 :: alpha
@@ -350,9 +419,13 @@ module eos_sensor_types
 
      type, public :: defocus_small_ang_r8_t
 
-           integer(kind=i4)                          :: n
+           
            real(kind=dp)                             :: l2
            real(kind=dp)                             :: o
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif        
            real(kind=dp), dimension(:), allocatable  :: alpha
            real(kind=dp), dimension(:), allocatable  :: rho
            !dir$ attributes align : 64 :: alpha
@@ -363,6 +436,9 @@ module eos_sensor_types
      type, public :: traj_scan_dxdt_r4_t
 
            integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif          
            real(kind=sp), dimension(:,:), allocatable :: dx
            real(kind=sp), dimension(:,:), allocatable :: dt
            real(kind=sp), dimension(:),   allocatable :: dxdt
@@ -375,6 +451,9 @@ module eos_sensor_types
      type, public :: traj_scan_dxdt_r8_t
 
            integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif          
            real(kind=dp), dimension(:,:), allocatable :: dx
            real(kind=dp), dimension(:,:), allocatable :: dt
            real(kind=dp), dimension(:),   allocatable :: dxdt
@@ -387,6 +466,9 @@ module eos_sensor_types
      type, public :: traj_scan_dydt_r4_t
 
            integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif          
            real(kind=sp), dimension(:,:), allocatable :: dy
            real(kind=sp), dimension(:,:), allocatable :: dt
            real(kind=sp), dimension(:),   allocatable :: dydt
@@ -399,6 +481,9 @@ module eos_sensor_types
      type, public :: traj_scan_dydt_r8_t
 
            integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif          
            real(kind=dp), dimension(:,:), allocatable :: dy
            real(kind=dp), dimension(:,:), allocatable :: dt
            real(kind=dp), dimension(:),   allocatable :: dydt
@@ -412,6 +497,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: h
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif             
            real(kind=sp), dimension(:),   allocatable :: delta
            real(kind=sp), dimension(:),   allocatable :: gamma
            real(kind=sp), dimension(:),   allocatable :: ax
@@ -423,8 +511,12 @@ module eos_sensor_types
 
      type, public :: fov_x_axis_r8_t
 
+         
+           real(kind=dp)                              :: h
            integer(kind=i4)                           :: n
-           real(kind=sp)                              :: h
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif              
            real(kind=dp), dimension(:),   allocatable :: delta
            real(kind=dp), dimension(:),   allocatable :: gamma
            real(kind=dp), dimension(:),   allocatable :: ax
@@ -438,6 +530,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: h
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: delta
            real(kind=sp), dimension(:),   allocatable :: gamma
            real(kind=sp), dimension(:),   allocatable :: ay
@@ -449,8 +544,12 @@ module eos_sensor_types
 
      type, public :: fov_y_axis_r8_t
 
-           integer(kind=i4)                           :: n
+        
            real(kind=dp)                              :: h
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif             
            real(kind=dp), dimension(:),   allocatable :: delta
            real(kind=dp), dimension(:),   allocatable :: gamma
            real(kind=dp), dimension(:),   allocatable :: ay
@@ -464,6 +563,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: h
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: delta
            real(kind=sp), dimension(:),   allocatable :: theta
            real(kind=sp), dimension(:),   allocatable :: b
@@ -475,8 +577,12 @@ module eos_sensor_types
 
      type, public :: scan_width_r8_t
 
-           integer(kind=i4)                           :: n
+        
            real(kind=dp)                              :: h
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif           
            real(kind=dp), dimension(:),   allocatable :: delta
            real(kind=dp), dimension(:),   allocatable :: theta
            real(kind=dp), dimension(:),   allocatable :: b
@@ -491,6 +597,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: len
            real(kind=sp)                              :: i1
            real(kind=sp)                              :: delta
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif           
            real(kind=sp), dimension(:),   allocatable :: alfa
            real(kind=sp), dimension(:),   allocatable :: gamma
            real(kind=sp), dimension(:),   allocatable :: n
@@ -504,9 +613,13 @@ module eos_sensor_types
 
      type, public :: refract_shift_r8_t
 
-           integer(kind=i4)                           :: len
+          
            real(kind=dp)                              :: i1
            real(kind=dp)                              :: delta
+           integer(kind=i4)                           :: len
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif           
            real(kind=dp), dimension(:),   allocatable :: alfa
            real(kind=dp), dimension(:),   allocatable :: gamma
            real(kind=dp), dimension(:),   allocatable :: n
@@ -522,6 +635,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: l
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: alpha
            real(kind=sp), dimension(:),   allocatable :: xl
            real(kind=sp), dimension(:),   allocatable :: yl
@@ -533,8 +649,12 @@ module eos_sensor_types
 
      type, public :: project_xy_axis_r8_t
 
-           integer(kind=i4)                           :: n
+          
            real(kind=dp)                              :: l
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=dp), dimension(:),   allocatable :: alpha
            real(kind=dp), dimension(:),   allocatable :: xl
            real(kind=dp), dimension(:),   allocatable :: yl
@@ -548,6 +668,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: l
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: alpha
            real(kind=sp), dimension(:),   allocatable :: gamma
            real(kind=sp), dimension(:),   allocatable :: s
@@ -559,8 +682,12 @@ module eos_sensor_types
 
      type, public :: s_shift_r8_t
 
-           integer(kind=i4)                           :: n
+          
            real(kind=dp)                              :: l
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif             
            real(kind=dp), dimension(:),   allocatable :: alpha
            real(kind=dp), dimension(:),   allocatable :: gamma
            real(kind=dp), dimension(:),   allocatable :: s
@@ -574,6 +701,9 @@ module eos_sensor_types
 
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: s
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif  
            real(kind=sp), dimension(:),   allocatable :: gamma
            real(kind=sp), dimension(:),   allocatable :: xs
            real(kind=sp), dimension(:),   allocatable :: ys
@@ -585,8 +715,12 @@ module eos_sensor_types
 
      type, public :: project_s_xy_r8_t
 
-           integer(kind=i4)                           :: n
+          
            real(kind=dp)                              :: s
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif           
            real(kind=dp), dimension(:),   allocatable :: gamma
            real(kind=dp), dimension(:),   allocatable :: xs
            real(kind=dp), dimension(:),   allocatable :: ys
@@ -602,6 +736,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: t
            real(kind=sp)                              :: xlo
            real(kind=sp)                              :: xup
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif           
            real(kind=sp), dimension(:,:), allocatable :: rhoE
            real(kind=sp), dimension(:),   allocatable :: absc
            real(kind=sp), dimension(:),   allocatable :: Phit
@@ -615,10 +752,14 @@ module eos_sensor_types
 
      type, public :: raster_flux_int_r8_t
 
-           integer(kind=i4)                           :: n
-           integer(kind=i4)                           :: t
+          
            real(kind=dp)                              :: xlo
            real(kind=dp)                              :: xup
+           integer(kind=i4)                           :: n
+           integer(kind=i4)                           :: t
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif              
            real(kind=dp), dimension(:,:), allocatable :: rhoE
            real(kind=dp), dimension(:),   allocatable :: absc
            real(kind=dp), dimension(:),   allocatable :: Phit
@@ -637,6 +778,9 @@ module eos_sensor_types
            real(kind=sp)                              :: invs
            real(kind=sp)                              :: xlo
            real(kind=sp)                              :: xup
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif  
            real(kind=sp), dimension(:,:), allocatable :: rhophi
            real(kind=sp), dimension(:),   allocatable :: absc
            real(kind=sp), dimension(:),   allocatable :: rhi
@@ -650,11 +794,13 @@ module eos_sensor_types
 
      type, public :: raster_opacity_int_r8_t
 
-           integer(kind=i4)                           :: n
-           integer(kind=i4)                           :: t
+          
            real(kind=dp)                              :: invs
            real(kind=dp)                              :: xlo
            real(kind=dp)                              :: xup
+           integer(kind=i4)                           :: n
+           integer(kind=i4)                           :: t
+           
            real(kind=dp), dimension(:,:), allocatable :: rhophi
            real(kind=dp), dimension(:),   allocatable :: absc
            real(kind=dp), dimension(:),   allocatable :: rhi
@@ -671,6 +817,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: om0
            real(kind=sp)                              :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: coss
            !dir$ attributes align : 64 :: coss
      end type cos_series_r4_t
@@ -678,9 +827,13 @@ module eos_sensor_types
 
      type, public :: cos_series_r8_t
 
-           integer(kind=i4)                           :: n
+         
            real(kind=dp)                              :: om0
            real(kind=dp)                              :: k
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
            real(kind=dp), dimension(:),   allocatable :: coss
            !dir$ attributes align : 64 :: coss
      end type cos_series_r8_t
@@ -691,6 +844,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: om0
            real(kind=sp)                              :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
            real(kind=sp), dimension(:),   allocatable :: sins
            !dir$ attributes align : 64 :: sins
      end type sin_series_r4_t
@@ -698,24 +854,31 @@ module eos_sensor_types
 
      type, public :: sin_series_r8_t
 
-           integer(kind=i4)                           :: n
+          
            real(kind=dp)                              :: om0
            real(kind=dp)                              :: k
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif             
            real(kind=dp), dimension(:),   allocatable :: sins
            !dir$ attributes align : 64 :: sins
      end type sins_series_r8_t
 
 
-     type, public :: rad_flux_spectrum
+     type, public :: rad_flux_spectrum_t
 
            integer(kind=i4)                           :: dim_len
            integer(kind=i4)                           :: data_len
            integer(kind=i4)                           :: status
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif  
            real(kind=dp), dimension(:),   allocatable :: phi_in
            complex(kind=sp), dimension(:),allocatable :: phi_out
            !dir$ attributes align : 64 :: phi_in
            !dir$ attributes align : 64 :: phi_out
-     end type rad_flux_spectrum
+     end type rad_flux_spectrum_t
 
 
      type, public :: squared_cos_flux_r4_t
@@ -723,6 +886,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: tin
            real(kind=sp)                              :: phi0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif             
            real(kind=sp), dimension(:),   allocatable :: phi0t
            !dir$ attributes align : 64 :: phi0t
      end type squared_cos_flux_r4_t
@@ -730,9 +896,13 @@ module eos_sensor_types
 
      type, public :: squared_cos_flux_r8_t
 
-           integer(kind=i4)                           :: n
+         
            real(kind=dp)                              :: tin
            real(kind=dp)                              :: phi0
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
            real(kind=dp), dimension(:),   allocatable :: phi0t
            !dir$ attributes align : 64 :: phi0t
      end type squared_cos_flux_r8_t
@@ -743,6 +913,9 @@ module eos_sensor_types
            integer(kind=i4)                           :: n
            real(kind=sp)                              :: T
            real(kind=sp)                              :: phi0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif 
            real(kind=sp), dimension(:),   allocatable :: phi0f
            real(kind=sp), dimension(:),   allocatable :: freq
            !dir$ attributes align : 64 :: phi0f
@@ -752,9 +925,13 @@ module eos_sensor_types
 
      type, public :: const_flux_spectr_r8_t
 
-           integer(kind=i4)                           :: n
+          
            real(kind=dp)                              :: T
            real(kind=dp)                              :: phi0
+           integer(kind=i4)                           :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
            real(kind=dp), dimension(:),   allocatable :: phi0f
            real(kind=dp), dimension(:),   allocatable :: freq
            !dir$ attributes align : 64 :: phi0f
@@ -769,6 +946,9 @@ module eos_sensor_types
            real(kind=sp)                             :: phi0
            real(kind=sp)                             :: rho0
            real(kind=sp)                             :: rho1
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif 
            real(kind=sp), dimension(:),  allocatable :: rhot_s
            real(kind=sp), dimension(:),  allocatable :: rhot_c
            !dir$ attributes align : 64 :: rhot_s
@@ -778,11 +958,15 @@ module eos_sensor_types
 
      type, public :: ideal_modulator_r8_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=dp)                             :: f0
            real(kind=dp)                             :: phi0
            real(kind=dp)                             :: rho0
            real(kind=dp)                             :: rho1
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif            
            real(kind=dp), dimension(:),  allocatable :: rhot_s
            real(kind=dp), dimension(:),  allocatable :: rhot_c
            !dir$ attributes align : 64 :: rhot_s
@@ -795,6 +979,9 @@ module eos_sensor_types
            integer(kind=i4)                          :: n
            real(kind=sp)                             :: fk
            real(kind=sp)                             :: Tin
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif 
            real(kind=dp), dimension(:),  allocatable :: phik
            real(kind=dp), dimension(:),  allocatable :: phi0
            !dir$ attributes align : 64 :: phik
@@ -804,9 +991,13 @@ module eos_sensor_types
         
       type, public :: rect_pulse_flux_r8_t
 
-           integer(kind=i4)                          :: n
+          
            real(kind=dp)                             :: fk
            real(kind=dp)                             :: Tin
+           integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
            real(kind=dp), dimension(:),  allocatable :: phik
            real(kind=dp), dimension(:),  allocatable :: phi0
            !dir$ attributes align : 64 :: phik
@@ -820,6 +1011,9 @@ module eos_sensor_types
             real(kind=sp)                             :: phi0
             real(kind=sp)                             :: tin
             real(kind=sp)                             :: t
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif             
             real(kind=sp), dimension(:),  allocatable :: ak
             real(kind=sp), dimension(:),  allocatable :: phik
             real(kind=sp), dimension(:),  allocatable :: k
@@ -831,10 +1025,14 @@ module eos_sensor_types
 
        type, public :: rect_pulse_amp_r8_t
 
-            integer(kind=i4)                          :: n
+           
             real(kind=dp)                             :: phi0
             real(kind=dp)                             :: tin
             real(kind=dp)                             :: t
+            integer(kind=i4)                          :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif              
             real(kind=dp), dimension(:),  allocatable :: ak
             real(kind=dp), dimension(:),  allocatable :: phik
             real(kind=dp), dimension(:),  allocatable :: k
@@ -852,6 +1050,9 @@ module eos_sensor_types
             real(kind=sp)                            :: beta
             real(kind=sp)                            :: omega0
             real(kind=sp)                            :: om0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif              
             real(kind=sp), dimension(:), allocatable :: rhot
             !dir$ attributes align : 64 :: rhot
        end type transmit_coeff_r4_t
@@ -859,12 +1060,16 @@ module eos_sensor_types
 
        type, public :: transmit_coeff_r8_t
 
-            integer(kind=i4)                         :: n
+           
             real(kind=dp)                            :: rho0
             real(kind=dp)                            :: rho1
             real(kind=dp)                            :: beta
             real(kind=dp)                            :: omega0
             real(kind=dp)                            :: om0
+            integer(kind=i4)                         :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif              
             real(kind=dp), dimension(:), allocatable :: rhot
             !dir$ attributes align : 64 :: rhot
        end type transmit_coeff_r8_t
@@ -877,6 +1082,9 @@ module eos_sensor_types
             real(kind=sp)                            :: xup
             real(kind=sp)                            :: np
             real(kind=sp)                            :: gamt
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
             real(kind=sp), dimension(:), allocatable :: Ft
             real(kind=sp), dimension(:), allocatable :: absc
             !dir$ attributes align : 64 :: Ft
@@ -886,11 +1094,13 @@ module eos_sensor_types
 
        type, public :: integrate_FT_r8_t
 
-            integer(kind=i4)                         :: n
-            integer(kind=i4)                         :: ier
+           
             real(kind=dp)                            :: xup
             real(kind=dp)                            :: np
             real(kind=dp)                            :: gamt
+            integer(kind=i4)                         :: n
+            integer(kind=i4)                         :: ier
+          
             real(kind=dp), dimension(:), allocatable :: Ft
             real(kind=dp), dimension(:), allocatable :: absc
             !dir$ attributes align : 64 :: Ft
@@ -908,6 +1118,7 @@ module eos_sensor_types
             real(kind=sp)                           :: Beta
             real(kind=sp)                           :: R0
             real(kind=sp)                           :: om0
+            
             real(kind=sp), dimension(:),allocatable :: rhot
             !dir$ attributes align : 64 :: rhot
        end type raster_transmittance_t4_t
@@ -915,7 +1126,7 @@ module eos_sensor_types
 
        type, public :: raster_transmittance_t8_t
 
-            integer(kind=i4)                        :: n
+           
             real(kind=dp)                           :: a
             real(kind=dp)                           :: r
             real(kind=dp)                           :: rho0
@@ -923,6 +1134,10 @@ module eos_sensor_types
             real(kind=dp)                           :: Beta
             real(kind=dp)                           :: R0
             real(kind=dp)                           :: om0
+            integer(kind=i4)                        :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif               
             real(kind=dp), dimension(:),allocatable :: rhot
             !dir$ attributes align : 64 :: rhot
        end type raster_transmittance_t8_t  
@@ -936,6 +1151,9 @@ module eos_sensor_types
             real(kind=sp)                           :: om0
             real(kind=sp)                           :: Beta
             real(kind=sp)                           :: Omega0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif   
             real(kind=sp), dimension(:),allocatable :: Phiom
             !dir$ attributes align : 64 :: Phiom
        end type transmit_freq_modul_r4_t
@@ -943,12 +1161,16 @@ module eos_sensor_types
 
        type, public :: transmit_freq_modul_r8_t
 
-            integer(kind=i4)                        :: n
+            
             real(kind=dp)                           :: Phi0
             real(kind=dp)                           :: rho0
             real(kind=dp)                           :: om0
             real(kind=dp)                           :: Beta
             real(kind=dp)                           :: Omega0
+            integer(kind=i4)                        :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif            
             real(kind=dp), dimension(:),allocatable :: Phiom
             !dir$ attributes align : 64 :: Phiom
        end type transmit_freq_modul_r8_t
@@ -962,6 +1184,9 @@ module eos_sensor_types
             real(kind=sp)                           :: Beta
             real(kind=sp)                           :: om0
             real(kind=sp)                           :: Omega0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif            
             real(kind=sp), dimension(:),allocatable :: rhot
             real(kind=sp), dimension(:),allocatable :: bjb
             !dir$ attributes align : 64 :: rhot
@@ -971,12 +1196,16 @@ module eos_sensor_types
 
         type, public :: transmitt_spectr_r8_t
 
-            integer(kind=i4)                        :: len
-            integer(kind=i4)                        :: n
+           
             real(kind=dp)                           :: rho0
             real(kind=dp)                           :: Beta
             real(kind=dp)                           :: om0
             real(kind=dp)                           :: Omega0
+            integer(kind=i4)                        :: len
+            integer(kind=i4)                        :: n
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif               
             real(kind=dp), dimension(:),allocatable :: rhot
             real(kind=dp), dimension(:),allocatable :: bjb
             !dir$ attributes align : 64 :: rhot
@@ -989,6 +1218,9 @@ module eos_sensor_types
              integer(kind=i4)                          :: dim_len
              integer(kind=i4)                          :: data_len
              integer(kind=i4)                          :: status
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif               
              real(kind=sp), dimension(:),allocatable   :: rhophi_in
              complex(kind=dp),dimension(:),allocatable :: rhophi_out
              !dir$ attributes align : 64 :: rhophi_in
@@ -1002,6 +1234,9 @@ module eos_sensor_types
              real(kind=sp)                             :: k
              real(kind=sp)                             :: ak
              integer(kind=i4)                          :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif               
              real(kind=sp), dimension(1:128)           :: rhophi
              real(kind=sp), dimension(1:128)           :: cosphi
          end type fourier_coff_ak_r4_t
@@ -1009,10 +1244,14 @@ module eos_sensor_types
 
         type, public :: fourier_coff_ak_r8_t
 
-             integer(kind=i4)                          :: N
+             
              real(kind=dp)                             :: k
              real(kind=dp)                             :: ak
              integer(kind=i4)                          :: ier
+             integer(kind=i4)                          :: N
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif             
              real(kind=dp), dimension(1:128)           :: rhophi
              real(kind=dp), dimension(1:128)           :: cosphi
         end type fourier_coff_ak_r8_t
@@ -1024,6 +1263,9 @@ module eos_sensor_types
              real(kind=sp)                             :: k
              real(kind=sp)                             :: a0k
              integer(kind=i4)                          :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif               
              real(kind=sp), dimension(1:128)           :: rhod
              real(kind=sp), dimension(1:128)           :: cosphi
             
@@ -1032,10 +1274,14 @@ module eos_sensor_types
 
         type, public :: fourier_coff_a0k_r8_t
 
-             integer(kind=i4)                          :: N
+             
              real(kind=dp)                             :: k
              real(kind=dp)                             :: a0k
              integer(kind=i4)                          :: ier
+             integer(kind=i4)                          :: N
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif                
              real(kind=dp), dimension(1:128)           :: rhod
              real(kind=dp), dimension(1:128)           :: cosphi
              
@@ -1048,6 +1294,9 @@ module eos_sensor_types
              real(kind=sp)                             :: k
              real(kind=sp)                             :: bk
              integer(kind=i4)                          :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif                
              real(kind=sp), dimension(1:128)           :: rhophi
              real(kind=sp), dimension(1:128)           :: cosphi
             
@@ -1056,10 +1305,14 @@ module eos_sensor_types
 
        type, public :: fourier_coff_bk_r8_t
 
-             integer(kind=i4)                          :: N
+            
              real(kind=dp)                             :: k
              real(kind=dp)                             :: bk
              integer(kind=i4)                          :: ier
+             integer(kind=i4)                          :: N
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif                
              real(kind=dp), dimension(1:128)           :: rhophi
              real(kind=dp), dimension(1:128)           :: cosphi
             
@@ -1072,6 +1325,9 @@ module eos_sensor_types
              real(kind=sp)                             :: k
              real(kind=sp)                             :: b0k
              integer(kind=i4)                          :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif                
              real(kind=sp), dimension(1:128)           :: rhod
              real(kind=sp), dimension(1:128)           :: cosphi
             
@@ -1080,10 +1336,14 @@ module eos_sensor_types
 
        type, public :: fourier_coff_b0k_r8_t
 
-             integer(kind=i4)                          :: N
+           
              real(kind=dp)                             :: k
              real(kind=dp)                             :: b0k
              integer(kind=i4)                          :: ier
+             integer(kind=i4)                          :: N
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif               
              real(kind=dp), dimension(1:128)           :: rhod
              real(kind=dp), dimension(1:128)           :: cosphi
             
@@ -1097,6 +1357,9 @@ module eos_sensor_types
              real(kind=sp)                              :: xup
              real(kind=sp)                              :: ans
              integer(kind=i4)                           :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif                
              real(kind=sp), dimension(1:128)            :: rhophi
              real(kind=sp), dimension(1:128)            :: absc
             
@@ -1110,6 +1373,9 @@ module eos_sensor_types
              real(kind=dp)                              :: xup
              real(kind=dp)                              :: ans
              integer(kind=i4)                           :: ier
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif                
              real(kind=dp), dimension(1:128)            :: rhophi
              real(kind=dp), dimension(1:128)            :: absc
             
@@ -1125,6 +1391,9 @@ module eos_sensor_types
              integer(kind=i4)                           :: klim
              real(kind=sp)                              :: xlo
              real(kind=sp)                              :: xup
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif               
              real(kind=sp),  dimension(1:128)           :: rhophi
              real(kind=sp),  dimension(1:128)           :: cosphi
              real(kind=sp),  dimension(1:128)           :: absc
@@ -1136,13 +1405,17 @@ module eos_sensor_types
         ! used with  raster_transmitt_fourier_phi_t_r4   
         type, public :: raster_transmit_phit_r8_t
 
-             integer(kind=i4)                           :: len
-             integer(kind=i4)                           :: N
+            
              real(kind=dp)                              :: ans !a0
-             integer(kind=i4)                           :: r
-             integer(kind=i4)                           :: klim
              real(kind=dp)                              :: xlo
              real(kind=dp)                              :: xup
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             integer(kind=i4)                           :: r
+             integer(kind=i4)                           :: klim
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif               
              real(kind=dp),  dimension(1:128)           :: rhophi
              real(kind=dp),  dimension(1:128)           :: cosphi
              real(kind=dp),  dimension(1:128)           :: absc
@@ -1162,6 +1435,7 @@ module eos_sensor_types
              integer(kind=i4)                           :: klim
              real(kind=sp)                              :: phi1
              real(kind=sp)                              :: phi2
+              
              real(kind=sp),  dimension(1:128)           :: rhophi
              real(kind=sp),  dimension(1:128)           :: rhod
              real(kind=sp),  dimension(1:128)           :: cosphi1
@@ -1175,14 +1449,18 @@ module eos_sensor_types
 
          type, public :: raster_transmitt_t_r8_t
 
-             integer(kind=i4)                           :: len
-             integer(kind=i4)                           :: N
+            
              real(kind=dp)                              :: xlo
              real(kind=dp)                              :: xup
-             integer(kind=i4)                           :: r   ! number of raster rotations
-             integer(kind=i4)                           :: klim
              real(kind=dp)                              :: phi1
              real(kind=dp)                              :: phi2
+             integer(kind=i4)                           :: len
+             integer(kind=i4)                           :: N
+             integer(kind=i4)                           :: r   ! number of raster rotations
+             integer(kind=i4)                           :: klim
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif              
              real(kind=dp),  dimension(1:128)           :: rhophi
              real(kind=dp),  dimension(1:128)           :: rhod
              real(kind=dp),  dimension(1:128)           :: cosphi1
@@ -1199,6 +1477,9 @@ module eos_sensor_types
               integer(kind=i4)                          :: htin
               real(kind=sp)                             :: f
               real(kind=sp)                             :: phi0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif                 
               real(kind=sp), dimension(:), allocatable  :: phi0f
               !dir$ attributes align : 64 :: phi0f
          end type raster_flux_sinc_r4_t
@@ -1206,9 +1487,13 @@ module eos_sensor_types
 
          type, public :: raster_flux_sinc_r8_t
 
-              integer(kind=i4)                          :: htin
+              
               real(kind=dp)                             :: f
               real(kind=dp)                             :: phi0
+              integer(kind=i4)                          :: htin
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif                 
               real(kind=dp), dimension(:), allocatable  :: phi0f
               !dir$ attributes align : 64 :: phi0f
          end type raster_flux_sinc_r8_t
@@ -1220,6 +1505,9 @@ module eos_sensor_types
               real(kind=sp)                             :: f0
               real(kind=sp)                             :: rho0
               real(kind=sp)                             :: phi0
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif              
               real(kind=sp), dimension(:), allocatable  :: phif
               !dir$ attributes align : 64 :: phif
          end type raster_flux_mod_sinc_r4_t
@@ -1227,10 +1515,14 @@ module eos_sensor_types
          
          type, public :: raster_flux_mod_sinc_r8_t
 
-              integer(kind=i4)                          :: htin
+             
               real(kind=dp)                             :: f0
               real(kind=dp)                             :: rho0
               real(kind=dp)                             :: phi0
+              integer(kind=i4)                          :: htin
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif              
               real(kind=dp), dimension(:), allocatable  :: phif
               !dir$ attributes align : 64 :: phif
          end type raster_flux_mod_sinc_r8_t
@@ -1244,6 +1536,9 @@ module eos_sensor_types
                real(kind=sp)                            :: fx
                real(kind=sp)                            :: rho0
                real(kind=sp)                            :: dt
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,8)
+#endif               
                real(kind=sp), dimension(:), allocatable :: phif
               !dir$ attributes align : 64 :: phif
          end type raster_mod_sinc_shifted_r4_t
@@ -1251,12 +1546,16 @@ module eos_sensor_types
 
          type, public :: raster_mod_sinc_shifted_r8_t
 
-               integer(kind=i4)                         :: htin !shall be divisable by 2
+              
                real(kind=dp)                            :: f
                real(kind=dp)                            :: phi0
                real(kind=dp)                            :: fx
                real(kind=dp)                            :: rho0
                real(kind=dp)                            :: dt
+               integer(kind=i4)                         :: htin !shall be divisable by 2
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif               
                real(kind=dp), dimension(:), allocatable :: phif
               !dir$ attributes align : 64 :: phif
          end type raster_mod_sinc_shifted_r8_t   
@@ -1266,15 +1565,104 @@ module eos_sensor_types
 
          type, public :: eo_sensor_r4_t
 
-               type(param_gamma_r4_t)     :: m_param_gamma
-               type(SN_r4_t)              :: m_SN
-               type(SM_r4_t)              :: m_SM
-               type(ratio_FH_r4_t)        :: m_ratio_FH
-               type(scan_mirror_ang_r4_t) :: m_scan_mirr_ang
-               type(Dmax_r4_t)            :: m_Dmax
-               type(Dmin_r4_t)            :: m_Dmin
-               type(defocus_cof_r4_t)     :: m_defocus_cof
-         end type eo_sensor_r4_t
+               type(param_gamma_r4_t)             :: m_param_gamma
+               type(SN_r4_t)                      :: m_SN
+               type(SM_r4_t)                      :: m_SM
+               type(ratio_FH_r4_t)                :: m_ratio_FH
+               type(scan_mirror_ang_r4_t)         :: m_scan_mirr_ang
+               type(Dmax_r4_t)                    :: m_Dmax
+               type(Dmin_r4_t)                    :: m_Dmin
+               type(defocus_cof_r4_t)             :: m_defocus_cof
+               type(circle_dispersion_r4_t)       :: m_circ_dispers
+               type(circ_dispers_diam_r4_t)       :: m_circ_dispers_diam
+               type(defocus_small_ang_r4_t)       :: m_defocus_small_ang
+               type(traj_scan_dxdt_r4_t)          :: m_traj_scan_dxdt
+               type(raj_scan_dydt_r4_t)           :: m_traj_scan_dydt
+               type(fov_x_axis_r4_t)              :: m_fov_x_axis
+               type(fov_y_axis_r4_t)              :: m_fov_y_axis
+               type(scan_width_r4_t)              :: m_scan_width
+               type(refract_shift_r4_t)           :: m_refract_shift
+               type(project_xy_axis_r4_t)         :: m_proj_xy_axis
+               type(s_shift_r4_t)                 :: m_s_shift_r4
+               type(project_s_xy_r4_t)            :: m_proj_s_xy
+               type(raster_flux_int_r4_t)         :: m_raster_flux_int
+               type(raster_opacity_int_r4_t)      :: m_rast_opac_int
+               type(cos_series_r4_t)              :: m_cos_series
+               type(sin_series_r4_t)              :: m_sin_series
+               type(rad_flux_spectrum_t)          :: m_rad_flux_spect
+               type(squared_cos_flux_r4_t)        :: m_square_cos_flux
+               type(const_flux_spectr_r4_t)       :: m_const_flux_spectr
+               type(ideal_modulator_r4_t)         :: m_ideal_mod
+               type(rect_pulse_flux_r4_t)         :: m_rect_puls_flux
+               type(rect_pulse_amp_r4_t)          :: m_rect_puls_amp
+               type(transmit_coeff_r4_t)          :: m_transmitt_cof
+               type(integrate_FT_r4_t)            :: m_integral_FT
+               type(raster_transmittance_t4_t)    :: m_raster_trans
+               type(transmit_freq_modul_r4_t)     :: m_trans_freq_mod
+               type(transmitt_spectr_r4_t)        :: m_trans_spectr
+               type(raster_transmit_fft_rc_t)     :: m_rast_tansmit_fft
+               type(fourier_coff_ak_r4_t)         :: m_fourier_coff_ak
+               type(fourier_coff_a0k_r4_t)        :: m_fourier_coff_a0k
+               type(fourier_coff_bk_r4_t)         :: m_fourier_coff_bk
+               type(fourier_coff_b0k_r4_t)        :: m_fourier_coff_b0k
+               type(fourier_coff_a0_r4_t)         :: m_fourier_coff_a0
+               type(raster_transmit_phit_r4_t)    :: m_rast_trans_phit
+               type(raster_transmitt_t_r4_t)      :: m_rast_trans_t
+               type(raster_flux_sinc_r4_t)        :: m_rast_flux_sinc
+               type(raster_flux_mod_sinc_r4_t)    :: m_rast_flux_mod_sinc
+               type(raster_mod_sinc_shifted_r4_t) :: m_rast_mod_sinc_shift
+           end type eo_sensor_r4_t
+
+
+           type, public :: eo_sensor_r8_t
+
+               type(param_gamma_r8_t)             :: m_param_gamma
+               type(SN_r8_t)                      :: m_SN
+               type(SM_r8_t)                      :: m_SM
+               type(ratio_FH_r8_t)                :: m_ratio_FH
+               type(scan_mirror_ang_r8_t)         :: m_scan_mirr_ang
+               type(Dmax_r8_t)                    :: m_Dmax
+               type(Dmin_r8_t)                    :: m_Dmin
+               type(defocus_cof_r8_t)             :: m_defocus_cof
+               type(circle_dispersion_r8_t)       :: m_circ_dispers
+               type(circ_dispers_diam_r8_t)       :: m_circ_dispers_diam
+               type(defocus_small_ang_r8_t)       :: m_defocus_small_ang
+               type(traj_scan_dxdt_r8_t)          :: m_traj_scan_dxdt
+               type(raj_scan_dydt_r8_t)           :: m_traj_scan_dydt
+               type(fov_x_axis_r8_t)              :: m_fov_x_axis
+               type(fov_y_axis_r8_t)              :: m_fov_y_axis
+               type(scan_width_r8_t)              :: m_scan_width
+               type(refract_shift_r8_t)           :: m_refract_shift
+               type(project_xy_axis_r8_t)         :: m_proj_xy_axis
+               type(s_shift_r8_t)                 :: m_s_shift_r4
+               type(project_s_xy_r8_t)            :: m_proj_s_xy
+               type(raster_flux_int_r8_t)         :: m_raster_flux_int
+               type(raster_opacity_int_r8_t)      :: m_rast_opac_int
+               type(cos_series_r8_t)              :: m_cos_series
+               type(sin_series_r8_t)              :: m_sin_series
+               type(rad_flux_spectrum_t)          :: m_rad_flux_spect
+               type(squared_cos_flux_r8_t)        :: m_square_cos_flux
+               type(const_flux_spectr_r8_t)       :: m_const_flux_spectr
+               type(ideal_modulator_r8_t)         :: m_ideal_mod
+               type(rect_pulse_flux_r8_t)         :: m_rect_puls_flux
+               type(rect_pulse_amp_r8_t)          :: m_rect_puls_amp
+               type(transmit_coeff_r8_t)          :: m_transmitt_cof
+               type(integrate_FT_r8_t)            :: m_integral_FT
+               type(raster_transmittance_t8_t)    :: m_raster_trans
+               type(transmit_freq_modul_r8_t)     :: m_trans_freq_mod
+               type(transmitt_spectr_r8_t)        :: m_trans_spectr
+               type(raster_transmit_fft_rc_t)     :: m_rast_tansmit_fft
+               type(fourier_coff_ak_r8_t)         :: m_fourier_coff_ak
+               type(fourier_coff_a0k_r8_t)        :: m_fourier_coff_a0k
+               type(fourier_coff_bk_r8_t)         :: m_fourier_coff_bk
+               type(fourier_coff_b0k_r8_t)        :: m_fourier_coff_b0k
+               type(fourier_coff_a0_r8_t)         :: m_fourier_coff_a0
+               type(raster_transmit_phit_r8_t)    :: m_rast_trans_phit
+               type(raster_transmitt_t_r8_t)      :: m_rast_trans_t
+               type(raster_flux_sinc_r8_t)        :: m_rast_flux_sinc
+               type(raster_flux_mod_sinc_r8_t)    :: m_rast_flux_mod_sinc
+               type(raster_mod_sinc_shifted_r8_t) :: m_rast_mod_sinc_shift
+          end type eo_sensor_r8_t
          
            
 
