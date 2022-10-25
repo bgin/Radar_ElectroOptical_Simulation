@@ -12745,6 +12745,306 @@ module eos_sensor
       end function ray_intercept_pa_r4
 
 
+      subroutine ray_intercept_pa_unroll_16x_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_16x_r4
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_16x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r4(delta,a0,g0,n)
+              end do
+              if(len<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,16
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r4(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sp(i+4) = ray_intercept_pa_r4(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sp(i+5) = ray_intercept_pa_r4(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sp(i+6) = ray_intercept_pa_r4(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sp(i+7) = ray_intercept_pa_r4(delta,a7,g7,n)
+               a8      = alpha(i+8)
+               g8      = gamma(i+8)
+               sp(i+8) = ray_intercept_pa_r4(delta,a8,g8,n)
+               a9      = alpha(i+9)
+               g9      = gamma(i+9)
+               sp(i+1) = ray_intercept_pa_r4(delta,a9,g9,n)
+               a10     = alpha(i+10)
+               g10     = gamma(i+10)
+               sp(i+10)= ray_intercept_pa_r4(delta,a10,g10,n)
+               a11     = alpha(i+11)
+               g11     = gamma(i+11)
+               sp(i+11)= ray_intercept_pa_r4(delta,a11,g11,n)
+               a12     = alpha(i+12)
+               g12     = gamma(i+12)
+               sp(i+12)= ray_intercept_pa_r4(delta,a12,g12,n)
+               a13     = alpha(i+13)
+               g13     = gamma(i+13)
+               sp(i+13)= ray_intercept_pa_r4(delta,a13,g13,n)
+               a14     = alpha(i+14)
+               g14     = gamma(i+14)
+               sp(i+14)= ray_intercept_pa_r4(delta,a14,g14,n)
+               a15     = alpha(i+15)
+               g15     = gamma(i+15)
+               sp(i+15)= ray_intercept_pa_r4(delta,a15,g15,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_16x_r4
+
+
+      subroutine ray_intercept_pa_unroll_8x_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_8x_r4
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_8x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r4(delta,a0,g0,n)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,8
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r4(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sp(i+4) = ray_intercept_pa_r4(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sp(i+5) = ray_intercept_pa_r4(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sp(i+6) = ray_intercept_pa_r4(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sp(i+7) = ray_intercept_pa_r4(delta,a7,g7,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_8x_r4
+
+
+         
+      subroutine ray_intercept_pa_unroll_4x_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_4x_r4
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_4x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r4(delta,a0,g0,n)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,4
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r4(delta,a3,g3,n)
+            end do
+      end subroutine ray_intercept_pa_unroll_4x_r4
+
+
+          
+      subroutine ray_intercept_pa_unroll_2x_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_2x_r4
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_2x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1
+           real(kind=sp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r4(delta,a0,g0,n)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,2
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r4(delta,a1,g1,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_2x_r4
+
+
+         
+      subroutine ray_intercept_pa_rolled_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_rolled_r4
+           !dir$ attributes forceinline :: ray_intercept_pa_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_rolled_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0
+           real(kind=sp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,len
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r4(delta,a0,g0,n)
+           end do
+      end subroutine ray_intercept_pa_rolled_r4
+
+
+      subroutine ray_intersect_pa_dispatch_r4( delta,alpha,gamma,n,sp,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intersect_pa_dispatch_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case
+               case (16)
+                  call ray_intercept_pa_unroll_16x_r4( delta,alpha,gamma,n,sp,len)
+               case (8)
+                  call ray_intercept_pa_unroll_8x_r4( delta,alpha,gamma,n,sp,len)
+               case (4)
+                  call ray_intercept_pa_unroll_4x_r4( delta,alpha,gamma,n,sp,len)
+               case (2)
+                  call ray_intercept_pa_unroll_2x_r4( delta,alpha,gamma,n,sp,len)
+               case (0)
+                  call ray_intercept_pa_rolled_r4( delta,alpha,gamma,n,sp,len)
+               case default
+                  return
+           end select
+      end subroutine ray_intersect_pa_dispatch_r4
+      
       
 
 
@@ -12768,10 +13068,309 @@ module eos_sensor
       end function ray_intercept_pa_r8
 
 
-    
+      subroutine ray_intercept_pa_unroll_16x_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_16x_r8
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_16x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=dp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r8(delta,a0,g0,n)
+              end do
+              if(len<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,16
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r8(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sp(i+4) = ray_intercept_pa_r8(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sp(i+5) = ray_intercept_pa_r8(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sp(i+6) = ray_intercept_pa_r8(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sp(i+7) = ray_intercept_pa_r8(delta,a7,g7,n)
+               a8      = alpha(i+8)
+               g8      = gamma(i+8)
+               sp(i+8) = ray_intercept_pa_r8(delta,a8,g8,n)
+               a9      = alpha(i+9)
+               g9      = gamma(i+9)
+               sp(i+1) = ray_intercept_pa_r8(delta,a9,g9,n)
+               a10     = alpha(i+10)
+               g10     = gamma(i+10)
+               sp(i+10)= ray_intercept_pa_r8(delta,a10,g10,n)
+               a11     = alpha(i+11)
+               g11     = gamma(i+11)
+               sp(i+11)= ray_intercept_pa_r8(delta,a11,g11,n)
+               a12     = alpha(i+12)
+               g12     = gamma(i+12)
+               sp(i+12)= ray_intercept_pa_r8(delta,a12,g12,n)
+               a13     = alpha(i+13)
+               g13     = gamma(i+13)
+               sp(i+13)= ray_intercept_pa_r8(delta,a13,g13,n)
+               a14     = alpha(i+14)
+               g14     = gamma(i+14)
+               sp(i+14)= ray_intercept_pa_r8(delta,a14,g14,n)
+               a15     = alpha(i+15)
+               g15     = gamma(i+15)
+               sp(i+15)= ray_intercept_pa_r8(delta,a15,g15,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_16x_r8
 
 
-      pure elemental function ray_intercept_na_r4(delta,alpha,gamma,n) result(sn)
+      subroutine ray_intercept_pa_unroll_8x_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_8x_r8
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_8x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r8(delta,a0,g0,n)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,8
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r8(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sp(i+4) = ray_intercept_pa_r8(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sp(i+5) = ray_intercept_pa_r8(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sp(i+6) = ray_intercept_pa_r8(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sp(i+7) = ray_intercept_pa_r8(delta,a7,g7,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_8x_r8
+
+
+         
+      subroutine ray_intercept_pa_unroll_4x_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_4x_r8
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_4x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r8(delta,a0,g0,n)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,4
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sp(i+2) = ray_intercept_pa_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sp(i+3) = ray_intercept_pa_r8(delta,a3,g3,n)
+            end do
+      end subroutine ray_intercept_pa_unroll_4x_r8
+
+
+          
+      subroutine ray_intercept_pa_unroll_2x_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_unroll_2x_r8
+           !dir$ attributes forceinline :: ray_intercept_pa_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_unroll_2x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1
+           real(kind=dp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sp(i)  = ray_intercept_pa_r8(delta,a0,g0,n)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,2
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sp(i+1) = ray_intercept_pa_r8(delta,a1,g1,n)
+           end do
+      end subroutine ray_intercept_pa_unroll_2x_r8
+
+
+         
+      subroutine ray_intercept_pa_rolled_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_pa_rolled_r8
+           !dir$ attributes forceinline :: ray_intercept_pa_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_pa_rolled_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0
+           real(kind=dp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,len
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sp(i)   = ray_intercept_pa_r8(delta,a0,g0,n)
+           end do
+      end subroutine ray_intercept_pa_rolled_r8
+
+
+      subroutine ray_intersect_pa_dispatch_r8( delta,alpha,gamma,n,sp,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intersect_pa_dispatch_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sp
+           integer(kind=i4),                intent(in) :: len
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case
+               case (16)
+                  call ray_intercept_pa_unroll_16x_r8( delta,alpha,gamma,n,sp,len)
+               case (8)
+                  call ray_intercept_pa_unroll_8x_r8( delta,alpha,gamma,n,sp,len)
+               case (4)
+                  call ray_intercept_pa_unroll_4x_r8( delta,alpha,gamma,n,sp,len)
+               case (2)
+                  call ray_intercept_pa_unroll_2x_r8( delta,alpha,gamma,n,sp,len)
+               case (0)
+                  call ray_intercept_pa_rolled_r8( delta,alpha,gamma,n,sp,len)
+               case default
+                  return
+           end select
+      end subroutine ray_intersect_pa_dispatch_r8
+      
+
+
+     pure elemental function ray_intercept_na_r4(delta,alpha,gamma,n) result(sn)
          !dir$ optimize:3
          !dir$ attributes code_align : 32 :: ray_intercept_na_r4
          !dir$ attributes forceinline :: ray_intercept_na_r4
@@ -12789,6 +13388,307 @@ module eos_sensor
          den = sqrt(n2-sin2)
          sn  = delta*1.0_sp-(num/den)
       end function ray_intercept_na_r4
+
+
+      subroutine ray_intercept_na_unroll_16x_r4(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_16x_r4
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_16x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_16x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=sp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=sp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r4(delta,a0,g0,n)
+              end do
+              if(len<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sn:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,16
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r4(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sn(i+4) = ray_intercept_na_r4(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sn(i+5) = ray_intercept_na_r4(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sn(i+6) = ray_intercept_na_r4(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sn(i+7) = ray_intercept_na_r4(delta,a7,g7,n)
+               a8      = alpha(i+8)
+               g8      = gamma(i+8)
+               sn(i+8) = ray_intercept_na_r4(delta,a8,g8,n)
+               a9      = alpha(i+9)
+               g9      = gamma(i+9)
+               sn(i+1) = ray_intercept_na_r4(delta,a9,g9,n)
+               a10     = alpha(i+10)
+               g10     = gamma(i+10)
+               sn(i+10)= ray_intercept_na_r4(delta,a10,g10,n)
+               a11     = alpha(i+11)
+               g11     = gamma(i+11)
+               sn(i+11)= ray_intercept_na_r4(delta,a11,g11,n)
+               a12     = alpha(i+12)
+               g12     = gamma(i+12)
+               sn(i+12)= ray_intercept_na_r4(delta,a12,g12,n)
+               a13     = alpha(i+13)
+               g13     = gamma(i+13)
+               sn(i+13)= ray_intercept_na_r4(delta,a13,g13,n)
+               a14     = alpha(i+14)
+               g14     = gamma(i+14)
+               sn(i+14)= ray_intercept_na_r4(delta,a14,g14,n)
+               a15     = alpha(i+15)
+               g15     = gamma(i+15)
+               sn(i+15)= ray_intercept_na_r4(delta,a15,g15,n)
+           end do
+      end subroutine ray_intercept_na_unroll_16x_r4
+
+
+      subroutine ray_intercept_na_unroll_8x_r4(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_8x_r4
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_8x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r4(delta,a0,g0,n)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned np:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,8
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r4(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sn(i+4) = ray_intercept_na_r4(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sn(i+5) = ray_intercept_na_r4(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sn(i+6) = ray_intercept_na_r4(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sn(i+7) = ray_intercept_na_r4(delta,a7,g7,n)
+           end do
+      end subroutine ray_intercept_na_unroll_8x_r4
+
+
+         
+      subroutine ray_intercept_na_unroll_4x_r4(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_4x_r4
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_4x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1,a2,a3
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r4(delta,a0,g0,n)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,4
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r4(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r4(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r4(delta,a3,g3,n)
+            end do
+      end subroutine ray_intercept_na_unroll_4x_r4
+
+
+          
+      subroutine ray_intercept_na_unroll_2x_r4(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_2x_r4
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_2x_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0,a1
+           real(kind=sp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r4(delta,a0,g0,n)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,2
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r4(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r4(delta,a1,g1,n)
+           end do
+      end subroutine ray_intercept_na_unroll_2x_r4
+
+
+         
+      subroutine ray_intercept_na_rolled_r4(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_rolled_r4
+           !dir$ attributes forceinline :: ray_intercept_na_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_rolled_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=sp), automatic :: a0
+           real(kind=sp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sn:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,len
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r4(delta,a0,g0,n)
+           end do
+      end subroutine ray_intercept_na_rolled_r4
+
+
+      subroutine ray_intersect_na_dispatch_r4( delta,alpha,gamma,n,sn,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intersect_na_dispatch_r4
+           real(kind=sp),                   intent(in) :: delta
+           real(kind=sp), dimension(1:len), intent(in) :: alpha
+           real(kind=sp), dimension(1:len), intent(in) :: gamma
+           real(kind=sp),                   intent(in) :: n
+           real(kind=sp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case
+               case (16)
+                  call ray_intercept_na_unroll_16x_r4( delta,alpha,gamma,n,sn,len)
+               case (8)
+                  call ray_intercept_na_unroll_8x_r4( delta,alpha,gamma,n,sn,len)
+               case (4)
+                  call ray_intercept_na_unroll_4x_r4( delta,alpha,gamma,n,sn,len)
+               case (2)
+                  call ray_intercept_na_unroll_2x_r4( delta,alpha,gamma,n,sn,len)
+               case (0)
+                  call ray_intercept_na_rolled_r4( delta,alpha,gamma,n,sn,len)
+               case default
+                  return
+           end select
+      end subroutine ray_intersect_na_dispatch_r4  
 
 
       pure elemental function ray_intercept_na_r8(delta,alpha,gamma,n) result(sn)
@@ -12811,11 +13711,310 @@ module eos_sensor
       end function ray_intercept_na_r8
 
 
-    
+      subroutine ray_intercept_na_unroll_16x_r8(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_16x_r8
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_16x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=dp), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r8(delta,a0,g0,n)
+              end do
+              if(len<16) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sn:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,16
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r8(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sn(i+4) = ray_intercept_na_r8(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sn(i+5) = ray_intercept_na_r8(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sn(i+6) = ray_intercept_na_r8(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sn(i+7) = ray_intercept_na_r8(delta,a7,g7,n)
+               a8      = alpha(i+8)
+               g8      = gamma(i+8)
+               sn(i+8) = ray_intercept_na_r8(delta,a8,g8,n)
+               a9      = alpha(i+9)
+               g9      = gamma(i+9)
+               sn(i+1) = ray_intercept_na_r8(delta,a9,g9,n)
+               a10     = alpha(i+10)
+               g10     = gamma(i+10)
+               sn(i+10)= ray_intercept_na_r8(delta,a10,g10,n)
+               a11     = alpha(i+11)
+               g11     = gamma(i+11)
+               sn(i+11)= ray_intercept_na_r8(delta,a11,g11,n)
+               a12     = alpha(i+12)
+               g12     = gamma(i+12)
+               sn(i+12)= ray_intercept_na_r8(delta,a12,g12,n)
+               a13     = alpha(i+13)
+               g13     = gamma(i+13)
+               sn(i+13)= ray_intercept_na_r8(delta,a13,g13,n)
+               a14     = alpha(i+14)
+               g14     = gamma(i+14)
+               sn(i+14)= ray_intercept_na_r8(delta,a14,g14,n)
+               a15     = alpha(i+15)
+               g15     = gamma(i+15)
+               sn(i+15)= ray_intercept_na_r8(delta,a15,g15,n)
+           end do
+      end subroutine ray_intercept_na_unroll_16x_r8
+
+
+      subroutine ray_intercept_na_unroll_8x_r8(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_8x_r8
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_8x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3,a4,a,a6,a7
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r8(delta,a0,g0,n)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned np:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,8
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r8(delta,a3,g3,n)
+               a4      = alpha(i+4)
+               g4      = gamma(i+4)
+               sn(i+4) = ray_intercept_na_r8(delta,a4,g4,n)
+               a5      = alpha(i+5)
+               g5      = gamma(i+5)
+               sn(i+5) = ray_intercept_na_r8(delta,a5,g5,n)
+               a6      = alpha(i+6)
+               g6      = gamma(i+6)
+               sn(i+6) = ray_intercept_na_r8(delta,a6,g6,n)
+               a7      = alpha(i+7)
+               g7      = gamma(i+7)
+               sn(i+7) = ray_intercept_na_r8(delta,a7,g7,n)
+           end do
+      end subroutine ray_intercept_na_unroll_8x_r8
+
+
+         
+      subroutine ray_intercept_na_unroll_4x_r8(delta,alpha,gamma,n,sp,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_4x_r8
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_4x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1,a2,a3
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r8(delta,a0,g0,n)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,4
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r8(delta,a1,g1,n)
+               a2      = alpha(i+2)
+               g2      = gamma(i+2)
+               sn(i+2) = ray_intercept_na_r8(delta,a2,g2,n)
+               a3      = alpha(i+3)
+               g3      = gamma(i+3)
+               sn(i+3) = ray_intercept_na_r8(delta,a3,g3,n)
+            end do
+      end subroutine ray_intercept_na_unroll_4x_r8
+
+
+          
+      subroutine ray_intercept_na_unroll_2x_r8(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_unroll_2x_r8
+           !dir$ attributes forceinline :: ray_intercept_na_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_unroll_2x_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0,a1
+           real(kind=dp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                 a0     = alpha(i)
+                 g0     = gamma(i)
+                 sn(i)  = ray_intercept_na_r8(delta,a0,g0,n)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sp:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=m1,len,2
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r8(delta,a0,g0,n)
+               a1      = alpha(i+1)
+               g1      = gamma(i+1)
+               sn(i+1) = ray_intercept_na_r8(delta,a1,g1,n)
+           end do
+      end subroutine ray_intercept_na_unroll_2x_r8
+
+
+         
+      subroutine ray_intercept_na_rolled_r8(delta,alpha,gamma,n,sn,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intercept_na_rolled_r8
+           !dir$ attributes forceinline :: ray_intercept_na_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ray_intercept_na_rolled_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           real(kind=dp), automatic :: a0
+           real(kind=dp), automatic :: g0
+           integer(kind=i4) :: i
+         
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned alpha:64
+           !dir$ assume_aligned sn:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector multiple_gather_scatter_by_shuffles 
+           !dir$ vector always
+           do i=1,len
+               a0      = alpha(i)
+               g0      = gamma(i)
+               sn(i)   = ray_intercept_na_r8(delta,a0,g0,n)
+           end do
+      end subroutine ray_intercept_na_rolled_r8
+
+
+      subroutine ray_intersect_na_dispatch_r8( delta,alpha,gamma,n,sn,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: ray_intersect_na_dispatch_r8
+           real(kind=dp),                   intent(in) :: delta
+           real(kind=dp), dimension(1:len), intent(in) :: alpha
+           real(kind=dp), dimension(1:len), intent(in) :: gamma
+           real(kind=dp),                   intent(in) :: n
+           real(kind=dp), dimension(1:len), intent(out):: sn
+           integer(kind=i4),                intent(in) :: len
+           integer(kind=i4),                intent(in) :: unroll_cnt
+           select case
+               case (16)
+                  call ray_intercept_na_unroll_16x_r8( delta,alpha,gamma,n,sn,len)
+               case (8)
+                  call ray_intercept_na_unroll_8x_r8( delta,alpha,gamma,n,sn,len)
+               case (4)
+                  call ray_intercept_na_unroll_4x_r8( delta,alpha,gamma,n,sn,len)
+               case (2)
+                  call ray_intercept_na_unroll_2x_r8( delta,alpha,gamma,n,sn,len)
+               case (0)
+                  call ray_intercept_na_rolled_r8( delta,alpha,gamma,n,sn,len)
+               case default
+                  return
+           end select
+      end subroutine ray_intersect_na_dispatch_r8  
+
 
 
        ! Formula 3, p. 110
-       pure function ray_diff_r4(delta,alpha,gamma,n,u) result(ds)
+      pure function ray_diff_r4(delta,alpha,gamma,n,u) result(ds)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 :: ray_diff_r4
            !dir$ attributes forceinline :: ray_diff_r4
@@ -12841,7 +14040,10 @@ module eos_sensor
               t1  = ray_intercept_na_r4(delta,alpha,gamma,n)
               ds  = t0-t1
            end if
-       end function ray_diff_r4
+      end function ray_diff_r4
+
+
+         
 
          
        pure function ray_diff_r8(delta,alpha,gamma,n,u) result(ds)
@@ -13198,6 +14400,8 @@ module eos_sensor
            ux   = u*t0
            uy   = u*t1
         end subroutine volt_impulse_uxuy_r4
+
+         
         
         
         subroutine volt_impulse_uxuy_r8(u,om1,om2,t,ux,uy)
