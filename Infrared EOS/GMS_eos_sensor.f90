@@ -15373,12 +15373,11 @@ module eos_sensor
      
 
         ! Formula 7,8  p. 111
-        subroutine compute_xy_r4(alpha,beta,delta,gamma,n,u,x,y)
+        subroutine compute_xy_r4(alpha,delta,gamma,n,u,x,y)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  compute_xy_r4
            !dir$ attributes forceinline ::  compute_xy_r4
            real(kind=sp),    intent(in)  :: alpha
-           real(kind=sp),    intent(in)  :: beta
            real(kind=sp),    intent(in)  :: delta
            real(kind=sp),    intent(in)  :: gamma
            real(kind=sp),    intent(in)  :: n
@@ -15391,18 +15390,17 @@ module eos_sensor
            pa   = ray_intercept_pa_r4(delta,alpha,gamma,n)
            xs   = pa*sag
            ys   = pa*cag
-           call compute_dxdy_r4(alpha,beta,delta,gamma,n,u,dx,dy)
+           call compute_dxdy_r4(alpha,delta,gamma,n,u,dx,dy)
            x    = xs+dx
            y    = ys+dx
         end subroutine compute_xy_r4
 
     
-        subroutine compute_xy_r8(alpha,beta,delta,gamma,n,u,x,y)
+        subroutine compute_xy_r8(alpha,delta,gamma,n,u,x,y)
            !dir$ optimize:3
            !dir$ attributes code_align : 32 ::  compute_xy_r8
            !dir$ attributes forceinline ::  compute_xy_r8
            real(kind=dp),    intent(in)  :: alpha
-           real(kind=dp),    intent(in)  :: beta
            real(kind=dp),    intent(in)  :: delta
            real(kind=dp),    intent(in)  :: gamma
            real(kind=dp),    intent(in)  :: n
@@ -15415,7 +15413,7 @@ module eos_sensor
            pa   = ray_intercept_pa_r8(delta,alpha,gamma,n)
            xs   = pa*sag
            ys   = pa*cag
-           call compute_dxdy_r8(alpha,beta,delta,gamma,n,u,dx,dy)
+           call compute_dxdy_r8(alpha,delta,gamma,n,u,dx,dy)
            x    = xs+dx
            y    = ys+dx
         end subroutine compute_xy_r8
