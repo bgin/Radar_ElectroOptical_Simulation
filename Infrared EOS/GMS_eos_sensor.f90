@@ -16728,7 +16728,193 @@ module eos_sensor
                g15   = gamma(i+15)
                call  paraxial_xdyd_r4(g15,n,xd(i+15),yd(i+15),len)
            end do
-        end subroutine paraxial_xdyd_unroll_16x_r4
+       end subroutine paraxial_xdyd_unroll_16x_r4
+
+
+       subroutine paraxial_xdyd_unroll_8x_r4(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_8x_r4
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_8x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_8x_r4
+           real(kind=sp), dimension(1:len), intent(in)  :: gamma
+           real(kind=sp),                   intent(in)  :: n
+           real(kind=sp), dimension(1:len), intent(out) :: xd
+           real(kind=sp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,8
+               g0    = gamma(i)
+               call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r4(g1,n,xd(i+1),yd(i+1),len)
+               g2    = gamma(i+2)
+               call  paraxial_xdyd_r4(g2,n,xd(i+2),yd(i+2),len)
+               g3    = gamma(i+3)
+               call  paraxial_xdyd_r4(g3,n,xd(i+3),yd(i+3),len)
+               g4    = gamma(i+4)
+               call  paraxial_xdyd_r4(g4,n,xd(i+4),yd(i+4),len)
+               g5    = gamma(i+5)
+               call  paraxial_xdyd_r4(g5,n,xd(i+5),yd(i+5),len)
+               g6    = gamma(i+6)
+               call  paraxial_xdyd_r4(g6,n,xd(i+6),yd(i+6),len)
+               g7    = gamma(i+7)
+               call  paraxial_xdyd_r4(g7,n,xd(i+7),yd(i+7),len)
+             end do
+       end subroutine paraxial_xdyd_unroll_8x_r4
+
+
+       
+       subroutine paraxial_xdyd_unroll_4x_r4(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_4x_r4
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_4x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_4x_r4
+           real(kind=sp), dimension(1:len), intent(in)  :: gamma
+           real(kind=sp),                   intent(in)  :: n
+           real(kind=sp), dimension(1:len), intent(out) :: xd
+           real(kind=sp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,4
+               g0    = gamma(i)
+               call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r4(g1,n,xd(i+1),yd(i+1),len)
+               g2    = gamma(i+2)
+               call  paraxial_xdyd_r4(g2,n,xd(i+2),yd(i+2),len)
+               g3    = gamma(i+3)
+               call  paraxial_xdyd_r4(g3,n,xd(i+3),yd(i+3),len)
+           end do
+       end subroutine paraxial_xdyd_unroll_4x_r4
+
+
+       subroutine paraxial_xdyd_unroll_2x_r4(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_2x_r4
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_2x_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_2x_r4
+           real(kind=sp), dimension(1:len), intent(in)  :: gamma
+           real(kind=sp),                   intent(in)  :: n
+           real(kind=sp), dimension(1:len), intent(out) :: xd
+           real(kind=sp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,2
+               g0    = gamma(i)
+               call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r4(g1,n,xd(i+1),yd(i+1),len)
+           end do
+       end subroutine paraxial_xdyd_unroll_2x_r4
+
+
+       subroutine paraxial_xdyd_rolled_r4(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_rolled_r4
+           !dir$ attributes forceinline :: paraxial_xdyd_rolled_r4
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_rolled_r4
+           real(kind=sp), dimension(1:len), intent(in)  :: gamma
+           real(kind=sp),                   intent(in)  :: n
+           real(kind=sp), dimension(1:len), intent(out) :: xd
+           real(kind=sp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=sp), automatic :: g0
+         
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(4)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=1,len
+               g0    = gamma(i)
+               call  paraxial_xdyd_r4(g0,n,xd(i),yd(i),len)
+           end do
+       end subroutine paraxial_xdyd_rolled_r4
+
+
+
+       subroutine paraxial_xdyd_dispatch_r4(gamma,n,xd,yd,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_dispatch_r4
+           real(kind=sp), dimension(1:len), intent(in)  :: gamma
+           real(kind=sp),                   intent(in)  :: n
+           real(kind=sp), dimension(1:len), intent(out) :: xd
+           real(kind=sp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call paraxial_xdyd_unroll_16x_r4(gamma,n,xd,yd,len)
+              case (8)
+                 call paraxial_xdyd_unroll_8x_r4(gamma,n,xd,yd,len)
+              case (4)
+                 call paraxial_xdyd_unroll_4x_r4(gamma,n,xd,yd,len)
+              case (2)
+                 call paraxial_xdyd_unroll_2x_r4(gamma,n,xd,yd,len)
+              case (0)
+                 call paraxial_xdyd_rolled_r4(gamma,n,xd,yd,len)
+              case default
+                 return
+            end select
+       end subroutine paraxial_xdyd_dispatch_r4
+ 
 
      
         subroutine paraxial_xdyd_r8(gamma,n,xd,yd)
@@ -16755,7 +16941,257 @@ module eos_sensor
 
 
        
-        
+        subroutine paraxial_xdyd_unroll_16x_r8(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_16x_r8
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_16x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_16x_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           real(kind=dp), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,16)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<16) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,16
+               g0    = gamma(i)
+               call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r8(g1,n,xd(i+1),yd(i+1),len)
+               g2    = gamma(i+2)
+               call  paraxial_xdyd_r8(g2,n,xd(i+2),yd(i+2),len)
+               g3    = gamma(i+3)
+               call  paraxial_xdyd_r8(g3,n,xd(i+3),yd(i+3),len)
+               g4    = gamma(i+4)
+               call  paraxial_xdyd_r8(g4,n,xd(i+4),yd(i+4),len)
+               g5    = gamma(i+5)
+               call  paraxial_xdyd_r8(g5,n,xd(i+5),yd(i+5),len)
+               g6    = gamma(i+6)
+               call  paraxial_xdyd_r8(g6,n,xd(i+6),yd(i+6),len)
+               g7    = gamma(i+7)
+               call  paraxial_xdyd_r8(g7,n,xd(i+7),yd(i+7),len)
+               g8    = gamma(i+8)
+               call  paraxial_xdyd_r8(g8,n,xd(i+8),yd(i+8),len)
+               g9    = gamma(i+9)
+               call  paraxial_xdyd_r8(g9,n,xd(i+9),yd(i+9),len)
+               g10   = gamma(i+10)
+               call  paraxial_xdyd_r8(g10,n,xd(i+10),yd(i+10),len)
+               g11   = gamma(i+11)
+               call  paraxial_xdyd_r8(g11,n,xd(i+11),yd(i+11),len)
+               g12   = gamma(i+12)
+               call  paraxial_xdyd_r8(g12,n,xd(i+12),yd(i+12),len) 
+               g13   = gamma(i+13)
+               call  paraxial_xdyd_r8(g13,n,xd(i+13),yd(i+13),len)
+               g14   = gamma(i+14)
+               call  paraxial_xdyd_r8(g14,n,xd(i+14),yd(i+14),len)
+               g15   = gamma(i+15)
+               call  paraxial_xdyd_r8(g15,n,xd(i+15),yd(i+15),len)
+           end do
+       end subroutine paraxial_xdyd_unroll_16x_r8
+
+
+       subroutine paraxial_xdyd_unroll_8x_r8(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_8x_r8
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_8x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_8x_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,8)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<8) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,8
+               g0    = gamma(i)
+               call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r8(g1,n,xd(i+1),yd(i+1),len)
+               g2    = gamma(i+2)
+               call  paraxial_xdyd_r8(g2,n,xd(i+2),yd(i+2),len)
+               g3    = gamma(i+3)
+               call  paraxial_xdyd_r8(g3,n,xd(i+3),yd(i+3),len)
+               g4    = gamma(i+4)
+               call  paraxial_xdyd_r8(g4,n,xd(i+4),yd(i+4),len)
+               g5    = gamma(i+5)
+               call  paraxial_xdyd_r8(g5,n,xd(i+5),yd(i+5),len)
+               g6    = gamma(i+6)
+               call  paraxial_xdyd_r8(g6,n,xd(i+6),yd(i+6),len)
+               g7    = gamma(i+7)
+               call  paraxial_xdyd_r8(g7,n,xd(i+7),yd(i+7),len)
+             end do
+       end subroutine paraxial_xdyd_unroll_8x_r8
+
+
+       
+       subroutine paraxial_xdyd_unroll_4x_r8(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_4x_r8
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_4x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_4x_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), automatic :: g0,g1,g2,g3
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,4)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<4) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,4
+               g0    = gamma(i)
+               call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r8(g1,n,xd(i+1),yd(i+1),len)
+               g2    = gamma(i+2)
+               call  paraxial_xdyd_r8(g2,n,xd(i+2),yd(i+2),len)
+               g3    = gamma(i+3)
+               call  paraxial_xdyd_r8(g3,n,xd(i+3),yd(i+3),len)
+           end do
+       end subroutine paraxial_xdyd_unroll_4x_r8
+
+
+       subroutine paraxial_xdyd_unroll_2x_r8(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_unroll_2x_r8
+           !dir$ attributes forceinline :: paraxial_xdyd_unroll_2x_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_unroll_2x_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), automatic :: g0,g1
+           integer(kind=i4) :: i,m,m1
+           m = mod(len,2)
+           if(m /= 0) then
+              do i=1,m
+                  g0    = gamma(i)
+                  call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+              end do
+              if(len<2) return
+           end if
+           m1 = m+1
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=m1,len,2
+               g0    = gamma(i)
+               call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+               g1    = gamma(i+1)
+               call  paraxial_xdyd_r8(g1,n,xd(i+1),yd(i+1),len)
+           end do
+       end subroutine paraxial_xdyd_unroll_2x_r8
+
+
+       subroutine paraxial_xdyd_rolled_r8(gamma,n,xd,yd,len)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_rolled_r8
+           !dir$ attributes forceinline :: paraxial_xdyd_rolled_r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: paraxial_xdyd_rolled_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           real(kind=dp), automatic :: g0
+         
+            !dir$ assume_aligned gamma:64
+            !dir$ assume_aligned dx:64
+            !dir$ assume_aligned dy:64
+            !dir$ vector aligned
+            !dir$ ivdep
+            !dir$ vector vectorlength(8)
+            !dir$ vector multiple_gather_scatter_by_shuffles 
+            !dir$ vector always 
+           do i=1,len
+               g0    = gamma(i)
+               call  paraxial_xdyd_r8(g0,n,xd(i),yd(i),len)
+           end do
+       end subroutine paraxial_xdyd_rolled_r8
+
+
+
+       subroutine paraxial_xdyd_dispatch_r8(gamma,n,xd,yd,len,unroll_cnt)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: paraxial_xdyd_dispatch_r8
+           real(kind=dp), dimension(1:len), intent(in)  :: gamma
+           real(kind=dp),                   intent(in)  :: n
+           real(kind=dp), dimension(1:len), intent(out) :: xd
+           real(kind=dp), dimension(1:len), intent(out) :: yd
+           integer(kind=i4),                intent(in)  :: len
+           integer(kind=i4),                intent(in)  :: unroll_cnt
+           select case (unroll_cnt)
+              case (16)
+                 call paraxial_xdyd_unroll_16x_r8(gamma,n,xd,yd,len)
+              case (8)
+                 call paraxial_xdyd_unroll_8x_r8(gamma,n,xd,yd,len)
+              case (4)
+                 call paraxial_xdyd_unroll_4x_r8(gamma,n,xd,yd,len)
+              case (2)
+                 call paraxial_xdyd_unroll_2x_r8(gamma,n,xd,yd,len)
+              case (0)
+                 call paraxial_xdyd_rolled_r8(gamma,n,xd,yd,len)
+              case default
+                 return
+            end select
+       end subroutine paraxial_xdyd_dispatch_r8
+ 
         
        
 
@@ -16779,6 +17215,9 @@ module eos_sensor
            ax    = H*delx*sec2
            ay    = H*dely*sec
         end subroutine fov_axay_r4
+
+
+        
         
         
         subroutine fov_axay_r8(H,delx,dely,phi,ax,ay)
@@ -16861,6 +17300,9 @@ module eos_sensor
            ux   = u*t0
            uy   = u*t1
         end subroutine volt_impulse_uxuy_r4
+
+
+        
 
          
         
