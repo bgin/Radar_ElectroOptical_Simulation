@@ -3285,7 +3285,594 @@ module eos_sensor_simd
      end function compute_SM_zmm8r8
 
 
+     subroutine compute_SM_unroll_16x_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(ZMM8r8_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(ZMM8r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SN:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_zmm8r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_zmm8r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_zmm8r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_zmm8r8(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SM_zmm8r8(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SM_zmm8r8(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SM_zmm8r8(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SM_zmm8r8(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SM_zmm8r8(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SM_zmm8r8(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SM_zmm8r8(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SM_zmm8r8(R,p15,g15)
+        end do
+     end subroutine compute_SM_unroll_16x_zmm8r8
+
+
+     subroutine compute_SM_unroll_16x_omp_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_omp_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_omp_zmm8r8
+        use omp_lib
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(ZMM8r8_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(ZMM8r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
+        !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
+        !$omp private(g13,p14,g14,p15,g15)                             &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_zmm8r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_zmm8r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_zmm8r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_zmm8r8(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SM_zmm8r8(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SM_zmm8r8(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SM_zmm8r8(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SM_zmm8r8(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SM_zmm8r8(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SM_zmm8r8(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SM_zmm8r8(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SM_zmm8r8(R,p15,g15)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_16x_omp_zmm8r8
+
+
+     subroutine compute_SM_unroll_8x_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SN:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_zmm8r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_zmm8r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_zmm8r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_zmm8r8(R,p7,g7)
+        end do
+     end subroutine compute_SM_unroll_8x_zmm8r8
+
+
+     subroutine compute_SM_unroll_8x_omp_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_omp_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_omp_zmm8r8
+        use omp_lib
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_zmm8r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_zmm8r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_zmm8r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_zmm8r8(R,p7,g7)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_8x_omp_zmm8r8
+
+
+     subroutine compute_SM_unroll_4x_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SN_unroll_4x_zmm8r8
+        !dir$ attributes forceinline :: compute_SN_unroll_4x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SN_unroll_4x_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+        end do
+     end subroutine compute_SM_unroll_4x_zmm8r8
+
+
+     subroutine compute_SM_unroll_4x_omp_zmm8r8(R,phi,gamma,SN,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_4x_omp_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_4x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_omp_zmm8r8
+        use omp_lib
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1,p2,p3
+        type(ZMM8r8_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3)                                           &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_zmm8r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_zmm8r8(R,p3,g3)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_4x_omp_zmm8r8
+
+
+     subroutine compute_SM_unroll_2x_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1
+        type(ZMM8r8_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+        end do
+     end subroutine compute_SM_unroll_2x_zmm8r8
+
+
+     subroutine compute_SM_unroll_2x_omp_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_omp_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_omp_zmm8r8
+        use omp_lib
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0,p1
+        type(ZMM8r8_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_zmm8r8(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_zmm8r8(R,p1,g1)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_2x_omp_zmm8r8
+
+
+     subroutine compute_SM_rolled_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_rolled_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0
+        type(ZMM8r8_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+        end do
+     end subroutine compute_SM_rolled_zmm8r8
+
+
+     subroutine compute_SM_rolled_omp_zmm8r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_omp_zmm8r8
+        !dir$ attributes forceinline :: compute_SM_rolled_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_omp_zmm8r8
+        use omp_lib
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(ZMM8r8_t), automatic :: p0
+        type(ZMM8r8_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp private(i)  shared(n,phi,gamma,SM)      
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_zmm8r8(R,p0,g0)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_rolled_omp_zmm8r8
+
      
+     subroutine compute_SM_dispatch_zmm8r8(R,phi,gamma,SM,n,unroll_cnt,omp_ver)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: compute_SM_dispatch_zmm8r8
+        type(ZMM8r8_t),  intent(in) :: R
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: phi
+        type(ZMM8r8_t),  dimension(1:n), intent(in) :: gamma
+        type(ZMM8r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        integer(kind=i4),                 intent(in) :: unroll_cnt
+        logical(kind=i4),                 intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_omp_zmm8r8(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_omp_zmm8r8(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_omp_zmm8r8(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_omp_zmm8r8(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_omp_zmm8r8(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         else
+            select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_zmm8r8(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_zmm8r8(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_zmm8r8(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_zmm8r8(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_zmm8r8(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         end if
+     end subroutine compute_SM_dispatch_zmm8r8
+
 
 
      !AVX/AVX2 versions
@@ -3305,6 +3892,597 @@ module eos_sensor_simd
      end function compute_SM_ymm8r4
 
 
+     subroutine compute_SM_unroll_16x_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM8r4_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(YMM8r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SN_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SN_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SN_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SN_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SN_ymm8r4(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SN_ymm8r4(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SN_ymm8r4(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SN_ymm8r4(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SN_ymm8r4(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SN_ymm8r4(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SN_ymm8r4(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SN_ymm8r4(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SN_ymm8r4(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SN_ymm8r4(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SN_ymm8r4(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SN_ymm8r4(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SN_ymm8r4(R,p15,g15)
+        end do
+     end subroutine compute_SM_unroll_16x_ymm8r4
+
+
+     subroutine compute_SM_unroll_16x_omp_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_omp_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_omp_ymm8r4
+        use omp_lib
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM8r4_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(YMM8r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
+        !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
+        !$omp private(g13,p14,g14,p15,g15)                             &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm8r4(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm8r4(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm8r4(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm8r4(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm8r4(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SM_ymm8r4(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SM_ymm8r4(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SM_ymm8r4(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SM_ymm8r4(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SM_ymm8r4(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SM_ymm8r4(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SM_ymm8r4(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SM_ymm8r4(R,p15,g15)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_16x_omp_ymm8r4
+
+
+     subroutine compute_SM_unroll_8x_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm8r4(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm8r4(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm8r4(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm8r4(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm8r4(R,p7,g7)
+        end do
+     end subroutine compute_SM_unroll_8x_ymm8r4
+
+
+     subroutine compute_SM_unroll_8x_omp_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_omp_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_omp_ymm8r4
+        use omp_lib
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm8r4(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm8r4(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm8r4(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm8r4(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm8r4(R,p7,g7)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_8x_omp_ymm8r4
+
+
+     subroutine compute_SM_unroll_4x_ymm8r4(R,phi,gamma,SN,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_4x_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_4x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SN:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm8r4(R,p3,g3)
+        end do
+     end subroutine compute_SM_unroll_4x_ymm8r4
+
+
+     subroutine compute_SM_unroll_4x_omp_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_4x_omp_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_4x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_omp_ymm8r4
+        use omp_lib
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1,p2,p3
+        type(YMM8r4_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3)                                           &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm8r4(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm8r4(R,p3,g3)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_4x_omp_ymm8r4
+
+
+     subroutine compute_SM_unroll_2x_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1
+        type(YMM8r4_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+        end do
+     end subroutine compute_SM_unroll_2x_ymm8r4
+
+
+     subroutine compute_SM_unroll_2x_omp_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_omp_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_omp_ymm8r4
+        use omp_lib
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0,p1
+        type(YMM8r4_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm8r4(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm8r4(R,p1,g1)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_2x_omp_ymm8r4
+
+
+     subroutine compute_SM_rolled_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_rolled_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0
+        type(YMM8r4_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+        end do
+     end subroutine compute_SM_rolled_ymm8r4
+
+
+     subroutine compute_SM_rolled_omp_ymm8r4(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_omp_ymm8r4
+        !dir$ attributes forceinline :: compute_SM_rolled_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_omp_ymm8r4
+        use omp_lib
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM8r4_t), automatic :: p0
+        type(YMM8r4_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp private(i)  shared(n,phi,gamma,SM)      
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm8r4(R,p0,g0)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_rolled_omp_ymm8r4
+
+     
+     subroutine compute_SM_dispatch_ymm8r4(R,phi,gamma,SM,n,unroll_cnt,omp_ver)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: compute_SM_dispatch_ymm8r4
+        type(YMM8r4_t),  intent(in) :: R
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: phi
+        type(YMM8r4_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM8r4_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        integer(kind=i4),                 intent(in) :: unroll_cnt
+        logical(kind=i4),                 intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_omp_ymm8r4(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_omp_ymm8r4(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_omp_ymm8r4(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_omp_ymm8r4(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_omp_ymm8r4(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         else
+            select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_ymm8r4(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_ymm8r4(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_ymm8r4(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_ymm8r4(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_ymm8r4(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         end if
+     end subroutine compute_SM_dispatch_ymm8r4
+
+
+
+
      pure function compute_SM_ymm4r8(R,phi,gamma) result(SM)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: compute_SM_ymm4r8
@@ -3319,6 +4497,597 @@ module eos_sensor_simd
         SN = compute_SN_ymm4r8(R,phi,gamma)
         SM = 2.0_sp*SN.v
      end function compute_SM_ymm4r8
+
+
+     subroutine compute_SM_unroll_16x_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM4r8_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(YMM4r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm4r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm4r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm4r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm4r8(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SM_ymm4r8(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SM_ymm4r8(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SM_ymm4r8(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SM_ymm4r8(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SM_ymm4r8(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SM_ymm4r8(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SM_ymm4r8(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SM_ymm4r8(R,p15,g15)
+        end do
+     end subroutine compute_SM_unroll_16x_ymm4r8
+
+
+     subroutine compute_SM_unroll_16x_omp_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_16x_omp_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_16x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_16x_omp_ymm4r8
+        use omp_lib
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM4r8_t), automatic :: p8,p9,p10,p11,p12,p13,p14,p15
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        type(YMM4r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
+        !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
+        !$omp private(g13,p14,g14,p15,g15)                             &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,16
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm4r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm4r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm4r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm4r8(R,p7,g7)
+           p8      = phi(i+8)
+           g8      = gamma(i+8)
+           SM(i+8) = compute_SM_ymm4r8(R,p8,g8)
+           p9      = phi(i+9)
+           g9      = gamma(i+9)
+           SM(i+9) = compute_SM_ymm4r8(R,p9,g9)
+           p10     = phi(i+10)
+           g10     = gamma(i+10)
+           SM(i+1) = compute_SM_ymm4r8(R,p10,g10)
+           p11     = phi(i+11)
+           g11     = gamma(i+11)
+           SM(i+1) = compute_SM_ymm4r8(R,p11,g11)
+           p12     = phi(i+12)
+           g12     = gamma(i+12)
+           SM(i+12)= compute_SM_ymm4r8(R,p12,g12)
+           p13     = phi(i+13)
+           g13     = gamma(i+13)
+           SM(i+13)= compute_SM_ymm4r8(R,p13,g13)
+           p14     = phi(i+14)
+           g14     = gamma(i+14)
+           SM(i+14)= compute_SM_ymm4r8(R,p14,g14)
+           p15     = phi(i+15)
+           g15     = gamma(i+15)
+           SM(i+15)= compute_SM_ymm4r8(R,p15,g15)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_16x_omp_ymm4r8
+
+
+     subroutine compute_SM_unroll_8x_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm4r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm4r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm4r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm4r8(R,p7,g7)
+        end do
+     end subroutine compute_SM_unroll_8x_ymm4r8
+
+
+     subroutine compute_SM_unroll_8x_omp_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_8x_omp_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_8x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_8x_omp_ymm4r8
+        use omp_lib
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3,p4,p5,p6,p7
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,8
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+           p4      = phi(i+4)
+           g4      = gamma(i+4)
+           SM(i+4) = compute_SM_ymm4r8(R,p4,g4)
+           p5      = phi(i+5)
+           g5      = gamma(i+5)
+           SM(i+5) = compute_SM_ymm4r8(R,p5,g5)
+           p6      = phi(i+6)
+           g6      = gamma(i+6)
+           SM(i+6) = compute_SM_ymm4r8(R,p6,g6)  
+           p7      = phi(i+7)
+           g7      = gamma(i+7)
+           SM(i+7) = compute_SM_ymm4r8(R,p7,g7)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_8x_omp_ymm4r8
+
+
+     subroutine compute_SM_unroll_4x_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_4x_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_4x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+        end do
+     end subroutine compute_SM_unroll_4x_ymm4r8
+
+
+     subroutine compute_SM_unroll_4x_omp_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_4x_omp_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_4x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_4x_omp_ymm4r8
+        use omp_lib
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1,p2,p3
+        type(YMM4r8_t), automatic :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
+        !$omp private(p3,g3)                                           &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,4
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+           p2      = phi(i+2)
+           g2      = gamma(i+2)
+           SM(i+2) = compute_SM_ymm4r8(R,p2,g2)
+           p3      = phi(i+3)
+           g3      = gamma(i+3)
+           SM(i+3) = compute_SM_ymm4r8(R,p3,g3)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_4x_omp_ymm4r8
+
+
+     subroutine compute_SM_unroll_2x_ymm4r8(R,phi,gamma,SN,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1
+        type(YMM4r8_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+        end do
+     end subroutine compute_SM_unroll_2x_ymm4r8
+
+
+     subroutine compute_SM_unroll_2x_omp_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_unroll_2x_omp_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_unroll_2x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_unroll_2x_omp_ymm4r8
+        use omp_lib
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0,p1
+        type(YMM4r8_t), automatic :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              SM(i) = compute_SM_ymm4r8(R,phi(i),gamma(i))
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SN:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
+        !$omp shared(n,phi,gamma,SM)
+        do i=m1,n,2
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+           p1      = phi(i+1)
+           g1      = gamma(i+1)
+           SM(i+1) = compute_SM_ymm4r8(R,p1,g1)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_unroll_2x_omp_ymm4r8
+
+
+     subroutine compute_SM_rolled_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_rolled_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0
+        type(YMM4r8_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SN:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(48
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+        end do
+     end subroutine compute_SM_rolled_ymm4r8
+
+
+     subroutine compute_SM_rolled_omp_ymm4r8(R,phi,gamma,SM,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: compute_SM_rolled_omp_ymm4r8
+        !dir$ attributes forceinline :: compute_SM_rolled_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: compute_SM_rolled_omp_ymm4r8
+        use omp_lib
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        type(YMM4r8_t), automatic :: p0
+        type(YMM4r8_t), automatic :: g0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned gamma:64
+        !dir$ assume_aligned SM:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector multiple_gather_scatter_by_shuffles 
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp private(i)  shared(n,phi,gamma,SN)      
+        do i=1,n
+           p0      = phi(i)
+           g0      = gamma(i)
+           SM(i)   = compute_SM_ymm4r8(R,p0,g0)
+        end do
+        !$omp end parallel do
+     end subroutine compute_SM_rolled_omp_ymm4r8
+
+     
+     subroutine compute_SM_dispatch_ymm4r8(R,phi,gamma,SM,n,unroll_cnt,omp_ver)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: compute_SM_dispatch_ymm4r8
+        type(YMM4r8_t),  intent(in) :: R
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n), intent(in) :: gamma
+        type(YMM4r8_t),  dimension(1:n), intent(out):: SM
+        integer(kind=i4),                 intent(in) :: n
+        integer(kind=i4),                 intent(in) :: unroll_cnt
+        logical(kind=i4),                 intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_omp_ymm4r8(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_omp_ymm4r8(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_omp_ymm4r8(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_omp_ymm4r8(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_omp_ymm4r8(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         else
+            select case (unroll_cnt)
+              case (16)
+                call compute_SM_unroll_16x_ymm4r8(R,phi,gamma,SM,n)
+              case (8)
+                call compute_SM_unroll_8x_ymm4r8(R,phi,gamma,SM,n) 
+              case (4)
+                call compute_SM_unroll_4x_ymm4r8(R,phi,gamma,SM,n)
+              case (2)
+                call compute_SM_unroll_2x_ymm4r8(R,phi,gamma,SM,n)
+              case (0)
+                call compute_SM_rolled_ymm4r8(R,phi,gamma,SM,n)
+              case default
+                return
+            end select
+         end if
+     end subroutine compute_SM_dispatch_ymm4r8
+
+
 
 
      !Сканирующее зеркало для обеспечения осмотра всего поля
