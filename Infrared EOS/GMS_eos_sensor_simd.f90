@@ -6989,6 +6989,616 @@ module eos_sensor_simd
         FH   = tan(hpsi.v)/tan(hphi.v)
      end function ratio_FH_ymm4r8
 
+
+     subroutine ratio_FH_unroll_16x_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_16x_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_16x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(YMM4r8_t), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        !dir$ attributes align : 32 :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(YMM4r8_t), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        !dir$ attributes align : 32 :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned psi:64
+        !dir$ assume_aligned FH:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        do i=m1,n,16
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+            ps4     = psi(i+4)
+            ph4     = phi(i+4)
+            FH(i+4) = ratio_FH_ymm4r8(ps4,ph4) 
+            ps5     = psi(i+5)
+            ph5     = phi(i+5)
+            FH(i+1) = ratio_FH_ymm4r8(ps5,ph5)
+            ps6     = psi(i+6)
+            ph6     = phi(i+6)
+            FH(i+6) = ratio_FH_ymm4r8(ps6,ph6)
+            ps7     = psi(i+7)
+            ph7     = phi(i+7)
+            FH(i+7) = ratio_FH_ymm4r8(ps7,ph7)
+            ps8     = psi(i+8)
+            ph8     = phi(i+8)
+            FH(i+8) = ratio_FH_ymm4r8(ps8,ph8)
+            ps9     = psi(i+9)
+            ph9     = phi(i+9)
+            FH(i+9) = ratio_FH_ymm4r8(ps9,ph9)
+            ps10    = psi(i+10)
+            ph10    = phi(i+10)
+            FH(i+10)= ratio_FH_ymm4r8(ps10,ph10)
+            ps11    = psi(i+11)
+            ph11    = phi(i+11)
+            FH(i+11)= ratio_FH_ymm4r8(ps11,ph11)
+            ps12    = psi(i+12)
+            ph12    = phi(i+12)
+            FH(i+12)= ratio_FH_ymm4r8(ps12,ph12)
+            ps13    = psi(i+13)
+            ph13    = phi(i+13)
+            FH(i+13)= ratio_FH_ymm4r8(ps13,ph13)
+            ps14    = psi(i+14)
+            ph14    = phi(i+14)
+            FH(i+14)= ratio_FH_ymm4r8(ps14,ph14) 
+            ps15    = psi(i+15)
+            ph15    = phi(i+15)
+            FH(i+15)= ratio_FH_ymm4r8(ps15,ph15)
+        end do
+     end subroutine ratio_FH_unroll_16x_ymm4r8
+
+
+     subroutine ratio_FH_unroll_16x_omp_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_16x_omp_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_16x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_omp_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(YMM4r8_t), automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        !dir$ attributes align : 32 :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(YMM4r8_t), automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        !dir$ attributes align : 32 :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned psi:64
+        !dir$ assume_aligned FH:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
+        !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
+        !$omp private(ps8,ph8,ps9,ph9,ps10,ph10,ps11,ph11,ps12,ph12) &
+        !$omp private(ps13,ph13,ps14,ph14,ps15,ph15)                 &
+        !$omp shared(n,psi,phi,FH)
+        do i=m1,n,16
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+            ps4     = psi(i+4)
+            ph4     = phi(i+4)
+            FH(i+4) = ratio_FH_ymm4r8(ps4,ph4) 
+            ps5     = psi(i+5)
+            ph5     = phi(i+5)
+            FH(i+1) = ratio_FH_ymm4r8(ps5,ph5)
+            ps6     = psi(i+6)
+            ph6     = phi(i+6)
+            FH(i+6) = ratio_FH_ymm4r8(ps6,ph6)
+            ps7     = psi(i+7)
+            ph7     = phi(i+7)
+            FH(i+7) = ratio_FH_ymm4r8(ps7,ph7)
+            ps8     = psi(i+8)
+            ph8     = phi(i+8)
+            FH(i+8) = ratio_FH_ymm4r8(ps8,ph8)
+            ps9     = psi(i+9)
+            ph9     = phi(i+9)
+            FH(i+9) = ratio_FH_ymm4r8(ps9,ph9)
+            ps10    = psi(i+10)
+            ph10    = phi(i+10)
+            FH(i+10)= ratio_FH_ymm4r8(ps10,ph10)
+            ps11    = psi(i+11)
+            ph11    = phi(i+11)
+            FH(i+11)= ratio_FH_ymm4r8(ps11,ph11)
+            ps12    = psi(i+12)
+            ph12    = phi(i+12)
+            FH(i+12)= ratio_FH_ymm4r8(ps12,ph12)
+            ps13    = psi(i+13)
+            ph13    = phi(i+13)
+            FH(i+13)= ratio_FH_ymm4r8(ps13,ph13)
+            ps14    = psi(i+14)
+            ph14    = phi(i+14)
+            FH(i+14)= ratio_FH_ymm4r8(ps14,ph14) 
+            ps15    = psi(i+15)
+            ph15    = phi(i+15)
+            FH(i+15)= ratio_FH_ymm4r8(ps15,ph15)
+        end do
+        !$omp end parallel do
+     end subroutine ratio_FH_unroll_16x_omp_ymm4r8
+
+
+     subroutine ratio_FH_unroll_8x_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_8x_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_8x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned psi:64
+        !dir$ assume_aligned FH:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        do i=m1,n,8
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+            ps4     = psi(i+4)
+            ph4     = phi(i+4)
+            FH(i+4) = ratio_FH_ymm4r8(ps4,ph4) 
+            ps5     = psi(i+5)
+            ph5     = phi(i+5)
+            FH(i+1) = ratio_FH_ymm4r8(ps5,ph5)
+            ps6     = psi(i+6)
+            ph6     = phi(i+6)
+            FH(i+6) = ratio_FH_ymm4r8(ps6,ph6)
+            ps7     = psi(i+7)
+            ph7     = phi(i+7)
+            FH(i+7) = ratio_FH_ymm4r8(ps7,ph7)
+         end do
+     end subroutine ratio_FH_unroll_8x_ymm4r8
+
+
+     subroutine ratio_FH_unroll_8x_omp_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_8x_omp_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_8x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_omp_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:64
+        !dir$ assume_aligned psi:64
+        !dir$ assume_aligned FH:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
+        !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
+        !$omp shared(n,psi,phi,FH)
+        do i=m1,n,8
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+            ps4     = psi(i+4)
+            ph4     = phi(i+4)
+            FH(i+4) = ratio_FH_ymm4r8(ps4,ph4) 
+            ps5     = psi(i+5)
+            ph5     = phi(i+5)
+            FH(i+1) = ratio_FH_ymm4r8(ps5,ph5)
+            ps6     = psi(i+6)
+            ph6     = phi(i+6)
+            FH(i+6) = ratio_FH_ymm4r8(ps6,ph6)
+            ps7     = psi(i+7)
+            ph7     = phi(i+7)
+            FH(i+7) = ratio_FH_ymm4r8(ps7,ph7)
+         end do
+        !$omp end parallel do
+     end subroutine ratio_FH_unroll_8x_omp_ymm4r8
+
+
+     subroutine ratio_FH_unroll_4x_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_4x_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_4x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        do i=m1,n,4
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+         end do
+     end subroutine ratio_FH_unroll_4x_ymm4r8
+
+
+     subroutine ratio_FH_unroll_4x_omp_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_4x_omp_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_4x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_omp_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1,ps2,ps3
+        !dir$ attributes align : 32 :: ps0,ps1,ps2,ps3
+        type(YMM4r8_t), automatic :: ph0,ph1,ph2,ph3
+        !dir$ attributes align : 32 :: ph0,ph1,ph2,ph3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
+        !$omp private(ps3,ph3)                                       &
+        !$omp shared(n,psi,phi,FH)
+        do i=m1,n,4
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+            ps2     = psi(i+2)
+            ph2     = phi(i+2)
+            FH(i+2) = ratio_FH_ymm4r8(ps2,ph2)
+            ps3     = psi(i+3)
+            ph3     = phi(i+3)
+            FH(i+3) = ratio_FH_ymm4r8(ps3,ph3)
+        end do
+        !$omp end parallel do
+     end subroutine ratio_FH_unroll_4x_omp_ymm4r8
+
+
+
+       subroutine ratio_FH_unroll_2x_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_2x_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_2x_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1
+        !dir$ attributes align : 32 :: ps0,ps1
+        type(YMM4r8_t), automatic :: ph0,ph1
+        !dir$ attributes align : 32 :: ph0,ph1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        do i=m1,n,2
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+        end do
+     end subroutine ratio_FH_unroll_2x_ymm4r8
+
+
+     subroutine ratio_FH_unroll_2x_omp_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_unroll_2x_omp_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_unroll_2x_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_omp_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0,ps1
+        !dir$ attributes align : 32 :: ps0,ps1
+        type(YMM4r8_t), automatic :: ph0,ph1
+        !dir$ attributes align : 32 :: ph0,ph1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              ps0   = psi(i)
+              ph0   = phi(i)
+              FH(i) = ratio_FH_ymm4r8(ps0,ph0)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1)            &
+        !$omp shared(n,psi,phi,FH)
+        do i=m1,n,2
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+            ps1     = psi(i+1)
+            ph1     = phi(i+1)
+            FH(i+1) = ratio_FH_ymm4r8(ps1,ph1)
+        end do
+        !$omp end parallel do
+     end subroutine ratio_FH_unroll_2x_omp_ymm4r8
+
+
+
+      subroutine ratio_FH_rolled_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_rolled_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_rolled_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0
+        !dir$ attributes align : 32 :: ps0
+        type(YMM4r8_t), automatic :: ph0
+        !dir$ attributes align : 32 :: ph0
+        integer(kind=i4) :: i
+       
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        do i=1,n
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+        end do
+     end subroutine ratio_FH_rolled_ymm4r8
+
+
+     subroutine ratio_FH_rolled_omp_ymm4r8(psi,phi,FH,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_rolled_omp_ymm4r8
+        !dir$ attributes forceinline :: ratio_FH_rolled_omp_ymm4r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_omp_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        type(YMM4r8_t), automatic :: ps0
+        !dir$ attributes align : 32 :: ps0
+        type(YMM4r8_t), automatic :: ph0
+        !dir$ attributes align : 32 :: ph0
+        integer(kind=i4) :: i
+      
+        !dir$ assume_aligned phi:32
+        !dir$ assume_aligned psi:32
+        !dir$ assume_aligned FH:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(i,ps0,ph0)                    &
+        !$omp shared(n,psi,phi,FH)
+        do i=1,n
+            ps0     = psi(i)
+            ph0     = phi(i)
+            FH(i)   = ratio_FH_ymm4r8(ps0,ph0)
+        end do
+        !$omp end parallel do
+     end subroutine ratio_FH_rolled_omp_ymm4r8
+
+
+
+     subroutine ratio_FH_dispatch_ymm4r8(psi,phi,FH,n,unroll_cnt,omp_ver)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: ratio_FH_dispatch_ymm4r8
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: psi
+        type(YMM4r8_t),  dimension(1:n),  intent(in) :: phi
+        type(YMM4r8_t),  dimension(1:n),  intent(out):: FH
+        integer(kind=i4),                  intent(in) :: n
+        integer(kind=i4),                  intent(in) :: unroll_cnt
+        logical(kind=i4),                  intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+               case (16)
+                  call ratio_FH_unroll_16x_omp_ymm4r8(psi,phi,FH,n)
+               case (8)
+                  call ratio_FH_unroll_8x_omp_ymm4r8(psi,phi,FH,n) 
+               case (4)
+                  call ratio_FH_unroll_4x_omp_ymm4r8(psi,phi,FH,n)
+               case (2)
+                  call ratio_FH_unroll_2x_omp_ymm4r8(psi,phi,FH,n)
+               case (0)
+                  call ratio_FH_rolled_omp_ymm4r8(psi,phi,FH,n)
+               case default
+                  return
+            end select
+         else
+            select case (unroll_cnt)
+               case (16)
+                  call ratio_FH_unroll_16x_ymm4r8(psi,phi,FH,n)
+               case (8)
+                  call ratio_FH_unroll_8x_ymm4r8(psi,phi,FH,n) 
+               case (4)
+                  call ratio_FH_unroll_4x_ymm4r8(psi,phi,FH,n)
+               case (2)
+                  call ratio_FH_unroll_2x_ymm4r8(psi,phi,FH,n)
+               case (0)
+                  call ratio_FH_rolled_ymm4r8(psi,phi,FH,n)
+               case default
+                  return
+            end select
+         end if
+     end subroutine ratio_FH_dispatch_ymm4r8
+      
+
+     
+
      ! следовательно, угол установки сканирующего зеркала
      ! Formula 4, p. 56
      pure function scan_mirror_ang_zmm16r4(gam0,psi,phi,dir) result(gamma)
