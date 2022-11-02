@@ -8394,6 +8394,753 @@ module eos_sensor_simd
      end function scan_mirror_ang_zmm8r8
 
 
+     subroutine scan_mirror_ang_unroll_16x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(ZMM8r8_t)   , automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 64 :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(ZMM8r8_t)   , automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 64 :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+        type(ZMM8r8_t)   , automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g5,g6,g7
+        !dir$ attributes align : 64 :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,16
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+            g4         = gam0(i+4)
+            ps4        = psi(i+4)
+            ph4        = phi(i+4)
+            gamma(i+4) = scan_mirror_ang_zmm8r8(g4,ps4,ph4,dir) 
+            g5         = gam0(i+5)
+            ps5        = psi(i+5)
+            ph5        = phi(i+5)
+            gamma(i+5) = scan_mirror_ang_zmm8r8(g5,ps5,ph5,dir)    
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+6) = scan_mirror_ang_zmm8r8(g6,ps6,ph6,dir)  
+            g7         = gam0(i+7)
+            ps7        = psi(i+7)
+            ph7        = phi(i+7)
+            gamma(i+7) = scan_mirror_ang_zmm8r8(g7,ps7,ph7,dir)  
+            g8         = gam0(i+8)
+            ps8        = psi(i+8)
+            ph8        = phi(i+8)
+            gamma(i+8) = scan_mirror_ang_zmm8r8(g8,ps8,ph8,dir)    
+            g9         = gam0(i+9)
+            ps9        = psi(i+9)
+            ph9        = phi(i+9)
+            gamma(i+9) = scan_mirror_ang_zmm8r8(g9,ps9,ph9,dir)  
+            g10        = gam0(i+1)
+            ps10       = psi(i+1)
+            ph10       = phi(i+1)
+            gamma(i+10)= scan_mirror_ang_zmm8r8(g10,ps10,ph10,dir) 
+            g11        = gam0(i+11)
+            ps11       = psi(i+11)
+            ph11       = phi(i+11)
+            gamma(i+11)= scan_mirror_ang_zmm8r8(g11,ps11,ph12,dir) 
+            g12        = gam0(i+12)
+            ps12       = psi(i+12)
+            ph12       = phi(i+12)
+            gamma(i+12)= scan_mirror_ang_zmm8r8(g12,ps12,ph12,dir)  
+            g13        = gam0(i+13)
+            ps13       = psi(i+13)
+            ph13       = phi(i+13)
+            gamma(i+13)= scan_mirror_ang_zmm8r8(g13,ps13,ph13,dir)
+            g14        = gam0(i+14)
+            ps14       = psi(i+14)
+            ph14       = phi(i+14)
+            gamma(i+14)= scan_mirror_ang_zmm8r8(g14,ps14,ph14,dir) 
+            g15        = gam0(i+15)
+            ps15       = psi(i+15)
+            ph155      = phi(i+15)
+            gamma(i+15)= scan_mirror_ang_zmm8r8(g15,ps15,ph15,dir)                  
+         end do
+     end subroutine scan_mirror_ang_unroll_16x_zmm8r8
+
+
+     
+     subroutine scan_mirror_ang_unroll_16x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_omp_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_omp_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(ZMM8r8_t)   , automatic :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 64 :: ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(ZMM8r8_t)   , automatic :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 64 :: ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+        type(ZMM8r8_t)   , automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+        !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g5,g6,g7
+        !dir$ attributes align : 64 :: g8,g9,g10,g11,g12,g13,g14,g15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
+         !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
+         !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
+         !$omp private(ps8,ps9,ps10,ps11,ps12,ps13,ps14,ps15)            &
+         !$omp private(ph8,ph9,ph10,ph11,ph12,ph13,ph14,ph15)            &
+         !$omp private(g8,g9,g10,g11,g12,g13,g14,g15)                    &
+         !$omp shared(n,gamma,gam0,psi,phi)
+         do i=m1,n,16
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+            g4         = gam0(i+4)
+            ps4        = psi(i+4)
+            ph4        = phi(i+4)
+            gamma(i+4) = scan_mirror_ang_zmm8r8(g4,ps4,ph4,dir) 
+            g5         = gam0(i+5)
+            ps5        = psi(i+5)
+            ph5        = phi(i+5)
+            gamma(i+5) = scan_mirror_ang_zmm8r8(g5,ps5,ph5,dir)    
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+6) = scan_mirror_ang_zmm8r8(g6,ps6,ph6,dir)  
+            g7         = gam0(i+7)
+            ps7        = psi(i+7)
+            ph7        = phi(i+7)
+            gamma(i+7) = scan_mirror_ang_zmm8r8(g7,ps7,ph7,dir)  
+            g8         = gam0(i+8)
+            ps8        = psi(i+8)
+            ph8        = phi(i+8)
+            gamma(i+8) = scan_mirror_ang_zmm8r8(g8,ps8,ph8,dir)    
+            g9         = gam0(i+9)
+            ps9        = psi(i+9)
+            ph9        = phi(i+9)
+            gamma(i+9) = scan_mirror_ang_zmm8r8(g9,ps9,ph9,dir)  
+            g10        = gam0(i+1)
+            ps10       = psi(i+1)
+            ph10       = phi(i+1)
+            gamma(i+10)= scan_mirror_ang_zmm8r8(g10,ps10,ph10,dir) 
+            g11        = gam0(i+11)
+            ps11       = psi(i+11)
+            ph11       = phi(i+11)
+            gamma(i+11)= scan_mirror_ang_zmm8r8(g11,ps11,ph12,dir) 
+            g12        = gam0(i+12)
+            ps12       = psi(i+12)
+            ph12       = phi(i+12)
+            gamma(i+12)= scan_mirror_ang_zmm8r8(g12,ps12,ph12,dir)  
+            g13        = gam0(i+13)
+            ps13       = psi(i+13)
+            ph13       = phi(i+13)
+            gamma(i+13)= scan_mirror_ang_zmm8r8(g13,ps13,ph13,dir)
+            g14        = gam0(i+14)
+            ps14       = psi(i+14)
+            ph14       = phi(i+14)
+            gamma(i+14)= scan_mirror_ang_zmm8r8(g14,ps14,ph14,dir) 
+            g15        = gam0(i+15)
+            ps15       = psi(i+15)
+            ph155      = phi(i+15)
+            gamma(i+15)= scan_mirror_ang_zmm8r8(g15,ps15,ph15,dir)                  
+         end do
+         !$omp end parallel do
+     end subroutine scan_mirror_ang_unroll_16x_zmm8r8
+
+
+     subroutine scan_mirror_ang_unroll_8x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+        !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g5,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,8
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+            g4         = gam0(i+4)
+            ps4        = psi(i+4)
+            ph4        = phi(i+4)
+            gamma(i+4) = scan_mirror_ang_zmm8r8(g4,ps4,ph4,dir) 
+            g5         = gam0(i+5)
+            ps5        = psi(i+5)
+            ph5        = phi(i+5)
+            gamma(i+5) = scan_mirror_ang_zmm8r8(g5,ps5,ph5,dir)    
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+6) = scan_mirror_ang_zmm8r8(g6,ps6,ph6,dir)  
+            g7         = gam0(i+7)
+            ps7        = psi(i+7)
+            ph7        = phi(i+7)
+            gamma(i+7) = scan_mirror_ang_zmm8r8(g7,ps7,ph7,dir)  
+        end do
+     end subroutine scan_mirror_ang_unroll_8x_zmm8r8
+
+
+     
+     subroutine scan_mirror_ang_unroll_8x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_omp_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_omp_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+        !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g5,g6,g7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
+         !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
+         !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
+         !$omp shared(n,gamma,gam0,psi,phi)
+         do i=m1,n,8
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r9(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+            g4         = gam0(i+4)
+            ps4        = psi(i+4)
+            ph4        = phi(i+4)
+            gamma(i+4) = scan_mirror_ang_zmm8r8(g4,ps4,ph4,dir) 
+            g5         = gam0(i+5)
+            ps5        = psi(i+5)
+            ph5        = phi(i+5)
+            gamma(i+5) = scan_mirror_ang_zmm8r8(g5,ps5,ph5,dir)    
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+6) = scan_mirror_ang_zmm8r8(g6,ps6,ph6,dir)  
+            g7         = gam0(i+7)
+            ps7        = psi(i+7)
+            ph7        = phi(i+7)
+            gamma(i+7) = scan_mirror_ang_zmm8r8(g7,ps7,ph7,dir)  
+         end do
+         !$omp end parallel do
+     end subroutine scan_mirror_ang_unroll_8x_zmm8r8
+
+
+     subroutine scan_mirror_ang_unroll_4x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3
+        !dir$ attributes align : 64 :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,4
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+        end do
+     end subroutine scan_mirror_ang_unroll_4x_zmm8r8
+
+
+     
+     subroutine scan_mirror_ang_unroll_4x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_omp_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_omp_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1,ps2,ps3
+        !dir$ attributes align : 64 :: ps0,ps1,ps2,ps3
+        type(ZMM8r8_t)   , automatic :: ph0,ph1,ph2,ph3
+        !dir$ attributes align : 64 :: ph0,ph1,ph2,ph3
+        type(ZMM8r8_t)   , automatic :: g0,g1,g2,g3
+        !dir$ attributes align : 64 :: g0,g1,g2,g3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3) &
+         !$omp private(ph0,ph1,ph2,ph3)                  &
+         !$omp private(g0,g1,g2,g3)                      &
+         !$omp shared(n,gamma,gam0,psi,phi)
+         do i=m1,n,4
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+            g2         = gam0(i+2)
+            ps2        = psi(i+2)
+            ph2        = phi(i+2)
+            gamma(i+2) = scan_mirror_ang_zmm8r8(g2,ps2,ph2,dir)  
+            g3         = gam0(i+3)
+            ps3        = psi(i+3)
+            ph3        = phi(i+3)
+            gamma(i+3) = scan_mirror_ang_zmm8r8(g3,ps3,ph3,dir)  
+         end do
+         !$omp end parallel do
+     end subroutine scan_mirror_ang_unroll_4x_zmm8r8
+
+
+    subroutine scan_mirror_ang_unroll_2x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1
+        !dir$ attributes align : 64 :: ps0,ps1
+        type(ZMM8r8_t)   , automatic :: ph0,ph1
+        !dir$ attributes align : 64 :: ph0,ph1
+        type(ZMM8r8_t)   , automatic :: g0,g1
+        !dir$ attributes align : 64 :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,2
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+         end do
+     end subroutine scan_mirror_ang_unroll_2x_zmm8r8
+
+
+     
+     subroutine scan_mirror_ang_unroll_2x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_omp_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_omp_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0,ps1
+        !dir$ attributes align : 64 :: ps0,ps1
+        type(ZMM8r8_t)   , automatic :: ph0,ph1
+        !dir$ attributes align : 64 :: ph0,ph1
+        type(ZMM8r8_t)   , automatic :: g0,g1
+        !dir$ attributes align : 64 :: g0,g1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              g0       = gam0(i)
+              ps0      = psi(i)
+              ph0      = phi(i)
+              gamma(i) = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir)  
+           end do
+           if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(ps0,ps1) &
+         !$omp private(ph0,ph1)                  &
+         !$omp private(g0,g1)                    &
+         !$omp shared(n,gamma,gam0,psi,phi)
+         do i=m1,n,2
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+            g1         = gam0(i+1)
+            ps1        = psi(i+1)
+            ph1        = phi(i+1)
+            gamma(i+1) = scan_mirror_ang_zmm8r8(g1,ps1,ph1,dir)   
+         end do
+         !$omp end parallel do
+     end subroutine scan_mirror_ang_unroll_2x_zmm8r8
+
+
+
+     subroutine scan_mirror_ang_rolled_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_rolled_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0
+        !dir$ attributes align : 64 :: ps0
+        type(ZMM8r8_t)   , automatic :: ph0
+        !dir$ attributes align : 64 :: ph0
+        type(ZMM8r8_t)   , automatic :: g0
+        !dir$ attributes align : 64 :: g0
+        integer(kind=i4) :: i
+      
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=1,n
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+         end do
+     end subroutine scan_mirror_ang_rolled_zmm8r8
+
+
+     
+     subroutine scan_mirror_ang_rolled_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_omp_zmm8r8
+        !dir$ attributes forceinline :: scan_mirror_ang_rolled_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_omp_zmm8r8
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        type(ZMM8r8_t)   , automatic :: ps0
+        !dir$ attributes align : 64 :: ps0
+        type(ZMM8r8_t)   , automatic :: ph0
+        !dir$ attributes align : 64 :: ph0
+        type(ZMM8r8_t)   , automatic :: g0
+        !dir$ attributes align : 64 :: g0
+        integer(kind=i4) :: i
+      
+           !dir$ assume_aligned gam0:64
+           !dir$ assume_aligned phi:64
+           !dir$ assume_aligned psi:64
+           !dir$ assume_aligned gamma:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp  private(i,ps0) &
+         !$omp private(ph0)                  &
+         !$omp private(g0)                    &
+         !$omp shared(n,gamma,gam0,psi,phi)
+         do i=1,n
+            g0         = gam0(i)
+            ps0        = psi(i)
+            ph0        = phi(i)
+            gamma(i)   = scan_mirror_ang_zmm8r8(g0,ps0,ph0,dir) 
+         end do
+         !$omp end parallel do
+     end subroutine scan_mirror_ang_rolled_zmm8r8
+
+
+
+     subroutine scan_mirror_ang_dispatch_zmm8r8(gam0,psi,phi,dir,gamma,n,unroll_cnt,omp_ver)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 ::
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
+        type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
+        type(ZMM8r8_t),  dimension(1:n),  intent(out) :: gamma
+        integer(kind=i4),                  intent(in)  :: n
+        character(len=3),                  intent(in)  :: dir
+        integer(kind=i4),                  intent(in)  :: unroll_cnt
+        logical(kind=i4),                  intent(in)  :: omp_ver
+        if(omp_ver) then
+            select case (unroll_cnt)
+               case (16)
+                  call scan_mirror_ang_unroll_16x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (8)
+                  call scan_mirror_ang_unroll_8x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (4)
+                  call scan_mirror_ang_unroll_4x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (2)
+                  call scan_mirror_ang_unroll_2x_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (0)
+                  call scan_mirror_ang_rolled_omp_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case default
+                  return
+             end select
+        else
+             select case (unroll_cnt)
+               case (16)
+                  call scan_mirror_ang_unroll_16x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (8)
+                  call scan_mirror_ang_unroll_8x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (4)
+                  call scan_mirror_ang_unroll_4x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (2)
+                  call scan_mirror_ang_unroll_2x_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case (0)
+                  call scan_mirror_ang_rolled_zmm8r8(gam0,psi,phi,dir,gamma,n)
+               case default
+                  return
+             end select
+        end if
+    end subroutine scan_mirror_ang_dispatch_zmm8r8
+
+
+
+
      !AVX/AVX2 versions
      pure function scan_mirror_ang_ymm8r4(gam0,psi,phi,dir) result(gamma)
         !dir$ optimize:3
