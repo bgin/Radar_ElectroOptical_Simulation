@@ -11728,7 +11728,7 @@ module eos_sensor_simd
 
     subroutine defocus_cof_dispatch_zmm8r8(l2,alpha,O,inf,dc,n,unroll_cnt,omp_ver)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 ::
+        !dir$ attributes code_align : 32 :: defocus_cof_dispatch_zmm8r8
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -11797,6 +11797,529 @@ module eos_sensor_simd
     end function defocus_cof_ymm8r4
 
 
+    subroutine defocus_cof_unroll_16x_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_16x_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_16x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_16x_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        type(YMM8r4_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+        !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 32 :: a8,a9,a10,a11,a12,a13,a14,a15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=m1,n,16
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+            a4      =  alpha(i+4)
+            dc(i+4) =  defocus_cof_ymm8r4(l2,a4,O,inf)
+            a5      =  alpha(i+5)
+            dc(i+5) =  defocus_cof_ymm8r4(l2,a5,O,inf)
+            a6      =  alpha(i+6)
+            dc(i+6) =  defocus_cof_ymm8r4(l2,a6,O,inf)
+            a7      =  alpha(i+7)
+            dc(i+7) =  defocus_cof_ymm8r4(l2,a7,O,inf)
+            a8      =  alpha(i+8)
+            dc(i+8) =  defocus_cof_ymm8r4(l2,a8,O,inf)
+            a9      =  alpha(i+9)
+            dc(i+9) =  defocus_cof_ymm8r4(l2,a9,O,inf)
+            a10     =  alpha(i+10)
+            dc(i+10)=  defocus_cof_ymm8r4(l2,a10,O,inf)
+            a11     =  alpha(i+11)
+            dc(i+11)=  defocus_cof_ymm8r4(l2,a11,O,inf)
+            a12     =  alpha(i+12)
+            dc(i+12)=  defocus_cof_ymm8r4(l2,a12,O,inf)
+            a13     =  alpha(i+13)
+            dc(i+13)=  defocus_cof_ymm8r4(l2,a13,O,inf)
+            a14      =  alpha(i+1)
+            dc(i+14) =  defocus_cof_ymm8r4(l2,a14,O,inf) 
+            a15      =  alpha(i+15)
+            dc(i+15) =  defocus_cof_ymm8r4(l2,a15,O,inf) 
+        end do
+    end subroutine defocus_cof_unroll_16x_ymm8r4
+
+
+    subroutine defocus_cof_unroll_16x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_16x_omp_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_16x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_16x_omp_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        type(YMM8r4_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+        !dir$ attributes align : 64 :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 64 :: a8,a9,a10,a11,a12,a13,a14,a15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
+        !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)
+        !$omp shared(n,alpha,dc,O,inf)
+        do i=m1,n,16
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+            a4      =  alpha(i+4)
+            dc(i+4) =  defocus_cof_ymm8r4(l2,a4,O,inf)
+            a5      =  alpha(i+5)
+            dc(i+5) =  defocus_cof_ymm8r4(l2,a5,O,inf)
+            a6      =  alpha(i+6)
+            dc(i+6) =  defocus_cof_ymm8r4(l2,a6,O,inf)
+            a7      =  alpha(i+7)
+            dc(i+7) =  defocus_cof_ymm8r4(l2,a7,O,inf)
+            a8      =  alpha(i+8)
+            dc(i+8) =  defocus_cof_ymm8r4(l2,a8,O,inf)
+            a9      =  alpha(i+9)
+            dc(i+9) =  defocus_cof_ymm8r4(l2,a9,O,inf)
+            a10     =  alpha(i+10)
+            dc(i+10)=  defocus_cof_ymm8r4(l2,a10,O,inf)
+            a11     =  alpha(i+11)
+            dc(i+11)=  defocus_cof_ymm8r4(l2,a11,O,inf)
+            a12     =  alpha(i+12)
+            dc(i+12)=  defocus_cof_ymm8r4(l2,a12,O,inf)
+            a13     =  alpha(i+13)
+            dc(i+13)=  defocus_cof_ymm8r4(l2,a13,O,inf)
+            a14      =  alpha(i+1)
+            dc(i+14) =  defocus_cof_ymm8r4(l2,a14,O,inf) 
+            a15      =  alpha(i+15)
+            dc(i+15) =  defocus_cof_ymm8r4(l2,a15,O,inf) 
+        end do
+        !$omp end parallel do
+    end subroutine defocus_cof_unroll_16x_ymm8r4
+
+
+    subroutine defocus_cof_unroll_8x_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_8x_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_8x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_8x_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=m1,n,8
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+            a4      =  alpha(i+4)
+            dc(i+4) =  defocus_cof_ymm8r4(l2,a4,O,inf)
+            a5      =  alpha(i+5)
+            dc(i+5) =  defocus_cof_ymm8r4(l2,a5,O,inf)
+            a6      =  alpha(i+6)
+            dc(i+6) =  defocus_cof_ymm8r4(l2,a6,O,inf)
+            a7      =  alpha(i+7)
+            dc(i+7) =  defocus_cof_ymm8r4(l2,a7,O,inf)
+         end do
+    end subroutine defocus_cof_unroll_8x_ymm8r4
+
+
+    subroutine defocus_cof_unroll_8x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_8x_omp_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_8x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_8x_omp_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
+        !$omp shared(n,alpha,dc,O,inf)
+        do i=m1,n,8
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+            a4      =  alpha(i+4)
+            dc(i+4) =  defocus_cof_ymm8r4(l2,a4,O,inf)
+            a5      =  alpha(i+5)
+            dc(i+5) =  defocus_cof_ymm8r4(l2,a5,O,inf)
+            a6      =  alpha(i+6)
+            dc(i+6) =  defocus_cof_ymm8r4(l2,a6,O,inf)
+            a7      =  alpha(i+7)
+            dc(i+7) =  defocus_cof_ymm8r4(l2,a7,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine defocus_cof_unroll_8x_ymm8r4
+
+
+     subroutine defocus_cof_unroll_4x_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_4x_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_4x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_4x_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(ZMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3
+        !dir$ attributes align : 32 :: a0,a1,a2,a3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=m1,n,4
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+        end do
+    end subroutine defocus_cof_unroll_4x_ymm8r4
+
+
+    subroutine defocus_cof_unroll_4x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_4x_omp_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_4x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_4x_omp_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1,a2,a3
+        !dir$ attributes align : 32 :: a0,a1,a2,a3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3)
+        !$omp shared(n,alpha,dc,O,inf)
+        do i=m1,n,4
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+            a2      =  alpha(i+2)
+            dc(i+2) =  defocus_cof_ymm8r4(l2,a2,O,inf)
+            a3      =  alpha(i+3)
+            dc(i+3) =  defocus_cof_ymm8r4(l2,a3,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine defocus_cof_unroll_4x_ymm8r4
+
+    
+    subroutine defocus_cof_unroll_2x_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_2x_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_2x_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_2x_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1
+        !dir$ attributes align : 32 :: a0,a1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=m1,n,2
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+        end do
+    end subroutine defocus_cof_unroll_2x_ymm8r4
+
+
+    
+
+
+    subroutine defocus_cof_unroll_2x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_unroll_2x_omp_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_unroll_2x_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_2x_omp_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0,a1
+        !dir$ attributes align : 32 :: a0,a1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              a0     =  alpha(i)
+              dc(i)  =  defocus_cof_ymm8r4(l2,a0,O,inf)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1)
+        !$omp shared(n,alpha,dc,O,inf)
+        do i=m1,n,2
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+            a1      =  alpha(i+1)
+            dc(i+1) =  defocus_cof_ymm8r4(l2,a1,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine defocus_cof_unroll_2x_ymm8r4
+
+
+    subroutine defocus_cof_rolled_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_rolled_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_rolled_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_rolled_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0
+        !dir$ attributes align : 32 :: a0
+        integer(kind=i4) :: i
+       
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=1,n
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+        end do
+    end subroutine defocus_cof_rolled_ymm8r4
+
+
+    subroutine defocus_cof_rolled_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_rolled_omp_ymm8r4
+        !dir$ attributes forceinline :: defocus_cof_rolled_omp_ymm8r4
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_rolled_omp_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        type(YMM8r4_t), automatic :: a0
+        !dir$ attributes align : 32 :: a0
+        integer(kind=i4) :: i
+       
+        !dir$ assume_aligned alpha:32
+        !dir$ assume_aligned dc:32
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0)
+        !$omp shared(n,alpha,dc,O,inf)
+        do i=1,n
+            a0      =  alpha(i)
+            dc(i)   =  defocus_cof_ymm8r4(l2,a0,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine defocus_cof_rolled_ymm8r4
+
+
+    subroutine defocus_cof_dispatch_ymm8r4(l2,alpha,O,inf,dc,n,unroll_cnt,omp_ver)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: defocus_cof_dispatch_ymm8r4
+        type(YMM8r4_t),                 intent(in) :: l2
+        type(YMM8r4_t), dimension(1:n), intent(in) :: alpha
+        type(YMM8r4_t),                 intent(in) :: O
+        logical(kind=i4),                intent(in) :: inf
+        type(YMM8r4_t), dimension(1:n), intent(out):: dc
+        integer(kind=i4),                intent(in) :: n
+        integer(kind=i4),                intent(in) :: unroll_cnt
+        logical(kind=i4),                intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+               case (16)
+                  call defocus_cof_unroll_16x_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (8)
+                  call defocus_cof_unroll_8x_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (4)
+                  call defocus_cof_unroll_4x_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (2)
+                  call defocus_cof_unroll_2x_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (0)
+                  call defocus_cof_rolled_ymm8r4(l2,alpha,O,inf,dc,n)
+               case default
+                  return
+           end select
+        else
+           select case (unroll_cnt)
+               case (16)
+                  call defocus_cof_unroll_16x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (8)
+                  call defocus_cof_unroll_8x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (4)
+                  call defocus_cof_unroll_4x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (2)
+                  call defocus_cof_unroll_2x_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+               case (0)
+                  call defocus_cof_rolled_omp_ymm8r4(l2,alpha,O,inf,dc,n)
+               case default
+                  return
+           end select 
+        end if
+    end subroutine defocus_cof_dispatch_ymm8r4
+
+
+
+
     pure function defocus_cof_ym4r8(l2,alpha,O,inf) result(dc)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: defocus_cof_ymm4r8
@@ -11817,6 +12340,9 @@ module eos_sensor_simd
            df    = l2.v/(icos.v-one.v)
         end if
     end function defocus_cof_ymm4r8
+
+
+    
 
     ! Диаметр кружка рассеяния р
     ! Formula 3, p.59
