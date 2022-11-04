@@ -11184,7 +11184,7 @@ module eos_sensor_simd
 
     subroutine defocus_cof_dispatch_zmm16r4(l2,alpha,O,inf,dc,n,unroll_cnt,omp_ver)
         !dir$ optimize:3
-        !dir$ attributes code_align : 32 ::
+        !dir$ attributes code_align : 32 :: defocus_cof_dispatch_zmm16r4
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -11685,7 +11685,7 @@ module eos_sensor_simd
         !dir$ assume_aligned dc:64
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always
         do i=1,n
             a0      =  alpha(i)
@@ -11770,8 +11770,6 @@ module eos_sensor_simd
         end if
     end subroutine defocus_cof_dispatch_zmm8r8
 
-
-    
 
 
     !AVX/AVX2 versions
@@ -13443,6 +13441,546 @@ module eos_sensor_simd
         t1 = defocus_cof_zmm8r8(l2,alpha,O,inf)
         rho= t0.v*t1.v
      end function circle_dispersion_zmm8r8
+
+
+     subroutine circle_dispersion_unroll_16x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_16x_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_16x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_16x_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        type(ZMM8r8_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+        !dir$ attributes align : 64 :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 64 :: a8,a9,a10,a11,a12,a13,a14,a15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        do i=m1,n,16
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+             a4        = alpha(i+1)
+             rho(i+4)  = circle_dispersion_zmm8r8(d,l1,l2,a4,O,inf)
+             a5        = alpha(i+5)
+             rho(i+5)  = circle_dispersion_zmm8r8(d,l1,l2,a5,O,inf)
+             a6        = alpha(i+6)
+             rho(i+6)  = circle_dispersion_zmm8r8(d,l1,l2,a6,O,inf)
+             a7        = alpha(i+7)
+             rho(i+7)  = circle_dispersion_zmm8r8(d,l1,l2,a7,O,inf)
+             a8        = alpha(i+8)
+             rho(i+8)  = circle_dispersion_zmm8r8(d,l1,l2,a8,O,inf)  
+             a9        = alpha(i+9)
+             rho(i+9)  = circle_dispersion_zmm8r8(d,l1,l2,a9,O,inf)
+             a10       = alpha(i+10)
+             rho(i+10) = circle_dispersion_zmm8r8(d,l1,l2,a10,O,inf)
+             a11       = alpha(i+1)
+             rho(i+11) = circle_dispersion_zmm8r8(d,l1,l2,a11,O,inf)
+             a12       = alpha(i+12)
+             rho(i+12) = circle_dispersion_zmm8r8(d,l1,l2,a12,O,inf)
+             a13       = alpha(i+13)
+             rho(i+13) = circle_dispersion_zmm8r8(d,l1,l2,a13,O,inf)
+             a14       = alpha(i+14)
+             rho(i+14) = circle_dispersion_zmm8r8(d,l1,l2,a14,O,inf) 
+             a15       = alpha(i+15)
+             rho(i+15) = circle_dispersion_zmm8r8(d,l1,l2,a15,O,inf)
+         end do
+    end subroutine circle_dispersion_unroll_16x_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_16x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_16x_omp_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_16x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_16x_omp_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        type(ZMM8r8_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+        !dir$ attributes align : 64 :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 64 :: a8,a9,a10,a11,a12,a13,a14,a15
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,16)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<16) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
+        !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
+        !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
+        do i=m1,n,16
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+             a4        = alpha(i+1)
+             rho(i+4)  = circle_dispersion_zmm8r8(d,l1,l2,a4,O,inf)
+             a5        = alpha(i+5)
+             rho(i+5)  = circle_dispersion_zmm8r8(d,l1,l2,a5,O,inf)
+             a6        = alpha(i+6)
+             rho(i+6)  = circle_dispersion_zmm8r8(d,l1,l2,a6,O,inf)
+             a7        = alpha(i+7)
+             rho(i+7)  = circle_dispersion_zmm8r8(d,l1,l2,a7,O,inf)
+             a8        = alpha(i+8)
+             rho(i+8)  = circle_dispersion_zmm8r8(d,l1,l2,a8,O,inf)  
+             a9        = alpha(i+9)
+             rho(i+9)  = circle_dispersion_zmm8r8(d,l1,l2,a9,O,inf)
+             a10       = alpha(i+10)
+             rho(i+10) = circle_dispersion_zmm8r8(d,l1,l2,a10,O,inf)
+             a11       = alpha(i+1)
+             rho(i+11) = circle_dispersion_zmm8r8(d,l1,l2,a11,O,inf)
+             a12       = alpha(i+12)
+             rho(i+12) = circle_dispersion_zmm8r8(d,l1,l2,a12,O,inf)
+             a13       = alpha(i+13)
+             rho(i+13) = circle_dispersion_zmm8r8(d,l1,l2,a13,O,inf)
+             a14       = alpha(i+14)
+             rho(i+14) = circle_dispersion_zmm8r8(d,l1,l2,a14,O,inf) 
+             a15       = alpha(i+15)
+             rho(i+15) = circle_dispersion_zmm8r8(d,l1,l2,a15,O,inf)
+         end do
+         !$omp end parallel do
+    end subroutine circle_dispersion_unroll_16x_omp_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_8x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_8x_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_8x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_8x_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 64 :: a0,a1,a2,a3,a4,a5,a6,a7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        do i=m1,n,8
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+             a4        = alpha(i+1)
+             rho(i+4)  = circle_dispersion_zmm8r8(d,l1,l2,a4,O,inf)
+             a5        = alpha(i+5)
+             rho(i+5)  = circle_dispersion_zmm8r8(d,l1,l2,a5,O,inf)
+             a6        = alpha(i+6)
+             rho(i+6)  = circle_dispersion_zmm8r8(d,l1,l2,a6,O,inf)
+             a7        = alpha(i+7)
+             rho(i+7)  = circle_dispersion_zmm8r8(d,l1,l2,a7,O,inf)
+        end do
+    end subroutine circle_dispersion_unroll_8x_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_8x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_8x_omp_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_8x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_8x_omp_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+        !dir$ attributes align : 64 :: a0,a1,a2,a3,a4,a5,a6,a7
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,8)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<8) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
+        !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
+        do i=m1,n,8
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+             a4        = alpha(i+1)
+             rho(i+4)  = circle_dispersion_zmm8r8(d,l1,l2,a4,O,inf)
+             a5        = alpha(i+5)
+             rho(i+5)  = circle_dispersion_zmm8r8(d,l1,l2,a5,O,inf)
+             a6        = alpha(i+6)
+             rho(i+6)  = circle_dispersion_zmm8r8(d,l1,l2,a6,O,inf)
+             a7        = alpha(i+7)
+             rho(i+7)  = circle_dispersion_zmm8r8(d,l1,l2,a7,O,inf)
+         end do
+         !$omp end parallel do
+    end subroutine circle_dispersion_unroll_8x_omp_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_4x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_4x_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_4x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_4x_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3
+        !dir$ attributes align : 64 :: a0,a1,a2,a3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        do i=m1,n,4
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+        end do
+    end subroutine circle_dispersion_unroll_4x_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_4x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_4x_omp_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_4x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_4x_omp_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1,a2,a3
+        !dir$ attributes align : 64 :: a0,a1,a2,a3
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,4)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<4) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
+        !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
+        do i=m1,n,4
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+             a2        = alpha(i+2)
+             rho(i+2)  = circle_dispersion_zmm8r8(d,l1,l2,a2,O,inf)
+             a3        = alpha(i+3)
+             rho(i+3)  = circle_dispersion_zmm8r8(d,l1,l2,a3,O,inf)
+         end do
+         !$omp end parallel do
+    end subroutine circle_dispersion_unroll_4x_omp_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_2x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_2x_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_2x_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_2x_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1
+        !dir$ attributes align : 64 :: a0,a1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        do i=m1,n,2
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+        end do
+    end subroutine circle_dispersion_unroll_2x_zmm8r8
+
+
+    subroutine circle_dispersion_unroll_2x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_unroll_2x_omp_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_unroll_2x_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_2x_omp_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0,a1
+        !dir$ attributes align : 64 :: a0,a1
+        integer(kind=i4) :: i,m,m1
+        m = mod(n,2)
+        if(m /= 0) then
+           do i=1,m
+              a0       = alpha(i)
+              rho(i)   = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+           end do
+           if(n<2) return
+        end if
+        m1 = m+1
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp firstprivate(m1) private(a0,a1)      &
+        !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
+        do i=m1,n,2
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+             a1        = alpha(i+1)
+             rho(i+1)  = circle_dispersion_zmm8r8(d,l1,l2,a1,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine circle_dispersion_unroll_2x_omp_zmm8r8
+
+
+    
+    subroutine circle_dispersion_rolled_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_rolled_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_rolled_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_rolled_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0
+        !dir$ attributes align : 64 :: a0
+        integer(kind=i4) :: i
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        do i=1,n
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+        end do
+    end subroutine circle_dispersion_rolled_zmm8r8
+
+
+    subroutine circle_dispersion_rolled_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_rolled_omp_zmm8r8
+        !dir$ attributes forceinline :: circle_dispersion_rolled_omp_zmm8r8
+        !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_rolled_omp_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        type(ZMM8r8_t), automatic :: a0
+        !dir$ attributes align : 64 :: a0
+        integer(kind=i4) :: i
+        !dir$ assume_aligned alpha:64
+        !dir$ assume_aligned rho:64
+        !dir$ vector aligned
+        !dir$ ivdep
+        !dir$ vector vectorlength(8)
+        !dir$ vector always 
+        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp private(a0)      &
+        !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
+        do i=1,n
+             a0        = alpha(i)
+             rho(i)    = circle_dispersion_zmm8r8(d,l1,l2,a0,O,inf)
+        end do
+        !$omp end parallel do
+    end subroutine circle_dispersion_rolled_omp_zmm8r8
+
+
+
+    subroutine circle_dispersion_dispatch_zmm8r8(d,l1,l2,alpha,O,inf,rho,n,unroll_cnt,omp_ver)
+        !dir$ optimize:3
+        !dir$ attributes code_align : 32 :: circle_dispersion_dispatch_zmm8r8
+        type(ZMM8r8_t),                   intent(in) :: d
+        type(ZMM8r8_t),                   intent(in) :: l1
+        type(ZMM8r8_t),                   intent(in) :: l2
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: alpha
+        type(ZMM8r8_t),                   intent(in) :: O
+        logical(kind=i4),                  intent(in) :: inf
+        type(ZMM8r8_t), dimension(1:n),   intent(in) :: rho
+        integer(kind=i4),                  intent(in) :: n
+        integer(kind=i4),                  intent(in) :: unroll_cnt
+        logical(kind=i4),                  intent(in) :: omp_ver
+        if(omp_ver) then
+           select case (unroll_cnt)
+               case (16)
+                  call circle_dispersion_unroll_16x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (8)
+                  call circle_dispersion_unroll_8x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (4)
+                  call circle_dispersion_unroll_4x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (2)
+                  call circle_dispersion_unroll_2x_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (0)
+                  call circle_dispersion_rolled_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case default
+                  return
+            end select
+         else
+            select case (unroll_cnt)
+               case (16)
+                  call circle_dispersion_unroll_16x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (8)
+                  call circle_dispersion_unroll_8x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (4)
+                  call circle_dispersion_unroll_4x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (2)
+                  call circle_dispersion_unroll_2x_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case (0)
+                  call circle_dispersion_rolled_omp_zmm8r8(d,l1,l2,alpha,O,inf,rho,n)
+               case default
+                  return
+            end select
+         end if
+    end subroutine circle_dispersion_dispatch_zmm8r8
 
 
      !AVX/AVX2 versions
