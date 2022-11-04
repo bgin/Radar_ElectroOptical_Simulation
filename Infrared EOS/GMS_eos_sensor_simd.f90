@@ -14513,6 +14513,21 @@ module eos_sensor_simd
         if(omp_ver) then
            select case (unroll_cnt)
                case (16)
+                  call circle_dispersion_unroll_16x_omp_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
+               case (8)
+                  call circle_dispersion_unroll_8x_omp_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
+               case (4)
+                  call circle_dispersion_unroll_4x_omp_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
+               case (2)
+                  call circle_dispersion_unroll_2x_omp_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
+               case (0)
+                  call circle_dispersion_rolled_omp_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
+               case default
+                  return
+            end select
+         else
+            select case (unroll_cnt)
+               case (16)
                   call circle_dispersion_unroll_16x_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
                case (8)
                   call circle_dispersion_unroll_8x_ymm8r4(d,l1,l2,alpha,O,inf,rho,n)
@@ -14525,23 +14540,8 @@ module eos_sensor_simd
                case default
                   return
             end select
-         else
-            select case (unroll_cnt)
-               case (16)
-                  call circle_dispersion_unroll_16x_omp_zmm16r4(d,l1,l2,alpha,O,inf,rho,n)
-               case (8)
-                  call circle_dispersion_unroll_8x_omp_zmm16r4(d,l1,l2,alpha,O,inf,rho,n)
-               case (4)
-                  call circle_dispersion_unroll_4x_omp_zmm16r4(d,l1,l2,alpha,O,inf,rho,n)
-               case (2)
-                  call circle_dispersion_unroll_2x_omp_zmm16r4(d,l1,l2,alpha,O,inf,rho,n)
-               case (0)
-                  call circle_dispersion_rolled_omp_zmm16r4(d,l1,l2,alpha,O,inf,rho,n)
-               case default
-                  return
-            end select
          end if
-    end subroutine circle_dispersion_dispatch_zmm16r4
+    end subroutine circle_dispersion_dispatch_ymm8r4
 
 
 
@@ -14563,6 +14563,9 @@ module eos_sensor_simd
         t1 = defocus_cof_ymm4r8(l2,alpha,O,inf)
         rho= t0.v*t1.v
      end function circle_dispersion_ymm4r8
+
+
+     
 
 
      !Formula 2, p. 59
