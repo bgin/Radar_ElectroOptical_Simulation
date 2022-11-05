@@ -17421,7 +17421,7 @@ module eos_sensor_simd
             ax(i+11)= fov_x_axis_zmm16r4(H,d11,g11)
             d12     = delta(i+12)
             g12     = gamma(i+12)
-            ax(i+12)= fov_x_axis_r4(H,d12,g12)
+            ax(i+12)= fov_x_axis_zmm16r4(H,d12,g12)
             d13     = delta(i+13)
             g13     = gamma(i+13)
             ax(i+13)= fov_x_axis_zmm16r4(H,d13,g13)
@@ -17516,7 +17516,7 @@ module eos_sensor_simd
             ax(i+11)= fov_x_axis_zmm16r4(H,d11,g11)
             d12     = delta(i+12)
             g12     = gamma(i+12)
-            ax(i+12)= fov_x_axis_r4(H,d12,g12)
+            ax(i+12)= fov_x_axis_zmm16r4(H,d12,g12)
             d13     = delta(i+13)
             g13     = gamma(i+13)
             ax(i+13)= fov_x_axis_zmm16r4(H,d13,g13)
@@ -17980,6 +17980,624 @@ module eos_sensor_simd
          tdel  = tan(delta.v)
          ax    = H.v*tdel.v/cos(gamm2.v)
       end function fov_x_axis_zmm8r8
+
+
+       subroutine fov_x_axis_unroll_16x_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_16x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(ZMM8r8_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         !dir$ attributes align : 64 :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 64 :: d8,d9,d10,d11,d12,d13,d14,d15
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(ZMM8r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 64 :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_zmm8r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_zmm8r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_zmm8r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_zmm8r8(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = gamma(i+8)
+            ax(i+8) = fov_x_axis_zmm8r8(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = gamma(i+9)
+            ax(i+9) = fov_x_axis_zmm8r8(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = gamma(i+10)
+            ax(i+10)= fov_x_axis_zmm8r8(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = gamma(i+11)
+            ax(i+11)= fov_x_axis_zmm8r8(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = gamma(i+12)
+            ax(i+12)= fov_x_axis_zmm8r8(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = gamma(i+13)
+            ax(i+13)= fov_x_axis_zmm8r8(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = gamma(i+14)
+            ax(i+14)= fov_x_axis_zmm8r8(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = gamma(i+15)
+            ax(i+15)= fov_x_axis_zmm8r8(H,d15,g15)
+         end do
+     end subroutine fov_x_axis_unroll_16x_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_16x_omp_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_omp_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_16x_omp_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_omp_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(ZMM8r8_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         !dir$ attributes align : 64 :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 64 :: d8,d9,d10,d11,d12,d13,d14,d15
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(ZMM8r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 64 :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
+         !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
+         !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
+         !$omp private(g8,g9,g10,g11,g12,g13,g14,g15)                 &
+         !$omp shared(n,H,delta,gamma,ax)
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_zmm8r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_zmm8r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_zmm8r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_zmm8r8(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = gamma(i+8)
+            ax(i+8) = fov_x_axis_zmm8r8(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = gamma(i+9)
+            ax(i+9) = fov_x_axis_zmm8r8(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = gamma(i+10)
+            ax(i+10)= fov_x_axis_zmm8r8(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = gamma(i+11)
+            ax(i+11)= fov_x_axis_zmm8r8(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = gamma(i+12)
+            ax(i+12)= fov_x_axis_zmm8r8(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = gamma(i+13)
+            ax(i+13)= fov_x_axis_zmm8r8(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = gamma(i+14)
+            ax(i+14)= fov_x_axis_zmm8r8(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = gamma(i+15)
+            ax(i+15)= fov_x_axis_zmm8r8(H,d15,g15)
+         end do
+         !$omp end parallel do
+     end subroutine fov_x_axis_unroll_16x_omp_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_8x_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_8x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 64 :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_zmm8r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_zmm8r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_zmm8r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_zmm8r8(H,d7,g7)
+         end do
+     end subroutine fov_x_axis_unroll_8x_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_8x_omp_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_omp_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_8x_omp_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_omp_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 64 :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 64 :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
+         !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
+         !$omp shared(n,H,delta,gamma,ax)
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = gamma(i+4)
+            ax(i+4) = fov_x_axis_zmm8r8(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = gamma(i+5)
+            ax(i+5) = fov_x_axis_zmm8r8(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = gamma(i+6)
+            ax(i+6) = fov_x_axis_zmm8r8(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = gamma(i+7)
+            ax(i+7) = fov_x_axis_zmm8r8(H,d7,g7)
+         end do
+         !$omp end parallel do
+     end subroutine fov_x_axis_unroll_8x_omp_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_4x_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_4x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3
+         !dir$ attributes align : 64 :: d0,d1,d2,d3
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3
+         !dir$ attributes align : 64 :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+         end do
+     end subroutine fov_x_axis_unroll_4x_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_4x_omp_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_omp_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_4x_omp_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_omp_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1,d2,d3
+         !dir$ attributes align : 64 :: d0,d1,d2,d3
+         type(ZMM8r8_t), automatic :: g0,g1,g2,g3
+         !dir$ attributes align : 64 :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
+         !$omp private(g0,g1,g2,g3)                        &
+         !$omp shared(n,H,delta,gamma,ax)
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = gamma(i+2)
+            ax(i+2) = fov_x_axis_zmm8r8(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = gamma(i+3)
+            ax(i+3) = fov_x_axis_zmm8r8(H,d3,g3)
+         end do
+         !$omp end parallel do
+     end subroutine fov_x_axis_unroll_4x_omp_zmm8r8
+
+
+    subroutine fov_x_axis_unroll_2x_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_2x_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0,d1
+         !dir$ attributes align : 64 :: d0,d1
+         type(ZMM8r8_t), automatic :: g0,g1
+         !dir$ attributes align : 64 :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+         end do
+     end subroutine fov_x_axis_unroll_2x_zmm8r8
+
+
+     subroutine fov_x_axis_unroll_2x_omp_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_omp_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_unroll_2x_omp_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_omp_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM16r4_t), automatic :: d0,d1
+         !dir$ attributes align : 64 :: d0,d1
+         type(ZMM8r8_t), automatic :: g0,g1
+         !dir$ attributes align : 64 :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = gamma(i)
+               ax(i) = fov_x_axis_zmm8r8(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1)      &
+         !$omp private(g0,g1)                        &
+         !$omp shared(n,H,delta,gamma,ax)
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = gamma(i+1)
+            ax(i+1) = fov_x_axis_zmm8r8(H,d1,g1)
+         end do
+         !$omp end parallel do
+     end subroutine fov_x_axis_unroll_2x_omp_zmm8r8
+
+
+      subroutine fov_x_axis_rolled_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_rolled_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_rolled_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0
+         !dir$ attributes align : 64 :: d0
+         type(ZMM8r8_t), automatic :: g0
+         !dir$ attributes align : 64 :: g0
+         integer(kind=i4) :: i
+         
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         do i=1,n
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+         end do
+     end subroutine fov_x_axis_rolled_zmm8r8
+
+
+     subroutine fov_x_axis_rolled_omp_zmm8r8(H,delta,gamma,ax,n)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_rolled_omp_zmm8r8
+           !dir$ attributes forceinline :: fov_x_axis_rolled_omp_zmm8r8
+           !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_omp_zmm8r8
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         type(ZMM8r8_t), automatic :: d0
+         !dir$ attributes align : 64 :: d0
+         type(ZMM8r8_t), automatic :: g0
+         !dir$ attributes align : 64 :: g0
+         integer(kind=i4) :: i
+       
+           !dir$ assume_aligned delta:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned ax:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(8)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp  private(d0)      &
+         !$omp private(g0)                        &
+         !$omp shared(n,H,delta,gamma,ax)
+         do i=1,n
+            d0      = delta(i)
+            g0      = gamma(i)
+            ax(i)   = fov_x_axis_zmm8r8(H,d0,g0)
+         end do
+         !$omp end parallel do
+     end subroutine fov_x_axis_rolled_omp_zmm8r8
+
+
+     subroutine fov_x_axis_dispatch_zmm16r4(H,delta,gamma,ax,n,unroll_cnt,omp_ver)
+           !dir$ optimize:3
+           !dir$ attributes code_align : 32 :: fov_x_axis_dispatch_zmm16r4
+         type(ZMM8r8_t),                  intent(in) :: H
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
+         type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
+         type(ZMM8r8_t),  dimension(1:n), intent(out) :: ax
+         integer(kind=i4),                 intent(in)  :: n
+         integer(kind=i4),                 intent(in)  :: unroll_cnt
+         logical(kind=i4),                 intent(in)  :: omp_ver
+         if(omp_ver) then
+            select case (unroll_cnt)
+                 case (16)
+                     call fov_x_axis_unroll_16x_omp_zmm8r8(H,delta,gamma,ax,n)
+                 case (8)
+                     call fov_x_axis_unroll_8x_omp_zmm8r8(H,delta,gamma,ax,n)
+                 case (4)
+                     call fov_x_axis_unroll_4x_omp_zmm8r8(H,delta,gamma,ax,n)
+                 case (2)
+                     call fov_x_axis_unroll_2x_omp_zmm8r8(H,delta,gamma,ax,n)
+                 case (0)
+                     call fov_x_axis_rolled_omp_zmm8r8(H,delta,gamma,ax,n)
+                 case default
+                      return
+             end select
+         else
+              select case (unroll_cnt)
+                 case (16)
+                     call fov_x_axis_unroll_16x_zmm8r8(H,delta,gamma,ax,n)
+                 case (8)
+                     call fov_x_axis_unroll_8x_zmm8r8(H,delta,gamma,ax,n)
+                 case (4)
+                     call fov_x_axis_unroll_4x_zmm8r8(H,delta,gamma,ax,n)
+                 case (2)
+                     call fov_x_axis_unroll_2x_zmm8r8(H,delta,gamma,ax,n)
+                 case (0)
+                     call fov_x_axis_rolled_zmm8r8(H,delta,gamma,ax,n)
+                 case default
+                      return
+             end select
+         end if
+     end subroutine fov_x_axis_dispatch_zmm8r8
+     
 
 
       !AVX/AVX2 versions.
