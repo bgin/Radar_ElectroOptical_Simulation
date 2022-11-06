@@ -18555,9 +18555,9 @@ module eos_sensor_simd
      end subroutine fov_x_axis_rolled_omp_zmm8r8
 
 
-     subroutine fov_x_axis_dispatch_zmm16r4(H,delta,gamma,ax,n,unroll_cnt,omp_ver)
+     subroutine fov_x_axis_dispatch_zmm8r8(H,delta,gamma,ax,n,unroll_cnt,omp_ver)
            !dir$ optimize:3
-           !dir$ attributes code_align : 32 :: fov_x_axis_dispatch_zmm16r4
+           !dir$ attributes code_align : 32 :: fov_x_axis_dispatch_zmm8r8
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
