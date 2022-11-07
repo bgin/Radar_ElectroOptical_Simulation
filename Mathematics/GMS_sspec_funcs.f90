@@ -7052,7 +7052,10 @@ subroutine clpmn ( mm, m, n, x, y, cpm, cpd )
   return
 end
 subroutine clpn ( n, x, y, cpn, cpd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: clpn
+   !dir$ attributes forceinline :: clpn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CLPN computes Legendre functions and derivatives for complex argument.
@@ -7132,7 +7135,10 @@ subroutine clpn ( n, x, y, cpn, cpd )
   return
 end
 subroutine clqmn ( mm, m, n, x, y, cqm, cqd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: clqmn
+   !dir$ attributes forceinline :: clqmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CLQMN: associated Legendre functions and derivatives for complex argument.
@@ -7319,7 +7325,10 @@ subroutine clqmn ( mm, m, n, x, y, cqm, cqd )
   return
 end
 subroutine clqn ( n, x, y, cqn, cqd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: clqn
+   !dir$ attributes forceinline :: clqn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CLQN: Legendre function Qn(z) and derivative Wn'(z) for complex argument.
@@ -7440,7 +7449,10 @@ subroutine clqn ( n, x, y, cqn, cqd )
   return
 end
 subroutine comelp ( hk, ck, ce )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: comelp
+   !dir$ attributes forceinline :: comelp
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! COMELP computes complete elliptic integrals K(k) and E(k).
@@ -7529,7 +7541,10 @@ subroutine comelp ( hk, ck, ce )
   return
 end
 subroutine cpbdn ( n, z, cpb, cpd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cpbdn
+   !dir$ attributes forceinline :: cpbdn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CPBDN: parabolic cylinder function Dn(z) and Dn'(z) for complex argument.
@@ -7688,7 +7703,10 @@ subroutine cpbdn ( n, z, cpb, cpd )
   return
 end
 subroutine cpdla ( n, z, cdn )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cpdla
+   !dir$ attributes forceinline :: cpdla
+  use mod_kinds, only : i4,dp
 !****************************************************************************80
 !
 !! CPDLA computes complex parabolic cylinder function Dn(z) for large argument.
@@ -7754,7 +7772,10 @@ subroutine cpdla ( n, z, cdn )
   return
 end
 subroutine cpdsa ( n, z, cdn )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cpdsa
+   !dir$ attributes forceinline :: cpdsa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CPDSA computes complex parabolic cylinder function Dn(z) for small argument.
@@ -7864,7 +7885,10 @@ subroutine cpdsa ( n, z, cdn )
   return
 end
 subroutine cpsi ( x, y, psr, psi )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cpsi
+   !dir$ attributes forceinline :: cpsi
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CPSI computes the psi function for a complex argument.
@@ -7993,7 +8017,10 @@ subroutine cpsi ( x, y, psr, psi )
   return
 end
 subroutine csphik ( n, z, nm, csi, cdi, csk, cdk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: csphik
+   !dir$ attributes forceinline :: csphik
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CSPHIK: complex modified spherical Bessel functions and derivatives.
@@ -8136,7 +8163,10 @@ subroutine csphik ( n, z, nm, csi, cdi, csk, cdk )
   return
 end
 subroutine csphjy ( n, z, nm, csj, cdj, csy, cdy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: csphjy
+   !dir$ attributes forceinline :: csphjy
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CSPHJY: spherical Bessel functions jn(z) and yn(z) for complex argument.
@@ -8276,7 +8306,10 @@ subroutine csphjy ( n, z, nm, csj, cdj, csy, cdy )
   return
 end
 subroutine cv0 ( kd, m, q, a0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cv0
+   !dir$ attributes forceinline :: cv0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CV0 computes the initial characteristic value of Mathieu functions.
@@ -8653,7 +8686,10 @@ subroutine cv0 ( kd, m, q, a0 )
   return
 end
 subroutine cva1 ( kd, m, q, cv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cva1
+   !dir$ attributes forceinline :: cva1
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CVA1 computes a sequence of characteristic values of Mathieu functions.
@@ -8865,7 +8901,10 @@ subroutine cva1 ( kd, m, q, cv )
   return
 end
 subroutine cva2 ( kd, m, q, a )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cva2
+   !dir$ attributes forceinline :: cva2
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CVA2 computes a specific characteristic value of Mathieu functions.
@@ -9023,7 +9062,10 @@ subroutine cva2 ( kd, m, q, a )
   return
 end
 subroutine cvf ( kd, m, q, a, mj, f )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cvf
+   !dir$ attributes forceinline :: cvf
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CVF computes F for the characteristic equation of Mathieu functions.
@@ -9153,7 +9195,10 @@ subroutine cvf ( kd, m, q, a, mj, f )
   return
 end
 subroutine cvql ( kd, m, q, a0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cvql
+   !dir$ attributes forceinline :: cvql
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CVQL computes the characteristic value of Mathieu functions for q <= 3*m.
@@ -9244,7 +9289,10 @@ subroutine cvql ( kd, m, q, a0 )
   return
 end
 subroutine cvqm ( m, q, a0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cvqm
+   !dir$ attributes forceinline :: cvqm
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CVQM computes the characteristic value of Mathieu functions for q <= m*m.
@@ -9297,7 +9345,10 @@ subroutine cvqm ( m, q, a0 )
   return
 end
 subroutine cy01 ( kf, z, zf, zd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cy01
+   !dir$ attributes forceinline :: cy01
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CY01 computes complex Bessel functions Y0(z) and Y1(z) and derivatives.
@@ -9546,7 +9597,10 @@ subroutine cy01 ( kf, z, zf, zd )
   return
 end
 subroutine cyzo ( nt, kf, kc, zo, zv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: cyzo
+   !dir$ attributes forceinline :: cyzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! CYZO computes zeros of complex Bessel functions Y0(z) and Y1(z) and Y1'(z).
@@ -9702,7 +9756,10 @@ subroutine cyzo ( nt, kf, kc, zo, zv )
   return
 end
 subroutine dvla ( va, x, pd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: dvla
+   !dir$ attributes forceinline :: dvla
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! DVLA computes parabolic cylinder functions Dv(x) for large argument.
@@ -9779,7 +9836,10 @@ subroutine dvla ( va, x, pd )
   return
 end
 subroutine dvsa ( va, x, pd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: dvsa
+   !dir$ attributes forceinline :: dvsa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! DVSA computes parabolic cylinder functions Dv(x) for small argument.
@@ -9883,7 +9943,10 @@ subroutine dvsa ( va, x, pd )
   return
 end
 subroutine e1xa ( x, e1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: e1xa
+   !dir$ attributes forceinline :: e1xa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! E1XA computes the exponential integral E1(x).
@@ -9958,7 +10021,10 @@ subroutine e1xa ( x, e1 )
   return
 end
 subroutine e1xb ( x, e1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: e1xb
+   !dir$ attributes forceinline :: e1xb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! E1XB computes the exponential integral E1(x).
@@ -10037,7 +10103,10 @@ subroutine e1xb ( x, e1 )
   return
 end
 subroutine e1z ( z, ce1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: e1z
+   !dir$ attributes forceinline :: e1z
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! E1Z computes the complex exponential integral E1(z).
@@ -10122,7 +10191,10 @@ subroutine e1z ( z, ce1 )
   return
 end
 subroutine eix ( x, ei )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: eix
+   !dir$ attributes forceinline :: eix
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! EIX computes the exponential integral Ei(x).
@@ -10197,7 +10269,10 @@ subroutine eix ( x, ei )
   return
 end
 subroutine elit ( hk, phi, fe, ee )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: elit
+   !dir$ attributes forceinline :: elit
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ELIT: complete and incomplete elliptic integrals F(k,phi) and E(k,phi).
@@ -10306,7 +10381,10 @@ subroutine elit ( hk, phi, fe, ee )
   return
 end
 subroutine elit3 ( phi, hk, c, el3 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: elit3
+   !dir$ attributes forceinline :: elit3
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ELIT3 computes the elliptic integral of the third kind.
@@ -10358,6 +10436,7 @@ subroutine elit3 ( phi, hk, c, el3 )
   real ( kind = dp ) f1
   real ( kind = dp ) f2
   real ( kind = dp ) hk
+  real ( kind = dp)  st1,st2
   integer ( kind = i4 ) i 
   logical lb1
   logical lb2
@@ -10393,11 +10472,13 @@ subroutine elit3 ( phi, hk, c, el3 )
   do i = 1, 10
     c0 = c2 * t(i)
     t1 = c1 + c0
+    st1= sin(t1)
     t2 = c1 - c0
-    f1 = 1.0D+00 / ( ( 1.0D+00 - c * sin(t1) * sin(t1) ) &
-      * sqrt ( 1.0D+00 - hk * hk * sin ( t1 ) * sin ( t1 ) ) )
-    f2 = 1.0D+00 / ( ( 1.0D+00 - c * sin ( t2 ) * sin ( t2 ) ) &
-      * sqrt( 1.0D+00 - hk * hk * sin ( t2 ) * sin ( t2 ) ) )
+    st2= sin(t2)
+    f1 = 1.0D+00 / ( ( 1.0D+00 - c * st1 * st1 ) &
+      * sqrt ( 1.0D+00 - hk * hk * st1 * st1 ) )
+    f2 = 1.0D+00 / ( ( 1.0D+00 - c * st2 * st2 ) &
+      * sqrt( 1.0D+00 - hk * hk * st2 * st2 ) )
     el3 = el3 + w(i) * ( f1 + f2 )
   end do
 
@@ -10406,7 +10487,10 @@ subroutine elit3 ( phi, hk, c, el3 )
   return
 end
 function envj ( n, x )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: envj
+   !dir$ attributes forceinline :: envj
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ENVJ is a utility function used by MSTA1 and MSTA2.
@@ -10452,7 +10536,10 @@ function envj ( n, x )
   return
 end
 subroutine enxa ( n, x, en )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: enxa
+   !dir$ attributes forceinline :: enxa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ENXA computes the exponential integral En(x).
@@ -10510,7 +10597,10 @@ subroutine enxa ( n, x, en )
   return
 end
 subroutine enxb ( n, x, en )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: enxb
+   !dir$ attributes forceinline :: enxb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ENXB computes the exponential integral En(x).
@@ -10623,7 +10713,10 @@ subroutine enxb ( n, x, en )
   return
 end
 subroutine error ( x, err )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: error
+   !dir$ attributes forceinline :: error
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ERROR evaluates the error function.
@@ -10709,7 +10802,10 @@ subroutine error ( x, err )
   return
 end
 subroutine eulera ( n, en )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: eulera
+   !dir$ attributes forceinline :: eulera
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! EULERA computes the Euler number En.
@@ -10770,7 +10866,10 @@ subroutine eulera ( n, en )
   return
 end
 subroutine eulerb ( n, en )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: eulerb
+   !dir$ attributes forceinline :: eulerb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! EULERB computes the Euler number En.
@@ -10841,7 +10940,10 @@ subroutine eulerb ( n, en )
   return
 end
 subroutine fcoef ( kd, m, q, a, fc )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: fcoef
+   !dir$ attributes forceinline :: fcoef
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! FCOEF: expansion coefficients for Mathieu and modified Mathieu functions.
@@ -11150,7 +11252,10 @@ subroutine fcoef ( kd, m, q, a, fc )
   return
 end
 subroutine fcs ( x, c, s )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: fcs
+   !dir$ attributes forceinline :: fcs
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! FCS computes Fresnel integrals C(x) and S(x).
@@ -11301,7 +11406,10 @@ subroutine fcs ( x, c, s )
   return
 end
 subroutine fcszo ( kf, nt, zo )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: fcszo
+   !dir$ attributes forceinline :: fcszo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! FCSZO computes complex zeros of Fresnel integrals C(x) or S(x).
@@ -11438,7 +11546,10 @@ subroutine fcszo ( kf, nt, zo )
   return
 end
 subroutine ffk ( ks, x, fr, fi, fm, fa, gr, gi, gm, ga )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ffk
+   !dir$ attributes forceinline :: ffk
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! FFK computes modified Fresnel integrals F+/-(x) and K+/-(x).
@@ -11659,7 +11770,10 @@ subroutine ffk ( ks, x, fr, fi, fm, fa, gr, gi, gm, ga )
   return
 end
 subroutine gaih ( x, ga )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: gaih
+   !dir$ attributes forceinline :: gaih
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! GAIH computes the GammaH function.
@@ -11720,7 +11834,10 @@ subroutine gaih ( x, ga )
   return
 end
 subroutine gam0 ( x, ga )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: gam0
+   !dir$ attributes forceinline :: gam0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! GAM0 computes the Gamma function for the LAMV function.
@@ -11796,10 +11913,13 @@ subroutine gam0 ( x, ga )
   return
 end
 subroutine gamma ( x, ga )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: gamma
+   !dir$ attributes forceinline :: gamma
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
-!! GAMMA evaluates the Gamma function.
+!! GAMMAv2 evaluates the Gamma function.
 !
 !  Licensing:
 !
@@ -11916,7 +12036,10 @@ subroutine gamma ( x, ga )
   return
 end
 subroutine gmn ( m, n, c, x, bk, gf, gd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: gmn
+   !dir$ attributes forceinline :: gmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! GMN computes quantities for oblate radial functions with small argument.
@@ -12027,7 +12150,10 @@ subroutine gmn ( m, n, c, x, bk, gf, gd )
   return
 end
 subroutine herzo ( n, x, w )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: herzo
+   !dir$ attributes forceinline :: herzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! HERZO computes the zeros the Hermite polynomial Hn(x).
@@ -12176,7 +12302,10 @@ subroutine herzo ( n, x, w )
   return
 end
 subroutine hygfx ( a, b, c, x, hf )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: hygfx
+   !dir$ attributes forceinline :: hygfx
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! HYGFX evaluates the hypergeometric function F(A,B,C,X).
@@ -12588,7 +12717,10 @@ subroutine hygfx ( a, b, c, x, hf )
   return
 end
 subroutine hygfz ( a, b, c, z, zhf )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: hygfz
+   !dir$ attributes forceinline :: hygfz
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! HYGFZ computes the hypergeometric function F(a,b,c,x) for complex argument.
@@ -13107,7 +13239,10 @@ subroutine hygfz ( a, b, c, z, zhf )
   return
 end
 subroutine ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ik01a
+   !dir$ attributes forceinline :: ik01a
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! IK01A compute Bessel function I0(x), I1(x), K0(x), and K1(x).
@@ -13294,7 +13429,10 @@ subroutine ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
   return
 end
 subroutine ik01b ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ik01b
+   !dir$ attributes forceinline :: ik01b
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! IK01B: Bessel functions I0(x), I1(x), K0(x), and K1(x) and derivatives.
@@ -13461,7 +13599,10 @@ subroutine ik01b ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
   return
 end
 subroutine ikna ( n, x, nm, bi, di, bk, dk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ikna
+   !dir$ attributes forceinline :: ikna
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! IKNA compute Bessel function In(x) and Kn(x), and derivatives.
@@ -13614,7 +13755,10 @@ subroutine ikna ( n, x, nm, bi, di, bk, dk )
   return
 end
 subroutine iknb ( n, x, nm, bi, di, bk, dk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: iknb
+   !dir$ attributes forceinline :: iknb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! IKNB compute Bessel function In(x) and Kn(x).
@@ -13785,7 +13929,10 @@ subroutine iknb ( n, x, nm, bi, di, bk, dk )
   return
 end
 subroutine ikv ( v, x, vm, bi, di, bk, dk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ikv
+   !dir$ attributes forceinline :: ikv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! IKV compute modified Bessel function Iv(x) and Kv(x) and their derivatives.
@@ -14049,7 +14196,10 @@ subroutine ikv ( v, x, vm, bi, di, bk, dk )
   return
 end
 subroutine incob ( a, b, x, bix )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: incob
+   !dir$ attributes forceinline :: incob
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! INCOB computes the incomplete beta function Ix(a,b).
@@ -14146,7 +14296,10 @@ subroutine incob ( a, b, x, bix )
   return
 end
 subroutine incog ( a, x, gin, gim, gip )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: incog
+   !dir$ attributes forceinline :: incog
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! INCOG computes the incomplete gamma function r(a,x), ,(a,x), P(a,x).
@@ -14245,7 +14398,10 @@ subroutine incog ( a, x, gin, gim, gip )
   return
 end
 subroutine itairy ( x, apt, bpt, ant, bnt )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itairy
+   !dir$ attributes forceinline :: itairy
+  use mod_kinds, only : i4,dp
 !****************************************************************************80
 !
 !! ITAIRY computes the integrals of Airy functions.
@@ -14432,7 +14588,10 @@ subroutine itairy ( x, apt, bpt, ant, bnt )
   return
 end
 subroutine itika ( x, ti, tk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itika
+   !dir$ attributes forceinline :: itika
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITIKA computes the integral of the modified Bessel functions I0(t) and K0(t).
@@ -14571,7 +14730,10 @@ subroutine itika ( x, ti, tk )
   return
 end
 subroutine itikb ( x, ti, tk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itikb
+   !dir$ attributes forceinline :: itikb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITIKB computes the integral of the Bessel functions I0(t) and K0(t).
@@ -14726,7 +14888,10 @@ subroutine itikb ( x, ti, tk )
   return
 end
 subroutine itjya ( x, tj, ty )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itjya
+   !dir$ attributes forceinline :: itjya
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITJYA computes integrals of Bessel functions J0(t) and Y0(t).
@@ -14867,7 +15032,10 @@ subroutine itjya ( x, tj, ty )
   return
 end
 subroutine itjyb ( x, tj, ty )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itjyb
+   !dir$ attributes forceinline :: itjyb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITJYB computes integrals of Bessel functions J0(t) and Y0(t).
@@ -15014,7 +15182,10 @@ subroutine itjyb ( x, tj, ty )
   return
 end
 subroutine itsh0 ( x, th0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itsh0
+   !dir$ attributes forceinline :: itsh0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITSH0 integrates the Struve function H0(t) from 0 to x.
@@ -15149,7 +15320,10 @@ subroutine itsh0 ( x, th0 )
   return
 end
 subroutine itsl0 ( x, tl0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itsl0
+   !dir$ attributes forceinline :: itsl0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITSL0 integrates the Struve function L0(t) from 0 to x.
@@ -15268,7 +15442,10 @@ subroutine itsl0 ( x, tl0 )
   return
 end
 subroutine itth0 ( x, tth )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: itth0
+   !dir$ attributes forceinline :: itth0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITTH0 integrates H0(t)/t from x to oo.
@@ -15369,7 +15546,10 @@ subroutine itth0 ( x, tth )
   return
 end
 subroutine ittika ( x, tti, ttk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ittika
+   !dir$ attributes forceinline :: ittika
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITTIKA integrates (I0(t)-1)/t from 0 to x, K0(t)/t from x to infinity.
@@ -15494,7 +15674,10 @@ subroutine ittika ( x, tti, ttk )
   return
 end
 subroutine ittikb ( x, tti, ttk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ittikb
+   !dir$ attributes forceinline :: ittikb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITTIKB integrates (I0(t)-1)/t from 0 to x, K0(t)/t from x to infinity.
@@ -15627,7 +15810,10 @@ subroutine ittikb ( x, tti, ttk )
   return
 end
 subroutine ittjya ( x, ttj, tty )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ittjya
+   !dir$ attributes forceinline :: ittjya
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITTJYA integrates (1-J0(t))/t from 0 to x, and Y0(t)/t from x to infinity.
@@ -15798,7 +15984,10 @@ subroutine ittjya ( x, ttj, tty )
   return
 end
 subroutine ittjyb ( x, ttj, tty )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: ittjyb
+   !dir$ attributes forceinline :: ittjyb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! ITTJYB integrates (1-J0(t))/t from 0 to x, and Y0(t)/t from x to infinity.
@@ -15942,7 +16131,10 @@ subroutine ittjyb ( x, ttj, tty )
   return
 end
 subroutine jdzo ( nt, n, m, p, zo )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jdzo
+   !dir$ attributes forceinline :: jdzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JDZO computes the zeros of Bessel functions Jn(x) and Jn'(x).
@@ -16181,7 +16373,10 @@ subroutine jdzo ( nt, n, m, p, zo )
   return
 end
 subroutine jelp ( u, hk, esn, ecn, edn, eph )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jelp
+   !dir$ attributes forceinline :: jelp
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JELP computes Jacobian elliptic functions SN(u), CN(u), DN(u).
@@ -16276,7 +16471,10 @@ subroutine jelp ( u, hk, esn, ecn, edn, eph )
   return
 end
 subroutine jy01a ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jy01a
+   !dir$ attributes forceinline :: jy01a
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JY01A computes Bessel functions J0(x), J1(x), Y0(x), Y1(x) and derivatives.
@@ -16480,7 +16678,10 @@ subroutine jy01a ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
   return
 end
 subroutine jy01b ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jy01b
+   !dir$ attributes forceinline :: jy01b
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JY01B computes Bessel functions J0(x), J1(x), Y0(x), Y1(x) and derivatives.
@@ -16657,7 +16858,10 @@ subroutine jy01b ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
   return
 end
 subroutine jyna ( n, x, nm, bj, dj, by, dy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jyna
+   !dir$ attributes forceinline :: jyna
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JYNA computes Bessel functions Jn(x) and Yn(x) and derivatives.
@@ -16816,7 +17020,10 @@ subroutine jyna ( n, x, nm, bj, dj, by, dy )
   return
 end
 subroutine jynb ( n, x, nm, bj, dj, by, dy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jynb
+   !dir$ attributes forceinline :: jynb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JYNB computes Bessel functions Jn(x) and Yn(x) and derivatives.
@@ -17019,7 +17226,10 @@ subroutine jynb ( n, x, nm, bj, dj, by, dy )
   return
 end
 subroutine jyndd ( n, x, bjn, djn, fjn, byn, dyn, fyn )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jyndd
+   !dir$ attributes forceinline :: jyndd
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JYNDD: Bessel functions Jn(x) and Yn(x), first and second derivatives.
@@ -17137,7 +17347,10 @@ subroutine jyndd ( n, x, bjn, djn, fjn, byn, dyn, fyn )
   return
 end
 subroutine jyv ( v, x, vm, bj, dj, by, dy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jyv
+   !dir$ attributes forceinline :: jyv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JYV computes Bessel functions Jv(x) and Yv(x) and their derivatives.
@@ -17462,7 +17675,10 @@ subroutine jyv ( v, x, vm, bj, dj, by, dy )
   return
 end
 subroutine jyzo ( n, nt, rj0, rj1, ry0, ry1 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: jyzo
+   !dir$ attributes forceinline :: jyzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! JYZO computes the zeros of Bessel functions Jn(x), Yn(x) and derivatives.
@@ -17645,7 +17861,10 @@ subroutine jyzo ( n, nt, rj0, rj1, ry0, ry1 )
   return
 end
 subroutine klvna ( x, ber, bei, ger, gei, der, dei, her, hei )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: kvlna
+   !dir$ attributes forceinline :: klvna
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! KLVNA: Kelvin functions ber(x), bei(x), ker(x), and kei(x), and derivatives.
@@ -17917,7 +18136,10 @@ subroutine klvna ( x, ber, bei, ger, gei, der, dei, her, hei )
   return
 end
 subroutine klvnb ( x, ber, bei, ger, gei, der, dei, her, hei )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: klvnb
+   !dir$ attributes forceinline :: klvnb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! KLVNB: Kelvin functions ber(x), bei(x), ker(x), and kei(x), and derivatives.
@@ -18178,7 +18400,10 @@ subroutine klvnb ( x, ber, bei, ger, gei, der, dei, her, hei )
   return
 end
 subroutine klvnzo ( nt, kd, zo )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: klvnzo
+   !dir$ attributes forceinline :: klvnzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! KLVNZO computes zeros of the Kelvin functions.
@@ -18298,7 +18523,10 @@ subroutine klvnzo ( nt, kd, zo )
   return
 end
 subroutine kmn ( m, n, c, cv, kd, df, dn, ck1, ck2 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: kmn
+   !dir$ attributes forceinline :: kmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! KMN: expansion coefficients of prolate or oblate spheroidal functions.
@@ -18514,7 +18742,10 @@ subroutine kmn ( m, n, c, cv, kd, df, dn, ck1, ck2 )
   return
 end
 subroutine lagzo ( n, x, w )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lagzo
+   !dir$ attributes forceinline :: lagzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LAGZO computes zeros of the Laguerre polynomial, and integration weights.
@@ -18640,7 +18871,10 @@ subroutine lagzo ( n, x, w )
   return
 end
 subroutine lamn ( n, x, nm, bl, dl )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lamn
+   !dir$ attributes forceinline :: lamn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LAMN computes lambda functions and derivatives.
@@ -18797,7 +19031,10 @@ subroutine lamn ( n, x, nm, bl, dl )
   return
 end
 subroutine lamv ( v, x, vm, vl, dl )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lamv
+   !dir$ attributes forceinline :: lamv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LAMV computes lambda functions and derivatives of arbitrary order.
@@ -19038,7 +19275,10 @@ subroutine lamv ( v, x, vm, vl, dl )
   return
 end
 subroutine legzo ( n, x, w )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: legzo
+   !dir$ attributes forceinline :: legzo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LEGZO computes the zeros of Legendre polynomials, and integration weights.
@@ -19161,7 +19401,10 @@ subroutine legzo ( n, x, w )
   return
 end
 subroutine lgama ( kf, x, gl )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lgama
+   !dir$ attributes forceinline :: lgama
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LGAMA computes the gamma function or its logarithm.
@@ -19258,7 +19501,10 @@ subroutine lgama ( kf, x, gl )
   return
 end
 subroutine lpmn ( mm, m, n, x, pm, pd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lpmn
+   !dir$ attributes forceinline :: lpmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LPMN computes associated Legendre functions Pmn(X) and derivatives P'mn(x).
@@ -19382,7 +19628,10 @@ subroutine lpmn ( mm, m, n, x, pm, pd )
   return
 end
 subroutine lpmns ( m, n, x, pm, pd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lpmns
+   !dir$ attributes forceinline :: lpmns
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LPMNS computes associated Legendre functions Pmn(X) and derivatives P'mn(x).
@@ -19491,7 +19740,10 @@ subroutine lpmns ( m, n, x, pm, pd )
   return
 end
 subroutine lpmv ( v, m, x, pmv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lpmv
+   !dir$ attributes forceinline :: lpmv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LPMV computes associated Legendre functions Pmv(X) with arbitrary degree.
@@ -19690,7 +19942,10 @@ subroutine lpmv ( v, m, x, pmv )
   return
 end
 subroutine lpn ( n, x, pn, pd )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lpn
+   !dir$ attributes forceinline :: lpn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LPN computes Legendre polynomials Pn(x) and derivatives Pn'(x).
@@ -19765,7 +20020,10 @@ subroutine lpn ( n, x, pn, pd )
   return
 end
 subroutine lpni ( n, x, pn, pd, pl )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lpni
+   !dir$ attributes forceinline :: lpni
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LPNI computes Legendre polynomials Pn(x), derivatives, and integrals.
@@ -19862,7 +20120,10 @@ subroutine lpni ( n, x, pn, pd, pl )
   return
 end
 subroutine lqmn ( mm, m, n, x, qm, qd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lqmn
+   !dir$ attributes forceinline :: lqmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LQMN computes associated Legendre functions Qmn(x) and derivatives.
@@ -20040,7 +20301,10 @@ subroutine lqmn ( mm, m, n, x, qm, qd )
   return
 end
 subroutine lqmns ( m, n, x, qm, qd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lqmns
+   !dir$ attributes forceinline :: lqmns
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LQMNS computes associated Legendre functions Qmn(x) and derivatives Qmn'(x).
@@ -20264,7 +20528,10 @@ subroutine lqmns ( m, n, x, qm, qd )
   return
 end
 subroutine lqna ( n, x, qn, qd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lqna
+   !dir$ attributes forceinline :: lqna
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LQNA computes Legendre function Qn(x) and derivatives Qn'(x).
@@ -20340,7 +20607,10 @@ subroutine lqna ( n, x, qn, qd )
   return
 end
 subroutine lqnb ( n, x, qn, qd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: lqnb
+   !dir$ attributes forceinline :: lqnb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! LQNB computes Legendre function Qn(x) and derivatives Qn'(x).
@@ -20479,7 +20749,10 @@ subroutine lqnb ( n, x, qn, qd )
   return
 end
 function msta1 ( x, mp )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: msta1
+   !dir$ attributes forceinline :: msta1
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! MSTA1 determines a backward recurrence starting point for Jn(x).
@@ -20558,7 +20831,10 @@ function msta1 ( x, mp )
   return
 end
 function msta2 ( x, n, mp )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: msta2
+   !dir$ attributes forceinline :: msta2
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! MSTA2 determines a backward recurrence starting point for Jn(x).
@@ -20652,7 +20928,10 @@ function msta2 ( x, n, mp )
   return
 end
 subroutine mtu0 ( kf, m, q, x, csf, csd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: mtu0
+   !dir$ attributes forceinline :: mtu0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! MTU0 computes Mathieu functions CEM(x,q) and SEM(x,q) and derivatives.
@@ -20793,7 +21072,10 @@ subroutine mtu0 ( kf, m, q, x, csf, csd )
   return
 end
 subroutine mtu12 ( kf, kc, m, q, x, f1r, d1r, f2r, d2r )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: mtu12
+   !dir$ attributes forceinline :: mtu12
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! MTU12 computes modified Mathieu functions of the first and second kind.
@@ -21029,7 +21311,10 @@ subroutine mtu12 ( kf, kc, m, q, x, f1r, d1r, f2r, d2r )
   return
 end
 subroutine othpl ( kf, n, x, pl, dpl )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: othpl
+   !dir$ attributes forceinline :: othpl
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! OTHPL computes orthogonal polynomials Tn(x), Un(x), Ln(x) or Hn(x).
@@ -21143,7 +21428,10 @@ subroutine othpl ( kf, n, x, pl, dpl )
   return
 end
 subroutine pbdv ( v, x, dv, dp, pdf, pdd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: pbdv
+   !dir$ attributes forceinline :: pbdv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! PBDV computes parabolic cylinder functions Dv(x) and derivatives.
@@ -21337,7 +21625,10 @@ subroutine pbdv ( v, x, dv, dp, pdf, pdd )
   return
 end
 subroutine pbvv ( v, x, vv, vp, pvf, pvd )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: pbvv
+   !dir$ attributes forceinline :: pbvv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! PBVV computes parabolic cylinder functions Vv(x) and their derivatives.
@@ -21550,7 +21841,10 @@ subroutine pbvv ( v, x, vv, vp, pvf, pvd )
   return
 end
 subroutine pbwa ( a, x, w1f, w1d, w2f, w2d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: pbwa
+   !dir$ attributes forceinline :: pbwa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! PBWA computes parabolic cylinder functions W(a,x) and derivatives.
@@ -21720,7 +22014,10 @@ subroutine pbwa ( a, x, w1f, w1d, w2f, w2d )
   return
 end
 subroutine psi ( x, ps )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: psi
+   !dir$ attributes forceinline :: psi
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! PSI computes the PSI function.
@@ -21837,8 +22134,11 @@ subroutine psi ( x, ps )
 
   return
 end
-subroutine qstar ( m, n, c, ck, ck1, qs, qt )
-
+subroutine  qstar ( m, n, c, ck, ck1, qs, qt )
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: qstar
+   !dir$ attributes forceinline :: qstar
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! QSTAR computes Q*mn(-ic) for oblate radial functions with a small argument.
@@ -21936,7 +22236,10 @@ subroutine qstar ( m, n, c, ck, ck1, qs, qt )
   return
 end
 subroutine rctj ( n, x, nm, rj, dj )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rctj
+   !dir$ attributes forceinline :: rctj
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RCTJ computes Riccati-Bessel function of the first kind, and derivatives.
@@ -22051,7 +22354,10 @@ subroutine rctj ( n, x, nm, rj, dj )
   return
 end
 subroutine rcty ( n, x, nm, ry, dy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rcty
+   !dir$ attributes forceinline :: rcty
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RCTY computes Riccati-Bessel function of the second kind, and derivatives.
@@ -22138,7 +22444,10 @@ subroutine rcty ( n, x, nm, ry, dy )
   return
 end
 subroutine refine ( kd, m, q, a, iflag )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: refine
+   !dir$ attributes forceinline :: refine
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! REFINE refines an estimate of the characteristic value of Mathieu functions.
@@ -22253,7 +22562,10 @@ subroutine refine ( kd, m, q, a, iflag )
   return
 end
 subroutine rmn1 ( m, n, c, x, df, kd, r1f, r1d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rmn1
+   !dir$ attributes forceinline :: rmn1
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RMN1 computes prolate and oblate spheroidal functions of the first kind.
@@ -22475,7 +22787,10 @@ subroutine rmn1 ( m, n, c, x, df, kd, r1f, r1d )
   return
 end
 subroutine rmn2l ( m, n, c, x, df, kd, r2f, r2d, id )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rmn2l
+   !dir$ attributes forceinline :: rmn2l
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RMN2L: prolate and oblate spheroidal functions, second kind, large CX.
@@ -22662,7 +22977,10 @@ subroutine rmn2l ( m, n, c, x, df, kd, r2f, r2d, id )
   return
 end
 subroutine rmn2so ( m, n, c, x, cv, df, kd, r2f, r2d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rmn2so
+   !dir$ attributes forceinline :: rmn2so
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RMN2SO: oblate radial functions of the second kind with small argument.
@@ -22802,7 +23120,10 @@ subroutine rmn2so ( m, n, c, x, cv, df, kd, r2f, r2d )
   return
 end
 subroutine rmn2sp ( m, n, c, x, cv, df, kd, r2f, r2d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rmn2sp
+   !dir$ attributes forceinline :: rmn2sp
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RMN2SP: prolate, oblate spheroidal radial functions, kind 2, small argument.
@@ -23041,7 +23362,10 @@ subroutine rmn2sp ( m, n, c, x, cv, df, kd, r2f, r2d )
   return
 end
 subroutine rswfo ( m, n, c, x, cv, kf, r1f, r1d, r2f, r2d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rswfo
+   !dir$ attributes forceinline :: rswfo
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RSWFO computes prolate spheroidal radial function of first and second kinds.
@@ -23136,7 +23460,10 @@ subroutine rswfo ( m, n, c, x, cv, kf, r1f, r1d, r2f, r2d )
   return
 end
 subroutine rswfp ( m, n, c, x, cv, kf, r1f, r1d, r2f, r2d )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: rswfp
+   !dir$ attributes forceinline :: rswfp
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! RSWFP computes prolate spheroidal radial function of first and second kinds.
@@ -23228,7 +23555,10 @@ subroutine rswfp ( m, n, c, x, cv, kf, r1f, r1d, r2f, r2d )
   return
 end
 subroutine scka ( m, n, c, cv, kd, ck )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: scka
+   !dir$ attributes forceinline :: scka
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SCKA: expansion coefficients for prolate and oblate spheroidal functions.
@@ -23412,7 +23742,10 @@ subroutine scka ( m, n, c, cv, kd, ck )
   return
 end
 subroutine sckb ( m, n, c, df, ck )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sckb
+   !dir$ attributes forceinline :: sckb
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SCKB: expansion coefficients for prolate and oblate spheroidal functions.
@@ -23532,7 +23865,10 @@ subroutine sckb ( m, n, c, df, ck )
   return
 end
 subroutine sdmn ( m, n, c, cv, kd, df )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sdmn
+   !dir$ attributes forceinline :: sdmn
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SDMN: expansion coefficients for prolate and oblate spheroidal functions.
@@ -23766,7 +24102,10 @@ subroutine sdmn ( m, n, c, cv, kd, df )
   return
 end
 subroutine segv ( m, n, c, kd, cv, eg )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: segv
+   !dir$ attributes forceinline :: segv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SEGV computes the characteristic values of spheroidal wave functions.
@@ -23982,7 +24321,10 @@ subroutine segv ( m, n, c, kd, cv, eg )
   return
 end
 subroutine sphi ( n, x, nm, si, di )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sphi
+   !dir$ attributes forceinline :: sphi
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SPHI computes spherical Bessel functions in(x) and their derivatives in'(x).
@@ -24087,7 +24429,10 @@ subroutine sphi ( n, x, nm, si, di )
   return
 end
 subroutine sphj ( n, x, nm, sj, dj )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sphj
+   !dir$ attributes forceinline :: sphj
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SPHJ computes spherical Bessel functions jn(x) and their derivatives.
@@ -24202,7 +24547,10 @@ subroutine sphj ( n, x, nm, sj, dj )
   return
 end
 subroutine sphk ( n, x, nm, sk, dk )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sphk
+   !dir$ attributes forceinline :: sphk
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SPHK computes modified spherical Bessel functions kn(x) and derivatives.
@@ -24292,7 +24640,10 @@ subroutine sphk ( n, x, nm, sk, dk )
   return
 end
 subroutine sphy ( n, x, nm, sy, dy )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: sphy
+   !dir$ attributes forceinline :: sphy
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! SPHY computes spherical Bessel functions yn(x) and their derivatives.
@@ -24375,7 +24726,10 @@ subroutine sphy ( n, x, nm, sy, dy )
   return
 end
 subroutine stvh0 ( x, sh0 )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvh0
+   !dir$ attributes forceinline :: stvh0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVH0 computes the Struve function H0(x).
@@ -24487,7 +24841,10 @@ subroutine stvh0 ( x, sh0 )
   return
 end
 subroutine stvh1 ( x, sh1 )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvh1
+   !dir$ attributes forceinline :: stvh1
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVH1 computes the Struve function H1(x).
@@ -24600,7 +24957,10 @@ subroutine stvh1 ( x, sh1 )
   return
 end
  subroutine stvhv ( v, x, hv )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvhv
+   !dir$ attributes forceinline :: stvhv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVHV computes the Struve function Hv(x) with arbitrary order v.
@@ -24785,7 +25145,10 @@ end
   return
 end
 subroutine stvl0 ( x, sl0 )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvl0
+   !dir$ attributes forceinline :: stvl0
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVL0 computes the modified Struve function L0(x).
@@ -24884,7 +25247,10 @@ subroutine stvl0 ( x, sl0 )
   return
 end
 subroutine stvl1 ( x, sl1 )
-
+  !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvl1
+   !dir$ attributes forceinline :: stvl1
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVL1 computes the modified Struve function L1(x).
@@ -24979,7 +25345,10 @@ subroutine stvl1 ( x, sl1 )
   return
 end
 subroutine stvlv ( v, x, slv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: stvlv
+   !dir$ attributes forceinline :: stvlv
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! STVLV computes the modified Struve function Lv(x) with arbitary order.
@@ -25134,85 +25503,12 @@ subroutine stvlv ( v, x, slv )
 
   return
 end
-subroutine timestamp ( )
 
-!*****************************************************************************80
-!
-!! TIMESTAMP prints the current YMDHMS date as a time stamp.
-!
-!  Example:
-!
-!    May 31 2001   9:45:54.872 AM
-!
-!  Modified:
-!
-!    31 May 2001
-!
-!  Author:
-!
-!    John Burkardt
-!
-!  Parameters:
-!
-!    None
-!
-  implicit none
-
-  character ( len = 8 ) ampm
-  integer ( kind = i4 ) d
-  character ( len = 8 ) date
-  integer ( kind = i4 ) h
-  integer ( kind = i4 ) m
-  integer ( kind = i4 ) mm
-  character ( len = 9 ), parameter, dimension(12) :: month = (/ &
-    'January  ', 'February ', 'March    ', 'April    ', &
-    'May      ', 'June     ', 'July     ', 'August   ', &
-    'September', 'October  ', 'November ', 'December ' /)
-  integer ( kind = i4 ) n
-  integer ( kind = i4 ) s
-  character ( len = 10 )  time
-  integer ( kind = i4 ) values(8)
-  integer ( kind = i4 ) y
-  character ( len = 5 ) zone
-
-  call date_and_time ( date, time, zone, values )
-
-  y = values(1)
-  m = values(2)
-  d = values(3)
-  h = values(5)
-  n = values(6)
-  s = values(7)
-  mm = values(8)
-
-  if ( h < 12 ) then
-    ampm = 'AM'
-  else if ( h == 12 ) then
-    if ( n == 0 .and. s == 0 ) then
-      ampm = 'Noon'
-    else
-      ampm = 'PM'
-    end if
-  else
-    h = h - 12
-    if ( h < 12 ) then
-      ampm = 'PM'
-    else if ( h == 12 ) then
-      if ( n == 0 .and. s == 0 ) then
-        ampm = 'Midnight'
-      else
-        ampm = 'AM'
-      end if
-    end if
-  end if
-
-  write ( *, '(a,1x,i2,1x,i4,2x,i2,a1,i2.2,a1,i2.2,a1,i3.3,1x,a)' ) &
-    trim ( month(m) ), d, y, h, ':', n, ':', s, '.', mm, trim ( ampm )
-
-  return
-end
 subroutine vvla ( va, x, pv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: vvla
+   !dir$ attributes forceinline :: vvla
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! VVLA computes parabolic cylinder function Vv(x) for large arguments.
@@ -25292,7 +25588,10 @@ subroutine vvla ( va, x, pv )
   return
 end
 subroutine vvsa ( va, x, pv )
-
+   !dir$ optimize:3
+   !dir$ attributes code_align : 32 :: vvsa
+   !dir$ attributes forceinline :: vvsa
+  use mod_kinds, only : i4,dp
 !*****************************************************************************80
 !
 !! VVSA computes parabolic cylinder function V(nu,x) for small arguments.
