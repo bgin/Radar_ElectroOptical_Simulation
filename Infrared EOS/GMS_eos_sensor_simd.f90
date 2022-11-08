@@ -21175,6 +21175,623 @@ module eos_sensor_simd
       end function scan_width_ymm8r4
 
 
+      subroutine scan_width_unroll_16x_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_16x_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_16x_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_16x_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(YMM8r4_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         !dir$ attributes align : 32 :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 32 :: d8,d9,d10,d11,d12,d13,d14,d15
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(YMM8r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 32 :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+          m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_ymm8r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_ymmm8r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_ymm8r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_ymm8r4(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = theta(i+8)
+            B(i+8) = scan_width_ymm8r4(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = theta(i+9)
+            B(i+9) = scan_width_ymm8r4(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = theta(i+10)
+            B(i+10)= scan_width_ymm8r4(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = theta(i+11)
+            B(i+11)= scan_width_ymm8r4(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = theta(i+12)
+            B(i+12)= scan_width_ymm8r4(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = theta(i+13)
+            B(i+13)= scan_width_ymm8r4(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = theta(i+14)
+            B(i+14)= scan_width_ymm8r4(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = theta(i+15)
+            B(i+15)= scan_width_ymm8r4(H,d15,g15)
+         end do
+      end subroutine scan_width_unroll_16x_ymm8r4
+
+
+      subroutine scan_width_unroll_16x_omp_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_16x_omp_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_16x_omp_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_16x_omp_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(YMM8r4_t), automatic :: d8,d9,d10,d11,d12,d13,d14,d15
+         !dir$ attributes align : 32 :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 32 :: d8,d9,d10,d11,d12,d13,d14,d15
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         type(YMM8r4_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+         !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 32 :: g8,g9,g10,g11,g12,g13,g14,g15
+         integer(kind=i4) :: i,m,m1
+          m = mod(n,16)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i)  = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<16) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
+         !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
+         !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
+         !$omp private(g8,g9,g10,g11,g12,g13,g14,g15)                 &
+         !$omp shared(n,delta,theta,B,H)
+         do i=m1,n,16
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_ymm8r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_ymmm8r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_ymm8r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_ymm8r4(H,d7,g7)
+            d8      = delta(i+8)
+            g8      = theta(i+8)
+            B(i+8) = scan_width_ymm8r4(H,d8,g8)
+            d9      = delta(i+9)
+            g9      = theta(i+9)
+            B(i+9) = scan_width_ymm8r4(H,d9,g9)
+            d10     = delta(i+10)
+            g10     = theta(i+10)
+            B(i+10)= scan_width_ymm8r4(H,d10,g10)
+            d11     = delta(i+11)
+            g11     = theta(i+11)
+            B(i+11)= scan_width_ymm8r4(H,d11,g11)
+            d12     = delta(i+12)
+            g12     = theta(i+12)
+            B(i+12)= scan_width_ymm8r4(H,d12,g12)
+            d13     = delta(i+13)
+            g13     = theta(i+13)
+            B(i+13)= scan_width_ymm8r4(H,d13,g13)
+            d14     = delta(i+14)
+            g14     = theta(i+14)
+            B(i+14)= scan_width_ymm8r4(H,d14,g14)
+            d15     = delta(i+15)
+            g15     = theta(i+15)
+            B(i+15)= scan_width_ymm8r4(H,d15,g15)
+         end do
+         !$omp end parallel do
+      end subroutine scan_width_unroll_16x_omp_ymm8r4
+
+
+      subroutine scan_width_unroll_8x_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_8x_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_8x_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 32 :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_ymm8r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_ymmm8r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_ymm8r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_ymm8r4(H,d7,g7)
+         end do
+      end subroutine scan_width_unroll_8x_ymm8r4
+
+
+      subroutine scan_width_unroll_8x_omp_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_8x_omp_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_8x_omp_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_omp_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3,d4,d5,d6,d7
+         !dir$ attributes align : 32 :: d0,d1,d2,d3,d4,d5,d6,d7
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3,g4,g,g6,g7
+         !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g,g6,g7
+         integer(kind=i4) :: i,m,m1
+          m = mod(n,8)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<8) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
+         !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
+         !$omp shared(n,delta,theta,B,H)
+         do i=m1,n,8
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+            d4      = delta(i+4)
+            g4      = theta(i+4)
+            B(i+4) = scan_width_ymm8r4(H,d4,g4)
+            d5      = delta(i+5)
+            g5      = theta(i+5)
+            B(i+5) = scan_width_ymmm8r4(H,d5,g5)
+            d6      = delta(i+6)
+            g6      = theta(i+6)
+            B(i+6) = scan_width_ymm8r4(H,d6,g6)
+            d7      = delta(i+7)
+            g7      = theta(i+7)
+            B(i+7) = scan_width_ymm8r4(H,d7,g7)
+         end do
+         !$omp end parallel do
+      end subroutine scan_width_unroll_8x_omp_ymm8r4
+
+
+      subroutine scan_width_unroll_4x_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_4x_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_4x_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_4x_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3
+         !dir$ attributes align : 32 :: d0,d1,d2,d3
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3
+         !dir$ attributes align : 32 :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+         end do
+      end subroutine scan_width_unroll_4x_ymm8r4
+
+
+      subroutine scan_width_unroll_4x_omp_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_4x_omp_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_4x_omp_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_4x_omp_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1,d2,d3
+         !dir$ attributes align : 32 :: d0,d1,d2,d3
+         type(YMM8r4_t), automatic :: g0,g1,g2,g3
+         !dir$ attributes align : 32 :: g0,g1,g2,g3
+         integer(kind=i4) :: i,m,m1
+          m = mod(n,4)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<4) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
+         !$omp private(g0,g1,g2,g3)                        &
+         !$omp shared(n,delta,theta,B,H)
+         do i=m1,n,4
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+            d2      = delta(i+2)
+            g2      = theta(i+2)
+            B(i+2) = scan_width_ymm8r4(H,d2,g2)
+            d3      = delta(i+3)
+            g3      = theta(i+3)
+            B(i+3) = scan_width_ymm8r4(H,d3,g3)
+         end do
+         !$omp end parallel do
+     end subroutine scan_width_unroll_4x_omp_ymm8r4
+
+
+
+     subroutine scan_width_unroll_2x_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_2x_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_2x_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1
+         !dir$ attributes align : 32 :: d0,d1
+         type(YMM8r4_t), automatic :: g0,g1
+         !dir$ attributes align : 32 :: g0,g1
+         integer(kind=i4) :: i,m,m1
+         m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+         end do
+      end subroutine scan_width_unroll_2x_ymm8r4
+
+
+      subroutine scan_width_unroll_2x_omp_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_unroll_2x_omp_ymm8r4
+         !dir$ attributes forceinline :: scan_width_unroll_2x_omp_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_omp_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0,d1
+         !dir$ attributes align : 64 :: d0,d1
+         type(YMM8r4_t), automatic :: g0,g1
+         !dir$ attributes align : 64 :: g0,g1
+         integer(kind=i4) :: i,m,m1
+          m = mod(n,2)
+         if(m /= 0) then
+            do i=1,m
+               d0    = delta(i)
+               g0    = theta(i)
+               B(i) = scan_width_ymm8r4(H,d0,g0)
+            end do
+            if(n<2) return
+         end if
+         m1 = m+1
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp firstprivate(m1) private(d0,d1)      &
+         !$omp private(g0,g1)                        &
+         !$omp shared(n,delta,theta,B,H)
+         do i=m1,n,2
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+            d1      = delta(i+1)
+            g1      = theta(i+1)
+            B(i+1) = scan_width_ymm8r4(H,d1,g1)
+         end do
+         !$omp end parallel do
+     end subroutine scan_width_unroll_2x_omp_ymm8r4
+
+
+     subroutine scan_width_rolled_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_rolled_ymm8r4
+         !dir$ attributes forceinline :: scan_width_rolled_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_rolled_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0
+         !dir$ attributes align : 32 :: d0
+         type(YMM8r4_t), automatic :: g0
+         !dir$ attributes align : 32 :: g0
+         integer(kind=i4) :: i
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         do i=1,n
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+         end do
+      end subroutine scan_width_rolled_ymm8r4
+
+
+      subroutine scan_width_rolled_omp_ymm8r4(H,delta,theta,B,n)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_rolled_omp_ymm8r4
+         !dir$ attributes forceinline :: scan_width_rolled_omp_ymm8r4
+         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_rolled_omp_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         type(YMM8r4_t), automatic :: d0
+         !dir$ attributes align : 32 :: d0
+         type(YMM8r4_t), automatic :: g0
+         !dir$ attributes align : 32 :: g0
+         integer(kind=i4) :: i
+        
+           !dir$ assume_aligned delta:32
+           !dir$ assume_aligned theta:32
+           !dir$ assume_aligned B:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp private(d0)      &
+         !$omp private(g0)                        &
+         !$omp shared(n,delta,theta,B,H)
+         do i=1,n
+            d0      = delta(i)
+            g0      = theta(i)
+            B(i)   = scan_width_ymm8r4(H,d0,g0)
+         end do
+         !$omp end parallel do
+     end subroutine scan_width_rolled_omp_ymm8r4
+
+
+     subroutine scan_width_dispatch_ymm8r4(H,delta,theta,B,n,unroll_cnt,omp_ver)
+         !dir$ optimize:3
+         !dir$ attributes code_align : 32 :: scan_width_dispatch_ymm8r4
+         type(YMM8r4_t),                  intent(in) :: H
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: delta
+         type(YMM8r4_t),  dimension(1:n), intent(in)  :: theta
+         type(YMM8r4_t),  dimension(1:n), intent(out) :: B
+         integer(kind=i4),                 intent(in)  :: n
+         integer(kind=i4),                 intent(in)  :: unroll_cnt
+         logical(kind=i4),                 intent(in)  :: omp_ver
+         if(omp_ver) then
+            select case (unroll_cnt)
+                case (16)
+                   call scan_width_unroll_16x_omp_ymm8r4(H,delta,theta,B,n)
+                case (8)
+                   call scan_width_unroll_8x_omp_ymm8r4(H,delta,theta,B,n)
+                case (4)
+                   call scan_width_unroll_4x_omp_ymm8r4(H,delta,theta,B,n)
+                case (2)
+                   call scan_width_unroll_2x_omp_ymm8r4(H,delta,theta,B,n)
+                case (0)
+                   call scan_width_rolled_omp_ymm8r4(H,delta,theta,B,n)
+                case default
+                   return
+             end select
+          else
+              select case (unroll_cnt)
+                case (16)
+                   call scan_width_unroll_16x_ymm8r4(H,delta,theta,B,n)
+                case (8)
+                   call scan_width_unroll_8x_ymm8r4(H,delta,theta,B,n)
+                case (4)
+                   call scan_width_unroll_4x_ymm8r4(H,delta,theta,B,n)
+                case (2)
+                   call scan_width_unroll_2x_ymm8r4(H,delta,theta,B,n)
+                case (0)
+                   call scan_width_rolled_ymm8r4(H,delta,theta,B,n)
+                case default
+                   return
+             end select
+     end subroutine scan_width_dispatch_ymm8r4
+
+
+
       pure function scan_width_ymm4r8(H,gamma,theta) result(B)
         !dir$ optimize:3
         !dir$ attributes code_align : 32 :: scan_width_ymm4r8
