@@ -24882,6 +24882,757 @@ module eos_sensor_simd
      end function refract_shift_ymm4r8  
 
 
+     subroutine refract_shift_unroll_16x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_16x_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_16x_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+            type(YMM4r8_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+            !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+            !dir$ attributes align : 32 :: a8,a9,a10,a11,a12,a13,a14,a15
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+            type(YMM4r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+            !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g5,g6,g7
+            !dir$ attributes align : 32 :: g8,g9,g10,g11,g12,g13,g14,g15
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+            type(YMM4r8_t), automatic :: n8,n9,n10,n11,n12,n13,n14,n15
+            !dir$ attributes align : 32 :: n0,n1,n2,n3,n4,n5,n6,n7
+            !dir$ attributes align : 32 :: n8,n9,n10,n11,n12,n13,n14,n15
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,16)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<16) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=m1,len,16
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_ymm4r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_ymm4r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_ymm4r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_ymm4r8(i1,delta,a7,g7,n7)
+             a8     = alfa(i+8)
+             g8     = gamma(i+8)
+             n8     = n(i+8)
+             l(i+8) = refract_shift_ymm4r8(i1,delta,a8,g8,n8)
+             a9     = alfa(i+9)
+             g9     = gamma(i+9)
+             n9     = n(i+9)
+             l(i+9) = refract_shift_ymm4r8(i1,delta,a9,g9,n9)
+             a10    = alfa(i+10)
+             g10    = gamma(i+10)
+             n10    = n(i+10)
+             l(i+10)= refract_shift_ymm4r8(i1,delta,a10,g10,n10)
+             a11    = alfa(i+11)
+             g11    = gamma(i+11)
+             n11    = n(i+11)
+             l(i+11)= refract_shift_ymm4r8(i1,delta,a11,g11,n11)
+             a12    = alfa(i+12)
+             g12    = gamma(i+12)
+             n12    = n(i+12)
+             l(i+12)= refract_shift_ymm4r8(i1,delta,a12,g12,n12)
+             a13    = alfa(i+13)
+             g13    = gamma(i+13)
+             n13    = n(i+13)
+             l(i+13)= refract_shift_ymm4r8(i1,delta,a13,g13,n13)
+             a14    = alfa(i+14)
+             g14    = gamma(i+14)
+             n14    = n(i+14)
+             l(i+14)= refract_shift_ymm4r8(i1,delta,a14,g14,n14)
+             a15    = alfa(i+15)
+             g15    = gamma(i+15)
+             n15    = n(i+15)
+             l(i+15)= refract_shift_ymm4r8(i1,delta,a15,g15,n15)
+         end do
+      end subroutine refract_shift_unroll_16x_ymm4r8
+
+
+      subroutine refract_shift_unroll_16x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_16x_omp_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_16x_omp_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_omp_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+            type(YMM4r8_t), automatic :: a8,a9,a10,a11,a12,a13,a14,a15
+            !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+            !dir$ attributes align : 32 :: a8,a9,a10,a11,a12,a13,a14,a15
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+            type(YMM4r8_t), automatic :: g8,g9,g10,g11,g12,g13,g14,g15
+            !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g5,g6,g7
+            !dir$ attributes align : 32 :: g8,g9,g10,g11,g12,g13,g14,g15
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+            type(YMM4r8_t), automatic :: n8,n9,n10,n11,n12,n13,n14,n15
+            !dir$ attributes align : 32 :: n0,n1,n2,n3,n4,n5,n6,n7
+            !dir$ attributes align : 32 :: n8,n9,n10,n11,n12,n13,n14,n15
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,16)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<16) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
+           !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
+           !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
+           !$omp private(g8,g9,g10,g11,g12,g13,g14,g15)                 &
+           !$omp private(n0,n1,n2,n3,n4,n5,n6,n7)                       &
+           !$omp private(n8,n9,n10,n11,n12,n13,n14,n15)                 &
+           !$omp shared(i1,delta,len,alfa,gamma,n)
+           do i=m1,len,16
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_ymm4r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_ymm4r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_ymm4r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_ymm4r8(i1,delta,a7,g7,n7)
+             a8     = alfa(i+8)
+             g8     = gamma(i+8)
+             n8     = n(i+8)
+             l(i+8) = refract_shift_ymm4r8(i1,delta,a8,g8,n8)
+             a9     = alfa(i+9)
+             g9     = gamma(i+9)
+             n9     = n(i+9)
+             l(i+9) = refract_shift_ymm4r8(i1,delta,a9,g9,n9)
+             a10    = alfa(i+10)
+             g10    = gamma(i+10)
+             n10    = n(i+10)
+             l(i+10)= refract_shift_ymm4r8(i1,delta,a10,g10,n10)
+             a11    = alfa(i+11)
+             g11    = gamma(i+11)
+             n11    = n(i+11)
+             l(i+11)= refract_shift_ymm4r8(i1,delta,a11,g11,n11)
+             a12    = alfa(i+12)
+             g12    = gamma(i+12)
+             n12    = n(i+12)
+             l(i+12)= refract_shift_ymm4r8(i1,delta,a12,g12,n12)
+             a13    = alfa(i+13)
+             g13    = gamma(i+13)
+             n13    = n(i+13)
+             l(i+13)= refract_shift_ymm4r8(i1,delta,a13,g13,n13)
+             a14    = alfa(i+14)
+             g14    = gamma(i+14)
+             n14    = n(i+14)
+             l(i+14)= refract_shift_ymm4r8(i1,delta,a14,g14,n14)
+             a15    = alfa(i+15)
+             g15    = gamma(i+15)
+             n15    = n(i+15)
+             l(i+15)= refract_shift_ymm4r8(i1,delta,a15,g15,n15)
+          end do
+          !$omp end parallel do
+      end subroutine refract_shift_unroll_16x_omp_ymm4r8
+
+
+      subroutine refract_shift_unroll_8x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_8x_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_8x_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+            !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+            !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g5,g6,g7
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+            !dir$ attributes align : 32 :: n0,n1,n2,n3,n4,n5,n6,n7
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,8)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<8) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=m1,len,8
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_ymm4r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_ymm4r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_ymm4r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_ymm4r8(i1,delta,a7,g7,n7)
+         end do
+      end subroutine refract_shift_unroll_8x_ymm4r8
+
+
+      subroutine refract_shift_unroll_8x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_8x_omp_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_8x_omp_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_omp_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3,a4,a5,a6,a7
+            !dir$ attributes align : 32 :: a0,a1,a2,a3,a4,a5,a6,a7
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3,g4,g5,g6,g7
+            !dir$ attributes align : 32 :: g0,g1,g2,g3,g4,g5,g6,g7
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3,n4,n5,n6,n7
+            !dir$ attributes align : 32 :: n0,n1,n2,n3,n4,n5,n6,n7
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,8)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<8) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
+           !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
+           !$omp private(n0,n1,n2,n3,n4,n5,n6,n7)                       &
+           !$omp shared(i1,delta,len,alfa,gamma,n)
+           do i=m1,len,8
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+             a4     = alfa(i+4)
+             g4     = gamma(i+4)
+             n4     = n(i+4)
+             l(i+4) = refract_shift_ymm4r8(i1,delta,a4,g4,n4)
+             a5     = alfa(i+5)
+             g5     = gamma(i+5)
+             n5     = n(i+5)
+             l(i+5) = refract_shift_ymm4r8(i1,delta,a5,g5,n5)
+             a6     = alfa(i+6)
+             g6     = gamma(i+6)
+             n6     = n(i+6)
+             l(i+6) = refract_shift_ymm4r8(i1,delta,a6,g6,n6)
+             a7     = alfa(i+7)
+             g7     = gamma(i+7)
+             n7     = n(i+7)
+             l(i+7) = refract_shift_ymm4r8(i1,delta,a7,g7,n7)
+          end do
+          !$omp end parallel do
+      end subroutine refract_shift_unroll_8x_omp_ymm4r8
+
+
+      subroutine refract_shift_unroll_4x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_4x_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_4x_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3
+            !dir$ attributes align : 32 :: a0,a1,a2,a3
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3
+            !dir$ attributes align : 32 :: g0,g1,g2,g3
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3
+            !dir$ attributes align : 32 :: n0,n1,n2,n3
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,4)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<4) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:64
+           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned n:64
+           !dir$ assume_aligned l:64
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=m1,len,4
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+          end do
+      end subroutine refract_shift_unroll_4x_ymm4r8
+
+
+      subroutine refract_shift_unroll_4x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_4x_omp_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_4x_omp_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_omp_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1,a2,a3
+            !dir$ attributes align : 32 :: a0,a1,a2,a3
+            type(YMM4r8_t) , automatic :: g0,g1,g2,g3
+            !dir$ attributes align : 32 :: g0,g1,g2,g3
+            type(YMM4r8_t), automatic :: n0,n1,n2,n3
+            !dir$ attributes align : 32 :: n0,n1,n2,n3
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,4)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<4) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
+           !$omp private(g0,g1,g2,g3)                        &
+           !$omp private(n0,n1,n2,n3)                       &
+           !$omp shared(i1,delta,len,alfa,gamma,n)
+           do i=m1,len,4
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+             a2     = alfa(i+2)
+             g2     = gamma(i+2)
+             n2     = n(i+2)
+             l(i+2) = refract_shift_ymm4r8(i1,delta,a2,g2,n2)
+             a3     = alfa(i+3)
+             g3     = gamma(i+3)
+             n3     = n(i+3)
+             l(i+3) = refract_shift_ymm4r8(i1,delta,a3,g3,n3)
+          end do
+          !$omp end parallel do
+      end subroutine refract_shift_unroll_4x_omp_ymm4r8
+
+
+      subroutine refract_shift_unroll_2x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_2x_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_2x_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1
+            !dir$ attributes align : 32 :: a0,a1
+            type(YMM4r8_t) , automatic :: g0,g1
+            !dir$ attributes align : 32 :: g0,g1
+            type(YMM4r8_t), automatic :: n0,n1
+            !dir$ attributes align : 32 :: n0,n1
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,2)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<2) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=m1,len,2
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+          end do
+      end subroutine refract_shift_unroll_2x_ymm4r8
+
+
+      subroutine refract_shift_unroll_2x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_unroll_2x_omp_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_unroll_2x_omp_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_omp_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0,a1
+            !dir$ attributes align : 32 :: a0,a1
+            type(YMM4r8_t) , automatic :: g0,g1
+            !dir$ attributes align : 32 :: g0,g1
+            type(YMM4r8_t), automatic :: n0,n1
+            !dir$ attributes align : 32 :: n0,n1
+            integer(kind=i4) :: i,m,m1
+            m = mod(len,2)
+            if(m /= 0) then
+            do i=1,m
+               a0     = alfa(i)
+               g0     = gamma(i)
+               n0     = n(i)
+               l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+            end do
+            if(len<2) return
+            end if
+           m1 = m+1
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp firstprivate(m1) private(a0,a1,)      &
+           !$omp private(g0,g1)                        &
+           !$omp private(n0,n1)                       &
+           !$omp shared(i1,delta,len,alfa,gamma,n)
+           do i=m1,len,2
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+             a1     = alfa(i+1)
+             g1     = gamma(i+1)
+             n1     = n(i+1)
+             l(i+1) = refract_shift_ymm4r8(i1,delta,a1,g1,n1)
+          end do
+          !$omp end parallel do
+      end subroutine refract_shift_unroll_2x_omp_ymm4r8
+
+
+      subroutine refract_shift_rolled_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_rolled_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_rolled_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0
+            !dir$ attributes align : 32 :: a0
+            type(YMM4r8_t) , automatic :: g0
+            !dir$ attributes align : 32 :: g0
+            type(YMM4r8_t), automatic :: n0
+            !dir$ attributes align : 32 :: n0
+            integer(kind=i4) :: i
+           
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=1,len
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+           end do
+      end subroutine refract_shift_rolled_ymm4r8
+
+
+      subroutine refract_shift_rolled_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  refract_shift_rolled_omp_ymm4r8
+            !dir$ attributes forceinline ::  refract_shift_rolled_omp_ymm4r8
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_omp_ymm4r8
+            type(YMM4r8_t),                     intent(in) :: i1
+            type(YMM4r8_t),                     intent(in) :: delta
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+            type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+            type(YMM4r8_t), dimension(1:len),   intent(out):: l
+            integer(kind=i4),                    intent(in) :: len
+            type(YMM4r8_t), automatic :: a0
+            !dir$ attributes align : 32 :: a0
+            type(YMM4r8_t) , automatic :: g0
+            !dir$ attributes align : 32 :: g0
+            type(YMM4r8_t), automatic :: n0
+            !dir$ attributes align : 32 :: n0
+            integer(kind=i4) :: i
+         
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
+           !dir$ vector aligned
+           !dir$ ivdep
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp private(a0)      &
+           !$omp private(g0)                        &
+           !$omp private(n0)                       &
+           !$omp shared(i1,delta,len,alfa,gamma,n)
+           do i=1,len
+             a0     = alfa(i)
+             g0     = gamma(i)
+             n0     = n(i)
+             l(i)   = refract_shift_ymm4r8(i1,delta,a0,g0,n0)
+          end do
+          !$omp end parallel do
+      end subroutine refract_shift_rolled_omp_ymm4r8
+
+      
+      subroutine refract_shift_dispatch_ymm4r8(i1,delta,alfa,gamma,n,l,len,unroll_cnt,omp_ver)
+          !dir$ optimize:3
+          !dir$ attributes code_align : 32 :: refract_shift_dispatch_ymm4r8
+          type(YMM4r8_t),                     intent(in) :: i1
+          type(YMM4r8_t),                     intent(in) :: delta
+          type(YMM4r8_t), dimension(1:len),   intent(in) :: alfa
+          type(YMM4r8_t), dimension(1:len),   intent(in) :: gamma
+          type(YMM4r8_t), dimension(1:len),   intent(in) :: n
+          type(YMM4r8_t), dimension(1:len),   intent(out):: l
+          integer(kind=i4),                    intent(in) :: len 
+          integer(kind=i4),                    intent(in) :: unroll_cnt
+          logical(kind=i4),                    intent(in) :: omp_ver
+          if(omp_ver) then
+             select case (unroll_cnt)
+                 case (16)
+                    call refract_shift_unroll_16x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (8)
+                    call refract_shift_unroll_8x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (4)
+                    call refract_shift_unroll_4x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (2)
+                    call refract_shift_unroll_2x_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (0)
+                    call refract_shift_rolled_omp_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case default
+                    return
+             end select
+          else
+              select case (unroll_cnt)
+                 case (16)
+                    call refract_shift_unroll_16x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (8)
+                    call refract_shift_unroll_8x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (4)
+                    call refract_shift_unroll_4x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (2)
+                    call refract_shift_unroll_2x_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case (0)
+                    call refract_shift_rolled_ymm4r8(i1,delta,alfa,gamma,n,l,len)
+                 case default
+                    return
+             end select
+          end if
+      end subroutine refract_shift_dispatch_ymm4r8
+
+
+
+
 
     !Formula 1, p. 108    
     subroutine project_xy_axis_zmm16r4(l,alpha,xl,yl)
