@@ -140,6 +140,12 @@ module antenna_types
        real(kind=sp), dimension(:), allocatable :: e_yi
        real(kind=sp), dimension(:), allocatable :: e_zr
        real(kind=sp), dimension(:), allocatable :: e_zi
+       !dir$ attributes align : 64 :: e_xr
+       !dir$ attributes align : 64 :: e_xi
+       !dir$ attributes align : 64 :: e_yr
+       !dir$ attributes align : 64 :: e_yi
+       !dir$ attributes align : 64 :: e_zr
+       !dir$ attributes align : 64 :: e_zi
     end type E_R4
 
 
@@ -150,12 +156,18 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif
-       real(kind=sp), dimension(:), allocatable :: e_xr
-       real(kind=sp), dimension(:), allocatable :: e_xi
-       real(kind=sp), dimension(:), allocatable :: e_yr
-       real(kind=sp), dimension(:), allocatable :: e_yi
-       real(kind=sp), dimension(:), allocatable :: e_zr
-       real(kind=sp), dimension(:), allocatable :: e_zi
+       real(kind=sp), dimension(:), allocatable :: h_xr
+       real(kind=sp), dimension(:), allocatable :: h_xi
+       real(kind=sp), dimension(:), allocatable :: h_yr
+       real(kind=sp), dimension(:), allocatable :: h_yi
+       real(kind=sp), dimension(:), allocatable :: h_zr
+       real(kind=sp), dimension(:), allocatable :: h_zi
+       !dir$ attributes align : 64 :: h_xr
+       !dir$ attributes align : 64 :: h_xi
+       !dir$ attributes align : 64 :: h_yr
+       !dir$ attributes align : 64 :: h_yi
+       !dir$ attributes align : 64 :: h_zr
+       !dir$ attributes align : 64 :: h_zi
     end type H_R4
 
 
@@ -172,6 +184,12 @@ module antenna_types
        real(kind=dp), dimension(:), allocatable :: e_yi
        real(kind=dp), dimension(:), allocatable :: e_zr
        real(kind=dp), dimension(:), allocatable :: e_zi
+       !dir$ attributes align : 64 :: e_xr
+       !dir$ attributes align : 64 :: e_xi
+       !dir$ attributes align : 64 :: e_yr
+       !dir$ attributes align : 64 :: e_yi
+       !dir$ attributes align : 64 :: e_zr
+       !dir$ attributes align : 64 :: e_zi
     end type E_R8
 
 
@@ -182,21 +200,95 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif
-       real(kind=dp), dimension(:), allocatable :: e_xr
-       real(kind=dp), dimension(:), allocatable :: e_xi
-       real(kind=dp), dimension(:), allocatable :: e_yr
-       real(kind=dp), dimension(:), allocatable :: e_yi
-       real(kind=dp), dimension(:), allocatable :: e_zr
-       real(kind=dp), dimension(:), allocatable :: e_zi
+       real(kind=dp), dimension(:), allocatable :: h_xr
+       real(kind=dp), dimension(:), allocatable :: h_xi
+       real(kind=dp), dimension(:), allocatable :: h_yr
+       real(kind=dp), dimension(:), allocatable :: h_yi
+       real(kind=dp), dimension(:), allocatable :: h_zr
+       real(kind=dp), dimension(:), allocatable :: h_zi
+       !dir$ attributes align : 64 :: h_xr
+       !dir$ attributes align : 64 :: h_xi
+       !dir$ attributes align : 64 :: h_yr
+       !dir$ attributes align : 64 :: h_yi
+       !dir$ attributes align : 64 :: h_zr
+       !dir$ attributes align : 64 :: h_zi
     end type H_R8
 
 
+    ! Formula (1-37)
+    ! Average level of side lobes
+    type, public :: avg_slobes_r4_t
+
+          integer(kind=i4)      :: nang  ! number of theta angles
+          real(kind=sp)         :: ifac  ! Integral factor
+          real(kind=sp)         :: omega ! Steradian angles
+          real(kind=sp)         :: asl ! the result
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif   
+           real(kind=sp), dimension(:), allocatable :: sinth ! Sine of theta angle
+           real(kind=sp), dimension(:), allocatable :: F     ! Antenna  rdiation pattern 
+           !dir$ attributes align : 64 :: sinth
+           !dir$ attributes align : 64 :: F
+    end type avg_slobes_r4_t
+
+
+     ! Formula (1-37)
+    ! Average level of side lobes
+    type, public :: avg_slobes_r8_t
+
+          integer(kind=i4)      :: nang  ! number of theta angles
+          real(kind=dp)         :: ifac  ! Integral factor
+          real(kind=dp)         :: omega ! Steradian angles
+          real(kind=dp)         :: asl ! the result
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif   
+           real(kind=dp), dimension(:), allocatable :: sinth ! Sine of theta angle
+           real(kind=dp), dimension(:), allocatable :: F     ! Antenna  rdiation pattern 
+           !dir$ attributes align : 64 :: sinth
+           !dir$ attributes align : 64 :: F
+    end type avg_slobes_r8_t
+
+
+    ! Formula (1-38)
+    ! Average (squared) level of side lobes
+    type, public :: avgsqr_slobes_r4_t
+
+          integer(kind=i4)      :: nang  ! number of theta angles
+          real(kind=sp)         :: ifac  ! Integral factor
+          real(kind=sp)         :: omega ! Steradian angles
+          real(kind=sp)         :: asl ! the result
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif   
+           real(kind=sp), dimension(:), allocatable :: sinth ! Sine of theta angle
+           real(kind=sp), dimension(:), allocatable :: Fsqr     ! Antenna  rdiation pattern 
+           !dir$ attributes align : 64 :: sinth
+           !dir$ attributes align : 64 :: Fsqr
+    end type avgsqr_slobes_r4_t
+
+
+     ! Formula (1-37)
+    ! Average level of side lobes
+    type, public :: avgsqr_slobes_r8_t
+
+          integer(kind=i4)      :: nang  ! number of theta angles
+          real(kind=dp)         :: ifac  ! Integral factor
+          real(kind=dp)         :: omega ! Steradian angles
+          real(kind=dp)         :: asl ! the result
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif   
+           real(kind=dp), dimension(:), allocatable :: sinth ! Sine of theta angle
+           real(kind=dp), dimension(:), allocatable :: Fsqr     ! Antenna  rdiation pattern 
+           !dir$ attributes align : 64 :: sinth
+           !dir$ attributes align : 64 :: Fsqr
+    end type avgsqr_slobes_r8_t
+
     
-
-
     
-
-
+ 
 
 
 
