@@ -219,7 +219,8 @@ module antenna_types
     ! Average level of side lobes
     type, public :: avg_slobes_r4_t
 
-          integer(kind=i4)      :: nang  ! number of theta angles
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
           real(kind=sp)         :: ifac  ! Integral factor
           real(kind=sp)         :: omega ! Steradian angles
           real(kind=sp)         :: asl ! the result
@@ -237,7 +238,8 @@ module antenna_types
     ! Average level of side lobes
     type, public :: avg_slobes_r8_t
 
-          integer(kind=i4)      :: nang  ! number of theta angles
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
           real(kind=dp)         :: ifac  ! Integral factor
           real(kind=dp)         :: omega ! Steradian angles
           real(kind=dp)         :: asl ! the result
@@ -255,7 +257,8 @@ module antenna_types
     ! Average (squared) level of side lobes
     type, public :: avgsqr_slobes_r4_t
 
-          integer(kind=i4)      :: nang  ! number of theta angles
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
           real(kind=sp)         :: ifac  ! Integral factor
           real(kind=sp)         :: omega ! Steradian angles
           real(kind=sp)         :: asl ! the result
@@ -269,11 +272,12 @@ module antenna_types
     end type avgsqr_slobes_r4_t
 
 
-     ! Formula (1-37)
-    ! Average level of side lobes
+     ! Formula (1-38)
+    ! Average (squared) level of side lobes
     type, public :: avgsqr_slobes_r8_t
 
-          integer(kind=i4)      :: nang  ! number of theta angles
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
           real(kind=dp)         :: ifac  ! Integral factor
           real(kind=dp)         :: omega ! Steradian angles
           real(kind=dp)         :: asl ! the result
@@ -286,6 +290,22 @@ module antenna_types
            !dir$ attributes align : 64 :: Fsqr
     end type avgsqr_slobes_r8_t
 
+
+    ! Formula (1-39)
+    ! Dispersion coefficient
+    type, public :: dispers_coef_r4_t
+
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
+          real(kind=sp)         :: omega ! steradian angle
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif  
+          real(kind=sp), dimension(:), allocatable :: P     ! Antenna power radiation.
+          real(kind=sp), dimension(:), allocatable :: sinth
+          !dir$ attributes align : 64 :: P
+          !dir$ attributes align : 64 :: sinth
+    end type dispers_coef_r4_t
     
     
  
