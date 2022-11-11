@@ -215,6 +215,211 @@ module antenna_types
     end type H_R8
 
 
+    type, public :: JE_C4
+       ! Complex Electric Current
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+        complex(kind=sp), dimension(:), allocatable :: je_x
+        complex(kind=sp), dimension(:), allocatable :: je_y
+        complex(kind=sp), dimension(:), allocatable :: je_z
+        !dir$ attributes align : 64 :: je_x
+        !dir$ attributes align : 64 :: je_y
+        !dir$ attributes align : 64 :: je_z
+    end type JE_C4
+
+
+    type, public :: JM_C4
+       ! Complex Magnetic Current
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+        complex(kind=sp), dimension(:), allocatable :: jm_x
+        complex(kind=sp), dimension(:), allocatable :: jm_y
+        complex(kind=sp), dimension(:), allocatable :: jm_z
+        !dir$ attributes align : 64 :: jm_x
+        !dir$ attributes align : 64 :: jm_y
+        !dir$ attributes align : 64 :: jm_z
+    end type JM_C4
+
+
+    type, public :: JE_C8
+       ! Complex Electric Current
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+        complex(kind=dp), dimension(:), allocatable :: je_x
+        complex(kind=dp), dimension(:), allocatable :: je_y
+        complex(kind=dp), dimension(:), allocatable :: je_z
+        !dir$ attributes align : 64 :: je_x
+        !dir$ attributes align : 64 :: je_y
+        !dir$ attributes align : 64 :: je_z
+    end type JE_C8
+
+
+    type, public :: JM_C8
+       ! Complex Magnetic Current
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+        complex(kind=dp), dimension(:), allocatable :: jm_x
+        complex(kind=dp), dimension(:), allocatable :: jm_y
+        complex(kind=dp), dimension(:), allocatable :: jm_z
+        !dir$ attributes align : 64 :: jm_x
+        !dir$ attributes align : 64 :: jm_y
+        !dir$ attributes align : 64 :: jm_z
+    end type JM_C8
+
+
+    type, public :: JE_R4
+       ! Complex Electric Current  decomposed into real and imaginary parts 
+       ! To be used mainly by the integrators.
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+       real(kind=sp), dimension(:), allocatable :: je_xr
+       real(kind=sp), dimension(:), allocatable :: je_xi
+       real(kind=sp), dimension(:), allocatable :: je_yr
+       real(kind=sp), dimension(:), allocatable :: je_yi
+       real(kind=sp), dimension(:), allocatable :: je_zr
+       real(kind=sp), dimension(:), allocatable :: je_zi
+       !dir$ attributes align : 64 :: je_xr
+       !dir$ attributes align : 64 :: je_xi
+       !dir$ attributes align : 64 :: je_yr
+       !dir$ attributes align : 64 :: je_yi
+       !dir$ attributes align : 64 :: je_zr
+       !dir$ attributes align : 64 :: je_zi
+    end type JE_R4
+
+
+    type, public :: JM_R4
+       ! Complex Magnetic Current  decomposed into real and imaginary parts 
+       ! To be used mainly by the integrators.
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+       real(kind=sp), dimension(:), allocatable :: jm_xr
+       real(kind=sp), dimension(:), allocatable :: jm_xi
+       real(kind=sp), dimension(:), allocatable :: jm_yr
+       real(kind=sp), dimension(:), allocatable :: jm_yi
+       real(kind=sp), dimension(:), allocatable :: jm_zr
+       real(kind=sp), dimension(:), allocatable :: jm_zi
+       !dir$ attributes align : 64 :: jm_xr
+       !dir$ attributes align : 64 :: jm_xi
+       !dir$ attributes align : 64 :: jm_yr
+       !dir$ attributes align : 64 :: jm_yi
+       !dir$ attributes align : 64 :: jm_zr
+       !dir$ attributes align : 64 :: jm_zi
+    end type JM_R4
+
+
+    type, public :: JE_R8
+       ! Complex Electric Current  decomposed into real and imaginary parts 
+       ! To be used mainly by the integrators.
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+       real(kind=dp), dimension(:), allocatable :: je_xr
+       real(kind=dp), dimension(:), allocatable :: je_xi
+       real(kind=dp), dimension(:), allocatable :: je_yr
+       real(kind=dp), dimension(:), allocatable :: je_yi
+       real(kind=dp), dimension(:), allocatable :: je_zr
+       real(kind=dp), dimension(:), allocatable :: je_zi
+       !dir$ attributes align : 64 :: je_xr
+       !dir$ attributes align : 64 :: je_xi
+       !dir$ attributes align : 64 :: je_yr
+       !dir$ attributes align : 64 :: je_yi
+       !dir$ attributes align : 64 :: je_zr
+       !dir$ attributes align : 64 :: je_zi
+    end type JE_R8
+
+
+    type, public :: JM_R8
+       ! Complex Magnetic Current  decomposed into real and imaginary parts 
+       ! To be used mainly by the integrators.
+       integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+       real(kind=dp), dimension(:), allocatable :: jm_xr
+       real(kind=dp), dimension(:), allocatable :: jm_xi
+       real(kind=dp), dimension(:), allocatable :: jm_yr
+       real(kind=dp), dimension(:), allocatable :: jm_yi
+       real(kind=dp), dimension(:), allocatable :: jm_zr
+       real(kind=dp), dimension(:), allocatable :: jm_zi
+       !dir$ attributes align : 64 :: jm_xr
+       !dir$ attributes align : 64 :: jm_xi
+       !dir$ attributes align : 64 :: jm_yr
+       !dir$ attributes align : 64 :: jm_yi
+       !dir$ attributes align : 64 :: jm_zr
+       !dir$ attributes align : 64 :: jm_zi
+    end type JM_R8
+
+
+    type, public :: EIKR_C4
+       ! Time-Harmonic complex exponential
+       integer(kind=i4)        :: npts
+       real(kind=sp)           :: k
+       real(kind=sp)           :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+       complex(kind=sp), dimension(:), allocatable :: eikr
+       !dir$ attributes align : 64 :: eikr
+    end type EIKR_C4
+
+
+    type, public :: EIKR_C8
+       ! Time-Harmonic complex exponential
+       integer(kind=i4)        :: npts
+       real(kind=dp)           :: k
+       real(kind=dp)           :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+       complex(kind=dp), dimension(:), allocatable :: eikr
+       !dir$ attributes align : 64 :: eikr
+    end type EIKR_C8
+
+
+    type, public :: EIKR_R4
+        ! Time-Harmonic complex exponential decomposed into 
+        ! real and imaginary parts
+       integer(kind=i4)        :: npts
+       real(kind=sp)           :: k
+       real(kind=sp)           :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+       real(kind=sp), dimension(:), allocatable :: e_re
+       real(kind=sp), dimension(:), allocatable :: e_im
+       !dir$ attributes align : 64 :: e_re
+       !dir$ attributes align : 64 :: e_im
+    end type EIKR_R4
+
+
+    type, public :: EIKR_R8
+        ! Time-Harmonic complex exponential decomposed into 
+        ! real and imaginary parts
+       integer(kind=i4)        :: npts
+       real(kind=dp)           :: k
+       real(kind=dp)           :: R
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+       real(kind=dp), dimension(:), allocatable :: e_re
+       real(kind=dp), dimension(:), allocatable :: e_im
+       !dir$ attributes align : 64 :: e_re
+       !dir$ attributes align : 64 :: e_im
+    end type EIKR_R8
+
     ! Formula (1-37)
     ! Average level of side lobes
     type, public :: avg_slobes_r4_t
@@ -306,6 +511,24 @@ module antenna_types
           !dir$ attributes align : 64 :: P
           !dir$ attributes align : 64 :: sinth
     end type dispers_coef_r4_t
+
+
+    type, public :: dispers_coef_r8_t
+
+          integer(kind=i4)      :: nth  ! number of theta angles
+          integer(kind=i4)      :: nphi ! number of phi angles
+          real(kind=dp)         :: omega ! steradian angle
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif  
+          real(kind=dp), dimension(:), allocatable :: P     ! Antenna power radiation.
+          real(kind=dp), dimension(:), allocatable :: sinth
+          !dir$ attributes align : 64 :: P
+          !dir$ attributes align : 64 :: sinth
+    end type dispers_coef_r8_t
+
+
+    
     
     
  
