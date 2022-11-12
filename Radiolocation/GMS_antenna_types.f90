@@ -686,7 +686,7 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_zi
     end type HVM_r4_t
 
-
+     ! Far-field radiation-patter of antenna
      ! Formula (2-15)
     type, public :: HVM_r8_t
           ! Hertz vector magnetic decomposed 
@@ -746,7 +746,7 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif 
-          type(JE_r8_t)          :: jer4
+          type(JE_r8_t)          :: jer8
           type(EIKR_r8_t)        :: eikr
           real(kind=dp), dimension(:), allocatable :: costh
           real(kind=dp), dimension(:), allocatable :: ne_xr
@@ -772,8 +772,8 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif 
-          type(JE_c4_t)           :: jer4
-          type(EIKR_r4_t)         :: eikr
+          type(JE_c4_t)           :: jec4
+          type(EIKR_c4_t)         :: eikr
           real(kind=sp),    dimension(:), allocatable :: costh
           complex(kind=sp), dimension(:), allocatable :: ne_x
           complex(kind=sp), dimension(:), allocatable :: ne_y
@@ -792,8 +792,8 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif 
-          type(JE_c8_t)           :: jer4
-          type(EIKR_r8_t)         :: eikr
+          type(JE_c8_t)           :: jec8
+          type(EIKR_c8_t)         :: eikr
           real(kind=dp),    dimension(:), allocatable :: costh
           complex(kind=dp), dimension(:), allocatable :: ne_x
           complex(kind=dp), dimension(:), allocatable :: ne_y
@@ -803,6 +803,307 @@ module antenna_types
           !dir$ attributes align : 64 :: ne_y
           !dir$ attributes align : 64 :: ne_z
     end type NEVec_c8_t
+
+
+     ! Formula (2-24,2-25)
+    type, public :: NMVec_r4_t
+
+          integer(kind=i4)      :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JM_r4_t)         :: jmr4
+          type(EIKR_r4_t)       :: eikr
+          real(kind=sp), dimension(:), allocatable :: costh
+          real(kind=sp), dimension(:), allocatable :: nm_xr
+          real(kind=sp), dimension(:), allocatable :: nm_xi
+          real(kind=sp), dimension(:), allocatable :: nm_yr
+          real(kind=sp), dimension(:), allocatable :: nm_yi
+          real(kind=sp), dimension(:), allocatable :: nm_zr
+          real(kind=sp), dimension(:), allocatable :: nm_zi
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: nm_xr
+          !dir$ attributes align : 64 :: nm_xi
+          !dir$ attributes align : 64 :: nm_yr
+          !dir$ attributes align : 64 :: nm_yi
+          !dir$ attributes align : 64 :: nm_zr
+          !dir$ attributes align : 64 :: nm_zi
+    end type NMVec_r4_t
+
+
+     ! Formula (2-24,2-25)
+    type, public :: NMVec_r8_t
+
+          integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JM_r8_t)          :: jmr8
+          type(EIKR_r8_t)        :: eikr
+          real(kind=dp), dimension(:), allocatable :: costh
+          real(kind=dp), dimension(:), allocatable :: nm_xr
+          real(kind=dp), dimension(:), allocatable :: nm_xi
+          real(kind=dp), dimension(:), allocatable :: nm_yr
+          real(kind=dp), dimension(:), allocatable :: nm_yi
+          real(kind=dp), dimension(:), allocatable :: nm_zr
+          real(kind=dp), dimension(:), allocatable :: nm_zi
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: nm_xr
+          !dir$ attributes align : 64 :: nm_xi
+          !dir$ attributes align : 64 :: nm_yr
+          !dir$ attributes align : 64 :: nm_yi
+          !dir$ attributes align : 64 :: nm_zr
+          !dir$ attributes align : 64 :: nm_zi
+    end type NMVec_r8_t
+
+
+    ! Formula (2-24,2-25) 
+    type, public :: NMVec_c4_t
+
+           integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JM_c4_t)           :: jmc4
+          type(EIKR_c4_t)         :: eikr
+          real(kind=sp),    dimension(:), allocatable :: costh
+          complex(kind=sp), dimension(:), allocatable :: nm_x
+          complex(kind=sp), dimension(:), allocatable :: nm_y
+          complex(kind=sp), dimension(:), allocatable :: nm_z
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: nm_x
+          !dir$ attributes align : 64 :: nm_y
+          !dir$ attributes align : 64 :: nm_z
+    end type NMVec_c4_t
+
+
+     ! Formula (2-24,2-25) 
+    type, public :: NMVec_c8_t
+
+           integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JE_c8_t)           :: jec8
+          type(EIKR_r8_t)         :: eikr
+          real(kind=dp),    dimension(:), allocatable :: costh
+          complex(kind=dp), dimension(:), allocatable :: nm_x
+          complex(kind=dp), dimension(:), allocatable :: nm_y
+          complex(kind=dp), dimension(:), allocatable :: nm_z
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: nm_x
+          !dir$ attributes align : 64 :: nm_y
+          !dir$ attributes align : 64 :: nm_z
+    end type NMVec_c8_t
+
+    
+    ! Formula (2-22)
+    ! "Far-field" Hertz vector electric
+    type, public :: FFHEV_r4_t
+
+          real(kind=sp)      :: if_re
+          real(kind=sp)      :: if_im
+          type(EIKR_r4_t)    :: eikr
+          type(NEVec_r4_t)   :: nev
+          real(kind=sp), dimension(:), allocatable :: hv_xr
+          real(kind=sp), dimension(:), allocatable :: hv_xi
+          real(kind=sp), dimension(:), allocatable :: hv_yr
+          real(kind=sp), dimension(:), allocatable :: hv_yi
+          real(kind=sp), dimension(:), allocatable :: hv_zr
+          real(kind=sp), dimension(:), allocatable :: hv_zi
+          !dir$ attributes align : 64 :: hv_xr
+          !dir$ attributes align : 64 :: hv_xi
+          !dir$ attributes align : 64 :: hv_yr
+          !dir$ attributes align : 64 :: hv_yi
+          !dir$ attributes align : 64 :: hv_zr
+          !dir$ attributes align : 64 :: hv_zi
+    end type FFHEV_r4_t
+
+
+    ! Formula (2-22)
+    ! "Far-field" Hertz vector electric
+    type, public :: FFHEV_r8_t
+
+          real(kind=dp)      :: if_re
+          real(kind=dp)      :: if_im
+          type(EIKR_r8_t)    :: eikr
+          type(NEVec_r8_t)   :: nev
+          real(kind=dp), dimension(:), allocatable :: hv_xr
+          real(kind=dp), dimension(:), allocatable :: hv_xi
+          real(kind=dp), dimension(:), allocatable :: hv_yr
+          real(kind=dp), dimension(:), allocatable :: hv_yi
+          real(kind=dp), dimension(:), allocatable :: hv_zr
+          real(kind=dp), dimension(:), allocatable :: hv_zi
+          !dir$ attributes align : 64 :: hv_xr
+          !dir$ attributes align : 64 :: hv_xi
+          !dir$ attributes align : 64 :: hv_yr
+          !dir$ attributes align : 64 :: hv_yi
+          !dir$ attributes align : 64 :: hv_zr
+          !dir$ attributes align : 64 :: hv_zi
+    end type FFHEV_r8_t
+
+
+    ! Formula (2-22)
+    ! "Far-field" Hertz vector electric
+    type, public :: FFHEV_c4_t
+
+          complex(kind=sp)       :: ifac
+          type(EIKR_c4_t)        :: eikr
+          type(NEVec_c4_t)       :: nev
+          complex(kind=sp), dimension(:), allocatable :: hv_x
+          complex(kind=sp), dimension(:), allocatable :: hv_y
+          complex(kind=sp), dimension(:), allocatable :: hv_z
+          !dir$ attributes align : 64 :: hv_x
+          !dir$ attributes align : 64 :: hv_y
+          !dir$ attributes align : 64 :: hv_z
+    end type FFHEV_c4_t
+
+
+    ! Formula (2-22)
+    ! "Far-field" Hertz vector electric
+    type, public :: FFHEV_c8_t
+
+          complex(kind=dp)       :: ifac
+          type(EIKR_c8_t)        :: eikr
+          type(NEVec_c8_t)       :: nev
+          complex(kind=dp), dimension(:), allocatable :: hv_x
+          complex(kind=dp), dimension(:), allocatable :: hv_y
+          complex(kind=dp), dimension(:), allocatable :: hv_z
+          !dir$ attributes align : 64 :: hv_x
+          !dir$ attributes align : 64 :: hv_y
+          !dir$ attributes align : 64 :: hv_z
+    end type FFHEV_c8_t
+
+
+    ! Formula (2-24)
+    ! "Far-field" Hertz vector magnetic
+    type, public :: FFHMV_r4_t
+
+          real(kind=sp)      :: if_re
+          real(kind=sp)      :: if_im
+          type(EIKR_r4_t)    :: eikr
+          type(NMVec_r4_t)   :: nmv
+          real(kind=sp), dimension(:), allocatable :: hv_xr
+          real(kind=sp), dimension(:), allocatable :: hv_xi
+          real(kind=sp), dimension(:), allocatable :: hv_yr
+          real(kind=sp), dimension(:), allocatable :: hv_yi
+          real(kind=sp), dimension(:), allocatable :: hv_zr
+          real(kind=sp), dimension(:), allocatable :: hv_zi
+          !dir$ attributes align : 64 :: hv_xr
+          !dir$ attributes align : 64 :: hv_xi
+          !dir$ attributes align : 64 :: hv_yr
+          !dir$ attributes align : 64 :: hv_yi
+          !dir$ attributes align : 64 :: hv_zr
+          !dir$ attributes align : 64 :: hv_zi
+    end type FFHMV_r4_t
+
+
+    ! Formula (2-24)
+    ! "Far-field" Hertz vector magnetic
+    type, public :: FFHMV_r8_t
+
+          real(kind=dp)      :: if_re
+          real(kind=dp)      :: if_im
+          type(EIKR_r8_t)    :: eikr
+          type(NMVec_r8_t)   :: nmv
+          real(kind=dp), dimension(:), allocatable :: hv_xr
+          real(kind=dp), dimension(:), allocatable :: hv_xi
+          real(kind=dp), dimension(:), allocatable :: hv_yr
+          real(kind=dp), dimension(:), allocatable :: hv_yi
+          real(kind=dp), dimension(:), allocatable :: hv_zr
+          real(kind=dp), dimension(:), allocatable :: hv_zi
+          !dir$ attributes align : 64 :: hv_xr
+          !dir$ attributes align : 64 :: hv_xi
+          !dir$ attributes align : 64 :: hv_yr
+          !dir$ attributes align : 64 :: hv_yi
+          !dir$ attributes align : 64 :: hv_zr
+          !dir$ attributes align : 64 :: hv_zi
+    end type FFHMV_r8_t
+
+
+    ! Formula (2-24)
+    ! "Far-field" Hertz vector magnetic
+    type, public :: FFHMV_c4_t
+
+          complex(kind=sp)       :: ifac
+          type(EIKR_c4_t)        :: eikr
+          type(NMVec_c4_t)       :: nmv
+          complex(kind=sp), dimension(:), allocatable :: hv_x
+          complex(kind=sp), dimension(:), allocatable :: hv_y
+          complex(kind=sp), dimension(:), allocatable :: hv_z
+          !dir$ attributes align : 64 :: hv_x
+          !dir$ attributes align : 64 :: hv_y
+          !dir$ attributes align : 64 :: hv_z
+    end type FFHMV_c4_t
+
+
+    ! Formula (2-24)
+    ! "Far-field" Hertz vector electric
+    type, public :: FFHMV_c8_t
+
+          complex(kind=dp)       :: ifac
+          type(EIKR_c8_t)        :: eikr
+          type(NMVec_c8_t)       :: nmv
+          complex(kind=dp), dimension(:), allocatable :: hv_x
+          complex(kind=dp), dimension(:), allocatable :: hv_y
+          complex(kind=dp), dimension(:), allocatable :: hv_z
+          !dir$ attributes align : 64 :: hv_x
+          !dir$ attributes align : 64 :: hv_y
+          !dir$ attributes align : 64 :: hv_z
+    end type FFHMV_c8_t
+
+
+    ! Formula (2-26)
+    ! Cosine of integration angle.
+    type, public :: cos_iang_r4_t
+          
+          integer(kind=i4)          :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif      
+          real(kind=sp), dimension(:), allocatable :: cth
+          real(kind=sp), dimension(:), allocatable :: cthi
+          real(kind=sp), dimension(:), allocatable :: sth
+          real(kind=sp), dimension(:), allocatable :: sthi
+          real(kind=sp), dimension(:), allocatable :: cphphi
+          real(kind=sp), dimension(:), allocatable :: ciang ! the result  
+          !dir$ attributes align : 64 :: cth  
+          !dir$ attributes align : 64 :: cthi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: sthi
+          !dir$ attributes align : 64 :: cphphi
+          !dir$ attributes align : 64 :: ciang 
+    end type cos_iang_r4_t
+
+
+    ! Formula (2-26)
+    ! Cosine of integration angle.
+    type, public :: cos_iang_r8_t
+          
+          integer(kind=i4)          :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif      
+          real(kind=dp), dimension(:), allocatable :: cth
+          real(kind=dp), dimension(:), allocatable :: cthi
+          real(kind=dp), dimension(:), allocatable :: sth
+          real(kind=dp), dimension(:), allocatable :: sthi
+          real(kind=dp), dimension(:), allocatable :: cphphi
+          real(kind=dp), dimension(:), allocatable :: ciang ! the result  
+          !dir$ attributes align : 64 :: cth  
+          !dir$ attributes align : 64 :: cthi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: sthi
+          !dir$ attributes align : 64 :: cphphi
+          !dir$ attributes align : 64 :: ciang 
+    end type cos_iang_r8_t
+
+
+    ! Formula (2-36)
+
+
+    
+
     
 
 
