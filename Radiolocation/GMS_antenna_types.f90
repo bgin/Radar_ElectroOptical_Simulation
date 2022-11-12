@@ -1100,9 +1100,220 @@ module antenna_types
 
 
     ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NEsph_r4_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NEVec_r4_t)        :: nev
+          real(kind=sp), dimension(:), allocatable :: cphi
+          real(kind=sp), dimension(:), allocatable :: cth
+          real(kind=sp), dimension(:), allocatable :: sphi
+          real(kind=sp), dimension(:), allocatable :: sth
+          real(kind=sp), dimension(:), allocatable :: nth_re
+          real(kind=sp), dimension(:), allocatable :: nth_im
+          real(kind=sp), dimension(:), allocatable :: nph_re
+          real(kind=sp), dimension(:), allocatable :: nph_im
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth_re
+          !dir$ attributes align : 64 :: nth_im
+          !dir$ attributes align : 64 :: nph_re
+          !dir$ attributes align : 64 :: nph_im
+    end type NEsph_r4_t
 
 
-    
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NEsph_r8_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NEVec_r8_t)        :: nev
+          real(kind=dp), dimension(:), allocatable :: cphi
+          real(kind=dp), dimension(:), allocatable :: cth
+          real(kind=dp), dimension(:), allocatable :: sphi
+          real(kind=dp), dimension(:), allocatable :: sth
+          real(kind=dp), dimension(:), allocatable :: nth_re
+          real(kind=dp), dimension(:), allocatable :: nth_im
+          real(kind=dp), dimension(:), allocatable :: nph_re
+          real(kind=dp), dimension(:), allocatable :: nph_im
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth_re
+          !dir$ attributes align : 64 :: nth_im
+          !dir$ attributes align : 64 :: nph_re
+          !dir$ attributes align : 64 :: nph_im
+    end type NEsph_r8_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NEsph_c4_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NEVec_c4_t)        :: nev
+          real(kind=sp),    dimension(:), allocatable :: cphi
+          real(kind=sp),    dimension(:), allocatable :: cth
+          real(kind=sp),    dimension(:), allocatable :: sphi
+          real(kind=sp),    dimension(:), allocatable :: sth
+          complex(kind=sp), dimension(:), allocatable :: nth
+          complex(kind=sp), dimension(:), allocatable :: nph
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth
+          !dir$ attributes align : 64 :: nph
+     end type NEsph_c4_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NEsph_c8_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NEVec_c8_t)        :: nev
+          real(kind=dp),    dimension(:), allocatable :: cphi
+          real(kind=dp),    dimension(:), allocatable :: cth
+          real(kind=dp),    dimension(:), allocatable :: sphi
+          real(kind=dp),    dimension(:), allocatable :: sth
+          complex(kind=dp), dimension(:), allocatable :: nth
+          complex(kind=dp), dimension(:), allocatable :: nph
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth
+          !dir$ attributes align : 64 :: nph
+     end type NEsph_c8_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NMsph_r4_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NMVec_r4_t)        :: nev
+          real(kind=sp), dimension(:), allocatable :: cphi
+          real(kind=sp), dimension(:), allocatable :: cth
+          real(kind=sp), dimension(:), allocatable :: sphi
+          real(kind=sp), dimension(:), allocatable :: sth
+          real(kind=sp), dimension(:), allocatable :: nth_re
+          real(kind=sp), dimension(:), allocatable :: nth_im
+          real(kind=sp), dimension(:), allocatable :: nph_re
+          real(kind=sp), dimension(:), allocatable :: nph_im
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth_re
+          !dir$ attributes align : 64 :: nth_im
+          !dir$ attributes align : 64 :: nph_re
+          !dir$ attributes align : 64 :: nph_im
+    end type NMsph_r4_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NMsph_r8_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NMVec_r8_t)        :: nev
+          real(kind=dp), dimension(:), allocatable :: cphi
+          real(kind=dp), dimension(:), allocatable :: cth
+          real(kind=dp), dimension(:), allocatable :: sphi
+          real(kind=dp), dimension(:), allocatable :: sth
+          real(kind=dp), dimension(:), allocatable :: nth_re
+          real(kind=dp), dimension(:), allocatable :: nth_im
+          real(kind=dp), dimension(:), allocatable :: nph_re
+          real(kind=dp), dimension(:), allocatable :: nph_im
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth_re
+          !dir$ attributes align : 64 :: nth_im
+          !dir$ attributes align : 64 :: nph_re
+          !dir$ attributes align : 64 :: nph_im
+    end type NMsph_r8_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NMsph_c4_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NMVec_c4_t)        :: nev
+          real(kind=sp),    dimension(:), allocatable :: cphi
+          real(kind=sp),    dimension(:), allocatable :: cth
+          real(kind=sp),    dimension(:), allocatable :: sphi
+          real(kind=sp),    dimension(:), allocatable :: sth
+          complex(kind=sp), dimension(:), allocatable :: nth
+          complex(kind=sp), dimension(:), allocatable :: nph
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth
+          !dir$ attributes align : 64 :: nph
+     end type NMsph_c4_t
+
+
+    ! Formula (2-36)
+    ! 'N'-electric and 'N'-magnetic vector functions of fields voltage
+    ! in spherical coordinate system.
+    type, public NMsph_c8_t
+          
+          integer(kind=i4)        :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+          type(NMVec_c8_t)        :: nev
+          real(kind=dp),    dimension(:), allocatable :: cphi
+          real(kind=dp),    dimension(:), allocatable :: cth
+          real(kind=dp),    dimension(:), allocatable :: sphi
+          real(kind=dp),    dimension(:), allocatable :: sth
+          complex(kind=dp), dimension(:), allocatable :: nth
+          complex(kind=dp), dimension(:), allocatable :: nph
+          !dir$ attributes align : 64 :: cphi
+          !dir$ attributes align : 64 :: cth
+          !dir$ attributes align : 64 :: sphi
+          !dir$ attributes align : 64 :: sth
+          !dir$ attributes align : 64 :: nth
+          !dir$ attributes align : 64 :: nph
+     end type NMsph_c8_t
+
 
     
 
