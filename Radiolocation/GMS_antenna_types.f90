@@ -367,11 +367,12 @@ module antenna_types
        ! Time-Harmonic complex exponential
        integer(kind=i4)        :: npts
        real(kind=sp)           :: k
-       real(kind=sp)           :: R
 #if (USE_STRUCT_PADDING) == 1
-           STRUCT_PADDING(0,20)
+           STRUCT_PADDING(0,24)
 #endif
+       real(kind=sp),    dimension(:), allocatable :: R
        complex(kind=sp), dimension(:), allocatable :: eikr
+       !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: eikr
     end type EIKR_C4_t
 
@@ -380,11 +381,12 @@ module antenna_types
        ! Time-Harmonic complex exponential
        integer(kind=i4)        :: npts
        real(kind=dp)           :: k
-       real(kind=dp)           :: R
 #if (USE_STRUCT_PADDING) == 1
-           STRUCT_PADDING(0,12)
+           STRUCT_PADDING(0,20)
 #endif
+       real(kind=dp),    dimension(:), allocatable :: R
        complex(kind=dp), dimension(:), allocatable :: eikr
+       !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: eikr
     end type EIKR_C8_t
 
@@ -394,12 +396,13 @@ module antenna_types
         ! real and imaginary parts
        integer(kind=i4)        :: npts
        real(kind=sp)           :: k
-       real(kind=sp)           :: R
 #if (USE_STRUCT_PADDING) == 1
-           STRUCT_PADDING(0,20)
+           STRUCT_PADDING(0,24)
 #endif
+       real(kind=sp), dimension(:), allocatable :: R
        real(kind=sp), dimension(:), allocatable :: e_re
        real(kind=sp), dimension(:), allocatable :: e_im
+       !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: e_re
        !dir$ attributes align : 64 :: e_im
     end type EIKR_R4_t
@@ -410,12 +413,14 @@ module antenna_types
         ! real and imaginary parts
        integer(kind=i4)        :: npts
        real(kind=dp)           :: k
-       real(kind=dp)           :: R
+       
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,20)
 #endif
+       real(kind=dp), dimension(:), allocatable :: R
        real(kind=dp), dimension(:), allocatable :: e_re
        real(kind=dp), dimension(:), allocatable :: e_im
+       !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: e_re
        !dir$ attributes align : 64 :: e_im
     end type EIKR_R8_t
@@ -706,6 +711,14 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_zr
           !dir$ attributes align : 64 :: hm_zi
     end type HVM_R8_t
+
+
+    ! Formula (2-22,2-23)
+    type, public :: NEVec_r4_t
+
+          !
+          
+    end type NEVec_r4_t
 
 
 
