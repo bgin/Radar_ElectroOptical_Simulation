@@ -67,7 +67,7 @@ module antenna_types
     character(*),        parameter :: ANTENNA_TYPES_SYNOPSIS    = "ADT describing various antenna types characteristics."
 
     
-    type, public :: E_C4_t
+    type, public :: E_c4_t
           ! Complex 3D Electric Field
           integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -79,10 +79,10 @@ module antenna_types
           !dir$ attributes align : 64 :: e_x
           !dir$ attributes align : 64 :: e_y
           !dir$ attributes align : 64 :: e_z
-    end type E_C4_t
+    end type E_c4_t
 
 
-    type, public :: H_C4_t
+    type, public :: H_c4_t
           ! Complex 3D Magnetic Field
           integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -94,10 +94,10 @@ module antenna_types
           !dir$ attributes align : 64 :: h_x
           !dir$ attributes align : 64 :: h_y
           !dir$ attributes align : 64 :: h_z
-    end type H_C4_t
+    end type H_c4_t
 
 
-    type, public :: E_C8_t
+    type, public :: E_c8_t
           ! Complex 3D Electric Field
           integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -109,10 +109,10 @@ module antenna_types
           !dir$ attributes align : 64 :: e_x
           !dir$ attributes align : 64 :: e_y
           !dir$ attributes align : 64 :: e_z
-    end type E_C8_t
+    end type E_c8_t
 
 
-    type, public :: H_C8_t
+    type, public :: H_c8_t
           ! Complex 3D Magnetic Field
           integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -124,10 +124,10 @@ module antenna_types
           !dir$ attributes align : 64 :: h_x
           !dir$ attributes align : 64 :: h_y
           !dir$ attributes align : 64 :: h_z
-    end type H_C8_t
+    end type H_c8_t
 
 
-    type, public :: E_R4_t
+    type, public :: E_r4_t
        ! Complex Electric  field  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)           :: npts
@@ -146,10 +146,10 @@ module antenna_types
        !dir$ attributes align : 64 :: e_yi
        !dir$ attributes align : 64 :: e_zr
        !dir$ attributes align : 64 :: e_zi
-    end type E_R4_t
+    end type E_r4_t
 
 
-    type, public :: H_R4_t
+    type, public :: H_r4_t
        ! Complex Magnetic field  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)           :: npts
@@ -168,10 +168,10 @@ module antenna_types
        !dir$ attributes align : 64 :: h_yi
        !dir$ attributes align : 64 :: h_zr
        !dir$ attributes align : 64 :: h_zi
-    end type H_R4_t
+    end type H_r4_t
 
 
-    type, public :: E_R8_t
+    type, public :: E_r8_t
        ! Complex Electric  field  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)           :: npts
@@ -190,10 +190,10 @@ module antenna_types
        !dir$ attributes align : 64 :: e_yi
        !dir$ attributes align : 64 :: e_zr
        !dir$ attributes align : 64 :: e_zi
-    end type E_R8_t
+    end type E_r8_t
 
 
-    type, public :: H_R8_t
+    type, public :: H_r8_t
        ! Complex Magnetic field  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)           :: npts
@@ -212,10 +212,10 @@ module antenna_types
        !dir$ attributes align : 64 :: h_yi
        !dir$ attributes align : 64 :: h_zr
        !dir$ attributes align : 64 :: h_zi
-    end type H_R8_t
+    end type H_r8_t
 
 
-    type, public :: JE_C4_t
+    type, public :: JE_c4_t
        ! Complex Electric Current
        integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -227,10 +227,10 @@ module antenna_types
         !dir$ attributes align : 64 :: je_x
         !dir$ attributes align : 64 :: je_y
         !dir$ attributes align : 64 :: je_z
-    end type JE_C4_t
+    end type JE_c4_t
 
 
-    type, public :: JM_C4_t
+    type, public :: JM_c4_t
        ! Complex Magnetic Current
        integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -242,10 +242,10 @@ module antenna_types
         !dir$ attributes align : 64 :: jm_x
         !dir$ attributes align : 64 :: jm_y
         !dir$ attributes align : 64 :: jm_z
-    end type JM_C4_t
+    end type JM_c4_t
 
 
-    type, public :: JE_C8_t
+    type, public :: JE_c8_t
        ! Complex Electric Current
        integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -257,10 +257,10 @@ module antenna_types
         !dir$ attributes align : 64 :: je_x
         !dir$ attributes align : 64 :: je_y
         !dir$ attributes align : 64 :: je_z
-    end type JE_C8_t
+    end type JE_c8_t
 
 
-    type, public :: JM_C8_t
+    type, public :: JM_c8_t
        ! Complex Magnetic Current
        integer(kind=i4)        :: npts
 #if (USE_STRUCT_PADDING) == 1
@@ -272,10 +272,10 @@ module antenna_types
         !dir$ attributes align : 64 :: jm_x
         !dir$ attributes align : 64 :: jm_y
         !dir$ attributes align : 64 :: jm_z
-    end type JM_C8_t
+    end type JM_c8_t
 
 
-    type, public :: JE_R4_t
+    type, public :: JE_r4_t
        ! Complex Electric Current  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)        :: npts
@@ -294,10 +294,10 @@ module antenna_types
        !dir$ attributes align : 64 :: je_yi
        !dir$ attributes align : 64 :: je_zr
        !dir$ attributes align : 64 :: je_zi
-    end type JE_R4_t
+    end type JE_r4_t
 
 
-    type, public :: JM_R4_t
+    type, public :: JM_r4_t
        ! Complex Magnetic Current  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)        :: npts
@@ -316,10 +316,10 @@ module antenna_types
        !dir$ attributes align : 64 :: jm_yi
        !dir$ attributes align : 64 :: jm_zr
        !dir$ attributes align : 64 :: jm_zi
-    end type JM_R4_t
+    end type JM_r4_t
 
 
-    type, public :: JE_R8_t
+    type, public :: JE_r8_t
        ! Complex Electric Current  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)        :: npts
@@ -338,10 +338,10 @@ module antenna_types
        !dir$ attributes align : 64 :: je_yi
        !dir$ attributes align : 64 :: je_zr
        !dir$ attributes align : 64 :: je_zi
-    end type JE_R8_t
+    end type JE_r8_t
 
 
-    type, public :: JM_R8_t
+    type, public :: JM_r8_t
        ! Complex Magnetic Current  decomposed into real and imaginary parts 
        ! To be used mainly by the integrators.
        integer(kind=i4)        :: npts
@@ -360,10 +360,10 @@ module antenna_types
        !dir$ attributes align : 64 :: jm_yi
        !dir$ attributes align : 64 :: jm_zr
        !dir$ attributes align : 64 :: jm_zi
-    end type JM_R8_t
+    end type JM_r8_t
 
 
-    type, public :: EIKR_C4_t
+    type, public :: EIKR_c4_t
        ! Time-Harmonic complex exponential
        integer(kind=i4)        :: npts
        real(kind=sp)           :: k
@@ -374,10 +374,10 @@ module antenna_types
        complex(kind=sp), dimension(:), allocatable :: eikr
        !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: eikr
-    end type EIKR_C4_t
+    end type EIKR_c4_t
 
 
-    type, public :: EIKR_C8_t
+    type, public :: EIKR_c8_t
        ! Time-Harmonic complex exponential
        integer(kind=i4)        :: npts
        real(kind=dp)           :: k
@@ -388,10 +388,10 @@ module antenna_types
        complex(kind=dp), dimension(:), allocatable :: eikr
        !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: eikr
-    end type EIKR_C8_t
+    end type EIKR_c8_t
 
 
-    type, public :: EIKR_R4_t
+    type, public :: EIKR_r4_t
         ! Time-Harmonic complex exponential decomposed into 
         ! real and imaginary parts
        integer(kind=i4)        :: npts
@@ -405,10 +405,10 @@ module antenna_types
        !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: e_re
        !dir$ attributes align : 64 :: e_im
-    end type EIKR_R4_t
+    end type EIKR_r4_t
 
 
-    type, public :: EIKR_R8_t
+    type, public :: EIKR_r8_t
         ! Time-Harmonic complex exponential decomposed into 
         ! real and imaginary parts
        integer(kind=i4)        :: npts
@@ -423,7 +423,7 @@ module antenna_types
        !dir$ attributes align : 64 :: R
        !dir$ attributes align : 64 :: e_re
        !dir$ attributes align : 64 :: e_im
-    end type EIKR_R8_t
+    end type EIKR_r8_t
 
 
     
@@ -459,7 +459,7 @@ module antenna_types
            STRUCT_PADDING(0,4)
 #endif   
          real(kind=dp), dimension(:), allocatable :: sinth ! Sine of theta angle
-         real(kind=dp), dimension(:), allocatable :: F     ! Antenna  rdiation pattern 
+         real(kind=dp), dimension(:), allocatable :: F     ! Antenna  radiation pattern 
          !dir$ attributes align : 64 :: sinth
          !dir$ attributes align : 64 :: F
     end type avg_slobes_r8_t
@@ -478,7 +478,7 @@ module antenna_types
            STRUCT_PADDING(0,16)
 #endif   
           real(kind=sp), dimension(:), allocatable :: sinth ! Sine of theta angle
-          real(kind=sp), dimension(:), allocatable :: Fsqr     ! Antenna  rdiation pattern 
+          real(kind=sp), dimension(:), allocatable :: Fsqr     ! Antenna  radiation pattern 
           !dir$ attributes align : 64 :: sinth
           !dir$ attributes align : 64 :: Fsqr
     end type avgsqr_slobes_r4_t
@@ -497,7 +497,7 @@ module antenna_types
            STRUCT_PADDING(0,4)
 #endif   
           real(kind=dp), dimension(:), allocatable :: sinth ! Sine of theta angle
-          real(kind=dp), dimension(:), allocatable :: Fsqr     ! Antenna  rdiation pattern 
+          real(kind=dp), dimension(:), allocatable :: Fsqr     ! Antenna  radiation pattern 
           !dir$ attributes align : 64 :: sinth
           !dir$ attributes align : 64 :: Fsqr
     end type avgsqr_slobes_r8_t
@@ -536,12 +536,12 @@ module antenna_types
     end type dispers_coef_r8_t
 
     ! Formula (2-13)
-    type, public :: HVE_C4_t
+    type, public :: HVE_c4_t
           ! Hertz vector electric
           integer(kind=i4)      :: npts
           complex(kind=sp)      :: ifac
-          type(JE_C4_t)         :: jec4
-          type(EIKR_C4_t)       :: eikr
+          type(JE_c4_t)         :: jec4
+          type(EIKR_c4_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,12)
 #endif  
@@ -551,15 +551,15 @@ module antenna_types
           !dir$ attributes align : 64 :: he_x
           !dir$ attributes align : 64 :: he_y
           !dir$ attributes align : 64 :: he_z
-    end type HVE_C4_t
+    end type HVE_c4_t
 
     ! Formula (2-13)
-    type, public :: HVE_C8_t
+    type, public :: HVE_c8_t
           ! Hertz vector electric
           integer(kind=i4)      :: npts
           complex(kind=dp)      :: ifac
-          type(JE_C8_t)         :: jec4
-          type(EIKR_C8_t)       :: eikr
+          type(JE_c8_t)         :: jec4
+          type(EIKR_c8_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif  
@@ -569,17 +569,17 @@ module antenna_types
           !dir$ attributes align : 64 :: he_x
           !dir$ attributes align : 64 :: he_y
           !dir$ attributes align : 64 :: he_z
-    end type HVE_C8_t
+    end type HVE_c8_t
 
 
     ! Formula (2-13)
-    type, public :: HVE_R4_t
+    type, public :: HVE_r4_t
           ! Hertz vector electronic decomposed 
           integer(kind=i4)      :: npts
           real(kind=sp)         :: if_re
           real(kind=sp)         :: if_im
-          type(JE_R4_t)         :: jer4
-          type(EIKR_R4_t)       :: eikr
+          type(JE_r4_t)         :: jer4
+          type(EIKR_r4_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,12)
 #endif 
@@ -595,17 +595,17 @@ module antenna_types
           !dir$ attributes align : 64 :: he_yi
           !dir$ attributes align : 64 :: he_zr
           !dir$ attributes align : 64 :: he_zi
-    end type HVE_R4_t
+    end type HVE_r4_t
 
 
      ! Formula (2-13)
-    type, public :: HVE_R8_t
+    type, public :: HVE_r8_t
           ! Hertz vector electronic decomposed 
           integer(kind=i4)      :: npts
           real(kind=dp)         :: if_re
           real(kind=dp)         :: if_im
-          type(JE_R8_t)         :: jer4
-          type(EIKR_R8_t)       :: eikr
+          type(JE_r8_t)         :: jer4
+          type(EIKR_r8_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif 
@@ -621,16 +621,16 @@ module antenna_types
           !dir$ attributes align : 64 :: he_yi
           !dir$ attributes align : 64 :: he_zr
           !dir$ attributes align : 64 :: he_zi
-    end type HVE_R8_t
+    end type HVE_r8_t
 
 
     ! Formula (2-15)
-    type, public :: HVM_C4_t
+    type, public :: HVM_c4_t
           ! Hertz vector magnetic
           integer(kind=i4)      :: npts
           complex(kind=sp)      :: ifac
-          type(JM_C4_t)         :: jmc4
-          type(EIKR_C4_t)       :: eikr
+          type(JM_c4_t)         :: jmc4
+          type(EIKR_c4_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,12)
 #endif  
@@ -640,15 +640,15 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_x
           !dir$ attributes align : 64 :: hm_y
           !dir$ attributes align : 64 :: hm_z
-    end type HVM_C4_t
+    end type HVM_c4_t
 
     ! Formula (2-15)
-    type, public :: HVM_C8_t
+    type, public :: HVM_c8_t
           ! Hertz vector magnetic
           integer(kind=i4)      :: npts
           complex(kind=dp)      :: ifac
-          type(JM_C8_t)         :: jmc8
-          type(EIKR_C8_t)       :: eikr
+          type(JM_c8_t)         :: jmc8
+          type(EIKR_c8_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif  
@@ -658,17 +658,17 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_x
           !dir$ attributes align : 64 :: hm_y
           !dir$ attributes align : 64 :: hm_z
-    end type HVM_C8_t
+    end type HVM_c8_t
 
 
     ! Formula (2-15)
-    type, public :: HVM_R4_t
+    type, public :: HVM_r4_t
           ! Hertz vector magnetic decomposed 
           integer(kind=i4)      :: npts
           real(kind=sp)         :: if_re
           real(kind=sp)         :: if_im
-          type(JM_R4_t)         :: jmr4
-          type(EIKR_R4_t)       :: eikr
+          type(JM_r4_t)         :: jmr4
+          type(EIKR_r4_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,12)
 #endif 
@@ -684,17 +684,17 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_yi
           !dir$ attributes align : 64 :: hm_zr
           !dir$ attributes align : 64 :: hm_zi
-    end type HVM_R4_t
+    end type HVM_r4_t
 
 
      ! Formula (2-15)
-    type, public :: HVM_R8_t
+    type, public :: HVM_r8_t
           ! Hertz vector magnetic decomposed 
           integer(kind=i4)      :: npts
           real(kind=dp)         :: if_re
           real(kind=dp)         :: if_im
-          type(JM_R8_t)         :: jmr8
-          type(EIKR_R8_t)       :: eikr
+          type(JM_r8_t)         :: jmr8
+          type(EIKR_r8_t)       :: eikr
 #if (USE_STRUCT_PADDING) == 1
            STRUCT_PADDING(0,4)
 #endif 
@@ -710,15 +710,59 @@ module antenna_types
           !dir$ attributes align : 64 :: hm_yi
           !dir$ attributes align : 64 :: hm_zr
           !dir$ attributes align : 64 :: hm_zi
-    end type HVM_R8_t
+    end type HVM_r8_t
 
 
     ! Formula (2-22,2-23)
     type, public :: NEVec_r4_t
 
-          !
-          
+          integer(kind=i4)      :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JE_r4_t)         :: jer4
+          type(EIKR_r4_t)       :: eikr
+          real(kind=sp), dimension(:), allocatable :: costh
+          real(kind=sp), dimension(:), allocatable :: ne_xr
+          real(kind=sp), dimension(:), allocatable :: ne_xi
+          real(kind=sp), dimension(:), allocatable :: ne_yr
+          real(kind=sp), dimension(:), allocatable :: ne_yi
+          real(kind=sp), dimension(:), allocatable :: ne_zr
+          real(kind=sp), dimension(:), allocatable :: ne_zi
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: ne_xr
+          !dir$ attributes align : 64 :: ne_xi
+          !dir$ attributes align : 64 :: ne_yr
+          !dir$ attributes align : 64 :: ne_yi
+          !dir$ attributes align : 64 :: ne_zr
+          !dir$ attributes align : 64 :: ne_zi
     end type NEVec_r4_t
+
+
+     ! Formula (2-22,2-23)
+    type, public :: NEVec_r8_t
+
+          integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JE_r8_t)          :: jer4
+          type(EIKR_r48_t)       :: eikr
+          real(kind=dp), dimension(:), allocatable :: costh
+          real(kind=dp), dimension(:), allocatable :: ne_xr
+          real(kind=dp), dimension(:), allocatable :: ne_xi
+          real(kind=dp), dimension(:), allocatable :: ne_yr
+          real(kind=dp), dimension(:), allocatable :: ne_yi
+          real(kind=dp), dimension(:), allocatable :: ne_zr
+          real(kind=dp), dimension(:), allocatable :: ne_zi
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: ne_xr
+          !dir$ attributes align : 64 :: ne_xi
+          !dir$ attributes align : 64 :: ne_yr
+          !dir$ attributes align : 64 :: ne_yi
+          !dir$ attributes align : 64 :: ne_zr
+          !dir$ attributes align : 64 :: ne_zi
+    end type NEVec_r8_t
 
 
 
