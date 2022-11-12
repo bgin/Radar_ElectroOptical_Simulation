@@ -747,7 +747,7 @@ module antenna_types
            STRUCT_PADDING(0,4)
 #endif 
           type(JE_r8_t)          :: jer4
-          type(EIKR_r48_t)       :: eikr
+          type(EIKR_r8_t)        :: eikr
           real(kind=dp), dimension(:), allocatable :: costh
           real(kind=dp), dimension(:), allocatable :: ne_xr
           real(kind=dp), dimension(:), allocatable :: ne_xi
@@ -765,8 +765,44 @@ module antenna_types
     end type NEVec_r8_t
 
 
+    ! Formula (2-22,2-23) 
+    type, public :: NEVec_c4_t
+
+           integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JE_c4_t)           :: jer4
+          type(EIKR_r4_t)         :: eikr
+          real(kind=sp),    dimension(:), allocatable :: costh
+          complex(kind=sp), dimension(:), allocatable :: ne_x
+          complex(kind=sp), dimension(:), allocatable :: ne_y
+          complex(kind=sp), dimension(:), allocatable :: ne_z
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: ne_x
+          !dir$ attributes align : 64 :: ne_y
+          !dir$ attributes align : 64 :: ne_z
+    end type NEVec_c4_t
 
 
+     ! Formula (2-22,2-23) 
+    type, public :: NEVec_c8_t
+
+           integer(kind=i4)       :: npts
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif 
+          type(JE_c8_t)           :: jer4
+          type(EIKR_r8_t)         :: eikr
+          real(kind=dp),    dimension(:), allocatable :: costh
+          complex(kind=dp), dimension(:), allocatable :: ne_x
+          complex(kind=dp), dimension(:), allocatable :: ne_y
+          complex(kind=dp), dimension(:), allocatable :: ne_z
+          !dir$ attributes align : 64 :: costh
+          !dir$ attributes align : 64 :: ne_x
+          !dir$ attributes align : 64 :: ne_y
+          !dir$ attributes align : 64 :: ne_z
+    end type NEVec_c8_t
     
 
 
