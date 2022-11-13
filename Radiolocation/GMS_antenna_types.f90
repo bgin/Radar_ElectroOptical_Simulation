@@ -1559,6 +1559,110 @@ module antenna_types
       end type FFMC_c8_t
 
 
+      ! Formula (2-38)
+      type, public :: poynting_avg_r4_t
+
+            integer(kind=i4)         :: nth
+            integer(kind=i4)         :: nphi
+            real(kind=sp)            :: k2
+            real(kind=sp)            :: eps_r
+            real(kind=sp)            :: eps_i
+            real(kind=sp)            :: mu_r
+            real(kind=sp)            :: mu_i
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+            type(NMsph_r4_t)         :: nmsp
+            type(NEsph_r4_t)         :: nesp
+            real(kind=sp), dimension(:), allocatable :: R2
+            real(kind=sp), dimension(:), allocatable :: e_r
+            real(kind=sp), dimension(:), allocatable :: S_re 
+            real(kind=sp), dimension(:), allocatable :: S_im 
+            !dir$ attributes align : 64 :: R2
+            !dir$ attributes align : 64 :: e_r
+            !dir$ attributes align : 64 :: S_re
+            !dir$ attributes align : 64 :: S_im      
+      end type poynting_avg_r4_t
+
+
+       ! Formula (2-38)
+      type, public :: poynting_avg_r8_t
+
+            integer(kind=i4)         :: nth
+            integer(kind=i4)         :: nphi
+            real(kind=dp)            :: k2
+            real(kind=dp)            :: eps_r
+            real(kind=dp)            :: eps_i
+            real(kind=dp)            :: mu_r
+            real(kind=dp)            :: mu_i
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif
+            type(NMsph_r8_t)         :: nmsp
+            type(NEsph_r8_t)         :: nesp
+            real(kind=dp), dimension(:), allocatable :: R2
+            real(kind=dp), dimension(:), allocatable :: e_r
+            real(kind=dp), dimension(:), allocatable :: S_re 
+            real(kind=dp), dimension(:), allocatable :: S_im 
+            !dir$ attributes align : 64 :: R2
+            !dir$ attributes align : 64 :: e_r
+            !dir$ attributes align : 64 :: S_re
+            !dir$ attributes align : 64 :: S_im      
+      end type poynting_avg_r8_t
+
+
+        ! Formula (2-38)
+      type, public :: poynting_avg_c4_t
+
+            integer(kind=i4)         :: nth
+            integer(kind=i4)         :: nphi
+            real(kind=sp)            :: k2
+            complex(kind=sp)         :: eps
+            complex(kind=sp)         :: mu_r
+           
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+            type(NMsph_c4_t)         :: nmsp
+            type(NEsph_c4_t)         :: nesp
+            real(kind=sp),    dimension(:), allocatable :: R2
+            real(kind=sp),    dimension(:), allocatable :: e_r
+            complex(kind=sp), dimension(:), allocatable :: S
+            !dir$ attributes align : 64 :: R2
+            !dir$ attributes align : 64 :: e_r
+            !dir$ attributes align : 64 :: S
+       end type poynting_avg_r4_t
+
+
+       ! Formula (2-38)
+      type, public :: poynting_avg_c8_t
+
+            integer(kind=i4)         :: nth
+            integer(kind=i4)         :: nphi
+            real(kind=dp)            :: k2
+            complex(kind=dp)         :: eps
+            complex(kind=dp)         :: mu
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif
+            type(NMsph_c8_t)         :: nmsp
+            type(NEsph_c8_t)         :: nesp
+            real(kind=dp),    dimension(:), allocatable :: R2
+            real(kind=dp),    dimension(:), allocatable :: e_r
+            complex(kind=dp), dimension(:), allocatable :: S
+            !dir$ attributes align : 64 :: R2
+            !dir$ attributes align : 64 :: e_r
+            !dir$ attributes align : 64 :: S
+      end type poynting_avg_c8_t
+
+
+      
+
+
+
+      
+
+
 
      
 
