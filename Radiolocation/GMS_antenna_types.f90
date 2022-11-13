@@ -1326,7 +1326,7 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_r4_t)           :: eikr
-           type(NEsph_r4_t)          :: nesph
+           type(NEVec_r4_t)          :: nev
            real(kind=sp), dimension(:), allocatable :: ffec_xr
            real(kind=sp), dimension(:), allocatable :: ffec_xi
            real(kind=sp), dimension(:), allocatable :: ffec_yr
@@ -1353,7 +1353,7 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_r8_t)           :: eikr
-           type(NEsph_r8_t)          :: nesph
+           type(NEVec_r8_t)          :: nev
            real(kind=dp), dimension(:), allocatable :: ffec_xr
            real(kind=dp), dimension(:), allocatable :: ffec_xi
            real(kind=dp), dimension(:), allocatable :: ffec_yr
@@ -1379,7 +1379,7 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_c4_t)           :: eikr
-           type(NEsph_c4_t)          :: nesph
+           type(NEVec_c4_t)          :: nev
            complex(kind=sp), dimension(:), allocatable :: ffec_x
            complex(kind=sp), dimension(:), allocatable :: ffec_y
            complex(kind=sp), dimension(:), allocatable :: ffec_z
@@ -1399,7 +1399,7 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_c8_t)           :: eikr
-           type(NEsph_c8_t)          :: nesph
+           type(NEVec_c8_t)          :: nev
            complex(kind=dp), dimension(:), allocatable :: ffec_x
            complex(kind=dp), dimension(:), allocatable :: ffec_y
            complex(kind=dp), dimension(:), allocatable :: ffec_z
@@ -1420,7 +1420,7 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_r4_t)           :: eikr
-           type(NMsph_r4_t)          :: nmsph
+           type(NMVec_r4_t)          :: nmv
            real(kind=sp), dimension(:), allocatable :: ffmc_xr
            real(kind=sp), dimension(:), allocatable :: ffmc_xi
            real(kind=sp), dimension(:), allocatable :: ffmc_yr
@@ -1447,7 +1447,7 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_r8_t)           :: eikr
-           type(NMsph_r8_t)          :: nesph
+           type(NMVec_r8_t)          :: nmv
            real(kind=dp), dimension(:), allocatable :: ffmc_xr
            real(kind=dp), dimension(:), allocatable :: ffmc_xi
            real(kind=dp), dimension(:), allocatable :: ffmc_yr
@@ -1473,7 +1473,7 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_c4_t)           :: eikr
-           type(NMsph_c4_t)          :: nesph
+           type(NMVec_c4_t)          :: nmv
            complex(kind=sp), dimension(:), allocatable :: ffmc_x
            complex(kind=sp), dimension(:), allocatable :: ffmc_y
            complex(kind=sp), dimension(:), allocatable :: ffmc_z
@@ -1493,7 +1493,7 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_c8_t)           :: eikr
-           type(NMsph_c8_t)          :: nesph
+           type(NMVec_c8_t)          :: nmv
            complex(kind=dp), dimension(:), allocatable :: ffmc_x
            complex(kind=dp), dimension(:), allocatable :: ffmc_y
            complex(kind=dp), dimension(:), allocatable :: ffmc_z
