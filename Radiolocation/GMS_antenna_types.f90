@@ -1326,13 +1326,20 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_r4_t)           :: eikr
+           type(NEsph_r4_t)          :: nsph
            type(NEVec_r4_t)          :: nev
+           real(kind=sp), dimension(:), allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=sp), dimension(:), allocatable :: e_th ! theta -unit vector spherical
+           real(kind=sp), dimension(:), allocatable :: e_ph ! phi   -unit vector spherical
            real(kind=sp), dimension(:), allocatable :: ffec_xr
            real(kind=sp), dimension(:), allocatable :: ffec_xi
            real(kind=sp), dimension(:), allocatable :: ffec_yr
            real(kind=sp), dimension(:), allocatable :: ffec_yi
            real(kind=sp), dimension(:), allocatable :: ffec_zr
            real(kind=sp), dimension(:), allocatable :: ffec_zi
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffec_xr
            !dir$ attributes align : 64 :: ffec_xi
            !dir$ attributes align : 64 :: ffec_yr
@@ -1353,13 +1360,20 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_r8_t)           :: eikr
+           type(NEsph_r8_t)          :: nsph
            type(NEVec_r8_t)          :: nev
+           real(kind=dp), dimension(:), allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=dp), dimension(:), allocatable :: e_th ! theta -unit vector spherical
+           real(kind=dp), dimension(:), allocatable :: e_ph ! phi   -unit vector spherical
            real(kind=dp), dimension(:), allocatable :: ffec_xr
            real(kind=dp), dimension(:), allocatable :: ffec_xi
            real(kind=dp), dimension(:), allocatable :: ffec_yr
            real(kind=dp), dimension(:), allocatable :: ffec_yi
            real(kind=dp), dimension(:), allocatable :: ffec_zr
            real(kind=dp), dimension(:), allocatable :: ffec_zi
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffec_xr
            !dir$ attributes align : 64 :: ffec_xi
            !dir$ attributes align : 64 :: ffec_yr
@@ -1379,10 +1393,17 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_c4_t)           :: eikr
+           type(NEsph_c4_t)          :: nsph
            type(NEVec_c4_t)          :: nev
+           real(kind=sp), dimension(:), allocatable    :: e_r  ! r     -unit vector spherical
+           real(kind=sp), dimension(:), allocatable    :: e_th ! theta -unit vector spherical
+           real(kind=sp), dimension(:), allocatable    :: e_ph ! phi   -unit vector spherical
            complex(kind=sp), dimension(:), allocatable :: ffec_x
            complex(kind=sp), dimension(:), allocatable :: ffec_y
            complex(kind=sp), dimension(:), allocatable :: ffec_z
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffec_x
            !dir$ attributes align : 64 :: ffec_y
            !dir$ attributes align : 64 :: ffec_z
@@ -1399,10 +1420,17 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_c8_t)           :: eikr
+           type(NEsph_c8_t)          :: nsph
            type(NEVec_c8_t)          :: nev
-           complex(kind=dp), dimension(:), allocatable :: ffec_x
-           complex(kind=dp), dimension(:), allocatable :: ffec_y
-           complex(kind=dp), dimension(:), allocatable :: ffec_z
+           real(kind=dp), dimension(:),    allocatable    :: e_r  ! r     -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable    :: e_th ! theta -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable    :: e_ph ! phi   -unit vector spherical
+           complex(kind=dp), dimension(:), allocatable    :: ffec_x
+           complex(kind=dp), dimension(:), allocatable    :: ffec_y
+           complex(kind=dp), dimension(:), allocatable    :: ffec_z
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffec_x
            !dir$ attributes align : 64 :: ffec_y
            !dir$ attributes align : 64 :: ffec_z
@@ -1420,13 +1448,20 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_r4_t)           :: eikr
+           type(NMsph_r4_t)          :: nmsp
            type(NMVec_r4_t)          :: nmv
-           real(kind=sp), dimension(:), allocatable :: ffmc_xr
-           real(kind=sp), dimension(:), allocatable :: ffmc_xi
-           real(kind=sp), dimension(:), allocatable :: ffmc_yr
-           real(kind=sp), dimension(:), allocatable :: ffmc_yi
-           real(kind=sp), dimension(:), allocatable :: ffmc_zr
-           real(kind=sp), dimension(:), allocatable :: ffmc_zi
+           real(kind=sp), dimension(:),    allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=sp), dimension(:),    allocatable :: e_th ! theta -unit vector spherical
+           real(kind=sp), dimension(:),    allocatable :: e_ph ! phi   -unit vector spherical
+           real(kind=sp), dimension(:),    allocatable :: ffmc_xr
+           real(kind=sp), dimension(:),    allocatable :: ffmc_xi
+           real(kind=sp), dimension(:),    allocatable :: ffmc_yr
+           real(kind=sp), dimension(:),    allocatable :: ffmc_yi
+           real(kind=sp), dimension(:),    allocatable :: ffmc_zr
+           real(kind=sp), dimension(:),    allocatable :: ffmc_zi
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffmc_xr
            !dir$ attributes align : 64 :: ffmc_xi
            !dir$ attributes align : 64 :: ffmc_yr
@@ -1447,13 +1482,20 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_r8_t)           :: eikr
+           type(NMsph_r8_t)          :: nmsp
            type(NMVec_r8_t)          :: nmv
+           real(kind=dp), dimension(:), allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=dp), dimension(:), allocatable :: e_th ! theta -unit vector spherical
+           real(kind=dp), dimension(:), allocatable :: e_ph ! phi   -unit vector spherical
            real(kind=dp), dimension(:), allocatable :: ffmc_xr
            real(kind=dp), dimension(:), allocatable :: ffmc_xi
            real(kind=dp), dimension(:), allocatable :: ffmc_yr
            real(kind=dp), dimension(:), allocatable :: ffmc_yi
            real(kind=dp), dimension(:), allocatable :: ffmc_zr
            real(kind=dp), dimension(:), allocatable :: ffmc_zi
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffmc_xr
            !dir$ attributes align : 64 :: ffmc_xi
            !dir$ attributes align : 64 :: ffmc_yr
@@ -1473,10 +1515,17 @@ module antenna_types
            STRUCT_PADDING(0,20)
 #endif
            type(EIKR_c4_t)           :: eikr
+           type(NMsph_c4_t)          :: mmsp
            type(NMVec_c4_t)          :: nmv
+           real(kind=dp), dimension(:),    allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable :: e_th ! theta -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable :: e_ph ! phi   -unit vector spherical
            complex(kind=sp), dimension(:), allocatable :: ffmc_x
            complex(kind=sp), dimension(:), allocatable :: ffmc_y
            complex(kind=sp), dimension(:), allocatable :: ffmc_z
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffmc_x
            !dir$ attributes align : 64 :: ffmc_y
            !dir$ attributes align : 64 :: ffmc_z
@@ -1493,10 +1542,17 @@ module antenna_types
            STRUCT_PADDING(0,12)
 #endif
            type(EIKR_c8_t)           :: eikr
+           type(NMsph_c8_t)          :: nmsp
            type(NMVec_c8_t)          :: nmv
+           real(kind=dp), dimension(:),    allocatable :: e_r  ! r     -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable :: e_th ! theta -unit vector spherical
+           real(kind=dp), dimension(:),    allocatable :: e_ph ! phi   -unit vector spherical
            complex(kind=dp), dimension(:), allocatable :: ffmc_x
            complex(kind=dp), dimension(:), allocatable :: ffmc_y
            complex(kind=dp), dimension(:), allocatable :: ffmc_z
+           !dir$ attributes align : 64 :: e_r
+           !dir$ attributes align : 64 :: e_th
+           !dir$ attributes align : 64 :: e_ph
            !dir$ attributes align : 64 :: ffmc_x
            !dir$ attributes align : 64 :: ffmc_y
            !dir$ attributes align : 64 :: ffmc_z
