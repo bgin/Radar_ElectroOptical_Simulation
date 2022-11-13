@@ -1315,6 +1315,198 @@ module antenna_types
      end type NMsph_c8_t
 
 
+     ! Formula (2-27)
+     ! Far field (zone) 'electric current' for R>=2*D^2/gamma
+     type, public :: FFEC_r4_t
+
+           integer(kind=i4)          :: npts
+           real(kind=sp)             :: if_re
+           real(kind=sp)             :: if_im
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+           type(EIKR_r4_t)           :: eikr
+           type(NEsph_r4_t)          :: nesph
+           real(kind=sp), dimension(:), allocatable :: ffec_xr
+           real(kind=sp), dimension(:), allocatable :: ffec_xi
+           real(kind=sp), dimension(:), allocatable :: ffec_yr
+           real(kind=sp), dimension(:), allocatable :: ffec_yi
+           real(kind=sp), dimension(:), allocatable :: ffec_zr
+           real(kind=sp), dimension(:), allocatable :: ffec_zi
+           !dir$ attributes align : 64 :: ffec_xr
+           !dir$ attributes align : 64 :: ffec_xi
+           !dir$ attributes align : 64 :: ffec_yr
+           !dir$ attributes align : 64 :: ffec_yi
+           !dir$ attributes align : 64 :: ffec_zr
+           !dir$ attributes align : 64 :: ffec_zi      
+     end type FFEC_r4_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'electric current' for R>=2*D^2/gamma
+     type, public :: FFEC_r8_t
+
+           integer(kind=i4)          :: npts
+           real(kind=dp)             :: if_re
+           real(kind=dp)             :: if_im
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+           type(EIKR_r8_t)           :: eikr
+           type(NEsph_r8_t)          :: nesph
+           real(kind=dp), dimension(:), allocatable :: ffec_xr
+           real(kind=dp), dimension(:), allocatable :: ffec_xi
+           real(kind=dp), dimension(:), allocatable :: ffec_yr
+           real(kind=dp), dimension(:), allocatable :: ffec_yi
+           real(kind=dp), dimension(:), allocatable :: ffec_zr
+           real(kind=dp), dimension(:), allocatable :: ffec_zi
+           !dir$ attributes align : 64 :: ffec_xr
+           !dir$ attributes align : 64 :: ffec_xi
+           !dir$ attributes align : 64 :: ffec_yr
+           !dir$ attributes align : 64 :: ffec_yi
+           !dir$ attributes align : 64 :: ffec_zr
+           !dir$ attributes align : 64 :: ffec_zi      
+     end type FFEC_r8_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'electric current' for R>=2*D^2/gamma
+     type, public :: FFEC_c4_t
+
+           integer(kind=i4)          :: npts
+           complex(kind=sp)          :: ifac
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+           type(EIKR_c4_t)           :: eikr
+           type(NEsph_c4_t)          :: nesph
+           complex(kind=sp), dimension(:), allocatable :: ffec_x
+           complex(kind=sp), dimension(:), allocatable :: ffec_y
+           complex(kind=sp), dimension(:), allocatable :: ffec_z
+           !dir$ attributes align : 64 :: ffec_x
+           !dir$ attributes align : 64 :: ffec_y
+           !dir$ attributes align : 64 :: ffec_z
+      end type FFEC_c4_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'electric current' for R>=2*D^2/gamma
+     type, public :: FFEC_c8_t
+
+           integer(kind=i4)          :: npts
+           complex(kind=dp)          :: ifac
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+           type(EIKR_c8_t)           :: eikr
+           type(NEsph_c8_t)          :: nesph
+           complex(kind=dp), dimension(:), allocatable :: ffec_x
+           complex(kind=dp), dimension(:), allocatable :: ffec_y
+           complex(kind=dp), dimension(:), allocatable :: ffec_z
+           !dir$ attributes align : 64 :: ffec_x
+           !dir$ attributes align : 64 :: ffec_y
+           !dir$ attributes align : 64 :: ffec_z
+      end type FFEC_c8_t
+
+
+       ! Formula (2-27)
+     ! Far field (zone) 'magnetic current' for R>=2*D^2/gamma
+     type, public :: FFMC_r4_t
+
+           integer(kind=i4)          :: npts
+           real(kind=sp)             :: if_re
+           real(kind=sp)             :: if_im
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+           type(EIKR_r4_t)           :: eikr
+           type(NMsph_r4_t)          :: nmsph
+           real(kind=sp), dimension(:), allocatable :: ffmc_xr
+           real(kind=sp), dimension(:), allocatable :: ffmc_xi
+           real(kind=sp), dimension(:), allocatable :: ffmc_yr
+           real(kind=sp), dimension(:), allocatable :: ffmc_yi
+           real(kind=sp), dimension(:), allocatable :: ffmc_zr
+           real(kind=sp), dimension(:), allocatable :: ffmc_zi
+           !dir$ attributes align : 64 :: ffmc_xr
+           !dir$ attributes align : 64 :: ffmc_xi
+           !dir$ attributes align : 64 :: ffmc_yr
+           !dir$ attributes align : 64 :: ffmc_yi
+           !dir$ attributes align : 64 :: ffmc_zr
+           !dir$ attributes align : 64 :: ffmc_zi      
+     end type FFMC_r4_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'magnetic current' for R>=2*D^2/gamma
+     type, public :: FFMC_r8_t
+
+           integer(kind=i4)          :: npts
+           real(kind=dp)             :: if_re
+           real(kind=dp)             :: if_im
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+           type(EIKR_r8_t)           :: eikr
+           type(NMsph_r8_t)          :: nesph
+           real(kind=dp), dimension(:), allocatable :: ffmc_xr
+           real(kind=dp), dimension(:), allocatable :: ffmc_xi
+           real(kind=dp), dimension(:), allocatable :: ffmc_yr
+           real(kind=dp), dimension(:), allocatable :: ffmc_yi
+           real(kind=dp), dimension(:), allocatable :: ffmc_zr
+           real(kind=dp), dimension(:), allocatable :: ffmc_zi
+           !dir$ attributes align : 64 :: ffmc_xr
+           !dir$ attributes align : 64 :: ffmc_xi
+           !dir$ attributes align : 64 :: ffmc_yr
+           !dir$ attributes align : 64 :: ffmc_yi
+           !dir$ attributes align : 64 :: ffmc_zr
+           !dir$ attributes align : 64 :: ffmc_zi      
+     end type FFMC_r8_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'magnetic current' for R>=2*D^2/gamma
+     type, public :: FFMC_c4_t
+
+           integer(kind=i4)          :: npts
+           complex(kind=sp)          :: ifac
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+           type(EIKR_c4_t)           :: eikr
+           type(NMsph_c4_t)          :: nesph
+           complex(kind=sp), dimension(:), allocatable :: ffmc_x
+           complex(kind=sp), dimension(:), allocatable :: ffmc_y
+           complex(kind=sp), dimension(:), allocatable :: ffmc_z
+           !dir$ attributes align : 64 :: ffmc_x
+           !dir$ attributes align : 64 :: ffmc_y
+           !dir$ attributes align : 64 :: ffmc_z
+      end type FFMC_c4_t
+
+
+     ! Formula (2-27)
+     ! Far field (zone) 'magnetic current' for R>=2*D^2/gamma
+     type, public :: FFMC_c8_t
+
+           integer(kind=i4)          :: npts
+           complex(kind=dp)          :: ifac
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+           type(EIKR_c8_t)           :: eikr
+           type(NMsph_c8_t)          :: nesph
+           complex(kind=dp), dimension(:), allocatable :: ffmc_x
+           complex(kind=dp), dimension(:), allocatable :: ffmc_y
+           complex(kind=dp), dimension(:), allocatable :: ffmc_z
+           !dir$ attributes align : 64 :: ffmc_x
+           !dir$ attributes align : 64 :: ffmc_y
+           !dir$ attributes align : 64 :: ffmc_z
+      end type FFMC_c8_t
+
+
+
+     
+
+
     
 
 
