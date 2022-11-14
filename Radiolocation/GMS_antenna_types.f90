@@ -1752,6 +1752,35 @@ module antenna_types
       end type RP_normalized_c8_t
 
 
+      ! Formula (2-43)
+      ! The current distribution along the 'z' coordiante
+      type, public :: Iz_r4_t
+
+            integer(kind=i4)        :: npts
+            real(kind=sp)           :: I0
+            real(kind=sp)           :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
+            real(kind=sp), dimension(:), allocatable ::  Iz
+            !dir$ attributes align : 64 :: Iz
+      end type Iz_r4_t
+
+
+      ! Formula (2-43)
+      ! The current distribution along the 'z' coordiante
+      type, public :: Iz_r8_t
+
+            integer(kind=i4)        :: npts
+            real(kind=dp)           :: I0
+            real(kind=dp)           :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif
+            real(kind=dp), dimension(:), allocatable ::  Iz
+            !dir$ attributes align : 64 :: Iz
+      end type Iz_r8_t
+
       
 
 
