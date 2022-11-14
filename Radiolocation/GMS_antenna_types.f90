@@ -1656,6 +1656,50 @@ module antenna_types
       end type poynting_avg_c8_t
 
 
+      ! Formula (2-37)
+      ! Intensity of radiation (steradian angle) in directions: phi,theta
+      type, public :: Rad_power_r4_t
+
+            type(poynting_avg_r4_t) :: pavg
+            real(kind=sp), dimension(:), allocatable :: P_re
+            real(kind=sp), dimension(:), allocatable :: P_im
+            !dir$ attributes align : 64 :: P_re
+            !dir$ attributes align : 64 :: P_im
+      end type Rad_power_r4_t
+
+
+      ! Formula (2-37)
+      ! Intensity of radiation (steradian angle) in directions: phi,theta
+      type, public :: Rad_power_r8_t
+
+            type(poynting_avg_r8_t) :: pavg
+            real(kind=dp), dimension(:), allocatable :: P_re
+            real(kind=dp), dimension(:), allocatable :: P_im
+            !dir$ attributes align : 64 :: P_re
+            !dir$ attributes align : 64 :: P_im
+      end type Rad_power_r8_t
+
+
+      ! Formula (2-37)
+      ! Intensity of radiation (steradian angle) in directions: phi,theta
+      type, public :: Rad_power_c4_t
+
+            type(poynting_avg_c4_t) :: pavg
+            complex(kind=sp), dimension(:), allocatable :: P
+            !dir$ attributes align : 64 :: P
+      end type Rad_power_c4_t
+
+
+      ! Formula (2-37)
+      ! Intensity of radiation (steradian angle) in directions: phi,theta
+      type, public :: Rad_power_c8_t
+
+            type(poynting_avg_c8_t) :: pavg
+            complex(kind=dp), dimension(:), allocatable :: P
+            !dir$ attributes align : 64 :: P
+      end type Rad_power_c8_t
+
+
       
 
 
