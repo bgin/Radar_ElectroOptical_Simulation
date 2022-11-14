@@ -1700,6 +1700,58 @@ module antenna_types
       end type Rad_power_c8_t
 
 
+      ! Formula (2-39)
+      ! Normalized radiation pattern expressed by the ratio
+      ! of poynting vectors.
+      type, public :: RP_normalized_r4_t
+            
+            type(poynting_avg_r4_t)  :: pv
+            type(poynting_avg_r4_t)  :: pv_max
+            real(kind=sp), dimension(:), allocatable :: psi_re
+            real(kind=sp), dimension(:), allocatable :: psi_im
+            !dir$ attributes align : 64 :: psi_re
+            !dir$ attributes align : 64 :: psi_im
+      end type RP_normalized_r4_t
+
+
+      ! Formula (2-39)
+      ! Normalized radiation pattern expressed by the ratio
+      ! of poynting vectors.
+      type, public :: RP_normalized_r8_t
+            
+            type(poynting_avg_r8_t)  :: pv
+            type(poynting_avg_r8_t)  :: pv_max
+            real(kind=dp), dimension(:), allocatable :: psi_re
+            real(kind=dp), dimension(:), allocatable :: psi_im
+            !dir$ attributes align : 64 :: psi_re
+            !dir$ attributes align : 64 :: psi_im
+      end type RP_normalized_r8_t
+
+
+      ! Formula (2-39)
+      ! Normalized radiation pattern expressed by the ratio
+      ! of poynting vectors.
+      type, public :: RP_normalized_c4_t
+            
+            type(poynting_avg_c4_t)  :: pv
+            type(poynting_avg_c4_t)  :: pv_max
+            complex(kind=sp), dimension(:), allocatable :: psi_re
+            !dir$ attributes align : 64 :: psi_re
+      end type RP_normalized_c4_t
+
+
+      ! Formula (2-39)
+      ! Normalized radiation pattern expressed by the ratio
+      ! of poynting vectors.
+      type, public :: RP_normalized_c8_t
+            
+            type(poynting_avg_c8_t)  :: pv
+            type(poynting_avg_c8_t)  :: pv_max
+            complex(kind=dp), dimension(:), allocatable :: psi_re
+            !dir$ attributes align : 64 :: psi_re
+      end type RP_normalized_c8_t
+
+
       
 
 
