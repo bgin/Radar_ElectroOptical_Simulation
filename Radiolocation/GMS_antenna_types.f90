@@ -1781,7 +1781,49 @@ module antenna_types
             !dir$ attributes align : 64 :: Iz
       end type Iz_r8_t
 
+
+      ! Formula (2-44)
+      ! Radiation pattern of thin wire (odd m)
+      type, public :: RP_wire_odd_r4_t
+
+            integer(kind=i4)      :: npts
+            real(kind=sp)         :: A
+            real(kind=sp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_odd_r4_t
+
       
+      ! Formula (2-44)
+      ! Radiation pattern of thin wire (odd m)
+      type, public :: RP_wire_odd_r8_t
+
+            integer(kind=i4)      :: npts
+            real(kind=dp)         :: A
+            real(kind=dp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_odd_r8_t
+
+
+      ! Formula (2-45)
+      ! Radiation pattern of thin wire (even m)
+      type, public :: RP_wire_even_r4_t
+
+            integer(kind=i4)      :: npts
+            real(kind=sp)         :: A
+            real(kind=sp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_even_r4_t
+
+      
+      ! Formula (2-45)
+      ! Radiation pattern of thin wire (even m)
+      type, public :: RP_wire_even_r8_t
+
+            integer(kind=i4)      :: npts
+            real(kind=dp)         :: A
+            real(kind=dp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_even_r8_t
 
 
 
