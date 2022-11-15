@@ -1975,7 +1975,70 @@ module antenna_types
       end type Iz_symmetric_c8_t
 
 
-      
+      ! Formula (2-47)
+      ! Wire symmetric current radiation pattern
+      type, public :: RP_wire_symm_r4_t
+            
+            integer(kind=i4)      :: nth
+            real(kind=sp)         :: k
+            real(kind=sp)         :: L
+            real(kind=sp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif  
+            real(kind=sp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_symm_r4_t
+
+
+      ! Formula (2-47)
+      ! Wire symmetric current radiation pattern
+      type, public :: RP_wire_symm_r8_t
+            
+            integer(kind=i4)      :: nth
+            real(kind=dp)         :: k
+            real(kind=dp)         :: L
+            real(kind=dp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif  
+            real(kind=dp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_symm_r8_t
+
+
+      ! Formula (2-49)
+      ! Wire (running-wave) radiation pattern
+      type, public :: RP_wire_rwave_r4_t
+
+            integer(kind=i4)      :: nth
+            real(kind=sp)         :: k
+            real(kind=sp)         :: L
+            real(kind=sp)         :: A
+            real(kind=sp)         :: beta
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif  
+            real(kind=sp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_rwave_r4_t
+
+
+      ! Formula (2-49)
+      ! Wire (running-wave) radiation pattern
+      type, public :: RP_wire_rwave_r8_t
+
+            integer(kind=i4)      :: nth
+            real(kind=dp)         :: k
+            real(kind=dp)         :: L
+            real(kind=dp)         :: A
+            real(kind=dp)         :: beta
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif  
+            real(kind=dp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth
+      end type RP_wire_rwave_r8_t
 
 
 
