@@ -2041,6 +2041,114 @@ module antenna_types
       end type RP_wire_rwave_r8_t
 
 
+      ! Formula (2-62)
+      ! Flat 2D antenna radiating slot (Integral of electric field)
+      ! x-component only
+      type, public :: EF_slot2D_r4_t
+
+            integer(kind=i4)      :: nx
+            integer(kind=i4)      :: ny
+            integer(kind=i4)      :: nphi
+            integer(kind=i4)      :: ntht
+            real(kind=sp)         :: k
+            real(kind=sp)         :: A
+            real(kind=sp)         :: B
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,4)
+#endif           
+            real(kind=sp), dimension(:), allocatable :: Ex_re
+            real(kind=sp), dimension(:), allocatable :: Ex_im
+            real(kind=sp), dimension(:), allocatable :: Ey_re
+            real(kind=sp), dimension(:), allocatable :: Ey_im
+            real(kind=sp), dimension(:), allocatable :: N_re
+            real(kind=sp), dimension(:), allocatable :: N_im  
+            !dir$ attributes align : 64 :: Ex_re
+            !dir$ attributes align : 64 :: Ex_im
+            !dir$ attributes align : 64 :: Ey_re
+            !dir$ attributes align : 64 :: Ey_im
+            !dir$ attributes align : 64 :: N_re
+            !dir$ attributes align : 64 :: N_im
+      end type EF_slot2D_r4_t
+
+
+      ! Formula (2-62)
+      ! Flat 2D antenna radiating slot (Integral of electric field)
+      ! x-component only
+      type, public :: EF_slot2D_r8_t
+
+            integer(kind=i4)      :: nx
+            integer(kind=i4)      :: ny
+            integer(kind=i4)      :: nphi
+            integer(kind=i4)      :: ntht
+            real(kind=dp)         :: k
+            real(kind=dp)         :: A
+            real(kind=dp)         :: B
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,24)
+#endif           
+            real(kind=dp), dimension(:), allocatable :: Ex_re
+            real(kind=dp), dimension(:), allocatable :: Ex_im
+            real(kind=dp), dimension(:), allocatable :: Ey_re
+            real(kind=dp), dimension(:), allocatable :: Ey_im
+            real(kind=dp), dimension(:), allocatable :: N_re
+            real(kind=dp), dimension(:), allocatable :: N_im  
+            !dir$ attributes align : 64 :: Ex_re
+            !dir$ attributes align : 64 :: Ex_im
+            !dir$ attributes align : 64 :: Ey_re
+            !dir$ attributes align : 64 :: Ey_im
+            !dir$ attributes align : 64 :: N_re
+            !dir$ attributes align : 64 :: N_im
+      end type EF_slot2D_r8_t
+
+
+      ! Formula (2-62)
+      ! Flat 2D antenna radiating slot (Integral of electric field)
+      ! x-component only
+      type, public :: EF_slot2D_c4_t
+
+            integer(kind=i4)      :: nx
+            integer(kind=i4)      :: ny
+            integer(kind=i4)      :: nphi
+            integer(kind=i4)      :: ntht
+            real(kind=sp)         :: k
+            real(kind=sp)         :: A
+            real(kind=sp)         :: B
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,4)
+#endif           
+            complex(kind=sp), dimension(:), allocatable :: Ex
+            complex(kind=sp), dimension(:), allocatable :: Ey
+            complex(kind=sp), dimension(:), allocatable :: N
+            !dir$ attributes align : 64 :: Ex
+            !dir$ attributes align : 64 :: Ey
+            !dir$ attributes align : 64 :: Ey
+            !dir$ attributes align : 64 :: N
+       end type EF_slot2D_c4_t
+
+
+      ! Formula (2-62)
+      ! Flat 2D antenna radiating slot (Integral of electric field)
+      ! x-component only
+      type, public :: EF_slot2D_c8_t
+
+            integer(kind=i4)      :: nx
+            integer(kind=i4)      :: ny
+            integer(kind=i4)      :: nphi
+            integer(kind=i4)      :: ntht
+            real(kind=dp)         :: k
+            real(kind=dp)         :: A
+            real(kind=dp)         :: B
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,24)
+#endif           
+            complex(kind=dp), dimension(:), allocatable :: Ex
+            complex(kind=dp), dimension(:), allocatable :: Ey
+            complex(kind=dp), dimension(:), allocatable :: N
+            !dir$ attributes align : 64 :: Ex
+            !dir$ attributes align : 64 :: Ey
+            !dir$ attributes align : 64 :: N
+       end type EF_slot2D_c8_t
+
 
      
 
