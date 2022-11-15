@@ -1904,6 +1904,77 @@ module antenna_types
       end type Iz_phase_speed_c8_t
 
 
+      ! Formula (2-46)
+      ! Symmetric sinusoidal current distribution.
+      type, public :: Iz_symmetric_r4_t
+            
+            integer(kind=i4)      :: nz
+            real(kind=sp)         :: I0_re
+            real(kind=sp)         :: I0_im
+            real(kind=sp)         :: L
+            real(kind=sp)         :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
+            real(kind=sp), dimension(:), allocatable :: Iz_re
+            real(kind=sp), dimension(:), allocatable :: Iz_im
+            !dir$ attributes align : 64 :: Iz_re
+            !dir$ attributes align : 64 :: Iz_im
+      end type Iz_symmetric_r4_t
+
+
+      ! Formula (2-46)
+      ! Symmetric sinusoidal current distribution.
+      type, public :: Iz_symmetric_r8_t
+            
+            integer(kind=i4)      :: nz
+            real(kind=dp)         :: I0_re
+            real(kind=dp)         :: I0_im
+            real(kind=dp)         :: L
+            real(kind=dp)         :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif            
+            real(kind=dp), dimension(:), allocatable :: Iz_re
+            real(kind=dp), dimension(:), allocatable :: Iz_im
+            !dir$ attributes align : 64 :: Iz_re
+            !dir$ attributes align : 64 :: Iz_im
+      end type Iz_symmetric_r8_t
+
+
+      ! Formula (2-46)
+      ! Symmetric sinusoidal current distribution.
+      type, public :: Iz_symmetric_c4_t
+            
+            integer(kind=i4)      :: nz
+            complex(kind=sp)      :: I0
+            real(kind=sp)         :: L
+            real(kind=sp)         :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,12)
+#endif            
+            complex(kind=sp), dimension(:), allocatable :: Iz
+            !dir$ attributes align : 64 :: Iz
+            
+      end type Iz_symmetric_c4_t
+
+
+      ! Formula (2-46)
+      ! Symmetric sinusoidal current distribution.
+      type, public :: Iz_symmetric_c8_t
+            
+            integer(kind=i4)      :: nz
+            complex(kind=dp)      :: I0
+            real(kind=dp)         :: L
+            real(kind=dp)         :: k
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,28)
+#endif            
+            complex(kind=dp), dimension(:), allocatable :: Iz
+            !dir$ attributes align : 64 :: Iz
+      end type Iz_symmetric_c8_t
+
+
       
 
 
