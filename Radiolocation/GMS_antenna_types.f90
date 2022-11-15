@@ -2150,6 +2150,35 @@ module antenna_types
        end type EF_slot2D_c8_t
 
 
+       ! Formula (2-65)
+       type, public :: RP_lin_ant_r4_t
+             
+             integer(kind=i4)      :: nth
+             integer(kind=i4)      :: nx
+             real(kind=sp)         :: A
+             real(kind=sp)         :: L
+             real(kind=sp)         :: gamm
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,12)
+#endif   
+             real(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type RP_lin_ant_r4_t
+
+
+       ! Formula (2-65)
+       type, public :: RP_lin_ant_r8_t
+             
+             integer(kind=i4)      :: nth
+             integer(kind=i4)      :: nx
+             real(kind=dp)         :: A
+             real(kind=dp)         :: L
+             real(kind=dp)         :: gamm
+             real(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type RP_lin_ant_r8_t
+
+
      
 
 
