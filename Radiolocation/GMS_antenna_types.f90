@@ -1788,6 +1788,9 @@ module antenna_types
 
             integer(kind=i4)      :: npts
             real(kind=sp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
       end type RP_wire_odd_r4_t
@@ -1799,6 +1802,9 @@ module antenna_types
 
             integer(kind=i4)      :: npts
             real(kind=dp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
       end type RP_wire_odd_r8_t
@@ -1810,6 +1816,9 @@ module antenna_types
 
             integer(kind=i4)      :: npts
             real(kind=sp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,24)
+#endif
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
       end type RP_wire_even_r4_t
@@ -1821,10 +1830,78 @@ module antenna_types
 
             integer(kind=i4)      :: npts
             real(kind=dp)         :: A
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,20)
+#endif
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
       end type RP_wire_even_r8_t
 
+
+      ! Formula (2-48)
+      ! For a wire with current modulated by phase speed
+      type, public :: Iz_phase_speed_r4_t
+            
+            integer(kind=i4)      :: nz
+            real(kind=sp)         :: I0_re
+            real(kind=sp)         :: I0_im
+            real(kind=sp)         :: beta  ! freq/c
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif
+            real(kind=sp), dimension(:), allocatable :: Iz_re
+            real(kind=sp), dimension(:), allocatable :: Iz_im
+            !dir$ attributes align : 64 :: Iz_re
+            !dir$ attributes align : 64 :: Iz_im
+      end type Iz_phase_speed_r4_t
+
+
+      ! Formula (2-48)
+      ! For a wire with current modulated by phase speed
+      type, public :: Iz_phase_speed_r8_t
+            
+            integer(kind=i4)      :: nz
+            real(kind=dp)         :: I0_re
+            real(kind=dp)         :: I0_im
+            real(kind=dp)         :: beta  ! freq/c
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+            real(kind=dp), dimension(:), allocatable :: Iz_re
+            real(kind=dp), dimension(:), allocatable :: Iz_im
+            !dir$ attributes align : 64 :: Iz_re
+            !dir$ attributes align : 64 :: Iz_im
+      end type Iz_phase_speed_r8_t
+
+
+      ! Formula (2-48)
+      ! For a wire with current modulated by phase speed
+      type, public :: Iz_phase_speed_c4_t
+            
+            integer(kind=i4)      :: nz
+            complex(kind=sp)      :: I0
+            real(kind=sp)         :: beta  ! freq/c
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,16)
+#endif
+            complex(kind=sp), dimension(:), allocatable :: Iz
+            !dir$ attributes align : 64 :: Iz
+      end type Iz_phase_speed_c4_t
+
+
+      ! Formula (2-48)
+      ! For a wire with current modulated by phase speed
+      type, public :: Iz_phase_speed_c8_t
+            
+            integer(kind=i4)      :: nz
+            complex(kind=dp)      :: I0
+            real(kind=dp)         :: beta  ! freq/c
+#if (USE_STRUCT_PADDING) == 1
+           STRUCT_PADDING(0,4)
+#endif
+            complex(kind=dp), dimension(:), allocatable :: Iz
+            !dir$ attributes align : 64 :: Iz
+      end type Iz_phase_speed_c8_t
 
 
       
