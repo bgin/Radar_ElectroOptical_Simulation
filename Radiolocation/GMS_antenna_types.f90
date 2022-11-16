@@ -2179,6 +2179,72 @@ module antenna_types
        end type RP_lin_ant_r8_t
 
 
+       
+       ! Formula (2-67)
+       ! Main lobe width
+       type, public :: main_lob_width_r4_t
+
+             integer(kind=i4)      :: nx
+             real(kind=sp)         :: A
+             real(kind=sp)         :: gamm
+             real(kind=sp)         :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,16)
+#endif 
+             real(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type main_lobe_width_r4_t
+
+
+       ! Formula (2-67)
+       ! Main lobe width
+       type, public :: main_lob_width_r8_t
+
+             integer(kind=i4)      :: nx
+             real(kind=dp)         :: A
+             real(kind=dp)         :: gamm
+             real(kind=dp)         :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,4)
+#endif 
+             real(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type main_lobe_width_r8_t
+
+
+       ! Formula (2-68)
+       ! Normalized radiation pattern.
+       type, public :: RP_peakless_r4_t
+
+             integer(kind=i4)      :: nx
+             real(kind=sp)         :: A
+             real(kind=sp)         :: gamm
+             real(kind=sp)         :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,16)
+#endif 
+             real(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth 
+       end type RP_peakless_r4_t
+
+
+       ! Formula (2-68)
+       ! Normalized radiation pattern.
+       type, public :: RP_peakless_r8_t
+
+             integer(kind=i4)      :: nx
+             real(kind=dp)         :: A
+             real(kind=dp)         :: gamm
+             real(kind=dp)         :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,4)
+#endif 
+             real(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth 
+       end type RP_peakless_r8_t
+
+
+
      
 
 
