@@ -1754,7 +1754,7 @@ module antenna_types
 
       ! Formula (2-43)
       ! The current distribution along the 'z' coordiante
-      type, public :: Iz_r4_t
+      type, public :: f243_r4_t
 
             integer(kind=i4)        :: npts
             real(kind=sp)           :: I0
@@ -1764,12 +1764,12 @@ module antenna_types
 #endif
             real(kind=sp), dimension(:), allocatable ::  Iz
             !dir$ attributes align : 64 :: Iz
-      end type Iz_r4_t
+      end type f243_r4_t
 
 
       ! Formula (2-43)
       ! The current distribution along the 'z' coordiante
-      type, public :: Iz_r8_t
+      type, public :: f243_r8_t
 
             integer(kind=i4)        :: npts
             real(kind=dp)           :: I0
@@ -1779,12 +1779,12 @@ module antenna_types
 #endif
             real(kind=dp), dimension(:), allocatable ::  Iz
             !dir$ attributes align : 64 :: Iz
-      end type Iz_r8_t
+      end type f243_r8_t
 
 
       ! Formula (2-44)
       ! Radiation pattern of thin wire (odd m)
-      type, public :: RP_wire_odd_r4_t
+      type, public :: f244_r4_t
 
             integer(kind=i4)      :: npts
             real(kind=sp)         :: A
@@ -1793,12 +1793,12 @@ module antenna_types
 #endif
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_odd_r4_t
+      end type f244_r4_t
 
       
       ! Formula (2-44)
       ! Radiation pattern of thin wire (odd m)
-      type, public :: RP_wire_odd_r8_t
+      type, public :: f244_r8_t
 
             integer(kind=i4)      :: npts
             real(kind=dp)         :: A
@@ -1807,12 +1807,12 @@ module antenna_types
 #endif
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_odd_r8_t
+      end type f244_r8_t
 
 
       ! Formula (2-45)
       ! Radiation pattern of thin wire (even m)
-      type, public :: RP_wire_even_r4_t
+      type, public :: f245_r4_t
 
             integer(kind=i4)      :: npts
             real(kind=sp)         :: A
@@ -1821,12 +1821,12 @@ module antenna_types
 #endif
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_even_r4_t
+      end type f245_r4_t
 
       
       ! Formula (2-45)
       ! Radiation pattern of thin wire (even m)
-      type, public :: RP_wire_even_r8_t
+      type, public :: f245_r8_t
 
             integer(kind=i4)      :: npts
             real(kind=dp)         :: A
@@ -1835,12 +1835,12 @@ module antenna_types
 #endif
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_even_r8_t
+      end type f245_r8_t
 
 
       ! Formula (2-48)
       ! For a wire with current modulated by phase speed
-      type, public :: Iz_phase_speed_r4_t
+      type, public :: f248_r4_t
             
             integer(kind=i4)      :: nz
             real(kind=sp)         :: I0_re
@@ -1853,12 +1853,12 @@ module antenna_types
             real(kind=sp), dimension(:), allocatable :: Iz_im
             !dir$ attributes align : 64 :: Iz_re
             !dir$ attributes align : 64 :: Iz_im
-      end type Iz_phase_speed_r4_t
+      end type f248_r4_t
 
 
       ! Formula (2-48)
       ! For a wire with current modulated by phase speed
-      type, public :: Iz_phase_speed_r8_t
+      type, public :: f248_r8_t
             
             integer(kind=i4)      :: nz
             real(kind=dp)         :: I0_re
@@ -1871,12 +1871,12 @@ module antenna_types
             real(kind=dp), dimension(:), allocatable :: Iz_im
             !dir$ attributes align : 64 :: Iz_re
             !dir$ attributes align : 64 :: Iz_im
-      end type Iz_phase_speed_r8_t
+      end type f248_r8_t
 
 
       ! Formula (2-48)
       ! For a wire with current modulated by phase speed
-      type, public :: Iz_phase_speed_c4_t
+      type, public :: f248_c4_t
             
             integer(kind=i4)      :: nz
             complex(kind=sp)      :: I0
@@ -1886,12 +1886,12 @@ module antenna_types
 #endif
             complex(kind=sp), dimension(:), allocatable :: Iz
             !dir$ attributes align : 64 :: Iz
-      end type Iz_phase_speed_c4_t
+      end type f248_c4_t
 
 
       ! Formula (2-48)
       ! For a wire with current modulated by phase speed
-      type, public :: Iz_phase_speed_c8_t
+      type, public :: f248_c8_t
             
             integer(kind=i4)      :: nz
             complex(kind=dp)      :: I0
@@ -1901,12 +1901,12 @@ module antenna_types
 #endif
             complex(kind=dp), dimension(:), allocatable :: Iz
             !dir$ attributes align : 64 :: Iz
-      end type Iz_phase_speed_c8_t
+      end type f248_c8_t
 
 
       ! Formula (2-46)
       ! Symmetric sinusoidal current distribution.
-      type, public :: Iz_symmetric_r4_t
+      type, public :: f246_r4_t
             
             integer(kind=i4)      :: nz
             real(kind=sp)         :: I0_re
@@ -1920,12 +1920,12 @@ module antenna_types
             real(kind=sp), dimension(:), allocatable :: Iz_im
             !dir$ attributes align : 64 :: Iz_re
             !dir$ attributes align : 64 :: Iz_im
-      end type Iz_symmetric_r4_t
+      end type f246_r4_t
 
 
       ! Formula (2-46)
       ! Symmetric sinusoidal current distribution.
-      type, public :: Iz_symmetric_r8_t
+      type, public :: f246_r8_t
             
             integer(kind=i4)      :: nz
             real(kind=dp)         :: I0_re
@@ -1939,12 +1939,12 @@ module antenna_types
             real(kind=dp), dimension(:), allocatable :: Iz_im
             !dir$ attributes align : 64 :: Iz_re
             !dir$ attributes align : 64 :: Iz_im
-      end type Iz_symmetric_r8_t
+      end type f246_r8_t
 
 
       ! Formula (2-46)
       ! Symmetric sinusoidal current distribution.
-      type, public :: Iz_symmetric_c4_t
+      type, public :: f246_c4_t
             
             integer(kind=i4)      :: nz
             complex(kind=sp)      :: I0
@@ -1956,12 +1956,12 @@ module antenna_types
             complex(kind=sp), dimension(:), allocatable :: Iz
             !dir$ attributes align : 64 :: Iz
             
-      end type Iz_symmetric_c4_t
+      end type f246_c4_t
 
 
       ! Formula (2-46)
       ! Symmetric sinusoidal current distribution.
-      type, public :: Iz_symmetric_c8_t
+      type, public :: f246_c8_t
             
             integer(kind=i4)      :: nz
             complex(kind=dp)      :: I0
@@ -1972,12 +1972,12 @@ module antenna_types
 #endif            
             complex(kind=dp), dimension(:), allocatable :: Iz
             !dir$ attributes align : 64 :: Iz
-      end type Iz_symmetric_c8_t
+      end type f246_c8_t
 
 
       ! Formula (2-47)
       ! Wire symmetric current radiation pattern
-      type, public :: RP_wire_symm_r4_t
+      type, public :: f247_r4_t
             
             integer(kind=i4)      :: nth
             real(kind=sp)         :: k
@@ -1988,12 +1988,12 @@ module antenna_types
 #endif  
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_symm_r4_t
+      end type f247_r4_t
 
 
       ! Formula (2-47)
       ! Wire symmetric current radiation pattern
-      type, public :: RP_wire_symm_r8_t
+      type, public :: f247_r8_t
             
             integer(kind=i4)      :: nth
             real(kind=dp)         :: k
@@ -2004,12 +2004,12 @@ module antenna_types
 #endif  
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_symm_r8_t
+      end type f247_r8_t
 
 
       ! Formula (2-49)
       ! Wire (running-wave) radiation pattern
-      type, public :: RP_wire_rwave_r4_t
+      type, public :: f249_r4_t
 
             integer(kind=i4)      :: nth
             real(kind=sp)         :: k
@@ -2021,12 +2021,12 @@ module antenna_types
 #endif  
             real(kind=sp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_rwave_r4_t
+      end type f249_r4_t
 
 
       ! Formula (2-49)
       ! Wire (running-wave) radiation pattern
-      type, public :: RP_wire_rwave_r8_t
+      type, public :: f249_r8_t
 
             integer(kind=i4)      :: nth
             real(kind=dp)         :: k
@@ -2038,13 +2038,13 @@ module antenna_types
 #endif  
             real(kind=dp), dimension(:), allocatable :: Fth
             !dir$ attributes align : 64 :: Fth
-      end type RP_wire_rwave_r8_t
+      end type f249_r8_t
 
 
       ! Formula (2-62)
       ! Flat 2D antenna radiating slot (Integral of electric field)
       ! x-component only
-      type, public :: EF_slot2D_r4_t
+      type, public :: f262_r4_t
 
             integer(kind=i4)      :: nx
             integer(kind=i4)      :: ny
@@ -2068,13 +2068,13 @@ module antenna_types
             !dir$ attributes align : 64 :: Ey_im
             !dir$ attributes align : 64 :: N_re
             !dir$ attributes align : 64 :: N_im
-      end type EF_slot2D_r4_t
+      end type f262_r4_t
 
 
       ! Formula (2-62)
       ! Flat 2D antenna radiating slot (Integral of electric field)
       ! x-component only
-      type, public :: EF_slot2D_r8_t
+      type, public :: f262_r8_t
 
             integer(kind=i4)      :: nx
             integer(kind=i4)      :: ny
@@ -2098,13 +2098,13 @@ module antenna_types
             !dir$ attributes align : 64 :: Ey_im
             !dir$ attributes align : 64 :: N_re
             !dir$ attributes align : 64 :: N_im
-      end type EF_slot2D_r8_t
+      end type f262_r8_t
 
 
       ! Formula (2-62)
       ! Flat 2D antenna radiating slot (Integral of electric field)
       ! x-component only
-      type, public :: EF_slot2D_c4_t
+      type, public :: f262_c4_t
 
             integer(kind=i4)      :: nx
             integer(kind=i4)      :: ny
@@ -2123,13 +2123,13 @@ module antenna_types
             !dir$ attributes align : 64 :: Ey
             !dir$ attributes align : 64 :: Ey
             !dir$ attributes align : 64 :: N
-       end type EF_slot2D_c4_t
+       end type f262_c4_t
 
 
       ! Formula (2-62)
       ! Flat 2D antenna radiating slot (Integral of electric field)
       ! x-component only
-      type, public :: EF_slot2D_c8_t
+      type, public :: f262_c8_t
 
             integer(kind=i4)      :: nx
             integer(kind=i4)      :: ny
@@ -2147,11 +2147,11 @@ module antenna_types
             !dir$ attributes align : 64 :: Ex
             !dir$ attributes align : 64 :: Ey
             !dir$ attributes align : 64 :: N
-       end type EF_slot2D_c8_t
+       end type f262_c8_t
 
 
        ! Formula (2-65)
-       type, public :: RP_lin_ant_r4_t
+       type, public :: f265_r4_t
              
              integer(kind=i4)      :: nth
              integer(kind=i4)      :: nx
@@ -2163,11 +2163,11 @@ module antenna_types
 #endif   
              real(kind=sp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth
-       end type RP_lin_ant_r4_t
+       end type f265_r4_t
 
 
        ! Formula (2-65)
-       type, public :: RP_lin_ant_r8_t
+       type, public :: f268_r8_t
              
              integer(kind=i4)      :: nth
              integer(kind=i4)      :: nx
@@ -2176,78 +2176,185 @@ module antenna_types
              real(kind=dp)         :: gamm
              real(kind=dp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth
-       end type RP_lin_ant_r8_t
+       end type f268_r8_t
 
 
        
        ! Formula (2-67)
        ! Main lobe width
-       type, public :: main_lob_width_r4_t
-
+       type, public :: f267_r4_t
+ 
+             integer(kind=i4)      :: nth
              integer(kind=i4)      :: nx
              real(kind=sp)         :: A
              real(kind=sp)         :: gamm
              real(kind=sp)         :: L
 #if (USE_STRUCT_PADDING) == 1
-            STRUCT_PADDING(0,16)
+            STRUCT_PADDING(0,12)
 #endif 
              real(kind=sp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth
-       end type main_lobe_width_r4_t
+       end type f267_r4_t
 
 
        ! Formula (2-67)
        ! Main lobe width
-       type, public :: main_lob_width_r8_t
+       type, public :: f267_r8_t
 
+             integer(kind=i4)      :: nth
              integer(kind=i4)      :: nx
              real(kind=dp)         :: A
              real(kind=dp)         :: gamm
              real(kind=dp)         :: L
-#if (USE_STRUCT_PADDING) == 1
-            STRUCT_PADDING(0,4)
-#endif 
              real(kind=dp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth
-       end type main_lobe_width_r8_t
+       end type f267_r8_t
 
 
        ! Formula (2-68)
        ! Normalized radiation pattern.
-       type, public :: RP_peakless_r4_t
+       type, public :: f268_r4_t
 
              integer(kind=i4)      :: nx
+             integer(kind=i4)      :: nth
              real(kind=sp)         :: A
              real(kind=sp)         :: gamm
              real(kind=sp)         :: L
 #if (USE_STRUCT_PADDING) == 1
-            STRUCT_PADDING(0,16)
+            STRUCT_PADDING(0,12)
 #endif 
              real(kind=sp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth 
-       end type RP_peakless_r4_t
+       end type f268_r4_t
 
 
        ! Formula (2-68)
        ! Normalized radiation pattern.
-       type, public :: RP_peakless_r8_t
+       type, public :: f268_r8_t
 
              integer(kind=i4)      :: nx
+             integer(kind=i4)      :: nth
              real(kind=dp)         :: A
              real(kind=dp)         :: gamm
              real(kind=dp)         :: L
-#if (USE_STRUCT_PADDING) == 1
-            STRUCT_PADDING(0,4)
-#endif 
              real(kind=dp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth 
-       end type RP_peakless_r8_t
+       end type f268_r8_t
 
 
+       ! Formula (2-71)
+       ! The area of homogenous sidelobs
+       type, public :: f271_r4_t
 
+             integer(kind=i4)   :: m
+             integer(kind=i4)   :: n
+             integer(kind=i4)   :: nth
+             integer(kind=i4)   :: nx
+             real(kind=sp)      :: gamm
+             real(kind=sp)      :: L
+             real(kind=sp)      :: A
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,4)
+#endif
+            real(kind=sp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth  
+       end type f271_r4_t
+
+
+        ! Formula (2-71)
+       ! The area of homogenous sidelobs
+       type, public :: f271_r8_t
+
+             integer(kind=i4)   :: m
+             integer(kind=i4)   :: n
+             integer(kind=i4)   :: nth
+             integer(kind=i4)   :: nx
+             real(kind=dp)      :: gamm
+             real(kind=dp)      :: L
+             real(kind=dp)      :: A
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,24)
+#endif
+            real(kind=dp), dimension(:), allocatable :: Fth
+            !dir$ attributes align : 64 :: Fth  
+       end type f271_r8_t
+
+
+       ! Formula (2-74)
+       ! The antenna current distribution for creating
+       ! the radiation pattern (2-71)
+       ! Changed the naming pattern.
+       type, public :: f274_r4_t
+
+             integer(kind=i4)        :: nx
+             integer(kind=i4)        :: m
+             integer(kind=i4)        :: n
+             real(kind=sp)           :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,16)
+#endif
+             real(kind=sp), dimension(:), allocatable :: F0mM
+             real(kind=dp), dimension(:), allocatable :: FnmM
+             real(kind=sp), dimension(:), allocatable :: f2xL
+             !dir$ attributes align : 64 :: F0mM
+             !dir$ attributes align : 64 :: FnmM
+             !dir$ attributes align : 64 :: f2xL
+       end type f274_r4_t
+
+
+       ! Formula (2-74)
+       ! The antenna current distribution for creating
+       ! the radiation pattern (2-71)
+       type, public :: f274_r8_t
+
+             integer(kind=i4)        :: nx
+             integer(kind=i4)        :: m
+             integer(kind=i4)        :: n
+             real(kind=dp)           :: L
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,12)
+#endif
+             real(kind=dp), dimension(:), allocatable :: F0mM
+             real(kind=dp), dimension(:), allocatable :: FnmM
+             real(kind=dp), dimension(:), allocatable :: f2xL
+             !dir$ attributes align : 64 :: F0mM
+             !dir$ attributes align : 64 :: FnmM
+             !dir$ attributes align : 64 :: f2xL
+       end type f274_r8_t
+
+
+       ! Formula (2-78)
+       ! The antenna current distribution for creating
+       ! the radiation pattern (2-75)
+       
+       type, public :: f278_r4_t
      
+             integer(kind=i4)       :: nx
+             real(kind=sp)          :: L
+             real(kind=sp)          :: A
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,20)
+#endif
+             real(kind=sp), dimension(:), allocatable :: fx
+             !dir$ attributes align : 64 :: fx
+       end type f278_r4_t
 
 
+       ! Formula (2-78)
+       ! The antenna current distribution for creating
+       ! the radiation pattern (2-75)
+       
+       type, public :: f278_r8_t
+     
+             integer(kind=i4)       :: nx
+             real(kind=dp)          :: L
+             real(kind=dp)          :: A
+#if (USE_STRUCT_PADDING) == 1
+            STRUCT_PADDING(0,12)
+#endif
+             real(kind=dp), dimension(:), allocatable :: fx
+             !dir$ attributes align : 64 :: fx
+       end type f278_r8_t
     
 
 
