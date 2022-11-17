@@ -2603,8 +2603,72 @@ module antenna_types
              real(kind=sp)            :: delta1
              real(kind=sp)            :: delta2
              real(kind=sp)            :: D
-             
+             real(kind=sp)            :: iph
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+             real(kind=sp), dimension(:), allocatable :: fph
+             !dir$ attributes align : 64 :: fph
        end type f287_r4_t
+
+
+       ! Formula (2-87)
+       ! 
+       type, public :: f287_r8_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: nph
+             real(kind=dp)            :: ir
+             real(kind=dp)            :: delta1
+             real(kind=dp)            :: delta2
+             real(kind=dp)            :: D
+             real(kind=dp)            :: iph
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,16)
+#endif
+             real(kind=dp), dimension(:), allocatable :: fph
+             !dir$ attributes align : 64 :: fph
+       end type f287_r8_t
+
+
+       ! Formula (2-88)
+       ! Radiation pattern for 2-87, iff phi'=0
+       type, public :: f288_r4_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: nth
+             real(kind=sp)            :: ir
+             real(kind=sp)            :: delta1
+             real(kind=sp)            :: delta2
+             real(kind=sp)            :: D
+             real(kind=sp)            :: k
+             real(kind=sp)            :: R0
+             real(kind=sp)            :: ith
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,28)
+#endif
+             real(kind=sp), dimension(:), allocatable :: Fu0
+             !dir$ attributes align : 64 :: Fu0
+       end type f288_r4_t
+
+
+       ! Formula (2-88)
+       ! Radiation pattern for 2-87, iff phi'=0
+       type, public :: f288_r8_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: nth
+             real(kind=dp)            :: ir
+             real(kind=dp)            :: delta1
+             real(kind=dp)            :: delta2
+             real(kind=dp)            :: D
+             real(kind=dp)            :: k
+             real(kind=dp)            :: R0
+             real(kind=dp)            :: ith
+             real(kind=dp), dimension(:), allocatable :: Fu0
+             !dir$ attributes align : 64 :: Fu0
+       end type f288_r8_t
+
 
        
 
