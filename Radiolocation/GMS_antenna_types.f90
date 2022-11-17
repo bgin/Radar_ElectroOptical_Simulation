@@ -2553,6 +2553,46 @@ module antenna_types
        end type f284_r8_t
 
 
+       ! Formula (2-85)
+       ! The radiation pattern of circular synch-phase slit
+       ! for the current distribution (2-84)
+       type, public :: f285_r4_t
+
+             integer(kind=i4)        :: nr
+             integer(kind=i4)        :: nth
+             real(kind=sp)           :: ir
+             real(kind=sp)           :: D
+             real(kind=sp)           :: delta
+             real(kind=sp)           :: R0
+             real(kind=sp)           :: k
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+             real(kind=sp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f285_r4_t
+
+
+       ! Formula (2-85)
+       ! The radiation pattern of circular synch-phase slit
+       ! for the current distribution (2-84)
+       type, public :: f285_r8_t
+
+             integer(kind=i4)        :: nr
+             integer(kind=i4)        :: nth
+             real(kind=dp)           :: ir
+             real(kind=dp)           :: D
+             real(kind=dp)           :: delta
+             real(kind=dp)           :: R0
+             real(kind=dp)           :: k
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,16)
+#endif
+             real(kind=dp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f285_r8_t
+
+
        
 
 
