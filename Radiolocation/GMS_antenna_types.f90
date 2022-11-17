@@ -2355,7 +2355,173 @@ module antenna_types
              real(kind=dp), dimension(:), allocatable :: fx
              !dir$ attributes align : 64 :: fx
        end type f278_r8_t
-    
+
+
+       ! Formula (2-79)
+       ! Constant and squared-cosine distribution.
+       type, public :: f279_r4_t
+
+             integer(kind=i4)       :: nx
+             real(kind=sp)          :: C
+             real(kind=sp)          :: initx
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,20)
+#endif       
+             real(kind=sp), dimension(:), allocatable :: fx
+             !dir$ attributes align : 64 :: fx      
+       end type f279_r4_t
+
+
+       ! Formula (2-79)
+       ! Constant and squared-cosine distribution.
+       type, public :: f279_r8_t
+
+             integer(kind=i4)       :: nx
+             real(kind=dp)          :: C
+             real(kind=dp)          :: initx
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,12)
+#endif       
+             real(kind=dp), dimension(:), allocatable :: fx
+             !dir$ attributes align : 64 :: fx      
+       end type f279_r8_t
+
+
+       ! Formula (2-80)
+       ! Radiation pattern of (2-79)
+       type, public :: f280_r4_t
+
+             integer(kind=i4)        :: nth
+             real(kind=sp)           :: L
+             real(kind=sp)           :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,20)
+#endif  
+             real(kind=sp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f280_r4_t
+
+
+       ! Formula (2-80)
+       ! Radiation pattern of (2-79)
+       type, public :: f280_r8_t
+
+             integer(kind=i4)        :: nth
+             real(kind=dp)           :: L
+             real(kind=dp)           :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,12)
+#endif  
+             real(kind=dp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f280_r8_t
+
+
+       ! Formula (2-83)
+       ! Circular slit radiation pattern (for each point of observation i.e. theta,phi do:)
+       type, public :: f283_r4_t
+
+             integer(kind=i4)        :: nth1
+             integer(kind=i4)        :: nph1
+             integer(kind=i4)        :: nph2
+             integer(kind=i4)        :: nr
+             real(kind=sp)           :: k
+             real(kind=sp)           :: iph1  ! starting values
+             real(kind=sp)           :: iph2  ! starting values
+             real(kind=sp)           :: ir    ! starting values
+             real(kind=sp)           :: ith   ! starting values
+             real(kind=sp)           :: R     ! slit diameter
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             real(kind=sp), dimension(:), allocatable :: Ex_re 
+             real(kind=sp), dimension(:), allocatable :: Ex_im
+             real(kind=sp), dimension(:), allocatable :: Nx_re
+             real(kind=sp), dimension(:), allocatable :: Nx_im
+             !dir$ attributes align : 64 :: Ex_re
+             !dir$ attributes align : 64 :: Ex_im
+             !dir$ attributes align : 64 :: Nx_re
+             !dir$ attributes align : 64 :: Nx_im
+       end type f283_r4_t
+
+
+          ! Formula (2-83)
+       ! Circular slit radiation pattern (for each point of observation i.e. theta,phi do:)
+       type, public :: f283_r8_t
+
+             integer(kind=i4)        :: nth1
+             integer(kind=i4)        :: nph1
+             integer(kind=i4)        :: nph2
+             integer(kind=i4)        :: nr
+             real(kind=dp)           :: k
+             real(kind=dp)           :: iph1  ! starting values
+             real(kind=dp)           :: iph2  ! starting values
+             real(kind=dp)           :: ir    ! starting values
+             real(kind=dp)           :: ith   ! starting values
+             real(kind=dp)           :: R     ! slit diameter
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,2)
+#endif
+             real(kind=dp), dimension(:), allocatable :: Ex_re 
+             real(kind=dp), dimension(:), allocatable :: Ex_im
+             real(kind=dp), dimension(:), allocatable :: Nx_re
+             real(kind=dp), dimension(:), allocatable :: Nx_im
+             !dir$ attributes align : 64 :: Ex_re
+             !dir$ attributes align : 64 :: Ex_im
+             !dir$ attributes align : 64 :: Nx_re
+             !dir$ attributes align : 64 :: Nx_im
+       end type f283_r8_t
+
+
+       ! Formula (2-83)
+       ! Circular slit radiation pattern (for each point of observation i.e. theta,phi do:)
+       type, public :: f283_c4_t
+
+             integer(kind=i4)        :: nth1
+             integer(kind=i4)        :: nph1
+             integer(kind=i4)        :: nph2
+             integer(kind=i4)        :: nr
+             real(kind=sp)           :: k
+             real(kind=sp)           :: iph1  ! starting values
+             real(kind=sp)           :: iph2  ! starting values
+             real(kind=sp)           :: ir    ! starting values
+             real(kind=sp)           :: ith   ! starting values
+             real(kind=sp)           :: R     ! slit diameter
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             complex(kind=sp), dimension(:), allocatable :: Ex 
+             complex(kind=sp), dimension(:), allocatable :: Nx
+             !dir$ attributes align : 64 :: Ex
+             !dir$ attributes align : 64 :: Nx
+       end type f283_c4_t
+
+
+          ! Formula (2-83)
+       ! Circular slit radiation pattern (for each point of observation i.e. theta,phi do:)
+       type, public :: f283_c8_t
+
+             integer(kind=i4)        :: nth1
+             integer(kind=i4)        :: nph1
+             integer(kind=i4)        :: nph2
+             integer(kind=i4)        :: nr
+             real(kind=dp)           :: k
+             real(kind=dp)           :: iph1  ! starting values
+             real(kind=dp)           :: iph2  ! starting values
+             real(kind=dp)           :: ir    ! starting values
+             real(kind=dp)           :: ith   ! starting values
+             real(kind=dp)           :: R     ! slit diameter
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,2)
+#endif
+             complex(kind=dp), dimension(:), allocatable :: Ex
+             complex(kind=dp), dimension(:), allocatable :: Nx
+             !dir$ attributes align : 64 :: Ex
+             !dir$ attributes align : 64 :: Nx
+       end type f283_c8_t
+
+
+       
 
 
 
