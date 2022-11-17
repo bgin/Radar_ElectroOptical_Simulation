@@ -2593,6 +2593,19 @@ module antenna_types
        end type f285_r8_t
 
 
+       ! Formula (2-87)
+       ! 
+       type, public :: f287_r4_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: nph
+             real(kind=sp)            :: ir
+             real(kind=sp)            :: delta1
+             real(kind=sp)            :: delta2
+             real(kind=sp)            :: D
+             
+       end type f287_r4_t
+
        
 
 
