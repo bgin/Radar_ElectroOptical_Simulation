@@ -2521,6 +2521,38 @@ module antenna_types
        end type f283_c8_t
 
 
+       ! Formula (2-84)
+       ! The current distribution for (2-83)
+       type, public :: f284_r4_t
+
+             integer(kind=i4)        :: nr
+             real(kind=sp)           :: ir
+             real(kind=sp)           :: D
+             real(kind=sp)           :: delta
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,16)
+#endif
+             real(kind=sp), dimension(:), allocatable :: fp
+             !dir$ attributes align : 64 :: fp
+       end type f284_r4_t
+
+
+       ! Formula (2-84)
+       ! The current distribution for (2-83)
+       type, public :: f284_r8_t
+
+             integer(kind=i4)        :: nr
+             real(kind=dp)           :: ir
+             real(kind=dp)           :: D
+             real(kind=dp)           :: delta
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+             real(kind=dp), dimension(:), allocatable :: fp
+             !dir$ attributes align : 64 :: fp
+       end type f284_r8_t
+
+
        
 
 
