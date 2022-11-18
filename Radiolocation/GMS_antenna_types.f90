@@ -2631,9 +2631,9 @@ module antenna_types
        end type f287_r8_t
 
 
-       ! Formula (2-88)
+       ! Formula (2-88), and (2-89)
        ! Radiation pattern for 2-87, iff phi'=0
-       type, public :: f288_r4_t
+       type, public :: f2889_r4_t
 
              integer(kind=i4)         :: nr
              integer(kind=i4)         :: nth
@@ -2649,12 +2649,12 @@ module antenna_types
 #endif
              real(kind=sp), dimension(:), allocatable :: Fu0
              !dir$ attributes align : 64 :: Fu0
-       end type f288_r4_t
+       end type f2889_r4_t
 
 
-       ! Formula (2-88)
-       ! Radiation pattern for 2-87, iff phi'=0
-       type, public :: f288_r8_t
+       ! Formula (2-88) and (2-89)
+       ! Radiation pattern for 2-87, iff phi'= 0
+       type, public :: f2889_r8_t
 
              integer(kind=i4)         :: nr
              integer(kind=i4)         :: nth
@@ -2667,8 +2667,10 @@ module antenna_types
              real(kind=dp)            :: ith
              real(kind=dp), dimension(:), allocatable :: Fu0
              !dir$ attributes align : 64 :: Fu0
-       end type f288_r8_t
+       end type f2889_r8_t
 
+
+      
 
        
 
