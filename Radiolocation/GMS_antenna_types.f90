@@ -2709,8 +2709,38 @@ module antenna_types
 #endif          
              real(kind=dp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth   
-       end type f291_r8_t        
+       end type f291_r8_t 
 
+
+       ! Formula (2-67a)
+       ! Radiation patter main lobe width       
+       type, public :: f267a_r4_t
+
+             integer(kind=i4)         :: nx
+             integer(kind=i4)         :: nth
+             real(kind=sp)            :: A
+             real(kind=sp)            :: D
+             real(kind=sp)            :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,8)
+#endif 
+             real(kind=sp), dimension(:), allocatable :: twoth
+             !dir$ attributes align : 64 :: twoth
+       end type f267a_r4_t
+
+
+       ! Formula (2-67a)
+       ! Radiation patter main lobe width       
+       type, public :: f267a_r8_t
+
+             integer(kind=i4)         :: nx
+             integer(kind=i4)         :: nth
+             real(kind=dp)            :: A
+             real(kind=dp)            :: D
+             real(kind=dp)            :: gamm
+             real(kind=dp), dimension(:), allocatable :: twoth
+             !dir$ attributes align : 64 :: twoth
+       end type f267a_r8_t 
 
 
       
