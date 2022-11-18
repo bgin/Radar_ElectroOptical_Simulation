@@ -2855,6 +2855,40 @@ module antenna_types
        end type f295_r8_t
 
 
+       ! Formula (2-100)
+       type, public :: f2100_r4_t
+
+             integer(kind=i4)          :: nx
+             integer(kind=i4)          :: nth
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: ith
+             real(kind=sp)             :: k
+             real(kind=sp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,8)
+#endif 
+             real(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type f2100_r4_t
+
+
+        ! Formula (2-100)
+       type, public :: f2100_r8_t
+
+             integer(kind=i4)          :: nx
+             integer(kind=i4)          :: nth
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: ith
+             real(kind=dp)             :: k
+             real(kind=dp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif 
+             real(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+       end type f2100_r8_t
+
+
       
 
        
