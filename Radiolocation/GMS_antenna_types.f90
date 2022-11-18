@@ -2670,6 +2670,49 @@ module antenna_types
        end type f2889_r8_t
 
 
+       ! Formula (2-91)
+       ! Quasi-optimal radiation pattern
+       type, public :: f291_r4_t
+
+             integer(kind=i4)         :: nth
+             integer(kind=i4)         :: nx
+             integer(kind=i4)         :: m
+             integer(kind=i4)         :: n
+             real(kind=sp)            :: ith
+             real(kind=sp)            :: ix
+             real(kind=sp)            :: A
+             real(kind=sp)            :: D
+             real(kind=sp)            :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,28)
+#endif          
+             real(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth   
+       end type f291_r4_t   
+
+
+       ! Formula (2-91)
+       ! Quasi-optimal radiation pattern
+       type, public :: f291_r8_t
+
+             integer(kind=i4)         :: nth
+             integer(kind=i4)         :: nx
+             integer(kind=i4)         :: m
+             integer(kind=i4)         :: n
+             real(kind=dp)            :: ith
+             real(kind=dp)            :: ix
+             real(kind=dp)            :: A
+             real(kind=dp)            :: D
+             real(kind=dp)            :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,8)
+#endif          
+             real(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth   
+       end type f291_r8_t        
+
+
+
       
 
        
