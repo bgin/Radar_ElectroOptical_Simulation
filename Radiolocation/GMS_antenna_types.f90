@@ -2814,6 +2814,47 @@ module antenna_types
        end type f294_r8_t
 
 
+       ! Formula (2-95)
+       ! Radiation pattern of (2-94)
+       type, public :: f295_r4_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nG
+             real(kind=sp)             :: a
+             real(kind=sp)             :: b
+             real(kind=sp)             :: alpha
+             real(kind=sp)             :: beta
+             real(kind=sp)             :: ith
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+             real(kind=sp), dimension(32) :: Gu
+
+             real(kind=sp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f295_r4_t
+
+
+       ! Formula (2-95)
+       ! Radiation pattern of (2-94)
+       type, public :: f295_r8_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nG
+             real(kind=dp)             :: a
+             real(kind=dp)             :: b
+             real(kind=dp)             :: alpha
+             real(kind=dp)             :: beta
+             real(kind=dp)             :: ith
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,16)
+#endif 
+             real(kind=dp), dimension(32) :: Gu
+             real(kind=dp), dimension(:), allocatable :: Fu
+             !dir$ attributes align : 64 :: Fu
+       end type f295_r8_t
+
+
       
 
        
