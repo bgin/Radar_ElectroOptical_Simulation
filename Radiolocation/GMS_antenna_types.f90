@@ -2743,6 +2743,77 @@ module antenna_types
        end type f267a_r8_t 
 
 
+       ! Formula (2-93)
+       ! 
+       type, public :: f293_r4_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: m
+             integer(kind=i4)         :: nth
+             real(kind=sp)            :: D
+             real(kind=sp)            :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,12)
+#endif 
+             real(kind=sp), dimension(:), allocatable :: fp
+             !dir$ attributes align : 64 :: fp
+       end type f293_r4_t
+
+
+       ! Formula (2-93)
+       ! 
+       type, public :: f293_r8_t
+
+             integer(kind=i4)         :: nr
+             integer(kind=i4)         :: m
+             integer(kind=i4)         :: nth
+             real(kind=dp)            :: D
+             real(kind=dp)            :: gamm
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif 
+             real(kind=dp), dimension(:), allocatable :: fp
+             !dir$ attributes align : 64 :: fp
+       end type f293_r8_t
+
+
+       ! Formula (2-94)
+       ! Fourier series of current distribution of elliptic slit.
+       type, public :: f294_r4_t
+
+             integer(kind=i4)          :: nx
+             integer(kind=i4)          :: ny
+             real(kind=sp)             :: a
+             real(kind=sp)             :: b
+             real(kind=sp)             :: ir
+             real(kind=sp)             :: is
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: iy
+             real(kind=sp), dimension(:,:), allocatable :: fxy
+             !dir$ attributes align : 64 :: fxy
+       end type f294_r4_t
+
+
+       ! Formula (2-94)
+       ! Fourier series of current distribution of elliptic slit.
+       type, public :: f294_r8_t
+
+             integer(kind=i4)          :: nx
+             integer(kind=i4)          :: ny
+             real(kind=dp)             :: a
+             real(kind=dp)             :: b
+             real(kind=dp)             :: ir
+             real(kind=dp)             :: is
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: iy
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,8)
+#endif 
+             real(kind=dp), dimension(:,:), allocatable :: fxy
+             !dir$ attributes align : 64 :: fxy
+       end type f294_r8_t
+
+
       
 
        
