@@ -3076,8 +3076,45 @@ module antenna_types
              !dir$ attributes align : 64 :: Fth
         end type f2105_c8_t
 
-      
 
+        ! Formula (2-107)
+        type, public :: f2107_r4_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              integer(kind=i4)         :: nx
+              real(kind=sp)            :: ith
+              real(kind=sp)            :: ix
+              real(kind=sp)            :: A
+              real(kind=sp)            :: k
+              real(kind=sp)            :: L
+              real(kind=sp), dimension(:), allocatable :: Fu0
+              real(kind=sp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu0
+              !dir$ attributes align : 64 :: Fu
+        end type f2107_r4_t
+
+      
+        ! Formula (2-107)
+        type, public :: f2107_r8_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              integer(kind=i4)         :: nx
+              real(kind=dp)            :: ith
+              real(kind=dp)            :: ix
+              real(kind=dp)            :: A
+              real(kind=dp)            :: k
+              real(kind=dp)            :: L
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,12)
+#endif
+              real(kind=dp), dimension(:), allocatable :: Fu0
+              real(kind=dp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu0
+              !dir$ attributes align : 64 :: Fu
+        end type f2107_r8_t
+ 
        
 
 
