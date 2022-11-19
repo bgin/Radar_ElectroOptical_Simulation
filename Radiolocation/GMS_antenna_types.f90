@@ -3114,6 +3114,51 @@ module antenna_types
               !dir$ attributes align : 64 :: Fu0
               !dir$ attributes align : 64 :: Fu
         end type f2107_r8_t
+
+
+        ! Formula (2-110)
+        ! The averaged radiation pattern of antenna array
+        type, public :: f2110_r4_t
+
+              integer(kind=i4)         :: m
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              integer(kind=i4)         :: nph
+              real(kind=sp)            :: sig
+              real(kind=sp)            :: delta
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,8)
+#endif
+              real(kind=sp), dimension(:,:), allocatable :: P0
+              real(kind=sp), dimension(:,:), allocatable :: s
+              real(kind=sp), dimension(:,:), allocatable :: Imn
+              real(kind=sp), dimension(:,:), allocatable :: P
+              !dir$ attributes align : 64 :: P0
+              !dir$ attributes align : 64 :: s
+              !dir$ attributes align : 64 :: Imn
+              !dir$ attributes align : 64 :: P
+        end type f2110_r4_t
+
+
+        ! Formula (2-110)
+        ! The averaged radiation pattern of antenna array
+        type, public :: f2110_r8_t
+
+              integer(kind=i4)         :: m
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              integer(kind=i4)         :: nph
+              real(kind=dp)            :: sig
+              real(kind=dp)            :: delta
+              real(kind=dp), dimension(:,:), allocatable :: P0
+              real(kind=dp), dimension(:,:), allocatable :: s
+              real(kind=dp), dimension(:,:), allocatable :: Imn
+              real(kind=dp), dimension(:,:), allocatable :: P
+              !dir$ attributes align : 64 :: P0
+              !dir$ attributes align : 64 :: s
+              !dir$ attributes align : 64 :: Imn
+              !dir$ attributes align : 64 :: P
+        end type f2110_r8_t
  
        
 
