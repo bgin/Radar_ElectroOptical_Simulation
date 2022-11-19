@@ -2976,9 +2976,105 @@ module antenna_types
 #if (USE_STRUCT_PADDING) == 1
              STRUCT_PADDING(0,60)
 #endif
-             complex(kind=dp), dimension(:), allocatable :: Fth_re
+             complex(kind=dp), dimension(:), allocatable :: Fth
              !dir$ attributes align : 64 :: Fth
         end type f2102_c8_t
+
+
+        ! Formula (2-105)
+        ! Radiation pattern of slit -- squared phase error and
+        ! cosine amplitude distribution.
+        type, public :: f2105_r4_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=sp)             :: ith
+             real(kind=sp)             :: ir
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: beta
+             real(kind=sp)             :: k
+             real(kind=sp)             :: L
+             real(kind=sp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             real(kind=sp), dimension(:), allocatable :: Fth_re
+             real(kind=sp), dimension(:), allocatable :: Fth_im
+             !dir$ attributes align : 64 :: Fth_re
+             !dir$ attributes align : 64 :: Fth_im
+        end type f2105_r4_t
+
+
+        ! Formula (2-105)
+        ! Radiation pattern of slit -- squared phase error and
+        ! cosine amplitude distribution.
+        type, public :: f2105_r8_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=dp)             :: ith
+             real(kind=dp)             :: ir
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: beta
+             real(kind=dp)             :: k
+             real(kind=dp)             :: L
+             real(kind=dp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,60)
+#endif
+             real(kind=dp), dimension(:), allocatable :: Fth_re
+             real(kind=dp), dimension(:), allocatable :: Fth_im
+             !dir$ attributes align : 64 :: Fth_re
+             !dir$ attributes align : 64 :: Fth_im
+        end type f2105_r8_t
+
+
+        ! Formula (2-105)
+        ! Radiation pattern of slit -- squared phase error and
+        ! cosine amplitude distribution.
+        type, public :: f2105_c4_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=sp)             :: ith
+             real(kind=sp)             :: ir
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: beta
+             real(kind=sp)             :: k
+             real(kind=sp)             :: L
+             real(kind=sp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             complex(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+        end type f2105_c4_t
+
+
+        ! Formula (2-105)
+        ! Radiation pattern of slit -- squared phase error and
+        ! cosine amplitude distribution.
+        type, public :: f2105_c8_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=dp)             :: ith
+             real(kind=dp)             :: ir
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: beta
+             real(kind=dp)             :: k
+             real(kind=dp)             :: L
+             real(kind=dp)             :: A
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,60)
+#endif
+             complex(kind=dp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+        end type f2105_c8_t
 
       
 
