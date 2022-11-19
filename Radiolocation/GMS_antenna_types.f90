@@ -3212,14 +3212,16 @@ module antenna_types
               integer(kind=i4)         :: nth
               integer(kind=i4)         :: nph
               real(kind=sp)            :: sig
-              real(kind=sp)            :: delta
               real(kind=sp)            :: D
               real(kind=sp)            :: gamm
               real(kind=sp)            :: rho
               real(kind=sp)            :: ith
-              real(kind=sp), dimension(:), allocatable :: P0
-              real(kind=sp), dimension(:), allocatable :: s
-              real(kind=sp), dimension(:), allocatable :: P
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+              real(kind=sp), dimension(:,:), allocatable :: P0
+              real(kind=sp), dimension(:,:), allocatable :: s
+              real(kind=sp), dimension(:,:), allocatable :: P
               !dir$ attributes align : 64 :: P0
               !dir$ attributes align : 64 :: s
               !dir$ attributes align : 64 :: P
@@ -3233,13 +3235,55 @@ module antenna_types
               integer(kind=i4)         :: nth
               integer(kind=i4)         :: nph
               real(kind=dp)            :: sig
-              real(kind=dp)            :: delta
               real(kind=dp)            :: D
               real(kind=dp)            :: gamm
               real(kind=dp)            :: rho
               real(kind=dp)            :: ith
 #if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,16)
+#endif
+              real(kind=dp), dimension(:,:), allocatable :: P0
+              real(kind=dp), dimension(:,:), allocatable :: s
+              real(kind=dp), dimension(:,:), allocatable :: P
+              !dir$ attributes align : 64 :: P0
+              !dir$ attributes align : 64 :: s
+              !dir$ attributes align : 64 :: P
+        end type f2111_r8_t
+
+
+        ! Formula (2-111a)
+        type, public :: f2111a_r4_t
+
+              integer(kind=i4)         :: nth
+              real(kind=sp)            :: sig
+              real(kind=sp)            :: D
+              real(kind=sp)            :: gamm
+              real(kind=sp)            :: rho
+              real(kind=sp)            :: ith
+#if (USE_STRUCT_PADDING) == 1
              STRUCT_PADDING(0,8)
+#endif
+              real(kind=sp), dimension(:), allocatable :: P0
+              real(kind=sp), dimension(:), allocatable :: s
+              real(kind=sp), dimension(:), allocatable :: P
+              !dir$ attributes align : 64 :: P0
+              !dir$ attributes align : 64 :: s
+              !dir$ attributes align : 64 :: P
+        end type f2111a_r4_t
+
+
+        ! Formula (2-111)
+        ! The average radiation pattern of radiating slit
+        type, public :: f2111a_r8_t
+
+              integer(kind=i4)         :: nth
+              real(kind=dp)            :: sig
+              real(kind=dp)            :: D
+              real(kind=dp)            :: gamm
+              real(kind=dp)            :: rho
+              real(kind=dp)            :: ith
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,20)
 #endif
               real(kind=dp), dimension(:), allocatable :: P0
               real(kind=dp), dimension(:), allocatable :: s
@@ -3247,7 +3291,7 @@ module antenna_types
               !dir$ attributes align : 64 :: P0
               !dir$ attributes align : 64 :: s
               !dir$ attributes align : 64 :: P
-        end type f2111_r8_t
+        end type f2111a_r8_t
  
        
 
