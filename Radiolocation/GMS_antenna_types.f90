@@ -2889,6 +2889,97 @@ module antenna_types
        end type f2100_r8_t
 
 
+       ! Formula (2-102)
+       ! Radiation pattern of slit of squared phase error.
+       type, public :: f2102_r4_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=sp)             :: ith
+             real(kind=sp)             :: ir
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: R
+             real(kind=sp)             :: A
+             real(kind=sp)             :: k
+             real(kind=sp)             :: B
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             real(kind=sp), dimension(:), allocatable :: Fth_re
+             real(kind=sp), dimension(:), allocatable :: Fth_im
+             !dir$ attributes align : 64 :: Fth_re
+             !dir$ attributes align : 64 :: Fth_im
+       end type f2102_r4_t
+
+
+       ! Formula (2-102)
+       ! Radiation pattern of slit of squared phase error.
+       type, public :: f2102_r8_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=dp)             :: ith
+             real(kind=dp)             :: ir
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: R
+             real(kind=dp)             :: A
+             real(kind=dp)             :: k
+             real(kind=dp)             :: B
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,60)
+#endif
+             real(kind=dp), dimension(:), allocatable :: Fth_re
+             real(kind=dp), dimension(:), allocatable :: Fth_im
+             !dir$ attributes align : 64 :: Fth_re
+             !dir$ attributes align : 64 :: Fth_im
+       end type f2102_r8_t
+
+
+       ! Formula (2-102)
+       ! Radiation pattern of slit of squared phase error.
+       type, public :: f2102_c4_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=sp)             :: ith
+             real(kind=sp)             :: ir
+             real(kind=sp)             :: ix
+             real(kind=sp)             :: R
+             real(kind=sp)             :: A
+             real(kind=sp)             :: k
+             real(kind=sp)             :: B
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+             complex(kind=sp), dimension(:), allocatable :: Fth
+             !dir$ attributes align : 64 :: Fth
+        end type f2102_c4_t
+
+
+       ! Formula (2-102)
+       ! Radiation pattern of slit of squared phase error.
+       type, public :: f2102_c8_t
+
+             integer(kind=i4)          :: nth
+             integer(kind=i4)          :: nr
+             integer(kind=i4)          :: nx
+             real(kind=dp)             :: ith
+             real(kind=dp)             :: ir
+             real(kind=dp)             :: ix
+             real(kind=dp)             :: R
+             real(kind=dp)             :: A
+             real(kind=dp)             :: k
+             real(kind=dp)             :: B
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,60)
+#endif
+             complex(kind=dp), dimension(:), allocatable :: Fth_re
+             !dir$ attributes align : 64 :: Fth
+        end type f2102_c8_t
+
       
 
        
