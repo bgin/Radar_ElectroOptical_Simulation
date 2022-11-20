@@ -3292,7 +3292,50 @@ module antenna_types
               !dir$ attributes align : 64 :: s
               !dir$ attributes align : 64 :: P
         end type f2111a_r8_t
- 
+
+
+        ! Formula (2-125)
+        ! For sinusoidal phase error and for cos(gamma*pi*x) amplitude
+        ! distribution -- the radiation pattern.
+        type, public :: f2125_r4_t
+
+              integer(kind=i4)         :: m
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              real(kind=sp)            :: ith
+              real(kind=sp)            :: L
+              real(kind=sp)            :: gamm
+              real(kind=sp)            :: beta
+              real(kind=sp)            :: rho
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+              real(kind=sp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu
+        end type f2125_r4_t
+
+
+        ! Formula (2-125)
+        ! For sinusoidal phase error and for cos(gamma*pi*x) amplitude
+        ! distribution -- the radiation pattern.
+        type, public :: f2125_r8_t
+
+              integer(kind=i4)         :: m
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: nth
+              real(kind=sp)            :: ith
+              real(kind=sp)            :: L
+              real(kind=sp)            :: gamm
+              real(kind=sp)            :: beta
+              real(kind=sp)            :: rho
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,24)
+#endif
+              real(kind=sp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu
+        end type f2125_r8_t
+
+       
        
 
 
