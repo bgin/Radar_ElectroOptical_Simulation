@@ -3323,17 +3323,102 @@ module antenna_types
               integer(kind=i4)         :: m
               integer(kind=i4)         :: n
               integer(kind=i4)         :: nth
-              real(kind=sp)            :: ith
-              real(kind=sp)            :: L
-              real(kind=sp)            :: gamm
-              real(kind=sp)            :: beta
-              real(kind=sp)            :: rho
+              real(kind=dp)            :: ith
+              real(kind=dp)            :: L
+              real(kind=dp)            :: gamm
+              real(kind=dp)            :: beta
+              real(kind=dp)            :: rho
 #if (USE_STRUCT_PADDING) == 1
-             STRUCT_PADDING(0,24)
+             STRUCT_PADDING(0,12)
 #endif
-              real(kind=sp), dimension(:), allocatable :: Fu
+              real(kind=dp), dimension(:), allocatable :: Fu
               !dir$ attributes align : 64 :: Fu
         end type f2125_r8_t
+
+
+        ! Formula (2-126)
+        ! Radiation pattern for cosine phase variations, i.e. a*cos(npi/2*x) and
+        ! in the case of homogenous amplitude distribution.
+        type, public :: f2126_r4_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: k
+              integer(kind=i4)         :: nth
+              real(kind=sp)            :: L
+              real(kind=sp)            :: ith
+              real(kind=sp)            :: gamm
+              real(kind=sp)            :: alpha
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+              real(kind=sp), dimension(:), allocatable :: Fu_re
+              real(kind=sp), dimension(:), allocatable :: Fu_im
+              !dir$ attributes align : 64 :: Fu_re
+              !dir$ attributes align : 64 :: Fu_im
+        end type f2126_r4_t
+
+
+        ! Formula (2-126)
+        ! Radiation pattern for cosine phase variations, i.e. a*cos(npi/2*x) and
+        ! in the case of homogenous amplitude distribution.
+        type, public :: f2126_r8_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: k
+              integer(kind=i4)         :: nth
+              real(kind=dp)            :: L
+              real(kind=dp)            :: ith
+              real(kind=dp)            :: gamm
+              real(kind=dp)            :: alpha
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,20)
+#endif
+              real(kind=dp), dimension(:), allocatable :: Fu_re
+              real(kind=dp), dimension(:), allocatable :: Fu_im
+              !dir$ attributes align : 64 :: Fu_re
+              !dir$ attributes align : 64 :: Fu_im
+        end type f2126_r8_t
+
+
+        ! Formula (2-126)
+        ! Radiation pattern for cosine phase variations, i.e. a*cos(npi/2*x) and
+        ! in the case of homogenous amplitude distribution.
+        type, public :: f2126_c4_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: k
+              integer(kind=i4)         :: nth
+              real(kind=sp)            :: L
+              real(kind=sp)            :: ith
+              real(kind=sp)            :: gamm
+              real(kind=sp)            :: alpha
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,4)
+#endif
+              complex(kind=sp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu
+         end type f2126_c4_t
+
+
+        ! Formula (2-126)
+        ! Radiation pattern for cosine phase variations, i.e. a*cos(npi/2*x) and
+        ! in the case of homogenous amplitude distribution.
+        type, public :: f2126_c8_t
+
+              integer(kind=i4)         :: n
+              integer(kind=i4)         :: k
+              integer(kind=i4)         :: nth
+              real(kind=dp)            :: L
+              real(kind=dp)            :: ith
+              real(kind=dp)            :: gamm
+              real(kind=dp)            :: alpha
+#if (USE_STRUCT_PADDING) == 1
+             STRUCT_PADDING(0,20)
+#endif
+              complex(kind=dp), dimension(:), allocatable :: Fu
+              !dir$ attributes align : 64 :: Fu
+         end type f2126_c8_t
+
 
        
        
