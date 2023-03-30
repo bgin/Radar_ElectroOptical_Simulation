@@ -248,4 +248,88 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));  
 
 
+                  ////////////////////////////////////////////////////////////////////////////
+
+
+                  void cdiv_zmm16r4_u( const float * __restrict xre,
+                                       const float * __restrict xim,
+                                       const float * __restrict yre,
+                                       const float * __restrict yim,
+                                       float *       __restrict zre,
+                                       float *       __restrict zim)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                  void cdiv_zmm16r4_a(const float  * __restrict __attribute__((aligned(64))) xre,
+                                       const float * __restrict __attribute__((aligned(64))) xim,
+                                       const float * __restrict __attribute__((aligned(64))) yre,
+                                       const float * __restrict __attribute__((aligned(64))) yim,
+                                       float *       __restrict __attribute__((aligned(64))) zre,
+                                       float *       __restrict __attribute__((aligned(64))) zim)                  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                  void cdiv_zmm16r4( const __m512 xre,
+                                     const __m512 xim,
+                                     const __m512 yre,
+                                     const __m512 yim,
+                                     __m512 * __restrict zre,
+                                     __m512 * __restrict zim) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                 void cdiv_zmm16r4(  const __m512 xre,
+                                     const __m512 xim,
+                                     const __m512 s,
+                                     __m512 * __restrict zre,
+                                     __m512 * __restrict zim)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                void cdiv_zmm16r4_uip(   const float * __restrict xre,
+                                         const float * __restrict xim,
+                                         float *       __restrict zre,
+                                         float *       __restrict zim) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                void cdiv_zmm16r4_aip(   const float * __restrict __attribute__((aligned(64))) xre,
+                                         const float * __restrict __attribute__((aligned(64))) xim,
+                                         float *       __restrict __attribute__((aligned(64))) zre,
+                                         float *       __restrict __attribute__((aligned(64))) zim) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+                
+                void cdiv_smith_zmm16r4_u(   const float * __restrict xre,
+                                             const float * __restrict xim,
+                                             const float * __restrict yre,
+                                             const float * __restrict yim,
+                                             float *       __restrict zre,
+                                             float *       __restrict zim)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                
+
 #endif /*__GMS_COMPLEX_ZMM16R4_H__*/
