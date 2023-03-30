@@ -687,8 +687,37 @@ SOFTWARE.
 							 __attribute__((hot))
                                                          __attribute__((aligned(32)));    
 
+           
+            //////////////////////////////////////////////////////////////////////////////////////
 
 
+            void cpolar_zmm16r4_u(       const float * __restrict rho,
+                                         const float * __restrict tht,
+                                         float * __restrict  re,
+                                         float * __restrict  im)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
 
+
+           void cpolar_zmm16r4_a(        const float * __restrict __attribute__((aligned(64))) rho,
+                                         const float * __restrict __attribute__((aligned(64))) tht,
+                                         float * __restrict  __attribute__((aligned(64))) re,
+                                         float * __restrict  __attribute__((aligned(64))) im)   
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+           void cpolar_zmm16r4(        const __m512 rho,
+                                       const __m512 tht,
+                                       __m512 * __restrict re,
+                                       __m512 * __restrict im)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 #endif /*__GMS_COMPLEX_ZMM16R4_H__*/
