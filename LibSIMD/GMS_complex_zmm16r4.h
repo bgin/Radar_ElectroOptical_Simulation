@@ -720,4 +720,42 @@ SOFTWARE.
 							 __attribute__((hot))
                                                          __attribute__((aligned(32)));
 
+
+         /////////////////////////////////////////////////////////////////////////////////////////////
+
+ 
+         void csqrt_zmm16r4_u(         const float * __restrict xre,
+                                       const float * __restrict xim,
+                                       float * __restrict wrkc,
+                                       float * __restrict csqr,
+                                       float * __restrict csqi)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+          
+          void csqrt_zmm16r4_a(        const float * __restrict __attribute__((aligned(64)))  xre,
+                                       const float * __restrict __attribute__((aligned(64)))  xim,
+                                       float * __restrict __attribute__((aligned(64)))  wrkc,
+                                       float * __restrict __attribute__((aligned(64)))  csqr,
+                                       float * __restrict __attribute__((aligned(64)))  csqi)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+          void csqrt_zmm16r4(         const __m512 xre,
+                                      const __m512 xim,
+                                      __m512 * __restrict wrkc,
+                                      __m512 * __restrict csqr,
+                                      __m512 * __restrict csqi)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+
 #endif /*__GMS_COMPLEX_ZMM16R4_H__*/
