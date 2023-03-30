@@ -383,9 +383,33 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
-              
+             ////////////////////////////////////////////////////////////////////////////
 
 
+             void  carg_zmm16r4_u(     const float * __restrict re,
+                                       const float * __restrict im,
+                                       float * __restrict  carg )
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+             void carg_zmm16r4_a(      const float * __restrict __attribute__((aligned(64))) re,
+                                       const float * __restrict __attribute__((aligned(64))) im,
+                                       float * __restrict  __attribute__((aligned(64))) carg)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+             __m512 carg_zmm16r4(      const __m512 re,
+                                       const __m512 im)
+                                                        __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
                                             
 
