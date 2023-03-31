@@ -1274,6 +1274,181 @@
              }
 
 
+             ////////////////////////////////////////////////////////////////////////////
+
+
+               
+                   void cmean_quot_zmm16r4_u(const float * __restrict xre,
+                                             const float * __restrict xim,
+                                             const float * __restrict yre,
+                                             const float * __restrict yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        register __m512 rep,imp,den,rquot,iquot;
+                        const float inv16 = 0.0625f;
+                        float sre,sim;
+                        zmm0 = _mm512_loadu_ps(&xre[0]);
+                        zmm1 = _mm512_loadu_ps(&yre[0]);
+                        zmm2 = _mm512_loadu_ps(&xim[0]);
+                        zmm3 = _mm512_loadu_ps(&yim[0]);
+                        sre  = 0.0f;
+                        rep  = _mm512_fmsub_ps(zmm0,zmm1,
+                                               _mm512_mul_ps(zmm2,zmm3));
+                        imp  = _mm512_fmadd_ps(zmm2,zmm1,
+                                               _mm512_mul_ps(zmm0,zmm3));
+                        sim  = 0.0f;
+                        den  = _mm512_fmadd_ps(zmm1,zmm1,
+                                               _mm512_mul_ps(zmm3,zmm3));
+                        rquot = _mm512_div_ps(rep,den);
+                        sre   = _mm512_reduce_ps(rquot);
+                        *mre  = sre*inv16;
+                        iquot = _mm512_div_ps(imp,den);
+                        sim   = _mm512_reduce_ps(iquot);
+                        *mim  = sre*inv16;
+              }  
+
+
+                 
+                   void cmean_quot_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) xre,
+                                             const float * __restrict __attribute__((aligned(64))) xim,
+                                             const float * __restrict __attribute__((aligned(64))) yre,
+                                             const float * __restrict __attribute__((aligned(64))) yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        register __m512 rep,imp,den,rquot,iquot;
+                        const float inv16 = 0.0625f;
+                        float sre,sim;
+                        zmm0 = _mm512_load_ps(&xre[0]);
+                        zmm1 = _mm512_load_ps(&yre[0]);
+                        zmm2 = _mm512_load_ps(&xim[0]);
+                        zmm3 = _mm512_load_ps(&yim[0]);
+                        sre  = 0.0f;
+                        rep  = _mm512_fmsub_ps(zmm0,zmm1,
+                                               _mm512_mul_ps(zmm2,zmm3));
+                        imp  = _mm512_fmadd_ps(zmm2,zmm1,
+                                               _mm512_mul_ps(zmm0,zmm3));
+                        sim  = 0.0f;
+                        den  = _mm512_fmadd_ps(zmm1,zmm1,
+                                               _mm512_mul_ps(zmm3,zmm3));
+                        rquot = _mm512_div_ps(rep,den);
+                        sre   = _mm512_reduce_ps(rquot);
+                        *mre  = sre*inv16;
+                        iquot = _mm512_div_ps(imp,den);
+                        sim   = _mm512_reduce_ps(iquot);
+                        *mim  = sre*inv16;
+              }  
+
+
+                  
+                   void cmean_quot_zmm16r4(  const __m512 xre,
+                                             const __m512 xim,
+                                             const __m512 yre,
+                                             const __m512 yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim) {
+
+                        register __m512 rep,imp,den,rquot,iquot;
+                        const float inv16 = 0.0625f;
+                        float sre,sim;
+                        sre  = 0.0f;
+                        rep  = _mm512_fmsub_ps(xre,yre,
+                                               _mm512_mul_ps(xim,yim));
+                        imp  = _mm512_fmadd_ps(xim,yre,
+                                               _mm512_mul_ps(xre,yim));
+                        sim  = 0.0f;
+                        den  = _mm512_fmadd_ps(yre,yre,
+                                               _mm512_mul_ps(yim,yim));
+                        rquot = _mm512_div_ps(rep,den);
+                        sre   = _mm512_reduce_ps(rquot);
+                        *mre  = sre*inv16;
+                        iquot = _mm512_div_ps(imp,den);
+                        sim   = _mm512_reduce_ps(iquot);
+                        *mim  = sre*inv16;
+              }  
+
+
+               //////////////////////////////////////////////////////////////
+
+
+                
+                   void cnorm_cprod_zmm16r4_u(const float * __restrict xre,
+                                              const float * __restrict xim,
+                                              const float * __restrict yre,
+                                              const float * __restrict yim,
+                                              float * __restrict mre,
+                                              float * __restrict mim ) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        register __m512 rep,imp,magc1,magc2,vcmag;
+                        zmm0 = _mm512_loadu_ps(&xre[0]);
+                        zmm1 = _mm512_loadu_ps(&yre[0]);
+                        zmm2 = _mm512_loadu_ps(&xim[0]);
+                        zmm3 = _mm512_loadu_ps(&yim[0]);
+                        rep  = _mm512_fmadd_ps(zmm0,zmm1,
+                                               _mm512_mul_ps(zmm2,zmm3));
+                        magc1= _mm512_mul_ps(rep,rep);
+                        imp  = _mm512_fmsub_ps(zmm2,zmm1,
+                                               _mm512_mul_ps(zmm0,zmm3));
+                        magc2= _mm512_mul_ps(imp,imp);
+                        vcmag= _mm512_sqrt_ps(_mm512_add_ps(magc1,magc2));
+                        _mm512_storeu_ps(&mre[0], _mm512_div_ps(rep,vcmag));
+                        _mm512_storeu_ps(&mim[0], _mm512_div_ps(imp,vcmag));
+             }
+
+
+                 
+                   void cnorm_cprod_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) xre,
+                                              const float * __restrict __attribute__((aligned(64))) xim,
+                                              const float * __restrict __attribute__((aligned(64))) yre,
+                                              const float * __restrict __attribute__((aligned(64))) yim,
+                                              float * __restrict __attribute__((aligned(64))) mre,
+                                              float * __restrict __attribute__((aligned(64))) mim ) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        register __m512 rep,imp,magc1,magc2,vcmag;
+                        zmm0 = _mm512_load_ps(&xre[0]);
+                        zmm1 = _mm512_load_ps(&yre[0]);
+                        zmm2 = _mm512_load_ps(&xim[0]);
+                        zmm3 = _mm512_load_ps(&yim[0]);
+                        rep  = _mm512_fmad_ps(zmm0,zmm1,
+                                               _mm512_mul_ps(zmm2,zmm3));
+                        magc1= _mm512_mul_ps(rep,rep);
+                        imp  = _mm512_fmsub_ps(zmm2,zmm1,
+                                               _mm512_mul_ps(zmm0,zmm3));
+                        magc2= _mm512_mul_ps(imp,imp);
+                        vcmag= _mm512_sqrt_ps(_mm512_add_ps(magc1,magc2));
+                        _mm512_store_ps(&mre[0], _mm512_div_ps(rep,vcmag));
+                        _mm512_store_ps(&mim[0], _mm512_div_ps(imp,vcmag));
+             }
+
+
+                
+                   void cnorm_cprod_zmm16r4(const __m512 xre,
+                                            const __m512 xim,
+                                            const __m512 yre,
+                                            const __m512 yim,
+                                            __m512 * __restrict mre,
+                                            __m512 * __restrict mim) {
+
+                        register __m512 rep,imp,magc1,magc2,vcmag;
+                        rep  = _mm512_fmad_ps(xre,yre,
+                                               _mm512_mul_ps(xim,yim));
+                        magc1= _mm512_mul_ps(rep,rep);
+                        imp  = _mm512_fmsub_ps(xim,yre,
+                                               _mm512_mul_ps(xre,yim));
+                        magc2= _mm512_mul_ps(imp,imp);
+                        vcmag= _mm512_sqrt_ps(_mm512_add_ps(magc1,magc2));
+                        *mre = _mm512_div_ps(rep,vcmag);
+                        *mim = _mm512_div_ps(imp,vcmag)
+             }
+
+
+
+
 
   
 
