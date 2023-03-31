@@ -37,7 +37,7 @@ SOFTWARE.
     const char * const GMS_COMPLEX_ZMM16R4_DESCRIPTION   = "AVX512 optimized complex number implementation."
 
 
-#include <cstdint>
+
 #include <immintrin.h>
 
 
