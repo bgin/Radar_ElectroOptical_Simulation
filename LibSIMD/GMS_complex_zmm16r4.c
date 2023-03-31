@@ -563,6 +563,44 @@
                         return (cabs);
                  }
 
+
+              ////////////////////////////////////////////////////////////////////////////////
+
+
+                 
+                   void carg_zmm16r4_u(const float * __restrict re,
+                                       const float * __restrict im,
+                                       float * __restrict  carg) {
+
+                        register __m512 zmm0,zmm1;
+                        zmm0 = _mm512_loadu_ps(&re[0]);
+                        zmm1 = _mm512_loadu_ps(&im[0]);
+                        _mm512_storeu_ps(&carg[0], xatan2f(zmm0,zmm1));
+                }
+
+
+                  
+                   void carg_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) re,
+                                       const float * __restrict __attribute__((aligned(64))) im,
+                                       float * __restrict  __attribute__((aligned(64))) carg) {
+
+                        register __m512 zmm0,zmm1;
+                        zmm0 = _mm512_load_ps(&re[0]);
+                        zmm1 = _mm512_load_ps(&im[0]);
+                        _mm512_store_ps(&carg[0], xatan2f(zmm0,zmm1));
+                }
+
+
+                 
+                   __m512 carg_zmm16r4(const __m512 re,
+                                       const __m512 im) {
+
+                       register __m512 carg;
+                       carg = xatan2f(re,im);
+                       return (carg);
+                }
+
+
    
 
 
