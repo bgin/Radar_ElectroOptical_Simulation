@@ -516,6 +516,52 @@
                                                 _mm512_div_ps(_mm512_sub_ps(xim,_mm512_mul_ps(xre,r)),den)));
                }
 
+#include "GMS_sleefsimdsp.h"
+
+
+               /////////////////////////////////////////////////////////////////////////////////////
+
+
+                 
+                   void cabs_zmm16r4_u(const float * __restrict re,
+                                       const float * __restrict im,
+                                       float * __restrict  cabs) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3,zmm4;
+                        zmm0  = _mm512_loadu_ps(&re[0]);
+                        zmm1  = _mm512_mul_ps(zmm0,zmm0);
+                        zmm2  = _mm512_loadu_ps(&im[0]);
+                        zmm3  = _mm512_mul_ps(zmm2,zmm2);
+                        zmm4  = xsqrtf(_mm512_add_ps(zmm1,zmm3));
+                        _mm512_storeu_ps(&cabs[0],zmm4);
+                 }
+
+
+                 
+                   void cabs_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) re,
+                                       const float * __restrict __attribute__((aligned(64))) im,
+                                       float * __restrict  __attribute__((aligned(64))) cabs) {
+
+                        register __m512 zmm0,zmm1,zmm2,zmm3,zmm4;
+                        zmm0  = _mm512_load_ps(&re[0]);
+                        zmm1  = _mm512_mul_ps(zmm0,zmm0);
+                        zmm2  = _mm512_load_ps(&im[0]);
+                        zmm3  = _mm512_mul_ps(zmm2,zmm2);
+                        zmm4  = xsqrtf(_mm512_add_ps(zmm1,zmm3));
+                        _mm512_store_ps(&cabs[0],zmm4);
+                 }
+
+
+                  
+                   __m512 cabs_zmm16r4(const __m512 re,
+                                       const __m512 im) {
+
+                        register __m512 zmm0,zmm1,cabs;
+                        zmm0 = _mm512_mul_ps(re,re);
+                        zmm1 = _mm512_mul_ps(im,im);
+                        cabs = xsqrtf(_mm512_add_ps(zmm0,zmm1));
+                        return (cabs);
+                 }
 
    
 
