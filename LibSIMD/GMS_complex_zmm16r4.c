@@ -49,3 +49,33 @@
                         zmm1  = _mm512_add_ps(xim,yim);
                         *zim  = zmm1; 
                   }
+
+
+                 
+                   void cadd_zmm16r4_uip(const float * __restrict xre,
+                                         const float * __restrict xim,
+                                         float *       __restrict zre,
+                                         float *       __restrict zim) {
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        zmm0  = _mm512_loadu_ps(&xre[0]);
+                        zmm1  = _mm512_loadu_ps(&xim[0]);
+                        zmm2  = _mm512_loadu_ps(&zre[0]);
+                        zmm3  = _mm512_loadu_ps(&zim[0])
+                        _mm512_storeu_ps(&zre[0], _mm512_add_ps(zmm2,zmm0));
+                        _mm512_storeu_ps(&zim[0], _mm512_add_ps(zmm3,zmm1));
+              }
+
+
+                  
+                   void cadd_zmm16r4_aip(const float * __restrict __ATTR_ALIGN__(64) xre,
+                                         const float * __restrict __ATTR_ALIGN__(64) xim,
+                                         float *       __restrict __ATTR_ALIGN__(64) zre,
+                                         float *       __restrict __ATTR_ALIGN__(64) zim) {
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        zmm0  = _mm512_load_ps(&xre[0]);
+                        zmm1  = _mm512_load_ps(&xim[0]);
+                        zmm2  = _mm512_load_ps(&zre[0]);
+                        zmm3  = _mm512_load_ps(&zim[0])
+                        _mm512_store_ps(&zre[0], _mm512_add_ps(zmm2,zmm0));
+                        _mm512_store_ps(&zim[0], _mm512_add_ps(zmm3,zmm1));
+              }
