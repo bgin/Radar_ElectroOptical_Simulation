@@ -837,10 +837,43 @@ SOFTWARE.
          //////////////////////////////////////////////////////////////////////////////////////
 
 
+         void cmean_quot_zmm16r4_u(          const float * __restrict xre,
+                                             const float * __restrict xim,
+                                             const float * __restrict yre,
+                                             const float * __restrict yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim)
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32)));
 
 
+         void cmean_quot_zmm16r4_a(          const float * __restrict __attribute__((aligned(64)))  xre,
+                                             const float * __restrict __attribute__((aligned(64)))  xim,
+                                             const float * __restrict __attribute__((aligned(64)))  yre,
+                                             const float * __restrict __attribute__((aligned(64)))  yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim) 
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32)));
 
 
+         void cmean_quot_zmm16r4(            const __m512 xre,
+                                             const __m512 xim,
+                                             const __m512 yre,
+                                             const __m512 yim,
+                                             float * __restrict mre,
+                                             float * __restrict mim) 
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32)));
+
+ 
+         //////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
