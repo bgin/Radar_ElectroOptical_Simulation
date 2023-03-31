@@ -974,7 +974,7 @@ SOFTWARE.
                                                              __attribute__((aligned(32))); 
 
 
-             void arith_cmean_zmm16r4(        const __m512 xre,
+            void arith_cmean_zmm16r4(        const __m512 xre,
                                               const __m512 xim,
                                               float * __restrict mre,
                                               float * __restrict min)
@@ -984,7 +984,43 @@ SOFTWARE.
                                                              __attribute__((aligned(32))); 
 
 
+           ///////////////////////////////////////////////////////////////////////////////////////
 
+
+            void cnormalize_zmm16r4_u(        const float * __restrict xre,
+                                              const float * __restrict xim,
+                                              const float * __restrict yre,
+                                              const float * __restrict yim,
+                                              float * __restrict mre,
+                                              float * __restrict mim )
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32))); 
+
+
+            void cnormalize_zmm16r4_a(        const float * __restrict __attribute__((aligned(64)))  xre,
+                                              const float * __restrict __attribute__((aligned(64)))  xim,
+                                              const float * __restrict __attribute__((aligned(64)))  yre,
+                                              const float * __restrict __attribute__((aligned(64)))  yim,
+                                              float * __restrict __attribute__((aligned(64)))  mre,
+                                              float * __restrict __attribute__((aligned(64)))  mim )
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32))); 
+
+
+             void cnormalize_zmm16r4(       const __m512 xre,
+                                            const __m512 xim,
+                                            const __m512 yre,
+                                            const __m512 yim,
+                                            __m512 * __restrict mre,
+                                            __m512 * __restrict mim )
+                                                               __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32))); 
 
 
 
