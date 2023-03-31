@@ -895,6 +895,167 @@
               }
 
 
+               /////////////////////////////////////////////////////////////////////
+
+
+                 
+                   void cneq_zmm16r4_u(const float * __restrict xre,
+                                      const float * __restrict xim,
+                                      const float * __restrict yre,
+                                      const float * __restrict yim,
+                                      __mmask16 * __restrict eqr,
+                                      __mmask16 * __restrict eqi ) {
+
+                      register __m512 zmm0,zmm1,zmm2,zmm3;
+                      zmm0 = _mm512_loadu_ps(&xre[0]);
+                      zmm1 = _mm512_loadu_ps(&yre[0]);
+                      _mm512_storeu_ps(&eqr[0],
+                                       _mm512_cmp_ps_mask(zmm0,zmm1,_CMP_NEQ_OQ));
+                      zmm2 = _mm512_loadu_ps(&xim[0]);
+                      zmm3 = _mm512_loadu_ps(&yim[0]);
+                      _mm512_storeu_ps(&eqi[0],
+                                       _mm512_cmp_ps_mask(zmm2,zmm3,_CMP_NEQ_OQ));
+              }
+
+
+                 
+                   void cneq_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) xre,
+                                      const float * __restrict __attribute__((aligned(64))) xim,
+                                      const float * __restrict __attribute__((aligned(64))) yre,
+                                      const float * __restrict __attribute__((aligned(64))) yim,
+                                      __mmask16 * __restrict __attribute__((aligned(64))) eqr,
+                                      __mmask16 * __restrict __attribute__((aligned(64))) eqi ) {
+
+                      register __m512 zmm0,zmm1,zmm2,zmm3;
+                      zmm0 = _mm512_load_ps(&xre[0]);
+                      zmm1 = _mm512_load_ps(&yre[0]);
+                      _mm512_store_ps(&eqr[0],
+                                       _mm512_cmp_ps_mask(zmm0,zmm1,_CMP_NEQ_OQ));
+                      zmm2 = _mm512_load_ps(&xim[0]);
+                      zmm3 = _mm512_load_ps(&yim[0]);
+                      _mm512_store_ps(&eqi[0],
+                                       _mm512_cmp_ps_mask(zmm2,zmm3,_CMP_NEQ_OQ));
+              }
+
+
+                  
+                   void cneq_zmm16r4(const __m512 xre,
+                                    const __m512 xim,
+                                    const __m512 yre,
+                                    const __m512 yim,
+                                    __mmask16 * __restrict eqr,
+                                    __mmask16 * __restrict eqi) {
+
+                         *eqr = _mm512_cmp_ps_mask(xre,yre,_CMP_NEQ_OQ);
+                         *eqi = _mm512_cmp_ps_mask(xim,yim,_CMP_NEQ_OQ);
+              }
+
+
+               ////////////////////////////////////////////////////////////////////////////
+
+
+               
+                   void cexp_zmm16r4_u(const float * __restrict xre,
+                                       const float * __restrict xim,
+                                       float * __restrict cexpr,
+                                       float * __restrict cexpi ) {
+
+                        register const __m512 I = _mm512_set1_ps(1.0f);
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        zmm0  = _mm512_loadu_ps(&xre[0]);
+                        zmm1  = _mm512_loadu_ps(&xim[0]);
+                        zmm2  = xexpf(zmm0);
+                        zmm3  = _mm512_mul_ps(zmm2,xcosf(zmm1));
+                        _mm512_storeu_ps(&cexpr[0],zmm3);
+                        zmm4  = _mm512_mul_ps(zmm2,_mm512_mul_ps(xsinf(zmm1),I));
+                        _mm512_storeu_ps(&cexpi[0],zmm4);
+              }
+
+
+                 
+                   void cexp_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) xre,
+                                       const float * __restrict __attribute__((aligned(64))) xim,
+                                       float * __restrict __attribute__((aligned(64))) cexpr,
+                                       float * __restrict __attribute__((aligned(64))) cexpi ) {
+
+                        register const __m512 I = _mm512_set1_ps(1.0f);
+                        register __m512 zmm0,zmm1,zmm2,zmm3;
+                        zmm0  = _mm512_load_ps(&xre[0]);
+                        zmm1  = _mm512_load_ps(&xim[0]);
+                        zmm2  = xexpf(zmm0);
+                        zmm3  = _mm512_mul_ps(zmm2,xcosf(zmm1));
+                        _mm512_store_ps(&cexpr[0],zmm3);
+                        zmm4  = _mm512_mul_ps(zmm2,_mm512_mul_ps(xsinf(zmm1),I));
+                        _mm512_store_ps(&cexpi[0],zmm4);
+              }
+
+
+                  
+                   void cexp_zmm16r4(const __m512 xre,
+                                     const __m512 xim,
+                                     __m512 * __restrict cexpr,
+                                     __m512 * __restrict cexpi) {
+
+                        register const __m512 I = _mm512_set1_ps(1.0f);
+                        register __m512 zmm0;
+                        zmm0   = xexpf(xre);
+                        *cexpr = _mm512_mul_ps(zmm0,xcosf(xim));
+                        *cexpi = _mm512_mul_ps(zmm0,_mm512_mul_ps(xsinf(xim),I));
+              }
+
+
+               ////////////////////////////////////////////////////////////////////
+
+
+              
+                   void cpolar_zmm16r4_u(const float * __restrict rho,
+                                         const float * __restrict tht,
+                                         float * __restrict  re,
+                                         float * __restrict  im) {
+
+                         register __m512 zmm0,zmm1,zmm2,zmm3;
+                         zmm0 = _mm512_loadu_ps(&rho[0]);
+                         zmm1 = _mm512_loadu_ps(&tht[0]);
+                         zmm2 = _mm512_mul_ps(zmm0,xcosf(zmm1)); //tht
+                         _mm512_storeu_ps(&re[0],zmm2);
+                         zmm3 = _mm512_mul_ps(zmm0,xsinf(zmm1)); //tht
+                         _mm512_storeu_ps(&im[0],zmm3);
+              }
+
+
+                 
+                   void cpolar_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) rho,
+                                         const float * __restrict __attribute__((aligned(64))) tht,
+                                         float * __restrict  __attribute__((aligned(64))) re,
+                                         float * __restrict  __attribute__((aligned(64))) im) {
+
+                         register __m512 zmm0,zmm1,zmm2,zmm3;
+                         zmm0 = _mm512_load_ps(&rho[0]);
+                         zmm1 = _mm512_load_ps(&tht[0]);
+                         zmm2 = _mm512_mul_ps(zmm0,xcosf(zmm1)); //tht
+                         _mm512_store_ps(&re[0],zmm2);
+                         zmm3 = _mm512_mul_ps(zmm0,xsinf(zmm1)); //tht
+                         _mm512_store_ps(&im[0],zmm3);
+              }
+
+
+                 
+                   void cpolar_zmm16r4(const __m512 rho,
+                                       const __m512 tht,
+                                       __m512 * __restrict re,
+                                       __m512 * __restrict im) {
+
+                        register __m512 zmm0,zmm1;
+                        zmm0 = _mm512_mul_ps(rho,xcosf(tht));
+                        *re  = zmm0;
+                        zmm1 = _mm512_mul_ps(rho,xsinf(tht));
+                        *im  = zmm1;
+              }
+
+
+
+
+
   
  
 
