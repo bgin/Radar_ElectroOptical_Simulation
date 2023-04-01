@@ -261,9 +261,95 @@ c
 							 __attribute__((hot))
                                                          __attribute__((aligned(32))); 
 
+             ///////////////////////////////////////////////////////////////////////////////
 
 
+/*							fresnl.c
+ *
+ *	Fresnel integral
+ *
+ *
+ *
+ * SYNOPSIS:
+ *
+ * double x, S, C;
+ * void fresnl();
+ *
+ * fresnl( x, _&S, _&C );
+ *
+ *
+ * DESCRIPTION:
+ *
+ * Evaluates the Fresnel integrals
+ *
+ *           x
+ *           -
+ *          | |
+ * C(x) =   |   cos(pi/2 t**2) dt,
+ *        | |
+ *         -
+ *          0
+ *
+ *           x
+ *           -
+ *          | |
+ * S(x) =   |   sin(pi/2 t**2) dt.
+ *        | |
+ *         -
+ *          0
+ *
+ *
+ * The integrals are evaluated by a power series for x < 1.
+ * For x >= 1 auxiliary functions f(x) and g(x) are employed
+ * such that
+ *
+ * C(x) = 0.5 + f(x) sin( pi/2 x**2 ) - g(x) cos( pi/2 x**2 )
+ * S(x) = 0.5 - f(x) cos( pi/2 x**2 ) - g(x) sin( pi/2 x**2 )
+ *
+ *
+ *
+ * ACCURACY:
+ *
+ *  Relative error.
+ *
+ * Arithmetic  function   domain     # trials      peak         rms
+ *   IEEE       S(x)      0, 10       10000       2.0e-15     3.2e-16
+ *   IEEE       C(x)      0, 10       10000       1.8e-15     3.3e-16
+ *   DEC        S(x)      0, 10        6000       2.2e-16     3.9e-17
+ *   DEC        C(x)      0, 10        5000       2.3e-16     3.9e-17
+ */
 
+/*
+Cephes Math Library Release 2.8:  June, 2000
+Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
+*/
+
+
+               void fresnel_zmm16r4(    const __m512 xxa,
+                                        __m512 * __restrict ssa,
+                                        __m512 * __restrict cca)      
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+              void fresnel_zmm16r4_a(     const float * __restrict __attribute__((aligned(64))) pxxa,
+                                          float * __restrict __attribute__((aligned(64))) ssa,
+                                          float * __restrict __attribute__((aligned(64))) cca)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+              void fresnel_zmm16r4_u(     const float * __restrict  pxxa,
+                                          float * __restrict  ssa,
+                                          float * __restrict  cca) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
