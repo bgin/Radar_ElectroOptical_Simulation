@@ -142,6 +142,29 @@ c
                                                          __attribute__((aligned(32)));
 
 
+                  __m512 rc_zmm16r4_a( const float * __restrict __ATTR_ALIGN__(64) px,
+                                       const float * __restrict __ATTR_ALIGN__(64) py,
+                                       const float * __restrict __ATTR_ALIGN__(64) perrtot)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                  __m512 rc_zmm16r4_u( const float * __restrict  px,
+                                       const float * __restrict  py,
+                                       const float * __restrict  perrtot) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+             ////////////////////////////////////////////////////////////////////////////////////////
+
+
+                 
+
+
 
 
 
