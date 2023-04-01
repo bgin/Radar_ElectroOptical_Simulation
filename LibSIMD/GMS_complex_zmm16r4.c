@@ -938,6 +938,54 @@
              ////////////////////////////////////////////////////////////////////////////////////
 
 
+                  void ctan_zmm16r4_u( const float * __restrict xre,
+                                       const float * __restrict xim,
+                                       float * __restrict tanr,
+                                       float * __restrict tani) {
+
+                        register __m512 zmm0,zmm1,sinr,sini,cosr,cosi,resr,resi;
+                        zmm0 = _mm512_loadu_ps(&xre[0]);
+                        zmm1 = _mm512_loadu_ps(&xim[0]);
+                        csin_zmm16r4(zmm0,zmm1,&sinr,&sini);
+                        ccos_zmm16r4(zmm0,zmm1,&cosr,&cosi);
+                        cdiv_zmm16r4(sinr,sini,cosr,cosi,&resr,&resi);
+                        _mm512_storeu_ps(&tanr[0], resr);
+                        _mm512_storeu_ps(&tani[0], resi);
+                }
+
+
+                  void ctan_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) xre,
+                                       const float * __restrict __attribute__((aligned(64))) xim,
+                                       float * __restrict __attribute__((aligned(64))) tanr,
+                                       float * __restrict __attribute__((aligned(64))) tani) {
+
+                        register __m512 zmm0,zmm1,sinr,sini,cosr,cosi,resr,resi;
+                        zmm0 = _mm512_load_ps(&xre[0]);
+                        zmm1 = _mm512_load_ps(&xim[0]);
+                        csin_zmm16r4(zmm0,zmm1,&sinr,&sini);
+                        ccos_zmm16r4(zmm0,zmm1,&cosr,&cosi);
+                        cdiv_zmm16r4(sinr,sini,cosr,cosi,&resr,&resi);
+                        _mm512_store_ps(&tanr[0], resr);
+                        _mm512_store_ps(&tani[0], resi);
+                }
+
+
+                 void ctan_zmm16r4(   const __m512 xre,
+                                      const __m512 xim,
+                                      __m512 * __restrict tanr,
+                                      __m512 * __restrict tani)  {
+
+                        register __m512 sinr,sini,cosr,cosi,resr,resi;
+                        csin_zmm16r4(xre,xim,&sinr,&sini);
+                        ccos_zmm16r4(xre,xim,&cosr,&cosi);
+                        cdiv_zmm16r4(sinr,sini,cosr,cosi,&resr,&resi);
+                        *tanr = resr;
+                        *tani = resi; 
+               }
+
+            ////////////////////////////////////////////////////////////////////////////////////
+
+
               
                    void ceq_zmm16r4_u(const float * __restrict xre,
                                       const float * __restrict xim,
