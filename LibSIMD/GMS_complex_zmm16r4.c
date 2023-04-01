@@ -884,7 +884,55 @@
                       *powr = _mm512_mul_ps(ptrm,xcosf(targ));
                       *powi = _mm512_mul_ps(ptrm,xsinf(targ));
                }
+
+
+             ////////////////////////////////////////////////////////////////////////////////////
  
+
+                  void clog_zmm16r4_u(  const float * __restrict xre,
+                                        const float * __restrict xim,
+                                        float * __restrict logr,
+                                        float * __restrict logi) {
+
+                      register __m512 zmm0,zmm1,cabs,carg,rep;
+                      zmm0  = _mm512_loadu_ps(&xre[0]);
+                      zmm1  = _mm512_loadu_ps(&xim[0]);
+                      cabs  = cabs_zmm16r4(zmm0,zmm1);
+                      carg  = carg_zmm16r4(zmm0,zmm1);
+                      rep   = xlogf(cabs);
+                      _mm512_storeu_ps(&logr[0],rep);
+                      _mm512_storeu_ps(&logi[0],carg); 
+               }
+
+
+                   void clog_zmm16r4_u(  const float * __restrict __attribute__((aligned(64))) xre,
+                                         const float * __restrict __attribute__((aligned(64))) xim,
+                                         float * __restrict __attribute__((aligned(64))) logr,
+                                         float * __restrict __attribute__((aligned(64))) logi) {
+
+                      register __m512 zmm0,zmm1,cabs,carg,rep;
+                      zmm0  = _mm512_loadu_ps(&xre[0]);
+                      zmm1  = _mm512_loadu_ps(&xim[0]);
+                      cabs  = cabs_zmm16r4(zmm0,zmm1);
+                      carg  = carg_zmm16r4(zmm0,zmm1);
+                      rep   = xlogf(cabs);
+                      _mm512_storeu_ps(&logr[0],rep);
+                      _mm512_storeu_ps(&logi[0],carg); 
+               }
+
+
+                   void clog_zmm16r4(    const __m512 xre,
+                                         const __m512 xim,
+                                         __m512 * __restrict logr,
+                                         __m512 * __restrict logi) {
+
+                      register __m512 cabs,carg,rep;
+                      cabs  = cabs_zmm16r4(zmm0,zmm1);
+                      carg  = carg_zmm16r4(zmm0,zmm1);
+                      rep   = xlogf(cabs);
+                      *logr = rep;
+                      *logi = carg; 
+               }
 
 
              ////////////////////////////////////////////////////////////////////////////////////
