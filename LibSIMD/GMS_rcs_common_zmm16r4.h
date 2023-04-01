@@ -352,11 +352,35 @@ Copyright 1984, 1987, 1989, 2000 by Stephen L. Moshier
                                                          __attribute__((aligned(32))); 
 
 
+            ///////////////////////////////////////////////////////////////////////////
 
 
 
+               /*
+                           Same as above -- divided into Fresnel 'C' integral
+                           and Fresnel 'S' integral.
+                     */
 
 
+               __m512 fresnel_C_zmm16r4(const __m512 xxa)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+              __m512 fresnel_C_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pxxa)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+              __m512 fresnel_C_zmm16r4_u(const float * __restrict  pxxa)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
