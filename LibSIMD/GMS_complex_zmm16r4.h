@@ -541,7 +541,7 @@ SOFTWARE.
            ////////////////////////////////////////////////////////////////////////////////
 
 
-            void ccosh_zmm16r4_u(const float * __restrict xre,
+            void ccosh_zmm16r4_u(      const float * __restrict xre,
                                        const float * __restrict xim,
                                        float * __restrict  csre,
                                        float * __restrict  csim)
@@ -551,7 +551,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));  
 
 
-             void ccosh_zmm16r4_a(const float * __restrict  __attribute__((aligned(64))) xre,
+             void ccosh_zmm16r4_a(     const float * __restrict  __attribute__((aligned(64))) xre,
                                        const float * __restrict __attribute__((aligned(64))) xim,
                                        float * __restrict  __attribute__((aligned(64))) csre,
                                        float * __restrict  __attribute__((aligned(64))) csim)
@@ -572,6 +572,43 @@ SOFTWARE.
 
 
              /////////////////////////////////////////////////////////////////////////////
+
+
+            
+             void cpow_zmm16r4_u(   const float * __restrict xre,
+                                    const float * __restrict xim,
+                                    const float n,
+                                    float * __restrict powr,
+                                    float * __restrict powi) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+             void cpow_zmm16r4_u(   const float * __restrict __attribute__((aligned(64))) xre,
+                                    const float * __restrict __attribute__((aligned(64))) xim,
+                                    const float n,
+                                    float * __restrict __attribute__((aligned(64))) powr,
+                                    float * __restrict __attribute__((aligned(64))) powi) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+             void cpow_zmm16r4(const __m512 xre,
+                               const __m512 xim,
+                               const float n,
+                               __m512 * __restrict powr,
+                               __m512 * __restrict powi)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+             ////////////////////////////////////////////////////////////////////////////
+
 
 
              void ceq_zmm16r4_u(      const float * __restrict xre,
