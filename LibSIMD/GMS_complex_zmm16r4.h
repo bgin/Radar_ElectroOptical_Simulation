@@ -643,6 +643,40 @@ SOFTWARE.
             //////////////////////////////////////////////////////////////////////////////
 
 
+              void ctan_zmm16r4_u( const float * __restrict xre,
+                                   const float * __restrict xim,
+                                   float * __restrict tanr,
+                                   float * __restrict tani) 
+                                                        __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+              void ctan_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) xre,
+                                   const float * __restrict __attribute__((aligned(64))) xim,
+                                   float * __restrict tanr,
+                                   float * __restrict tani) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));   
+
+
+              void ctan_zmm16r4(   const __m512 xre,
+                                   const __m512 xim,
+                                   __m512 * __restrict tanr,
+                                   __m512 * __restrict tani)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));   
+
+
+
+            ////////////////////////////////////////////////////////////////////////////
+
+
 
              void ceq_zmm16r4_u(      const float * __restrict xre,
                                       const float * __restrict xim,
