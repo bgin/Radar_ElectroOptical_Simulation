@@ -825,6 +825,71 @@
              ////////////////////////////////////////////////////////////////////////////////////
 
 
+                 void cpow_zmm16r4_u(      const float * __restrict xre,
+                                           const float * __restrict xim,
+                                           const float n,
+                                           float * __restrict powr,
+                                           float * __restrict powi) {
+
+                      register __m512 zmm0,zmm1,r,tht,vn,ptrm,targ,rep,imp;
+                      zmm0  = _mm512_loadu_ps(&xre[0]);
+                      rep   = _mm512_mul_ps(zmm0,zmm0);
+                      vn    = _mm512_set1_ps(n);
+                      zmm1  = _mm512_loadu_ps(&xim[0]);
+                      imp   = _mm512_mul_ps(zmm1,zmm1);
+                      r     = _mm512_sqrt_ps(_mm512_add_ps(rep,imp));
+                      tht   = xatanf(_mm512_div_ps(zmm1,zmm0));
+                      ptrm  = _mm512_pow_ps(r,vn);
+                      targ  = _mm512_mul_ps(vn,tht);
+                      _mm512_storeu_ps(&powr[0],_mm512_mul_ps(ptrm,xcosf(targ)));
+                      _mm512_storeu_ps(&powi[0],_mm512_mul_ps(ptrm,xsinf(targ)));
+                }
+
+
+                   void cpow_zmm16r4_a(    const float * __restrict __attribute__((aligned(64)))  xre,
+                                           const float * __restrict __attribute__((aligned(64)))  xim,
+                                           const float n,
+                                           float * __restrict __attribute__((aligned(64)))  powr,
+                                           float * __restrict __attribute__((aligned(64)))  powi) {
+
+                      register __m512 zmm0,zmm1,r,tht,vn,ptrm,targ,rep,imp;
+                      zmm0  = _mm512_load_ps(&xre[0]);
+                      rep   = _mm512_mul_ps(zmm0,zmm0);
+                      vn    = _mm512_set1_ps(n);
+                      zmm1  = _mm512_load_ps(&xim[0]);
+                      imp   = _mm512_mul_ps(zmm1,zmm1);
+                      r     = _mm512_sqrt_ps(_mm512_add_ps(rep,imp));
+                      tht   = xatanf(_mm512_div_ps(zmm1,zmm0));
+                      ptrm  = _mm512_pow_ps(r,vn);
+                      targ  = _mm512_mul_ps(vn,tht);
+                      _mm512_store_ps(&powr[0],_mm512_mul_ps(ptrm,xcosf(targ)));
+                      _mm512_store_ps(&powi[0],_mm512_mul_ps(ptrm,xsinf(targ)));
+                }
+
+
+                 void cpow_zmm16r4(const __m512 xre,
+                                   const __m512 xim,
+                                   const float n,
+                                   __m512 * __restrict powr,
+                                   __m512 * __restrict powi) {
+
+                      register __m512 r,tht,vn,ptrm,targ,rep,imp;
+                      rep   = _mm512_mul_ps(xre,xre);
+                      vn    = _mm512_set1_ps(n);
+                      imp   = _mm512_mul_ps(xim,xim);
+                      r     = _mm512_sqrt_ps(_mm512_add_ps(rep,imp));
+                      tht   = xatanf(_mm512_div_ps(xim,xre));
+                      ptrm  = _mm512_pow_ps(r,vn);
+                      targ  = _mm512_mul_ps(vn,tht);
+                      *powr = _mm512_mul_ps(ptrm,xcosf(targ));
+                      *powi = _mm512_mul_ps(ptrm,xsinf(targ));
+               }
+ 
+
+
+             ////////////////////////////////////////////////////////////////////////////////////
+
+
               
                    void ceq_zmm16r4_u(const float * __restrict xre,
                                       const float * __restrict xim,
