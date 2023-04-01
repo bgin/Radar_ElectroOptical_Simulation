@@ -474,6 +474,40 @@ SOFTWARE.
             //////////////////////////////////////////////////////////////////////////////
 
 
+             void csin_zmm16r4_u(      const float * __restrict xre,
+                                       const float * __restrict xim,
+                                       float * __restrict  csre,
+                                       float * __restrict  csim)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+             void csin_zmm16r4_a(      const float * __restrict __attribute__((aligned(64))) xre,
+                                       const float * __restrict __attribute__((aligned(64))) xim,
+                                       float * __restrict  __attribute__((aligned(64))) csre,
+                                       float * __restrict  __attribute__((aligned(64))) csim) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+             void csin_zmm16r4(      const __m512 xre,
+                                     const __m512 xim,
+                                     __m512 * __restrict csre,
+                                     __m512 * __restrict csim)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+
+           ////////////////////////////////////////////////////////////////////////////////
+
+
             void ccosh_zmm16r4_u(const float * __restrict xre,
                                        const float * __restrict xim,
                                        float * __restrict  csre,
