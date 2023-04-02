@@ -37,7 +37,7 @@ SOFTWARE.
     const char * const GMS_RCS_COMMON_ZMM8R8_DESCRIPTION   = "AVX512 optimized Radar Cross Section common functions."
 
 
-#include <cstdint>
+
 #include <immintrin.h>
 
 
