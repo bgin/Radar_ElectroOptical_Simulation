@@ -150,6 +150,45 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
+                  /*
+                       The complex scattering amplitudes near the lower end of the resonance
+                       region (say, 0.4 < k^a < 1) 
+                       E-plane approximation
+                       These equations are not valid at all for k0a > 1. They are
+                       valid for all theta angles.
+                   */
+
+
+             ///////////////////////////////////////////////////////////////////////////////////////
+
+
+                    void S1_f3213_zmm146r4( const __m512 k0a,
+                                            const __m512 tht,
+                                           __m512 * __restrict S1r,
+                                           __m512 * __restrict S1i)    
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+                    void S1_f3213_zmm146r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
+                                              const float * __restrict __attribute__((aligned(64))) ptht,
+                                              float * __restrict __attribute__((aligned(64))) S1r,
+                                              float * __restrict __attribute__((aligned(64))) S1i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                     void S1_f3213_zmm146r4_u( const float * __restrict  pk0a,
+                                               const float * __restrict  ptht,
+                                               float * __restrict S1r,
+                                               float * __restrict S1i)        
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
 
