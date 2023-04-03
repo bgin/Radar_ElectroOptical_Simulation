@@ -456,9 +456,44 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                      /*
+                        High frequency region (k0a > 20).
+                        Complex scattering amplitudes.
+                        Formula 3.2-24
+                   */
 
 
+                //////////////////////////////////////////////////////////////////////////////////////
 
+
+                      void S12_f3224_zmm16r4( const __m512 k0a,
+                                              const __m512 tht,
+                                              __m512 * __restrict S12r,
+                                              __m512 * __restrict S12i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                       void S12_f3224_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
+                                                 const float * __restrict __attribute__((aligned(64))) ptht,
+                                                 float * __restrict __attribute__((aligned(64))) S12r,
+                                                 float * __restrict __attribute__((aligned(64))) S12i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void S12_f3224_zmm16r4_u( const float * __restrict  pk0a,
+                                                 const float * __restrict  ptht,
+                                                 float * __restrict  S12r,
+                                                 float * __restrict  S12i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
