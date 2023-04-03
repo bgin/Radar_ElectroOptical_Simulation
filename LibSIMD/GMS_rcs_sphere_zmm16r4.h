@@ -496,6 +496,43 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                           /*
+                       Resonance region (0.4 < k0a < 20.0), equations are valid only for k0a < 1.0.
+                       Complex scattering amplitude represented as a scattering function -- formula 3.2-26
+                 */
+
+
+             ///////////////////////////////////////////////////////////////////////////////////////////
+ 
+                        
+                       void S12_f3226_zmm16r4(const __m512 k0a,
+                                              __m512 * __restrict S12r,
+                                              __m512 * __restrict S12i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void S12_f3226_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0a,
+                                                float * __restrict __attribute__((aligned(64))) S12r,
+                                                float * __restrict __attribute__((aligned(64))) S12i)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void S12_f3226_zmm16r4_u(const float * __restrict  pk0a,
+                                                float * __restrict  S12r,
+                                                float * __restrict  S12i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+
 
 
 
