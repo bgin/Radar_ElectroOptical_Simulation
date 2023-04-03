@@ -532,6 +532,39 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                  /*
+                           Resonance region (0.4 < k0a < 20.0), equations are valid only for k0a < 1.0.
+                           Radar cross-section, formula 3.2-27
+                     */
+
+
+             /////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                       __m512 rcs_f3227_zmm16r4(const __m512 k0a,
+                                                const __m512 a)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void rcs_f3227_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0a,
+                                                const float * __restrict __attribute__((aligned(64))) pa,
+                                                float * __restrict __attribute__((aligned(64))) rcs)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void rcs_f3227_zmm16r4_u(const float * __restrict  pk0a,
+                                                const float * __restrict  pa,
+                                                float * __restrict  rcs) 
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
