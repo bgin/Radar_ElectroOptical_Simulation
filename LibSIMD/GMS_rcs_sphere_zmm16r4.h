@@ -91,7 +91,28 @@ SOFTWARE.
                     */
 
 
-                    
+                    __m512 rcs_f325_zmm16r4(const __m512 k0,
+                                            const __m512 a ) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                   __m512 rcs_f325_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0,
+                                             const float * __restrict __attribute__((aligned(64))) pa )
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                   __m512 rcs_f325_zmm16r4_u(const float * __restrict pk0,
+                                             const float * __restrict pa )
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
 
