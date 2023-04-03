@@ -53,7 +53,7 @@ SOFTWARE.
                    */
 
 
-                     void rcs_f324_zmm16r4(   const __m512 k0a, // size of sphere expressed in wavenumber units
+                     void Fth_f324_zmm16r4(   const __m512 k0a, // size of sphere expressed in wavenumber units
                                                __m512 * __restrict F0r, // the results
                                                __m512 * __restrict F0i)
                                                          __attribute__((vectorcall))
@@ -62,7 +62,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
-                     void rcs_f324_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pk0a, // size of sphere expressed in wavenumber units
+                     void Fth_f324_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pk0a, // size of sphere expressed in wavenumber units
                                                __m512 * __restrict F0r, // the results
                                                __m512 * __restrict F0i)
                                                          __attribute__((vectorcall))
@@ -71,7 +71,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
-                     void rcs_f324_zmm16r4_u(  const float * __restrict  pk0a, // size of sphere expressed in wavenumber units
+                     void Fth_f324_zmm16r4_u(  const float * __restrict  pk0a, // size of sphere expressed in wavenumber units
                                                __m512 * __restrict F0r, // the results
                                                __m512 * __restrict F0i) 
                                                          __attribute__((vectorcall))
@@ -81,7 +81,17 @@ SOFTWARE.
 
 
 
+        //////////////////////////////////////////////////////////////////////////////////////////////
 
+
+                      /*
+                        Radar Cross Section Handbook 1, page 147, formula 3.2-5
+                        Backscattering cross section
+                        
+                    */
+
+
+                    
 
 
 
