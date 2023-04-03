@@ -271,5 +271,68 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
+                      /*
+                       Formula 3.2-17, optics contribution at upper end of resonance region
+                   */
 
+
+           /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                     void S2_f3217_zmm16r4(const __m512 k0a,
+                                           const __m512 tht,
+                                           __m512 * __restrict S2r,
+                                           __m512 * __restrict S2i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                     void S2_f3217_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pk0a,
+                                             const float * __restrict __attribute__((aligned(64)))  ptht,
+                                             float * __restrict __attribute__((aligned(64)))  S2r,
+                                             float * __restrict __attribute__((aligned(64)))  S2i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                     void S2_f3217_zmm16r4_u(const float * __restrict  pk0a,
+                                             const float * __restrict  ptht,
+                                             float * __restrict  S2r,
+                                             float * __restrict  S2i)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 #endif /*__GMS_RCS_SPHERE_ZMM16R4_H__*/
