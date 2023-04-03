@@ -309,13 +309,151 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
+                      /*
+                        Low frequency region (k0a < 0.4) i.e. Rayleigh-region complex scattering
+                        amplitudes.
+                        Formula 3.2-20
+                    */
+
+                 //////////////////////////////////////////////////////////////////////////////////////
+
+
+                      __m512 S1_f3220_zmm16r4(const __m512 k0a,
+                                              const __m512 tht) 
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                      void S1_f3220_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pk0a,
+                                              const float * __restrict __attribute__((aligned(64)))  ptht,
+                                              float * __restrict __attribute__((aligned(64)))  S1)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                       void S1_f3220_zmm16r4_u(const float * __restrict pk0a,
+                                               const float * __restrict ptht,
+                                               float * __restrict S1)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                         /*
+                        Low frequency region (k0a < 0.4) i.e. Rayleigh-region complex scattering
+                        amplitudes.
+                        Formula 3.2-21
+                    */
+
+
+             ///////////////////////////////////////////////////////////////////////////////////////
+
+
+                        __m512 S2_f3221_zmm16r4(const __m512 k0a,
+                                                const __m512 tht)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                        void S2_f3221_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pk0a,
+                                                const float * __restrict __attribute__((aligned(64)))  ptht,
+                                                float * __restrict S2)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                       void S2_f3221_zmm16r4_u(const float * __restrict  pk0a,
+                                               const float * __restrict  ptht,
+                                               float * __restrict S2)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
+                         /*
+                         The E-plane and H-plane scattering cross sections.
+                         Formula 3.2-22
+                    */
+
+                 ////////////////////////////////////////////////////////////////////////////////////////
 
 
+                     __m512 rcs_f3222_zmm16r4(const __m512 k0a,
+                                              const __m512 a,
+                                              const __m512 theta)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                     void rcs_f3222_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pk0a,
+                                                const float * __restrict __attribute__((aligned(64))) pa,
+                                                const float * __restrict __attribute__((aligned(64))) ptheta,
+                                                float * __restrict __attribute__((aligned(64))) rcs )
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void rcs_f3222_zmm16r4_u(  const float * __restrict  pk0a,
+                                                 const float * __restrict  pa,
+                                                 const float * __restrict ptheta,
+                                                 float * __restrict  rcs ) {
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                          /*
+                         The E-plane and H-plane scattering cross sections.
+                         Formula 3.2-23
+                    */
+
+
+                //////////////////////////////////////////////////////////////////////////////////
+
+
+                    __m512 rcs_f3223_zmm16r4(const __m512 k0a,
+                                             const __m512 a,
+                                             const __m512 theta)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                    void rcs_f3223_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pk0a,
+                                               const float * __restrict __attribute__((aligned(64))) pa,
+                                               const float * __restrict __attribute__((aligned(64))) ptheta,
+                                               float * __restrict __attribute__((aligned(64))) rcs  )
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                    void rcs_f3223_zmm16r4_u(  const float * __restrict  pk0a,
+                                               const float * __restrict  pa,
+                                               const float * __restrict  ptheta,
+                                               float * __restrict  rcs  ) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
