@@ -115,10 +115,39 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
+                /*
+                        Creeping wave term, F c(0) at the upper end of the resonance region.
+                        Formula 3.2-8
+                    */
+
+          /////////////////////////////////////////////////////////////////////////////////////////////
 
 
+                   void Fc_f328_zmm16r4( const __m512 x,//k0a
+                                         __m512 * __restrict Fc0r,
+                                         __m512 * __restrict Fc0i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
+                  void Fc_f328_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) px,//k0a
+                                           float * __restrict __attribute__((aligned(64))) Fc0r,
+                                           float * __restrict __attribute__((aligned(64))) Fc0i) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                   void Fc_f328_zmm16r4_u(const float * __restrict px,//k0a
+                                           float * __restrict  Fc0r,
+                                           float * __restrict  Fc0i) 
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
 
