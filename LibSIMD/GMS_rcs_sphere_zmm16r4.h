@@ -1075,5 +1075,50 @@ SOFTWARE.
 							 __attribute__((hot))
                                                          __attribute__((aligned(32)));
 
+                        
+                    /*
+                          Bistatic Geometric Optics Rays.
+                          The RCS of sphere included N-rays.
+                          E-plane or H-plane, for backscattering
+                          and forward-scattering E and H RCS are 
+                          identical
+                     */
+
+
+                //////////////////////////////////////////////////////////////////////////////
+
+#include <stdint.h>
+
+
+                        __m512 rcs_f3314_zmm16r4(const __m512 * __restrict Snthr,
+                                            const __m512 * __restrict Snthi,
+                                            const __m512 * __restrict cjphr,
+                                            const __m512 * __restrict cjphi,
+                                            __m512 * __restrict wrkr,
+                                            __m512 * __restrict wrki,
+                                            const __m512 k02,
+                                            const int32_t N)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                          /*
+                         Large sphere limit, k0a > 1.15/m1 (reflective region).
+                         Backscattering RCS, formula 3.3-17
+                    */
+
+
+               /////////////////////////////////////////////////////////////////////////////////////
+
+
+                      
+
+
+
+
+
+
 
 #endif /*__GMS_RCS_SPHERE_ZMM16R4_H__*/
