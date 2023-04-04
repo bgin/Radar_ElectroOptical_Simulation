@@ -832,13 +832,87 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                        void B_coffs_f335_zmm16r4(const __m512 k0a3,
+                                             const __m512 k0a5,
+                                             const __m512 m1r,
+                                             const __m512 m1i,
+                                             __m512 * __restrict B1r,
+                                             __m512 * __restrict B1i,
+                                             __m512 * __restrict B2r,
+                                             __m512 * __restrict B2i)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                        void B_coffs_f335_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pk0a3,
+                                               const float * __restrict __attribute__((aligned(64)))  pk0a5,
+                                               const float * __restrict __attribute__((aligned(64)))  pm1r,
+                                               const float * __restrict __attribute__((aligned(64))) pm1i,
+                                               float * __restrict __attribute__((aligned(64))) B1r,
+                                               float * __restrict __attribute__((aligned(64))) B1i,
+                                               float * __restrict __attribute__((aligned(64))) B2r,
+                                               float * __restrict __attribute__((aligned(64))) B2i)
+                                                            __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                        void B_coffs_f335_zmm16r4_u(const float * __restrict   pk0a3,
+                                               const float * __restrict   pk0a5,
+                                               const float * __restrict   pm1r,
+                                               const float * __restrict   pm1i,
+                                               float * __restrict  B1r,
+                                               float * __restrict  B1i,
+                                               float * __restrict  B2r,
+                                               float * __restrict  B2i)
+                                                              __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                      /*
+                         Rayleigh backscattering RCS for dielectric spheres at angle 0.
+                         Formula 3.3-7
+                     */
 
+
+               ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+                      __m512 rcs_f337_zmm16r4(const __m512 a,
+                                           const __m512 k0a4,
+                                           const __m512 m1r,
+                                           const __m512 m1i) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void rcs_f337_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pa,
+                                           const float * __restrict __attribute__((aligned(64))) pk0a4,
+                                           const float * __restrict __attribute__((aligned(64))) pm1r,
+                                           const float * __restrict __attribute__((aligned(64))) pm1i,
+                                           float * __restrict __attribute__((aligned(64))) rcs )
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void rcs_f337_zmm16r4_u(const float * __restrict  pa,
+                                           const float * __restrict  pk0a4,
+                                           const float * __restrict  pm1r,
+                                           const float * __restrict  pm1i,
+                                           float * __restrict  rcs )
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
