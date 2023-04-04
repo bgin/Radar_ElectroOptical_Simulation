@@ -567,7 +567,40 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                    /*
+                       Scattering functions equation at upper end of resonance region.
+                       Optics wave term and creeping wave term.
+                       Optics wave term, formula 3.2-28
+                   */
 
+               ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                      void FO_f3228_zmm16r4(const __m512 k0a,
+                                            __m512 * __restrict FOr,
+                                            __m512 * __restrict FOi)      
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void FO_f3228_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0a,
+                                              float * __restrict __attribute__((aligned(64))) FOr,
+                                              float * __restrict __attribute__((aligned(64))) FOi)
+                                                            __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void FO_f3228_zmm16r4_u(const float * __restrict pk0a,
+                                              float * __restrict FOr,
+                                              float * __restrict FOi)
+                                                             __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
