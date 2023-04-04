@@ -1001,6 +1001,46 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                           /*
+                         E-plane and H-plane RCS.
+                         Formulae: 3.3-10,3.3-11
+                     */
+
+
+                ////////////////////////////////////////////////////////////////////////////////
+
+
+                       __m512 rcs_f3310_zmm16r4(const __m512 tht,
+                                            const __m512 a,
+                                            const __m512 ka04,
+                                            const __m512 mm1r,
+                                            const __m512 mm1i)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                        __m512 rcs_f3310_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) ptht,
+                                            const float * __restrict __attribute__((aligned(64))) pa,
+                                            const float * __restrict __attribute__((aligned(64))) pka04,
+                                            const float * __restrict __attribute__((aligned(64))) pmm1r,
+                                            const float * __restrict __attribute__((aligned(64))) pmm1i)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                         __m512 rcs_f3310_zmm16r4_u(const float * __restrict  ptht,
+                                              const float * __restrict  pa,
+                                              const float * __restrict  pka04,
+                                              const float * __restrict  pmm1r,
+                                              const float * __restrict  pmm1i)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
 
