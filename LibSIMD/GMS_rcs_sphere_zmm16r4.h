@@ -710,7 +710,151 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));  
 
 
+                     /*
+                         High-frequency region -- forward scattering function and 
+                         cross-section (k0a > 20)
+                         Formula 3.2-33 (Forward scattering function).
+                     */
 
 
- 
+             /////////////////////////////////////////////////////////////////////////////////////////
+
+
+                    void F_f3233_zmm16r4(const __m512 k0a,
+                                        __m512 * __restrict Fr,
+                                        __m512 * __restrict Fi)     
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                    void F_f3233_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0a,
+                                           float * __restrict __attribute__((aligned(64))) Fr,
+                                           float * __restrict __attribute__((aligned(64))) Fi)  
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                    void F_f3233_zmm16r4_u(const float * __restrict  pk0a,
+                                          float * __restrict  Fr,
+                                          float * __restrict  Fi)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                        /*
+                         High-frequency region -- forward scattering function and 
+                         cross-section (k0a > 20)
+                         Formula 3.2-34 (RCS).
+                     */
+
+
+               /////////////////////////////////////////////////////////////////////////////////////////
+
+
+                      __m512 rcs_f3234_zmm16r4(const __m512 k0a,
+                                               const __m512 a)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void rcs_f3234_zmm16r4_a(const float * __restrict  __attribute__((aligned(64))) pk0a,
+                                               const float * __restrict  __attribute__((aligned(64))) pa,
+                                               float * __restrict  __attribute__((aligned(64))) rcs)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void rcs_f3234_zmm16r4_u(const float * __restrict  pk0a,
+                                                const float * __restrict  pa,
+                                                float * __restrict  rcs)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                        /*
+                          Low-frequency region (k1a < 0.8).
+                          Expansion by two series terms i.e. A0,A1 and B0,B1.
+                          Formula 3.3-5
+                    */
+
+
+              //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                       void A_coffs_f335_zmm16r4(const __m512 k0a5,
+                                                 const __m512 m1r,
+                                                 const __m512 m1i,
+                                                 __m512 * __restrict A1r,
+                                                 __m512 * __restrict A1i,
+                                                 __m512 * __restrict A2r,
+                                                 __m512 * __restrict A2i)         
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                        void A_coffs_f335_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pk0a5,
+                                               const float * __restrict __attribute__((aligned(64)))  pm1r,
+                                               const float * __restrict __attribute__((aligned(64)))  pm1i,
+                                               float * __restrict __attribute__((aligned(64)))  A1r,
+                                               float * __restrict __attribute__((aligned(64)))  A1i,
+                                               float * __restrict __attribute__((aligned(64)))  A2r,
+                                               float * __restrict __attribute__((aligned(64)))  A2i) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                        void A_coffs_f335_zmm16r4_u(const float * __restrict  pk0a5,
+                                                const float * __restrict  pm1r,
+                                               const float * __restrict  pm1i,
+                                               float * __restrict  A1r,
+                                               float * __restrict  A1i,
+                                               float * __restrict  A2r,
+                                               float * __restrict  A2i) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif /*__GMS_RCS_SPHERE_ZMM16R4_H__*/
