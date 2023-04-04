@@ -1113,12 +1113,56 @@ SOFTWARE.
                /////////////////////////////////////////////////////////////////////////////////////
 
 
-                      
+                     __m512 rcs_f3317_zmm16r4(const __m512 m1r,
+                                             const __m512 m1i,
+                                             const __m512 a) 
+                                                        __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
+                      __m512 rcs_f3317_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pm1r,
+                                              const float * __restrict __attribute__((aligned(64))) pm1i,
+                                              const float * __restrict __attribute__((aligned(64))) pa)
+                                                            __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
+                     __m512 rcs_f3317_zmm16r4_u(const float * __restrict  pm1r,
+                                               const float * __restrict  pm1i,
+                                               const float * __restrict  pa) 
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
+
+                       /*
+                       Forward scattering RCS.
+                       Formula 3.3-19
+                         */
+
+
+                 /////////////////////////////////////////////////////////////////////////////////////////
+
+
+                        __m512 rcs_f3319_zmm16r4(const __m512 a,
+                                                 const __m512 k0a)
+                                                             __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                         __m512 rcs_f3319_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pa,
+                                                    const float * __restrict __attribute__((aligned(64))) pk0a)
+                                                              __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
 
 
 #endif /*__GMS_RCS_SPHERE_ZMM16R4_H__*/
