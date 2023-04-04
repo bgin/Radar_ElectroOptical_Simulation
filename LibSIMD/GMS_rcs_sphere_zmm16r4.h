@@ -915,16 +915,90 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                           /*
+                        Low-frequency bi-static scattering
+                  */
 
 
+               //////////////////////////////////////////////////////////////////////////////
 
 
+                      void S1_f338_zmm16r4(const __m512 ka03,
+                                        const __m512 ka05,
+                                        const __m512 tht,
+                                        const __m512 mm1r,
+                                        const __m512 mm1i,
+                                        __m512 * __restrict S1r,
+                                        __m512 * __restrict S1i)   
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                      void S1_f338_zmm16r4_a(const float * __restrict __attribute__((aligned(64)))  pka03,
+                                        const float * __restrict __attribute__((aligned(64))) pka05,
+                                        const float * __restrict __attribute__((aligned(64))) ptht,
+                                        const float * __restrict __attribute__((aligned(64))) pmm1r,
+                                        const float * __restrict __attribute__((aligned(64))) pmm1i,
+                                        float * __restrict __attribute__((aligned(64))) S1r,
+                                        float * __restrict __attribute__((aligned(64))) S1i)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                       void S1_f338_zmm16r4_u(const float * __restrict  pka03,
+                                        const float * __restrict  pka05,
+                                        const float * __restrict  ptht,
+                                        const float * __restrict  pmm1r,
+                                        const float * __restrict  pmm1i,
+                                        float * __restrict  S1r,
+                                        float * __restrict  S1i)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
+                      void S2_f338_zmm16r4(const __m512 ka03,
+                                        const __m512 ka05,
+                                        const __m512 tht,
+                                        const __m512 mm1r,
+                                        const __m512 mm1i,
+                                        __m512 * __restrict S2r,
+                                        __m512 * __restrict S2i)  
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void S2_f338_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pka03,
+                                          const float * __restrict __attribute__((aligned(64))) pka05,
+                                          const float * __restrict __attribute__((aligned(64))) ptht,
+                                          const float * __restrict __attribute__((aligned(64))) pmm1r,
+                                          const float * __restrict __attribute__((aligned(64))) pmm1i,
+                                          float * __restrict __attribute__((aligned(64))) S2r,
+                                          float * __restrict __attribute__((aligned(64))) S2i)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void S2_f338_zmm16r4_u(const float * __restrict  pka03,
+                                          const float * __restrict  pka05,
+                                          const float * __restrict  ptht,
+                                          const float * __restrict  pmm1r,
+                                          const float * __restrict  pmm1i,
+                                          float * __restrict  S2r,
+                                          float * __restrict  S2i) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
 
 
 
