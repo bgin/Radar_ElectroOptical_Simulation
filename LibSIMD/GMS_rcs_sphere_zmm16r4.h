@@ -1165,4 +1165,69 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
+                         __m512 rcs_f3319_zmm16r4_u(const float * __restrict  pa,
+                                                    const float * __restrict  pk0a)
+                                                             __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                            /*
+                         Approximate solutions for far-field region (Rayleigh-Gans)
+                         (abs(m1-1) << 1,2*k0a abs(m1-1) << 1)
+                         Bistatic scattering formula 3.3-22
+                     */
+
+
+                  ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+                           void S1_f3322_zmm16r4(const __m512 m1r,
+                                                 const __m512 m1i,
+                                                 const __m512 tht,
+                                                 const __m512 k0a,
+                                                  __m512 * __restrict S1r,
+                                                  __m512 * __restrict S1i)
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                          void S1_f3322_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pm1r,
+                                           const float * __restrict __attribute__((aligned(64))) pm1i,
+                                           const float * __restrict __attribute__((aligned(64))) ptht,
+                                           const float * __restrict __attribute__((aligned(64))) pk0a,
+                                           float * __restrict __attribute__((aligned(64))) S1r,
+                                           float * __restrict __attribute__((aligned(64))) S1i) 
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+                           void S1_f3322_zmm16r4_u(const float * __restrict  pm1r,
+                                           const float * __restrict  pm1i,
+                                           const float * __restrict  ptht,
+                                           const float * __restrict  pk0a,
+                                           float * __restrict S1r,
+                                           float * __restrict  S1i) 
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif /*__GMS_RCS_SPHERE_ZMM16R4_H__*/
