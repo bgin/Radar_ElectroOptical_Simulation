@@ -603,9 +603,111 @@ SOFTWARE.
                                                          __attribute__((aligned(32))); 
 
 
+                        /*
+                       Scattering functions equation at upper end of resonance region.
+                       Optics wave term and creeping wave term.
+                       Creeping wave term, formula 3.2-29
+                   */
 
 
+             /////////////////////////////////////////////////////////////////////////////////////////
 
+
+                      void FC_f3229_zmm16r4(const __m512 x,
+                                            __m512 * __restrict FCr,
+                                            __m512 * __restrict FCi)
+                                                            __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                       void FC_f3229_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) px,
+                                               float * __restrict __attribute__((aligned(64))) FCr,
+                                               float * __restrict __attribute__((aligned(64))) FCi)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32))); 
+
+
+                      void FC_f3229_zmm16r4_u(const float * __restrict  px,
+                                              float * __restrict  FCr,
+                                              float * __restrict  FCi) 
+                                                            __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                        /*
+                         Low frquency region (k0a < 0.4), Rayleigh approximation
+                         for forward scattering function and cross-section.
+                         Formulae: 3.2-31, 3.2-32
+                         Forward scattering function.
+                   */
+
+
+              ////////////////////////////////////////////////////////////////////////////////////////
+
+
+                       __m512 F_f3231_zmm16r4(const __m512 k0a)
+                                                           __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                       void F_f3231_zmm16r4_a(const float * __restrict __attribute__((aligned(64))) pk0a,
+                                              float * __restrict __attribute__((aligned(64))) Fpi )
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32)));  
+
+
+                      void F_f3231_zmm16r4_u(const float * __restrict  pk0a,
+                                             float * __restrict  Fpi) 
+                                                             __attribute__((vectorcall))
+                                                             __attribute__((noinline))
+							     __attribute__((hot))
+                                                             __attribute__((aligned(32)));  
+
+
+                           /*
+                         Low frquency region (k0a < 0.4), Rayleigh approximation
+                         for forward scattering function and cross-section.
+                         Formulae: 3.2-31, 3.2-32
+                         RCS.
+                   */
+
+               ////////////////////////////////////////////////////////////////////////////////////////
+
+
+                     __m512 rcs_f3232_zmm16r4(const __m512 k0a,
+                                              const __m512 a)    
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                     void rcs_f3232_zmm16r4_a(  const float * __restrict __attribute__((aligned(64))) pk0a,
+                                                const float * __restrict __attribute__((aligned(64))) pa,
+                                                float * __restrict __attribute__((aligned(64))) rcs) 
+                                                         __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
+
+
+                      void rcs_f3232_zmm16r4_u(  const float * __restrict  pk0a,
+                                              const float * __restrict    pa,
+                                              float * __restrict  rcs)
+                                                          __attribute__((vectorcall))
+                                                         __attribute__((noinline))
+							 __attribute__((hot))
+                                                         __attribute__((aligned(32)));  
 
 
 
