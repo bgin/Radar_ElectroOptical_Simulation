@@ -162,7 +162,7 @@ SOFTWARE.
              ///////////////////////////////////////////////////////////////////////////////////////
 
 
-                    void S1_f3213_zmm146r4( const __m512 k0a,
+                    void S1_f3213_zmm16r4( const __m512 k0a,
                                             const __m512 tht,
                                            __m512 * __restrict S1r,
                                            __m512 * __restrict S1i)    
@@ -171,7 +171,7 @@ SOFTWARE.
 							 __attribute__((hot))
                                                          __attribute__((aligned(32)));
 
-                    void S1_f3213_zmm146r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
+                    void S1_f3213_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
                                               const float * __restrict __attribute__((aligned(64))) ptht,
                                               float * __restrict __attribute__((aligned(64))) S1r,
                                               float * __restrict __attribute__((aligned(64))) S1i)
@@ -181,7 +181,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
-                     void S1_f3213_zmm146r4_u( const float * __restrict  pk0a,
+                     void S1_f3213_zmm16r4_u( const float * __restrict  pk0a,
                                                const float * __restrict  ptht,
                                                float * __restrict S1r,
                                                float * __restrict S1i)        
@@ -203,7 +203,7 @@ SOFTWARE.
               //////////////////////////////////////////////////////////////////////////////////////////
 
 
-                     void S2_f3214_zmm146r4( const __m512 k0a,
+                     void S2_f3214_zmm16r4( const __m512 k0a,
                                              const __m512 tht,
                                              __m512 * __restrict S2r,
                                              __m512 * __restrict S2i)
@@ -213,7 +213,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
-                     void S2_f3214_zmm146r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
+                     void S2_f3214_zmm16r4_a( const float * __restrict __attribute__((aligned(64))) pk0a,
                                                const float * __restrict __attribute__((aligned(64))) ptht,
                                                float * __restrict __attribute__((aligned(64))) S2r,
                                                float * __restrict __attribute__((aligned(64))) S2i)
@@ -223,7 +223,7 @@ SOFTWARE.
                                                          __attribute__((aligned(32)));
 
 
-                     void S2_f3214_zmm146r4_u( const float * __restrict  pk0a,
+                     void S2_f3214_zmm16r4_u( const float * __restrict  pk0a,
                                                const float * __restrict  ptht,
                                                float * __restrict  S2r,
                                                float * __restrict  S2i) 
