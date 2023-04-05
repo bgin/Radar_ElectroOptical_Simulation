@@ -29,6 +29,10 @@
     #define  __ATTR_HOT__  __attribute__ ((hot))
 #endif
 
+#if !defined(__ATTR_NOINLINE__)
+    #define  __ATTR_NOINLINE__  __attribute__ ((noinline))
+#endif
+
 #if !defined(__ATTR_COLD__)
     #define __ATTR_COLD__ __attribute__ ((cold))
 #endif
@@ -70,7 +74,10 @@
 #endif
 
 
-
+#define FUNC_ATTRIBUTES  __attribute__((vectorcall)) \
+                         __attribute__ ((noinline)) \
+                         __attribute__ ((hot))  \
+                         __attribute__ ((aligned((32))))
 
 
 
