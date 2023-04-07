@@ -1075,7 +1075,7 @@ SOFTWARE.
                     */
 
 
-                   void expj_f6358_zmm16(const __m512d k0,
+                   void expj_f6358_zmm8r8(const __m512d k0,
                                          const __m512d beta,
                                          const __m512d a,
                                          const __m512d h,
@@ -1085,7 +1085,7 @@ SOFTWARE.
                                                    FUNC_ATTRIBUTES;   
 
                   
-                   void expj_f6358_zmm16_a(const double * __restrict __ATTR_ALIGN__(64) pk0,
+                   void expj_f6358_zmm8r8_a(const double * __restrict __ATTR_ALIGN__(64) pk0,
                                            const double * __restrict __ATTR_ALIGN__(64) pbeta,
                                            const double * __restrict __ATTR_ALIGN__(64) pa,
                                            const double * __restrict __ATTR_ALIGN__(64) ph,
@@ -1096,7 +1096,7 @@ SOFTWARE.
 
 
                   
-                   void expj_f6358_zmm16_u(const double * __restrict  pk0,
+                   void expj_f6358_zmm8r8_u(const double * __restrict  pk0,
                                            const double * __restrict  pbeta,
                                            const double * __restrict  pa,
                                            const double * __restrict  ph,
@@ -1379,14 +1379,14 @@ SOFTWARE.
                                                                    FUNC_ATTRIBUTES;   
 
                   
-                   __m512d rcs_f6412_zmm16(const __m512d a,
+                   __m512d rcs_f6412_zmm8r8(const __m512d a,
                                           const __m512d b,
                                           const __m512d k0,
                                           const __m512d tht) 
                                                                     FUNC_ATTRIBUTES;   
 
                  
-                   __m512d rcs_f6412_zmm16_a(const double * __restrict __ATTR_ALIGN__(64) pa,
+                   __m512d rcs_f6412_zmm8r8_a(const double * __restrict __ATTR_ALIGN__(64) pa,
                                             const double * __restrict __ATTR_ALIGN__(64) pb,
                                             const double * __restrict __ATTR_ALIGN__(64) pk0,
                                             const double * __restrict __ATTR_ALIGN__(64) ptht)
@@ -1394,7 +1394,7 @@ SOFTWARE.
 
 
                  
-                   __m512d rcs_f6412_zmm16_u(const double * __restrict  pa,
+                   __m512d rcs_f6412_zmm8r8_u(const double * __restrict  pa,
                                             const double * __restrict  pb,
                                             const double * __restrict  pk0,
                                             const double * __restrict  ptht) 
