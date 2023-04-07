@@ -39,7 +39,7 @@ SOFTWARE.
 
 
 
-#include <cstdint>
+#include <stdint.h>
 #include <stdbool.h>
 #include <immintrin.h>
 #include "GMS_kernel_config.h"
