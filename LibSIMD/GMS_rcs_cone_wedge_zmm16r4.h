@@ -1075,7 +1075,7 @@ SOFTWARE.
                     */
 
 
-                   void expj_f6358_zmm16(const __m512 k0,
+                   void expj_f6358_zmm16r4(const __m512 k0,
                                          const __m512 beta,
                                          const __m512 a,
                                          const __m512 h,
@@ -1085,7 +1085,7 @@ SOFTWARE.
                                                    FUNC_ATTRIBUTES;   
 
                   
-                   void expj_f6358_zmm16_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
+                   void expj_f6358_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                            const float * __restrict __ATTR_ALIGN__(64) pbeta,
                                            const float * __restrict __ATTR_ALIGN__(64) pa,
                                            const float * __restrict __ATTR_ALIGN__(64) ph,
@@ -1096,7 +1096,7 @@ SOFTWARE.
 
 
                   
-                   void expj_f6358_zmm16_u(const float * __restrict  pk0,
+                   void expj_f6358_zmm16r4_u(const float * __restrict  pk0,
                                            const float * __restrict  pbeta,
                                            const float * __restrict  pa,
                                            const float * __restrict  ph,
@@ -1379,14 +1379,14 @@ SOFTWARE.
                                                                    FUNC_ATTRIBUTES;   
 
                   
-                   __m512 rcs_f6412_zmm16(const __m512 a,
+                   __m512 rcs_f6412_zmm16r4(const __m512 a,
                                           const __m512 b,
                                           const __m512 k0,
                                           const __m512 tht) 
                                                                     FUNC_ATTRIBUTES;   
 
                  
-                   __m512 rcs_f6412_zmm16_a(const float * __restrict __ATTR_ALIGN__(64) pa,
+                   __m512 rcs_f6412_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                             const float * __restrict __ATTR_ALIGN__(64) pb,
                                             const float * __restrict __ATTR_ALIGN__(64) pk0,
                                             const float * __restrict __ATTR_ALIGN__(64) ptht)
@@ -1394,7 +1394,7 @@ SOFTWARE.
 
 
                  
-                   __m512 rcs_f6412_zmm16_u(const float * __restrict  pa,
+                   __m512 rcs_f6412_zmm16r4_u(const float * __restrict  pa,
                                             const float * __restrict  pb,
                                             const float * __restrict  pk0,
                                             const float * __restrict  ptht) 
