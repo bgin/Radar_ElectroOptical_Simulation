@@ -50,11 +50,7 @@ SOFTWARE.
 
 
               
-                   const  static __m512 Ir  = _mm512_setzero_ps();
-                   const  static __m512 Ii  = _mm512_set1_ps(1.0f);
-                   const  static __m512 nIr = _mm512_set1_ps(-0.0f);
-                   const  static __m512 nIi = _mm512_set1_ps(-1.0f);
-                   const  static __m512 PI  = _mm512_set1_ps(3.14159265358979323846264338328f);
+                 
 
                
 
