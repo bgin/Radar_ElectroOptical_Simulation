@@ -1394,11 +1394,7 @@ SOFTWARE.
                                                const float * __restrict __ATTR_ALIGN__(64) peps0r,
                                                const float * __restrict __ATTR_ALIGN__(64) peps0i) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f41104_zmm16r4_u(const float * __restrict  pa0,
                                                const float * __restrict  pa1,
                                                const float * __restrict  pk0a0,
@@ -1417,11 +1413,7 @@ SOFTWARE.
                          Formula 4.1-105
                   */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f41105_zmm16r4(const __m512 a0,
                                              const __m512 a1,
                                              const __m512 k0a0,
@@ -1435,11 +1427,6 @@ SOFTWARE.
                                              const __m512 eps0i) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f41105_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa0,
                                                const float * __restrict __ATTR_ALIGN__(64) pa1,
                                                const float * __restrict __ATTR_ALIGN__(64) pk0a0,
@@ -1452,11 +1439,6 @@ SOFTWARE.
                                                const float * __restrict __ATTR_ALIGN__(64) peps0r,
                                                const float * __restrict __ATTR_ALIGN__(64) peps0i) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f41105_zmm16r4_u(const float * __restrict  pa0,
                                                const float * __restrict  pa1,
                                                const float * __restrict  pk0a0,
@@ -1475,11 +1457,7 @@ SOFTWARE.
                  */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f41106_zmm16r4(const __m512 a0,
                                              const __m512 a1,
                                              const __m512 k0a0,
@@ -2283,11 +2261,6 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void Hph_f4253_zmm16r4(const __m512 H0r,
                                           const __m512 H0i,
                                           const __m512 k0z,
@@ -2302,11 +2275,6 @@ SOFTWARE.
                                           __m512 * __restrict Hpr,
                                           __m512 * __restrict Hpi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void Hph_f4253_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pH0r,
                                           const float * __restrict __ATTR_ALIGN__(64) pH0i,
                                           const float * __restrict __ATTR_ALIGN__(64) pk0z,
@@ -2321,11 +2289,7 @@ SOFTWARE.
                                           float * __restrict __ATTR_ALIGN__(64) Hpr,
                                           float * __restrict __ATTR_ALIGN__(64) Hpi) FUNC_ATTRIBUTES;
 
-                     __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void Hph_f4253_zmm16r4_u(const float * __restrict  pH0r,
                                           const float * __restrict pH0i,
                                           const float * __restrict  pk0z,
@@ -2349,11 +2313,7 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+            
                    void Ez_f4254_zmm16r4( const __m512 H0r,
                                           const __m512 H0i,
                                           const __m512 k0z,
@@ -2369,11 +2329,7 @@ SOFTWARE.
                                           __m512 * __restrict Ezi) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+              
                    void Ez_f4254_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pH0r,
                                           const float * __restrict __ATTR_ALIGN__(64) pH0i,
                                           const float * __restrict __ATTR_ALIGN__(64) pk0z,
@@ -2388,11 +2344,7 @@ SOFTWARE.
                                           float * __restrict __ATTR_ALIGN__(64) Hzr,
                                           float * __restrict __ATTR_ALIGN__(64) Hzi ) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void Ez_f4254_zmm16r4_u(const float * __restrict  pH0r,
                                           const float * __restrict pH0i,
                                           const float * __restrict  pk0z,
@@ -2416,11 +2368,7 @@ SOFTWARE.
                  */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f4256_zmm16r4(const __m512 a0,
                                             const __m512 k0a0,
                                             const __m512 psi,
@@ -2430,11 +2378,6 @@ SOFTWARE.
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4256_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa0,
                                               const float * __restrict __ATTR_ALIGN__(64) pk0a0,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsi,
@@ -2444,11 +2387,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4256_zmm16r4_u(const float * __restrict  pa0,
                                               const float * __restrict  pk0a0,
                                               const float * __restrict  ppsi,
@@ -2466,11 +2405,6 @@ SOFTWARE.
                  */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4258_zmm16r4(const __m512 a0,
                                             const __m512 k0a0,
                                             const __m512 psi,
@@ -2480,11 +2414,7 @@ SOFTWARE.
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4258_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa0,
                                               const float * __restrict __ATTR_ALIGN__(64) pk0a0,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsi,
@@ -2494,11 +2424,6 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4258_zmm16r4_u(const float * __restrict  pa0,
                                               const float * __restrict  pk0a0,
                                               const float * __restrict  ppsi,
@@ -2517,11 +2442,7 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4257_zmm16r4(const __m512 a0,
                                             const __m512 k0a0,
                                             const __m512 psi,
@@ -2532,11 +2453,7 @@ SOFTWARE.
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4257_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa0,
                                               const float * __restrict __ATTR_ALIGN__(64) pk0a0,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsi,
@@ -2546,11 +2463,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4257_zmm16r4_u(const float * __restrict  pa0,
                                               const float * __restrict  pk0a0,
                                               const float * __restrict  ppsi,
@@ -2570,11 +2483,7 @@ SOFTWARE.
                    */
 
                     
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void ES_f439_zmm16r4(const __m512 EIr,
                                         const __m512 EIi,
                                         const __m512 r,
@@ -2587,11 +2496,7 @@ SOFTWARE.
                                         __m512 * __restrict ESi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void ES_f439_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pEIr,
                                           const float * __restrict __ATTR_ALIGN__(64) pEIi,
                                           const float * __restrict __ATTR_ALIGN__(64) pr,
@@ -2603,11 +2508,7 @@ SOFTWARE.
                                           float * __restrict __ATTR_ALIGN__(64) ESr,
                                           float * __restrict __ATTR_ALIGN__(64) ESi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void ES_f439_zmm16r4_u(const float * __restrict  pEIr,
                                           const float * __restrict  pEIi,
                                           const float * __restrict  pr,
@@ -2629,22 +2530,14 @@ SOFTWARE.
 
                     */
                   
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4310_zmm16r4(const __m512 k0,
                                             const __m512 h,
                                             const __m512 psii,
                                             const __m512 psis,
                                             const __m512 ln4h) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4310_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pk0,
                                               const float * __restrict __ATTR_ALIGN__(64)  ph,
                                               const float * __restrict __ATTR_ALIGN__(64)  ppsii,
@@ -2652,11 +2545,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64)  pln4h) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f4310_zmm16r4_u(const float * __restrict   pk0,
                                               const float * __restrict   ph,
                                               const float * __restrict   ppsii,
@@ -2670,31 +2559,18 @@ SOFTWARE.
                          Formula 4.3-11
                     */
 
-                   
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4311_zmm16r4(const __m512 k0,
                                             const __m512 h,
                                             const __m512 ln4h) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4311_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) ph,
                                               const float * __restrict __ATTR_ALIGN__(64) pln4h) FUNC_ATTRIBUTES;
 
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4311_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  ph,
                                               const float * __restrict  pln4h) FUNC_ATTRIBUTES;
@@ -2706,11 +2582,7 @@ SOFTWARE.
                            Formula 4.3-18
                       */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void ES_f4318_zmm16r4(const __m512 EIr,
                                          const __m512 EIi,
                                          const __m512 k0,
@@ -2722,11 +2594,7 @@ SOFTWARE.
                                          __m512 * __restrict ESr,
                                          __m512 * __restrict ESi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    void ES_f4318_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pEIr,
                                            const float * __restrict __ATTR_ALIGN__(64)  pEIi,
                                            const float * __restrict __ATTR_ALIGN__(64)  pk0,
@@ -2739,11 +2607,7 @@ SOFTWARE.
                                            float * __restrict __ATTR_ALIGN__(64)  ESi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void ES_f4318_zmm16r4_u(const float * __restrict   pEIr,
                                            const float * __restrict   pEIi,
                                            const float * __restrict   pk0,
@@ -2762,11 +2626,7 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    void ES_f4319_zmm16r4(const __m512 EIr,
                                          const __m512 EIi,
                                          const __m512 k0,
@@ -2778,11 +2638,6 @@ SOFTWARE.
                                          __m512 * __restrict ESi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void ES_f4319_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pEIr,
                                            const float * __restrict __ATTR_ALIGN__(64)  pEIi,
                                            const float * __restrict __ATTR_ALIGN__(64)  pk0,
@@ -2793,11 +2648,7 @@ SOFTWARE.
                                            float * __restrict __ATTR_ALIGN__(64) ESr,
                                            float * __restrict __ATTR_ALIGN__(64)  ESi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+              
                    void ES_f4319_zmm16r4_u(const float * __restrict   pEIr,
                                            const float * __restrict   pEIi,
                                            const float * __restrict   pk0,
@@ -2816,11 +2667,7 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void ES_f4320_zmm16r4(const __m512 EIr,
                                          const __m512 EIi,
                                          const __m512 k0,
@@ -2831,11 +2678,6 @@ SOFTWARE.
                                          __m512 * __restrict ESr,
                                          __m512 * __restrict ESi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void ES_f4320_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pEIr,
                                            const float * __restrict __ATTR_ALIGN__(64)  pEIi,
                                            const float * __restrict __ATTR_ALIGN__(64)  pk0,
@@ -2846,11 +2688,6 @@ SOFTWARE.
                                            float * __restrict __ATTR_ALIGN__(64) ESr,
                                            float * __restrict __ATTR_ALIGN__(64)  ESi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void ES_f4320_zmm16r4_u(const float * __restrict   pEIr,
                                            const float * __restrict   pEIi,
                                            const float * __restrict   pk0,
@@ -2869,11 +2706,7 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void ES_f4321_zmm16r4(const __m512 EIr,
                                          const __m512 EIi,
                                          const __m512 k0,
@@ -2886,11 +2719,7 @@ SOFTWARE.
                                          __m512 * __restrict ESi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void ES_f4321_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pEIr,
                                            const float * __restrict __ATTR_ALIGN__(64)  pEIi,
                                            const float * __restrict __ATTR_ALIGN__(64)  pk0,
@@ -2903,11 +2732,7 @@ SOFTWARE.
                                            float * __restrict __ATTR_ALIGN__(64)  ESi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    void ES_f4321_zmm16r4_u(const float * __restrict   pEIr,
                                            const float * __restrict   pEIi,
                                            const float * __restrict   pk0,
@@ -2927,22 +2752,14 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4322_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 psii,
                                             const __m512 psis,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4322_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii,
@@ -2950,11 +2767,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4322_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  ppsii,
@@ -2968,32 +2781,20 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4323_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 psii,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4323_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4323_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  ppsii,
@@ -3006,33 +2807,21 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4324_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 psis,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4324_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsis,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4324_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  ppsis,
@@ -3046,11 +2835,7 @@ SOFTWARE.
                    */
 
   
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4325_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 psii,
@@ -3058,11 +2843,7 @@ SOFTWARE.
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4325_zmm16r4_a(  const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsis,
@@ -3070,11 +2851,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4325_zmm16r4_u(  const float * __restrict  pk0,
                                                 const float * __restrict  pa,
                                                 const float * __restrict  ppsis,
@@ -3094,80 +2871,43 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 a1_f4330_zmm16r4(const __m512 k0h,
                                            const __m512 psi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 a1_f4330_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                              const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 a1_f4330_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 a2_f4330_zmm16r4(const __m512 k0h,
                                            const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 a2_f4330_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                              const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 a2_f4330_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 a3_f4330_zmm16r4(const __m512 k0h,
                                            const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 a3_f4330_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                              const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 a3_f4330_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
@@ -3177,48 +2917,24 @@ SOFTWARE.
                           Formula 4.3-31
                       */
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 F1_f4331_zmm16r4(const __m512 k0a) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 F1_f4331_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 F1_f4331_zmm16r4_u(const float * __restrict  pk0a) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 F2_f4331_zmm16r4(const __m512 k0a) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 F2_f4331_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 F2_f4331_zmm16r4_u(const float * __restrict  pk0a) FUNC_ATTRIBUTES;
 
                      /*
@@ -3227,29 +2943,17 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 L_f4334_zmm16r4(const __m512 k0h,
                                           const __m512 k0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 L_f4334_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                             const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 L_f4334_zmm16r4_u(const float * __restrict pk0h,
                                             const float * __restrict pk0a) FUNC_ATTRIBUTES;
 
@@ -3260,28 +2964,16 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 S_f4335_zmm16r4(const __m512 k0a,
                                           const __m512 k0h) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 S_f4335_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                             const float * __restrict __ATTR_ALIGN__(64) pk0h) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 S_f4335_zmm16r4_u(const float * __restrict  pk0a,
                                             const float * __restrict  pk0h) FUNC_ATTRIBUTES;
 
@@ -3293,55 +2985,29 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 G2_f4332_zmm16r4(const __m512 k0h,
                                            const __m512 k0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 G2_f4332_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                            const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 G2_f4332_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 G1_f4332_zmm16r4(const __m512 k0h,
                                            const __m512 k0a) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 G1_f4332_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                              const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 G1_f4332_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  pk0a) FUNC_ATTRIBUTES;
 
@@ -3352,47 +3018,27 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 H2_f4333_zmm16r4(const __m512 k0h,
                                            const __m512 k0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 H2_f4333_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0h,
                                              const float * __restrict __ATTR_ALIGN__(64) pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 H2_f4333_zmm16r4_u(const float * __restrict  pk0h,
                                              const float * __restrict  pk0a) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 H1_f4333_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                              const float * __restrict __ATTR_ALIGN__(64) pk0h) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 H1_f4333_zmm16r4_u(const float * __restrict  pk0a,
                                              const float * __restrict  pk0h) FUNC_ATTRIBUTES;
 
@@ -3405,11 +3051,7 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4329_zmm16r4(const __m512 k0,
                                             const __m512 gami,
                                             const __m512 gams,
@@ -3418,11 +3060,6 @@ SOFTWARE.
                                             const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4329_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pgami,
                                               const float * __restrict __ATTR_ALIGN__(64) pgams,
@@ -3431,11 +3068,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4329_zmm16r4_u(const float * __restrict pk0,
                                               const float * __restrict  pgami,
                                               const float * __restrict  pgams,
@@ -3451,22 +3084,14 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4337_zmm16r4(const __m512 gammi,
                                             const __m512 gamms,
                                             const __m512 psii,
                                             const __m512 psis,
                                             const __m512 g0 )  FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4337_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pgammi,
                                               const float * __restrict __ATTR_ALIGN__(64) pgamms,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii,
@@ -3475,11 +3100,7 @@ SOFTWARE.
       
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4337_zmm16r4_u(const float * __restrict  pgammi,
                                               const float * __restrict  pgamms,
                                               const float * __restrict  ppsii,
@@ -3494,11 +3115,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4340_zmm16r4(const __m512 gammi,
                                             const __m512 gamms,
                                             const __m512 psii,
@@ -3506,22 +3123,13 @@ SOFTWARE.
                                             const __m512 g0 )  FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4340_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pgammi,
                                               const float * __restrict __ATTR_ALIGN__(64) pgamms,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsis,
                                               const float * __restrict __ATTR_ALIGN__(64) pg0 )  FUNC_ATTRIBUTES;
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4340_zmm16r4_u(const float * __restrict  pgammi,
                                               const float * __restrict  pgamms,
                                               const float * __restrict  ppsii,
@@ -3534,22 +3142,14 @@ SOFTWARE.
                            Biscattering RCS, formula 4.3-43
                       */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4343_zmm16r4(const __m512 rcs_inf, // rcs of inifnitely long cylinder (section 4.2)
                                             const __m512 k0,
                                             const __m512 h,
                                             const __m512 psis,
                                             const __m512 psii) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4343_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) prcs_inf, // rcs of inifnitely long cylinder (section 4.2)
                                               const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) ph,
@@ -3557,11 +3157,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4343_zmm16r4_u(const float * __restrict  prcs_inf, // rcs of inifnitely long cylinder (section 4.2)
                                               const float * __restrict  pk0,
                                               const float * __restrict  ph,
@@ -3575,11 +3171,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4344_zmm16r4(const __m512 h,
                                             const __m512 k0,
                                             const __m512 k0a,
@@ -3589,11 +3181,7 @@ SOFTWARE.
                                             const __m512 gami) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4344_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  ph,
                                               const float * __restrict __ATTR_ALIGN__(64)  pk0,
                                               const float * __restrict __ATTR_ALIGN__(64)  pk0a,
@@ -3604,11 +3192,6 @@ SOFTWARE.
 
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4344_zmm16r4_u(const float * __restrict   ph,
                                               const float * __restrict   pk0,
                                               const float * __restrict   pk0a,
@@ -3625,11 +3208,7 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4345_zmm16r4(const __m512 psi,
                                             const __m512 k0a,
                                             const __m512 gami,
@@ -3638,11 +3217,7 @@ SOFTWARE.
                                             const __m512 h) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4345_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  ph,
                                               const float * __restrict __ATTR_ALIGN__(64)  pk0,
                                               const float * __restrict __ATTR_ALIGN__(64)  pk0a,
@@ -3651,11 +3226,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64)  ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4345_zmm16r4_u(const float * __restrict   ph,
                                               const float * __restrict   pk0,
                                               const float * __restrict   pk0a,
@@ -3670,51 +3241,25 @@ SOFTWARE.
 
                    */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 M1_f4350_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 M1_f4350_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 M1_f4350_zmm16r4_u(const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 M2_f4350_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 M2_f4350_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 M2_f4350_zmm16r4_u(const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
 
@@ -3725,51 +3270,27 @@ SOFTWARE.
 
                    */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 N1_f4351_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 N1_f4351_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 N1_f4351_zmm16r4_u(const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 N2_f4351_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 N2_f4351_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 N2_f4351_zmm16r4_u(const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
 
@@ -3781,49 +3302,25 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 G_f4352_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 G_f4352_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 G_f4352_zmm16r4_u(const float * __restrict  ppsi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 F_f4352_zmm16r4(const __m512 psi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 F_f4352_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) ppsi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 F_f4352_zmm16r4_u(const float * __restrict ppsi) FUNC_ATTRIBUTES;
 
                     /*
@@ -3832,11 +3329,7 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4353_zmm16r4(const __m512 k0a,
                                             const __m512 k0,
                                             const __m512 h,
@@ -3845,11 +3338,6 @@ SOFTWARE.
                                             const __m512 psis) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4353_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                               const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) ph,
@@ -3858,11 +3346,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) ppsis) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                   
                    __m512 rcs_f4353_zmm16r4_u(const float * __restrict  pk0a,
                                               const float * __restrict  pk0,
                                               const float * __restrict  ph,
@@ -3877,33 +3361,20 @@ SOFTWARE.
                             Formula 4.3-54
                        */
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4354_zmm16r4(const __m512 k0a,
                                             const __m512 h,
                                             const __m512 psii,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
 
-                     __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4354_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                               const float * __restrict __ATTR_ALIGN__(64) ph,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4354_zmm16r4_u(const float * __restrict  pk0a,
                                               const float * __restrict  ph,
                                               const float * __restrict  ppsii,
@@ -3917,33 +3388,21 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4354_zmm16r4(const __m512 k0a,
                                             const __m512 h,
                                             const __m512 k0,
                                             const __m512 psii) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4354_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                               const float * __restrict __ATTR_ALIGN__(64) ph,
                                               const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) ppsii) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4354_zmm16r4_u(const float * __restrict  pk0a,
                                               const float * __restrict  ph,
                                               const float * __restrict  pk0,
@@ -3956,39 +3415,17 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4356_zmm16r4(const __m512 k0a,
                                             const __m512 h) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4356_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                             const float * __restrict __ATTR_ALIGN__(64) ph) FUNC_ATTRIBUTES;
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4356_zmm16r4_u(const float * __restrict  pk0a,
-                                            const float * __restrict  ph) {
-
-                          register __m512  k0a  = _mm512_loadu_ps(&pk0a[0]);
-                          register __m512  h    = _mm512_loadu_ps(&ph[0]);
-                          const __m512 _4 = _mm512_set1_ps(4.0f);
-                          register __m512 rcs,h2;
-                          h2 = _mm512_mul_ps(h,h);
-                          rcs = _mm512_mul_ps(_4,_mm512_mul_ps(k0a,h2));
-                          return (rcs); 
-                }
+                                            const float * __restrict  ph) FUNC_ATTRIBUTES;
 
 
                   /*
@@ -4001,11 +3438,7 @@ SOFTWARE.
                          TM-case,formula 4.4-11
                     */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TM_f4411_zmm16r4(const __m512 a,
                                          const __m512 b,
                                          const __m512 k0,
@@ -4013,11 +3446,7 @@ SOFTWARE.
                                          __m512 * __restrict TMi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TM_f4411_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                          const float * __restrict __ATTR_ALIGN__(64) pb,
                                          const float * __restrict __ATTR_ALIGN__(64) pk0,
@@ -4025,11 +3454,7 @@ SOFTWARE.
                                          float * __restrict __ATTR_ALIGN__(64) TMi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TM_f4411_zmm16r4_u(const float * __restrict  pa,
                                            const float * __restrict  pb,
                                            const float * __restrict  pk0,
@@ -4037,11 +3462,7 @@ SOFTWARE.
                                            float * __restrict  TMi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4412_zmm16r4(const __m512 k0a,
                                          const __m512 a,
                                          const __m512 b,
@@ -4051,11 +3472,7 @@ SOFTWARE.
                                          __m512 * __restrict TEi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4412_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0a,
                                            const float * __restrict __ATTR_ALIGN__(64) pa,
                                            const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4065,11 +3482,7 @@ SOFTWARE.
                                            float * __restrict __ATTR_ALIGN__(64) TEi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4412_zmm16r4_u(const float * __restrict  pk0a,
                                            const float * __restrict  pa,
                                            const float * __restrict  pb,
@@ -4085,32 +3498,19 @@ SOFTWARE.
                   */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4413_zmm16r4(const __m512 a,
                                             const __m512 b,
                                             const __m512 k0) FUNC_ATTRIBUTES;
                                             
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4413_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pa,
                                               const float * __restrict __ATTR_ALIGN__(64)  pb,
                                               const float * __restrict __ATTR_ALIGN__(64)  pk0) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4413_zmm16r4_u(const float * __restrict   pa,
                                               const float * __restrict   pb,
                                               const float * __restrict   pk0) FUNC_ATTRIBUTES;
@@ -4129,11 +3529,7 @@ SOFTWARE.
 
                      */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __mmask16 
                    TM_f4415_helper_zmm16r4(const __m512 k0,
                                            const __m512 a,
@@ -4141,11 +3537,6 @@ SOFTWARE.
                                            const __m512 phi2,
                                            const __m512 b) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void TM_f4415_zmm16r4(const __m512 phi1,
                                          const __m512 phi2,
                                          const __m512 a,
@@ -4155,11 +3546,7 @@ SOFTWARE.
                                          __m512 * __restrict TMi,
                                          bool & status) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TM_f4415_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pphi1,
                                          const float * __restrict __ATTR_ALIGN__(64) pphi2,
                                          const float * __restrict __ATTR_ALIGN__(64) pa,
@@ -4170,11 +3557,7 @@ SOFTWARE.
                                          bool & status) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    void TM_f4415_zmm16r4_u(const float * __restrict  pphi1,
                                          const float * __restrict  pphi2,
                                          const float * __restrict  pa,
@@ -4190,11 +3573,7 @@ SOFTWARE.
                       */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4416_zmm16r4(const __m512 phi1,
                                          const __m512 phi2,
                                          const __m512 a,
@@ -4204,11 +3583,7 @@ SOFTWARE.
                                          __m512 * __restrict TEi,
                                          bool & status) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                   
                    void TE_f4416_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pphi1,
                                          const float * __restrict __ATTR_ALIGN__(64) pphi2,
                                          const float * __restrict __ATTR_ALIGN__(64) pa,
@@ -4219,11 +3594,7 @@ SOFTWARE.
                                          bool & status) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    void TE_f4416_zmm16r4_u(const float * __restrict  pphi1,
                                          const float * __restrict  pphi2,
                                          const float * __restrict  pa,
@@ -4240,33 +3611,19 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4419_zmm16r4(const __m512 phi1,
                                             const __m512 phi2,
                                             const __m512 a,
                                             const __m512 b) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4419_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pphi1,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi2,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb) FUNC_ATTRIBUTES;
 
 
-                     __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 rcs_f4419_zmm16r4_u(const float * __restrict  pphi1,
                                               const float * __restrict  pphi2,
                                               const float * __restrict  pa,
@@ -4280,32 +3637,19 @@ SOFTWARE.
                       */
 
 
-                     
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4420_zmm16r4(const __m512 a,
                                             const __m512 b,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                   
                    __m512 rcs_f4420_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4420_zmm16r4_u(const float * __restrict  pa,
                                               const float * __restrict  pb,
                                               const float * __restrict  pphi) FUNC_ATTRIBUTES;
@@ -4318,11 +3662,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __mmask16 
                    T_f4423_helper_zmm16r4( const __m512 k0,
                                            const __m512 a,
@@ -4331,11 +3671,6 @@ SOFTWARE.
                                            const __m512 b) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    __m512 T_f4423_zmm16r4(const __m512 a,
                                           const __m512 b,
                                           const __m512 phi1,
@@ -4344,11 +3679,7 @@ SOFTWARE.
                                           bool & status) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 T_f4423_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                           const float * __restrict __ATTR_ALIGN__(64) pb,
                                           const float * __restrict __ATTR_ALIGN__(64) pphi1,
@@ -4357,11 +3688,7 @@ SOFTWARE.
                                           bool & status) FUNC_ATTRIBUTES;
 
 
-                     __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 T_f4423_zmm16r4_u(const float * __restrict pa,
                                           const float * __restrict  pb,
                                           const float * __restrict  pphi1,
@@ -4377,11 +3704,7 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4424_zmm16r4(const __m512 a,
                                           const __m512 b,
                                           const __m512 phi1,
@@ -4390,11 +3713,7 @@ SOFTWARE.
                                           bool & status) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4424_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
                                               const float * __restrict __ATTR_ALIGN__(64) pphi1,
@@ -4403,11 +3722,7 @@ SOFTWARE.
                                               bool & status) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+              
                    __m512 rcs_f4424_zmm16r4_u(const float * __restrict  pa,
                                               const float * __restrict  pb,
                                               const float * __restrict  pphi1,
@@ -4422,33 +3737,21 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+              
                    __m512 rcs_f4425_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
                                             const __m512 phi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4425_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64)  pk0,
                                               const float * __restrict __ATTR_ALIGN__(64)  pa,
                                               const float * __restrict __ATTR_ALIGN__(64)  pb,
                                               const float * __restrict __ATTR_ALIGN__(64)  pphi) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f4425_zmm16r4_u(const float * __restrict   pk0,
                                               const float * __restrict   pa,
                                               const float * __restrict   pb,
@@ -4462,11 +3765,6 @@ SOFTWARE.
                           TM-case, formula 4.4-26
                      */
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
                    void TM_f4426_zmm16r4(const __m512 k0,
                                          const __m512 a,
                                          const __m512 b,
@@ -4480,11 +3778,7 @@ SOFTWARE.
                                          __m512 * __restrict TMi) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    void TM_f4426_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                          const float * __restrict __ATTR_ALIGN__(64) pa,
                                          const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4497,11 +3791,7 @@ SOFTWARE.
                                          float * __restrict __ATTR_ALIGN__(64) TMr,
                                          float * __restrict __ATTR_ALIGN__(64) TMi) FUNC_ATTRIBUTES;
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TM_f4426_zmm16r4_u(const float * __restrict  pk0,
                                          const float * __restrict  pa,
                                          const float * __restrict  pb,
@@ -4522,11 +3812,7 @@ SOFTWARE.
                      */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4427_zmm16r4(const __m512 k0,
                                          const __m512 a,
                                          const __m512 b,
@@ -4539,11 +3825,7 @@ SOFTWARE.
                                          __m512 * __restrict TEr,
                                          __m512 * __restrict TEi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    void TE_f4427_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                          const float * __restrict __ATTR_ALIGN__(64) pa,
                                          const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4556,11 +3838,7 @@ SOFTWARE.
                                          float * __restrict __ATTR_ALIGN__(64) TEr,
                                          float * __restrict __ATTR_ALIGN__(64) TEi) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    void TE_f4427_zmm16r4_u(const float * __restrict  pk0,
                                          const float * __restrict  pa,
                                          const float * __restrict  pb,
@@ -4584,11 +3862,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4428_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4599,11 +3873,7 @@ SOFTWARE.
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4428_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4614,11 +3884,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4428_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  pb,
@@ -4640,11 +3906,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4429_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4656,11 +3918,7 @@ SOFTWARE.
                                          const __m512 mui) FUNC_ATTRIBUTES;
 
 
-                    __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4429_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4672,11 +3930,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4429_zmm16r4_u(const float * __restrict pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict pb,
@@ -4697,11 +3951,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f4430_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4711,11 +3961,7 @@ SOFTWARE.
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4430_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4725,11 +3971,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                  __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4430_zmm16r4_u(const float * __restrict pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  pb,
@@ -4749,11 +3991,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+               
                    __m512 rcs_f4431_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4763,11 +4001,7 @@ SOFTWARE.
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4431_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4778,11 +4012,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4431_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  pb,
@@ -4802,11 +4032,7 @@ SOFTWARE.
                     */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4432_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4815,11 +4041,7 @@ SOFTWARE.
                                             const __m512 epsi,
                                             const __m512 mur,
                                             const __m512 mui) FUNC_ATTRIBUTES;
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                
                    __m512 rcs_f4432_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4829,11 +4051,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmur,
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4432_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  pb,
@@ -4854,11 +4072,7 @@ SOFTWARE.
                    */
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4433_zmm16r4(const __m512 k0,
                                             const __m512 a,
                                             const __m512 b,
@@ -4869,11 +4083,7 @@ SOFTWARE.
                                             const __m512 mui) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f4433_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
                                               const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pb,
@@ -4884,11 +4094,7 @@ SOFTWARE.
                                               const float * __restrict __ATTR_ALIGN__(64) pmui) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-                   __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                  
                    __m512 rcs_f4433_zmm16r4_u(const float * __restrict  pk0,
                                               const float * __restrict  pa,
                                               const float * __restrict  pb,
