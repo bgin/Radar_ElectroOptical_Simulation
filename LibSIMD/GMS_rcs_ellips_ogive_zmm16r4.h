@@ -286,11 +286,7 @@ SOFTWARE.
                                             const __m512 k0) FUNC_ATTRIBUTES;
 
 
-                   __ATTR_ALWAYS_INLINE__
-	           __ATTR_HOT__
-	           __ATTR_ALIGN__(32)
-                   __ATTR_VECTORCALL__
-	           static inline
+                 
                    __m512 rcs_f5189_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
                                               const float * __restrict __ATTR_ALIGN__(64) pc,
                                               const float * __restrict __ATTR_ALIGN__(64) ptht,
