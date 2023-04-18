@@ -1,6 +1,6 @@
 
 
-#include "GMS_rcs_cone_wedge_zmm16r4.h"
+
 
 
 
@@ -27,7 +27,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
+#include "GMS_rcs_cone_wedge_zmm16r4.h"
 #include "GMS_sleefsimdsp.h"
 #include "GMS_complex_zmm16r4.h"
 
@@ -5461,12 +5461,949 @@ SOFTWARE.
 
 
                  
-                                          
+                  
+                     /*
+                         The far-zone amplitude for TM-case.
+                         For small loop k0a<<1
+                         Formula 6.4-13
+                      */
 
-                    
+
+                 
+                   void Uth_f6413_zmm16r4(const __m512 a,
+                                          const __m512 k0,
+                                          const __m512 b,
+                                          const __m512 tht,
+                                         __m512 *  __restrict Uthr,
+                                         __m512 *  __restrict Uthi) {
+
+                        const __m512 pis = _mm512_set1_ps(2.0f*9.869604401089358618834490999876f);
+                        const __m512 _2  = _mm512_set1_ps(2.0f);
+                        const __m512 _8  = _mm512_set1_ps(8.0f);
+                        const __m512 sme0= _mm512_set1_ps(376.991118430775188623669955550061f); 
+                        register __m512 a2,k0a,cost,costs;
+                        register __m512 ii,ir,arg,larg,num,den,div;
+                        ir   = _mm512_setzero_ps();
+                        a2   = _mm512_mul_ps(a,a);
+                        cost = xcosf(tht);
+                        k0a  = _mm512_mul_ps(a2,_mm512_mul_ps(k0,a));
+                        arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                        costs= _mm512_mul_ps(cost,cost);
+                        larg = xlogf(arg);
+                        num  = _mm512_mul_ps(pis,_mm512_mul_ps(k0a,costs));
+                        den  = _mm512_mul_ps(_mm512_sub_ps(larg,_2);
+                        div  = _mm512_div_ps(num,den);
+                        ii   = div;
+                        *Uthr = ir;
+                        *Uthi = ii;
+             }
 
 
-                    
+                 
+                   void Uth_f6413_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
+                                            const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                            const float * __restrict __ATTR_ALIGN__(64) pb,
+                                            const float * __restrict __ATTR_ALIGN__(64) ptht,
+                                            float *  __restrict __ATTR_ALIGN__(64) Uthr,
+                                            float *  __restrict __ATTR_ALIGN__(64) Uthi) {
+
+                        register __m512 a   = _mm512_load_ps(&pa[0]);
+                        register __m512 k0  = _mm512_load_ps(&pk0[0]);
+                        register __m512 b   = _mm512_load_ps(&pb[0]);
+                        register __m512 tht = _mm512_load_ps(&ptht[0]);
+                        const __m512 pis = _mm512_set1_ps(2.0f*9.869604401089358618834490999876f);
+                        const __m512 _2  = _mm512_set1_ps(2.0f);
+                        const __m512 _8  = _mm512_set1_ps(8.0f);
+                        const __m512 sme0= _mm512_set1_ps(376.991118430775188623669955550061f); 
+                        register __m512 a2,k0a,cost,costs;
+                        register __m512 ii,ir,arg,larg,num,den,div;
+                        ir   = _mm512_setzero_ps();
+                        a2   = _mm512_mul_ps(a,a);
+                        cost = xcosf(tht);
+                        k0a  = _mm512_mul_ps(a2,_mm512_mul_ps(k0,a));
+                        arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                        costs= _mm512_mul_ps(cost,cost);
+                        larg = xlogf(arg);
+                        num  = _mm512_mul_ps(pis,_mm512_mul_ps(k0a,costs));
+                        den  = _mm512_mul_ps(_mm512_sub_ps(larg,_2);
+                        div  = _mm512_div_ps(num,den);
+                        ii   = div;
+                        _mm512_store_ps(&Uthr[0], ir);
+                        _mm512_store_ps(&Uthi[0], ii);
+             }
+
+
+                 
+                   void Uth_f6413_zmm16r4_u(const float * __restrict  pa,
+                                            const float * __restrict  pk0,
+                                            const float * __restrict  pb,
+                                            const float * __restrict  ptht,
+                                            float *  __restrict  Uthr,
+                                            float *  __restrict Uthi) {
+
+                        register __m512 a   = _mm512_loadu_ps(&pa[0]);
+                        register __m512 k0  = _mm512_loadu_ps(&pk0[0]);
+                        register __m512 b   = _mm512_loadu_ps(&pb[0]);
+                        register __m512 tht = _mm512_loadu_ps(&ptht[0]);
+                        const __m512 pis = _mm512_set1_ps(2.0f*9.869604401089358618834490999876f);
+                        const __m512 _2  = _mm512_set1_ps(2.0f);
+                        const __m512 _8  = _mm512_set1_ps(8.0f);
+                        const __m512 sme0= _mm512_set1_ps(376.991118430775188623669955550061f); 
+                        register __m512 a2,k0a,cost,costs;
+                        register __m512 ii,ir,arg,larg,num,den,div;
+                        ir   = _mm512_setzero_ps();
+                        a2   = _mm512_mul_ps(a,a);
+                        cost = xcosf(tht);
+                        k0a  = _mm512_mul_ps(a2,_mm512_mul_ps(k0,a));
+                        arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                        costs= _mm512_mul_ps(cost,cost);
+                        larg = xlogf(arg);
+                        num  = _mm512_mul_ps(pis,_mm512_mul_ps(k0a,costs));
+                        den  = _mm512_mul_ps(_mm512_sub_ps(larg,_2);
+                        div  = _mm512_div_ps(num,den);
+                        ii   = div;
+                        _mm512_storeu_ps(&Uthr[0], ir);
+                        _mm512_storeu_ps(&Uthi[0], ii);
+             }
+
+
+                
+                   void Uth_f6413_u16x_zmm16r4(const __m512 a,
+                                               const __m512 k0,
+                                               const __m512 b,
+                                               const __m512 * __restrict __ATTR_ALIGN__(64) tht,
+                                               __m512 * __restrict __ATTR_ALIGN__(64) Uthr,
+                                               __m512 * __restrict __ATTR_ALIGN__(64) Uthi,
+                                               const int32_t n) {
+
+                        if(__builtin_expect(n<=0,0)) { return;}
+                        register __m512 t0,t1,t2,t3,t4,t5,t6,t7;
+                        register __m512 t8,t9,t10,t11,t12,t13,t14,t15;
+                        register __m512 resr,resi;
+                        int32_t j,m1,m;
+                        m = n%16;
+
+                        if(m != 0) {
+                           for(j = 0; j != m; ++j) {
+                               t0 = tht[j];
+                               Uv_f6413_zmm16r4(a,k0,b,t0,&resr,&resi);
+                               _mm512_store_ps(&Uthr[j],resr);
+                               _mm512_store_ps(&Uthi[j],resi);
+                           }
+                           if(n<16) { return;}
+                        }
+
+                        m1 = m+1;
+                        for(j = m1; j != n; j += 16) {
+                             t0 = tht[j+0];
+                             Uv_f6413_zmm16r4(a,k0,b,t0,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+0],resr);
+                             _mm512_store_ps(&Uthi[j+0],resi);
+                             t1 = tht[j+1];
+                             Uv_f6413_zmm16r4(a,k0,b,t1,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+1],resr);
+                             _mm512_store_ps(&Uthi[j+1],resi);
+                             t2 = tht[j+2];
+                             Uv_f6413_zmm16r4(a,k0,b,t2,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+2],resr);
+                             _mm512_store_ps(&Uthi[j+2],resi);
+                             t3 = tht[j+3];
+                             Uv_f6413_zmm16r4(a,k0,b,t3,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+3],resr);
+                             _mm512_store_ps(&Uthi[j+3],resi);
+                             t4 = tht[j+4];
+                             Uv_f6413_zmm16r4(a,k0,b,t4,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+4],resr);
+                             _mm512_store_ps(&Uthi[j+4],resi);
+                             t5 = tht[j+5];
+                             Uv_f6413_zmm16r4(a,k0,b,t5,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+5],resr);
+                             _mm512_store_ps(&Uthi[j+5],resi);
+                             t6 = tht[j+6];
+                             Uv_f6413_zmm16r4(a,k0,b,t6,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+6],resr);
+                             _mm512_store_ps(&Uthi[j+6],resi);
+                             t7 = tht[j+7];
+                             Uv_f6413_zmm16r4(a,k0,b,t7,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+7],resr);
+                             _mm512_store_ps(&Uthi[j+7],resi);
+                             t8 = tht[j+8];
+                             Uv_f6413_zmm16r4(a,k0,b,t8,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+8],resr);
+                             _mm512_store_ps(&Uthi[j+8],resi);
+                             t9 = tht[j+9];
+                             Uv_f6413_zmm16r4(a,k0,b,t9,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+9],resr);
+                             _mm512_store_ps(&Uthi[j+9],resi);
+                             t10 = tht[j+10];
+                             Uv_f6413_zmm16r4(a,k0,b,t10,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+10],resr);
+                             _mm512_store_ps(&Uthi[j+10],resi);
+                             t11 = tht[j+11];
+                             Uv_f6413_zmm16r4(a,k0,b,t11,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+11],resr);
+                             _mm512_store_ps(&Uthi[j+11],resi);
+                             t12 = tht[j+12];
+                             Uv_f6413_zmm16r4(a,k0,b,t12,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+12],resr);
+                             _mm512_store_ps(&Uthi[j+12],resi); 
+                             t13 = tht[j+13];
+                             Uv_f6413_zmm16r4(a,k0,b,t13,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+13],resr);
+                             _mm512_store_ps(&Uthi[j+13],resi);
+                             t14 = tht[j+14];
+                             Uv_f6413_zmm16r4(a,k0,b,t14,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+14],resr);
+                             _mm512_store_ps(&Uthi[j+14],resi);
+                             t15 = tht[j+15];
+                             Uv_f6413_zmm16r4(a,k0,b,t15,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+15],resr);
+                             _mm512_store_ps(&Uthi[j+15],resi);
+                        }
+                 }
+
+
+                  
+                   void Uth_f6413_u8x_zmm16r4( const __m512 a,
+                                              const __m512 k0,
+                                              const __m512 b,
+                                              const __m512 * __restrict __ATTR_ALIGN__(64) tht,
+                                              __m512 * __restrict __ATTR_ALIGN__(64) Uthr,
+                                              __m512 * __restrict __ATTR_ALIGN__(64) Uthi,
+                                              const int32_t n) {
+
+                        if(__builtin_expect(n<=0,0)) { return;}
+                        register __m512 t0,t1,t2,t3,t4,t5,t6,t7;
+                        register __m512 resr,resi;
+                        int32_t j,m1,m;
+                        m = n%8;
+
+                        if(m != 0) {
+                           for(j = 0; j != m; ++j) {
+                               t0 = tht[j];
+                               Uv_f6413_zmm16r4(a,k0,b,t0,&resr,&resi);
+                               _mm512_store_ps(&Uthr[j],resr);
+                               _mm512_store_ps(&Uthi[j],resi);
+                           }
+                           if(n<8) { return;}
+                        }
+
+                        m1 = m+1;
+                        for(j = m1; j != n; j += 8) {
+                             t0 = tht[j+0];
+                             Uv_f6413_zmm16r4(a,k0,b,t0,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+0],resr);
+                             _mm512_store_ps(&Uthi[j+0],resi);
+                             t1 = tht[j+1];
+                             Uv_f6413_zmm16r4(a,k0,b,t1,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+1],resr);
+                             _mm512_store_ps(&Uthi[j+1],resi);
+                             t2 = tht[j+2];
+                             Uv_f6413_zmm16r4(a,k0,b,t2,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+2],resr);
+                             _mm512_store_ps(&Uthi[j+2],resi);
+                             t3 = tht[j+3];
+                             Uv_f6413_zmm16r4(a,k0,b,t3,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+3],resr);
+                             _mm512_store_ps(&Uthi[j+3],resi);
+                             t4 = tht[j+4];
+                             Uv_f6413_zmm16r4(a,k0,b,t4,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+4],resr);
+                             _mm512_store_ps(&Uthi[j+4],resi);
+                             t5 = tht[j+5];
+                             Uv_f6413_zmm16r4(a,k0,b,t5,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+5],resr);
+                             _mm512_store_ps(&Uthi[j+5],resi);
+                             t6 = tht[j+6];
+                             Uv_f6413_zmm16r4(a,k0,b,t6,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+6],resr);
+                             _mm512_store_ps(&Uthi[j+6],resi);
+                             t7 = tht[j+7];
+                             Uv_f6413_zmm16r4(a,k0,b,t7,&resr,&resi);
+                             _mm512_store_ps(&Uthr[j+7],resr);
+                             _mm512_store_ps(&Uthi[j+7],resi);
+                      }
+                 }
+
+
+                    /*
+                       Resulting RCS (of 6.4-13)
+                       Formula 6.4-14
+                   */
+
+
+               
+                   __m512 rcs_f6414_zmm16(const __m512 a,
+                                          const __m512 b,
+                                          const __m512 k0,
+                                          const __m512 tht) {
+
+                         const __m512 pi3 = _mm512_set1_ps(31.006276680299820175476315067101f);
+                         const __m512 _2  = _mm512_set1_ps(2.0f);
+                         const __m512 _8  = _mm512_set1_ps(8.0f);
+                         register __m512 a2,k0a,k0a4,x0,x1,cost,cost4;
+                         register __m512 rcs,arg,larg,largs;
+                         a2   = _mm512_mul_ps(pi3,_mm512_mul_ps(a,a));
+                         cost = xcosf(tht);
+                         k0a  = _mm512_mul_ps(k0,a);
+                         x1   = _mm512_mul_ps(cost,cost);
+                         arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                         x0   = _mm512_mul_ps(k0a,k0a);
+                         larg = _mm512_sub_ps(xlogf(arg),_2);
+                         cost4= _mm512_mul_ps(x1,x1);
+                         k0a4 = _mm512_mul_ps(x0,x0);
+                         largs= _mm512_mul_ps(larg,larg);
+                         x1   = _mm512_mul_ps(_mm512_mul_ps(a2,k0a4),cost4);
+                         rcs  = _mm512_div_ps(x1,largs);
+                         return (rcs);
+                 }
+
+
+                 
+                   __m512 rcs_f6414_zmm16_a(const float * __restrict __ATTR_ALIGN__(64) pa,
+                                            const float * __restrict __ATTR_ALIGN__(64) pb,
+                                            const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                            const float * __restrict __ATTR_ALIGN__(64) ptht) {
+
+                         register __m512 a   = _mm512_load_ps(&pa[0]);
+                         register __m512 k0  = _mm512_load_ps(&pk0[0]);
+                         register __m512 b   = _mm512_load_ps(&pb[0]);
+                         register __m512 tht = _mm512_load_ps(&ptht[0]);
+                         const __m512 pi3 = _mm512_set1_ps(31.006276680299820175476315067101f);
+                         const __m512 _2  = _mm512_set1_ps(2.0f);
+                         const __m512 _8  = _mm512_set1_ps(8.0f);
+                         register __m512 a2,k0a,k0a4,x0,x1,cost,cost4;
+                         register __m512 rcs,arg,larg,largs;
+                         a2   = _mm512_mul_ps(pi3,_mm512_mul_ps(a,a));
+                         cost = xcosf(tht);
+                         k0a  = _mm512_mul_ps(k0,a);
+                         x1   = _mm512_mul_ps(cost,cost);
+                         arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                         x0   = _mm512_mul_ps(k0a,k0a);
+                         larg = _mm512_sub_ps(xlogf(arg),_2);
+                         cost4= _mm512_mul_ps(x1,x1);
+                         k0a4 = _mm512_mul_ps(x0,x0);
+                         largs= _mm512_mul_ps(larg,larg);
+                         x1   = _mm512_mul_ps(_mm512_mul_ps(a2,k0a4),cost4);
+                         rcs  = _mm512_div_ps(x1,largs);
+                         return (rcs);
+                 }
+
+
+                   __m512 rcs_f6414_zmm16_u(const float * __restrict  pa,
+                                            const float * __restrict  pb,
+                                            const float * __restrict  pk0,
+                                            const float * __restrict  ptht) {
+
+                         register __m512 a   = _mm512_loadu_ps(&pa[0]);
+                         register __m512 k0  = _mm512_loadu_ps(&pk0[0]);
+                         register __m512 b   = _mm512_loadu_ps(&pb[0]);
+                         register __m512 tht = _mm512_loadu_ps(&ptht[0]);
+                         const __m512 pi3 = _mm512_set1_ps(31.006276680299820175476315067101f);
+                         const __m512 _2  = _mm512_set1_ps(2.0f);
+                         const __m512 _8  = _mm512_set1_ps(8.0f);
+                         register __m512 a2,k0a,k0a4,x0,x1,cost,cost4;
+                         register __m512 rcs,arg,larg,largs;
+                         a2   = _mm512_mul_ps(pi3,_mm512_mul_ps(a,a));
+                         cost = xcosf(tht);
+                         k0a  = _mm512_mul_ps(k0,a);
+                         x1   = _mm512_mul_ps(cost,cost);
+                         arg  = _mm512_div_ps(_mm512_mul_ps(_8,a),b);
+                         x0   = _mm512_mul_ps(k0a,k0a);
+                         larg = _mm512_sub_ps(xlogf(arg),_2);
+                         cost4= _mm512_mul_ps(x1,x1);
+                         k0a4 = _mm512_mul_ps(x0,x0);
+                         largs= _mm512_mul_ps(larg,larg);
+                         x1   = _mm512_mul_ps(_mm512_mul_ps(a2,k0a4),cost4);
+                         rcs  = _mm512_div_ps(x1,largs);
+                         return (rcs);
+                 }
+
+
+                   /*
+                         Infinte wedges
+                         Plane wave incident perpendicular to wedge edge.
+                         
+                    */
+
+                     
+                   
+                   /*
+                         Infinte wedges
+                         Plane wave incident perpendicular to wedge edge.
+                         Quantity Va, formula 6.5-6
+                    */
+
+
+                
+                   void Va_f656_zmm16r4(const __m512 k0,
+                                        const __m512 r,
+                                        const __m512 psi,
+                                        const __m512 arg2, //2pinN
+                                        __m512 * __restrict Var,
+                                        __m512 * __restrict Vai) {
+
+                       const __m512 npi    = _mm512_set1_ps(-3.14159265358979323846264338328f);
+                       const __m512 pi     = _mm512_set1_ps(3.14159265358979323846264338328f);
+                       register __m512 arg1= _mm512_add_ps(psi,arg2);
+                       const __m512 n1     = _mm512_set1_ps(-1.0f);
+                       const __mmask16 m1  = _mm512_cmp_ps_mask(npi,arg1,_CMP_LT_OQ);
+                       const __mmask16 m2  = _mm512_cmp_ps_mask(arg1,pi,_CMP_LT_OQ);
+                       if(m1 && m2) {
+                           register __m512 ear,eai,cer,cei,k0r;
+                           register __m512 arg1,carg;
+                           k0r = _mm512_mul_ps(k0,r);
+                           ear = _mm512_setzero_ps();
+                           carg= xcosf(arg1);
+                           eai = _mm512_mul_ps(k0r,carg);
+                           cexp_zmm16r4(ear,eai,&cer,&cei);
+                           *Var = cer;
+                           *Vai = cei;
+                       }
+                       else {  
+                           *Var = _mm512_setzero_ps();
+                           *Vai = _mm512_setzero_ps();
+                       }
+                }
+
+
+                
+                   void Va_f656_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                          const float * __restrict __ATTR_ALIGN__(64) pr,
+                                          const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                          const float * __restrict __ATTR_ALIGN__(64) parg2, //2pinN
+                                          float * __restrict __ATTR_ALIGN__(64) Var,
+                                          float * __restrict __ATTR_ALIGN__(64) Vai) {
+
+                       register __m512 psi = _mm512_load_ps(&ppsi[0]);
+                       register __m512 arg2= _mm512_load_ps(&parg2[0]);
+                       const __m512 npi    = _mm512_set1_ps(-3.14159265358979323846264338328f);
+                       const __m512 pi     = _mm512_set1_ps(3.14159265358979323846264338328f);
+                       register __m512 arg1= _mm512_add_ps(psi,arg2);
+                       const __m512 n1     = _mm512_set1_ps(-1.0f);
+                       const __mmask16 m1  = _mm512_cmp_ps_mask(npi,arg1,_CMP_LT_OQ);
+                       const __mmask16 m2  = _mm512_cmp_ps_mask(arg1,pi,_CMP_LT_OQ);
+                       if(m1 && m2) {
+                           register __m512 k0 = _mm512_load_ps(&pk0[0]);
+                           register __m512 r  = _mm512_load_ps(&pr[0]);
+                           register __m512 ear,eai,cer,cei,k0r;
+                           register __m512 arg1,carg;
+                           k0r = _mm512_mul_ps(k0,r);
+                           ear = _mm512_setzero_ps();
+                           carg= xcosf(arg1);
+                           eai = _mm512_mul_ps(k0r,carg);
+                           cexp_zmm16r4(ear,eai,&cer,&cei);
+                           _mm512_store_ps(&Var[0] ,cer);
+                           _mm512_store_ps(&Vai[0] ,cei);
+                       }
+                       else {  
+                           _mm512_store_ps(&Var[0] ,_mm512_setzero_ps());
+                           _mm512_store_ps(&Vai[0] ,_mm512_setzero_ps());
+                       }
+                }
+
+
+                 
+                   void Va_f656_zmm16r4_u(const float * __restrict  pk0,
+                                          const float * __restrict  pr,
+                                          const float * __restrict  ppsi,
+                                          const float * __restrict  parg2, //2pinN
+                                          float * __restrict  Var,
+                                          float * __restrict  Vai) {
+
+                       register __m512 psi = _mm512_loadu_ps(&ppsi[0]);
+                       register __m512 arg2= _mm512_loadu_ps(&parg2[0]);
+                       const __m512 npi    = _mm512_set1_ps(-3.14159265358979323846264338328f);
+                       const __m512 pi     = _mm512_set1_ps(3.14159265358979323846264338328f);
+                       register __m512 arg1= _mm512_add_ps(psi,arg2);
+                       const __m512 n1     = _mm512_set1_ps(-1.0f);
+                       const __mmask16 m1  = _mm512_cmp_ps_mask(npi,arg1,_CMP_LT_OQ);
+                       const __mmask16 m2  = _mm512_cmp_ps_mask(arg1,pi,_CMP_LT_OQ);
+                       if(m1 && m2) {
+                           register __m512 k0 = _mm512_loadu_ps(&pk0[0]);
+                           register __m512 r  = _mm512_loadu_ps(&pr[0]);
+                           register __m512 ear,eai,cer,cei,k0r;
+                           register __m512 arg1,carg;
+                           k0r = _mm512_mul_ps(k0,r);
+                           ear = _mm512_setzero_ps();
+                           carg= xcosf(arg1);
+                           eai = _mm512_mul_ps(k0r,carg);
+                           cexp_zmm16r4(ear,eai,&cer,&cei);
+                           _mm512_storeu_ps(&Var[0] ,cer);
+                           _mm512_storeu_ps(&Vai[0] ,cei);
+                       }
+                       else {  
+                           _mm512_storeu_ps(&Var[0] ,_mm512_setzero_ps());
+                           _mm512_storeu_ps(&Vai[0] ,_mm512_setzero_ps());
+                       }
+                }
+
+
+                   
+                 /*
+                         Equation 6.5-8 for large values of k0r.
+                         Formula 6.5-14
+                    */ 
+
+
+                
+                   void Vb_f6514_zmm16r4(const __m512 k0r,
+                                         const __m512 psi,
+                                         const __m512 n,
+                                         __m512 * __restrict Vbr,
+                                         __m512 * __restrict Vbi) {
+
+                         const __m512 pio4 = _mm512_set1_ps(0.78539816339744830961566084582f);
+                         const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                         const __m512 _2pi = _mm512_set1_ps(2.0f*3.14159265358979323846264338328f);
+                         register __m512 ear,eai,cer,cei,inv,pin,psin,spin,cpin,cpsin;
+                         register __m512 x0,x1,rat,den,t0r,t0i;
+                         x0   = _mm512_mul_ps(_2pi,k0r);
+                         invn = _mm512_rcp14_ps(n);
+                         ear = _mm512_setzero_ps();
+                         eai = _mm512_add_ps(k0r,pio4);
+                         pin = _mm512_div_ps(pi,n);
+                         den = _mm512_sqrt_ps(x0);
+                         cexp_zmm16r4(ear,eai,&cer,&cei);
+                         spin = xsinf(pin);
+                         cpin = xcosf(pin);
+                         x0   = _mm512_mul_ps(invn,spin);
+                         cpsin= xcosf(psin);
+                         t0r = _mm512_div_ps(cer,den);
+                         x1  = _mm512_sub_ps(cpin,cpsin);
+                         t0i = _mm512_div_ps(cei,den);
+                         rat = _mm512_div_ps(x0,x1);
+                         *Vbr= _mm512_mul_ps(t0r,rat);
+                         *Vbi= _mm512_mul_ps(t0i,rat);
+                 }
+
+
+                
+                   void Vb_f6514_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0r,
+                                           const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                           const float * __restrict __ATTR_ALIGN__(64) pn,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbr,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbi) {
+
+                         
+                         register __m512 k0r = _mm512_load_ps(&pk0r[0]);
+                         register __m512 psi = _mm512_load_ps(&psi[0]);
+                         register __m512 n   = _mm512_load_ps(&pn[0]);
+                         const __m512 pio4 = _mm512_set1_ps(0.78539816339744830961566084582f);
+                         const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                         const __m512 _2pi = _mm512_set1_ps(2.0f*3.14159265358979323846264338328f);
+                         register __m512 ear,eai,cer,cei,inv,pin,psin,spin,cpin,cpsin;
+                         register __m512 x0,x1,rat,den,t0r,t0i;
+                         x0   = _mm512_mul_ps(_2pi,k0r);
+                         invn = _mm512_rcp14_ps(n);
+                         ear = _mm512_setzero_ps();
+                         eai = _mm512_add_ps(k0r,pio4);
+                         pin = _mm512_div_ps(pi,n);
+                         den = _mm512_sqrt_ps(x0);
+                         cexp_zmm16r4(ear,eai,&cer,&cei);
+                         spin = xsinf(pin);
+                         cpin = xcosf(pin);
+                         x0   = _mm512_mul_ps(invn,spin);
+                         cpsin= xcosf(psin);
+                         t0r = _mm512_div_ps(cer,den);
+                         x1  = _mm512_sub_ps(cpin,cpsin);
+                         t0i = _mm512_div_ps(cei,den);
+                         rat = _mm512_div_ps(x0,x1);
+                         _mm512_store_ps(&Vbr[0], _mm512_mul_ps(t0r,rat));
+                         _mm512_store_ps(&Vbi[0], _mm512_mul_ps(t0i,rat));
+                 }
+
+
+                   void Vb_f6514_zmm16r4_u(const float * __restrict  pk0r,
+                                           const float * __restrict  ppsi,
+                                           const float * __restrict  pn,
+                                           float * __restrict  Vbr,
+                                           float * __restrict  Vbi) {
+
+                         
+                         register __m512 k0r = _mm512_loadu_ps(&pk0r[0]);
+                         register __m512 psi = _mm512_loadu_ps(&psi[0]);
+                         register __m512 n   = _mm512_loadu_ps(&pn[0]);
+                         const __m512 pio4 = _mm512_set1_ps(0.78539816339744830961566084582f);
+                         const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                         const __m512 _2pi = _mm512_set1_ps(2.0f*3.14159265358979323846264338328f);
+                         register __m512 ear,eai,cer,cei,inv,pin,psin,spin,cpin,cpsin;
+                         register __m512 x0,x1,rat,den,t0r,t0i;
+                         x0   = _mm512_mul_ps(_2pi,k0r);
+                         invn = _mm512_rcp14_ps(n);
+                         ear = _mm512_setzero_ps();
+                         eai = _mm512_add_ps(k0r,pio4);
+                         pin = _mm512_div_ps(pi,n);
+                         den = _mm512_sqrt_ps(x0);
+                         cexp_zmm16r4(ear,eai,&cer,&cei);
+                         spin = xsinf(pin);
+                         cpin = xcosf(pin);
+                         x0   = _mm512_mul_ps(invn,spin);
+                         cpsin= xcosf(psin);
+                         t0r = _mm512_div_ps(cer,den);
+                         x1  = _mm512_sub_ps(cpin,cpsin);
+                         t0i = _mm512_div_ps(cei,den);
+                         rat = _mm512_div_ps(x0,x1);
+                         _mm512_storeu_ps(&Vbr[0], _mm512_mul_ps(t0r,rat));
+                         _mm512_storeu_ps(&Vbi[0], _mm512_mul_ps(t0i,rat));
+                 }
+                        
+
+                      /*
+                        Equation 6.5-8 'Vb' at the shadow boundary.
+                        Formula 6.5-15
+                    */
+
+
+                
+                   void Vb_f6515_zmm16r4(const __m512 k0r,
+                                         const __m512 n,
+                                         __m512 * __restrict Vbr,
+                                         __m512 * __restrict Vbi,
+                                         const bool sign) { // positive == true, negative == false
+
+                        const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                        const __m512 hlf  = _mm512_set1_ps(0.5f);
+                        const __m512 nhlf = _mm512_set1_ps(-0.5f);
+                        const __m512 _1   = _mm512_set1_ps(1.0f);
+                        register __m512 ear,eai,cer,cer,ir,ii;
+                        register __m512 t0r,t0i,pin,spin,cpin,cot;
+                        register __m512 den,x0,x1,t1r,t1i;
+                        x0   = _mm512_add_ps(n,n);
+                        ir   = _mm512_setzero_ps();
+                        pin  = _mm512_mul_ps(pi,n);
+                        ii   = _mm512_div_ps(_1,x0);
+                        x1   = _mm512_add_ps(k0r,k0r);
+                        spin = xsinf(pin);
+                        ear  = ir;
+                        eai  = k0r;
+                        cexp_zmm16r4(ear,eai,&cer,&cei);
+                        den  = _mm512_sqrt_ps(x1);
+                        cpin = xcosf(pin);
+                        cot  = _mm512_div_ps(cpin,spin);
+                        ear  = _mm512_mul_ps(cot,cer);
+                        eai  = _mm512_mul_ps(cot,cei);
+                        x0   = _mm512_div_ps(ear,den);
+                        x1   = _mm512_div_ps(eai,den);
+                        cmul_zmm16r4(ir,ii,x0,x1,&t1r,&t1i);
+                        if(!sign) {
+                             t0r   = _mm512_mul_ps(nhlf,cer);
+                             *Vbr  = _mm512_sub_ps(t0r,t1r);
+                             t0i   = _mm512_mul_ps(nhlf,cei);
+                             *Vbi  = _mm512_sub_ps(t0i,t1i);
+                        }
+                        else {
+                             t0r   = _mm512_mul_ps(hlf,cer);
+                             *Vbr  = _mm512_sub_ps(t0r,t1r);
+                             t0i   = _mm512_mul_ps(hlf,cei);
+                             *Vbi  = _mm512_sub_ps(t0i,t1i);
+                        }
+                }
+
+
+                 
+                   void Vb_f6515_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pn,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbr,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbi,
+                                           const bool sign) { // positive == true, negative == false
+
+                        register __m512 k0r = _mm512_load_ps(&pk0r[0]);
+                        register __m512 n   = _mm512_load_ps(&pn[0]);
+                        const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                        const __m512 hlf  = _mm512_set1_ps(0.5f);
+                        const __m512 nhlf = _mm512_set1_ps(-0.5f);
+                        const __m512 _1   = _mm512_set1_ps(1.0f);
+                        register __m512 ear,eai,cer,cer,ir,ii;
+                        register __m512 t0r,t0i,pin,spin,cpin,cot;
+                        register __m512 den,x0,x1,t1r,t1i;
+                        x0   = _mm512_add_ps(n,n);
+                        ir   = _mm512_setzero_ps();
+                        pin  = _mm512_mul_ps(pi,n);
+                        ii   = _mm512_div_ps(_1,x0);
+                        x1   = _mm512_add_ps(k0r,k0r);
+                        spin = xsinf(pin);
+                        ear  = ir;
+                        eai  = k0r;
+                        cexp_zmm16r4(ear,eai,&cer,&cei);
+                        den  = _mm512_sqrt_ps(x1);
+                        cpin = xcosf(pin);
+                        cot  = _mm512_div_ps(cpin,spin);
+                        ear  = _mm512_mul_ps(cot,cer);
+                        eai  = _mm512_mul_ps(cot,cei);
+                        x0   = _mm512_div_ps(ear,den);
+                        x1   = _mm512_div_ps(eai,den);
+                        cmul_zmm16r4(ir,ii,x0,x1,&t1r,&t1i);
+                        if(!sign) {
+                             t0r   = _mm512_mul_ps(nhlf,cer);
+                             _mm512_store_ps(&Vbr[0], _mm512_sub_ps(t0r,t1r));
+                             t0i   = _mm512_mul_ps(nhlf,cei);
+                             _mm512_store_ps(&Vbi[0], _mm512_sub_ps(t0i,t1i));
+                        }
+                        else {
+                             t0r   = _mm512_mul_ps(hlf,cer);
+                             _mm512_store_ps(&Vbr[0], _mm512_sub_ps(t0r,t1r));
+                             t0i   = _mm512_mul_ps(hlf,cei);
+                             _mm512_store_ps(&Vbi[0], _mm512_sub_ps(t0i,t1i));
+                        }
+                }
+  
+
+
+                 
+                   void Vb_f6515_zmm16r4_u(const float * __restrict  pk0r,
+                                           const float * __restrict  pn,
+                                           float * __restrict  Vbr,
+                                           float * __restrict  Vbi,
+                                           const bool sign) { // positive == true, negative == false
+
+                        register __m512 k0r = _mm512_loadu_ps(&pk0r[0]);
+                        register __m512 n   = _mm512_loadu_ps(&pn[0]);
+                        const __m512 pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+                        const __m512 hlf  = _mm512_set1_ps(0.5f);
+                        const __m512 nhlf = _mm512_set1_ps(-0.5f);
+                        const __m512 _1   = _mm512_set1_ps(1.0f);
+                        register __m512 ear,eai,cer,cer,ir,ii;
+                        register __m512 t0r,t0i,pin,spin,cpin,cot;
+                        register __m512 den,x0,x1,t1r,t1i;
+                        x0   = _mm512_add_ps(n,n);
+                        ir   = _mm512_setzero_ps();
+                        pin  = _mm512_mul_ps(pi,n);
+                        ii   = _mm512_div_ps(_1,x0);
+                        x1   = _mm512_add_ps(k0r,k0r);
+                        spin = xsinf(pin);
+                        ear  = ir;
+                        eai  = k0r;
+                        cexp_zmm16r4(ear,eai,&cer,&cei);
+                        den  = _mm512_sqrt_ps(x1);
+                        cpin = xcosf(pin);
+                        cot  = _mm512_div_ps(cpin,spin);
+                        ear  = _mm512_mul_ps(cot,cer);
+                        eai  = _mm512_mul_ps(cot,cei);
+                        x0   = _mm512_div_ps(ear,den);
+                        x1   = _mm512_div_ps(eai,den);
+                        cmul_zmm16r4(ir,ii,x0,x1,&t1r,&t1i);
+                        if(!sign) {
+                             t0r   = _mm512_mul_ps(nhlf,cer);
+                             _mm512_storeu_ps(&Vbr[0], _mm512_sub_ps(t0r,t1r));
+                             t0i   = _mm512_mul_ps(nhlf,cei);
+                             _mm512_storeu_ps(&Vbi[0], _mm512_sub_ps(t0i,t1i));
+                        }
+                        else {
+                             t0r   = _mm512_mul_ps(hlf,cer);
+                             _mm512_storeu_ps(&Vbr[0], _mm512_sub_ps(t0r,t1r));
+                             t0i   = _mm512_mul_ps(hlf,cei);
+                             _mm512_storeu_ps(&Vbi[0], _mm512_sub_ps(t0i,t1i));
+                        }
+                }
+
+
+                   /*
+                          The function 'U(t,psi) as defined by 
+                          the formula 6.5-5
+                          Formula 6.5-5
+                     */
+
+
+               
+                   void Urp_f655_zmm16r4(  const __m512 k0,
+                                           const __m512 r,
+                                           const __m512 psi,
+                                           const __m512 arg2, //2pinN
+                                           const __m512 n,
+                                           const bool shadow,
+                                           const bool sign,
+                                           __m512 * __restrict Urpr,
+                                           __m512 * __restrict Urpi) {
+
+                     register __m512 Var,Vai,Vbr,Vbi;
+                     register __m512 k0r = _mm512_mul_ps(k0,r);
+                     if(shadow) {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6515_zmm16r4(k0r,n,&Vbr,&Vbi,sign);
+                        *Urpr = _mm512_add_ps(Var,Vbr);
+                        *Urpi = _mm512_add_ps(Vai,Vbi);
+                     } 
+                      else {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6514_zmm16r4(k0r,n,&Vbr,&Vbi);
+                        *Urpr = _mm512_add_ps(Var,Vbr);
+                        *Urpi = _mm512_add_ps(Vai,Vbi);
+                     }  
+               }
+ 
+
+
+                
+                   void Urp_f655_zmm16r4_a(  const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                             const float * __restrict __ATTR_ALIGN__(64) pr,
+                                             const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                             const float * __restrict __ATTR_ALIGN__(64) parg2, //2pinN
+                                             const float * __restrict __ATTR_ALIGN__(64) pn,
+                                             const bool shadow,
+                                             const bool sign,
+                                             float * __restrict __ATTR_ALIGN__(64) Urpr,
+                                             float * __restrict __ATTR_ALIGN__(64) Urpi) {
+
+                     register __m512 k0  = _mm512_load_ps(&pk0[0]);
+                     register __m512 r   = _mm512_load_ps(&pr[0]);
+                     register __m512 psi = _mm512_load_ps(&psi[0]);
+                     register __m512 arg2= _mm512_load_ps(&parg2[0]);
+                     register __m512 n   = _mm512_load_ps(&pn[0]);
+                     register __m512 k0r = _mm512_mul_ps(k0,r);
+                     register __m512 Var,Vai,Vbr,Vbi;
+                     if(shadow) {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6515_zmm16r4(k0r,n,&Vbr,&Vbi,sign);
+                        _mm512_store_ps(&Urpr[0], _mm512_add_ps(Var,Vbr));
+                        _mm512_store_ps(&Urpi[0], _mm512_add_ps(Vai,Vbi));
+                     } 
+                      else {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6514_zmm16r4(k0r,n,&Vbr,&Vbi);
+                        _mm512_store_ps(&Urpr[0], _mm512_add_ps(Var,Vbr));
+                        _mm512_store_ps(&Urpi[0], _mm512_add_ps(Vai,Vbi));
+                     }  
+               }
+
+
+               
+                   void Urp_f655_zmm16r4_u(  const float * __restrict  pk0,
+                                             const float * __restrict  pr,
+                                             const float * __restrict  ppsi,
+                                             const float * __restrict  parg2, //2pinN
+                                             const float * __restrict  pn,
+                                             const bool shadow,
+                                             const bool sign,
+                                             float * __restrict  Urpr,
+                                             float * __restrict  Urpi) {
+
+                     register __m512 k0  = _mm512_loadu_ps(&pk0[0]);
+                     register __m512 r   = _mm512_loadu_ps(&pr[0]);
+                     register __m512 psi = _mm512_loadu_ps(&psi[0]);
+                     register __m512 arg2= _mm512_loadu_ps(&parg2[0]);
+                     register __m512 n   = _mm512_loadu_ps(&pn[0]);
+                     register __m512 k0r = _mm512_mul_ps(k0,r);
+                     register __m512 Var,Vai,Vbr,Vbi;
+                     if(shadow) {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6515_zmm16r4(k0r,n,&Vbr,&Vbi,sign);
+                        _mm512_storeu_ps(&Urpr[0], _mm512_add_ps(Var,Vbr));
+                        _mm512_storeu_ps(&Urpi[0], _mm512_add_ps(Vai,Vbi));
+                     } 
+                      else {
+                        Va_f656_zmm16r4(k0,r,psi,arg2,&Var,&Vai);
+                        Vb_f6514_zmm16r4(k0r,n,&Vbr,&Vbi);
+                        _mm512_storeu_ps(&Urpr[0], _mm512_add_ps(Var,Vbr));
+                        _mm512_storeu_ps(&Urpi[0], _mm512_add_ps(Vai,Vbi));
+                     }  
+               }
+
+
+                 /*
+                      Total Electric field.
+                      Formula 6.5-3
+                  */
+
+
+                 
+                   void EsT_f653_zmm16r4(const __m512 Urp1r,
+                                         const __m512 Urp1i,
+                                         const __m512 Urp2r,
+                                         const __m512 Urp2i,
+                                         __m512 * __restrict Esr,
+                                         __m512 * __restrict Esi) {
+
+                        *Esr = _mm512_sub_ps(Urp1r,Urp2r);
+                        *Esi = _mm512_sub_ps(Urp1i,Urp2i);
+                }
+
+
+                
+                   void EsT_f653_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pUrp1r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp1i,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp2r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp2i,
+                                           float * __restrict __ATTR_ALIGN__(64) Esr,
+                                           float * __restrict __ATTR_ALIGN__(64) Esi) {
+
+                         register __m512 Urp1r = _mm512_load_ps(&pUrp1r[0]);
+                         register __m512 Urp1i = _mm512_load_ps(&pUrp1i[0]);
+                         register __m512 Urp2r = _mm512_load_ps(&pUrp2r[0]);
+                         register __m512 Urp2i = _mm512_load_ps(&pUrp2i[0]);
+                         _mm512_store_ps(&Esr[0] ,_mm512_sub_ps(Urp1r,Urp2r));
+                         _mm512_store_ps(&Esi[0] ,_mm512_sub_ps(Urp1i,Urp2i));
+                }
+
+
+                 
+                   void EsT_f653_zmm16r4_u(const float * __restrict  pUrp1r,
+                                           const float * __restrict  pUrp1i,
+                                           const float * __restrict  pUrp2r,
+                                           const float * __restrict  pUrp2i,
+                                           float * __restrict  Esr,
+                                           float * __restrict  Esi) {
+
+                         register __m512 Urp1r = _mm512_loadu_ps(&pUrp1r[0]);
+                         register __m512 Urp1i = _mm512_loadu_ps(&pUrp1i[0]);
+                         register __m512 Urp2r = _mm512_loadu_ps(&pUrp2r[0]);
+                         register __m512 Urp2i = _mm512_loadu_ps(&pUrp2i[0]);
+                         _mm512_storeu_ps(&Esr[0] ,_mm512_sub_ps(Urp1r,Urp2r));
+                         _mm512_storeu_ps(&Esi[0] ,_mm512_sub_ps(Urp1i,Urp2i));
+                }
+
+
+               /*
+                      Total Magnetic field.
+                      Formula 6.5-4
+                  */
+                
+
+                   void HsT_f654_zmm16r4(const __m512 Urp1r,
+                                         const __m512 Urp1i,
+                                         const __m512 Urp2r,
+                                         const __m512 Urp2i,
+                                         __m512 * __restrict Hsr,
+                                         __m512 * __restrict Hsi) {
+
+                        *Hsr = _mm512_add_ps(Urp1r,Urp2r);
+                        *Hsi = _mm512_add_ps(Urp1i,Urp2i);
+                }
+
+
+                 
+                   void HsT_f654_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) Urp1r,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp1i,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp2r,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp2i,
+                                           float * __restrict __ATTR_ALIGN__(64) Hsr,
+                                           float * __restrict __ATTR_ALIGN__(64) Hsi) {
+
+                         register __m512 Urp1r = _mm512_load_ps(&pUrp1r[0]);
+                         register __m512 Urp1i = _mm512_load_ps(&pUrp1i[0]);
+                         register __m512 Urp2r = _mm512_load_ps(&pUrp2r[0]);
+                         register __m512 Urp2i = _mm512_load_ps(&pUrp2i[0]);
+                         _mm512_store_ps(&Hsr[0] ,_mm512_add_ps(Urp1r,Urp2r));
+                         _mm512_store_ps(&Hsi[0] ,_mm512_add_ps(Urp1i,Urp2i));
+                }
+
+
+                 
+                   void HsT_f654_zmm16r4_u(const float * __restrict  Urp1r,
+                                           const float * __restrict  Urp1i,
+                                           const float * __restrict  Urp2r,
+                                           const float * __restrict  Urp2i,
+                                           float * __restrict  Hsr,
+                                           float * __restrict  Hsi) {
+
+                         register __m512 Urp1r = _mm512_loadu_ps(&pUrp1r[0]);
+                         register __m512 Urp1i = _mm512_loadu_ps(&pUrp1i[0]);
+                         register __m512 Urp2r = _mm512_loadu_ps(&pUrp2r[0]);
+                         register __m512 Urp2i = _mm512_loadu_ps(&pUrp2i[0]);
+                         _mm512_storeu_ps(&Hsr[0] ,_mm512_add_ps(Urp1r,Urp2r));
+                         _mm512_storeu_ps(&Hsi[0] ,_mm512_add_ps(Urp1i,Urp2i));
+                }
+
 
 
 
