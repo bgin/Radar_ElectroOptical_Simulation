@@ -1403,7 +1403,293 @@ SOFTWARE.
                  
                                           
 
-                    
+                     /*
+                         The far-zone amplitude for TM-case.
+                         For small loop k0a<<1
+                         Formula 6.4-13
+                      */
+
+
+                
+                   void Uth_f6413_zmm16r4(const __m512 a,
+                                          const __m512 k0,
+                                          const __m512 b,
+                                          const __m512 tht,
+                                         __m512 *  __restrict Uthr,
+                                         __m512 *  __restrict Uthi) FUNC_ATTRIBUTES;   
+
+
+                   void Uth_f6413_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pa,
+                                            const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                            const float * __restrict __ATTR_ALIGN__(64) pb,
+                                            const float * __restrict __ATTR_ALIGN__(64) ptht,
+                                            float *  __restrict __ATTR_ALIGN__(64) Uthr,
+                                            float *  __restrict __ATTR_ALIGN__(64) Uthi) FUNC_ATTRIBUTES;   
+
+
+               
+                   void Uth_f6413_zmm16r4_u(const float * __restrict  pa,
+                                            const float * __restrict  pk0,
+                                            const float * __restrict  pb,
+                                            const float * __restrict  ptht,
+                                            float *  __restrict  Uthr,
+                                            float *  __restrict Uthi) FUNC_ATTRIBUTES;   
+
+
+               
+                   void Uth_f6413_u16x_zmm16r4(const __m512 a,
+                                               const __m512 k0,
+                                               const __m512 b,
+                                               const __m512 * __restrict __ATTR_ALIGN__(64) tht,
+                                               __m512 * __restrict __ATTR_ALIGN__(64) Uthr,
+                                               __m512 * __restrict __ATTR_ALIGN__(64) Uthi,
+                                               const int32_t n) FUNC_ATTRIBUTES;   
+
+               
+                   void Uth_f6413_u8x_zmm16r4( const __m512 a,
+                                              const __m512 k0,
+                                              const __m512 b,
+                                              const __m512 * __restrict __ATTR_ALIGN__(64) tht,
+                                              __m512 * __restrict __ATTR_ALIGN__(64) Uthr,
+                                              __m512 * __restrict __ATTR_ALIGN__(64) Uthi,
+                                              const int32_t n) FUNC_ATTRIBUTES;   
+
+                    /*
+                       Resulting RCS (of 6.4-13)
+                       Formula 6.4-14
+                   */
+
+
+                 
+                   __m512 rcs_f6414_zmm16(const __m512 a,
+                                          const __m512 b,
+                                          const __m512 k0,
+                                          const __m512 tht) FUNC_ATTRIBUTES;   
+
+
+               
+                   __m512 rcs_f6414_zmm16_a(const float * __restrict __ATTR_ALIGN__(64) pa,
+                                            const float * __restrict __ATTR_ALIGN__(64) pb,
+                                            const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                            const float * __restrict __ATTR_ALIGN__(64) ptht) FUNC_ATTRIBUTES;   
+
+
+                 
+                   __m512 rcs_f6414_zmm16_u(const float * __restrict  pa,
+                                            const float * __restrict  pb,
+                                            const float * __restrict  pk0,
+                                            const float * __restrict  ptht) FUNC_ATTRIBUTES;   
+
+
+                   /*
+                         Infinte wedges
+                         Plane wave incident perpendicular to wedge edge.
+                         
+                    */
+
+                     
+                   
+                   /*
+                         Infinte wedges
+                         Plane wave incident perpendicular to wedge edge.
+                         Quantity Va, formula 6.5-6
+                    */
+
+
+               
+                   void Va_f656_zmm16r4(const __m512 k0,
+                                        const __m512 r,
+                                        const __m512 psi,
+                                        const __m512 arg2, //2pinN
+                                        __m512 * __restrict Var,
+                                        __m512 * __restrict Vai) FUNC_ATTRIBUTES;   
+
+
+                
+                   void Va_f656_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                          const float * __restrict __ATTR_ALIGN__(64) pr,
+                                          const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                          const float * __restrict __ATTR_ALIGN__(64) parg2, //2pinN
+                                          float * __restrict __ATTR_ALIGN__(64) Var,
+                                          float * __restrict __ATTR_ALIGN__(64) Vai) FUNC_ATTRIBUTES;   
+
+
+               
+                   void Va_f656_zmm16r4_u(const float * __restrict  pk0,
+                                          const float * __restrict  pr,
+                                          const float * __restrict  ppsi,
+                                          const float * __restrict  parg2, //2pinN
+                                          float * __restrict  Var,
+                                          float * __restrict  Vai) FUNC_ATTRIBUTES;   
+
+
+                   
+                 /*
+                         Equation 6.5-8 for large values of k0r.
+                         Formula 6.5-14
+                    */ 
+
+
+               
+                   void Vb_f6514_zmm16r4(const __m512 k0r,
+                                         const __m512 psi,
+                                         const __m512 n,
+                                         __m512 * __restrict Vbr,
+                                         __m512 * __restrict Vbi) FUNC_ATTRIBUTES;   
+
+
+              
+                   void Vb_f6514_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0r,
+                                           const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                           const float * __restrict __ATTR_ALIGN__(64) pn,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbr,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbi) FUNC_ATTRIBUTES;   
+
+              
+                   void Vb_f6514_zmm16r4_u(const float * __restrict  pk0r,
+                                           const float * __restrict  ppsi,
+                                           const float * __restrict  pn,
+                                           float * __restrict  Vbr,
+                                           float * __restrict  Vbi) FUNC_ATTRIBUTES;  
+
+
+                   /*
+                        Equation 6.5-8 'Vb' at the shadow boundary.
+                        Formula 6.5-15
+                    */
+
+
+                  
+                   void Vb_f6515_zmm16r4(const __m512 k0r,
+                                         const __m512 n,
+                                         __m512 * __restrict Vbr,
+                                         __m512 * __restrict Vbi,
+                                         const bool sign) FUNC_ATTRIBUTES;  
+
+                 
+                   void Vb_f6515_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pk0r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pn,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbr,
+                                           float * __restrict __ATTR_ALIGN__(64) Vbi,
+                                           const bool sign) FUNC_ATTRIBUTES;  
+  
+
+
+                
+                   void Vb_f6515_zmm16r4_u(const float * __restrict  pk0r,
+                                           const float * __restrict  pn,
+                                           float * __restrict  Vbr,
+                                           float * __restrict  Vbi,
+                                           const bool sign) FUNC_ATTRIBUTES;  
+
+                   /*
+                          The function 'U(t,psi) as defined by 
+                          the formula 6.5-5
+                          Formula 6.5-5
+                     */
+
+
+                 
+                   void Urp_f655_zmm16r4(  const __m512 k0,
+                                           const __m512 r,
+                                           const __m512 psi,
+                                           const __m512 arg2, //2pinN
+                                           const __m512 n,
+                                           const bool shadow,
+                                           const bool sign,
+                                           __m512 * __restrict Urpr,
+                                           __m512 * __restrict Urpi) FUNC_ATTRIBUTES;  
+
+
+               
+                   void Urp_f655_zmm16r4_a(  const float * __restrict __ATTR_ALIGN__(64) pk0,
+                                             const float * __restrict __ATTR_ALIGN__(64) pr,
+                                             const float * __restrict __ATTR_ALIGN__(64) ppsi,
+                                             const float * __restrict __ATTR_ALIGN__(64) parg2, //2pinN
+                                             const float * __restrict __ATTR_ALIGN__(64) pn,
+                                             const bool shadow,
+                                             const bool sign,
+                                             float * __restrict __ATTR_ALIGN__(64) Urpr,
+                                             float * __restrict __ATTR_ALIGN__(64) Urpi) FUNC_ATTRIBUTES;  
+
+
+               
+                   void Urp_f655_zmm16r4_u(  const float * __restrict  pk0,
+                                             const float * __restrict  pr,
+                                             const float * __restrict  ppsi,
+                                             const float * __restrict  parg2, //2pinN
+                                             const float * __restrict  pn,
+                                             const bool shadow,
+                                             const bool sign,
+                                             float * __restrict  Urpr,
+                                             float * __restrict  Urpi) FUNC_ATTRIBUTES;  
+
+
+                 /*
+                      Total Electric field.
+                      Formula 6.5-3
+                  */
+
+
+                
+                   void EsT_f653_zmm16r4(const __m512 Urp1r,
+                                         const __m512 Urp1i,
+                                         const __m512 Urp2r,
+                                         const __m512 Urp2i,
+                                         __m512 * __restrict Esr,
+                                         __m512 * __restrict Esi) FUNC_ATTRIBUTES;  
+
+                
+                   void EsT_f653_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) pUrp1r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp1i,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp2r,
+                                           const float * __restrict __ATTR_ALIGN__(64) pUrp2i,
+                                           float * __restrict __ATTR_ALIGN__(64) Esr,
+                                           float * __restrict __ATTR_ALIGN__(64) Esi) FUNC_ATTRIBUTES;  
+
+
+                  
+                   void EsT_f653_zmm16r4_u(const float * __restrict  pUrp1r,
+                                           const float * __restrict  pUrp1i,
+                                           const float * __restrict  pUrp2r,
+                                           const float * __restrict  pUrp2i,
+                                           float * __restrict  Esr,
+                                           float * __restrict  Esi) FUNC_ATTRIBUTES;  
+
+
+               /*
+                      Total Magnetic field.
+                      Formula 6.5-4
+                  */
+                
+
+                
+                   void HsT_f654_zmm16r4(const __m512 Urp1r,
+                                         const __m512 Urp1i,
+                                         const __m512 Urp2r,
+                                         const __m512 Urp2i,
+                                         __m512 * __restrict Hsr,
+                                         __m512 * __restrict Hsi) FUNC_ATTRIBUTES;  
+
+               
+                   void HsT_f654_zmm16r4_a(const float * __restrict __ATTR_ALIGN__(64) Urp1r,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp1i,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp2r,
+                                           const float * __restrict __ATTR_ALIGN__(64) Urp2i,
+                                           float * __restrict __ATTR_ALIGN__(64) Hsr,
+                                           float * __restrict __ATTR_ALIGN__(64) Hsi) FUNC_ATTRIBUTES;  
+
+
+                 
+                   void HsT_f654_zmm16r4_u(const float * __restrict  Urp1r,
+                                           const float * __restrict  Urp1i,
+                                           const float * __restrict  Urp2r,
+                                           const float * __restrict  Urp2i,
+                                           float * __restrict  Hsr,
+                                           float * __restrict  Hsi) FUNC_ATTRIBUTES;  
+
+ 
+
 
 
                     
