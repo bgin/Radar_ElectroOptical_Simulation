@@ -35,23 +35,7 @@ SOFTWARE.
 
          
          
-               /*
-                   Work (input) arrays for kernel rcs_f8162_zmm16r4_2t_u and
-                   rcs_f8162_zmm16r4_2t_a.
-               */
-               __ATTR_ALIGN__(64) struct RCS_F8162_DATA {
-               
-                       float * __restrict  Ya1; 
-                       float * __restrict  Ya2; 
-                       float * __restrict  Ya3; 
-                       float * __restrict  Ea;  
-                       float * __restrict  WRKa; 
-                       float * __restrict  Yb1;
-                       float * __restrict  Yb2; 
-                       float * __restrict  Yb3; 
-                       float * __restrict  Eb; 
-                       float * __restrict  WRKb;  
-               };
+             
          
               
               /*
