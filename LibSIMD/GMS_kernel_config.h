@@ -74,10 +74,26 @@
 #endif
 
 
-#define FUNC_ATTRIBUTES  __attribute__((vectorcall)) \
-                         __attribute__ ((noinline)) \
-                         __attribute__ ((hot))  \
+#define FUNC_ATTRIBUTES  __attribute__ ((vectorcall)) \
+                         __attribute__ ((noinline))   \
+                         __attribute__ ((hot))        \
                          __attribute__ ((aligned((32))))
+                         
+                         
+//
+// Round down to 4 elements
+//
+#ifndef ROUND_TO_FOUR
+#define ROUND_TO_FOUR(x,y) ((x) & ~((y)-1))
+#endif
+// Basically the same as above.
+#ifndef ROUND_TO_EIGHT
+#define ROUND_TO_EIGHT(x,y) ((x) & ~((y)-1))
+#endif
+
+#ifndef ROUND_TO_SIXTEEN
+#define ROUND_TO_SIXTEEN(x,y) ((x) & ~((y)-1))
+#endif         
 
 
 
