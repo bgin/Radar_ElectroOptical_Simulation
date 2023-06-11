@@ -1,0 +1,5 @@
+-collect-with runsa 
+-knob event-config=UOPS_DISPATCHED_PORT.PORT_2:sa=1000000:OS=no:USR=yes,UOPS_DISPATCHED_PORT.PORT_3:sa=1000000:OS=no:USR=yes,UOPS_DISPATCHED_PORT.PORT_7:sa=1000000:OS=no:USR=yes,UOPS_DISPATCHED_PORT.PORT_4:sa=1000000:OS=no:USR=yes,CPU_CLK_UNHALTED.THREAD:sa=100000:OS=no:USR=yes,CPU_CLK_UNHALTED.THREAD_P:sa=100000:OS=no:USR=yes
+-knob event-mode=user 
+-knob sampling-interval=1 
+-run-pass-thru=--perf-threads=none
