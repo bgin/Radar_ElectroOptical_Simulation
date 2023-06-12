@@ -1,0 +1,5 @@
+-collect-with runsa 
+-knob event-config=PU_CLK_UNHALTED.THREAD:sa=1000000:OS=no:USR=yes,CPU_CLK_UNHALTED.REF_TSC:sa=1000000:OS=no:USR=yes,INST_RETIRED.ANY:sa=1000000:OS=no:USR=yes,UNC_CHA_DIR_UPDATE.HA,UNC_CHA_DIR_UPDATE.TOR,UNC_M2M_DIRECTORY_UPDATE.ANY 
+-knob event-mode=user 
+-knob sampling-interval=1 
+-run-pass-thru=--perf-threads=none
