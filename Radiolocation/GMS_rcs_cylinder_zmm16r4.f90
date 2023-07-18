@@ -100,6 +100,31 @@ module rcs_cylinder_zmm16r4
                    !      Backscatter scattering width for E-field 
                    !      cylinder-parallel,formula 4.1-19
                    ! */
+                   
+                   
+             pure function rcs_f419_zmm16r4(a,k0a) result(rcs)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f419_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f419_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f419_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t) :: rcs
+                   ! locals
+                   type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 =             &
+                                                 ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t), parameter :: C2467401100272339654708622749969 =             &
+                                                 ZMM16r4_t(2.467401100272339654708622749969_sp)
+                   type(ZMM16r4_t), parameter :: C08905  = ZMM16r4_t(0.8905_sp)
+                   ZMM16r4_t, automatic :: num,arg,ln,ln2,den
+                   num.v = a.v*C9869604401089358618834490999876.v
+                   arg.v = k0a.v*C08905.v
+                   ln.v  = log(arg.v)
+                   ln2.v = ln.v*ln.v
+                   den.v = k0a.v*ln2.v+C2467401100272339654708622749969.v
+                   rcs.v = num.v/den.v
+             end function rcs_f419_zmm16r4
 
 
 
