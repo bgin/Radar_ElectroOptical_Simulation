@@ -1003,14 +1003,25 @@ module rcs_cylinder_zmm16r4
              pure function rcs_f4121_zmm16r4(a,k0a) result(rcs)
                   
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: rcs_f4121_zmm16r4_rolled
-                   !dir$ attributes forceinline :: rcs_f4121_zmm16r4_rolled
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4121_zmm16r4_rolled 
+                   !dir$ attributes code_align : 32 :: rcs_f4121_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4121_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4121_zmm16r4
                    type(ZMM16r4_t), intent(in) :: a
                    type(ZMM16r4_t), intent(in) :: k0a
                    type(ZMM16r4_t) :: rcs
                    rcs = rcs_f4120_zmm16r4(a,k0a)
              end function rcs_f4121_zmm16r4
+             
+             
+              !/*
+              !          Bistatic scattering widths, H-field cylinder axis-parallel
+              !          Formula 4.1-22
+              !     */ 
+              
+              
+              pure function rcs_f4122_zmm16r4(phi,a,k0a) result(rcs)
+                     
+              end function rcs_f4122_zmm16r4
              
 
 
