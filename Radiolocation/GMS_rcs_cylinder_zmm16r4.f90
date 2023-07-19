@@ -994,6 +994,24 @@ module rcs_cylinder_zmm16r4
                      end do
              end subroutine rcs_f4120_zmm16r4_rolled
              
+             
+             ! /*
+             !           Bistatic scattering widths, E-field cylinder axis-parallel
+             !           Formula 4.1-21
+             !      */
+             
+             pure function rcs_f4121_zmm16r4(a,k0a) result(rcs)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4121_zmm16r4_rolled
+                   !dir$ attributes forceinline :: rcs_f4121_zmm16r4_rolled
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4121_zmm16r4_rolled 
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16r4_t), intent(in) :: k0a
+                   type(ZMM16r4_t) :: rcs
+                   rcs = rcs_f4120_zmm16r4(a,k0a)
+             end function rcs_f4121_zmm16r4
+             
 
 
 
