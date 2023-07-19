@@ -555,7 +555,25 @@ module rcs_cylinder_zmm16r4
              !       */
              
              
+             pure function rcs_f4120_zmm16r4(a,k0a) result(rcs)
              
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4120_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4120_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4120_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 = &
+                                             ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t), parameter :: C225 = ZMM16r4_t(2.25_sp)
+                   type(ZMM16r4_t), automatic :: pi2a,k0a3,t0
+                   k0a3.v = k0a.v*k0a.v*k0a.v
+                   t0.v   = C225.v*k0a3.v
+                   pi2a.v = a.v*C9869604401089358618834490999876.v
+                   rcs.v  = pi2a.v*t0.v
+             end function rcs_f4120_zmm16r4
 
 
 
