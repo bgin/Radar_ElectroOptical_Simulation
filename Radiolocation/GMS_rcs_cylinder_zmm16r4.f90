@@ -948,6 +948,52 @@ module rcs_cylinder_zmm16r4
              end subroutine rcs_f4120_zmm16r4_unroll4x
              
          
+             subroutine rcs_f4120_zmm16r4_rolled(pa,pk0a,prcs,n,PF_DIST)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4120_zmm16r4_rolled
+                   !dir$ attributes forceinline :: rcs_f4120_zmm16r4_rolled
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4120_zmm16r4_rolled
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pa
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pk0a
+                   type(ZMM16r4_t), dimension(1:n), intent(out):: prcs
+                   integer(kind=i4),                intent(in) :: n
+                   integer(kind=i4),                intent(in) :: PF_DIST
+                   !Locals
+                   type(ZMM16r4_t), automatic :: a0
+                   type(ZMM16r4_t), automatic :: k0a0
+                   type(ZMM16r4_t), automatic :: rcs0
+                   integer(kind=i4) :: i
+                  
+                    !dir$ assume_aligned pa:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned prcs:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                   do i=1,n
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)   
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.) 
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.) 
+#endif                    
+                         a0.v        = pa(i+0).v
+                         k0a.v       = pk0a(i+0).v
+                         rcs.v       = rcs_f4120_zmm16r4(a0,k0a)
+                         prcs(i+0).v = rcs.v
+                     end do
+             end subroutine rcs_f4120_zmm16r4_rolled
+             
 
 
 
