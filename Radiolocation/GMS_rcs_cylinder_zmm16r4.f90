@@ -1020,7 +1020,26 @@ module rcs_cylinder_zmm16r4
               
               
               pure function rcs_f4122_zmm16r4(phi,a,k0a) result(rcs)
-                     
+              
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4122_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4122_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4122_zmm16r4 
+                   type(ZMM16r4_t),   intent(in) :: phi
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 = &
+                                              ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t), automatic :: pi2a,k0a3,cosp,frac,sqr
+                   pi2a.v = a.v*C9869604401089358618834490999876.v
+                   k0a3.v = k0a.v*k0a.v*k0a.v
+                   cosp.v = cos(phi.v)
+                   frac.v = C05.v*cosp.v
+                   sqr.v  = frac.v*frac.v
+                   rcs.v  = pi2a.v*k0a3.v*sqr.v
               end function rcs_f4122_zmm16r4
              
 
