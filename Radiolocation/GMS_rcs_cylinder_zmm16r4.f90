@@ -2574,7 +2574,70 @@ module rcs_cylinder_zmm16r4
              end subroutine Kz_f4125_zmm16r4_unroll4x
                 
 
-
+             subroutine Kz_f4125_zmm16r4_rolled(peps0,pmu0,pE,pk0a,pKz,PF_DIST1, &
+                                                   n,PF_DIST1,PF_DIST2)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Kz_f4125_zmm16r4_rolled
+                   !dir$ attributes forceinline :: Kz_f4125_zmm16r4_rolled
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Kz_f4125_zmm16r4_rolled
+                   real(kind=sp),   dimension(1:n), intent(in) :: peps0
+                   real(kind=sp),   dimension(1:n), intent(in) :: pmu0
+                   type(ZMM16c4),   dimension(1:n), intent(in) :: pE
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pk0a
+                   type(ZMM16c4),   dimension(1:n), intent(in) :: pKz
+                   integer(kind=i4),                intent(in) :: n
+                   integer(kind=i4),                intent(in) :: PF_DIST1
+                   integer(kind=i4),                intent(in) :: PF_DIST2
+                   ! Locals
+                   type(ZMM16c4),   automatic :: Kz0
+                   type(ZMM16c4),   automatic :: E0
+                   type(ZMM16r4_t), automatic :: k0a0
+                   real(kind=sp),   automatic :: eps00
+                   real(kind=sp),   automatic :: mu00
+                   integer(kind=i4) :: i
+                 
+                    !dir$ assume_aligned peps0:64
+                    !dir$ assume_aligned pmu0:64
+                    !dir$ assume_aligned pE:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned pKz:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                 do i=1,n
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T1,.true.,.false.) 
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                         eps00    = peps0(i+0)
+                         mu00     = pmu0(i+0)
+                         E0.v     = pE(i+0).v
+                         k0a0.v   = pk0a(i+0).v
+                         Kz0      = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i+0) = Kz0 
+                     end do
+             end subroutine Kz_f4125_zmm16r4_rolled
+                
 
 
 
