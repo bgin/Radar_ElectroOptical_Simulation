@@ -52,6 +52,12 @@ Compiler optimization settings.
     #error Unrecognized Fortran Compiler
 #endif
 
+// Explicit vectorization
+// Use this when array semantics is not vectorized
+
+#if !defined(GMS_EXPLICIT_VECTORIZE)
+#define GMS_EXPLICIT_VECTORIZE 0
+#endif
 
 // OpenMP support
     
