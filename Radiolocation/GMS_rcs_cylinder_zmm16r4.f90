@@ -1808,9 +1808,160 @@ module rcs_cylinder_zmm16r4
              end subroutine rcs_f4124_zmm16r4_unroll12x
              
 
+             subroutine rcs_f4124_zmm16r4_unroll8x(pa,pk0a,prcs,n,PF_DIST)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4124_zmm16r4_unroll8x
+                   !dir$ attributes forceinline :: rcs_f4124_zmm16r4_unroll8x
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4124_zmm16r4_unroll8x
+                   type(ZMM16r4_t), dimension(1:n), intent(in)    :: pa
+                   type(ZMM16r4_t), dimension(1:n), intent(in)    :: pk0a
+                   type(ZMM16r4_t), dimension(1:n), intent(out)   :: prcs 
+                   integer(kind=i4)               , intent(in)    :: n
+                   integer(kind=i4)               , intent(in)    :: PF_DIST
+                   ! Locals
+                   type(ZMM16r4_t), automatic :: a0,a1,a2,a3
+                   type(ZMM16r4_t), automatic :: k0a0,k0a1,k0a2,k0a3
+                   type(ZMM16r4_t), automatic :: rcs0,rcs1,rcs2,rcs3
+                   integer(kind=i4) :: i,m,m1
+                   m = mod(n,8)
+                   if(m/=0) then
+                      do i=1,m
+                         a0.v       = pa(i).v
+                         k0a0.v     = pk0a(i).v
+                         rcs0       = rcs_f4124_zmm16r4(a0,k0a0)
+                         prcs(i).v  = rcs0.v
+                      end do
+                      if(n<8) return
+                   end if
+                   m1=m+1
+                    !dir$ assume_aligned pa:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned prcs:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                   do i=m1,n,8
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)   
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.) 
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.) 
+#endif       
+                        a0.v         = pa(i+0).v
+                        k0a0.v       = pk0a(i+0).v
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
+                        prcs(i+0).v  = rcs0.v  
+                        a1.v         = pa(i+1).v
+                        k0a1.v       = pk0a(i+1).v
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
+                        prcs(i+1).v  = rcs1.v 
+                        a2.v         = pa(i+2).v
+                        k0a2.v       = pk0a(i+2).v
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
+                        prcs(i+2).v  = rcs2.v  
+                        a3.v         = pa(i+3).v
+                        k0a3.v       = pk0a(i+3).v
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
+                        prcs(i+3).v  = rcs3.v  
+                        a0.v         = pa(i+4).v
+                        k0a0.v       = pk0a(i+4).v
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
+                        prcs(i+4).v  = rcs0.v  
+                        a1.v         = pa(i+5).v
+                        k0a1.v       = pk0a(i+5).v
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
+                        prcs(i+5).v  = rcs1.v 
+                        a2.v         = pa(i+6).v
+                        k0a2.v       = pk0a(i+6).v
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
+                        prcs(i+6).v  = rcs2.v
+                        a3.v         = pa(i+7).v
+                        k0a3.v       = pk0a(i+7).v
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
+                        prcs(i+7).v  = rcs3.v  
+                    end do
+             end subroutine rcs_f4124_zmm16r4_unroll8x
                
                
+             subroutine rcs_f4124_zmm16r4_unroll4x(pa,pk0a,prcs,n,PF_DIST)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4124_zmm16r4_unroll4x
+                   !dir$ attributes forceinline :: rcs_f4124_zmm16r4_unroll4x
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4124_zmm16r4_unroll4x
+                   type(ZMM16r4_t), dimension(1:n), intent(in)    :: pa
+                   type(ZMM16r4_t), dimension(1:n), intent(in)    :: pk0a
+                   type(ZMM16r4_t), dimension(1:n), intent(out)   :: prcs 
+                   integer(kind=i4)               , intent(in)    :: n
+                   integer(kind=i4)               , intent(in)    :: PF_DIST
+                   ! Locals
+                   type(ZMM16r4_t), automatic :: a0,a1,a2,a3
+                   type(ZMM16r4_t), automatic :: k0a0,k0a1,k0a2,k0a3
+                   type(ZMM16r4_t), automatic :: rcs0,rcs1,rcs2,rcs3
+                   integer(kind=i4) :: i,m,m1
+                   m = mod(n,4)
+                   if(m/=0) then
+                      do i=1,m
+                         a0.v       = pa(i).v
+                         k0a0.v     = pk0a(i).v
+                         rcs0       = rcs_f4124_zmm16r4(a0,k0a0)
+                         prcs(i).v  = rcs0.v
+                      end do
+                      if(n<4) return
+                   end if
+                   m1=m+1
+                    !dir$ assume_aligned pa:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned prcs:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                   do i=m1,n,4
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)   
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.) 
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(pa(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.) 
+#endif       
+                        a0.v         = pa(i+0).v
+                        k0a0.v       = pk0a(i+0).v
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
+                        prcs(i+0).v  = rcs0.v  
+                        a1.v         = pa(i+1).v
+                        k0a1.v       = pk0a(i+1).v
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
+                        prcs(i+1).v  = rcs1.v 
+                        a2.v         = pa(i+2).v
+                        k0a2.v       = pk0a(i+2).v
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
+                        prcs(i+2).v  = rcs2.v  
+                        a3.v         = pa(i+3).v
+                        k0a3.v       = pk0a(i+3).v
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
+                        prcs(i+3).v  = rcs3.v  
+                   end do
+             end subroutine rcs_f4124_zmm16r4_unroll4x
                
+                 
               
 
 
