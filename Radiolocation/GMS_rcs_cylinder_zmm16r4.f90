@@ -1590,12 +1590,12 @@ module rcs_cylinder_zmm16r4
                end function rcs_f4124_zmm16r4
                
                
-               subroutine rcs_f424_zmm16r4_unroll16x(pa,pk0a,prcs,n,PF_DIST)
+               subroutine rcs_f4124_zmm16r4_unroll16x(pa,pk0a,prcs,n,PF_DIST)
              
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: rcs_f424_zmm16r4_unroll16x
-                   !dir$ attributes forceinline :: rcs_f424_zmm16r4_unroll16x
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f424_zmm16r4_unroll16x
+                   !dir$ attributes code_align : 32 :: rcs_f4124_zmm16r4_unroll16x
+                   !dir$ attributes forceinline :: rcs_f4124_zmm16r4_unroll16x
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4124_zmm16r4_unroll16x
                    type(ZMM16r4_t), dimension(1:n), intent(in)    :: pa
                    type(ZMM16r4_t), dimension(1:n), intent(in)    :: pk0a
                    type(ZMM16r4_t), dimension(1:n), intent(out)   :: prcs 
@@ -1611,7 +1611,7 @@ module rcs_cylinder_zmm16r4
                       do i=1,m
                          a0.v       = pa(i).v
                          k0a0.v     = pk0a(i).v
-                         rcs0       = rcs_f424_zmm16r4(a0,k0a0)
+                         rcs0       = rcs_f4124_zmm16r4(a0,k0a0)
                          prcs(i).v  = rcs0.v
                       end do
                       if(n<16) return
@@ -1641,70 +1641,70 @@ module rcs_cylinder_zmm16r4
 #endif       
                         a0.v         = pa(i+0).v
                         k0a0.v       = pk0a(i+0).v
-                        rcs0         = rcs_f424_zmm16r4(a0,k0a0)
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
                         prcs(i+0).v  = rcs0.v  
                         a1.v         = pa(i+1).v
                         k0a1.v       = pk0a(i+1).v
-                        rcs1         = rcs_f424_zmm16r4(a1,k0a1)
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
                         prcs(i+1).v  = rcs1.v 
                         a2.v         = pa(i+2).v
                         k0a2.v       = pk0a(i+2).v
-                        rcs2         = rcs_f424_zmm16r4(a2,k0a2)
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
                         prcs(i+2).v  = rcs2.v  
                         a3.v         = pa(i+3).v
                         k0a3.v       = pk0a(i+3).v
-                        rcs3         = rcs_f424_zmm16r4(a3,k0a3)
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
                         prcs(i+3).v  = rcs3.v  
                         a0.v         = pa(i+4).v
                         k0a0.v       = pk0a(i+4).v
-                        rcs0         = rcs_f424_zmm16r4(a0,k0a0)
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
                         prcs(i+4).v  = rcs0.v  
                         a1.v         = pa(i+5).v
                         k0a1.v       = pk0a(i+5).v
-                        rcs1         = rcs_f424_zmm16r4(a1,k0a1)
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
                         prcs(i+5).v  = rcs1.v 
                         a2.v         = pa(i+6).v
                         k0a2.v       = pk0a(i+6).v
-                        rcs2         = rcs_f424_zmm16r4(a2,k0a2)
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
                         prcs(i+6).v  = rcs2.v
                         a3.v         = pa(i+7).v
                         k0a3.v       = pk0a(i+7).v
-                        rcs3         = rcs_f424_zmm16r4(a3,k0a3)
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
                         prcs(i+7).v  = rcs3.v  
                         a0.v         = pa(i+8).v
                         k0a0.v       = pk0a(i+8).v
-                        rcs0         = rcs_f424_zmm16r4(a0,k0a0)
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
                         prcs(i+8).v  = rcs0.v  
                         a1.v         = pa(i+9).v
                         k0a1.v       = pk0a(i+9).v
-                        rcs1         = rcs_f424_zmm16r4(a1,k0a1)
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
                         prcs(i+9).v  = rcs1.v 
                         a2.v         = pa(i+10).v
                         k0a2.v       = pk0a(i+10).v
-                        rcs2         = rcs_f424_zmm16r4(a2,k0a2)
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
                         prcs(i+10).v = rcs2.v
                         a3.v         = pa(i+11).v
                         k0a3.v       = pk0a(i+11).v
-                        rcs3         = rcs_f424_zmm16r4(a3,k0a3)
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
                         prcs(i+11).v = rcs3.v  
                         a0.v         = pa(i+12).v
                         k0a0.v       = pk0a(i+12).v
-                        rcs0         = rcs_f424_zmm16r4(a0,k0a0)
+                        rcs0         = rcs_f4124_zmm16r4(a0,k0a0)
                         prcs(i+12).v = rcs0.v  
                         a1.v         = pa(i+13).v
                         k0a1.v       = pk0a(i+13).v
-                        rcs1         = rcs_f424_zmm16r4(a1,k0a1)
+                        rcs1         = rcs_f4124_zmm16r4(a1,k0a1)
                         prcs(i+13).v = rcs1.v 
                         a2.v         = pa(i+14).v
                         k0a2.v       = pk0a(i+14).v
-                        rcs2         = rcs_f424_zmm16r4(a2,k0a2)
+                        rcs2         = rcs_f4124_zmm16r4(a2,k0a2)
                         prcs(i+14).v = rcs2.v
                         a3.v         = pa(i+15).v
                         k0a3.v       = pk0a(i+15).v
-                        rcs3         = rcs_f424_zmm16r4(a3,k0a3)
+                        rcs3         = rcs_f4124_zmm16r4(a3,k0a3)
                         prcs(i+15).v = rcs3.v                      
                    end do
-             end subroutine rcs_f424_zmm16r4_unroll16x
+             end subroutine rcs_f4124_zmm16r4_unroll16x
 
                
                
