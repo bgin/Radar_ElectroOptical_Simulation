@@ -1563,6 +1563,12 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t) :: rcs
                    rcs = rcs_f4120_zmm16r4(a,k0a)
                end function rcs_f4123_zmm16r4
+               
+               
+               !/*
+               !        Forward scattering widths, H-field.
+               !        Formula 4.1-24
+               !    */
               
 
 
