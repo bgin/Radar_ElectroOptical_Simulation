@@ -2007,6 +2007,47 @@ module rcs_cylinder_zmm16r4
                         prcs(i+0).v  = rcs0.v  
                     end do
              end subroutine rcs_f4124_zmm16r4_rolled
+             
+             
+             !/*
+             !             Surface currents (k0a << 1), for long cylinder (wire).
+             !             E-field cylinder axis parallel.
+             !             Formula 4.1-25
+             !          */ 
+             
+             
+             pure function Kz_f4125_zmm16r4(eps0,mu0,E,k0a) result(Kz)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Kz_f4125_zmm16r4
+                   !dir$ attributes forceinline :: Kz_f4125_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Kz_f4125_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   real(kind=sp),   intent(in) :: eps0
+                   real(kind=sp),   intent(in) :: mu0
+                   type(ZMM16c4),   intent(in) :: E
+                   type(ZMM164r_t), intent(in) :: k0a
+                   type(ZMM16c4) :: Kz
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C157079632679489661923132169164 = 
+                                         ZMM16r4_t(1.57079632679489661923132169164_sp)
+                   type(ZMM16r4_t), parameter :: C08905 = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16c4),   automatic :: t0,t1,div
+                   type(ZMM164r_t), automatic :: veps0,vmu0
+                   type(ZMM16r4_t), automatic :: lna,ln
+                   type(ZMM16r4_t), automatic :: x0
+                   veps0 = ZMM16r4_t(eps0)
+                   lna.v = k0a.v*C08905.v
+                   vmu0  = ZMM16r4_t(mu0)
+                   ln.v  = log(lna.v)
+                   x0.v  = veps0.v/vmu0.v
+                   t0.re = v16_0.v
+                   t0.im = sqrt(x0.v)
+                   t1.re = k0a.v*ln.v
+                   t1.im = C157079632679489661923132169164.v
+                   div   = E/t1
+                   Kz    = div*t0
+             end function Kz_f4125_zmm16r4
                 
 
 
