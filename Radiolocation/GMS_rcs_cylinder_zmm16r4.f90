@@ -2048,6 +2048,173 @@ module rcs_cylinder_zmm16r4
                    div   = E/t1
                    Kz    = div*t0
              end function Kz_f4125_zmm16r4
+             
+             
+             subroutine Kz_f4125_zmm16r4_unroll16x(peps0,pmu0,pE,pk0a,pKz,PF_DIST1, &
+                                                   n,PF_DIST1,PF_DIST2)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Kz_f4125_zmm16r4_unroll16x
+                   !dir$ attributes forceinline :: Kz_f4125_zmm16r4_unroll16x
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Kz_f4125_zmm16r4_unroll16x
+                   real(kind=sp),   dimension(1:n), intent(in) :: peps0
+                   real(kind=sp),   dimension(1:n), intent(in) :: pmu0
+                   type(ZMM16c4),   dimension(1:n), intent(in) :: pE
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pk0a
+                   type(ZMM16c4),   dimension(1:n), intent(in) :: pKz
+                   integer(kind=i4),                intent(in) :: n
+                   integer(kind=i4),                intent(in) :: PF_DIST1
+                   integer(kind=i4),                intent(in) :: PF_DIST2
+                   ! Locals
+                   type(ZMM16c4),   automatic :: Kz0,Kz1,Kz2,Kz3
+                   type(ZMM16c4),   automatic :: E0,E1,E2,E3
+                   type(ZMM16r4_t), automatic :: k0a0,k0a1,k0a2,k0a3
+                   real(kind=sp),   automatic :: eps00,eps01,eps02,eps03
+                   real(kind=sp),   automatic :: mu00,mu01,mu02,mu03
+                   integer(kind=i4) :: i,m,m1
+                   m = mod(n,16)
+                   if(m/=0) then
+                      do i=1,m
+                         eps00  = peps0(i)
+                         mu00   = pmu0(i)
+                         E0.v   = pE(i).v
+                         k0a0.v = pk0a(i).v
+                         Kz0    = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i) = Kz0
+                      end do
+                      if(n<16) return
+                   end if
+                   m1 = m+1
+                    !dir$ assume_aligned peps0:64
+                    !dir$ assume_aligned pmu0:64
+                    !dir$ assume_aligned pE:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned pKz:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                 do i=m1,n,16
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T1,.true.,.false.) 
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(peps0(i+PF_DIST1),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST1),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST2),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST2),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                         eps00    = peps0(i+0)
+                         mu00     = pmu0(i+0)
+                         E0.v     = pE(i+0).v
+                         k0a0.v   = pk0a(i+0).v
+                         Kz0      = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i+0) = Kz0 
+                         eps01    = peps0(i+1)
+                         mu01     = pmu0(i+1)
+                         E1.v     = pE(i+1).v
+                         k0a1.v   = pk0a(i+1).v
+                         Kz1      = Kz_f4125_zmm16r4(eps01,mu01,E1,k0a1)
+                         pKz(i+1) = Kz1 
+                         eps02    = peps0(i+2)
+                         mu02     = pmu0(i+2)
+                         E2.v     = pE(i+2).v
+                         k0a2.v   = pk0a(i+2).v
+                         Kz2      = Kz_f4125_zmm16r4(eps02,mu02,E2,k0a2)
+                         pKz(i+2) = Kz2
+                         eps03    = peps0(i+3)
+                         mu03     = pmu0(i+3)
+                         E3.v     = pE(i+3).v
+                         k0a3.v   = pk0a(i+3).v
+                         Kz3      = Kz_f4125_zmm16r4(eps03,mu03,E3,k0a3)
+                         pKz(i+3) = Kz3  
+                         eps00    = peps0(i+4)
+                         mu00     = pmu0(i+4)
+                         E0.v     = pE(i+4).v
+                         k0a0.v   = pk0a(i+4).v
+                         Kz0      = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i+4) = Kz0 
+                         eps01    = peps0(i+5)
+                         mu01     = pmu0(i+5)
+                         E1.v     = pE(i+5).v
+                         k0a1.v   = pk0a(i+5).v
+                         Kz1      = Kz_f4125_zmm16r4(eps01,mu01,E1,k0a1)
+                         pKz(i+5) = Kz1 
+                         eps02    = peps0(i+6)
+                         mu02     = pmu0(i+6)
+                         E2.v     = pE(i+6).v
+                         k0a2.v   = pk0a(i+6).v
+                         Kz2      = Kz_f4125_zmm16r4(eps02,mu02,E2,k0a2)
+                         pKz(i+6) = Kz2
+                         eps03    = peps0(i+7)
+                         mu03     = pmu0(i+7)
+                         E3.v     = pE(i+7).v
+                         k0a3.v   = pk0a(i+7).v
+                         Kz3      = Kz_f4125_zmm16r4(eps03,mu03,E3,k0a3)
+                         pKz(i+7) = Kz3  
+                         eps00    = peps0(i+8)
+                         mu00     = pmu0(i+8)
+                         E0.v     = pE(i+8).v
+                         k0a0.v   = pk0a(i+8).v
+                         Kz0      = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i+8) = Kz0 
+                         eps01    = peps0(i+9)
+                         mu01     = pmu0(i+9)
+                         E1.v     = pE(i+9).v
+                         k0a1.v   = pk0a(i+9).v
+                         Kz1      = Kz_f4125_zmm16r4(eps01,mu01,E1,k0a1)
+                         pKz(i+9) = Kz1 
+                         eps02    = peps0(i+10)
+                         mu02     = pmu0(i+10)
+                         E2.v     = pE(i+10).v
+                         k0a2.v   = pk0a(i+10).v
+                         Kz2      = Kz_f4125_zmm16r4(eps02,mu02,E2,k0a2)
+                         pKz(i+10) = Kz2
+                         eps03    = peps0(i+11)
+                         mu03     = pmu0(i+11)
+                         E3.v     = pE(i+11).v
+                         k0a3.v   = pk0a(i+11).v
+                         Kz3      = Kz_f4125_zmm16r4(eps03,mu03,E3,k0a3)
+                         pKz(i+11) = Kz3  
+                         eps00    = peps0(i+12)
+                         mu00     = pmu0(i+12)
+                         E0.v     = pE(i+12).v
+                         k0a0.v   = pk0a(i+12).v
+                         Kz0      = Kz_f4125_zmm16r4(eps00,mu00,E0,k0a0)
+                         pKz(i+12) = Kz0 
+                         eps01    = peps0(i+13)
+                         mu01     = pmu0(i+13)
+                         E1.v     = pE(i+13).v
+                         k0a1.v   = pk0a(i+13).v
+                         Kz1      = Kz_f4125_zmm16r4(eps01,mu01,E1,k0a1)
+                         pKz(i+13) = Kz1 
+                         eps02    = peps0(i+14)
+                         mu02     = pmu0(i+14)
+                         E2.v     = pE(i+14).v
+                         k0a2.v   = pk0a(i+14).v
+                         Kz2      = Kz_f4125_zmm16r4(eps02,mu02,E2,k0a2)
+                         pKz(i+14) = Kz2
+                         eps03    = peps0(i+15)
+                         mu03     = pmu0(i+15)
+                         E3.v     = pE(i+15).v
+                         k0a3.v   = pk0a(i+15).v
+                         Kz3      = Kz_f4125_zmm16r4(eps03,mu03,E3,k0a3)
+                         pKz(i+15) = Kz3  
+                 end do
+             end subroutine Kz_f4125_zmm16r4_unroll16x
                 
 
 
