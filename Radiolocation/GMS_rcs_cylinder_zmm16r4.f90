@@ -3366,6 +3366,15 @@ module rcs_cylinder_zmm16r4
              end subroutine Iz_f4127_zmm16r4_rolled
              
              
+              ! /*
+              !          Approximation for upper-middle and high-frequency region
+              !          (k0a > 2).
+              !          Bistatic creeping wave approximation for resonance region
+              !          (0<<phi<pi/2, k0a > 2)
+              !          Electric-field.
+              !      */
+             
+             
              
 
 
