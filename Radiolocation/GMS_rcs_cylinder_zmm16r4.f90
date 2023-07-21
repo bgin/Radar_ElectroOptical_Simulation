@@ -2666,7 +2666,40 @@ module rcs_cylinder_zmm16r4
               !         Formula 4.1-27 
               !!
               !!     */   
-
+            
+             pure function Iz_f4127_zmm16r4(eps0,mu0,E,k0a,k0) result(Iz)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Iz_f4127_zmm16r4
+                   !dir$ attributes forceinline :: Iz_f4127_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Iz_f4127_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_neg1
+                   type(ZMM16r4_t),  intent(in) :: eps0
+                   type(ZMM16r4_t),  intent(in) :: mu0
+                   type(ZMM16c4),    intent(in) :: E
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16c4) :: Iz
+                   ! Locals
+                   type(ZMM16c4),   automatic :: t0,t1
+                   type(ZMM16c4),   automatic :: t2,div
+                   type(ZMM16r4_t), automatic :: sqr
+                   type(ZMM16r4_t), automatic :: lna,ln
+                   type(ZMM16r4_t), parameter :: C6283185307179586476925286766559 =    &
+                                        ZMM16r4_t(6.283185307179586476925286766559_sp) ! 2*PI
+                   type(ZMM16r4_t), parameter :: C157079632679489661923132169164  =    &
+                                        ZMM16r4_t(1.57079632679489661923132169164_sp)  ! PI/2
+                   type(ZMM16r4_t), parameter :: C08905 = ZMM16r4_t(0.8905_sp)
+                   lna.v  = k0a.v*C08905.v
+                   t0.re  = v16_0.v
+                   t2     = E*C6283185307179586476925286766559
+                   sqr.v  = sqrt(eps0.v/mu0.v)
+                   t1.im  = v16_neg1.v*C157079632679489661923132169164.v  
+                   ln.v   = log(lna.v)
+                   t0.im  = v16_neg1.v*sqr.v
+                   div    = t2/t1
+                   Iz     = t0*div
+             end function Iz_f4127_zmm16r4
 
 
 
