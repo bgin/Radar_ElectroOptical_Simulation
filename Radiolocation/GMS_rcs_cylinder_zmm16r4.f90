@@ -2637,6 +2637,28 @@ module rcs_cylinder_zmm16r4
                          pKz(i+0) = Kz0 
                      end do
              end subroutine Kz_f4125_zmm16r4_rolled
+             
+             
+             !/*
+             !            Surface currents (k0a << 1), for long cylinder (wire).
+             !             H-field cylinder axis parallel.
+             !             Formula 4.1-26
+             !      */
+             
+             pure function Kph_f4126_zmm16r4(H) result(Kph)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Kph_f4126_zmm16r4
+                   !dir$ attributes forceinline :: Kph_f4126_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Kph_f4126_zmm16r4
+                   type(ZMM16c4),  intent(in) :: H
+                   type(ZMM16c4) :: Kph
+                   ! Locals
+                   type(ZMM16c4), automatic :: I
+                   I.re = -1.0_sp
+                   I.im = -1.0_sp
+                   Kph  = I*H
+             end function Kph_f4126_zmm16r4
                 
 
 
