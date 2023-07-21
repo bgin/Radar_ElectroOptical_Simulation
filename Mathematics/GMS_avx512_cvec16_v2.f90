@@ -2424,18 +2424,20 @@ module  avx512_cvec16_v2
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: cexp_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cexp_c16
 
-          type(ZMM16c4),   intent(in) :: x
+         type(ZMM16c4),   intent(in) :: x
 
          !DIR$ ATTRIBUTES ALIGN : 64 :: iq
          type(ZMM16c4)  :: iq
+         type(ZMM16r4_t), automatic :: t0
          integer(kind=i4) :: i4
-          !dir$ loop_count(16)
+        !dir$ loop_count(16)
         !dir$ vector aligned
         !dir$ vector vectorlength(4)
         !dir$ vector always
          do i=0, 15
-            iq.re(i) = exp(x.re(i))*cos(x.im(i))
-            iq.im(i) = exp(x.re(i))*cos(x.im(i))
+            t0.v(i)  = exp(x.re(i))
+            iq.re(i) = t0.v(i)*cos(x.im(i))
+            iq.im(i) = t0.v(i)*sin(x.im(i))
          end do
       end function cexp_c16
         
@@ -2497,14 +2499,16 @@ module  avx512_cvec16_v2
 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
         type(ZMM16c4)  :: iq
+        type(ZMM16r4_t), automatic :: t0
         integer(kind=i4) :: i
         !dir$ loop_count(16)
         !dir$ vector aligned
         !dir$ vector vectorlength(4)
         !dir$ vector always
         do i=0, 15
-           iq.re(i) = exp(re.v(i))*cos(im.v(i))
-           iq.im(i) = exp(re.v(i))*sin(im.v(i))
+           t0.v(i)  = exp(re.v(i))
+           iq.re(i) = t0.v(i)*cos(im.v(i))
+           iq.im(i) = t0.v(i)*sin(im.v(i))
         end do
       end function cexp_2xv16
         
