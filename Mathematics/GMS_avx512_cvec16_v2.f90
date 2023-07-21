@@ -77,6 +77,11 @@ module  avx512_cvec16_v2
         real(kind=sp), dimension(0:15) :: re
         real(kind=sp), dimension(0:15) :: im
      end type ZMM16c4
+     
+     interface assignment (=)
+         module procedure c16_assign_c16
+         module procedure c16_assign_v16
+     end interface assignment (=)
 
      interface operator (+)
          module procedure c16_add_c16
@@ -401,8 +406,47 @@ module  avx512_cvec16_v2
            iq.im(i) = rhs.im(i)
         end do
       end function copy_init
-
-
+      
+      
+      pure function c16_assign_c16(x) result(iq)
+        !DIR$ OPTIMIZE:3
+        !DIR$ ATTRIBUTES INLINE :: c16_assign_c16
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_assign_c16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_assign_c16
+        type(ZMM16c4),    intent(in) :: x
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(ZMM16c4) :: iq
+        integer(kind=i4) :: i
+        !dir$ loop_count(15)
+        !dir$ vector aligned
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=0, 15
+           iq.re(i) = x.re(i)
+           iq.im(i) = x.im(i)
+        end do
+      end function c16_assign_c16
+      
+      
+      pure function c16_assign_v16(x) result(iq)
+        !DIR$ OPTIMIZE:3
+        !DIR$ ATTRIBUTES INLINE :: c16_assign_v16
+        !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: c16_assign_v16
+        !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c16_assign_v16
+        use mod_vecconsts, only : v16_0
+        type(ZMM16r4_t),    intent(in) :: x
+        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
+        type(ZMM16c4) :: iq
+        integer(kind=i4) :: i
+        !dir$ loop_count(15)
+        !dir$ vector aligned
+        !dir$ vector vectorlength(4)
+        !dir$ vector always
+        do i=0, 15
+           iq.re(i) = x.v(i)
+           iq.im(i) = v16_0.v
+        end do
+      end function c16_assign_v16
       
       pure function c16_add_c16(x,y) result(iq)
         !DIR$ OPTIMIZE:3
