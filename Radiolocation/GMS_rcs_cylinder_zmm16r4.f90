@@ -3294,6 +3294,79 @@ module rcs_cylinder_zmm16r4
              end subroutine Iz_f4127_zmm16r4_unroll4x
              
              
+             subroutine Iz_f4127_zmm16r4_rolled(peps0,pmu0,pE,pk0a,
+                                                pk0,pIz,n,PF_DIST)
+                                                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Iz_f4127_zmm16r4_rolled
+                   !dir$ attributes forceinline :: Iz_f4127_zmm16r4_rolled
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Iz_f4127_zmm16r4_rolled
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: peps0
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pmu0
+                   type(ZMM16c4),   dimension(1:n), intent(in) :: pE
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pk0a
+                   type(ZMM16r4_t), dimension(1:n), intent(in) :: pk0
+                   type(ZMM16c4),   dimension(1:n), intent(out):: pIz
+                   integer(kind=i4),                intent(in) :: n
+                   integer(kind=i4),                intent(in) :: PF_DIST
+                   !Locals
+                   type(ZMM16c4),   automatic :: E0
+                   !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
+                   type(ZMM16r4_t), automatic :: eps00
+                   type(ZMM16r4_t), automatic :: mu00
+                   type(ZMM16r4_t), automatic :: k0a0
+                   type(ZMM16r4_t), automatic :: k00
+                   integer(kind=i4) :: i
+                  
+                    !dir$ assume_aligned peps0:64
+                    !dir$ assume_aligned pmu0:64
+                    !dir$ assume_aligned pE:64
+                    !dir$ assume_aligned pk0a:64
+                    !dir$ assume_aligned pk0:64
+                    !dir$ assume_aligned pIz:64
+                    !dir$ vector aligned
+                    !dir$ ivdep
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector multiple_gather_scatter_by_shuffles 
+                    !dir$ vector always
+                  do i=1,n
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(peps0(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+                       call mm_prefetch(pk0(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(peps0(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.) 
+                       call mm_prefetch(pk0(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(peps0(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+                       call mm_prefetch(pk0(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(peps0(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pmu0(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pE(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0a(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+                       call mm_prefetch(pk0(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif         
+                         eps00.v  = peps0(i+0).v
+                         mu00.v   = pmu0(i+0).v
+                         E0.re    = pE(i+0).re
+                         E0.im    = pE(i+0).im
+                         k0a0.v   = pk0a(i+0).v
+                         k00.v    = pk0(i+0).v
+                         pIz(i+0) = Iz_f4127_zmm16r4(eps00,mu00,E0,k0a0,k00)
+                     end do
+             end subroutine Iz_f4127_zmm16r4_rolled
+             
+             
+             
 
 
 
