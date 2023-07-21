@@ -2659,7 +2659,13 @@ module rcs_cylinder_zmm16r4
                    I.im = -1.0_sp
                    Kph  = I*H
              end function Kph_f4126_zmm16r4
-                
+             
+             
+              !/*
+              !          The toal current along the wire.
+              !         Formula 4.1-27 
+              !!
+              !!     */   
 
 
 
