@@ -3580,7 +3580,7 @@ module rcs_cylinder_zmm16r4
                    tmp2       = ce2*tmp1
                    tmp3       = ce3*tmp1
                    tc0        = Et*tmp2
-                   Ec         = tc0+tmp3
+                   EC         = tc0+tmp3
                end function EC_f4130_zmm16r4
                
                
@@ -3592,6 +3592,74 @@ module rcs_cylinder_zmm16r4
                !         Magnetic-field.
                !         Formula 4.1-32
                !     */
+               
+               
+                pure function HC_f4132_zmm16r4(phi,a,r,k0,k0a,H) result(HC)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: HC_f4132_zmm16r4
+                   !dir$ attributes forceinline :: HC_f4132_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: HC_f4132_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_1,v16_pi
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: r
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16c4),    intent(in) :: H
+                   type(ZMM16c4) :: HC
+                   ! Locals
+                   type(ZMM16c4),   parameter :: C0404308i070028   = ZMM16c4(0.404308_sp,0.70028_sp)        
+                   type(ZMM16C4),   parameter :: C0072732i01259755 = ZMM16c4(0.072732_sp,-0.1259755_sp)
+                   type(ZMM16r4_t), parameter :: C0261799387799149436538553615273 = &
+                                                    ZMM16r4_t(0.261799387799149436538553615273_sp)
+                   type(ZMM16r4_t), parameter :: C0166666666666666666666666666667 = &
+                                                    ZMM16r4_t(0.166666666666666666666666666667_sp)
+                   type(ZMM16r4_t), parameter :: C0666666666666666666666666666667 = &
+                                                    ZMM16r4_t(0.666666666666666666666666666667_sp)
+                   type(ZMM16r4_t), parameter :: C1333333333333333333333333333333 = &
+                                                    ZMM16r4_t(1.333333333333333333333333333333_sp)
+                   type(ZMM16r4_t), parameter :: C0910721 = ZMM16r4_t(0.910721_sp)
+                   type(ZMM16c4),   automatic :: e1a,ce1
+                   type(ZMM16c4),   automatic :: e2a,e3a                   
+                   type(ZMM16c4),   automatic :: ce2,ce3
+                   type(ZMM16c4),   automatic :: tmp2,tmp3
+                   type(ZMM16c4),   automatic :: Ht,tmp1
+                   type(ZMM16c4),   automatic :: tc0,tc1
+                   type(ZMM16r4_t), automatic :: k0ai16,k0apaphi,k0apsphi,korp12
+                   type(ZMM16r4_t), automatic :: k0an23,k0an43,t0,sqr,t1
+                   k0ai16.v   = k0a.v*C0166666666666666666666666666667.v
+                   k0apaphi.v = k0a.v*v16_pi.v+phi.v
+                   e2a.re     = v16_0.v
+                   e2a.im     = k0apaphi.v
+                   t0.v       = k0ai16.v
+                   ce2        = cexp_c16(e2a)
+                   k0ai16.v   = v16_1.v/t0.v
+                   k0apsphi.v = k0a.v*v16_pi.v-phi.v
+                   k0rp12.v   = k0.v*r.v+C0261799387799149436538553615273.v
+                   e3a.re     = v16_0.v
+                   e3a.im     = k0apsphi.v
+                   ce3        = cexp_c16(e3a)
+                   t0.v       = a.v/(r.v*r.v)
+                   sqr.v      = sqrt(t0.v)
+                   Ht.re      = H.re*sqr.v
+                   Ht.im      = H.im*sqr.v
+                   t0.v       = k0a.v*C0666666666666666666666666666667.v
+                   t1.v       = k0a.v*C1333333333333333333333333333333.v
+                   e1a.re     = v16_0.v
+                   k0an23.v   = v16_1.v/t0.v
+                   e1a.im     = k0rp12
+                   k0an43.v   = v16_1.v/t1.v
+                   ce1        = cexp_c16(e1a)
+                   tc0        = C0404308i070028*v16_1+k0an23
+                   tc1        = C0072732i01259755*k0an43
+                   tmp1       = tc0-tc1
+                   tmp2       = ce2*tmp1
+                   tmp3       = ce3*tmp1
+                   tc0        = Ht*tmp2
+                   HC         = tc0+tmp3
+               end function HC_f4132_zmm16r4
+               
               
               
                                              
