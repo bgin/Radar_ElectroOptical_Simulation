@@ -3580,8 +3580,18 @@ module rcs_cylinder_zmm16r4
                    tmp2       = ce2*tmp1
                    tmp3       = ce3*tmp1
                    tc0        = Et*tmp2
-                   Ec         = tc0*tmp3
+                   Ec         = tc0+tmp3
                end function EC_f4130_zmm16r4
+               
+               
+               !  /*
+               !         Approximation for upper-middle and high-frequency region
+               !         (k0a > 2).
+               !         Bistatic creeping wave approximation for resonance region
+               !         valid only for (0<<phi<pi/2, k0a > 2)
+               !         Magnetic-field.
+               !         Formula 4.1-32
+               !     */
               
               
                                              
