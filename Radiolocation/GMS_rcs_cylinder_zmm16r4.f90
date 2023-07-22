@@ -3373,6 +3373,69 @@ module rcs_cylinder_zmm16r4
               !          (0<<phi<pi/2, k0a > 2)
               !          Electric-field.
               !      */
+              
+              
+              pure function EO_f4129_zmm16r4(phi2,a,r,k0,k0a,E) result(EO)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: EO_f4129_zmm16r4
+                   !dir$ attributes forceinline :: EO_f4129_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: EO_f4129_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_1
+                   type(ZMM16r4_t),  intent(in) :: phi2
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: r
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16c4),    intent(in) :: E
+                   type(ZMM16c4) :: E0
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C0375     = ZMM16r4_t(0.375_sp)
+                   type(ZMM16r4_t), parameter :: C01171875 = ZMM16r4_t(0.1171875_sp)
+                   type(ZMM16r4_t), parameter :: C40       = ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t), parameter :: C80       = ZMM16r4_t(8.0_sp)
+                   type(ZMM16r4_t), parameter :: C330      = ZMM16r4_t(33.0_sp)
+                   type(ZMM16r4_t), parameter :: C50       = ZMM16r4_t(5.0_sp)
+                   type(ZMM16r4_t), parameter :: C10       = ZMM16r4_t(1.0_sp)
+                   type(ZMM16c4),   automatic :: tc0,tc1
+                   type(ZMM16c4),   automatic :: ce,ex
+                   type(ZMM16c4),   automatic :: tc2
+                   type(ZMM16r4_t), automatic :: t0,t1,t2,cosf2
+                   type(ZMM16r4_t), automatic :: t3,t4,t5,k0a2
+                   type(ZMM16r4_t), automatic :: cos4f2,k0as,fac,a2
+                   type(ZMM16r4_t), automatic :: cos2f2,cos4f2,r2,ear
+                   cosf2.v  = cos(phi2.v)
+                   k0a2.v   = k0a.v+k0a.v
+                   r2.v     = r.v*r.v
+                   a2.v     = a.v*a.v
+                   cos2f2.v = cosf2.v*cosf2.v
+                   k0as.v   = k0a.v*k0a.v
+                   cos4f2.v = cos2f2.v*cos2f2.v
+                   t0.v     = a.v*cosf2.v
+                   t1.v     = t0.v/r2.v
+                   ear.v    = k0.v*r.v-(a2.v*cosf2.v)
+                   fac.v    = sqrt(t1.v)
+                   tc0.re   = v16_0.v
+                   tc0.im   = ear.v
+                   ce       = cexp_c16(tc0)
+                   t3.v     = v16_1.v/cos2f2.v
+                   tc1      = tc0*ce
+                   t3.v     = t3.v*C0375.v
+                   t0.v     = C40.v*k0as.v*cos2f2.v
+                   t4.v     = v16_1.v/t0.v
+                   t1.v     = C80.v*cos2f2.v
+                   t2.v     = C01171875.v*(C330.v/t1.v)
+                   t0.v     = C70.v/cos4f2.v
+                   !tc2.re   = v16_0.v
+                   tc2.im   = v16_1.v/(k0a2.v*cosf2.v)
+                   tc2.re   = C10.v
+                   tc2.im   = C10.v+tc2.im
+                   ex       = E*tc1
+                   t5.v     = t4.v*(t2.v+t0.v)
+                   tc2      = tc2+t5
+                   E0       = ex*tc2
+              end function EO_f4129_zmm16r4
+                                             
              
              
              
