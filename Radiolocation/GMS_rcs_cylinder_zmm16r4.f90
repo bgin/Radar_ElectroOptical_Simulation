@@ -3435,6 +3435,15 @@ module rcs_cylinder_zmm16r4
                    tc2      = tc2+t5
                    E0       = ex*tc2
               end function EO_f4129_zmm16r4
+              
+              
+              ! /*
+              !         Approximation for upper-middle and high-frequency region
+              !          (k0a > 2).
+              !          Bistatic creeping wave approximation for resonance region
+              !          (0<<phi<pi/2, k0a > 2)
+              !          Magnetic-field.
+              !      */
                                              
              
              
