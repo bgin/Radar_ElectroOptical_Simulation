@@ -3714,7 +3714,12 @@ module rcs_cylinder_zmm16r4
                end function EO_f4133_zmm16r4
                
               
-              
+              !  /*
+              !!
+              !         Backscattering creeping-wave approximation for resonance region
+              !         (phi == 0, k0a > 2).
+              !         Optical wave component h-field, formula 4.1-35
+              !     */
                                              
              
              
