@@ -3688,7 +3688,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  parameter :: C1270= ZMM16r4_t(127.0_sp)
                    type(ZMM16r4_t),  parameter :: C5120= ZMM16r4_t(512.0_sp)
                    type(ZMM16c4),    automatic :: ea,ce,fac
-                   type(ZMM16c4),    automatic :: tc0,tc1,ce1
+                   type(ZMM16c4),    automatic :: tc0,ce1
                    type(ZMM16r4_t),  automatic :: r2,k0a2,k0r,k0as
                    type(ZMM16r4_t),  automatic :: t0,t1,t2,t3
                    r2.v   = r.v+r.v
@@ -3721,7 +3721,50 @@ module rcs_cylinder_zmm16r4
               !         Optical wave component h-field, formula 4.1-35
               !     */
                                              
-             
+              
+              pure function HO_f4135_zmm16r4(H,a,r,k0,k0a) result(HO)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: HO_f4135_zmm16r4
+                   !dir$ attributes forceinline :: HO_f4135_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: HO_f4135_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_1
+                   type(ZMM16c4),   intent(in) :: H
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: k0a
+                   type(ZMM16c4) :: HO
+                   !Locals
+                   type(ZMM16r4_t),  parameter :: C160 = ZMM16r4_t(16.0_sp)
+                   type(ZMM16r4_t),  parameter :: C110 = ZMM16r4_t(11.0_sp)
+                   type(ZMM16r4_t),  parameter :: C3530= ZMM16r4_t(353.0_sp)
+                   type(ZMM16r4_t),  parameter :: C5120= ZMM16r4_t(512.0_sp)
+                   type(ZMM16c4),    automatic :: ea,ce,fac
+                   type(ZMM16c4),    automatic :: tc0,ce1
+                   type(ZMM16r4_t),  automatic :: r2,k0a2,k0r,k0as
+                   type(ZMM16r4_t),  automatic :: t0,t1,t2,t3
+                   r2.v   = r.v+r.v
+                   k0a2.v = k0a.v+k0a.v
+                   t1.v   = a.v/r2.v
+                   k0r.v  = k0.v*r.v
+                   ea.im  = v16_0.v
+                   t0.v   = k0r.v-k0a2.v
+                   ea.re  = t0.v
+                   t2.v   = sqrt(t1.v)
+                   k0as.v = k0a.v*k0a.v
+                   fac    = H*t2
+                   ce     = cexp_c16(ea)
+                   t1.v   = C160.v*k0a.v
+                   t2.v   = C5120.v*k0as.v
+                   tc0.re = C110.v/t1.v
+                   tc0.im = v16_0.v
+                   t3.v   = C3530.v/t2.v
+                   tc0.re = v16_1.v-tc0.re
+                   tc0.re = t3.v+tc0.re
+                   ce1    = fac*ce
+                   HO     = ce1*tc0
+              end function HO_f4135_zmm16r4
              
              
 
