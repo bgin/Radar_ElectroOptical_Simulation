@@ -4016,6 +4016,13 @@ module rcs_cylinder_zmm16r4
                    tc0     = ce*sinc
                    Es      = fac*tc0
                end function Es_f4139_zmm16r4
+               
+               
+               !  /*
+               !          Forward scattering widths and pattern in high-frequency limit
+               !          (k0a>20.0), constant angle (alpha=0)
+               !          Formula 4.1-41, RCS.
+               !      */
 
 
 
