@@ -3980,6 +3980,42 @@ module rcs_cylinder_zmm16r4
                !          Formula 4.1-39.
                !!
                !        */
+               
+               pure function Es_f4139_zmm16r4(E,r,k0,alp,k0a) result(Es)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Es_f4139_zmm16r4
+                   !dir$ attributes forceinline :: Es_f4139_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Es_f4139_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16c4),   intent(in) :: E
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: alp
+                   type(ZMM16r4_t), intent(in) :: k0a
+                   type(ZMM16c4) :: Es
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),   automatic :: fac,ar
+                   type(ZMM16C4),   automatic :: tc0,ce
+                   type(ZMM16r4_t), automatic :: k0as2,k0r,k0alp
+                   type(ZMM16r4_t), automatic :: sinc,div,t0
+                   k0r.v   = k0.v*r.v
+                   k0alp.v = k0a.v*alp.v
+                   k0as2.v = c20.v+k0a.v*k0a.v
+                   div.v   = k0as.v/C078539816339744830961566084582.v
+                   ar.im   = v16_0.v
+                   t0.v    = sin(k0alp.v)
+                   ar.re   = k0r.v-C078539816339744830961566084582.v
+                   sinc.v  = t0.v/k0alp.v
+                   ce      = cexp_c16(ar)
+                   t0.v    = sqrt(div.v)
+                   fac     = E*t0
+                   tc0     = ce*sinc
+                   Es      = fac*tc0
+               end function Es_f4139_zmm16r4
 
 
 
