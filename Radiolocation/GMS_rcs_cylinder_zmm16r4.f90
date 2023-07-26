@@ -3832,6 +3832,15 @@ module rcs_cylinder_zmm16r4
                    rex.v   = rex.v*t1.v
                    EC      = tc0*rex
               end function EC_f4134_zmm16r4
+              
+              
+              !  /*
+              !!
+              !         Backscattering creeping-wave approximation for resonance region
+              !         (phi == 0, k0a > 2).
+              !         Creeping wave component h-field, formula 4.1-36
+              !     */
+
 
 
 
