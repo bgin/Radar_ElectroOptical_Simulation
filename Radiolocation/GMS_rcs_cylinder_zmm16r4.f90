@@ -3945,6 +3945,13 @@ module rcs_cylinder_zmm16r4
                                                      ZMM16r4_t(3.14159265358979323846264338328_sp)
                    rcs.v = a.v*C314159265358979323846264338328.v
               end function rcs_f4138_zmm16r4
+              
+              
+               ! /*
+               !          Forward scattering widths and pattern in high-frequency limit
+               !          (k0a>20.0)
+               !          Formula 4.1-40, RCS.
+               !      */
 
 
 
