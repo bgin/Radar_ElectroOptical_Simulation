@@ -3924,6 +3924,28 @@ module rcs_cylinder_zmm16r4
                    t0.v    = a.v*cosp2.v
                    rcs.v   = C314159265358979323846264338328.v*t0.v
               end function rcs_f4137_zmm16r4
+              
+              
+              !    /*
+              !           Backscattering Width in High-Frequency Limit (k0a > 20)
+              !            Formula 4.1-38
+              !       */
+              
+              
+              pure function rcs_f4138_zmm16r4(a) result(rcs)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4138_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4138_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4138_zmm16r4
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16r4_t) :: rcs
+                   ! LOcals
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
+                                                     ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   rcs.v = a.v*C314159265358979323846264338328.v
+              end function rcs_f4138_zmm16r4
+
 
 
 
