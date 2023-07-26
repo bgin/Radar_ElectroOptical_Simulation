@@ -3899,6 +3899,32 @@ module rcs_cylinder_zmm16r4
                    rex.v   = rex.v*t1.v
                    HC      = tc0*rex
               end function HC_f4136_zmm16r4
+              
+              
+              !  /*
+              !          Bistatic scattering width in high frequency limit (k0a > 20)
+              !          for |PI-phi| > k0a^0.3
+              !          Formula 4.1-37
+              !      */
+              
+              pure function rcs_f4137_zmm16r4(a,phi2) result(rcs)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4137_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4137_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4137_zmm16r4
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16r4_t), intent(in) :: phi2
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
+                                                     ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t), automatic :: cosp2,t0
+                   cosp2.v = cos(phi2.v)
+                   t0.v    = a.v*cosp2.v
+                   rcs.v   = C314159265358979323846264338328.v*t0.v
+              end function rcs_f4137_zmm16r4
+
 
 
 
