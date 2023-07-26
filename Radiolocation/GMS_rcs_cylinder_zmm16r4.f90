@@ -3840,7 +3840,65 @@ module rcs_cylinder_zmm16r4
               !         (phi == 0, k0a > 2).
               !         Creeping wave component h-field, formula 4.1-36
               !     */
-
+              
+              
+              pure function HC_f4136_zmm16r4(H,a,r,k0) result(HC)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: HC_f4136_zmm16r4
+                   !dir$ attributes forceinline :: HC_f4136_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: HC_f4136_zmm16r4 
+                   use mod_vecconsts, only : v16_0,v16_1
+                   type(ZMM16c4),   intent(in) :: H
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16c4) :: HC
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
+                                                     ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t), parameter :: C0261799387799149436538553615273 = &
+                                                     ZMM16r4_t(0.261799387799149436538553615273_sp)
+                   type(ZMM16r4_t), parameter :: C12701695 = ZMM16r4_t(1.2701695_sp)
+                   type(ZMM16r4_t), parameter :: C02284945 = ZMM16r4_t(0.2284945_sp)
+                   type(ZMM16r4_t), parameter :: C0333333333333333333333333333333333333 = &
+                                                     ZMM16r4_t(0.333333333333333333333333333333333333_sp)
+                   type(ZMM16r4_t), parameter :: C3063830 = ZMM16r4_t(3.063830_sp)
+                   type(ZMM16r4_t), parameter :: C2200000 = ZMM16r4_t(-2.200000_sp)
+                   type(ZMM16r4_t), parameter :: C03957635 = ZMM16r4_t(0.3957635_sp)
+                   type(ZMM16r4_t), parameter :: C0166666666666666666666666666667  = &
+                                                     ZMM16r4_t(0.166666666666666666666666666667_sp)
+                   type(ZMM16c4),   automatic :: tc0,e1a
+                   type(ZMM16c4),   automatic :: ce1,frac
+                   type(ZMM16r4_t), automatic :: k0r,k0a
+                   type(ZMM16r4_t), automatic :: k0a13,k0an13
+                   type(ZMM16r4_t), automatic :: k0an16,r2
+                   type(ZMM16r4_t), automatic :: t0,t1
+                   type(ZMM16r4_t), automatic :: exar,rex   
+                   k0r.v   = k0.v*r.v
+                   k0a.v   = k0.v*a.v
+                   k0a13.v = k0a.v**C0333333333333333333333333333333333333.v
+                   r2.v    = r.v+r.v
+                   t1.v    = k0a.v**C0166666666666666666666666666667.v
+                   t0.v    = a.v/r2.v
+                   k0an16.v= v16_1.v/t1.v
+                   t2.v    = sqrt(t0.v)
+                   frac    = H*t2
+                   t0.v    = C12701695.v*k0a13.v-(C02284945.v*k0an13.v)
+                   t1.v    = k0a.v*C314159265358979323846264338328.v+ &
+                             (C0261799387799149436538553615273.v+t0.v)
+                   e1a.im  = v16_0.v
+                   t1.v    = k0r.v+t1.v
+                   e1a.re  = t1.v
+                   ce1     = cexp_c16(e1a)
+                   exar.v  = C2200000.v*k0a13.v-(C03957635.v*k0an13.v)
+                   t1.v    = C3063830.v*k0an16.v
+                   t2.v    = exp(exar.v)
+                   rex.v   = v16_1.v/t2.v
+                   tc0     = frac*ce1 
+                   rex.v   = rex.v*t1.v
+                   HC      = tc0*rex
+              end function HC_f4136_zmm16r4
 
 
 
