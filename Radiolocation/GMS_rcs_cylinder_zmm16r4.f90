@@ -3972,7 +3972,14 @@ module rcs_cylinder_zmm16r4
                    k0as.v  = C40.v*k0a.v*k0a.v
                    rcs.v   = k0as.v*sinc.v*sinc.v
                end function rcs_f4140_zmm16r4
-
+               
+               
+               !  /*
+               !          Forward scattering widths and pattern in high-frequency limit
+               !          (k0a>20.0), forward scattered (diffracted) e-field
+               !          Formula 4.1-39.
+               !!
+               !        */
 
 
 
