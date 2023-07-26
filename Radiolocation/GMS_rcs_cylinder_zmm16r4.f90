@@ -4023,6 +4023,20 @@ module rcs_cylinder_zmm16r4
                !          (k0a>20.0), constant angle (alpha=0)
                !          Formula 4.1-41, RCS.
                !      */
+               
+               
+               pure function rcs_f4141_zmm16r4(k0a) result(rcs)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4141_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4141_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4141_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t), parameter :; C40 = ZMM16r4_t(4.0_sp)
+                   rcs.v = C40.v*k0a.v*k0a.v 
+               end function rcs_f4141_zmm16r4
 
 
 
