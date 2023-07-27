@@ -4276,7 +4276,7 @@ module rcs_cylinder_zmm16r4
                    t1.v    = mu1.v-mu0.v
                    t2.v    = mu1.v+mu0.v
                    mut.v   = C20.v*(t1.v/t2.v)
-                   diff.v  = epst.v-mut.v*cosp.v
+                   diff.v  = epst.v-mut.v
                    sqr.v   = diff.v*diff.v
                    rcs.v   = t0.v*k0a3.v*sqr.v
                end function rcs_f4149_zmm16r4
@@ -4317,7 +4317,7 @@ module rcs_cylinder_zmm16r4
                    t1.v    = eps1.v-eps0.v
                    t2.v    = eps1.v+eps0.v
                    mut.v   = C20.v*(t1.v/t2.v)
-                   diff.v  = epst.v-mut.v*cosp.v
+                   diff.v  = epst.v-mut.v
                    sqr.v   = diff.v*diff.v
                    rcs.v   = t0.v*k0a3.v*sqr.v
                end function rcs_f4150_zmm16r4
@@ -4358,13 +4358,52 @@ module rcs_cylinder_zmm16r4
                    t1.v    = mu1.v-mu0.v
                    t2.v    = mu1.v+mu0.v
                    mut.v   = C20.v*(t1.v/t2.v)
-                   diff.v  = epst.v-mut.v*cosp.v
+                   diff.v  = epst.v-mut.v
                    sqr.v   = diff.v*diff.v
                    rcs.v   = t0.v*k0a3.v*sqr.v
                end function rcs_f4151_zmm16r4
-              
-              
                
+               
+               ! /*
+               !          Forward scattering width (k0a<<1, k1a<<1), phi = pi
+               !          Formula 4.1-52
+               !      */
+              
+              
+               pure function rcs_f4152_zmm16r4(a,k0a,eps1,   &
+                                          eps0,mu1,mu0) result(rcs)
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4152_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4152_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4152_zmm16r4
+                   use mod_veconsts, only : v16_1
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: eps1
+                   type(ZMM16r4_t),  intent(in) :: eps0
+                   type(ZMM16r4_t),  intent(in) :: mu1
+                   type(ZMM16r4_t),  intent(in) :: mu0
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328  =
+                                                       ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t), automatic :: t0,t1,k0a3,epst
+                   type(ZMM16r4_t), automatic :: mut,sqr
+                   type(ZMM16r4_t), automatic :: t2,diff
+                   k0a3.v  = k0a.v*k0a.v*k0a.v
+                   t0.v    = C078539816339744830961566084582.v* &
+                             C314159265358979323846264338328.v*a.v
+                   epst.v  = mu1.v/mu0.v-v16_1.v
+                   t1.v    = eps1.v-eps0.v
+                   t2.v    = eps1.v+eps0.v
+                   mut.v   = C20.v*(t1.v/t2.v)
+                   diff.v  = epst.v-mut.v
+                   sqr.v   = diff.v*diff.v
+                   rcs.v   = t0.v*k0a3.v*sqr.v
+               end function rcs_f4152_zmm16r4
 
 
 
