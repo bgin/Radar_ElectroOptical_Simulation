@@ -1105,19 +1105,15 @@ module  avx512_cvec16_v2
          !DIR$ ATTRIBUTES INLINE :: v16_div_c16
          !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: v16_div_c16
          !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: v16_div_c16
+        use mod_vecconsts, v16_0
         type(ZMM16r4_t),       intent(in) :: x
-        type(ZMM16c4),  intent(in) :: y
+        type(ZMM16c4),         intent(in) :: y
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
         type(ZMM16c4) :: iq
-        integer(kind=i4) :: i
-        !dir$ loop_count(16)
-        !dir$ vector aligned
-        !dir$ vector vectorlength(4)
-        !dir$ vector always
-        do i=0, 15
-           iq.re(i) = x/y.re(i)
-           iq.im(i) = x/y.im(i)
-        end do
+        type(ZMM16c4), automatic :: t0
+        t0.re = x.v
+        t0.im = v16_0.v
+        iq    = t0/y
       end function v16_div_c16
         
 
@@ -1127,19 +1123,15 @@ module  avx512_cvec16_v2
         !DIR$ ATTRIBUTES INLINE :: s1_div_c16
         !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: s1_div_c16
         !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: s1_div_c16
+        use mod_vecconsts, only : v16_0
         real(kind=sp),         intent(in) :: x
         type(ZMM16c4),  intent(in) :: y
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
         type(ZMM16c4) :: iq
-        integer(kind=i4) :: i
-          !dir$ loop_count(16)
-        !dir$ vector aligned
-        !dir$ vector vectorlength(4)
-        !dir$ vector always
-        do i=0, 15
-           iq.re(i) = x/y.re(i)
-           iq.im(i) = x/y.im(i)
-        end do
+        type(ZMM16c4), automatic :: t0
+        t0.re = x
+        t0.im = v16_0.v
+        iq    = t0/y
       end function s1_div_c16
 
 
