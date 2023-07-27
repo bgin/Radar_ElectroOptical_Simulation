@@ -4044,6 +4044,114 @@ module rcs_cylinder_zmm16r4
                !         Approximations for the low frequency region (k0a<<1,k1a<<1)
                !         Scattered far-zone e-field, formula 4.1-45
                !     */
+               
+               
+               pure function Es_f4145_zmm16r4(EI,r,k0,k0a,phi,  &
+                                              eps0,eps1,mu0,mu1) result(Es)
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Es_f4145_zmm16r4
+                   !dir$ attributes forceinline :: Es_f4145_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Es_f4145_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_1
+                   type(ZMM16c4),   intent(in) :: EI
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: k0a
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: eps0
+                   type(ZMM16r4_t), intent(in) :: eps1
+                   type(ZMM16r4_t), intent(in) :: mu0
+                   type(ZMM16r4_t), intent(in) :: mu1
+                   type(ZMM16c4) :: Es
+                   !Locals
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C1253314137315500251207882642406 = &
+                                                       ZMM16r4_t(1.253314137315500251207882642406_sp)
+                   type(ZMM16c4),   automatic :: frac,ea
+                   type(ZMM16c4),   automatic :: ce,tc0
+                   type(ZMM16r4_t), automatic :: k0r,k0as,k0as2,t0
+                   type(ZMM16r4_t), automatic :: t1,cosp,t2,sk0r
+                   type(ZMM16r4_t), automatic :: t3,mul
+                   k0r.v   = k0.v*r.v
+                   k0as.v  = k0a.v*k0a.v
+                   k0as2.v = C05.v*k0as.v
+                   sk0r.v  = sqrt(k0r.v)
+                   frac    = EI*C1253314137315500251207882642406.v
+                   cosp.v  = cos(phi)
+                   ea.re   = k0r.v-C078539816339744830961566084582.v
+                   t0.v    = (eps1.v/eps0.v)-v16_1.v
+                   ea.im   = v16_0.v
+                   t1.v    = (mu1.v-mu0.v)/(mu1.v+mu0.v)
+                   t2.v    = t1.v+t1.v
+                   ce      = cexp_c16(ea)
+                   t1.v    = t2.v*cosp.v
+                   ce.re   = ce.re/sk0r.v
+                   t3.v    = t0.v-t1.v
+                   ce.im   = ce.im/sk0r.v
+                   mul.v   = k0as2.v*t3.v
+                   tc0     = ce*mul
+                   Es      = frac*tc0
+               end function Es_f4145_zmm16r4
+               
+               
+               ! /*
+               !         Approximations for the low frequency region (k0a<<1,k1a<<1)
+               !         Scattered far-zone h-field, formula 4.1-46
+               !     */
+               
+               pure function Hs_f4146_zmm16r4(HI,r,k0,k0a,phi,  &
+                                              eps0,eps1,mu0,mu1) result(Hs)
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Hs_f4146_zmm16r4
+                   !dir$ attributes forceinline :: Hs_f4146_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Hs_f4146_zmm16r4
+                   use mod_vecconsts, only : v16_0,v16_1
+                   type(ZMM16c4),   intent(in) :: HI
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: k0a
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: eps0
+                   type(ZMM16r4_t), intent(in) :: eps1
+                   type(ZMM16r4_t), intent(in) :: mu0
+                   type(ZMM16r4_t), intent(in) :: mu1
+                   type(ZMM16c4) :: Hs
+                   !Locals
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C1253314137315500251207882642406 = &
+                                                       ZMM16r4_t(1.253314137315500251207882642406_sp)
+                   type(ZMM16c4),   automatic :: frac,ea
+                   type(ZMM16c4),   automatic :: ce,tc0
+                   type(ZMM16r4_t), automatic :: k0r,k0as,k0as2,t0
+                   type(ZMM16r4_t), automatic :: t1,cosp,t2,sk0r
+                   type(ZMM16r4_t), automatic :: t3,mul
+                   k0r.v   = k0.v*r.v
+                   k0as.v  = k0a.v*k0a.v
+                   k0as2.v = C05.v*k0as.v
+                   sk0r.v  = sqrt(k0r.v)
+                   frac    = HI*C1253314137315500251207882642406.v
+                   cosp.v  = cos(phi)
+                   ea.re   = k0r.v-C078539816339744830961566084582.v
+                   t0.v    = (mu1.v/mu0.v)-v16_1.v
+                   ea.im   = v16_0.v
+                   t1.v    = (eps1.v-eps0.v)/(eps1.v+eps0.v)
+                   t2.v    = t1.v+t1.v
+                   ce      = cexp_c16(ea)
+                   t1.v    = t2.v*cosp.v
+                   ce.re   = ce.re/sk0r.v
+                   t3.v    = t0.v-t1.v
+                   ce.im   = ce.im/sk0r.v
+                   mul.v   = k0as2.v*t3.v
+                   tc0     = ce*mul
+                   Hs      = frac*tc0
+               end function Hs_f4146_zmm16r4
+               
 
 
 
