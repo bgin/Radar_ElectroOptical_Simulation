@@ -4281,6 +4281,12 @@ module rcs_cylinder_zmm16r4
                    rcs.v   = t0.v*k0a3.v*sqr.v
                end function rcs_f4149_zmm16r4
                
+               
+              !  /*
+              !           Backscattering width (k0a<<1,k1a<<1), when phi = 0
+              !           Formula 4.1-50
+              !      */ 
+               
 
 
 
