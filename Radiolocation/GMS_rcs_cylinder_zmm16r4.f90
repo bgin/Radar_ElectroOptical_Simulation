@@ -4404,6 +4404,12 @@ module rcs_cylinder_zmm16r4
                    sqr.v   = diff.v*diff.v
                    rcs.v   = t0.v*k0a3.v*sqr.v
                end function rcs_f4152_zmm16r4
+               
+               
+               ! /*
+               !            Fresnel reflection and transmission coefficients
+               !            Formula 4.1-72
+               !        */
 
 
 
