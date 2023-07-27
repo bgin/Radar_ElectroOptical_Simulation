@@ -4037,6 +4037,13 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :; C40 = ZMM16r4_t(4.0_sp)
                    rcs.v = C40.v*k0a.v*k0a.v 
                end function rcs_f4141_zmm16r4
+               
+               
+               
+               !    /*
+               !         Approximations for the low frequency region (k0a<<1,k1a<<1)
+               !         Scattered far-zone e-field, formula 4.1-45
+               !     */
 
 
 
