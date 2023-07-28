@@ -4567,6 +4567,12 @@ module rcs_cylinder_zmm16r4
                    den.re = den.re+cosp.v
                    Tout   = cos2p/den
                end function Tout_f4175_zmm16r4
+               
+               
+               !  /*
+               !            Fresnel reflection and transmission coefficients
+               !            Formula 4.1-76
+               !     */
  
  
 
