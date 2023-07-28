@@ -4577,10 +4577,10 @@ module rcs_cylinder_zmm16r4
                pure function Rin_f4176_zmm16r4(mu,eps,psi) result(Rin)
                     
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: Rin_f4175_zmm16r4
-                   !dir$ attributes forceinline :: Rin_f4175_zmm16r4
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Rin_f4175_zmm16r4  
-                   use mod_vecconsts, only : v16_1,v16_0
+                   !dir$ attributes code_align : 32 :: Rin_f4176_zmm16r4
+                   !dir$ attributes forceinline :: Rin_f4176_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Rin_f4176_zmm16r4  
+                   use mod_vecconsts, only : v16_1
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16r4_t), intent(in) :: psi
@@ -4608,7 +4608,46 @@ module rcs_cylinder_zmm16r4
                    den    = sq2+sq1
                    Rin    = num/den
                end function Rin_f4176_zmm16r4
- 
+               
+               
+                !  /*
+                !           Fresnel reflection and transmission coefficients
+                !           Formula 4.1-77
+                !    */
+
+               pure function Rin_f4177_zmm16r4(mu,eps,psi) result(Rin)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Rin_f4177_zmm16r4
+                   !dir$ attributes forceinline :: Rin_f4177_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Rin_f4177_zmm16r4  
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16c4) :: Rin
+                   ! Locals
+                   type(ZMM16c4),   automatic :: div,mul
+                   type(ZMM16c4),   automatic :: den,num
+                   type(ZMM16c4),   automatic :: sq1,sq2
+                   type(ZMM16c4),   automatic :: tc0
+                   type(ZMM16r4_t), automatic :: cosp,sinp
+                   type(ZMM16r4_t), automatic :: sin2p
+                   div    = mu/eps
+                   sinp.v = sin(psi.v)
+                   mul    = mu*eps
+                   sq2    = csqrt_c16(div)
+                   sin2p.v= sinp.v+sinp.v
+                   cosp.v = cos(psi.v)
+                   tc0    = mul*sin2p
+                   tc0.re = v16_1.v-tc0.re
+                   sq1    = csqrt_c16(tc0)
+                   sq2.re = cosp.v*sq2.re
+                   sq2.im = cosp.v*sq2.im
+                   num    = sq2-sq1
+                   den    = sq2+sq1
+                   Rin    = num/den
+               end function Rin_f4177_zmm16r4
  
 
 
