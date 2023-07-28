@@ -4509,7 +4509,6 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   automatic :: sq2,mul
                    type(ZMM16c4),   automatic :: tc0,tc1
                    type(ZMM16c4),   automatic :: num,den
-                   type(ZMM16c4),   automatic :: sq1s
                    type(ZMM16r4_t), automatic :: cosp,sinp
                    type(ZMM16r4_t), automatic :: sin2p,t0
                    div    = eps/mu
@@ -4529,6 +4528,13 @@ module rcs_cylinder_zmm16r4
                    den.im = v16_0.v
                    Tout   = num/den
                end function Tout_f4174_zmm16r4
+               
+               
+               
+               !    /*
+               !            Fresnel reflection and transmission coefficients
+               !            Formula 4.1-75
+               !        */
  
  
 
