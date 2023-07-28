@@ -4447,6 +4447,44 @@ module rcs_cylinder_zmm16r4
                    tc3.im = v16_0.v
                    Tin    = tc1/tc3
                end function Tin_f4172_zmm16r4
+               
+               
+               ! /*
+               !            Fresnel reflection and transmission coefficients
+               !            Formula 4.1-73
+               !        */
+               
+               pure function Tin_f4173_zmm16r4(mu,eps,psi) result(Tin)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Tin_f4173_zmm16r4
+                   !dir$ attributes forceinline :: Tin_f4173_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Tin_f4173_zmm16r4 
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16c4) :: Tin
+                   ! Locals
+                   type(ZMM16c4),  automatic :: div,sq1
+                   type(ZMM16c4),  automatic :: sq2,mul
+                   type(ZMM16c4),  automatic :: tc0
+                   type(ZMM16r4_t),automatic :: cosp,cos2p
+                   type(ZMM16r4_t),automatic :: sinp,sin2p
+                   type(ZMM16r4_t),automatic :: msp1
+                   mul    = mu*esp
+                   cosp.v = cos(psi.v)
+                   div    = eps/mu
+                   sinp.v = sin(psi.v)
+                   cos2p.v= cosp.v+cosp.v
+                   sin2p.v= sinp.v+sinp.v
+                   msp1.v = v16_1.v-sin2p.v
+                   sq1    = csqrt_c16(div)
+                   tc0    = msp1/mul
+                   sq2    = csqrt_c16(tc0)
+                   Tin    = sq1*sq2+cosp
+               end function Tin_f4173_zmm16r4
+ 
 
 
 
