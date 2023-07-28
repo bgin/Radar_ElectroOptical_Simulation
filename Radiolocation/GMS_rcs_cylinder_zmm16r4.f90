@@ -4673,6 +4673,32 @@ module rcs_cylinder_zmm16r4
                    summ = sq1+sq2 
                    Rext = dif/summ
                end function Rext_f4164_zmm16r4
+               
+               
+                ! /*
+                !!
+                !         Axial rays, when phi = 0
+                !         Formula 4.1-67
+                !    */
+                
+                pure function Tin_f4167_zmm16r4(mu,eps) result(Tin)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Tin_f4167_zmm16r4
+                   !dir$ attributes forceinline :: Tin_f4167_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Tin_f4167_zmm16r4
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4) :: Tin
+                   ! Locals
+                   type(ZMM16c4),  automatic :: sq1,sq2
+                   type(ZMM16c4),  automatic :: summ,mu2
+                   sq1  = csqrt_c16(mu)
+                   mu2  = sq1+sq1
+                   sq2  = csqrt_c16(eps)
+                   summ = sq1+sq2
+                   Tin  = mu2/summ
+                end function Tin_f4167_zmm16r4
  
 
 
