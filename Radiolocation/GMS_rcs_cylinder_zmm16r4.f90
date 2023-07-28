@@ -4726,6 +4726,55 @@ module rcs_cylinder_zmm16r4
                 end function Tout_f4168_zmm16r4
                 
                 
+                 !/*
+                 !         Axial rays, when phi = 0
+                 !         Formula 4.1-69
+                 !  */
+                 
+                pure function Rint_f4169_zmm16r4(mu,eps) result(Rint)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Rint_f4169_zmm16r4
+                   !dir$ attributes forceinline :: Rint_f4169_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Rint_f4169_zmm16r4
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4) :: Rint
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: Cn10 = ZMM16r4_t(-1.0_sp)
+                   type(ZMM16c4),   automatic :: tc0
+                   tc0  = Rext_f4164_zmm16r4(mu,eps)
+                   Rint = tc0*Cn10
+                end function Rint_f4169_zmm16r4
+                
+                
+                 !  /*
+                 !      Backscatter widths in high-frequency limit.
+                 !      Phi = 0, formula 4.1-91,for k1a>5.
+                 !   */
+                 
+                pure function rcs_f4191_zmm16r4(a,mu,eps) result(rcs)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4191_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4191_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4191_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16c4),    intent(in) :: mu
+                   type(ZMM16c4),    intent(in) :: eps
+                   type(ZMM16r4_t) :: rcs
+                   ! LOcals
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328 = &
+                                                    ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16c4),   automatic :: tc0
+                   type(ZMM16r4_t), automatic :: cab
+                   tc0   = Rext_f4164_zmm16r4(mu,eps)
+                   cab   = cabs_c16(tc0)
+                   rcs.v = cab.v*C314159265358979323846264338328.v*a.v
+                end function rcs_f4191_zmm16r4
+
+                
+                
                 
 
  
