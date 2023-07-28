@@ -4535,6 +4535,38 @@ module rcs_cylinder_zmm16r4
                !            Fresnel reflection and transmission coefficients
                !            Formula 4.1-75
                !        */
+               
+               pure function Tout_f4175_zmm16r4(mu,eps,psi) result(Tout)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Tout_f4175_zmm16r4
+                   !dir$ attributes forceinline :: Tout_f4175_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Tout_f4175_zmm16r4  
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16c4) :: Tout
+                   type(ZMM16c4),   automatic :: div,sq1
+                   type(ZMM16c4),   automatic :: sq2,mul
+                   type(ZMM16c4),   automatic :: tc0
+                   type(ZMM16c4),   automatic :: num,den
+                   type(ZMM16r4_t), automatic :: cosp,sinp
+                   type(ZMM16r4_t), automatic :: sin2p,cos2p
+                   div    = mu/eps
+                   cosp.v = cos(psi.v)
+                   mul    = eps*mu
+                   sinp.  = sin(psi.v)
+                   cos2p.v= cosp.v+cosp.v
+                   sq2    = csqrt_c16(div)
+                   sin2p.v= sinp.v*sinp.v
+                   tc0.re = v16_1.v-mul.re*sin2p.v
+                   tc0.im = mul.im*sin2p.v
+                   sq1    = csqrt_c16(tc0)
+                   den    = sq1*sq2
+                   den.re = den.re+cosp.v
+                   Tout   = cos2p/den
+               end function Tout_f4175_zmm16r4
  
  
 
