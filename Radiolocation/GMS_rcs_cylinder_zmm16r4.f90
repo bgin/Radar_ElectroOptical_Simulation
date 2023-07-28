@@ -4648,6 +4648,31 @@ module rcs_cylinder_zmm16r4
                    den    = sq2+sq1
                    Rin    = num/den
                end function Rin_f4177_zmm16r4
+               
+               
+               ! /*
+               !           Specular rays reflection
+               !           Formula 4.1-64
+               !       */
+               
+               pure function Rext_f4164_zmm16r4(mu,eps) result(Rext)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Rext_f4164_zmm16r4
+                   !dir$ attributes forceinline :: Rext_f4164_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Rext_f4164_zmm16r4
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4) :: Rext
+                   ! Locals
+                   type(ZMM16c4),  automatic :: sq1,sq2
+                   type(ZMM16c4),  automatic :: dif,summ
+                   sq1  = csqrt_c16(mu)
+                   sq2  = csqrt_c16(eps)
+                   dif  = sq1-sq2
+                   summ = sq1+sq2 
+                   Rext = dif/summ
+               end function Rext_f4164_zmm16r4
  
 
 
