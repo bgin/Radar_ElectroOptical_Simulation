@@ -4484,6 +4484,16 @@ module rcs_cylinder_zmm16r4
                    sq2    = csqrt_c16(tc0)
                    Tin    = sq1*sq2+cosp
                end function Tin_f4173_zmm16r4
+               
+               
+              
+                 !   /*
+                 !          Fresnel reflection and transmission coefficients
+                 !          Formula 4.1-74
+                 !      */
+                 
+                 
+ 
  
 
 
