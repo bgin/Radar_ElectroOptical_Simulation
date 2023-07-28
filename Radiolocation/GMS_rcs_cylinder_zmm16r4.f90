@@ -4460,7 +4460,7 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes code_align : 32 :: Tin_f4173_zmm16r4
                    !dir$ attributes forceinline :: Tin_f4173_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Tin_f4173_zmm16r4 
-                   use mod_vecconsts, only : v16_1,v16_0
+                   use mod_vecconsts, only : v16_1
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16r4_t), intent(in) :: psi
@@ -4492,7 +4492,43 @@ module rcs_cylinder_zmm16r4
                  !          Formula 4.1-74
                  !      */
                  
-                 
+               pure function Tout_f4174_zmm16r4(mu,eps,psi) result(Tout)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Tout_f4174_zmm16r4
+                   !dir$ attributes forceinline :: Tout_f4174_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Tout_f4174_zmm16r4 
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16c4) :: Tout
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16c4),   automatic :: div,sq1
+                   type(ZMM16c4),   automatic :: sq2,mul
+                   type(ZMM16c4),   automatic :: tc0,tc1
+                   type(ZMM16c4),   automatic :: num,den
+                   type(ZMM16c4),   automatic :: sq1s
+                   type(ZMM16r4_t), automatic :: cosp,sinp
+                   type(ZMM16r4_t), automatic :: sin2p,t0
+                   div    = eps/mu
+                   cosp.v = cos(psi.v)
+                   mul    = eps*mu
+                   sinp.v = sin(psi.v)
+                   sq1    = csqrt_c16(div)
+                   sin2p.v= sinp.v*sinp.v
+                   t0.v   = mul.re*sinp.v
+                   tc0.re = v16_1.v-t0.v
+                   tc0.im = t0.v
+                   sq2    = csqrt_c16(tc0)
+                   tc1    = sq1*tc0
+                   num.re = C20.v*tc1.re
+                   num.im = C20.v*tc1.im
+                   den.re = cosp.v+tc1.re
+                   den.im = v16_0.v
+                   Tout   = num/den
+               end function Tout_f4174_zmm16r4
  
  
 
