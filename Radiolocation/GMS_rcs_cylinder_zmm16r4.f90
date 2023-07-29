@@ -4975,7 +4975,7 @@ module rcs_cylinder_zmm16r4
                    ma1.v    = v16_1.v-a1a0s.v
                    frac.im  = v16_0.v
                    div      = eps1/eps0
-                   div.re   = div.re-v16_1.v
+                   div      = div-v16_1
                    tc0      = div*ma1
                    A0       = frac*tc0
                 end function A0_f41124_zmm16r4
