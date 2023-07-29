@@ -512,7 +512,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.re(i)+y.v(i)
-           iq.im(i) = v16_n0.v(i)
         end do
       end function c16_add_v16
 
@@ -536,7 +535,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.re(i)+y
-           iq.im(i0 = v16_n0.v(i)
         end do
       end function c16_add_s1
 
@@ -584,7 +582,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.v(i)+y.re(i)
-           iq.im(i) = v16_n0.v(i)
         end do
       end function v16_add_c16
 
@@ -606,8 +603,7 @@ module  avx512_cvec16_v2
         !dir$ vector vectorlength(4)
         !dir$ vector always
         do i=0, 15
-           iq.re(i) = x
-           iq.im(i) = v16_n0.v(i)
+           iq.re(i) = x+y.re(i)
         end do
       end function s1_add_c16
 
@@ -677,7 +673,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.re(i)-y.v(i)
-           iq.im(i0 = v16_n0.v(i)
         end do
       end function c16_sub_v16
 
@@ -700,7 +695,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.re(i)-y
-           iq.im(i) = v16_n0.v(i)
         end do
       end function c16_sub_s1
 
@@ -748,7 +742,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x.v(i)-y.re(i)
-           iq.im(i) = v16_n0.v(i)
         end do
       end function v16_sub_c16
 
@@ -771,7 +764,6 @@ module  avx512_cvec16_v2
         !dir$ vector always
         do i=0, 15
            iq.re(i) = x-y.re(i)
-           iq.im(i) = v16_n0.v(i)
         end do
       end function s1_sub_c16
 
