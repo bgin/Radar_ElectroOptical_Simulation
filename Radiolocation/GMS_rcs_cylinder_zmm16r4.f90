@@ -4886,6 +4886,13 @@ module rcs_cylinder_zmm16r4
                    cab     = cabs_c16(tc1)
                    rcs.v   = frac.v*cab.v
                 end function rcs_f41105_zmm16r4  
+                
+                
+                !/*
+                !      Forward scattering width (k0a0<<1, k1a0<<1), phi = pi.
+                !      Formula 4.1-106
+                ! */
+
                  
 
                 
