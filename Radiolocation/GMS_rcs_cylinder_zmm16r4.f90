@@ -4837,7 +4837,62 @@ module rcs_cylinder_zmm16r4
                  !        Formula 4.1-105
                  ! */
                  
-                pure function rcs_f41105_zmm16r4(a0,a1,k0a0,phi,mu1,  &
+                pure function rcs_f41105_zmm16r4(a0,a1,k0a0,mu1,  &
+                                                 mu0,eps1,eps0)     result(rcs)
+                      
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f41105_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f41105_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f41105_zmm16r4
+                   use mod_vecconsts, inly : v16_1,v16_0
+                   type(ZMM16r4_t),  intent(in) :: a0
+                   type(ZMM16r4_t),  intent(in) :: a1
+                   type(ZMM16r4_t),  intent(in) :: k0a0
+                   type(ZMM16c4),    intent(in) :: mu1
+                   type(ZMM16c4),    intent(in) :: mu0
+                   type(ZMM16c4),    intent(in) :: eps1
+                   type(ZMM16c4),    intent(in) :: eps0
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C314159265358979323846264338328 = &
+                                                       ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16c4),   automatic :: div,e1m
+                   type(ZMM16c4),   automatic :: tc1,tc0
+                   type(ZMM16c4),   automatic :: e0m,div2
+                   type(ZMM16c4),   automatic :: num,den
+                   type(ZMM16r4_t), automatic :: pia,k0a03
+                   type(ZMM16r4_t), automatic :: a1a0,pa1
+                   type(ZMM16r4_t), automatic :: ma1,cab
+                   type(ZMM16r4_t), automatic :: frac,a1a0s
+                   k0a03.v =  k0a.v*k0a.v*k0a.v
+                   pia.v   =  C314159265358979323846264338328.v*a.v
+                   frac.v  = pia.v*C078539816339744830961566084582.v*k0a03.v
+                   a1a0.v  = a1.v/a0.v
+                   a1a0s.v = a1a0.v*a1a0.v
+                   pa1.v   = v16_1.v+a1a0s.v
+                   e1m     = eps1*pa1
+                   ma1.v   = v16_1.v-a1a0s.v
+                   div     = mu1/mu0
+                   e0m     = eps0*ma1
+                   tc0     = (div*ma1)-v16_1
+                   num     = e1m-e0m
+                   den     = e1m+e0m
+                   div2    = num/den
+                   div2    = C20*div2
+                   tc1     = tc0-div2
+                   cab     = cabs_c16(tc1)
+                   rcs.v   = frac.v*cab.v
+                end function rcs_f41105_zmm16r4  
+                
+                
+                !/*
+                !      Forward scattering width (k0a0<<1, k1a0<<1), phi = pi.
+                !      Formula 4.1-106
+                ! */
+                
+                pure function rcs_f41106_zmm16r4(a0,a1,k0a0,phi,mu1,  &
                                                  mu0,eps1,eps0)     result(rcs)
                       
                    !dir$ optimize:3
@@ -4887,11 +4942,6 @@ module rcs_cylinder_zmm16r4
                    rcs.v   = frac.v*cab.v
                 end function rcs_f41105_zmm16r4  
                 
-                
-                !/*
-                !      Forward scattering width (k0a0<<1, k1a0<<1), phi = pi.
-                !      Formula 4.1-106
-                ! */
 
                  
 
