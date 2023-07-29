@@ -4892,13 +4892,13 @@ module rcs_cylinder_zmm16r4
                 !      Formula 4.1-106
                 ! */
                 
-                pure function rcs_f41106_zmm16r4(a0,a1,k0a0,phi,mu1,  &
+                pure function rcs_f41106_zmm16r4(a0,a1,k0a0,mu1,  &
                                                  mu0,eps1,eps0)     result(rcs)
                       
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: rcs_f41105_zmm16r4
-                   !dir$ attributes forceinline :: rcs_f41105_zmm16r4
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f41105_zmm16r4
+                   !dir$ attributes code_align : 32 :: rcs_f41106_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f41106_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f41106_zmm16r4
                    use mod_vecconsts, inly : v16_1,v16_0
                    type(ZMM16r4_t),  intent(in) :: a0
                    type(ZMM16r4_t),  intent(in) :: a1
@@ -4937,10 +4937,18 @@ module rcs_cylinder_zmm16r4
                    den     = e1m+e0m
                    div2    = num/den
                    div2    = C20*div2
-                   tc1     = tc0-div2
+                   tc1     = tc0+div2
                    cab     = cabs_c16(tc1)
                    rcs.v   = frac.v*cab.v
-                end function rcs_f41105_zmm16r4  
+                end function rcs_f41106_zmm16r4  
+                
+                
+                 !/*
+                 !      Hollow cylindrical shell.
+                 !      Approximations for the low frequency region
+                 ! !     (k0a0<<1, k1a0<<1).
+                 !      Formula 4.1-124
+                 ! */
                 
 
                  
