@@ -4980,6 +4980,45 @@ module rcs_cylinder_zmm16r4
                    A0       = frac*tc0
                 end function A0_f41124_zmm16r4
                 
+                 !/*
+                 !!
+                 !      Hollow cylindrical shell.
+                 !      Approximations for the low frequency region
+                 !      (k0a0<<1, k1a0<<1).
+                 !      Formula 4.1-126
+                 !  */
+                 
+               pure function B0_f41126_zmm16r4(a1,a0,k0a0,mu1,mu0) result(B0)
+                      
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: B0_f41126_zmm16r4
+                   !dir$ attributes forceinline :: B0_f41126_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: B0_f41126_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16r4_t),  intent(in) :: a0
+                   type(ZMM16r4_t),  intent(in) :: a1
+                   type(ZMM16r4_t),  intent(in) :: k0a0
+                   type(ZMM16c4),    intent(in) :: mu1
+                   type(ZMM16c4),    intent(in) :: mu0
+                   type(ZMM16c4) :: B0
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),   automatic :: frac,div
+                   type(ZMM16c4),   automatic :: tc0
+                   type(ZMM16r4_t), automatic :: k0a02,a1a0
+                   type(ZMM16r4_t), automatic :: a1a0s,ma1
+                   k0a02.v  = k0a.v*k0a.v
+                   a1a0.v   = a1.v/a0.v
+                   a1a0s.v  = a1a0.v*a1a0.v
+                   frac.re  = C078539816339744830961566084582.v*k0a02.v
+                   ma1.v    = v16_1.v-a1a0s.v
+                   frac.im  = v16_0.v
+                   div      = mu1/mu0
+                   div      = div-v16_1
+                   tc0      = div*ma1
+                   B0       = frac*tc0
+                end function B0_f41126_zmm16r4
+                
 
                  
 
