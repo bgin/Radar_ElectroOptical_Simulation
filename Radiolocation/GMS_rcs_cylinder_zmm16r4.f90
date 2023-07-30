@@ -5126,6 +5126,33 @@ module rcs_cylinder_zmm16r4
                    B1       = frac*rat
                 end function B1_f41127_zmm16r4
                 
+                !  /*
+                !!
+                !          Low-frequncy approximations (k0a<0.2)
+                !          Cylindrical Luneberg lens (k0a<0.2).
+                !          Formula 4.1-162
+                !     */
+                
+                pure function A0_f41162_zmm16r4(k0a) result(A0)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: A0_f41162_zmm16r4
+                   !dir$ attributes forceinline :: A0_f41162_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: A0_f41162_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16c4) :: A0
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   ! Locals
+                   type(ZMM16r4_t), automatic :: k0a2,k0ah
+                   k0a2.v = k0a.v*k0a.v
+                   k0ah.v = C05.v*k0a2.v
+                   A0.re  = C078539816339744830961566084582.v*k0ah.v
+                   A0.im  = v16_0
+                end function A0_f41162_zmm16r4
+                
 
                  
 
