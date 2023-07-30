@@ -5200,6 +5200,34 @@ module rcs_cylinder_zmm16r4
                    rcs.v  = k0a3.v*t0.v
                 end function rcs_f41163_zmm16r4
                 
+                ! /*
+                !          Low-frequncy approximations (k0a<0.2)
+                !          Cylindrical Luneberg lens (k0a<0.2).  
+                !          Scattering widths.
+                !          Formula 4.1-164
+                !      */
+                
+                pure function rcs_f41164_zmm16r4(a,k0a,phi) result(rcs)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f41164_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f41164_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f41164_zmm16r4 
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 = &
+                                                           ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t), parameter :: C003607 = ZMM16r4_t(0.03607_sp)
+                   type(ZMM16r4_t), automatic :: t0,cosp,k0a3,cos2p
+                   k0a3.v  = k0a.v*k0a.v*k0a.v
+                   cosp.v  = cos(phi.v)
+                   t0.v    = C003607.v*C9869604401089358618834490999876.v*a.v
+                   cos2p.v = cosp.v*cosp.v
+                   rcs.v   = t0.v*k0a3.v*cos2p.v
+                end function rcs_f41164_zmm16r4
+                
 
                  
 
