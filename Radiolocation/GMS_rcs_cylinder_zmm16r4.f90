@@ -5228,6 +5228,30 @@ module rcs_cylinder_zmm16r4
                    rcs.v   = t0.v*k0a3.v*cos2p.v
                 end function rcs_f41164_zmm16r4
                 
+                !   /*
+                !!
+                !      Cylindrical Eaton-Lippman Lens, (k0a<0.2)
+                !      Formulae 4.1-165
+                !  */
+                
+                pure function A0_f41165_zmm16r4(k0a) result(A0)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: A0_f41165_zmm16r4
+                   !dir$ attributes forceinline :: A0_f41165_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: A0_f41165_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16c4)  :: A0
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = 
+                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),  automatic :: k0a2
+                   k0a2.v  = k0a.v*ka0.v 
+                   A0.re   = C078539816339744830961566084582.v*k0a2.v
+                   A0.im   = 
+                end function A0_f41165_zmm16r4
+                
 
                  
 
