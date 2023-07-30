@@ -5298,6 +5298,37 @@ module rcs_cylinder_zmm16r4
                    rcs.v  = k0a3.v*C9869604401089358618834490999876.v*a4.v
                 end function rcs_f14166_zmm16r4
                 
+                 ! /*
+                 !!
+                 !      Cylindrical Eaton-Lippman Lens, (k0a<0.2) 
+                 !      Scattering widths.
+                 !      Formula: 1.4-167
+                 !  */
+                 
+                 pure function rcs_f14167_zmm16r4(a,k0a,phi) result(rcs)
+                     
+                    !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f14167_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f14167_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f14167_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                             ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t),  parameter :: C019024 =  ZMM16r4_t(0.19024_sp)
+                   type(ZMM16r4_t),  automatic :: cosp,cos2p,k0a3,t0,t1
+                   k0a3.v = k0a.v*k0a3.v*k0a.v
+                   cosp.v = cos(phi.v)
+                   t0.v   = C019024.v*C9869604401089358618834490999876.v
+                   t1.v   = a.v*k0a3.v
+                   cos2p.v= cosp.v*cosp.v
+                   rcs.v  = t0.v*t1.v*cos2p.v
+                 end function rcs_f14167_zmm16r4
+                 
+                
 
                  
 
