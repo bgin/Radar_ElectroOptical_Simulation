@@ -5081,7 +5081,7 @@ module rcs_cylinder_zmm16r4
                 !           Formula 4.1-127
                 !    */
                 
-                pure function B1_f41127_zmm16r4(a1,a0,k0a0,mu,mu0) result(A1)
+                pure function B1_f41127_zmm16r4(a1,a0,k0a0,eps0,eps1) result(A1)
                       
                    !dir$ optimize:3
                    !dir$ attributes code_align : 32 :: B1_f41127_zmm16r4
@@ -5091,8 +5091,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: a0
                    type(ZMM16r4_t),  intent(in) :: a1
                    type(ZMM16r4_t),  intent(in) :: k0a0
-                   type(ZMM16c4),    intent(in) :: mu1
-                   type(ZMM16c4),    intent(in) :: mu0
+                   type(ZMM16c4),    intent(in) :: eps0
+                   type(ZMM16c4),    intent(in) :: eps1
                    type(ZMM16c4) :: B1
                    ! Locals
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
@@ -5108,9 +5108,9 @@ module rcs_cylinder_zmm16r4
                    k0a2.v   = k0a.v*k0a.v
                    frac.im  = v16_0.v
                    frac.re  = C078539816339744830961566084582.v*k0a2.v
-                   div      = mu1/mu0
+                   div      = eps1/eps0
                    a1a0s.v  = a1a0.v*a1a0.v
-                   ma1.v    = v16_1.v*a1a0s.v
+                   ma1.v    = v16_1.v-a1a0s.v
                    divs     = div*div
                    divs     = divs-v16_1
                    tc0.re   = div.re+v16_1.v
@@ -5123,7 +5123,7 @@ module rcs_cylinder_zmm16r4
                    sqm      = sqm*a1a02
                    den      = sqp*sqm
                    rat      = num/den
-                   A1       = frac*rat
+                   B1       = frac*rat
                 end function B1_f41127_zmm16r4
                 
 
