@@ -5057,7 +5057,7 @@ module rcs_cylinder_zmm16r4
                    frac.re  = C078539816339744830961566084582.v*k0a2.v
                    div      = mu1/mu0
                    a1a0s.v  = a1a0.v*a1a0.v
-                   ma1.v    = v16_1.v*a1a0s.v
+                   ma1.v    = v16_1.v-a1a0s.v
                    divs     = div*div
                    divs     = divs-v16_1
                    tc0.re   = div.re+v16_1.v
@@ -5072,6 +5072,59 @@ module rcs_cylinder_zmm16r4
                    rat      = num/den
                    A1       = frac*rat
                 end function A1_f41125_zmm16r4
+                
+                !  /*
+                !!
+                !          Hollow cylindrical shell.
+                !          Approximations for the low frequency region
+                !          (k0a0<<1, k1a0<<1).
+                !           Formula 4.1-127
+                !    */
+                
+                pure function B1_f41127_zmm16r4(a1,a0,k0a0,mu,mu0) result(A1)
+                      
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: B1_f41127_zmm16r4
+                   !dir$ attributes forceinline :: B1_f41127_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: B1_f41127_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16r4_t),  intent(in) :: a0
+                   type(ZMM16r4_t),  intent(in) :: a1
+                   type(ZMM16r4_t),  intent(in) :: k0a0
+                   type(ZMM16c4),    intent(in) :: mu1
+                   type(ZMM16c4),    intent(in) :: mu0
+                   type(ZMM16c4) :: B1
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),   automatic :: rat,div
+                   type(ZMM16c4),   automatic :: divs,tc1
+                   type(ZMM16c4),   automatic :: sqp,sqm
+                   type(ZMM16c4),   automatic :: tc0,num
+                   type(ZMM16c4),   automatic :: den,facr
+                   type(ZMM16r4_t), automatic :: k0a2,a1a0
+                   type(ZMM16c4_t), automatic :: a1a0s,ma1
+                   a1a0.v   = a1.v/a0.v
+                   k0a2.v   = k0a.v*k0a.v
+                   frac.im  = v16_0.v
+                   frac.re  = C078539816339744830961566084582.v*k0a2.v
+                   div      = mu1/mu0
+                   a1a0s.v  = a1a0.v*a1a0.v
+                   ma1.v    = v16_1.v*a1a0s.v
+                   divs     = div*div
+                   divs     = divs-v16_1
+                   tc0.re   = div.re+v16_1.v
+                   tc0.im   = v16_0.v
+                   num      = divs*ma1
+                   sqp      = tc0*tc0
+                   tc1.re   = div.re-v16_1.v
+                   tc1.im   = v16_0.v
+                   sqm      = tc1*tc1
+                   sqm      = sqm*a1a02
+                   den      = sqp*sqm
+                   rat      = num/den
+                   A1       = frac*rat
+                end function B1_f41127_zmm16r4
                 
 
                  
