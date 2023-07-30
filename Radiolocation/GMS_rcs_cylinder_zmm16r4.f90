@@ -5150,8 +5150,29 @@ module rcs_cylinder_zmm16r4
                    k0a2.v = k0a.v*k0a.v
                    k0ah.v = C05.v*k0a2.v
                    A0.re  = C078539816339744830961566084582.v*k0ah.v
-                   A0.im  = v16_0
+                   A0.im  = v16_0.v
                 end function A0_f41162_zmm16r4
+                
+                
+                pure function B1_f41162_zmm16r4(k0a) result(B1)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: B1_f41162_zmm16r4
+                   !dir$ attributes forceinline :: B1_f41162_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: B1_f41162_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16c4) :: B1
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
+                                                       ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C18992 = ZMM16r4_t(1.8992_sp)
+                   ! Locals
+                   type(ZMM16r4_t), automatic :: k0a2,k0ah
+                   k0a2.v = k0a.v*k0a.v
+                   k0ah.v = C18992.v*k0a2.v
+                   B1.re  = C078539816339744830961566084582.v*k0ah.v
+                   B1.im  = v16_0.v
+                end function B1_f41162_zmm16r4
                 
 
                  
