@@ -5404,6 +5404,14 @@ module rcs_cylinder_zmm16r4
                    tc2     = k0a02*(tc0-tc1)
                    Ez      = div1*tc2
                 end function Ez_f4248_zmm16r4 
+                
+                !  /*
+                !!
+                !         Infinitely long cylinder.
+                !         Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+                !         TM-incident H-field.
+                !         Formula 4.2-51
+                !    */
                  
                 
 
