@@ -5467,6 +5467,71 @@ module rcs_cylinder_zmm16r4
                    tc1       = sinpsp*tc1
                    Eph       = frac*tc1
                 end function Eph_f4249_zmm16r4
+                
+               !   /*
+               !          Infinitely long cylinder.
+               !          Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !          TM-incident H-field.
+               !          Formula 4.2-50
+               !!
+               !   */
+               
+               pure function Hz_f4250_zmm16r4(E0,k0z,k0r,k0a0,psi,phi,eps,mu) result(Hz)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Hz_f4250_zmm16r4
+                   !dir$ attributes forceinline :: Hz_f4250_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Hz_f4250_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: E0
+                   type(ZMM16r4_t), intent(in) :: k0z
+                   type(ZMM16r4_t), intent(in) :: k0r
+                   type(ZMM16r4_t), intent(in) :: k0a0
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4) :: Hz
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
+                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t), parameter :: C000001763712109284471382861586  = &
+                                                         ZMM16r4_t(0.00001763712109284471382861586_sp)
+                   type(ZMM16c4),   automatic :: ea,ce
+                   type(ZMM16c4),   automatic :: frac,tc0
+                   type(ZMM16c4),   automatic :: mul,emum1
+                   type(ZMM16c4),   automatic :: epsp1,mup1
+                   type(ZMM16c4),   automatic :: tc1
+                   type(ZMM16r4_t), automatic :: den,t0,scosp,cosp
+                   type(ZMM16r4_t), automatic :: sinps,sinph,k0a02,cosps
+                   type(ZMM16r4_t), automatic :: sinpsp
+                   k0a02.v  = k0a0.v*k0a0.v
+                   cosp.v   = cos(phi.v)
+                   ea.im    = v16_0.v
+                   emum1    = eps*mu
+                   den.v    = sqrt(k0r.v)
+                   emum1    = emum1-v16_1
+                   epsp1    = eps+v16_1
+                   sinps.v  = sin(psi.v)
+                   mup1     = mu+v16_1
+                   sinph.v  = sin(phi.v)
+                   t0.v     = k0a.v*sinps.v+k0r.v*cosp.v+  &
+                              C078539816339744830961566084582.v
+                   cosps.v  = cos(psi.v)
+                   scosp.v  = sqrt(cosp.v)
+                   sinpsp.v = sinps.v*sinph.v
+                   ea.re    = t0.v
+                   ce       = cexp_c16(ea)
+                   ce       = scosp*ce
+                   frac     = E0*ce
+                   frac     = frac/den
+                   tc0      = C000001763712109284471382861586*frac*k0a02
+                   mul      = epsp1*mup1
+                   tc1      = emum1/mul
+                   tc1      = sinpsp*tc1
+                   Hz       = frac*tc1
+               end function Hz_f4250_zmm16r4
+
 
                 
                
