@@ -5328,6 +5328,83 @@ module rcs_cylinder_zmm16r4
                    rcs.v  = t0.v*t1.v*cos2p.v
                  end function rcs_f14167_zmm16r4
                  
+                !  /*
+                !!
+                !        Infinitely long cylinder.
+                !        Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+                !        TM-incident E-field.
+                !        Formula 4.2-48
+                !    */
+                
+                pure function Ez_f4248_zmm16r4(E0,psi,phi,k0,z,r,      &
+                                               a0,eps,mu)         result(Ez)
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Ez_f4248_zmm16r4
+                   !dir$ attributes forceinline :: Ez_f4248_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Ez_f4248_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: E0
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: z
+                   type(ZMM16r4_t), intent(in) :: a0
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4) :: Ez
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C0886226925452758013649083741671 =   &
+                                                         ZMM16r4_t(0.886226925452758013649083741671_sp)
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582  =   &
+                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),  parameter :: C05 =  ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),  parameter :: C20 =  ZMM16r4_t(2.0_sp)
+                   type(ZMM16c4),    automatic :: epsp1,epsm1
+                   type(ZMM16c4),    automatic :: mup1,mum1
+                   type(ZMM16c4),    automatic :: mul1,mul2
+                   type(ZMM16c4),    automatic :: mul3,tc0
+                   type(ZMM16c4),    automatic :: tc1,tc2
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16c4),    automatic :: frac,fre
+                   type(ZMM16c4),    automatic :: div1,div2
+                   type(ZMM16c4),    automatic :: num
+                   type(ZMM16r4_t),  automatic :: k0r,k0z,k0a0,cosp
+                   type(ZMM16r4_t),  automatic :: cosps,cos2ps,sinps,sin2ps
+                   type(ZMM16r4_t),  automatic :: k0a02,scosps
+                   k0r.v   = k0.v*r.v
+                   k0z.v   = k0.v*z.v
+                   k0a0.v  = k0.v*a0.v
+                   cosp.v  = cos(phi.v)
+                   k0a02.v = C05.v*k0a0.v*k0a0.v
+                   epsp1   = epsr+v16_1
+                   ea.re   = v16_0.v
+                   cosps.v = cos(psi.v)
+                   epsm1   = epsr-v16_1
+                   scosps.v= sqrt(cosps.v)
+                   sinps.v = sin(psi.v)
+                   mup1    = mu+v16_1
+                   cos2ps.v= cosps.v*cosps.v
+                   mum1    = mu-v16_1
+                   mul1    = epsr*mum1
+                   sin2ps.v= sinps.v*sinps.v
+                   t0.v    = k0z.v*sinps.v+k0r.v*cosps.v+ &
+                                 0.78539816339744830961566084582.v
+                   ea.re   = t0.v
+                   t1.v    = sqrt(k0r.v)
+                   ce      = cexp_c16(ea)
+                   frac    = E0*scosps
+                   fre     = frac*ce
+                   div1    = C0886226925452758013649083741671.v*(fre/t1)
+                   mul2    = epsm1*mup1
+                   mul3    = epsr1*mup1
+                   tc0     = epsm1*cos2ps
+                   num     = mul2*sin2ps+mul1
+                   div2    = num/mul3
+                   tc1     = C20*(div2/cosp)
+                   tc2     = k0a02*(tc0-tc1)
+                   Ez      = div1*tc2
+                end function Ez_f4248_zmm16r4 
+                 
                 
 
                  
