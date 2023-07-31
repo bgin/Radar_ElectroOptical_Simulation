@@ -5405,13 +5405,71 @@ module rcs_cylinder_zmm16r4
                    Ez      = div1*tc2
                 end function Ez_f4248_zmm16r4 
                 
-                !  /*
-                !!
-                !         Infinitely long cylinder.
-                !         Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
-                !         TM-incident H-field.
-                !         Formula 4.2-51
-                !    */
+                 ! /*
+                 !!
+                 !        Infinitely long cylinder.
+                 !        Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+                 !        TM-incident E-field.
+                 !        Formula 4.2-49
+                 !   */
+                 
+                pure function Eph_f4249_zmm16r4(E0,k0z,k0r,k0a0,psi,phi,eps,mu) result(Eph)
+                     
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Eph_f4249_zmm16r4
+                   !dir$ attributes forceinline :: Eph_f4249_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Eph_f4249_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: E0
+                   type(ZMM16r4_t), intent(in) :: k0z
+                   type(ZMM16r4_t), intent(in) :: k0r
+                   type(ZMM16r4_t), intent(in) :: k0a0
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4) :: Eph
+                   ! Locals
+                   type(ZMM16r4_t), parameter :: C2506628274631000502415765284811 = &
+                                                         ZMM16r4_t(2.506628274631000502415765284811_sp)
+                   type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
+                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),   automatic :: ea,ce
+                   type(ZMM16c4),   automatic :: frac,tc0
+                   type(ZMM16c4),   automatic :: mul,emum1
+                   type(ZMM16c4),   automatic :: epsp1,mup1
+                   type(ZMM16c4),   automatic :: tc1
+                   type(ZMM16r4_t), automatic :: den,t0
+                   type(ZMM16r4_t), automatic :: cosp,sinps
+                   type(ZMM16r4_t), automatic :: sinph,k0a02
+                   type(ZMM16r4_t), automatic :: cosps,sinpsp
+                   k0a02.v   = k0a0.v*k0a0.v
+                   cosp.v    = cos(phi.v)
+                   ea.im     = v16_v0.v
+                   t0.v      = k0r.v*cosp.v
+                   emum1     = eps*mu
+                   den.v     = sqrt(t0.v)
+                   emum1     = emum1-v16_1
+                   epsp1     = eps-v16_1
+                   sinps.v   = sin(psi.v)
+                   mup1      = mu+v16_1
+                   sinph.v   = sin(phi.v)
+                   cosps.v   = cos(psi.v)
+                   t0.v      = k0z.v*sinps.v+k0r.v*cosp.v+ &
+                               C078539816339744830961566084582.v
+                   ea.re     = t0.v
+                   ce        = cexp_c16(ea)
+                   frac      = E0*ce
+                   frac      = frac/den
+                   tc0       = C2506628274631000502415765284811*frac*k0a02
+                   mul       = epsp1*mup1
+                   tc1       = emum1/mul
+                   tc1       = sinpsp*tc1
+                   Eph       = frac*tc1
+                end function Eph_f4249_zmm16r4
+
+                
+               
                  
                 
 
