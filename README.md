@@ -25,9 +25,7 @@ List of references:
     
 3) Automatic Control of Aircraft and Missiles 
    John H. Blakelock
-   ASIN: B01FJ0JOU2
-   
- 
+   ASIN: B01FJ0JOU2   
     
   4) Principles of High-Resolution Radar (Artech House Radar Library), August W. Rihaczek ISBN-10: 089006900X
      ISBN-13: 978-0890069004
@@ -43,3 +41,11 @@ List of references:
   9) Горяинов В.Т., Журавлев А.Г., Тихонов В.И - Статистическая радиотехника. Примеры и задачи (1980, Советское радио)
 
   10) George T. Ruck, Donald E. Barrick , William D. Stuart , - Radar Cross Section Handbook  (1970, Kluwer Academic Plenum Publishers)
+
+  11) Тихонов В. И. Статистическая радиотехника. «Сов. радио», 1966
+
+  12) Вайнштейн Л. А., Зубаков В. Д. Выделение сигналов на фоне случайных помех. «Сов. радио», 1960.
+
+  13) Зубковнч С. Г. Статистические характеристики радиосигналов, отраженных от земной поверхности. «Сов. радио», 1968
+
+
