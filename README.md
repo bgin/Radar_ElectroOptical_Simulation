@@ -31,3 +31,11 @@ List of references:
     
   4) Principles of High-Resolution Radar (Artech House Radar Library), August W. Rihaczek ISBN-10: 089006900X
      ISBN-13: 978-0890069004
+
+  5) Леонов А.И. - Моделирование в радиолокации (1979, Сов. радио )
+
+  6) Кремер И.Я. - Модулирующие помехи и прием радиосигналов (1972)
+
+  7) Abramowitz M., Stegun I.A. (eds.) - Handbook of mathematical functions (1972, NBS)
+
+  8) Шифрин Я.С. - Вопросы статистической теории антенн
