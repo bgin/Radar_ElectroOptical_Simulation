@@ -41,3 +41,5 @@ List of references:
   8) Шифрин Я.С. - Вопросы статистической теории антенн
 
   9) Горяинов В.Т., Журавлев А.Г., Тихонов В.И - Статистическая радиотехника. Примеры и задачи (1980, Советское радио)
+
+  10) George T. Ruck, Donald E. Barrick , William D. Stuart , - Radar Cross Section Handbook  (1970, Kluwer Academic Plenum Publishers)
