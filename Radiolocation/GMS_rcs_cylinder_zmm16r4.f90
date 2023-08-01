@@ -5612,6 +5612,71 @@ module rcs_cylinder_zmm16r4
                !          Formula 4.2-55
                !!
                !    */
+               
+               pure function Eph_f4255_zmm16r4(H0,psi,phi,k0r,k0z,k0a0,eps,mu) result(Ep)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Eph_f4255_zmm16r4
+                   !dir$ attributes forceinline :: Eph_f4255_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Eph_f4255_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: H0
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: k0r
+                   type(ZMM16r4_t), intent(in) :: k0z
+                   type(ZMM16r4_t), intent(in) :: k0a0
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4) :: Ep
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C000001763712109284471382861586 = &
+                                                         ZMM16r4_t(0.00001763712109284471382861586_sp)
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
+                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),  parameter :: C20 =  ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t),  parameter :: C05 =  ZMM16r4_t(0.5_sp)
+                   type(ZMM16c4),    automatic :: mul1,mul2
+                   type(ZMM16c4),    automatic :: mul3,tc0
+                   type(ZMM16c4),    automatic :: tc1,mum1
+                   type(ZMM16c4),    automatic :: epsm1,num
+                   type(ZMM16c4),    automatic :: mup1,epsp1
+                   type(ZMM16c4),    automatic :: mucs,frac
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16r4_t),  automatic :: sinps,cosps
+                   type(ZMM16r4_t),  automatic :: k0a02,sk0r
+                   type(ZMM16r4_t),  automatic :: cos2ps,sin2ps
+                   type(ZMM16r4_t),  automatic :: cosp,t0
+                   k0a2.v   = C05.v*k0a.v*k0a.v
+                   cosps.v  = cos(psi.v)
+                   frac     = H0
+                   ea.im    = v16_0.v
+                   sinps.v  = sin(psi.v)
+                   cos2ps.v = cosps.v*cosps.v
+                   t0.v     = k0z.v*sinps.v+k0r.v*cosps.v+ &
+                              C078539816339744830961566084582.v
+                   sk0r.v   = sqrt(k0r.v*cosps.v)
+                   ea.re    = t0.v
+                   ce       = cexp_c16(ea)
+                   cosp.v   = cos(phi.v)
+                   mum1     = mu-v16_1
+                   epsm1    = eps-v16_1
+                   epsp1    = eps+v16_1
+                   mup1     = mu+v16_1
+                   tc0      = frac*ce
+                   mucs     = mum1*cos2ps
+                   tc0      = C000001763712109284471382861586*(tc0/sk0r)
+                   mul1     = epsm1*mup1
+                   tc0      = tc0*k0a02
+                   mul2     = epsp1*mum1
+                   num      = mul2*sinps+mul1
+                   mul3     = epsp1*mup1
+                   tc1      = num/mul3
+                   tc1      = C20*tc1*cosp
+                   mucs     = mucs-tc1
+                   Ep       = tc0*mucs                          
+               end function EPh_f4255_zmm16r4
+                                               
 
 
 
