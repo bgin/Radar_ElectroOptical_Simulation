@@ -5677,7 +5677,13 @@ module rcs_cylinder_zmm16r4
                    Ep       = tc0*mucs                          
                end function Eph_f4255_zmm16r4
                
-               
+               ! /*
+               !          Infinitely long cylinder.
+               !          Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !          TE-incident H-field.
+               !          Formula 4.2-53
+               ! !
+               !   */
                                                
 
 
