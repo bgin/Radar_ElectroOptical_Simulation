@@ -5736,6 +5736,14 @@ module rcs_cylinder_zmm16r4
                    div       = div*spsph
                    Hp        = tc0*div
                end function Hph_f4253_zmm16r4
+               
+               !   /*
+               !          Infinitely long cylinder.
+               !          Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !          TE-incident E-field.
+               !          Formula 4.2-54
+               !!
+               !    */
                                                
 
 
