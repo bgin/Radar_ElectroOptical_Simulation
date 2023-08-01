@@ -5797,6 +5797,13 @@ module rcs_cylinder_zmm16r4
                    div      = div*spsph
                    Ez       = tc0*div
                end function Ez_f4254_zmm16r4
+               
+               ! /*
+               !      Bistatic scattering width for (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !      Infinitely long cylinder.
+               !      TM-incident.
+               !      Formula 4.2-56
+               !  */
                                                
 
 
