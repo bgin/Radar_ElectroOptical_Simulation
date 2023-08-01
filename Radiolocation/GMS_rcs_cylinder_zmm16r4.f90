@@ -5675,7 +5675,9 @@ module rcs_cylinder_zmm16r4
                    tc1      = C20*tc1*cosp
                    mucs     = mucs-tc1
                    Ep       = tc0*mucs                          
-               end function EPh_f4255_zmm16r4
+               end function Eph_f4255_zmm16r4
+               
+               
                                                
 
 
