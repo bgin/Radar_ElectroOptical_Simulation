@@ -5858,6 +5858,13 @@ module rcs_cylinder_zmm16r4
                    cab.v    = cabs_c16(tc1)
                    rcs.v    = cab.v*frac.v
                end function rcs_f4256_zmm16r4
+               
+               !  /*
+               !      Bistatic scattering width for (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !      Infinitely long cylinder.
+               !      TE-incident.
+               !      Formula 4.2-58
+               !  */
                                                
 
 
