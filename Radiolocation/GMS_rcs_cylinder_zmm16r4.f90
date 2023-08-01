@@ -5744,6 +5744,59 @@ module rcs_cylinder_zmm16r4
                !          Formula 4.2-54
                !!
                !    */
+               
+               pure function Ez_f4254_zmm16r4(H0,k0z,k0r,psi,phi,k0a0,eps,mu) result(Hp)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: Ez_f4254_zmm16r4
+                   !dir$ attributes forceinline :: Ez_f4254_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: Ez_f4254_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: H0
+                   type(ZMM16r4_t), intent(in) :: k0z
+                   type(ZMM16r4_t), intent(in) :: k0r
+                   type(ZMM16r4_t), intent(in) :: psi
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: k0a0
+                   type(ZMM16c4),   intent(in) :: eps
+                   type(ZMM16c4),   intent(in) :: mu
+                   type(ZMM16c4) :: Ez
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C000001763712109284471382861586 = &
+                                                         ZMM16r4_t(0.00001763712109284471382861586_sp)
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
+                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),    automatic :: mul1,mul2
+                   type(ZMM16c4),    automatic :: div,epsp1
+                   type(ZMM16c4),    automatic :: mup1,frac
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16c4),    automatic :: tc0
+                   type(ZMM16r4_t),  automatic :: sinps,cosps
+                   type(ZMM16r4_t),  automatic :: scpk0r,sinph
+                   type(ZMM16r4_t),  automatic :: k0a02,spsph
+                   k0a02.v  = k0a.v*k0a.v
+                   sinps.v  = sin(psi.v)
+                   ea.im    = v16_0.v
+                   cosps.v  = cos(psi.v)
+                   ea.re    = k0z.v*sinps.v+k0r.v*cosps.v+ &
+                              C078539816339744830961566084582.v
+                   ce       = cexp_c16(ea)
+                   scpk0r.v = sqrt(k0r.v)
+                   frac     = H0*ce
+                   sinph.v  = sin(phi.v)
+                   frac     = frac*cosps
+                   spsph.v  = sinps.v*sinph.v
+                   mup1     = mu+v16_1
+                   epsp1    = eps+v16_1
+                   mul1     = eps*mu
+                   tc0      = C000001763712109284471382861586*(frac/scpk0r)
+                   mul1     = mul1-v16_1
+                   mul2     = epsp1*mup1
+                   div      = mul1/mul2
+                   tc0      = tc0*k0a02
+                   div      = div*spsph
+                   Ez       = tc0*div
+               end function Ez_f4254_zmm16r4
                                                
 
 
