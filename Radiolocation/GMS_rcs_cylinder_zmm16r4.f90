@@ -5604,6 +5604,14 @@ module rcs_cylinder_zmm16r4
                    mucs      = mucs-tc1
                    Hz        = tc0*mucs
                end function Hz_f4252_zmm16r4
+               
+               !  /*
+               !          Infinitely long cylinder.
+               !          Scattered fields (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !          TE-incident E-field.
+               !          Formula 4.2-55
+               !!
+               !    */
 
 
 
