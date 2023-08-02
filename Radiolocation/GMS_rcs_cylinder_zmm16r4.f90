@@ -5972,6 +5972,55 @@ module rcs_cylinder_zmm16r4
                    cab       = cabs_c16(div)
                    rcs.v     = frac.v*cab.v
                end function rcs_f4257_zmm16r4
+               
+               ! /*
+               !        Circular cylinders of finite length.
+               !        Cylinder radius small (k0a<1.0)
+               !        Wire limit of cylinder (h>>a).
+               !        E-field
+               !        Formula 4.3-9
+               !    */
+               
+               pure function ES_f439_zmm16r4(EI,r,k0,psii,psis,h,ln4h) result(ES)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: ES_f439_zmm16r4
+                   !dir$ attributes forceinline :: ES_f439_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ES_f439_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16c4),    intent(in) :: EI
+                   type(ZMM16r4_t),  intent(in) :: r
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: psii
+                   type(ZMM16r4_t),  intent(in) :: psis
+                   type(ZMM16r4_t),  intent(in) :: h
+                   type(ZMM16r4_t),  intent(in) :: ln4h
+                   type(ZMM16c4) :: ES
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C0333333333333333333333333333333 = &
+                                                       ZMM16r4_t(0.333333333333333333333333333333_sp)
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16c4),    automatic :: tc0,mul
+                   type(ZMM16r4_t),  automatic :: ir,k02,h3
+                   type(ZMM16r4_t),  automatic :: cpsii,cpsis,rat
+                   type(ZMM16r4_t),  automatic :: num,den
+                   k02.v   = C0333333333333333333333333333333.v*  &
+                             k0.v*k0.v
+                   cpsii.v = cos(psii.v)
+                   den.v   = ln4h.v-v16_1.v
+                   ir.v    = v16_1.v/r.v
+                   ea.re   = k0.v*r.v
+                   cpsis.v = cos(psis.v)
+                   ea.im   = v16_0.v
+                   h3.v    = h.v*h.v*h.v
+                   ce      = cexp_c16(ea)
+                   num.v   = h3.v*cpsis.v*cpsii.v
+                   ce      = ce*ir
+                   rat.v   = num.v/den.v
+                   tc0     = EI*rat
+                   mul     = ce*tc0
+                   ES      = mul*k02
+               end function ES_f439_zmm16r4
                                                
 
 
