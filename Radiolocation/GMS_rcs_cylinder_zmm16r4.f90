@@ -5919,6 +5919,59 @@ module rcs_cylinder_zmm16r4
                    cab.v    = cabs_c16(tc1)
                    rcs.v    = cab.v*frac.v
                end function rcs_f4258_zmm16r4
+               
+               ! /*
+               ! !
+               !            Bistatic scattering width for (k0a0 sqrt(epsr*mur-sin^2(Psi) < 0.5)
+               !            Infinitely long cylinder.
+               !            TM-incident.
+               !            Formula 4.2-57
+               !      */
+               
+               pure function rcs_f4257_zmm16r4(a0,k0a0,psi,phi,eps,mu) result(rcs)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4257_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4257_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4257_zmm16r4 
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16r4_t),  intent(in) :: a0
+                   type(ZMM16r4_t),  intent(in) :: k0a0
+                   type(ZMM16r4_t),  intent(in) :: psi
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16c4),    intent(in) :: eps
+                   type(ZMM16c4),    intent(in) :: mu
+                   type(ZMM16r4_t) :: rcs
+                   ! LOcals
+                   type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                        ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t),  parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t),  parameter :: C40 = ZMM16r4_t(4.0_sp)
+                   type(ZMM16c4),    automatic :: div,mul1
+                   type(ZMM16c4),    automatic :: mul2,epsp1
+                   type(ZMM16c4),    automatic :: mup1
+                   type(ZMM16r4_t),  automatic :: spi4,cos2ps,sinps,sinp
+                   type(ZMM16r4_t),  automatic :: k0a03,frac,t0,cab
+                   k0a03.v   = k0a0.v*k0a0.v*k0a0.v
+                   epsp1     = eps+v16_1
+                   cosps.v   = cos(psi.v)
+                   spi4.v    = C9869604401089358618834490999876.v* &
+                               a0.v*a0.v
+                   mup1      = mu1+v16_1
+                   cos2ps.v  = cosps.v*cosps.v
+                   spi4.v    = C40.v*spi4.v
+                   mul1      = eps*mu
+                   sinps.v   = sin(psi.v)
+                   mul1      = mul1-v16_1
+                   sinp.v    = sin(phi.v)
+                   mul2      = epsp1*mup1
+                   frac.v    = k0a03.v*(spi4.v/cos2ps.v)
+                   t0.v      = sinps.v*sinp.v
+                   div       = mul1/mul2
+                   div       = div*t0
+                   cab       = cabs_c16(div)
+                   rcs.v     = frac.v*cab.v
+               end function rcs_f4257_zmm16r4
                                                
 
 
