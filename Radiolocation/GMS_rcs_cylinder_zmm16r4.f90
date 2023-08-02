@@ -6072,6 +6072,34 @@ module rcs_cylinder_zmm16r4
                !          and scattered polarization direction coincide.
                !          Formula 4.3-11
                !     */
+               
+               pure function rcs_f4311_zmm16r4(k0,h,ln4h) result(rcs)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4311_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4311_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4311_zmm16r4 
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: h
+                   type(ZMM16r4_t),   intent(in) :: ln4h
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C0279252680319092732307790522958 = &
+                                                      ZMM16r4_t(0.279252680319092732307790522958_sp)
+                   type(ZMM16r4_t),  automatic :: den,inv,k04,h6
+                   type(ZMM16r4_t),  automatic :: t0,t1
+                   h2.v   = h.v*h.v
+                   k04.v    = k0.v*k0.v*k0.v*k0.v
+                   t0.v     = ln4h.v-v16_1.v
+                   t1.v     = h.v*h2.v
+                   den.v    = t0.v*t0.v
+                   h6.v     = t1.v*h2.v
+                   inv.v    = v16_1.v/den.v
+                   t0.v     = C0279252680319092732307790522958.v* &
+                              k04.v*h6.v
+                   rcs.v    = t0.v*inv.v
+               end function rcs_f4311_zmm16r4
                                                
 
 
