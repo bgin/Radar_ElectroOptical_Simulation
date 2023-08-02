@@ -6146,6 +6146,12 @@ module rcs_cylinder_zmm16r4
                    tc1      = EI*t0
                    ES       = tc0*tc1
                end function ES_f4318_zmm16r4
+               
+               !    /*
+               !            Disc limit of cylinder (h<<a).
+               !            Scattered fields from the cylinder in the disc limit
+               !            Formula 4.3-19
+               !       */
                                                
 
 
