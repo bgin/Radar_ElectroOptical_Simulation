@@ -6021,6 +6021,15 @@ module rcs_cylinder_zmm16r4
                    mul     = ce*tc0
                    ES      = mul*k02
                end function ES_f439_zmm16r4
+               
+               !  /*
+               !        Circular cylinders of finite length.
+               !        Cylinder radius small (k0a<1.0)
+               !        Wire limit of cylinder (h>>a).
+               !        RCS.
+               !        Formula 4.3-10
+               !!
+               !     */
                                                
 
 
