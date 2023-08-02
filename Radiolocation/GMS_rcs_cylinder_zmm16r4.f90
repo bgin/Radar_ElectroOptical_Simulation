@@ -6066,6 +6066,12 @@ module rcs_cylinder_zmm16r4
                    rat.v    = num.v/den.v
                    rcs.v    = frac.v*rat.v
                end function rcs_f4310_zmm16r4
+               
+               !   /*
+               !          The average dipole scattering RCS when the incidence
+               !          and scattered polarization direction coincide.
+               !          Formula 4.3-11
+               !     */
                                                
 
 
