@@ -6030,6 +6030,42 @@ module rcs_cylinder_zmm16r4
                !        Formula 4.3-10
                !!
                !     */
+               
+               pure function rcs_f4310_zmm16r4(k0,h,psii,psis,ln4h) result(rcs)
+                    
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4310_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4310_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4310_zmm16r4 
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: h
+                   type(ZMM16r4_t),   intent(in) :: psii
+                   type(ZMM16r4_t),   intent(in) :: psis
+                   type(ZMM16r4_t),   intent(in) :: ln4h
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C1396263401595463661538952614791 = &
+                                                        ZMM16r4_t(1.396263401595463661538952614791_sp)
+                   type(ZMM16r4_t),  automatic :: cpsii,cpsis,c2psii,c2psis
+                   type(ZMM16r4_t),  automatic :: den,num,t0,k0r
+                   type(ZMM16r4_t),  automatic :: h6,t1,h2,rat
+                   type(ZMM16r4_t),  automatic :: frac
+                   h2.v     = h.v*h.v
+                   k04.v    = k0.v*k0.v*k0.v*k0.v
+                   cpsii.v  = cos(psii.v)
+                   t0.v     = ln4h.v-v16_1.v
+                   c2psii.v = cpsii.v*cpsii.v
+                   den.v    = t0.v*t0.v
+                   t1.v     = h.v*h2.v
+                   h6.v     = t1.v*h2.v
+                   cpsis.v  = cos(psis.v)
+                   frac.v   = C1396263401595463661538952614791.v* &
+                              k04.v*h6.v
+                   num.v    = c2psis.v*c2psii.v
+                   rat.v    = num.v/den.v
+                   rcs.v    = frac.v*rat.v
+               end function rcs_f4310_zmm16r4
                                                
 
 
