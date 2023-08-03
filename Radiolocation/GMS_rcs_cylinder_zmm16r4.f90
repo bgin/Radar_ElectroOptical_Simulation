@@ -6212,6 +6212,54 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4) :: ES
                    ES = ES_f4319_zmm16r4(EI,k0,r,psii,phi,a)
                end function ES_f4320_zmm16r4
+               
+               !  /*
+               !            Disc limit of cylinder (h<<a).
+               !            Scattered fields from the cylinder in the disc limit
+               !            Formula 4.3-21
+               !    */
+               
+               pure function ES_f4321_zmm16r4(EI,k0,r,psii,psis,phi,a) result(ES)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: ES_f4321_zmm16r4
+                   !dir$ attributes forceinline :: ES_f4321_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ES_f4321_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16c4),   intent(in) :: EI
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: psii
+                   type(ZMM16r4_t), intent(in) :: psis
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16c4) :: ES
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C0424413181578387562050356702327 = &
+                                                        ZMM16r4_t(0.424413181578387562050356702327_sp)
+                   type(ZMM16r4_t),  parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16c4),    automatic :: tc0,tc1
+                   type(ZMM16r4_t),  automatic :: ir,a3,k02,cosp
+                   type(ZMM16r4_t),  automatic :: cpsii,t0,t1,cpsis
+                   a3.v   = a.v*a.v*a.v
+                   cosp.v = cos(phi.v)
+                   k02.v  = k0.v*k0.v 
+                   ir.v   = v16_1.v/r.v
+                   ea.im  = v16_0.v
+                   cpsis.v= cos(psis.v)
+                   ea.re  = k0.v*r.v
+                   ce     = cexp_c16(ea)
+                   t0.v   = C0424413181578387562050356702327.v* &
+                            k02.v
+                   cpsii.v= cos(psii.v)
+                   tc0    = t0*ce*ir
+                   cpsii.v= C05.v*cpsii.v
+                   t1.v   = cpsii.v*cpsis.v+cosp.v
+                   t0.v   = a3.v*t1.v
+                   tc1    = EI*t0
+                   ES     = tc0*tc1
+               end function ES_f4321_zmm16r4
                                                
 
 
