@@ -6300,6 +6300,15 @@ module rcs_cylinder_zmm16r4
                    t3.v    = s2psii.v*s2psis.v*cosp.v
                    rcs.v   = t2.v*a6.v*t3.v
                end function rcs_f4322_zmm16r4
+               
+                !/*
+                !           Disc limit of cylinder (h<<a).
+                !           Bistatic scattering RCS for cylinder in the disc limit
+                !           Formula 4.3-23
+                !      */
+                
+                
+
 
                                                
 
