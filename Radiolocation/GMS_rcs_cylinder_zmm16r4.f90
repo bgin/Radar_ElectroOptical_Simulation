@@ -6338,6 +6338,26 @@ module rcs_cylinder_zmm16r4
                    rcs.v   = t2.v*a6.v*t3.v
                end function rcs_f4323_zmm16r4
                
+               !/*
+               !            Disc limit of cylinder (h<<a).
+               !            Bistatic scattering RCS for cylinder in the disc limit
+               !            Formula 4.3-24
+               !       */
+               
+               pure function rcs_f4324_zmm16r4(k0,a,psis,phi) result(rcs)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4324_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4324_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4324_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: psii
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t)  :: rcs
+                   rcs = rcs_f4323_zmm16r4(k0,a,psis,phi)
+               end function rcs_f4324_zmm16r4
+               
 
 
                                                
