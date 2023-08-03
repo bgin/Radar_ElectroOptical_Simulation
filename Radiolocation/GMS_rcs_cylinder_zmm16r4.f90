@@ -6358,6 +6358,44 @@ module rcs_cylinder_zmm16r4
                    rcs = rcs_f4323_zmm16r4(k0,a,psis,phi)
                end function rcs_f4324_zmm16r4
                
+               !  /*
+               !            Disc limit of cylinder (h<<a).
+               !            Bistatic scattering RCS for cylinder in the disc limit
+               !            Formula 4.3-25
+               !    */
+               
+               pure function rcs_f4325_zmm16r4(k0,a,psii,psis,phi) result(rcs)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4325_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4325_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4325_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: psii
+                   type(ZMM16r4_t),  intent(in) :: psis
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t)  :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C2263536968418066997601902412409 = &
+                                                         ZMM16r4_t(2.263536968418066997601902412409_sp)
+                   type(ZMM16r4_t),  parameter :: C05 =  ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),  automatic :: k04,a6,t0,t1
+                   type(ZMM16r4_t),  automatic :: cpsii,cosp,t2
+                   type(ZMM16r4_t),  automatic :: term,cpsis
+                   cosp.v  = cos(phi.v)
+                   t0.v    = k0.v*k0.v
+                   cpsis.v = cos(psis.v)
+                   t1.v    = a.v*a.v
+                   cpsii.v = cos(psii.v)
+                   k04.v   = t0.v*t0.v
+                   cpsii.v = C05.v*cpsii.v
+                   t2.v    = C2263536968418066997601902412409.v* &
+                             k04.v*k04.v
+                   a6.v    = t1.v*t1.v*t1.v
+                   term.v  = cpsis.v*cpsii.v+cosp.v
+                   rcs.v   = t2.v*a6.v*term.v
+               end function rcs_f4325_zmm16r4
 
 
                                                
