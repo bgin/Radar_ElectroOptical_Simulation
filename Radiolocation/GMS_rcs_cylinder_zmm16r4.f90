@@ -6190,6 +6190,28 @@ module rcs_cylinder_zmm16r4
                    tc1      = EI*t0
                    ES       = tc0*tc1
                end function ES_f4319_zmm16r4
+               
+               !  /*
+               !            Disc limit of cylinder (h<<a).
+               !            Scattered fields from the cylinder in the disc limit
+               !            Formula 4.3-20
+               !    */
+               
+               pure function ES_f4320_zmm16r4(EI,k0,r,psii,phi,a) result(ES)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: ES_f4320_zmm16r4
+                   !dir$ attributes forceinline :: ES_f4320_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ES_f4320_zmm16r4
+                   type(ZMM16c4),   intent(in) :: EI
+                   type(ZMM16r4_t), intent(in) :: k0
+                   type(ZMM16r4_t), intent(in) :: r
+                   type(ZMM16r4_t), intent(in) :: psii
+                   type(ZMM16r4_t), intent(in) :: phi
+                   type(ZMM16r4_t), intent(in) :: a
+                   type(ZMM16c4) :: ES
+                   ES = ES_f4319_zmm16r4(EI,k0,r,psii,phi,a)
+               end function ES_f4320_zmm16r4
                                                
 
 
