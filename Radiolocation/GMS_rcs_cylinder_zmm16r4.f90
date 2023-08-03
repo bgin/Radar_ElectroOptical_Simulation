@@ -6307,7 +6307,37 @@ module rcs_cylinder_zmm16r4
                 !           Formula 4.3-23
                 !      */
                 
-                
+               pure function rcs_f4323_zmm16r4(k0,a,psii,phi) result(rcs)
+                   
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4323_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4323_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4323_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: psii
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t)  :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C2263536968418066997601902412409 = &
+                                                      ZMM16r4_t(2.263536968418066997601902412409_sp)
+                   type(ZMM16r4_t),  automatic :: k04,a6,t0,t1
+                   type(ZMM16r4_t),  automatic :: spsii,sinp,t2
+                   type(ZMM16r4_t),  automatic :: s2psii,sin2p
+                   sinp.v  = sin(phi.v)
+                   t0.v    = k0.v*k0.v
+                   t1.v    = a.v*a.v
+                   k04.v   = k0.v*k0.v
+                   spsii.v = sin(psii.v)
+                   t2.v    = C2263536968418066997601902412409.v* &
+                            k04.v*k04.v
+                   s2psii.v= spsii.v*spsii.v
+                   a6.v    = t1.v*t1.v*t1.v
+                   s2psii.v= spsii.v*spsii.v
+                   t3.v    = s2psii.v*sinp.v
+                   rcs.v   = t2.v*a6.v*t3.v
+               end function rcs_f4323_zmm16r4
+               
 
 
                                                
