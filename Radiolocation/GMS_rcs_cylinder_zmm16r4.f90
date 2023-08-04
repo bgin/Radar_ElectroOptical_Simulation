@@ -6578,6 +6578,12 @@ module rcs_cylinder_zmm16r4
                    S.v    = t0.v*sk0h.v+ &
                             C078539816339744830961566084582.v*ck0h.v
              end function S_f4335_zmm16r4
+             
+             !  /*
+             !!
+             !             Parameter G1,G2 of equation 4.3-29
+             !              Formula 4.3-32
+             !       */
 
 
 
