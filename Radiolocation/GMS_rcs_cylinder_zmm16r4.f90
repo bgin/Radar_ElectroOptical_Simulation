@@ -6462,6 +6462,11 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t) :: a3
                    a3 = a2_f4330_mm16r4(k0h,psi)
               end function a3_f4330_zmm16r4
+              
+              ! /*
+              !            Parameter F1,F2 of equation 4.3-29
+              !            Formula 4.3-31
+              !        */
 
 
                                                
