@@ -6634,6 +6634,34 @@ module rcs_cylinder_zmm16r4
                    rat.v = num.v*den.v
                    G1.v  = rat.v-ln.v
              end function G1_f4332_zmm16r4
+             
+             !   /*
+             !!
+             !              Parameter H1,H2 of equation 4.3-29
+             !              Formula 4.3-33
+             !       */
+             
+             pure function H2_f4333_zmm16r4(k0h,k0a) result(H2)
+                 
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: H2_f4333_zmm16r4
+                   !dir$ attributes forceinline :: H2_f4333_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: H2_f4333_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: H2
+                   type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = &
+                                                          ZMM16r4_t(1.57079632679489661923132169164_sp)
+                   type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   automatic :: L,S,num,den,arg
+                   arg.v = C157079632679489661923132169164.v*k0h.v
+                   L     = L_f4334_zmm16r4(k0h,k0a)
+                   S     = S_f4334_zmm16r4(k0a,k0h)
+                   num.v = C05.v*S.v
+                   den.v = L.v*L.v+S.v*S.v
+                   H2.v  = num.v/den.v
+             end function H2_f4333_zmm16r4
 
 
 
