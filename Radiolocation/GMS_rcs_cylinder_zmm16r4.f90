@@ -6498,7 +6498,7 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes forceinline :: F2_f4331_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: F2_f4331_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
-                   type(ZMM16r4_t) :: F1
+                   type(ZMM16r4_t) :: F2
                    ! Locals
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
@@ -6511,9 +6511,14 @@ module rcs_cylinder_zmm16r4
                    larg.v  = log(arg)
                    om.v    = C20.v*larg.v
                    om2.v   = om.v*om.v
-                   F1.v    = C314159265358979323846264338328.v/(om2.v+ &
+                   F2.v    = C314159265358979323846264338328.v/(om2.v+ &
                              C9869604401089358618834490999876.v)
-             end function F1_f4331_zmm16r4
+             end function F2_f4331_zmm16r4
+             
+             ! /*
+             !             Parameter (helper) Lambda of equation 4.3-29
+             !             Formula 4.3-34
+             !         */
 
 
                                                
