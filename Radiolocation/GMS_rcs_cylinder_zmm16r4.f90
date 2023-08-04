@@ -6698,6 +6698,13 @@ module rcs_cylinder_zmm16r4
                    ar.v   = num.v/den.v
                    H1.v   = ar.v-t0.v    
              end function H1_f4333_zmm16r4
+             
+             ! /*
+             !             Backscattering RCS for perfectly conducting wire.
+             !             (2*h>gamma/4)
+             !             Formula 4.3-29
+             !!
+             !        */
 
 
 
