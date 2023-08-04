@@ -6519,6 +6519,37 @@ module rcs_cylinder_zmm16r4
              !             Parameter (helper) Lambda of equation 4.3-29
              !             Formula 4.3-34
              !         */
+             
+             pure function L_f4334_zmm16r4(k0h,k0a) result(L)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: L_f4334_zmm16r4
+                   !dir$ attributes forceinline :: L_f4334_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: L_f4334_zmm16r4
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: L
+                   type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                                             ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),   parameter :: C411    = ZMM16r4_t(4.11_sp)
+                   type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(-0.5_sp)
+                   type(ZMM16r4_t),   parameter :: C20     = ZMM16r4_t(-2.0_sp)
+                   type(ZMM16r4_t),   parameter :: C08905  = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16r4_t),   automatic :: om,del,ck0h,sk0h
+                   type(ZMM16r4_t),   automatic :: t0,ar1,ar2,lar1,lar2
+                   ar1.v   = k0a.v*C08905.v
+                   ar2.v   = k0h.v*C411.v
+                   lar1.v  = log(ar1.v)
+                   lar2.v  = log(ar2.v)
+                   om.v    = C20.v*lar1.v
+                   del.v   = C05.v*lar2.v
+                   ck0h.v  = cos(k0h.v)
+                   t0.v    = v16_0.v-om.v-del.v
+                   sk0h.v  = sin(k0h.v)
+                   L.v     = C078539816339744830961566084582.v*sk0h.v+ &
+                               ck0h.v*t0.v
+             end function L_f4334_zmm16r4
 
 
                                                
