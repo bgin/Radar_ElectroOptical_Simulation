@@ -6550,6 +6550,12 @@ module rcs_cylinder_zmm16r4
                    L.v     = C078539816339744830961566084582.v*sk0h.v+ &
                                ck0h.v*t0.v
              end function L_f4334_zmm16r4
+             
+             ! /*
+             !             Parameter (helper) Sigma of equation 4.3-29
+             ! !            Formula 4.3-35
+             !         */
+
 
 
                                                
