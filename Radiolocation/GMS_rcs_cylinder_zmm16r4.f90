@@ -6555,6 +6555,29 @@ module rcs_cylinder_zmm16r4
              !             Parameter (helper) Sigma of equation 4.3-29
              ! !            Formula 4.3-35
              !         */
+             
+             pure function S_f4335_zmm16r4(k0a,k0h) result(S)
+             
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: S_f4335_zmm16r4
+                   !dir$ attributes forceinline :: S_f4335_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: S_f4335_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: S
+                   type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                                             ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),   parameter :: C712    = ZMM16r4_t(7.12_sp)
+                   type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   automatic :: ar,lar,sk0h,ck0h,t0
+                   ar.v   = C712.v*k0a.v
+                   sk0h.v = sin(k0h.v)
+                   lar.v  = log(ar.v)
+                   t0.v   = C05.v*lar.v
+                   ck0h.v = cos(k0h.v)
+                   S.v    = t0.v*sk0h.v+ &
+                            C078539816339744830961566084582.v*ck0h.v
+             end function S_f4335_zmm16r4
 
 
 
