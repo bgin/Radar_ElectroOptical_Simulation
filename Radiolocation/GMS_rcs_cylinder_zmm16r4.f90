@@ -6396,6 +6396,38 @@ module rcs_cylinder_zmm16r4
                    term.v  = cpsis.v*cpsii.v+cosp.v
                    rcs.v   = t2.v*a6.v*term.v
                end function rcs_f4325_zmm16r4
+               
+               !  /*
+               !           Backscattering RCS for perfectly conducting wire.
+               !           (2*h>gamma/4)
+               !           Formula 4.3-29
+               !!
+               !      */
+
+              !       /*
+              !            Parameter a1,a2,a3 of equation 4.3-29
+              !            Formula 4.3-30
+              !        */
+              
+              pure function a1_f4330_zmm16r4(k0h,psi) result(a1)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: a1_f4330_zmm16r4
+                   !dir$ attributes forceinline :: a1_f4330_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: a1_f4330_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: psi
+                   type(ZMM16r4_t) :: a1
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C20 = ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t),  automatic :: k0h2,spsi,arg,spsi2,sarg
+                   k0h2    = k0h.v+k0h.v
+                   spsi.v  = sin(psi.v)
+                   arg.v   = k0h2.v*spsi.v
+                   spsi2.v = spsi.v+spsi.v
+                   sarg.v  = sin(arg.v)
+                   a1.v    = sarg.v/spsi2.v
+              end function a1_f4330_zmm16r4
 
 
                                                
