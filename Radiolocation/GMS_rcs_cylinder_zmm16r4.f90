@@ -6448,6 +6448,20 @@ module rcs_cylinder_zmm16r4
                    sarg.v  = sin(arg.v)
                    a2.v    = sarg.v/msp1.v
               end function a2_f4330_zmm16r4
+              
+              
+              pure function a3_f4330_zmm16r4(k0h,psi) result(a3)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: a3_f4330_zmm16r4
+                   !dir$ attributes forceinline :: a3_f4330_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: a3_f4330_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: psi
+                   type(ZMM16r4_t) :: a3
+                   a3 = a2_f4330_mm16r4(k0h,psi)
+              end function a3_f4330_zmm16r4
 
 
                                                
