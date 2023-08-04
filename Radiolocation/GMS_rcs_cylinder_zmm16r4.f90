@@ -6673,6 +6673,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: H1
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
+                                                             ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = &
                                                           ZMM16r4_t(1.57079632679489661923132169164_sp)
                    type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
@@ -6688,7 +6690,13 @@ module rcs_cylinder_zmm16r4
                    om.v   = C20.v*lar.v
                    om2.v  = om.v*om.v
                    L      = L_f4334_zmm16r4(k0h,k0a)
-                   H1     = H1_f4333      
+                   H2     = H2_f4333_zmm16r4(k0h,k0a)
+                   num.v  = C05.v*L.v
+                   t0.v   = (3.14159265358979323846264338328.v*H2.v)/ &
+                             om2.v
+                   den.v  = L.v*L.v+S.v*S.v
+                   ar.v   = num.v/den.v
+                   H1.v   = ar.v-t0.v    
              end function H1_f4333_zmm16r4
 
 
