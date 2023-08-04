@@ -6489,6 +6489,31 @@ module rcs_cylinder_zmm16r4
                    F1.v    = om.v/(om2.v+ &
                              C9869604401089358618834490999876.v)
              end function F1_f4331_zmm16r4
+             
+             
+             pure function F2_f4331_zmm16r4(k0a) result(F2)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: F2_f4331_zmm16r4
+                   !dir$ attributes forceinline :: F2_f4331_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: F2_f4331_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: F1
+                   ! Locals
+                   type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                           ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                           ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),  parameter :: C08905 = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16r4_t),  parameter :: C20    = ZMM16r4_t(-2.0_sp)
+                   type(ZMM16r4_t),  automatic :: om,om2,arg,larg
+                   arg.v   = k0a.v*C08905.v
+                   larg.v  = log(arg)
+                   om.v    = C20.v*larg.v
+                   om2.v   = om.v*om.v
+                   F1.v    = C314159265358979323846264338328.v/(om2.v+ &
+                             C9869604401089358618834490999876.v)
+             end function F1_f4331_zmm16r4
 
 
                                                
