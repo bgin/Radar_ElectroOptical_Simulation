@@ -6562,8 +6562,8 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes code_align : 32 :: S_f4335_zmm16r4
                    !dir$ attributes forceinline :: S_f4335_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: S_f4335_zmm16r4
-                   type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t) :: S
                    type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
                                                              ZMM16r4_t(0.78539816339744830961566084582_sp)
@@ -6584,6 +6584,24 @@ module rcs_cylinder_zmm16r4
              !             Parameter G1,G2 of equation 4.3-29
              !              Formula 4.3-32
              !       */
+             
+             pure function G2_f4332_zmm16r4(k0h,k0a) result(G2)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: G2_f4332_zmm16r4
+                   !dir$ attributes forceinline :: G2_f4332_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: G2_f4332_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0h
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t) :: G2
+                   type(ZMM16r4_t),   parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   automatic :: L,S,num,den
+                   L     = L_f4334_zmm16r4(k0h,k0a)
+                   S     = S_f4334_zmm16r4(k0a,k0h)
+                   num.v = C05.v/S.v
+                   den.v = L.v*L.v+S.v*S.v
+                   G2.v  = num.v/den.v
+             end function G2_f4332_zmm16r4
 
 
 
