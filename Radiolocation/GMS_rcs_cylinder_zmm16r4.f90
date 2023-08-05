@@ -6787,7 +6787,12 @@ module rcs_cylinder_zmm16r4
              end function rcs_f4329_zmm16r4
 
 
-
+             ! /*
+             !!
+             !            Simplified back and bistatic scattering RCS for
+             !            half and full-wave dipole (2*h == gam0/2, and gam0)
+             !            gam0 -- wavelength.
+             !       */
                                                
 
 
