@@ -6838,6 +6838,13 @@ module rcs_cylinder_zmm16r4
                    t1.v      = tmp0.v*tmp1.v
                    rcs.v     = t0.v*t1.v
              end function rcs_f4337_zmm16r4
+             
+             !  /*
+             !!
+             !            Simplified back and bistatic scattering RCS for
+             !            Full-wave dipole (2*h == gam0)
+             !            gam0 -- wavelength.
+             !       */
                                                
 
 
