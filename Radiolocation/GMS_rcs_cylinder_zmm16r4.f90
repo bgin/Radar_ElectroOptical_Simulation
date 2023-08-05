@@ -6889,6 +6889,45 @@ module rcs_cylinder_zmm16r4
                    t1.v     = tmp0.v*tmp1.v
                    rcs.v    = t0.v*t1.v
              end function rcs_f4340_zmm16r4
+             
+            !   /*
+            !               Cylinder length much greater then wavelength (h>>gamma).
+            !               Biscattering RCS, formula 4.3-43
+            !          */
+            
+            pure function rcs_f4343_zmm16r4(rcsi,k0,h0,psis,psii) result(rcs)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4343_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4343_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4343_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: rcsi
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: psis
+                   type(ZMM16r4_t),   intent(in) :: psii
+                   type(ZMM16r4_t)  :: rcs
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t),   automatic :: k0h,x0,term1
+                   type(ZMM16r4_t),   automatic :: cpsis,c2psis,term2
+                   type(ZMM16r4_t),   automatic :: spsii,spsis,arg
+                   type(ZMM16r4_t),   automatic :: sarg,rat
+                   k0h.v   = C40.v*k0.v*h.v
+                   x0.v    = k0h.v*k0h.v
+                   cpsis.v = cos(psis.v)
+                   term1.v = x0.v/C314159265358979323846264338328.v
+                   c2psis.v= cpsis.v*cpsis.v
+                   term1.v = term1.v*c2psis.v*rcsi.v
+                   spsis.v = sin(psis.v)
+                   spsii.v = sin(psii.v)
+                   x0.v    = spsis.v*spsii.v
+                   arg.v   = k0.v*x0.v*h.v
+                   sarg.v  = sin(arg.v)
+                   rat.v   = sarg.v/arg.v
+                   term2.v = rat.v*rat.v
+                   rcs.v   = term1.v*term2.v
+            end function rcs_f4343_zmm16r4
                                                
 
 
