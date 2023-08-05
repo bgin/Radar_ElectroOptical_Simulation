@@ -6845,6 +6845,50 @@ module rcs_cylinder_zmm16r4
              !            Full-wave dipole (2*h == gam0)
              !            gam0 -- wavelength.
              !       */
+             
+             pure function rcs_f4340_zmm16r4(gammi,gamms,psii,psis,g0) result(rcs)
+                  
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4337_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4337_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4337_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: gammi
+                   type(ZMM16r4_t),   intent(in) :: gamms
+                   type(ZMM16r4_t),   intent(in) :: psii
+                   type(ZMM16r4_t),   intent(in) :: psis
+                   type(ZMM16r4_t),   intent(in) :: g0
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   automatic :: cgami,cgams,c2gami,c2gams
+                   type(ZMM16r4_t),   automatic :: t0,carg1,carg2,spsii
+                   type(ZMM16r4_t),   automatic :: spsis,cpsii,cpsis,rat1
+                   type(ZMM16r4_t),   automatic :: rat2,t1,c1,c2
+                   type(ZMM16r4_t),   automatic :: tmp0,tmp1
+                   spsii.v  = sin(psii.v)
+                   spsis.v  = sin(psis.v)
+                   cpsii.v  = cos(psii.v)
+                   carg1.v  = C314159265358979323846264338328.v* &
+                              spsii.v
+                   cpsii.v  = cpsii.v*cpsii.v
+                   cpsis.v  = cos(psis.v)
+                   carg2.v  = C314159265358979323846264338328.v* &
+                              spsis.v
+                   cpsis.v  = cpsis.v*cpsis.v
+                   cgams.v  = cos(gams.v)
+                   c2gams.v = cgams.v*cgams.v
+                   cgami.v  = cos(gammi.v)
+                   c2gami.v = cgami.v*cgami.v
+                   t0.v     = g0.v*c2gami.v*c2gams.v
+                   c1.v     = sin(carg1.v)
+                   rat1.v   = c1.v/cpsii.v
+                   tmp0.v   = rat1.v*rat1.v
+                   c2.v     = sin(carg2.v)
+                   rat2.v   = c2.v/cpsis.v
+                   tmp1.v   = rat2.v*rat2.v
+                   t1.v     = tmp0.v*tmp1.v
+                   rcs.v    = t0.v*t1.v
+             end function rcs_f4340_zmm16r4
                                                
 
 
