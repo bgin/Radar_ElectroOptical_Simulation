@@ -6705,6 +6705,86 @@ module rcs_cylinder_zmm16r4
              !             Formula 4.3-29
              !!
              !        */
+             
+             pure function rcs_f4329_zmm16r4(k0,gami,gams,k0h,k0a,psi) result(rcs)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4329_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4329_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4329_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t),  intent(in) :: gami
+                   type(ZMM16r4_t),  intent(in) :: gams
+                   type(ZMM16r4_t),  intent(in) :: k0h
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: psi
+                   type(ZMM16r4_t) :: rcs
+                   ! Locals
+                   type(ZMM16r4_t),  parameter  :: C50265482457436691815402294132472 = &
+                                                          ZMM16r4_t(50.265482457436691815402294132472_sp)
+                   type(ZMM16r4_t),  parameter  :: C20 =  ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t),  automatic  :: a1,a2,a3
+                   type(ZMM16r4_t),  automatic  :: F1,F2,G1
+                   type(ZMM16r4_t),  automatic  :: G2,H2,H1
+                   type(ZMM16r4_t),  automatic  :: frst,cgami,cgams
+                   type(ZMM16r4_t),  automatic  :: c2gami,c2gams,sinps
+                   type(ZMM16r4_t),  automatic  :: arg,sarg,carg
+                   type(ZMM16r4_t),  automatic  :: t0,t1,t2
+                   type(ZMM16r4_t),  automatic  :: t3,t4,x0
+                   type(ZMM16r4_t),  automatic  :: x1,t5,b0
+                   type(ZMM16r4_t),  automatic  :: a1s,F1F2,G1G2
+                   type(ZMM16r4_t),  automatic  :: a2pa3,a2ma3,H1H2
+                   type(ZMM16r4_t),  automatic  :: a2sma3s,GHGH,a21
+                   type(ZMM16r4_t),  automatic  :: FGFG,FHFH,tmp1
+                   type(ZMM16r4_t),  automatic  :: tmp2,tmp3
+                   a1       = a1_f4330_zmm16r4(k0h,psi)
+                   b0.v     = C50265482457436691815402294132472.v/ &
+                              k0.v*k0.v
+                   a21.v    = a1.v*a1.v
+                   cgami.v  = cos(gami.v)
+                   F1       = F1_f4331_zmm16r4(k0a)
+                   c2gami.v = cgami.v*cgami.v
+                   F2       = F2_f4331_zmm16r4(k0a)
+                   cgams.v  = cos(gams.v)
+                   G1       = G1_f4332_zmm16r4(k0h,k0a)
+                   c2gams.v = cgams.v*cgams.v
+                   a2.v     = a2_f4330_zmm16r4(k0h,psi)
+                   frst.v   = b0.v*c2gami.v*c2gams.v
+                   G2       = G1_f4332_zmm16r4(k0h,k0a)
+                   sinps.v  = sin(psi.v)
+                   a3       = a3_f4330_zmm16r4(k0h,psi)
+                   H1       = H1_f4333_zmm16r4(k0h,k0a)
+                   arg.v    = k0h.v*sinps.v
+                   H2       = H2_f4333_zmm16r4(k0h,k0a)
+                   sarg.v   = sin(arg.v)
+                   a1s.v    = a1.v*a1.v
+                   carg.v   = cos(arg.v)
+                   x0.v     = a2.v+a3.v
+                   a2pa3.v  = x0.v*x0.v
+                   F1F2.v   = F1.v*F1.v+F2.v*F2.v
+                   x1.v     = a2.v-a3.v
+                   t0.v     = a1s.v*F1F2.v
+                   a2ma3.v  = x1.v*x1.v
+                   G1G2.v   = G1.v*G1.v+G2.v*G2.v
+                   t1.v     = a2pa3.v*G1G2.v*carg.v
+                   x0.v     = sarg.v*sarg.v
+                   H1H2.v   = H1.v*H1.v+H2.v*H2.v
+                   t2.v     = a2ma3.v*H1H2.v*x0.v
+                   a2sma3s.v= C20.v*(a2.v*a2.v-a3.v*a3.v)
+                   GHGH.v   = G1.v*H1.v+G2.v*H2.v
+                   x1.v     = carg.v*sarg.v
+                   t3.v     = a2sma3s.v*GHGH.v*x1.v
+                   x0.v     = a21.v*a2pa3.v
+                   FGFG.v   = F1.v*G1.v+F2.v*G2.v
+                   t4.v     = x0.v*FGFG.v*carg.v
+                   x1.v     = a21.v*a2ma3.v
+                   FHFH.v   = F1.v*H1.v+F2.v*H2.v
+                   t5.v     = x1.v*FHFH.v*sarg.v
+                   tmp1.v   = t0.v+t1.v+t2.v
+                   tmp2.v   = (t3.v+t4.v)-t5.v
+                   tmp3.v   = tmp1.v-tmp2.v
+                   rcs.v    = frst.v*tmp3.v
+             end function rcs_f4329_zmm16r4
 
 
 
