@@ -6928,6 +6928,68 @@ module rcs_cylinder_zmm16r4
                    term2.v = rat.v*rat.v
                    rcs.v   = term1.v*term2.v
             end function rcs_f4343_zmm16r4
+            
+            ! /*
+            !             General bistatic scattering RCS from long thin wire.
+            ! !            Formula 4.3-44
+            !        */
+            
+            pure function rcs_f4344_zmm16r4(h,k0,k0a,psii,psis,gams,gami) result(rcs)
+            
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4344_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4344_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4344_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),  intent(in) :: h
+                   type(ZMM16r4_t),  intent(in) :: h0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: psii
+                   type(ZMM16r4_t),  intent(in) :: psis
+                   type(ZMM16r4_t),  intent(in) :: gams
+                   type(ZMM16r4_t),  intent(in) :: gami
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),   parameter :: C12566370614359172953850573533118 = &
+                                                            ZMM16r4_t(12.566370614359172953850573533118_sp)
+                   type(ZMM16r4_t),   parameter :: C2467401100272339654708622749969  = &
+                                                            ZMM16r4_t(2.467401100272339654708622749969_sp)
+                   type(ZMM16r4_t),   parameter :: C08905 = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16r4_t),   automatic :: term1,term2,term3
+                   type(ZMM16r4_t),   automatic :: cgami,cgams,c2gami
+                   type(ZMM16r4_t),   automatic :: c2gams,inv,arg
+                   type(ZMM16r4_t),   automatic :: sarg,rat1,rat2
+                   type(ZMM16r4_t),   automatic :: x0,x1,arg2
+                   type(ZMM16r4_t),   automatic :: larg,cpsii,cpsis
+                   type(ZMM16r4_t),   automatic :: fac,c2psii,c2psis
+                   type(ZMM16r4_t),   automatic :: spsii,spsis
+                   fac.v   = C12566370614359172953850573533118.v* &
+                             h.v*h.v
+                   arg2.v  = k0a.v*C2467401100272339654708622749969.v
+                   cpsii.v = cos(psii.v)
+                   cpsis.v = cos(psis.v)
+                   c2psii.v= cpsii.v*cpsii.v
+                   c2psis.v= cpsis.v*cpsis.v
+                   arg2.v  = cpsii.v*arg2.v
+                   rat1.v  = c2psis.v/c2psii.v
+                   cgami.v = cos(gami.v)
+                   c2gami.v= cgami.v*cgami.v
+                   cgams.v = cos(gams.v)
+                   c2gams.v= cgams.v*cgams.v
+                   x0.v    = c2gams.v*c2gami.v
+                   term1.v = fac.v*rat1.v*x0.v
+                   larg.v  = log(arg2.v)
+                   spsii.v = sin(psii.v)
+                   x1.v    = larg.v*larg.v+ &
+                             C2467401100272339654708622749969.v
+                   inv.v   = v16_1.v/x1.v
+                   spsis.v = sin(psis.v)
+                   x0.v    = spsii.v+spsis.v
+                   arg.v   = k0.v*x0.v*h.v
+                   sarg.v  = sin(arg.v)
+                   rat2.v  = sarg.v/arg.v
+                   term2.v = rat2.v*rat2.v
+                   rcs.v   = term1.v*inv.v*term2.v
+            end function rcs_f4344_zmm16r4
                                                
 
 
