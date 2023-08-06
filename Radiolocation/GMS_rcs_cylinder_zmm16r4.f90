@@ -7343,9 +7343,9 @@ module rcs_cylinder_zmm16r4
           pure function rcs_f4354_zmm16r4(k0a,h,psii,phi) result(rcs)
                
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: rcs_f4353_zmm16r4
-                   !dir$ attributes forceinline :: rcs_f4353_zmm16r4
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4353_zmm16r4
+                   !dir$ attributes code_align : 32 :: rcs_f4354_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4354_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4354_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t),   intent(in) :: h
                    type(ZMM16r4_t),   intent(in) :: psii
@@ -7363,6 +7363,45 @@ module rcs_cylinder_zmm16r4
                    x0.v   = trm1.v*cpsii.v
                    rcs.v  = x0.v*cphi.v
           end function rcs_f4354_zmm16r4
+          
+          
+            !  /*
+            !!
+            !             Backscattering direction -- RCS for incidence angles
+            !             near broadside.
+            !             Formula 4.3-54
+            !         */
+            
+            pure function rcs_f4354v2_zmm16r4(k0a,h,k0,psii) result(rcs)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4354v2_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4354v2_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4354v2_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t),   intent(in) :: h
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: phi 
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp) 
+                   type(ZMM16r4_t),   automatic :: trm1,trm2,cpsii,spsii
+                   type(ZMM16r4_t),   automatic :: x0,x1,k0h,h2
+                   type(ZMM16r4_t),   automatic :: arg,sarg
+                   k0h.v  = k0.v*h.v
+                   cpsii.v= cos(psii.v) 
+                   h2.v   = h.v*h.v
+                   x0.v   = k0h.v+k0h.v
+                   x1.v   = C40.v*k0a.v*h2.v
+                   spsii.v= sin(psi.v)
+                   trm1.v = x1.v*cpsii.v
+                   arg.v  = x0.v*spsii.v
+                   sarg.v = sin(arg.v)
+                   x0.v   = sarg.v/arg.v
+                   trm2.v = x0.v*x0.v
+                   rcs.v  = trm1.v*trm2.v
+            end function rcs_f4354v2_zmm16r4
+          
+          
 
            
            
