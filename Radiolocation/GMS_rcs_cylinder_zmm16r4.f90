@@ -7131,7 +7131,14 @@ module rcs_cylinder_zmm16r4
                    x0.v    = C10.v*inv1.v
                    M2.v    = C0577350269189625764509148780502.v* &
                              (x0.v-inv2.v)
-            end function M2_f4350_zmm16r4                                   
+            end function M2_f4350_zmm16r4  
+            
+            ! /*
+            !            Backscattering From a Perfectly Conducting Cylinder With Flat Ends.
+            !            Helper functions, M1,M2 for the main formula 4.3-48
+            !            Formula 4.3-51
+            !!
+            !       */                                 
 
 
 
