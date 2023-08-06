@@ -7289,6 +7289,52 @@ module rcs_cylinder_zmm16r4
            end function F_f4352_zmm16r4
            
            
+           
+          !          /*
+          !                 Scattering From Cylinder Near the Specular Direction.
+          !                 Formula 4.3-53
+          !            */
+          
+          pure function rcs_f4353_zmm16r4(k0a,k0,h,phi,psii,psis) result(rcs)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4353_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4353_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4353_zmm16r4
+                   type(ZMM16r4_t),   intent(in) :: k0a
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: h
+                   type(ZMM16r4_t),   intent(in) :: phi
+                   type(ZMM16r4_t),   intent(in) :: psii
+                   type(ZMM16r4_t),   intent(in) :: psis
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),   parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t) :: automatic :: trm1,trm2,trm3
+                   type(ZMM16r4_t) :: automatic :: cphi,cpsis,c2psis
+                   type(ZMM16r4_t) :: automatic :: c2psii,spsii,spsis
+                   type(ZMM16r4_t) :: automatic :: arg,sarg,x0,x1
+                   x0.v     = h.v*h.v
+                   cpsii.v  = cos(psii.v)
+                   x1.v     = C05.v*phi.v
+                   cphi.v   = cos(phi.v)
+                   trm1.v   = C40.v*k0a.v*x0.v
+                   spsii.v  = sin(psi.v)
+                   spsis.v  = sin(psis.v)
+                   x0.v     = spsii.v+spsis.v
+                   c2psis.v = cpsis.v*cpsis.v
+                   arg.v    = k0.v*x0.v*h.v
+                   x1.v     = c2psis.v*cphi.v
+                   sarg.v   = sin(arg.v)
+                   trm2.v   = x1.v/cpsii.v
+                   trm3.v   = sarg.v/arg.v
+                   x1.v     = trm1.v*trm2.v
+                   x0.v     = trm3.v*trm3.v
+                   rcs.v    = x1.v*x0.v
+          end function rcs_f4353_zmm16r4
+
+           
+           
                                     
 
 
