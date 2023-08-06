@@ -7053,12 +7053,12 @@ module rcs_cylinder_zmm16r4
             pure function M1_f4350_zmm16r4(psi) result(M1)
                 
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: rcs_f4350_zmm16r4
-                   !dir$ attributes forceinline :: rcs_f4350_zmm16r4
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4350_zmm16r4 
+                   !dir$ attributes code_align : 32 :: M1_f4350_zmm16r4
+                   !dir$ attributes forceinline :: M1_f4350_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: M1_f4350_zmm16r4
                    use mod_vecconsts, only : v16_1
                    type(ZMM16r4_t),   intent(in) :: psi
-                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t) :: M1
                    ! Locals
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328              = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
@@ -7090,7 +7090,48 @@ module rcs_cylinder_zmm16r4
                    M1.v    = C0577350269189625764509148780502.v* &
                              (x0.v+inv2.v)
             end function M1_f4350_zmm16r4
-                                               
+            
+            
+            pure function M2_f4350_zmm16r4(psi) result(M1)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: M2_f4350_zmm16r4
+                   !dir$ attributes forceinline :: M2_f4350_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: M2_f4350_zmm16r4 
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: psi
+                   type(ZMM16r4_t) :: M2
+                   ! Locals
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328              = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
+                                                           ZMM16r4_t(0.333333333333333333333333333333333333333333_sp)
+                   type(ZMM16r4_t),   parameter :: C0577350269189625764509148780502             = &
+                                                           ZMM16r4_t(0.577350269189625764509148780502_sp)
+                   type(ZMM16r4_t),   parameter :: C0666666666666666666666666666667             = &
+                                                           ZMM16r4_t(0.666666666666666666666666666667_sp)
+                   type(ZMM16r4_t),   parameter :: C05 =   ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   parameter :: C40 =   ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t),   parameter :: C10 =   ZMM16r4_t(-1.0_sp)
+                   type(ZMM16r4_t),   parameter :: C20 =   ZMM16r4_t(2.0_sp)
+                   type(ZMM16r4_t),   automatic :: inv1,inv2,arg1,arg2
+                   type(ZMM16r4_t),   automatic :: carg1,carg2,x0,x1
+                   arg1.v  = C0333333333333333333333333333333333333333333.v* &
+                             C40.v*psi.v
+                   carg1.v = cos(arg1.v)
+                   x0.v    = C20.v*psi.v+ &
+                             C314159265358979323846264338328.v
+                   carg1.v = C10.v+carg1.v
+                   arg2.v  = C0666666666666666666666666666667.v* &
+                             x0.v
+                   inv1.v  = v16_1.v/carg1.v
+                   carg2.v = cos(arg2.v)
+                   x1.v    = C05.v*carg2.v
+                   inv2.v  = v16_1.v/x1.v
+                   x0.v    = C10.v*inv1.v
+                   M2.v    = C0577350269189625764509148780502.v* &
+                             (x0.v-inv2.v)
+            end function M2_f4350_zmm16r4                                   
 
 
 
