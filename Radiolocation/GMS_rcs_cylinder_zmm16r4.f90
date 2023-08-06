@@ -7259,6 +7259,36 @@ module rcs_cylinder_zmm16r4
                    G.v     = C0577350269189625764509148780502.v* &
                              (C20.v-inv.v)
            end function G_f4352_zmm16r4
+           
+           
+           pure function F_f4352_zmm16r4(psi) result(G)
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: F_f4352_zmm16r4
+                   !dir$ attributes forceinline :: F_f4352_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: F_f4352_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: psi
+                   type(ZMM16r4_t) :: F
+                   ! Locals
+                   type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
+                                                           ZMM16r4_t(0.333333333333333333333333333333333333333333_sp)
+                   type(ZMM16r4_t),   parameter :: C0577350269189625764509148780502             = &
+                                                           ZMM16r4_t(0.577350269189625764509148780502_sp)
+                   type(ZMM16r4_t),   parameter :: C05 =   ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),   parameter :: C40 =   ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t),   parameter :: C20 =   ZMM16r4_t(-2.0_sp)
+                   type(ZMM16r4_t),   automatic :: inv,arg,carg,x0
+                   arg.v   = C0333333333333333333333333333333333333333333.v* &
+                             C40.v*psi.v
+                   carg.v  = cos(arg.v)
+                   x0.v    = C05.v+carg.v
+                   inv.v   = v16_1.v/x0.v
+                   F.v     = C0577350269189625764509148780502.v* &
+                             (C20.v+inv.v)
+           end function F_f4352_zmm16r4
+           
+           
                                     
 
 
