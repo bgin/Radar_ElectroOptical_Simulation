@@ -7550,12 +7550,12 @@ module rcs_cylinder_zmm16r4
             !!
             !         */
             
-            pure function TM_f4415_zmm16r4(k0,a,phi1,phi2,b) result(msk)
+            pure function TM_f4415_helper_zmm16r4(k0,a,phi1,phi2,b) result(msk)
                 
                    !dir$ optimize:3
-                   !dir$ attributes code_align : 32 :: TM_f4415_zmm16r4
-                   !dir$ attributes forceinline :: TM_f4415_zmm16r4
-                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4415_zmm16r4
+                   !dir$ attributes code_align : 32 :: TM_f4415_helper_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4415_helper_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4415_helper_zmm16r4
                    use mod_vecconsts, only : v16_1,v16_0
                    use mod_kinds, only : i1
                    type(ZMM16r4_t),  intent(in) :: k0a
@@ -7592,7 +7592,8 @@ module rcs_cylinder_zmm16r4
                    msk     = .false.
                    rt6.v   = v16_1.v/x0.v
                    mre     = (trm1.v>=rt6.v)
-            end function TM_f4415_zmm16r4
+                   msk     = all(mre)
+            end function TM_f4415_helper_zmm16r4
 
           
           
