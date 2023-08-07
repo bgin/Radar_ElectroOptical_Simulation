@@ -7549,6 +7549,50 @@ module rcs_cylinder_zmm16r4
             !            Page. 322.
             !!
             !         */
+            
+            pure function TM_f4415_zmm16r4(k0,a,phi1,phi2,b) result(msk)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TM_f4415_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4415_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4415_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   use mod_kinds, only : i1
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: phi1
+                   type(ZMM16r4_t),  intent(in) :: phi2
+                   type(ZMM16r4_t),  intent(in) :: b
+                   integer(kind=i2) :: msk
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),  parameter :: C0166666666666666666666666666667 = &
+                                                        ZMM16r4_t(0.166666666666666666666666666667_sp)
+                   type(ZMM16r4_t),  automatic :: a1,b2,sphi,cphi
+                   type(ZMM16r4_t),  automatic :: trm1,trm2,rt6,k02
+                   type(ZMM16r4_t),  automatic :: absp,sphi1s,cphi1s
+                   type(ZMM16r4_t),  automatic :: k0a2,k0b2,x0
+                   logical(kind=i4), dimension(0:15) :: mre
+                   k02.v   = k0.v*k0.v
+                   a2.v    = a.v*a.v
+                   k0a2.v  = k02.v*a2.v
+                   b2.v    = b.v*b.v
+                   k0b2.v  = k02.v*b2.v
+                   cphi1.v = cos(phi1)
+                   mre     = .false.
+                   absp.v  = abs(phi2.v-phi1.v)
+                   cphi1s.v= cphi1.v*cphi1.v
+                   sphi1.v = sin(phi1.v)
+                   trm1.v  = C314159265358979323846264338328.v* &
+                             absp.v
+                   sphi1s.v= sphi1.v*sphi1.v
+                   trm2.v  = k02a2.v*sphi1s.v+k02b2.v*cphi1s.v
+                   x0.v    = trm2.v** & 
+                             C0166666666666666666666666666667.v
+                   msk     = .false.
+                   rt6.v   = v16_1.v/x0.v
+                   mre     = (trm1.v>=rt6.v)
+            end function TM_f4415_zmm16r4
 
           
           
