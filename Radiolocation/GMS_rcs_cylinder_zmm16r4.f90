@@ -7504,6 +7504,40 @@ module rcs_cylinder_zmm16r4
             !           TM-case, RCS.
             !           Formula 4.4-13
             !      */
+            
+            pure function rcs_f4413_zmm16r4(a,b,k0) result(rcs)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4413_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4413_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4413_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: b
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16r4_t)   :: rcs
+                   type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
+                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
+                   type(ZMM16r4_t),  parameter :: C2467401100272339654708622749969 = &
+                                                            ZMM16r4_t(2.467401100272339654708622749969_sp)
+                   type(ZMM16r4_t),  parameter :: C08905  = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16r4_t),  parameter :: C05     = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),  automatic :: abh,k0abh,num,sqr1
+                   type(ZMM16r4_t),  automatic :: sqr2,c0k0,arg,larg
+                   type(ZMM16r4_t),  automatic :: x0,x1,den
+                   abh.v   = a.v*b.v*C05.v
+                   c0k0.v  = C08905.v*k0.v
+                   num.v   = C9869604401089358618834490999876.v* &
+                             abh.v
+                   arg.v   = c0k0.v*abh.v
+                   larg.v  = log(arg.v)
+                   x0.v    = larg.v*larg.v+ &
+                             C2467401100272339654708622749969.v
+                   sqr1.v  = sqrt(k0.v*abh.v)
+                   sqr2.v  = sqrt(x0.v)
+                   den.v   = sqr1.v*sqr2.v
+                   x1.v    = den.v*den.v
+                   rcs.v   = num.v/x1.v
+            end function rcs_f4413_zmm16r4
 
           
           
