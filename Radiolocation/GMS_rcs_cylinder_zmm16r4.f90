@@ -7538,6 +7538,17 @@ module rcs_cylinder_zmm16r4
                    x1.v    = den.v*den.v
                    rcs.v   = num.v/x1.v
             end function rcs_f4413_zmm16r4
+            
+            ! /*
+            !             High frequency approximations (k0a>5, k0b>5)
+            !             TM-case, formula 4.4-15
+            !          */
+            
+            !  /*
+            !            Helper function for testing the condition of high-frequency limit.
+            !            Page. 322.
+            !!
+            !         */
 
           
           
