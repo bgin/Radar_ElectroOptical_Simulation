@@ -7499,6 +7499,12 @@ module rcs_cylinder_zmm16r4
                    TE.re    = v16_0.v
                    TE.im    = -x1.v
             end function TE_f4412_zmm16r4
+            
+            !  /*
+            !           TM-case, RCS.
+            !           Formula 4.4-13
+            !      */
+
           
           
 
