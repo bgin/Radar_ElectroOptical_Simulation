@@ -7422,6 +7422,47 @@ module rcs_cylinder_zmm16r4
                    h2.v  = h.v*h.v
                    rcs.v = C40.v*k0a.v*h2.v
              end function rcs_f4356_zmm16r4
+             
+            !  /*
+            !           Elliptical cylinders.
+            !       */
+
+
+            !       /*
+            !             Low-frequency approximations (k0a<0.5, k0b<0.5)
+            !             TM-case,formula 4.4-11
+            !        */ 
+            
+            pure function TM_f4411_zmm16r4(a,b,k0) result(TM)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TM_f4411_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4411_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4411_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16c4)    :: TM
+                   type(ZMM16r4_t), parameter :: C157079632679489661923132169164n = &
+                                                          ZMM16r4_t(-1.57079632679489661923132169164_sp)
+                   type(ZMM16r4_t), parameter :: C157079632679489661923132169164  = &
+                                                          ZMM16r4_t(1.57079632679489661923132169164_sp)
+                   type(ZMM16r4_t), parameter :: C08905 = ZMM16r4_t(0.8905_sp)
+                   type(ZMM16r4_t), parameter :: C05    = ZMM16r4_t(0.5_sp)
+                   type(ZMM16c4),   automatic :: num,den,inv
+                   type(ZMM16r4_t), automatic :: ab2,c0k0,arg,larg
+                   den.im  = C157079632679489661923132169164n.v
+                   ab2.v   = C05.v*a.v*b.v
+                   num.re  = v16_1.v
+                   c0k0.v  = C08905.v*k0.v
+                   num.im  = num.re
+                   arg.v   = ab2.v*c0k0.v
+                   larg.v  = log(arg.v)
+                   den.re  = larg.v
+                   inv     = num/den
+                   TM      = C157079632679489661923132169164*inv 
+            end function TM_f4411_zmm16r4
           
           
 
