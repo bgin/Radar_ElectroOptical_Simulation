@@ -7463,6 +7463,42 @@ module rcs_cylinder_zmm16r4
                    inv     = num/den
                    TM      = C157079632679489661923132169164*inv 
             end function TM_f4411_zmm16r4
+            
+            pure function TE_f4412_zmm16r4(k0a,a,b,phi1,phi2) result(TE)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TE_f4412_zmm16r4
+                   !dir$ attributes forceinline :: TE_f4412_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TE_f4412_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16r4_t),  intent(in) :: k0a
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: b
+                   type(ZMM16r4_t),  intent(in) :: phi1
+                   type(ZMM16r4_t),  intent(in) :: phi2
+                   type(ZMM16c4)   :: TE
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
+                                                           ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),  automatic :: k0a2,ba,cphi1,sphi1
+                   type(ZMM16r4_t),  automatic :: trm1,trm2,ba1
+                   type(ZMM16r4_t),  automatic :: x0,x1,cphi2,sphi2
+                   cphi2.v  = cos(phi2.v)
+                   k0a2.v   = k0a.v*k0a.v
+                   ba.v     = b.v/a.v
+                   x0.v     = C078539816339744830961566084582.v* &
+                              k0a2.v
+                   cphi1.v  = cos(phi1.v)
+                   ba1.v    = v16_1.v+ba.v
+                   x1.v     = ba.v+ba1.v
+                   sphi1.v  = sin(phi1.v)
+                   trm1.v   = x0.v+x1.v
+                   sphi2.v  = sin(phi2.v)
+                   x0.v     = cphi2.v*cphi1.v+sphi2.v*sphi1.v
+                   trm2.v   = ba.v*x0.v
+                   x1.v     = trm1.v*trm2.v
+                   TE.re    = v16_0.v
+                   TE.im    = -x1.v
+            end function TE_f4412_zmm16r4
           
           
 
