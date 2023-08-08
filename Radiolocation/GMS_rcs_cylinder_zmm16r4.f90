@@ -7792,7 +7792,7 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes code_align : 32 :: T_f4423_helper_zmm16r4
                    !dir$ attributes forceinline :: T_f4423_helper_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f4423_helper_zmm16r4
-                   use mo_vecconsts, only : v16_1
+                   use mod_vecconsts, only : v16_1
                    use mod_kinds,    only : i2
                    type(ZMM16r4_t),   intent(in) :: k0
                    type(ZMM16r4_t),   intent(in) :: a
@@ -7832,11 +7832,101 @@ module rcs_cylinder_zmm16r4
             end function T_f4423_helper_zmm16r4
             
             
-            !  /*
+            subroutine T_f4423_zmm16r4(a,b,phi1,phi2,k0,T,stat)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: T_f4423_helper_zmm16r4
+                   !dir$ attributes forceinline :: T_f4423_helper_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f4423_helper_zmm16r4
+                   use mod_vecconsts, only : v16_1
+                   use mod_kinds,     only : i2
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(out):: T
+                   logical(kind=i2),  intent(out):: stat 
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   automatic :: k0c,c,alp,a2,b2
+                   type(ZMM16r4_t),   automatic :: sphi,sphi2,cphi,cphi2
+                   type(ZMM16r4_t),   automatic :: arg,sarg,rat,x0
+                   logical(kind=i2),  automatic :: tmp
+                   tmp = T_f4423_helper_zmm16r4(k0,a,phi1,phi2,b)
+                   if(tmp==.false.) then
+                      stat = tmp
+                      return
+                   end if
+                   a2.v    = a.v*a.v
+                   sphi.v  = sin(phi1.v)
+                   alp.v   = C314159265358979323846264338328.v* &
+                             (phi2.v-phi1.v)
+                   sphi2.v = sphi.v*sphi.v
+                   cphi.v  = cos(phi1.v)
+                   b2.v    = b.v*b.v
+                   cphi2.v = cphi.v*cphi.v
+                   x0.v    = a2.v*cphi2.v+b2.v*sphi2.v
+                   c.v     = sqrt(x0.v)
+                   k0c.v   = k0.v*c.v
+                   arg.v   = k0c.v*alp.v
+                   sarg.v  = sin(arg.v)
+                   k0c.v   = -k0c.v
+                   rat.v   = sarg.v/arg.v
+                   T.v     = k0c.v*rat.v
+                   stat    = .true.
+            end subroutine T_f4423_zmm16r4
+            
+            
+            !       /*
             !              Scattering width near the forward direction.
             !              Formula 4.4-24
             !!
             !         */
+            
+            subroutine rcs_f4424_zmm16r4(a,b,phi1,phi2,k0,rcs,stat)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4424_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4424_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4424_zmm16r4
+                   use mod_kinds,     only : i2
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(out):: rcs
+                   logical(kind=i2),  intent(out):: stat 
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t),   automatic :: k0c,c,alp
+                   type(ZMM16r4_t),   automatic :: a2,b2,
+                   type(ZMM16r4_t),   automatic :: sphi,sphi2
+                   type(ZMM16r4_t),   automatic :: cphi2,cphi2
+                   type(ZMM16r4_t),   automatic :: arg,sarg
+                   type(ZMM16r4_t),   automatic :: rat,x0,x1,x2
+                   a2.v   = a.v*a.v
+                   sphi.v = sin(phi1.v)
+                   alp.v  = C314159265358979323846264338328.v* &
+                            (phi2.v-phi1.v)
+                   sphi2.v= sphi.v*sphi.v
+                   b2.v   = b.v*b.v
+                   cphi.v = cos(phi1.v)
+                   cphi2.v= cphi.v*cphi.v
+                   x0.v   = a2.v*cphi2.v+b2.v*sphi2.v
+                   c.v    = sqrt(x0.v)
+                   k0c.v  = k0.v*c.v
+                   arg.v  = k0c.v*alp.v
+                   sarg.v = sin(arg.v)
+                   x1.v   = C40.v*k0c.v*k0c.v
+                   rat.v  = sarg.v/arg.v
+                   x2.v   = rat.v*rat.v
+                   rcs.v  = k0c.v*rat.v
+                   stat   = .true.
+            end subroutine rcs_f4424_zmm16r4
+
             
             
 
