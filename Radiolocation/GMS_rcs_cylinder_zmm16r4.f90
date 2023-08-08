@@ -7830,6 +7830,16 @@ module rcs_cylinder_zmm16r4
                    mre     = (abs(trm1.v)<rt6.v)
                    msk     = all(mre)
             end function T_f4423_helper_zmm16r4
+            
+            
+            !  /*
+            !              Scattering width near the forward direction.
+            !              Formula 4.4-24
+            !!
+            !         */
+            
+            
+
  
           
           
