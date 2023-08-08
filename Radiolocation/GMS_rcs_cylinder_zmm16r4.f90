@@ -7778,6 +7778,58 @@ module rcs_cylinder_zmm16r4
                    pow32.v= x0.v**C15.v
                    rcs.v  = num.v/pow32.v
             end function rcs_f4420_zmm16r4
+            
+            
+            !  /*
+            !            Forward scattering pattern and width.
+            !            Formula 4.4-23 a scattering amplitude
+            !!
+            !        */
+            
+            pure function T_f4423_helper_zmm16r4(k0,a,phi1,phi2,b) result(msk)
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: T_f4423_helper_zmm16r4
+                   !dir$ attributes forceinline :: T_f4423_helper_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: T_f4423_helper_zmm16r4
+                   use mo_vecconsts, only : v16_1
+                   use mod_kinds,    only : i2
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16r4_t),   intent(in) :: b
+                   logical(kind=i2) :: msk
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),   parameter :: C0166666666666666666666666666667 = &
+                                                           ZMM16r4_t(0.166666666666666666666666666667_sp)
+                   type(ZMM16r4_t),   automatic :: a2,b2,sphi1,cphi1
+                   type(ZMM16r4_t),   automatic :: trm1,trm2,rt6,k02
+                   type(ZMM16r4_t),   automatic :: absp,sphi1s,cphi1s
+                   type(ZMM16r4_t),   automatic :: k0a2,k0b2,x0
+                   logical(kind=i4), dimension(0:15), automatic :: mre
+                   k02.v   = k0.v*k0.v
+                   a2.v    = a.v*a.v
+                   cphi1.v = cos(phi1.v)
+                   k0a2.v  = k02.v*a2.v
+                   b2.v    = b.v*b.v
+                   sphi1.v = sin(phi1.v)
+                   k0b2.v  = k02.v*b2.v
+                   trm1.v  = phi1.v-phi2.v
+                   sphi1s.v= sphi1.v*sphi1.v
+                   cphi1s.v= C314159265358979323846264338328.v* &
+                             cphi1.v*cphi1.v
+                   sphi1s.v= sphi1.v*sphi1.v
+                   trm2.v  = k0a2.v*sphi1s+k02b2.v*cphi1s.v
+                   x0.v    = trm2.v* &
+                             C0166666666666666666666666666667.v
+                   mre     = .false.
+                   msk     = .false.
+                   rt6.v   = v16_1.v/x0.v
+                   mre     = (abs(trm1.v)<rt6.v)
+                   msk     = all(mre)
+            end function T_f4423_helper_zmm16r4
  
           
           
