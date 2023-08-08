@@ -7739,6 +7739,46 @@ module rcs_cylinder_zmm16r4
                    pow32.v = x0.v**C15.v
                    rcs.v   = num.v/pow32.v
             end function rcs_f4419_zmm16r4
+            
+           
+            
+            !       /*
+            !!
+            !              Backscattering width, for phi2 == phi1.
+            !              Formula 4.4-20
+            !          */
+            
+            
+            pure function rcs_f4420_zmm16r4(a,b,phi) result(rcs)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4420_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4420_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4420_zmm16r4
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: b
+                   type(ZMM16r4_t),  intent(in) :: phi
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),  parameter :: C15 = ZMM16r4_t(1.5_sp)
+                   type(ZMM16r4_t),  automatic :: a2,b2,a2b2
+                   type(ZMM16r4_t),  automatic :: num,carg,carg2
+                   type(ZMM16r4_t),  automatic :: sarg,sarg2
+                   type(ZMM16r4_t),  automatic :: pow32,x0
+                   a2.v   = a.v*a.v
+                   carg.v = cos(phi.v)
+                   b2.v   = b.v*b.v
+                   carg2.v= carg.v*carg.v
+                   num.v  = C314159265358979323846264338328.v* &
+                            a2.v*b2.v
+                   sarg.v = sin(phi.v)
+                   sarg2.v= sarg.v*sarg.v
+                   x0.v   = a2.v*carg2.v+b2.v*sarg2.v
+                   pow32.v= x0.v**C15.v
+                   rcs.v  = num.v/pow32.v
+            end function rcs_f4420_zmm16r4
+ 
           
           
 
