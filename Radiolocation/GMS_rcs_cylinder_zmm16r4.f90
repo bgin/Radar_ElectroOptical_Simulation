@@ -7594,6 +7594,86 @@ module rcs_cylinder_zmm16r4
                    mre     = (trm1.v>=rt6.v)
                    msk     = all(mre)
             end function TM_f4415_helper_zmm16r4
+            
+            
+            subroutine TM_f4415_zmm16r4(phi1,phi2,a,b,k0,TM,stat)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TM_f4415_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4415_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4415_zmm16r4
+                   use mod_kinds, only : i2
+                   use mod_vecconsts, only : v16_0
+                   type(ZMM16r4_t),  intent(in) :: phi1,
+                   type(ZMM16r4_t),  intent(in) :: phi2
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: b
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16c4),    intent(out):: TM
+                   logical(kind=i2), intent(out):: stat
+                   type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
+                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),  parameter :: C05 = ZMM16r4_t(0.5_sp)
+                   type(ZMM16r4_t),  parameter :: C15 = ZMM16r4_t(1.5_sp)
+                   type(ZMM16c4),    automatic :: ea,ce
+                   type(ZMM16r4_t),  automatic :: arg1,arg2,carg1,carg2
+                   type(ZMM16r4_t),  automatic :: sarg2,sqr1,trm1,f
+                   type(ZMM16r4_t),  automatic :: rho,a2b2,a2,b2
+                   type(ZMM16r4_t),  automatic :: k0a,cphi2,cphi1,sphi1
+                   type(ZMM16r4_t),  automatic :: sphi2,frat,cphis,sphis
+                   type(ZMM16r4_t),  automatic :: rhod,rhorat,x0,x1
+                   type(ZMM16r4_t),  automatic :: tmp1,tmp2,b2a2s,carg2s
+                   type(ZMM16r4_t),  automatic :: sarg2s
+                   integer(kind=i2), automatic :: msk
+                   msk      = TM_f4415_helper_zmm16r4(k0,a,phi1,phi2,b)
+                   if(msk==.false.) then
+                      stat = .false.
+                      return
+                   end if
+                   arg1.v   = C05.v*(phi2.v-phi1.v)
+                   cphi1.v  = cos(phi1.v)
+                   a2.v     = a.v*a.v
+                   b2.v     = b.v*b.v
+                   sphi1.v  = sin(phi1.v)
+                   k0a.v    = k0.v*a.v
+                   arg2.v   = C05.v*(phi2.v+phi1.v)
+                   carg1.v  = cos(arg1.v)
+                   a2b2.v   = a2.v*b2.v
+                   b2a2.v   = b2.v/a2.v
+                   trm1.v   = sqrt(C314159265358979323846264338328.v* &
+                                   carg1.v)
+                   cphi2.v  = cos(phi2.v)
+                   cphis.v  = cphi1.v*cphi2.v
+                   sphi2.v  = sin(phi2.v)
+                   sphis.v  = sphi1.v*sphi2.v
+                   carg2.v  = cos(arg2.v)
+                   sarg2.v  = sin(arg2.v)
+                   x0.v     = carg2.v*carg2.v
+                   x1.v     = sarg2.v*sarg2.v
+                   rhod.v   = a2.v*x0.v+b2.v*x1.v
+                   b2a2s.v  = b2a2.v*sphis.v
+                   tmp1.v   = rhod.v*C15.v
+                   rhorat.v = a2b2.v/tmp1.v
+                   x0.v     = sarg2.v*b2a2s.v+carg2.v
+                   carg2s.v = carg2.v*carg2.v
+                   tmp2.v   = cphis.v*x0.v
+                   sarg2s.v = sarg2.v*sarg2.v
+                   x1.v     = b2a2.v*sarg2s.v+carg2s.v
+                   tmp1.v   = sqrt(x1.v)
+                   frat.v   = tmp2.v/tmp1.v
+                   trm1.v   = -trm1.v
+                   ea.re    = C078539816339744830961566084582.v
+                   x0.v     = C05.v*sqrt(k0.v*rhorat.v)
+                   ea.im    = -(k0a.v*frat.v)
+                   x1.v     = trm1.v*x0.v
+                   ea.im    = C078539816339744830961566084582.v* &
+                              ea.im
+                   ce       = cexp_c16(ea)
+                   TM       = ce*x1
+                   stat     = .true.
+            end subroutine TM_f4415_zmm16r4
 
           
           
