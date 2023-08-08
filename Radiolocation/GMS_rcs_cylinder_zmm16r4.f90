@@ -7674,7 +7674,31 @@ module rcs_cylinder_zmm16r4
                    TM       = ce*x1
                    stat     = .true.
             end subroutine TM_f4415_zmm16r4
-
+            
+            
+            
+            !        /*
+            !             High frequency approximations (k0a>5, k0b>5)
+            !             TE-case, formula 4.4-16
+            !          */
+            
+            subroutine TE_f4416_zmm16r4(phi1,phi2,a,b,k0,TE,stat) 
+                 
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TE_f4416_zmm16r4
+                   !dir$ attributes forceinline :: TE_f4416_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TE_f4416_zmm16r4
+                   use mod_kinds, only : i2
+                   type(ZMM16r4_t),  intent(in) :: phi1,
+                   type(ZMM16r4_t),  intent(in) :: phi2
+                   type(ZMM16r4_t),  intent(in) :: a
+                   type(ZMM16r4_t),  intent(in) :: b
+                   type(ZMM16r4_t),  intent(in) :: k0
+                   type(ZMM16c4),    intent(out):: TM
+                   logical(kind=i2), intent(out):: stat 
+                
+                   TM_f4415_zmm16r4(phi1,phi2,a,b,k0,TE,stat)
+            end subroutine TE_f4416_zmm16r4
           
           
 
