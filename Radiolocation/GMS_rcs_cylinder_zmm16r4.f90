@@ -7926,6 +7926,40 @@ module rcs_cylinder_zmm16r4
                    rcs.v  = k0c.v*rat.v
                    stat   = .true.
             end subroutine rcs_f4424_zmm16r4
+            
+            
+            
+            !       /*
+            !             Scattering width in the exact forward direction (alpha == 0).
+            !             Formula 4.4-25
+            !         */
+            
+            pure function rcs_f4425_zmm16r4(k0,a,b,phi) result(rcs)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4425_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4425_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4425_zmm16r4
+                   type(ZMM16r4_t),    intent(in) :: k0
+                   type(ZMM16r4_t),    intent(in) :: a
+                   type(ZMM16r4_t),    intent(in) :: b
+                   type(ZMM16r4_t),    intent(in) :: phi
+                   type(ZMM16r4_t) :: rcs
+                   type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
+                   type(ZMM16r4_t),   automatic :: k04,a2,b2
+                   type(ZMM16r4_t),   automatic :: sphi,sphi2
+                   type(ZMM16r4_t),   automatic :: cphi,cphi2
+                   a2.v   = a.v*a.v
+                   sphi.v = sin(phi.v)
+                   b2.v   = b.v*b.v
+                   cphi.v = cos(phi.v)
+                   k04.v  = C40.v*k0.v
+                   cphi2.v= cphi.v*cphi.v
+                   sphi2.v= sphi.v*sphi.v
+                   x0.v   = a2.v*sphi2.v+b2.v*cphi2.v
+                   rcs.v  = k04.v*x0.v 
+            end function rcs_f4425_zmm16r4
+
 
             
             
