@@ -7967,7 +7967,56 @@ module rcs_cylinder_zmm16r4
             !              TM-case, formula 4.4-26
             !         */
             
-            
+            subroutine TM_f4426_zmm16r4(k0,a,b,phi1,phi2,eps,mu,TM)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TM_f4426_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4426_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4426_zmm16r4
+                   use mod_vecconsts, only : v16_1.v16_0
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16c4),     intent(in) :: eps
+                   type(ZMM16c4),     intent(in) :: mu
+                   type(ZMM16c4),     intent(out):: TM
+                   type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16c4),     automatic :: epsm1,mum1
+                   type(ZMM16c4),     automatic :: mupba,mumba
+                   type(ZMM16c4),     automatic :: tc0,tc1
+                   type(ZMM16c4),     automatic :: tc2,fac
+                   type(ZMM16c4),     automatic :: tc3,tmp
+                   type(ZMM16r4_t),   automatic :: k0a,k0a2,ba
+                   type(ZMM16r4_t),   automatic :: cphi2,cphi1
+                   type(ZMM16r4_t),   automatic :: sphi2,sphi1
+                   type(ZMM16r4_t),   automatic :: ba1,cphit,sphit
+                   k0a.v   = k0.v*a.v
+                   cphi1.v = cos(phi1.v)
+                   ba.v    = b.v/a.v
+                   epsm1   = eps-v16_1
+                   sphi1.v = sin(phi1.v)
+                   k0a2.v  = k0a.v*k0a.v
+                   mum1    = mu-v16_1
+                   cphi2.v = cos(phi2.v)
+                   ba1.v   = v16_1.v+ba.v
+                   cphit.v = cphi2.v*cphi1.v
+                   tc0     = epsm1-mum1
+                   fac.im  = v16_0.v
+                   sphi2.v = sin(phi2.v)
+                   fac.re  = C078539816339744830961566084582.v* &
+                             k0a2.v*ba.v
+                   sphit.v = sphi2.v*sphi1.v
+                   mupba   = mu+ba
+                   tc0     = cphit/mupba
+                   mumba   = (mu*ba)+v16_1
+                   tc2     = sphit/mumba
+                   tc3     = ba1*tc1+tc2
+                   tmp     = tc0*tc3
+                   TM      = fac*tmp
+            end subroutine TM_f4426_zmm16r4
 
 
             
