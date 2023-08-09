@@ -7959,6 +7959,15 @@ module rcs_cylinder_zmm16r4
                    x0.v   = a2.v*sphi2.v+b2.v*cphi2.v
                    rcs.v  = k04.v*x0.v 
             end function rcs_f4425_zmm16r4
+            
+            !  /*
+            !              Infinitely long homogenous cylinder at normal
+            !              incidence.
+            !              Low frequency approximation (k0a<0.5,k0b<0.5,k1a<0.5,k1b<0.5)
+            !              TM-case, formula 4.4-26
+            !         */
+            
+            
 
 
             
