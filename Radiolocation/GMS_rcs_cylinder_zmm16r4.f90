@@ -1,6 +1,6 @@
 
 
-
+#include "GMS_config.fpp"
 
 !/*MIT License
 !Copyright (c) 2020 Bernard Gingold
@@ -120,12 +120,30 @@ module rcs_cylinder_zmm16r4
                                                  ZMM16r4_t(2.467401100272339654708622749969_sp)
                    type(ZMM16r4_t), parameter :: C08905  = ZMM16r4_t(0.8905_sp)
                    ZMM16r4_t, automatic :: num,arg,ln,ln2,den
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                   integer(kind=i4) :: j
+                    !dir$ loop_count(15)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                   do j=0, 15
+                      num.v(j) = a.v(j)* &
+                                 C9869604401089358618834490999876.v(j)
+                      arg.v(j) = k0a.v(j)*C08905.v(j)
+                      ln.v(j)  = log(arg.v(j))
+                      ln2.v(j) = ln.v(j)*ln.v(j)
+                      den.v(j) = k0a.v(j)*ln2.v(j)+ &
+                                 C2467401100272339654708622749969.v(j)
+                      rcs.v(j) = num.v(j)/den.v(j)
+                   end do
+#else                 
                    num.v = a.v*C9869604401089358618834490999876.v
                    arg.v = k0a.v*C08905.v
                    ln.v  = log(arg.v)
                    ln2.v = ln.v*ln.v
                    den.v = k0a.v*ln2.v+C2467401100272339654708622749969.v
                    rcs.v = num.v/den.v
+#endif
              end function rcs_f419_zmm16r4
              
              
