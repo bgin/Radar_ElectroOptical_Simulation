@@ -4249,6 +4249,23 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: k0a
                    type(ZMM16c4) :: EO
                    ! Locals
+                   !dir$ attributes align : 64 :: C160
+                   !dir$ attributes align : 64 :: C50
+                   !dir$ attributes align : 64 :: C1270
+                   !dir$ attributes align : 64 :: C5120
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: fac
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: ce1
+                   !dir$ attributes align : 64 :: r2
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0r
+                   !dir$ attributes align : 64 :: k0as
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: t3
                    type(ZMM16r4_t),  parameter :: C160 = ZMM16r4_t(16.0_sp)
                    type(ZMM16r4_t),  parameter :: C50  = ZMM16r4_t(5.0_sp)
                    type(ZMM16r4_t),  parameter :: C1270= ZMM16r4_t(127.0_sp)
