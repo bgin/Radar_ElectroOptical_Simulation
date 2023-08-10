@@ -4149,6 +4149,32 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: H
                    type(ZMM16c4) :: HC
                    ! Locals
+                   !dir$ attributes align : 64 :: C0404308i070028  
+                   !dir$ attributes align : 64 :: C0072732i01259755
+                   !dir$ attributes align : 64 :: C0261799387799149436538553615273
+                   !dir$ attributes align : 64 :: C0166666666666666666666666666667
+                   !dir$ attributes align : 64 :: C0666666666666666666666666666667
+                   !dir$ attributes align : 64 :: C1333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0910721
+                   !dir$ attributes align : 64 :: e1a
+                   !dir$ attributes align : 64 :: ce1
+                   !dir$ attributes align : 64 :: e2a
+                   !dir$ attributes align : 64 :: e3a
+                   !dir$ attributes align : 64 :: ce2
+                   !dir$ attributes align : 64 :: ce3
+                   !dir$ attributes align : 64 :: Ht
+                   !dir$ attributes align : 64 :: tmp1
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: k0ai16
+                   !dir$ attributes align : 64 :: k0apaphi
+                   !dir$ attributes align : 64 :: k0apsphi
+                   !dir$ attributes align : 64 :: k0rp12
+                   !dir$ attributes align : 64 :: k0an23
+                   !dir$ attributes align : 64 :: k0an43
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: sqr
+                   !dir$ attributes align : 64 :: t1
                    type(ZMM16c4),   parameter :: C0404308i070028   = ZMM16c4(0.404308_sp,0.70028_sp)        
                    type(ZMM16C4),   parameter :: C0072732i01259755 = ZMM16c4(0.072732_sp,-0.1259755_sp)
                    type(ZMM16r4_t), parameter :: C0261799387799149436538553615273 = &
@@ -4166,7 +4192,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   automatic :: tmp2,tmp3
                    type(ZMM16c4),   automatic :: Ht,tmp1
                    type(ZMM16c4),   automatic :: tc0,tc1
-                   type(ZMM16r4_t), automatic :: k0ai16,k0apaphi,k0apsphi,korp12
+                   type(ZMM16r4_t), automatic :: k0ai16,k0apaphi,k0apsphi,k0rp12
                    type(ZMM16r4_t), automatic :: k0an23,k0an43,t0,sqr,t1
                    k0ai16.v   = k0a.v*C0166666666666666666666666666667.v
                    k0apaphi.v = k0a.v*v16_pi.v+phi.v
