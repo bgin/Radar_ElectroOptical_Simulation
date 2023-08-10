@@ -3848,6 +3848,33 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: E
                    type(ZMM16c4) :: E0
                    ! Locals
+                   !dir$ attributes align : 64 :: C0375
+                   !dir$ attributes align : 64 :: c01171875
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C80
+                   !dir$ attributes align : 64 :: C330
+                   !dir$ attributes align : 64 :: C50
+                   !dir$ attributes align : 64 :: C10
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: ex
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: cosf2
+                   !dir$ attributes align : 64 :: t3
+                   !dir$ attributes align : 64 :: t4
+                   !dir$ attributes align : 64 :: t5
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: cos4f2
+                   !dir$ attributes align : 64 :: k0as
+                   !dir$ attributes align : 64 :: fac
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: cos2f2
+                   !dir$ attributes align : 64 :: cos4f2
+                   !dir$ attributes align : 64 :: r2
+                   !dir$ attributes align : 64 :: ear
                    type(ZMM16r4_t), parameter :: C0375     = ZMM16r4_t(0.375_sp)
                    type(ZMM16r4_t), parameter :: C01171875 = ZMM16r4_t(0.1171875_sp)
                    type(ZMM16r4_t), parameter :: C40       = ZMM16r4_t(4.0_sp)
