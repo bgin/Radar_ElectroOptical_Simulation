@@ -3015,6 +3015,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),  intent(in) :: H
                    type(ZMM16c4) :: Kph
                    ! Locals
+                   !dir$ attributes align : 64 :: I
                    type(ZMM16c4), automatic :: I
                    I.re = -1.0_sp
                    I.im = -1.0_sp
@@ -3042,6 +3043,16 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0
                    type(ZMM16c4) :: Iz
                    ! Locals
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: sqr
+                   !dir$ attributes align : 64 :: lna
+                   !dir$ attributes align : 64 :: ln
+                   !dir$ attributes align : 64 :: C6283185307179586476925286766559
+                   !dir$ attributes align : 64 :: C157079632679489661923132169164 
+                   !dir$ attributes align : 64 :: C08905
                    type(ZMM16c4),   automatic :: t0,t1
                    type(ZMM16c4),   automatic :: t2,div
                    type(ZMM16r4_t), automatic :: sqr
@@ -3079,6 +3090,26 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4),                intent(in) :: n
                    integer(kind=i4),                intent(in) :: PF_DIST
                    !Locals
+                   !dir$ attributes align : 64 :: E0
+                   !dir$ attributes align : 64 :: E1
+                   !dir$ attributes align : 64 :: E2
+                   !dir$ attributes align : 64 :: E3
+                   !dir$ attributes align : 64 :: eps00
+                   !dir$ attributes align : 64 :: eps01
+                   !dir$ attributes align : 64 :: eps02
+                   !dir$ attributes align : 64 :: eps03
+                   !dir$ attributes align : 64 :: mu00
+                   !dir$ attributes align : 64 :: mu01
+                   !dir$ attributes align : 64 :: mu02
+                   !dir$ attributes align : 64 :: mu03
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k0a1
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: k00
+                   !dir$ attributes align : 64 :: k01
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: k03
                    type(ZMM16c4),   automatic :: E0,E1,E2,E3
                    !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
                    type(ZMM16r4_t), automatic :: eps00,eps01,eps02,eps03
@@ -3269,6 +3300,26 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4),                intent(in) :: n
                    integer(kind=i4),                intent(in) :: PF_DIST
                    !Locals
+                   !dir$ attributes align : 64 :: E0
+                   !dir$ attributes align : 64 :: E1
+                   !dir$ attributes align : 64 :: E2
+                   !dir$ attributes align : 64 :: E3
+                   !dir$ attributes align : 64 :: eps00
+                   !dir$ attributes align : 64 :: eps01
+                   !dir$ attributes align : 64 :: eps02
+                   !dir$ attributes align : 64 :: eps03
+                   !dir$ attributes align : 64 :: mu00
+                   !dir$ attributes align : 64 :: mu01
+                   !dir$ attributes align : 64 :: mu02
+                   !dir$ attributes align : 64 :: mu03
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k0a1
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: k00
+                   !dir$ attributes align : 64 :: k01
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: k03
                    type(ZMM16c4),   automatic :: E0,E1,E2,E3
                    !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
                    type(ZMM16r4_t), automatic :: eps00,eps01,eps02,eps03
@@ -3431,6 +3482,26 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4),                intent(in) :: n
                    integer(kind=i4),                intent(in) :: PF_DIST
                    !Locals
+                   !dir$ attributes align : 64 :: E0
+                   !dir$ attributes align : 64 :: E1
+                   !dir$ attributes align : 64 :: E2
+                   !dir$ attributes align : 64 :: E3
+                   !dir$ attributes align : 64 :: eps00
+                   !dir$ attributes align : 64 :: eps01
+                   !dir$ attributes align : 64 :: eps02
+                   !dir$ attributes align : 64 :: eps03
+                   !dir$ attributes align : 64 :: mu00
+                   !dir$ attributes align : 64 :: mu01
+                   !dir$ attributes align : 64 :: mu02
+                   !dir$ attributes align : 64 :: mu03
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k0a1
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: k00
+                   !dir$ attributes align : 64 :: k01
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: k03
                    type(ZMM16c4),   automatic :: E0,E1,E2,E3
                    !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
                    type(ZMM16r4_t), automatic :: eps00,eps01,eps02,eps03
@@ -3565,6 +3636,26 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4),                intent(in) :: n
                    integer(kind=i4),                intent(in) :: PF_DIST
                    !Locals
+                   !dir$ attributes align : 64 :: E0
+                   !dir$ attributes align : 64 :: E1
+                   !dir$ attributes align : 64 :: E2
+                   !dir$ attributes align : 64 :: E3
+                   !dir$ attributes align : 64 :: eps00
+                   !dir$ attributes align : 64 :: eps01
+                   !dir$ attributes align : 64 :: eps02
+                   !dir$ attributes align : 64 :: eps03
+                   !dir$ attributes align : 64 :: mu00
+                   !dir$ attributes align : 64 :: mu01
+                   !dir$ attributes align : 64 :: mu02
+                   !dir$ attributes align : 64 :: mu03
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k0a1
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: k00
+                   !dir$ attributes align : 64 :: k01
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: k03
                    type(ZMM16c4),   automatic :: E0,E1,E2,E3
                    !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
                    type(ZMM16r4_t), automatic :: eps00,eps01,eps02,eps03
@@ -3671,6 +3762,12 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4),                intent(in) :: n
                    integer(kind=i4),                intent(in) :: PF_DIST
                    !Locals
+                   !dir$ attributes align : 64 :: E0
+                   !dir$ attributes align : 64 :: eps00
+                   !dir$ attributes align : 64 :: mu00
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k00
+                  
                    type(ZMM16c4),   automatic :: E0
                    !type(ZMM16c4),   automatic :: Iz0,Iz1,Iz2,Iz3
                    type(ZMM16r4_t), automatic :: eps00
