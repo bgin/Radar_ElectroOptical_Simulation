@@ -119,6 +119,11 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :: C2467401100272339654708622749969 =             &
                                                  ZMM16r4_t(2.467401100272339654708622749969_sp)
                    type(ZMM16r4_t), parameter :: C08905  = ZMM16r4_t(0.8905_sp)
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: ln
+                   !dir$ attributes align : 64 :: ln2
+                   !dir$ attributes align : 64 :: den
                    ZMM16r4_t, automatic :: num,arg,ln,ln2,den
 #if (GMS_EXPLICIT_VECTORIZE) == 1
                    integer(kind=i4) :: j
@@ -159,6 +164,18 @@ module rcs_cylinder_zmm16r4
                    integer(kind=i4)               , intent(in)    :: n
                    integer(kind=i4)               , intent(in)    :: PF_DIST
                    ! Locals
+                   !dir$ attributes align : 64 :: a0
+                   !dir$ attributes align : 64 :: a1
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: a3
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: k0a1
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: rcs0
+                   !dir$ attributes align : 64 :: rcs1
+                   !dir$ attributes align : 64 :: rcs2
+                   !dir$ attributes align : 64 :: rcs3
                    type(ZMM16r4_t), automatic :: a0,a1,a2,a3
                    type(ZMM16r4_t), automatic :: k0a0,k0a1,k0a2,k0a3
                    type(ZMM16r4_t), automatic :: rcs0,rcs1,rcs2,rcs3
