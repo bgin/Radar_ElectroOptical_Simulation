@@ -6349,6 +6349,37 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4) :: Ez
                    ! Locals
+                   !dir$ attributes align : 64 :: C0886226925452758013649083741671 
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582 
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: mul1
+                   !dir$ attributes align : 64 :: mul2
+                   !dir$ attributes align : 64 :: mul3
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: tc2
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: fre
+                   !dir$ attributes align : 64 :: div1
+                   !dir$ attributes align : 64 :: div2
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: k0r
+                   !dir$ attributes align : 64 :: k0z
+                   !dir$ attributes align : 64 :: k0a0
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: cos2ps
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: sin2ps
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: scosps
                    type(ZMM16r4_t),  parameter :: C0886226925452758013649083741671 =   &
                                                          ZMM16r4_t(0.886226925452758013649083741671_sp)
                    type(ZMM16r4_t),  parameter :: C078539816339744830961566084582  =   &
