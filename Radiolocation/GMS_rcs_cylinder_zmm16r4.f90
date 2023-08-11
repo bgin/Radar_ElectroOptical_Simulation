@@ -6223,6 +6223,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16c4)  :: A0
                    ! Locals
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: k0a2
                    type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
                                                         ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t),  automatic :: k0a2
@@ -6241,6 +6243,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16c4)  :: B1
                    ! Locals
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C043616
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: t0
                    type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
                                                             ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t),  parameter :: C043616 = ZMM16r4_t(0.43616_sp)
@@ -6268,6 +6274,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C025
+                   !dir$ attributes align : 64 :: a4
+                   !dir$ attributes align : 64 :: k0a3
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                          ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C025 = ZMM16r4_t(0.25_sp)
@@ -6295,6 +6305,13 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: phi
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C019024
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: cos2p
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                              ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C019024 =  ZMM16r4_t(0.19024_sp)
