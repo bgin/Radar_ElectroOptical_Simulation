@@ -5456,6 +5456,16 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: psi
                    type(ZMM16c4) :: Rin
                    ! Locals
+                    !dir$ attributes align : 64 :: div
+                    !dir$ attributes align : 64 :: mul
+                    !dir$ attributes align : 64 :: den
+                    !dir$ attributes align : 64 :: num
+                    !dir$ attributes align : 64 :: sq1
+                    !dir$ attributes align : 64 :: sq2
+                    !dir$ attributes align : 64 :: tc0
+                    !dir$ attributes align : 64 :: cosp
+                    !dir$ attributes align : 64 :: sinp
+                    !dir$ attributes align : 64 :: sin2p
                    type(ZMM16c4),   automatic :: div,mul
                    type(ZMM16c4),   automatic :: den,num
                    type(ZMM16c4),   automatic :: sq1,sq2
@@ -5494,6 +5504,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16c4) :: Rext
                    ! Locals
+                   !dir$ attributes align : 64 :: sq1
+                   !dir$ attributes align : 64 :: sq2
+                   !dir$ attributes align : 64 :: dif
+                   !dir$ attributes align : 64 :: summ
                    type(ZMM16c4),  automatic :: sq1,sq2
                    type(ZMM16c4),  automatic :: dif,summ
                    sq1  = csqrt_c16(mu)
@@ -5520,6 +5534,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16c4) :: Tin
                    ! Locals
+                   !dir$ attributes align : 64 :: sq1
+                   !dir$ attributes align : 64 :: sq2
+                   !dir$ attributes align : 64 :: summ
+                   !dir$ attributes align : 64 :: mu2
                    type(ZMM16c4),  automatic :: sq1,sq2
                    type(ZMM16c4),  automatic :: summ,mu2
                    sq1  = csqrt_c16(mu)
@@ -5545,6 +5563,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16c4) :: Tout
                    ! Locals
+                   !dir$ attributes align : 64 :: sq1
+                   !dir$ attributes align : 64 :: sq2
+                   !dir$ attributes align : 64 :: summ
+                   !dir$ attributes align : 64 :: eps2
                    type(ZMM16c4),  automatic :: sq1,sq2
                    type(ZMM16c4),  automatic :: summ,eps2
                    sq1  = csqrt_c16(eps)
@@ -5570,6 +5592,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: eps
                    type(ZMM16c4) :: Rint
                    ! Locals
+                   !dir$ attributes align : 64 :: Cn10
+                   !dir$ attributes align : 64 :: tc0
                    type(ZMM16r4_t), parameter :: Cn10 = ZMM16r4_t(-1.0_sp)
                    type(ZMM16c4),   automatic :: tc0
                    tc0  = Rext_f4164_zmm16r4(mu,eps)
