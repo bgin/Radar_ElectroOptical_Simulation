@@ -4563,6 +4563,9 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: phi2
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: cosp2
+                   !dir$ attributes align : 64 :: t0
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
                                                      ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t), automatic :: cosp2,t0
@@ -4587,6 +4590,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: a
                    type(ZMM16r4_t) :: rcs
                    ! LOcals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328 
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
                                                      ZMM16r4_t(3.14159265358979323846264338328_sp)
                    rcs.v = a.v*C314159265358979323846264338328.v
