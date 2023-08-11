@@ -5803,6 +5803,25 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: eps1
                    type(ZMM16c4),    intent(in) :: eps0
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: e1m
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: e0m
+                   !dir$ attributes align : 64 :: div2
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: pia
+                   !dir$ attributes align : 64 :: k0a03
+                   !dir$ attributes align : 64 :: a1a0
+                   !dir$ attributes align : 64 :: pa1
+                   !dir$ attributes align : 64 :: ma1
+                   !dir$ attributes align : 64 :: cab
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: a1a0s
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328 = &
