@@ -6190,6 +6190,12 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16r4_t),  intent(in) :: phi
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C003607
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: cos2p
                    type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 = &
                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t), parameter :: C003607 = ZMM16r4_t(0.03607_sp)
