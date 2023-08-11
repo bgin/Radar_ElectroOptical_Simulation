@@ -4478,6 +4478,29 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: k0
                    type(ZMM16c4) :: HC
                    ! Locals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328 
+                   !dir$ attributes align : 64 :: C0261799387799149436538553615273
+                   !dir$ attributes align : 64 :: C12701695
+                   !dir$ attributes align : 64 :: C02284945
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C3063830
+                   !dir$ attributes align : 64 :: C2200000 
+                   !dir$ attributes align : 64 :: C03957635
+                   !dir$ attributes align : 64 :: C0166666666666666666666666666667 
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: e1a
+                   !dir$ attributes align : 64 :: ce1
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: k0r
+                   !dir$ attributes align : 64 :: k0a
+                   !dir$ attributes align : 64 :: k0a13
+                   !dir$ attributes align : 64 :: k0an13
+                   !dir$ attributes align : 64 :: k0an16
+                   !dir$ attributes align : 64 :: r2
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: exar
+                   !dir$ attributes align : 64 :: rex
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
                                                      ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t), parameter :: C0261799387799149436538553615273 = &
