@@ -6040,6 +6040,21 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: eps1
                    type(ZMM16c4) :: B1
                    ! Locals
+                     !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: rat
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: divs
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: sqp
+                   !dir$ attributes align : 64 :: sqm
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: facr
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: a1a0
+                   !dir$ attributes align : 64 :: a1a0s
+                   !dir$ attributes align : 64 :: ma1
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16c4),   automatic :: rat,div
@@ -6087,10 +6102,15 @@ module rcs_cylinder_zmm16r4
                    use mod_vecconsts, only : v16_0
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16c4) :: A0
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0ah
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
                    ! Locals
+                   
                    type(ZMM16r4_t), automatic :: k0a2,k0ah
                    k0a2.v = k0a.v*k0a.v
                    k0ah.v = C05.v*k0a2.v
@@ -6108,6 +6128,10 @@ module rcs_cylinder_zmm16r4
                    use mod_vecconsts, only : v16_0
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16c4) :: B1
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C18992
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0ah
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t), parameter :: C18992 = ZMM16r4_t(1.8992_sp)
@@ -6135,6 +6159,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: a
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C00625
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: k0a3
                    type(ZMM16r4_t), parameter :: C9869604401089358618834490999876 = &
                                                           ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t), parameter :: C00625 = ZMM16r4_t(0.0625_SP)
