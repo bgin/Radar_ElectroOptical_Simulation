@@ -4701,7 +4701,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: k0a
                    type(ZMM16r4_t) :: rcs
                    ! Locals
-                   type(ZMM16r4_t), parameter :; C40 = ZMM16r4_t(4.0_sp)
+                   !dir$ attributes align : 64 :: C40
+                   type(ZMM16r4_t), parameter :: C40 = ZMM16r4_t(4.0_sp)
                    rcs.v = C40.v*k0a.v*k0a.v 
                end function rcs_f4141_zmm16r4
                
@@ -4731,6 +4732,24 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: mu1
                    type(ZMM16c4) :: Es
                    !Locals
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C1253314137315500251207882642406
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: k0r
+                   !dir$ attributes align : 64 :: k0as
+                   !dir$ attributes align : 64 :: k0as2
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: sk0r
+                   !dir$ attributes align : 64 :: t3
+                   !dir$ attributes align : 64 :: mul
                    type(ZMM16r4_t), parameter :: C20 = ZMM16r4_t(2.0_sp)
                    type(ZMM16r4_t), parameter :: C05 = ZMM16r4_t(0.5_sp)
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
