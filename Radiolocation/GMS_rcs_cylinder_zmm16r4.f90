@@ -5876,6 +5876,14 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: eps1
                    type(ZMM16c4),    intent(in) :: eps0
                    type(ZMM16c4) :: A0
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: a1a0
+                   !dir$ attributes align : 64 :: a1a0s
+                   !dir$ attributes align : 64 :: ma1
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16c4),   automatic :: frac,div
@@ -5915,6 +5923,14 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: mu1
                    type(ZMM16c4),    intent(in) :: mu0
                    type(ZMM16c4) :: B0
+                    !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: a1a0
+                   !dir$ attributes align : 64 :: a1a0s
+                   !dir$ attributes align : 64 :: ma1
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16c4),   automatic :: frac,div
@@ -5956,6 +5972,21 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: mu0
                    type(ZMM16c4) :: A1
                    ! Locals
+                    !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: rat
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: divs
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: sqp
+                   !dir$ attributes align : 64 :: sqm
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: facr
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: a1a0
+                   !dir$ attributes align : 64 :: a1a0s
+                   !dir$ attributes align : 64 :: ma1
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582 = &
                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16c4),   automatic :: rat,div
