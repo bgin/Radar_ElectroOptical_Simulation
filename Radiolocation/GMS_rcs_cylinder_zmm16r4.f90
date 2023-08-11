@@ -5404,6 +5404,17 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: psi
                    type(ZMM16c4) :: Rin
                    ! Locals
+                    !dir$ attributes align : 64 :: div
+                    !dir$ attributes align : 64 :: mul
+                    !dir$ attributes align : 64 :: den
+                    !dir$ attributes align : 64 :: num
+                    !dir$ attributes align : 64 :: sq1
+                    !dir$ attributes align : 64 :: sq2
+                    !dir$ attributes align : 64 :: tc0
+                    !dir$ attributes align : 64 :: cosp
+                    !dir$ attributes align : 64 :: sinp
+                    !dir$ attributes align : 64 :: sin2p
+                    
                    type(ZMM16c4),   automatic :: div,mul
                    type(ZMM16c4),   automatic :: den,num
                    type(ZMM16c4),   automatic :: sq1,sq2
