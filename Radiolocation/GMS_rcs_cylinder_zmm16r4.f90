@@ -4997,7 +4997,6 @@ module rcs_cylinder_zmm16r4
                      !dir$ attributes align : 64 :: k0a3
                      !dir$ attributes align : 64 :: epst
                      !dir$ attributes align : 64 :: mut
-                     !dir$ attributes align : 64 :: cosp
                      !dir$ attributes align : 64 :: sqr
                      !dir$ attributes align : 64 :: t2
                      !dir$ attributes align : 64 :: diff
@@ -5042,6 +5041,17 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: mu0
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                     !dir$ attributes align : 64 :: C314159265358979323846264338328
+                     !dir$ attributes align : 64 :: C078539816339744830961566084582
+                     !dir$ attributes align : 64 :: C20
+                     !dir$ attributes align : 64 :: t0
+                     !dir$ attributes align : 64 :: t1
+                     !dir$ attributes align : 64 :: k0a3
+                     !dir$ attributes align : 64 :: epst
+                     !dir$ attributes align : 64 :: mut
+                     !dir$ attributes align : 64 :: sqr
+                     !dir$ attributes align : 64 :: t2
+                     !dir$ attributes align : 64 :: diff
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  =
                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
@@ -5083,6 +5093,17 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: mu0
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                     !dir$ attributes align : 64 :: C314159265358979323846264338328
+                     !dir$ attributes align : 64 :: C078539816339744830961566084582
+                     !dir$ attributes align : 64 :: C20
+                     !dir$ attributes align : 64 :: t0
+                     !dir$ attributes align : 64 :: t1
+                     !dir$ attributes align : 64 :: k0a3
+                     !dir$ attributes align : 64 :: epst
+                     !dir$ attributes align : 64 :: mut 
+                     !dir$ attributes align : 64 :: sqr
+                     !dir$ attributes align : 64 :: t2
+                     !dir$ attributes align : 64 :: diff
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  =
                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
