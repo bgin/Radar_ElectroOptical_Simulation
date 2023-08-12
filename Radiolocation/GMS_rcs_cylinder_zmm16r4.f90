@@ -7691,6 +7691,16 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: phi
                    type(ZMM16r4_t)  :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C2263536968418066997601902412409
+                   !dir$ attributes align : 64 :: k04
+                   !dir$ attributes align : 64 :: a6
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: cpsii
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: term
+                   !dir$ attributes align : 64 :: cpsis
                    type(ZMM16r4_t),  parameter :: C2263536968418066997601902412409 = &
                                                          ZMM16r4_t(2.263536968418066997601902412409_sp)
                    type(ZMM16r4_t),  parameter :: C05 =  ZMM16r4_t(0.5_sp)
@@ -7733,6 +7743,12 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: a1
                    ! Locals
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: k0h2
+                   !dir$ attributes align : 64 :: spsi
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: spsi2
+                   !dir$ attributes align : 64 :: sarg
                    type(ZMM16r4_t),  parameter :: C20 = ZMM16r4_t(2.0_sp)
                    type(ZMM16r4_t),  automatic :: k0h2,spsi,arg,spsi2,sarg
                    k0h2    = k0h.v+k0h.v
@@ -7755,6 +7771,10 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: a2
                    ! Locals
+                   !dir$ attributes align : 64 :: spsi
+                   !dir$ attributes align : 64 :: msp1
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: sarg
                    type(ZMM16r4_t),  automatic :: spsi,msp1,arg,sarg
                    spsi.v  = sin(psi.v)
                    msp1.v  = v16_1.v-spsi.v
@@ -7791,6 +7811,13 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: F1
                    ! Locals
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C08905
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: om
+                   !dir$ attributes align : 64 :: om2
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: larg
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C08905 = ZMM16r4_t(0.8905_sp)
