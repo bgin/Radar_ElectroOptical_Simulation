@@ -6457,6 +6457,25 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4) :: Eph
                    ! Locals
+                   !dir$ attributes align : 64 :: C2506628274631000502415765284811 
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: mul
+                   !dir$ attributes align : 64 :: emum1
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: sinph
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: sinpsp
                    type(ZMM16r4_t), parameter :: C2506628274631000502415765284811 = &
                                                          ZMM16r4_t(2.506628274631000502415765284811_sp)
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
@@ -6520,6 +6539,26 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4) :: Hz
                    ! Locals
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C000001763712109284471382861586
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: mul
+                   !dir$ attributes align : 64 :: emum1
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: scosp
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: sinph
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: sinpsp
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
                                                          ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t), parameter :: C000001763712109284471382861586  = &
