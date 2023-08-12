@@ -7377,6 +7377,19 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), intent(in) :: a
                    type(ZMM16c4) :: ES
                    ! Locals
+                   !dir$ attributes align : 64 :: C0424413181578387562050356702327
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: ir
+                   !dir$ attributes align : 64 :: a3
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: spsii
+                   !dir$ attributes align : 64 :: spsis
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
                    type(ZMM16r4_t),  parameter :: C0424413181578387562050356702327 = &
                                                         ZMM16r4_t(0.424413181578387562050356702327_sp)
                    type(ZMM16c4),    automatic :: ea,ce
