@@ -8685,6 +8685,15 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: G
                    ! Locals
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0577350269189625764509148780502
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: inv
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: carg
+                   !dir$ attributes align : 64 :: x0
                    type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
                                                            ZMM16r4_t(0.333333333333333333333333333333333333333333_sp)
                    type(ZMM16r4_t),   parameter :: C0577350269189625764509148780502             = &
@@ -8713,6 +8722,15 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: F
                    ! Locals
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0577350269189625764509148780502
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: inv
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: carg
+                   !dir$ attributes align : 64 :: x0
                    type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
                                                            ZMM16r4_t(0.333333333333333333333333333333333333333333_sp)
                    type(ZMM16r4_t),   parameter :: C0577350269189625764509148780502             = &
@@ -8750,6 +8768,21 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psii
                    type(ZMM16r4_t),   intent(in) :: psis
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: trm1
+                   !dir$ attributes align : 64 ::  trm2
+                   !dir$ attributes align : 64 ::  trm3
+                   !dir$ attributes align : 64 :: cphi
+                   !dir$ attributes align : 64 :: cpsis
+                   !dir$ attributes align : 64 :: c2psis
+                   !dir$ attributes align : 64 :: c2psii
+                   !dir$ attributes align : 64 :: spsii
+                   !dir$ attributes align : 64 :: spsis
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: sarg
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: x1
                    type(ZMM16r4_t),   parameter :: C05 = ZMM16r4_t(0.5_sp)
                    type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t),   automatic :: trm1,trm2,trm3
