@@ -7332,6 +7332,13 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: ln4h
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C0279252680319092732307790522958
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: inv
+                   !dir$ attributes align : 64 :: k04
+                   !dir$ attributes align : 64 :: h6
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
                    type(ZMM16r4_t),  parameter :: C0279252680319092732307790522958 = &
                                                       ZMM16r4_t(0.279252680319092732307790522958_sp)
                    type(ZMM16r4_t),  automatic :: den,inv,k04,h6
