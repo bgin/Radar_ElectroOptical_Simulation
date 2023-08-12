@@ -6973,6 +6973,31 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),    intent(in) :: mu
                    type(ZMM16r4_t) :: rcs
                    ! LOcals
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: epscps
+                   !dir$ attributes align : 64 :: div
+                   !dir$ attributes align : 64 :: mul1
+                   !dir$ attributes align : 64 :: mul2
+                   !dir$ attributes align : 64 :: mul3
+                   !dir$ attributes align : 64 :: k0a03
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: cos2p
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: sin2ps
+                   !dir$ attributes align : 64 :: spia
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: cab
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                         ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C20 = ZMM16r4_t(2.0_sp)
