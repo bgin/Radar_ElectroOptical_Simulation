@@ -8042,6 +8042,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: H2
+                   
                    type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = &
                                                           ZMM16r4_t(1.57079632679489661923132169164_sp)
                    type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
@@ -8493,6 +8494,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: M2
                    ! Locals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0577350269189625764509148780502
+                   !dir$ attributes align : 64 :: C0666666666666666666666666666667 
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C10
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: inv1
+                   !dir$ attributes align : 64 :: inv2
+                   !dir$ attributes align : 64 :: arg1
+                   !dir$ attributes align : 64 :: arg2
+                   !dir$ attributes align : 64 :: carg1
+                   !dir$ attributes align : 64 :: carg2
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: x1
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328              = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
@@ -8541,6 +8558,23 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: N1
                    ! Locals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0577350269189625764509148780502
+                   !dir$ attributes align : 64 :: C0666666666666666666666666666667 
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C40n
+                   !dir$ attributes align : 64 :: C10
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: inv1
+                   !dir$ attributes align : 64 :: inv2
+                   !dir$ attributes align : 64 :: arg1
+                   !dir$ attributes align : 64 :: arg2
+                   !dir$ attributes align : 64 :: carg1
+                   !dir$ attributes align : 64 :: carg2
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: x1
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328              = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
@@ -8584,6 +8618,23 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psi
                    type(ZMM16r4_t) :: N2
                    ! Locals
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C0333333333333333333333333333333333333333333
+                   !dir$ attributes align : 64 :: C0577350269189625764509148780502
+                   !dir$ attributes align : 64 :: C0666666666666666666666666666667 
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: C40n
+                   !dir$ attributes align : 64 :: C10
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: inv1
+                   !dir$ attributes align : 64 :: inv2
+                   !dir$ attributes align : 64 :: arg1
+                   !dir$ attributes align : 64 :: arg2
+                   !dir$ attributes align : 64 :: carg1
+                   !dir$ attributes align : 64 :: carg2
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: x1
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328              = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C0333333333333333333333333333333333333333333 = &
