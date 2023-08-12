@@ -9224,6 +9224,21 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0
                    type(ZMM16r4_t),   intent(out):: T
                    logical(kind=i2),  intent(out):: stat 
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328 
+                   !dir$ attributes align : 64 :: k0c
+                   !dir$ attributes align : 64 :: c
+                   !dir$ attributes align : 64 :: alp
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: b2
+                   !dir$ attributes align : 64 :: sphi
+                   !dir$ attributes align : 64 :: sphi2
+                   !dir$ attributes align : 64 :: cphi
+                   !dir$ attributes align : 64 :: cphi2
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: sarg
+                   !dir$ attributes align : 64 :: rat
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: tmp
                    type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   automatic :: k0c,c,alp,a2,b2
