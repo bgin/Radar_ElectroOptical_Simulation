@@ -7990,6 +7990,20 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: G1
+                    !dir$ attributes align : 64 :: C314159265358979323846264338328 
+                    !dir$ attributes align : 64 :: C05
+                    !dir$ attributes align : 64 :: C20
+                    !dir$ attributes align : 64 :: C08905
+                    !dir$ attributes align : 64 :: L
+                    !dir$ attributes align : 64 :: S
+                    !dir$ attributes align : 64 :: om
+                    !dir$ attributes align : 64 :: G2
+                    !dir$ attributes align : 64 :: ln
+                    !dir$ attributes align : 64 :: num
+                    !dir$ attributes align : 64 :: den
+                    !dir$ attributes align : 64 :: om2
+                    !dir$ attributes align : 64 :: t0
+                    !dir$ attributes align : 64 :: rat
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
                                                              ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
@@ -8728,6 +8742,7 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psii
                    type(ZMM16r4_t),   intent(in) :: phi 
                    type(ZMM16r4_t) :: rcs
+                   
                    type(ZMM16r4_t),   parameter :: C05 = ZMM16r4_t(0.5_sp)
                    type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t),   automatic :: trm1,phi2,h2
@@ -8760,6 +8775,17 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0
                    type(ZMM16r4_t),   intent(in) :: phi 
                    type(ZMM16r4_t) :: rcs
+                     !dir$ attributes align : 64 :: C40
+                     !dir$ attributes align : 64 :: trm1
+                     !dir$ attributes align : 64 :: trm2
+                     !dir$ attributes align : 64 :: cpsii
+                     !dir$ attributes align : 64 :: spsii
+                     !dir$ attributes align : 64 :: x0
+                     !dir$ attributes align : 64 :: x1
+                     !dir$ attributes align : 64 :: k0h
+                     !dir$ attributes align : 64 :: h2
+                     !dir$ attributes align : 64 :: arg
+                     !dir$ attributes align : 64 :: sarg
                    type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp) 
                    type(ZMM16r4_t),   automatic :: trm1,trm2,cpsii,spsii
                    type(ZMM16r4_t),   automatic :: x0,x1,k0h,h2
@@ -8794,6 +8820,8 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t),   intent(in) :: h
                    type(ZMM16r4_t)  :: rcs
+                   !dir$ attributes align : 64 :: C40
+                   !dir$ attributes align : 64 :: h2
                    type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp) 
                    type(ZMM16r4_t),   automatic :: h2
                    h2.v  = h.v*h.v
