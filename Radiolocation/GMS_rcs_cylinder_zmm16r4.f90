@@ -6623,6 +6623,33 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4) :: Hz
                    ! Locals
+                   !dir$ attributes align : 64 :: C1253314137315500251207882642406
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: mul
+                   !dir$ attributes align : 64 :: mul2
+                   !dir$ attributes align : 64 :: mul3
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: mucs
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: scosps
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: sk0r
+                   !dir$ attributes align : 64 :: cos2ps
+                   !dir$ attributes align : 64 :: sin2ps
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: t0
                    type(ZMM16r4_t), parameter :: C1253314137315500251207882642406 = &
                                                        ZMM16r4_t(1.253314137315500251207882642406_sp)
                    type(ZMM16r4_t), parameter :: C078539816339744830961566084582  = &
@@ -6696,6 +6723,32 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16c4),   intent(in) :: mu
                    type(ZMM16c4) :: Ep
                    ! Locals
+                   !dir$ attributes align : 64 :: C000001763712109284471382861586
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: mul1
+                   !dir$ attributes align : 64 :: mul2
+                   !dir$ attributes align : 64 :: mul3
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: mup1
+                   !dir$ attributes align : 64 :: epsp1
+                   !dir$ attributes align : 64 :: mucs
+                   !dir$ attributes align : 64 :: frac
+                   !dir$ attributes align : 64 :: ea
+                   !dir$ attributes align : 64 :: ce
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: cosps
+                   !dir$ attributes align : 64 :: k0a02
+                   !dir$ attributes align : 64 :: sk0r
+                   !dir$ attributes align : 64 :: cos2ps
+                   !dir$ attributes align : 64 :: sin2ps
+                   !dir$ attributes align : 64 :: cosp
+                   !dir$ attributes align : 64 :: t0
                    type(ZMM16r4_t),  parameter :: C000001763712109284471382861586 = &
                                                          ZMM16r4_t(0.00001763712109284471382861586_sp)
                    type(ZMM16r4_t),  parameter :: C078539816339744830961566084582 = &
