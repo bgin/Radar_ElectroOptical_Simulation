@@ -9136,6 +9136,18 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: b
                    type(ZMM16r4_t),  intent(in) :: phi
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328 
+                   !dir$ attributes align : 64 :: C15
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: b2
+                   !dir$ attributes align : 64 :: a2b2
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: carg
+                   !dir$ attributes align : 64 :: carg2
+                   !dir$ attributes align : 64 :: sarg
+                   !dir$ attributes align : 64 :: sarg2
+                   !dir$ attributes align : 64 :: pow32
+                   !dir$ attributes align : 64 :: x0
                    type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),  parameter :: C15 = ZMM16r4_t(1.5_sp)
@@ -9177,6 +9189,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: phi2
                    type(ZMM16r4_t),   intent(in) :: b
                    logical(kind=i2) :: msk
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C0166666666666666666666666666667
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: b2
+                   !dir$ attributes align : 64 :: sphi1
+                   !dir$ attributes align : 64 :: cphi1
+                   !dir$ attributes align : 64 :: trm1
+                   !dir$ attributes align : 64 :: trm2
+                   !dir$ attributes align : 64 :: rt6
+                   !dir$ attributes align : 64 :: k02
+                   !dir$ attributes align : 64 :: absp
+                   !dir$ attributes align : 64 :: sphi1s
+                   !dir$ attributes align : 64 :: cphi1s
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0b2
+                   !dir$ attributes align : 64 :: x0
                    type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
                                                         ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C0166666666666666666666666666667 = &
