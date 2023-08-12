@@ -7841,6 +7841,14 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: F2
                    ! Locals
+                   !dir$ attributes align : 64 :: C9869604401089358618834490999876
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C08905
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: om
+                   !dir$ attributes align : 64 :: om2
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: larg
                    type(ZMM16r4_t),  parameter :: C9869604401089358618834490999876 = &
                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C314159265358979323846264338328  = &
@@ -7871,6 +7879,20 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: L
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C411
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C08905
+                   !dir$ attributes align : 64 :: om
+                   !dir$ attributes align : 64 :: del
+                   !dir$ attributes align : 64 :: ck0h
+                   !dir$ attributes align : 64 :: sk0h
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: ar1
+                   !dir$ attributes align : 64 :: ar2
+                   !dir$ attributes align : 64 :: lar1
+                   !dir$ attributes align : 64 :: lar2
                    type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
                                                              ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t),   parameter :: C411    = ZMM16r4_t(4.11_sp)
@@ -7906,6 +7928,15 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t) :: S
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582
+                   !dir$ attributes align : 64 :: C712
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: ar
+                   !dir$ attributes align : 64 :: lar
+                   !dir$ attributes align : 64 :: sk0h
+                   !dir$ attributes align : 64 :: ck0h
+                   !dir$ attributes align : 64 :: t0
+                
                    type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
                                                              ZMM16r4_t(0.78539816339744830961566084582_sp)
                    type(ZMM16r4_t),   parameter :: C712    = ZMM16r4_t(7.12_sp)
