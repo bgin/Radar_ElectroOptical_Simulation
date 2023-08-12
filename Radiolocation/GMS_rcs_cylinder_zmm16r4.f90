@@ -7966,6 +7966,11 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: G2
+                   !dir$ attributes align : 64 :: C05
+                   !dir$ attributes align : 64 :: L
+                   !dir$ attributes align : 64 :: S
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: den
                    type(ZMM16r4_t),   parameter :: C05 = ZMM16r4_t(0.5_sp)
                    type(ZMM16r4_t),   automatic :: L,S,num,den
                    L     = L_f4334_zmm16r4(k0h,k0a)
