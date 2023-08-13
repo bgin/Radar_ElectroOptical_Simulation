@@ -8134,6 +8134,49 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  intent(in) :: psi
                    type(ZMM16r4_t) :: rcs
                    ! Locals
+                   !dir$ attributes align : 64 :: C50265482457436691815402294132472
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: a1
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: a3
+                   !dir$ attributes align : 64 :: F1
+                   !dir$ attributes align : 64 :: F2
+                   !dir$ attributes align : 64 :: G1
+                   !dir$ attributes align : 64 :: G2
+                   !dir$ attributes align : 64 :: H2
+                   !dir$ attributes align : 64 :: H1
+                   !dir$ attributes align : 64 :: frst
+                   !dir$ attributes align : 64 :: cgami
+                   !dir$ attributes align : 64 :: cgams
+                   !dir$ attributes align : 64 :: c2gami
+                   !dir$ attributes align : 64 :: c2gams
+                   !dir$ attributes align : 64 :: sinps
+                   !dir$ attributes align : 64 :: arg
+                   !dir$ attributes align : 64 :: sarg
+                   !dir$ attributes align : 64 :: carg
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: t2
+                   !dir$ attributes align : 64 :: t3
+                   !dir$ attributes align : 64 :: t4
+                   !dir$ attributes align : 64 :: x0
+                   !dir$ attributes align : 64 :: x1
+                   !dir$ attributes align : 64 :: t5
+                   !dir$ attributes align : 64 :: b0
+                   !dir$ attributes align : 64 :: a1s
+                   !dir$ attributes align : 64 :: F1F2
+                   !dir$ attributes align : 64 :: G1G2
+                   !dir$ attributes align : 64 :: a2pa3
+                   !dir$ attributes align : 64 :: a2ma3
+                   !dir$ attributes align : 64 :: H1H2
+                   !dir$ attributes align : 64 :: a2sma3s
+                   !dir$ attributes align : 64 :: GHGH
+                   !dir$ attributes align : 64 :: a21
+                   !dir$ attributes align : 64 :: FGFG
+                   !dir$ attributes align : 64 :: FHFH
+                   !dir$ attributes align : 64 :: tmp1
+                   !dir$ attributes align : 64 :: tmp2
+                   !dir$ attributes align : 64 :: tmp3
                    type(ZMM16r4_t),  parameter  :: C50265482457436691815402294132472 = &
                                                           ZMM16r4_t(50.265482457436691815402294132472_sp)
                    type(ZMM16r4_t),  parameter  :: C20 =  ZMM16r4_t(2.0_sp)
@@ -8219,6 +8262,25 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: psii
                    type(ZMM16r4_t),   intent(in) :: g0
                    type(ZMM16r4_t) :: rcs
+                   !dir$ attributes align : 64 :: C157079632679489661923132169164
+                   !dir$ attributes align : 64 :: cgami
+                   !dir$ attributes align : 64 :: cgams
+                   !dir$ attributes align : 64 :: c2gami
+                   !dir$ attributes align : 64 :: c2gams
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: carg1
+                   !dir$ attributes align : 64 :: carg2
+                   !dir$ attributes align : 64 :: spsii
+                   !dir$ attributes align : 64 :: spsis
+                   !dir$ attributes align : 64 :: cpsii
+                   !dir$ attributes align : 64 :: cpsis
+                   !dir$ attributes align : 64 :: rat1
+                   !dir$ attributes align : 64 :: rat2
+                   !dir$ attributes align : 64 :: t1
+                   !dir$ attributes align : 64 :: c1
+                   !dir$ attributes align : 64 :: c2
+                   !dir$ attributes align : 64 :: tmp0
+                   !dir$ attributes align : 64 :: tmp1
                    type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = 
                                                         ZMM16r4_t(1.57079632679489661923132169164_sp)
                    type(ZMM16r4_t),   automatic :: cgami,cgams
