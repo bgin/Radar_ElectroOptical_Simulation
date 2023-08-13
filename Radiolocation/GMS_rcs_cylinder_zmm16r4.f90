@@ -8042,7 +8042,13 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: H2
-                   
+                    !dir$ attributes align : 64 :: C157079632679489661923132169164
+                    !dir$ attributes align : 64 :: C05
+                    !dir$ attributes align : 64 :: L
+                    !dir$ attributes align : 64 :: S
+                    !dir$ attributes align : 64 :: num
+                    !dir$ attributes align : 64 :: den
+                    !dir$ attributes align : 64 :: arg
                    type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = &
                                                           ZMM16r4_t(1.57079632679489661923132169164_sp)
                    type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
@@ -8065,6 +8071,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   intent(in) :: k0h
                    type(ZMM16r4_t),   intent(in) :: k0a
                    type(ZMM16r4_t) :: H1
+                   !dir$ attributes align : 64 :: C314159265358979323846264338328
+                   !dir$ attributes align : 64 :: C157079632679489661923132169164
+                   !dir$ attributes align : 64 :: C05  
+                   !dir$ attributes align : 64 :: C20
+                   !dir$ attributes align : 64 :: C08905
+                   !dir$ attributes align : 64 :: H2
+                   !dir$ attributes align : 64 :: om
+                   !dir$ attributes align : 64 :: ar
+                   !dir$ attributes align : 64 :: lar
+                   !dir$ attributes align : 64 :: L
+                   !dir$ attributes align : 64 :: S
+                   !dir$ attributes align : 64 :: num
+                   !dir$ attributes align : 64 :: den
+                   !dir$ attributes align : 64 :: om2
+                   !dir$ attributes align : 64 :: t0
+                   !dir$ attributes align : 64 :: arg
                    type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
                                                              ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t),   parameter :: C157079632679489661923132169164 = &
