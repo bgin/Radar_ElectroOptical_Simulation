@@ -5803,9 +5803,11 @@ module rcs_cylinder_zmm16r4
                                                     ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16c4),   automatic :: tc0
                    type(ZMM16r4_t), automatic :: cab
+   
                    tc0   = Rext_f4164_zmm16r4(mu,eps)
                    cab   = cabs_c16(tc0)
                    rcs.v = cab.v*C314159265358979323846264338328.v*a.v
+
                 end function rcs_f4191_zmm16r4
                 
                 
@@ -6291,10 +6293,24 @@ module rcs_cylinder_zmm16r4
                    ! Locals
                    
                    type(ZMM16r4_t), automatic :: k0a2,k0ah
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                       k0a2.v(j) = k0a.v(j)*k0a.v(j)
+                       k0ah.v(j) = C05.v(j)*k0a2.v(j)
+                       A0.re(j)  = C078539816339744830961566084582.v(j)*k0ah.v(j)
+                       A0.im(j)  = v16_0.v(j)
+                    end do     
+#else              
                    k0a2.v = k0a.v*k0a.v
                    k0ah.v = C05.v*k0a2.v
                    A0.re  = C078539816339744830961566084582.v*k0ah.v
                    A0.im  = v16_0.v
+#endif
                 end function A0_f41162_zmm16r4
                 
                 
