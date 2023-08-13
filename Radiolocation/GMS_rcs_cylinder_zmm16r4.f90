@@ -6332,10 +6332,24 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :: C18992 = ZMM16r4_t(1.8992_sp)
                    ! Locals
                    type(ZMM16r4_t), automatic :: k0a2,k0ah
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15          
+                         k0a2.v(j) = k0a.v(j)*k0a.v(j)
+                         k0ah.v(j) = C18992.v(j)*k0a2.v(j)
+                         B1.re(j)  = C078539816339744830961566084582.v(j)*k0ah.v(j)
+                         B1.im(j)  = v16_0.v(j)
+                    end do
+#else         
                    k0a2.v = k0a.v*k0a.v
                    k0ah.v = C18992.v*k0a2.v
                    B1.re  = C078539816339744830961566084582.v*k0ah.v
                    B1.im  = v16_0.v
+#endif
                 end function B1_f41162_zmm16r4
                 
                 !  /*
