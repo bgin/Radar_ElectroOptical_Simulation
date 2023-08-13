@@ -6377,9 +6377,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :: C00625 = ZMM16r4_t(0.0625_SP)
                    ! Locals
                    type(ZMM16r4_t), automatic :: t0,k0a3
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15        
+                       t0.v(j)   = C9869604401089358618834490999876.v(j)*a.v(j)
+                       k0a3.v(j) = k0a.v(j)*k0a.v(j)*k0a.v(j)
+                       rcs.v(j)  = k0a3.v(j)*t0.v(j)
+                    end do
+#else                  
                    t0.v   = C9869604401089358618834490999876.v*a.v
                    k0a3.v = k0a.v*k0a.v*k0a.v
                    rcs.v  = k0a3.v*t0.v
+#endif
                 end function rcs_f41163_zmm16r4
                 
                 ! /*
@@ -6409,11 +6422,27 @@ module rcs_cylinder_zmm16r4
                                                            ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t), parameter :: C003607 = ZMM16r4_t(0.03607_sp)
                    type(ZMM16r4_t), automatic :: t0,cosp,k0a3,cos2p
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15 
+                        k0a3.v(j)  = k0a.v(j)*k0a.v(j)*k0a.v(j)
+                        cosp.v(j)  = cos(phi.v(j))
+                        t0.v(j)    = C003607.v(j)* &
+                                     C9869604401089358618834490999876.v(j)*a.v(j)
+                        cos2p.v(j) = cosp.v(j)*cosp.v(j)
+                        rcs.v(j)   = t0.v(j)*k0a3.v(j)*cos2p.v(j)
+                    end do
+#else                    
                    k0a3.v  = k0a.v*k0a.v*k0a.v
                    cosp.v  = cos(phi.v)
                    t0.v    = C003607.v*C9869604401089358618834490999876.v*a.v
                    cos2p.v = cosp.v*cosp.v
                    rcs.v   = t0.v*k0a3.v*cos2p.v
+#endif
                 end function rcs_f41164_zmm16r4
                 
                 !   /*
