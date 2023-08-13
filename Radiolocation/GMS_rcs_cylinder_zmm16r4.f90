@@ -4956,6 +4956,26 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), automatic :: t0,t1,k0a3,epst
                    type(ZMM16r4_t), automatic :: mut,cosp,sqr
                    type(ZMM16r4_t), automatic :: t2,diff
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                        k0a3.v(j)  = k0a.v(j)*k0a.v(j)*k0a.v(j)
+                        cosp.v(j)  = cos(phi.v(j))
+                        t0.v(j)    = C078539816339744830961566084582.v(j)* &
+                                     C314159265358979323846264338328.v(j)*a.v(j)
+                        epst.v(j)  = eps1.v(j)/eps0.v(j)-v16_1.v(j)
+                        t1.v(j)    = mu1.v(j)-mu0.v(j)
+                        t2.v(j)    = mu1.v(j)+mu0.v(j)
+                        mut.v(j)   = C20.v(j)*(t1.v(j)/t2.v(j))
+                        diff.v(j)  = epst.v(j)-mut.v(j)*cosp.v(j)
+                        sqr.v(j)   = diff.v(j)*diff.v(j)
+                        rcs.v(j)   = t0.v(j)*k0a3.v(j)*sqr.v(j)
+                    end do
+#else
                    k0a3.v  = k0a.v*k0a.v*k0a.v
                    cosp.v  = cos(phi.v)
                    t0.v    = C078539816339744830961566084582.v* &
@@ -4967,6 +4987,7 @@ module rcs_cylinder_zmm16r4
                    diff.v  = epst.v-mut.v*cosp.v
                    sqr.v   = diff.v*diff.v
                    rcs.v   = t0.v*k0a3.v*sqr.v
+#endif
                end function rcs_f4147_zmm16r4
                
                
