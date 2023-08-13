@@ -1813,9 +1813,22 @@ module rcs_cylinder_zmm16r4
                                                    ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t), parameter :: C025 = ZMM16r4_t(0.25_sp)
                    type(ZMM16r4_t), automatic :: pi2a,k0a3
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                        k0a3.v(j) = k0a.v(j)*k0a.v(j)*k0a.v(j)
+                        pi2a.v(j) = C9869604401089358618834490999876.v(j)*a.v(j)
+                        rcs.v(j)  = pi2a.v(j)*k0a3.v(j)*C025.v(j)
+                    end do
+#else
                    k0a3.v = k0a.v*k0a.v*k0a.v
                    pi2a.v = C9869604401089358618834490999876.v*a.v
                    rcs.v  = pi2a.v*k0a3.v*C025.v
+#endif
                end function rcs_f4124_zmm16r4
                
                
