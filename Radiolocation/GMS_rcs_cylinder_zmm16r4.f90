@@ -4598,9 +4598,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :: C314159265358979323846264338328  = &
                                                      ZMM16r4_t(3.14159265358979323846264338328_sp)
                    type(ZMM16r4_t), automatic :: cosp2,t0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                        cosp2.v(j) = cos(phi2.v(j))
+                        t0.v(j)    = a.v*cosp2.v(j)
+                        rcs.v(j)   = C314159265358979323846264338328.v(j)*t0.v(j)
+                    end do
+#else
                    cosp2.v = cos(phi2.v)
                    t0.v    = a.v*cosp2.v
                    rcs.v   = C314159265358979323846264338328.v*t0.v
+#endif
               end function rcs_f4137_zmm16r4
               
               
@@ -4650,11 +4663,26 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t), parameter :: C40 = ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t), automatic :: sinc,k0alp
                    type(ZMM16r4_t), automatic :: k0as,t0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                       k0alp.v(j) = k0a.v(j)*alpha.v(j)
+                       t0.v(j)    = sin(k0alp.v(j))
+                       sinc.v(j)  = t0.v(j)/k0alp.v(j)
+                       k0as.v(j)  = C40.v(j)*k0a.v(j)*k0a.v(j)
+                       rcs.v(j)   = k0as.v(j)*sinc.v(j)*sinc.v(j)
+                    end do
+#else
                    k0alp.v = k0a.v*alpha.v
                    t0.v    = sin(k0alp.v)
                    sinc.v  = t0.v/k0alp.v
                    k0as.v  = C40.v*k0a.v*k0a.v
                    rcs.v   = k0as.v*sinc.v*sinc.v
+#endif
                end function rcs_f4140_zmm16r4
                
                
