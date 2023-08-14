@@ -8802,6 +8802,36 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: rat2,t1
                    type(ZMM16r4_t),   automatic :: c1,c2
                    type(ZMM16r4_t),   automatic :: tmp0,tmp1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15  
+                        spsii.v(j)   = sin(psii.v(j))
+                        spsis.v(j)   = sin(psis.v(j))
+                        cpsii.v(j)   = cos(psii.v(j))
+                        carg1.v(j)   = C157079632679489661923132169164.v(j)* &
+                                       spsii.v(j)
+                        cpsis.v(j)   = cos(psis.v(j))
+                        carg2.v(j)   = C157079632679489661923132169164.v(j)* &
+                                       spsis.v(j)
+                        cgams.v(j)   = cos(gamms.v)
+                        c2gams.v(j)  = cgams.v(j)*cgams.v(j)
+                        cgami.v(j)   = cos(gammi.v(j))
+                        c2gami.v(j)  = cgammi.v(j)*cgammi.v(j)
+                        t0.v(j)      = g0.v(j)*c2gami.v(j)*c2gams.v(j)
+                        c1.v(j)      = cos(carg1.v(j))
+                        rat1.v(j)    = c1.v(j)/cpsii.v(j)
+                        tmp0.v(j)    = rat1.v(j)*rat1.v(j)
+                        c2.v(j)      = cos(carg2.v(j))
+                        rat2.v(j)    = c2.v(j)/cpsis.v(j)
+                        tmp1.v(j)    = rat2.v(j)*rat2.v(j)
+                        t1.v(j)      = tmp0.v(j)*tmp1.v(j)
+                        rcs.v(j)     = t0.v(j)*t1.v(j)
+                    end do
+#else                     
                    spsii.v   = sin(psii.v)
                    spsis.v   = sin(psis.v)
                    cpsii.v   = cos(psii.v)
@@ -8823,6 +8853,7 @@ module rcs_cylinder_zmm16r4
                    tmp1.v    = rat2.v*rat2.v
                    t1.v      = tmp0.v*tmp1.v
                    rcs.v     = t0.v*t1.v
+#endif
              end function rcs_f4337_zmm16r4
              
              !  /*
