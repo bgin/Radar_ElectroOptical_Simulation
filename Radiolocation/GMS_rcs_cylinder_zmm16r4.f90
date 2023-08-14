@@ -8113,7 +8113,8 @@ module rcs_cylinder_zmm16r4
                          a6.v(j)    = t1.v(j)*t1.v(j)*t1.v(j)
                          term.v(j)  = cpsis.v(j)*cpsii.v(j)+cosp.v(j)
                          rcs.v(j)   = t2.v(j)*a6.v(j)*term.v(j)
-                    end do                   
+                    end do    
+#else               
                    cosp.v  = cos(phi.v)
                    t0.v    = k0.v*k0.v
                    cpsis.v = cos(psis.v)
@@ -8126,6 +8127,7 @@ module rcs_cylinder_zmm16r4
                    a6.v    = t1.v*t1.v*t1.v
                    term.v  = cpsis.v*cpsii.v+cosp.v
                    rcs.v   = t2.v*a6.v*term.v
+#endif
                end function rcs_f4325_zmm16r4
                
                !  /*
@@ -8158,12 +8160,28 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes align : 64 :: sarg
                    type(ZMM16r4_t),  parameter :: C20 = ZMM16r4_t(2.0_sp)
                    type(ZMM16r4_t),  automatic :: k0h2,spsi,arg,spsi2,sarg
-                   k0h2    = k0h.v+k0h.v
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                        k0h2.v(j) = k0h.v(j)+k0h.v(j)
+                        spsi.v(j) = sin(psi.v(j))
+                        arg.v(j)  = k0h2.v(j)*spsi.v(j)
+                        spsi2.v(j) = spsi.v(j)+spsi.v(j)
+                        sarg.v(j)  = sin(arg.v(j))
+                        a1.v(j)    = sarg.v(j)/spsi2.v(j)
+                    end do
+#else                   
+                   k0h2.v    = k0h.v+k0h.v
                    spsi.v  = sin(psi.v)
                    arg.v   = k0h2.v*spsi.v
                    spsi2.v = spsi.v+spsi.v
                    sarg.v  = sin(arg.v)
                    a1.v    = sarg.v/spsi2.v
+#endif
               end function a1_f4330_zmm16r4
               
               
