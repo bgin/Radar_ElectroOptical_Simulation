@@ -8167,9 +8167,9 @@ module rcs_cylinder_zmm16r4
                     !dir$ vector vectorlength(4)
                     !dir$ vector always
                     do j=0,15   
-                        k0h2.v(j) = k0h.v(j)+k0h.v(j)
-                        spsi.v(j) = sin(psi.v(j))
-                        arg.v(j)  = k0h2.v(j)*spsi.v(j)
+                        k0h2.v(j)  = k0h.v(j)+k0h.v(j)
+                        spsi.v(j)  = sin(psi.v(j))
+                        arg.v(j)   = k0h2.v(j)*spsi.v(j)
                         spsi2.v(j) = spsi.v(j)+spsi.v(j)
                         sarg.v(j)  = sin(arg.v(j))
                         a1.v(j)    = sarg.v(j)/spsi2.v(j)
@@ -8201,11 +8201,26 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes align : 64 :: arg
                    !dir$ attributes align : 64 :: sarg
                    type(ZMM16r4_t),  automatic :: spsi,msp1,arg,sarg
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                        spsi.v(j)  = sin(psi.v(j))
+                        msp1.v(j)  = v16_1.v(j)-spsi.v(j)
+                        arg.v(j)   = k0h.v(j)*msp1.v(j)
+                        sarg.v(j)  = sin(arg.v(j))
+                        a2.v(j)    = sarg.v(j)/msp1.v(j)
+                    end do
+#else                   
                    spsi.v  = sin(psi.v)
                    msp1.v  = v16_1.v-spsi.v
                    arg.v   = k0h.v*msp1.v
                    sarg.v  = sin(arg.v)
                    a2.v    = sarg.v/msp1.v
+#endif
               end function a2_f4330_zmm16r4
               
               
