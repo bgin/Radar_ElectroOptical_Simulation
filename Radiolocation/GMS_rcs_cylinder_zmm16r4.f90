@@ -8003,6 +8003,27 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: k04,a6,t0,t1
                    type(ZMM16r4_t),  automatic :: spsii,sinp,t2
                    type(ZMM16r4_t),  automatic :: s2psii,sin2p
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                        sinp.v(j)  = sin(phi.v(j))
+                        t0.v(j)    = k0.v(j)*k0.v(j)
+                        t1.v(j)    = a.v(j)*a.v(j)
+                        k04.v(j)   = t0.v(j)
+                        spsii.v(j) = sin(psii.v(j))
+                        t2.v(j)    = C2263536968418066997601902412409.v(j)* &
+                                     k04.v(j)*k04.v(j)
+                        s2psii.v(j)= spsii.v(j)*spsii.v(j)
+                        a6.v(j)    = t1.v(j)*t1.v(j)*t1.v(j)
+                        s2psii.v(j)= spsii.v(j)*spsii.v(j)
+                        t3.v(j)    = s2psii.v(j)*sinp.v(j)
+                        rcs.v(j)   = t2.v(j)*a6.v(j)*t3.v(j)
+                    end do
+#else                   
                    sinp.v  = sin(phi.v)
                    t0.v    = k0.v*k0.v
                    t1.v    = a.v*a.v
@@ -8015,6 +8036,7 @@ module rcs_cylinder_zmm16r4
                    s2psii.v= spsii.v*spsii.v
                    t3.v    = s2psii.v*sinp.v
                    rcs.v   = t2.v*a6.v*t3.v
+#endif
                end function rcs_f4323_zmm16r4
                
                !/*
