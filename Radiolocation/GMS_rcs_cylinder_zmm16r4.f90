@@ -8263,12 +8263,28 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  parameter :: C08905 = ZMM16r4_t(0.8905_sp)
                    type(ZMM16r4_t),  parameter :: C20    = ZMM16r4_t(-2.0_sp)
                    type(ZMM16r4_t),  automatic :: om,om2,arg,larg
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15  
+                       arg.v(j)   = k0a.v(j)*C08905.v(j)
+                       larg.v(j)  = log(arg.v(j))
+                       om.v(j)    = C20.v(j)*larg.v(j)
+                       om2.v(j)   = om.v(j)*om.v(j)
+                       F1.v(j)    = om.v(j)/(om2.v(j)+ &
+                                    C9869604401089358618834490999876.v(j))
+                    end do
+#else
                    arg.v   = k0a.v*C08905.v
-                   larg.v  = log(arg)
+                   larg.v  = log(arg.v)
                    om.v    = C20.v*larg.v
                    om2.v   = om.v*om.v
                    F1.v    = om.v/(om2.v+ &
                              C9869604401089358618834490999876.v)
+#endif
              end function F1_f4331_zmm16r4
              
              
@@ -8296,12 +8312,28 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  parameter :: C08905 = ZMM16r4_t(0.8905_sp)
                    type(ZMM16r4_t),  parameter :: C20    = ZMM16r4_t(-2.0_sp)
                    type(ZMM16r4_t),  automatic :: om,om2,arg,larg
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15     
+                        arg.v(j)   = k0a.v(j)*C08905.v(j)
+                        larg.v(j)  = log(arg.v(j))
+                        om.v(j)    = C20.v(j)*larg.v(j)
+                        om2.v(j)   = om.v(j)*om.v(j)
+                        F2.v(j)    = C314159265358979323846264338328.v(j)/(om2.v(j)+ &
+                                     C9869604401089358618834490999876.v(j))
+                    end do       
+#else         
                    arg.v   = k0a.v*C08905.v
-                   larg.v  = log(arg)
+                   larg.v  = log(arg.v)
                    om.v    = C20.v*larg.v
                    om2.v   = om.v*om.v
                    F2.v    = C314159265358979323846264338328.v/(om2.v+ &
                              C9869604401089358618834490999876.v)
+#endif
              end function F2_f4331_zmm16r4
              
              ! /*
@@ -8341,6 +8373,26 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C08905  = ZMM16r4_t(0.8905_sp)
                    type(ZMM16r4_t),   automatic :: om,del,ck0h,sk0h
                    type(ZMM16r4_t),   automatic :: t0,ar1,ar2,lar1,lar2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15     
+                        ar1.v(j)   = k0a.v(j)*C08905.v(j)
+                        ar2.v(j)   = k0h.v(j)*C411.v(j)
+                        lar1.v(j)  = log(ar1.v(j))
+                        lar2.v(j)  = log(ar2.v(j))
+                        om.v(j)    = C20.v(j)*lar1.v(j)
+                        del.v(j)   = C05.v(j)*lar2.v(j)
+                        ck0h.v(j)  = cos(k0h.v(j))
+                        t0.v(j)    = v16_0.v(j)-om.v(j)-del.v(j)
+                        sk0h.v(j)  = sin(k0h.v(j))
+                        L.v(j)     = C078539816339744830961566084582.v(j)*sk0h.v(j)+ &
+                                     ck0h.v(j)*t0.v(j)
+                    end do
+#else
                    ar1.v   = k0a.v*C08905.v
                    ar2.v   = k0h.v*C411.v
                    lar1.v  = log(ar1.v)
@@ -8352,6 +8404,7 @@ module rcs_cylinder_zmm16r4
                    sk0h.v  = sin(k0h.v)
                    L.v     = C078539816339744830961566084582.v*sk0h.v+ &
                                ck0h.v*t0.v
+#endif
              end function L_f4334_zmm16r4
              
              ! /*
