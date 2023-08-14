@@ -6597,12 +6597,29 @@ module rcs_cylinder_zmm16r4
                                                              ZMM16r4_t(9.869604401089358618834490999876_sp)
                    type(ZMM16r4_t),  parameter :: C019024 =  ZMM16r4_t(0.19024_sp)
                    type(ZMM16r4_t),  automatic :: cosp,cos2p,k0a3,t0,t1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                         k0a3.v(j) = k0a.v(j)*k0a3.v(j)*k0a.v(j)
+                         cosp.v(j) = cos(phi.v(j))
+                         t0.v(j)   = C019024.v(j(j))* &
+                                     C9869604401089358618834490999876.v(j)
+                         t1.v(j)   = a.v(j)*k0a3.v(j)
+                         cos2p.v(j)= cosp.v(j)*cosp.v(j)
+                         rcs.v(j)  = t0.v(j)*t1.v(j)*cos2p.v(j)
+                    end do
+#else                   
                    k0a3.v = k0a.v*k0a3.v*k0a.v
                    cosp.v = cos(phi.v)
                    t0.v   = C019024.v*C9869604401089358618834490999876.v
                    t1.v   = a.v*k0a3.v
                    cos2p.v= cosp.v*cosp.v
                    rcs.v  = t0.v*t1.v*cos2p.v
+#endif
                  end function rcs_f14167_zmm16r4
                  
                 !  /*
