@@ -7684,7 +7684,7 @@ module rcs_cylinder_zmm16r4
                          rcs.v(j) = t0.v(j)*inv.v(j)
                     end do     
 #else              
-                   h2.v   = h.v*h.v
+                   h2.v     = h.v*h.v
                    k04.v    = k0.v*k0.v*k0.v*k0.v
                    t0.v     = ln4h.v-v16_1.v
                    t1.v     = h.v*h2.v
@@ -7932,10 +7932,32 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: k04,a6,t0,t1
                    type(ZMM16r4_t),  automatic :: spsii,spsis,cosp
                    type(ZMM16r4_t),  automatic :: s2psii,s2psis,cos2p,t2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                         t0.v(j)    = k0.v(j)*k0.v(j)
+                         t1.v(j)    = a.v(j)*a.v(j)
+                         cosp.v(j)  = cos(phi.v(j))
+                         k04.v(j)   = t0.v(j)
+                         spsii.v(j) = sin(psii.v(j))
+                         t2.v(j)    = C2263536968418066997601902412409.v(j)* &
+                                      k04.v(j)*k04.v(j)
+                         s2psii.v(j)= spsii.v(j)*spsii.v(j)
+                         a6.v(j)    = t1.v(j)*t1.v(j)*t1.v(j)
+                         spsis.v(j) = sin(psis.v(j))
+                         s2psis.v(j)= psis.v(j)*psis.v(j)
+                         t3.v(j)    = s2psii.v(j)*s2psis.v(j)*cosp.v(j)
+                         rcs.v(j)   = t2.v(j)*a6.v(j)*t3.v(j)
+                    end do
+#else                   
                    t0.v    = k0.v*k0.v
                    t1.v    = a.v*a.v
                    cosp.v  = cos(phi.v)
-                   k04.v   = k0.v*k0.v
+                   k04.v   = t0.v
                    spsii.v = sin(psii.v)
                    t2.v    = C2263536968418066997601902412409.v* &
                             k04.v*k04.v
@@ -7945,6 +7967,7 @@ module rcs_cylinder_zmm16r4
                    s2psis.v= psis.v*psis.v
                    t3.v    = s2psii.v*s2psis.v*cosp.v
                    rcs.v   = t2.v*a6.v*t3.v
+#endif
                end function rcs_f4322_zmm16r4
                
                 !/*
