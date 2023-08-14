@@ -7596,6 +7596,29 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: den,num,t0,k0r
                    type(ZMM16r4_t),  automatic :: h6,t1,h2,rat
                    type(ZMM16r4_t),  automatic :: frac
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                         h2.v(j)     = h.v(j)*h.v(j)
+                         k04.v(j)    = k0.v(j)*k0.v(j)*k0.v(j)*k0.v(j)
+                         cpsii.v(j)  = cos(psii.v(j))
+                         t0.v(j)     = ln4h.v(j)-v16_1.v(j)
+                         c2psii.v(j) = cpsii.v(j)*cpsii.v(j)
+                         den.v(j)    = t0.v(j)*t0.v(j)
+                         t1.v(j)     = h.v(j)*h2.v(j)
+                         h6.v(j)     = t1.v(j)*h2.v(j)
+                         cpsis.v(j)  = cos(psis.v(j))
+                         frac.v(j)   = C1396263401595463661538952614791.v(j)* &
+                                       k04.v(j)*h6.v(j)
+                         num.v(j)    = c2psis.v(j)*c2psii.v(j)
+                         rat.v(j)    = num.v(j)/den.v(j)
+                         rcs.v(j)    = frac.v(j)*rat.v(j)
+                    end do
+#else                  
                    h2.v     = h.v*h.v
                    k04.v    = k0.v*k0.v*k0.v*k0.v
                    cpsii.v  = cos(psii.v)
@@ -7610,6 +7633,7 @@ module rcs_cylinder_zmm16r4
                    num.v    = c2psis.v*c2psii.v
                    rat.v    = num.v/den.v
                    rcs.v    = frac.v*rat.v
+#endif
                end function rcs_f4310_zmm16r4
                
                !   /*
@@ -7641,6 +7665,25 @@ module rcs_cylinder_zmm16r4
                                                       ZMM16r4_t(0.279252680319092732307790522958_sp)
                    type(ZMM16r4_t),  automatic :: den,inv,k04,h6
                    type(ZMM16r4_t),  automatic :: t0,t1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                         h2.v(j)  = h.v(j)*h.v(j)
+                         k04.v(j) = k0.v(j)*k0.v(j)*k0.v(j)*k0.v(j)
+                         t0.v(j)  = ln4h.v(j)-v16_1.v(j)
+                         t1.v(j)  = h.v(j)*h2.v(j)
+                         den.v(j) = t0.v(j)*t0.v(j)
+                         h6.v(j)  = t1.v(j)*h2.v(j)
+                         inv.v(j) = v16_1.v(j)/den.v(j)
+                         t0.v(j)  = C0279252680319092732307790522958.v(j)* &
+                                    k04.v(j)*h6.v(j)
+                         rcs.v(j) = t0.v(j)*inv.v(j)
+                    end do     
+#else              
                    h2.v   = h.v*h.v
                    k04.v    = k0.v*k0.v*k0.v*k0.v
                    t0.v     = ln4h.v-v16_1.v
@@ -7651,6 +7694,7 @@ module rcs_cylinder_zmm16r4
                    t0.v     = C0279252680319092732307790522958.v* &
                               k04.v*h6.v
                    rcs.v    = t0.v*inv.v
+#endif
                end function rcs_f4311_zmm16r4
                
                !  /*
