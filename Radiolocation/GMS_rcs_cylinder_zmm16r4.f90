@@ -8435,6 +8435,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C712    = ZMM16r4_t(7.12_sp)
                    type(ZMM16r4_t),   parameter :: C05     = ZMM16r4_t(0.5_sp)
                    type(ZMM16r4_t),   automatic :: ar,lar,sk0h,ck0h,t0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15    
+                       ar.v(j)   = C712.v(j)*k0a.v(j)
+                       sk0h.v(j) = sin(k0h.v(j))
+                       lar.v(j)  = log(ar.v(j))
+                       t0.v(j)   = C05.v(j)*lar.v(j)
+                       ck0h.v(j) = cos(k0h.v(j))
+                       S.v(j)    = t0.v(j)*sk0h.v(j)+ &
+                                   C078539816339744830961566084582.v(j)*ck0h.v(j)
+                    end do
+#else                   
                    ar.v   = C712.v*k0a.v
                    sk0h.v = sin(k0h.v)
                    lar.v  = log(ar.v)
@@ -8442,6 +8458,7 @@ module rcs_cylinder_zmm16r4
                    ck0h.v = cos(k0h.v)
                    S.v    = t0.v*sk0h.v+ &
                             C078539816339744830961566084582.v*ck0h.v
+#endif
              end function S_f4335_zmm16r4
              
              !  /*
