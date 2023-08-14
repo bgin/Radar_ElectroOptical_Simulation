@@ -8094,6 +8094,26 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: k04,a6,t0,t1
                    type(ZMM16r4_t),  automatic :: cpsii,cosp,t2
                    type(ZMM16r4_t),  automatic :: term,cpsis
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15   
+                         cosp.v(j)  = cos(phi.v(j))
+                         t0.v(j)    = k0.v(j)*k0.v(j)
+                         cpsis.v(j) = cos(psis.v(j))
+                         t1.v(j)    = a.v(j)*a.v(j)
+                         cpsii.v(j) = cos(psii.v(j))
+                         k04.v(j)   = t0.v(j)*t0.v(j)
+                         cpsii.v(j) = C05.v(j)*cpsii.v(j)
+                         t2.v(j)    = C2263536968418066997601902412409.v(j)* &
+                                      k04.v(j)*k04.v(j)
+                         a6.v(j)    = t1.v(j)*t1.v(j)*t1.v(j)
+                         term.v(j)  = cpsis.v(j)*cpsii.v(j)+cosp.v(j)
+                         rcs.v(j)   = t2.v(j)*a6.v(j)*term.v(j)
+                    end do                   
                    cosp.v  = cos(phi.v)
                    t0.v    = k0.v*k0.v
                    cpsis.v = cos(psis.v)
