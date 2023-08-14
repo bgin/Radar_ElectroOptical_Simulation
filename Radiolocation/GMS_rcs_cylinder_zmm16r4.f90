@@ -8995,6 +8995,29 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: cpsis,c2psis,term2
                    type(ZMM16r4_t),   automatic :: spsii,spsis,arg
                    type(ZMM16r4_t),   automatic :: sarg,rat
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                         k0h.v(j)   = C40.v(j)*k0.v(j)*h.v(j)
+                         x0.v(j)    = k0h.v(j)*k0h.v(j)
+                         cpsis.v(j) = cos(psis.v(j))
+                         term1.v(j) = x0.v(j)/C314159265358979323846264338328.v(j)
+                         c2psis.v(j)= cpsis.v(j)*cpsis.v(j)
+                         term1.v(j) = term1.v(j)*c2psis.v(j)*rcsi.v(j)
+                         spsis.v(j) = sin(psis.v(j))
+                         spsii.v(j) = sin(psii.v(j))
+                         x0.v(j)    = spsis.v(j)*spsii.v(j)
+                         arg.v(j)   = k0.v(j)*x0.v(j)*h.v(j)
+                         sarg.v(j)  = sin(arg.v(j))
+                         rat.v(j)   = sarg.v(j)/arg.v(j)
+                         term2.v(j) = rat.v(j)*rat.v(j)
+                         rcs.v(j)   = term1.v(j)*term2.v(j) 
+                    end do    
+#else               
                    k0h.v   = C40.v*k0.v*h.v
                    x0.v    = k0h.v*k0h.v
                    cpsis.v = cos(psis.v)
@@ -9009,6 +9032,7 @@ module rcs_cylinder_zmm16r4
                    rat.v   = sarg.v/arg.v
                    term2.v = rat.v*rat.v
                    rcs.v   = term1.v*term2.v
+#endif
             end function rcs_f4343_zmm16r4
             
             ! /*
