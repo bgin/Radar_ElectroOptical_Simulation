@@ -9093,6 +9093,42 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: larg,cpsii,cpsis
                    type(ZMM16r4_t),   automatic :: fac,c2psii,c2psis
                    type(ZMM16r4_t),   automatic :: spsii,spsis
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15
+                         fac.v(j)   = C12566370614359172953850573533118.v(j) * &
+                                      h.v(j) *h.v(j) 
+                         arg2.v(j)   = k0a.v(j)*C2467401100272339654708622749969.v(j) 
+                         cpsii.v(j)  = cos(psii.v(j))
+                         cpsis.v(j)  = cos(psis.v(j))
+                         c2psii.v(j) = cpsii.v(j)*cpsii.v(j) 
+                         c2psis.v(j) = cpsis.v(j)*cpsis.v(j) 
+                         arg2.v(j)   = cpsii.v(j)*arg2.v(j) 
+                         rat1.v(j)   = c2psis.v(j)/c2psii.v(j) 
+                         cgami.v(j)  = cos(gami.v(j))
+                         c2gami.v(j) = cgami.v(j)*cgami.v(j) 
+                         cgams.v(j)  = cos(gams.v(j))
+                         c2gams.v(j) = cgams.v(j)*cgams.v(j) 
+                         x0.v(j)     = c2gams.v(j)*c2gami.v(j) 
+                         term1.v(j)  = fac.v(j)*rat1.v(j)*x0.v(j) 
+                         larg.v(j)   = log(arg2.v(j))
+                         spsii.v(j)  = sin(psii.v(j))
+                         x1.v(j)     = larg.v(j)*larg.v(j)+ &
+                                       C2467401100272339654708622749969.v(j)
+                         inv.v(j)    = v16_1.v(j)/x1.v(j)
+                         spsis.v(j)  = sin(psis.v(j))
+                         x0.v(j)     = spsii.v(j)+spsis.v(j)
+                         arg.v(j)    = k0.v(j)*x0.v(j)*h.v(j) 
+                         sarg.v(j)   = sin(arg.v(j))
+                         rat2.v(j)   = sarg.v(j)/arg.v(j)
+                         term2.v(j)  = rat2.v(j)*rat2.v(j)
+                         rcs.v(j)    = term1.v(j)*inv.v(j)*term2.v(j)
+                    end
+#else                   
                    fac.v   = C12566370614359172953850573533118.v* &
                              h.v*h.v
                    arg2.v  = k0a.v*C2467401100272339654708622749969.v
@@ -9120,6 +9156,7 @@ module rcs_cylinder_zmm16r4
                    rat2.v  = sarg.v/arg.v
                    term2.v = rat2.v*rat2.v
                    rcs.v   = term1.v*inv.v*term2.v
+#endif
             end function rcs_f4344_zmm16r4
             
             !  /*
