@@ -9206,6 +9206,35 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: rat,cpsi,cgami
                    type(ZMM16r4_t),  automatic :: cgams,c2gami,c2gams
                    type(ZMM16r4_t),  automatic :: spsi,x0,x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                    integer(kind=i4) :: j
+                    !dir$ loop_count(16)
+                    !dir$ vector aligned
+                    !dir$ vector vectorlength(4)
+                    !dir$ vector always
+                    do j=0,15    
+                       k0h.v(j)   = k0.v(j)*h.v(j)
+                       t0.v(j)    = C6283185307179586476925286766559.v(j)* &
+                                    h.v(j)*h.v(j)
+                       x0.v(j)    = k0h.v(j)+k0h.v(j)
+                       spsi.v(j)  = sin(psi.v(j))
+                       arg.v(j)   = x0.v(j)*spsi.v(j)
+                       cpsi.v(j)  = cos(psi.v(j))
+                       arg2.v(j)  = cpsi.v(j)*k0a.v(j)*C08905.v(j)
+                       larg.v(j)  = arg2.v(j)*arg2.v(j)+ &
+                                    C2467401100272339654708622749969.v(j)
+                       sarg.v(j)  = sin(arg.v(j))
+                       cgams.v(j) = cos(gams.v(j))
+                       rat.v(j)   = sarg.v(j)/arg.v(j)
+                       cgami.v(j) = cos(gami.v(j))
+                       x1.v(j)    = rat.v(j)*rat.v(j)
+                       c2gams.v(j)= cgams.v(j)*cgams.v(j)
+                       c2gami.v(j)= cgami.v(j)*cgami.v(j)
+                       x0.v(j)    = t0.v(j)*c2gams.v(j)*c2gami.v(j)
+                       rat1.v(j)  = x0.v(j)*larg.v(j)
+                       rcs.v(j)   = rat1.v(j)*x1.v(j)
+                    end do
+#else
                    k0h.v   = k0.v*h.v
                    t0.v    = C6283185307179586476925286766559.v* &
                              h.v*h.v
@@ -9226,6 +9255,7 @@ module rcs_cylinder_zmm16r4
                    x0.v    = t0.v*c2gams.v*c2gami.v
                    rat1.v  = x0.v*larg.v
                    rcs.v   = rat1.v*x1.v
+#endif
             end function rcs_f4345_zmm16r4
             
             
