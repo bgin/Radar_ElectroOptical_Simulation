@@ -9480,6 +9480,30 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C20 =   ZMM16r4_t(2.0_sp)
                    type(ZMM16r4_t),   automatic :: inv1,inv2,arg1,arg2
                    type(ZMM16r4_t),   automatic :: carg1,carg2,x0,x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                         arg1.v(j)  = C0333333333333333333333333333333333333333333.v(j)* &
+                                      C40.v(j)*psi.v(j)
+                         carg1.v(j) = cos(arg1.v(j))
+                         x0.v(j)    = C20.v(j)*psi.v(j)+ &
+                                      C314159265358979323846264338328.v(j)
+                         carg1.v(j) = C05.v(j)+carg1.v(j)
+                         arg2.v(j)  = C0666666666666666666666666666667.v(j)* &
+                                      x0.v(j)
+                         inv1.v(j)  = v16_1.v(j)/carg1.v(j)
+                         carg2.v(j) = cos(arg2.v(j))
+                         x1.v(j)    = C05.v(j)*carg2.v(j)
+                         inv2.v(j)  = v16_1.v(j)/x1.v(j)
+                         x0.v(j)    = C10.v(j)*inv1.v(j)
+                         N1.v(j)    = C0577350269189625764509148780502.v(j)* &
+                                      (C40n.v(j)-x0.v(j)-inv2.v(j))
+                      end do 
+#else                  
                    arg1.v  = C0333333333333333333333333333333333333333333.v* &
                              C40.v*psi.v
                    carg1.v = cos(arg1.v)
@@ -9495,6 +9519,7 @@ module rcs_cylinder_zmm16r4
                    x0.v    = C10.v*inv1.v
                    N1.v    = C0577350269189625764509148780502.v* &
                              (C40n.v-x0.v-inv2.v)
+#endif
             end function N1_f4350_zmm16r4    
             
             
