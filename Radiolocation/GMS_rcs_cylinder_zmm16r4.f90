@@ -9642,6 +9642,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C40 =   ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t),   parameter :: C20 =   ZMM16r4_t(-2.0_sp)
                    type(ZMM16r4_t),   automatic :: inv,arg,carg,x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                             arg.v(j)   = C0333333333333333333333333333333333333333333.v(j)* &
+                                          C40.v(j)*psi.v(j)
+                             carg.v(j)  = cos(arg.v(j))
+                             x0.v(j)    = C05.v(j)+carg.v(j)
+                             inv.v(j)   = v16_1.v(j)/x0.v(j)
+                             G.v(j)     = C0577350269189625764509148780502.v(j)* &
+                                          (C20.v(j)-inv.v(j))
+                      end do
+#else                   
                    arg.v   = C0333333333333333333333333333333333333333333.v* &
                              C40.v*psi.v
                    carg.v  = cos(arg.v)
@@ -9649,6 +9665,7 @@ module rcs_cylinder_zmm16r4
                    inv.v   = v16_1.v/x0.v
                    G.v     = C0577350269189625764509148780502.v* &
                              (C20.v-inv.v)
+#endif
            end function G_f4352_zmm16r4
            
            
