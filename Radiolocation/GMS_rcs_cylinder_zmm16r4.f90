@@ -10137,6 +10137,28 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: abh,k0abh,num,sqr1
                    type(ZMM16r4_t),  automatic :: sqr2,c0k0,arg,larg
                    type(ZMM16r4_t),  automatic :: x0,x1,den
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                            abh.v(j)   = a.v(j)*b.v(j)*C05.v(j)
+                            c0k0.v(j)  = C08905.v(j)*k0.v(j)
+                            num.v(j)   = C9869604401089358618834490999876.v(j)* &
+                                         abh.v(j)
+                            arg.v(j)   = c0k0.v(j)*abh.v(j)
+                            larg.v(j)  = log(arg.v(j))
+                            x0.v(j)    = larg.v(j)*larg.v(j)+ &
+                                         C2467401100272339654708622749969.v(j)
+                            sqr1.v(j)  = sqrt(k0.v(j)*abh.v(j))
+                            sqr2.v(j)  = sqrt(x0.v(j))
+                            den.v(j)   = sqr1.v(j)*sqr2.v(j)
+                            x1.v(j)    = den.v(j)*den.v(j)
+                            rcs.v(j)   = num.v(j)/x1.v(j)
+                      end do  
+#else                 
                    abh.v   = a.v*b.v*C05.v
                    c0k0.v  = C08905.v*k0.v
                    num.v   = C9869604401089358618834490999876.v* &
@@ -10150,6 +10172,7 @@ module rcs_cylinder_zmm16r4
                    den.v   = sqr1.v*sqr2.v
                    x1.v    = den.v*den.v
                    rcs.v   = num.v/x1.v
+#endif
             end function rcs_f4413_zmm16r4
             
             ! /*
