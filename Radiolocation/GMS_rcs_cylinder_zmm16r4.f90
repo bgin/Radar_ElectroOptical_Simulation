@@ -10053,6 +10053,32 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: k0a2,ba,cphi1,sphi1
                    type(ZMM16r4_t),  automatic :: trm1,trm2,ba1
                    type(ZMM16r4_t),  automatic :: x0,x1,cphi2,sphi2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                          cphi2.v(j)  = cos(phi2.v(j))
+                          k0a2.v(j)   = k0a.v(j)*k0a.v(j)
+                          ba.v(j)     = b.v(j)/a.v(j)
+                          x0.v(j)     = C078539816339744830961566084582.v(j)* &
+                                        k0a2.v(j)
+                          cphi1.v(j)  = cos(phi1.v(j))
+                          ba1.v(j)    = v16_1.v(j)+ba.v(j)
+                          x1.v(j)     = ba.v(j)+ba1.v(j)
+                          sphi1.v(j)  = sin(phi1.v(j))
+                          trm1.v(j)   = x0.v(j)+x1.v(j)
+                          sphi2.v(j)  = sin(phi2.v(j))
+                          x0.v(j)     = cphi2.v(j)*cphi1.v(j)+ &
+                                        sphi2.v(j)*sphi1.v(j)
+                          trm2.v(j)   = ba.v(j)*x0.v(j)
+                          x1.v(j)     = trm1.v(j)*trm2.v(j)
+                          TE.re(j)    = v16_0.v(j)
+                          TE.im(j)    = -x1.v(j)
+                      end do
+#else                   
                    cphi2.v  = cos(phi2.v)
                    k0a2.v   = k0a.v*k0a.v
                    ba.v     = b.v/a.v
@@ -10069,6 +10095,7 @@ module rcs_cylinder_zmm16r4
                    x1.v     = trm1.v*trm2.v
                    TE.re    = v16_0.v
                    TE.im    = -x1.v
+#endif
             end function TE_f4412_zmm16r4
             
             !  /*
