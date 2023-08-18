@@ -9899,6 +9899,27 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: trm1,trm2,cpsii,spsii
                    type(ZMM16r4_t),   automatic :: x0,x1,k0h,h2
                    type(ZMM16r4_t),   automatic :: arg,sarg
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                           k0h.v(j)  = k0.v(j)*h.v(j)
+                           cpsii.v(j)= cos(psii.v(j)) 
+                           h2.v(j)   = h.v(j)*h.v(j)
+                           x0.v(j)   = k0h.v(j)+k0h.v(j)
+                           x1.v(j)   = C40.v(j)*k0a.v(j)*h2.v(j)
+                           spsii.v(j)= sin(psi.v(j))
+                           trm1.v(j) = x1.v(j)*cpsii.v(j)
+                           arg.v(j)  = x0.v(j)*spsii.v(j)
+                           sarg.v(j) = sin(arg.v(j))
+                           x0.v(j)   = sarg.v(j)/arg.v(j)
+                           trm2.v(j) = x0.v(j)*x0.v(j)
+                           rcs.v(j)  = trm1.v(j)*trm2.v(j)
+                      end do    
+#else               
                    k0h.v  = k0.v*h.v
                    cpsii.v= cos(psii.v) 
                    h2.v   = h.v*h.v
@@ -9911,6 +9932,7 @@ module rcs_cylinder_zmm16r4
                    x0.v   = sarg.v/arg.v
                    trm2.v = x0.v*x0.v
                    rcs.v  = trm1.v*trm2.v
+#endif
             end function rcs_f4354v2_zmm16r4
             
             
