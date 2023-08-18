@@ -10225,6 +10225,34 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: absp,sphi1s,cphi1s
                    type(ZMM16r4_t),  automatic :: k0a2,k0b2,x0
                    logical(kind=i4), dimension(0:15) :: mre
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                             k02.v(j)   = k0.v(j)*k0.v(j)
+                             a2.v(j)    = a.v(j)*a.v(j)
+                             k0a2.v(j)  = k02.v(j)*a2.v(j)
+                             b2.v(j)    = b.v(j)*b.v(j)
+                             k0b2.v(j)  = k02.v(j)*b2.v(j)
+                             cphi1.v(j) = cos(phi1.v(j))
+                             absp.v(j)  = abs(phi2.v(j)-phi1.v(j))
+                             cphi1s.v(j)= cphi1.v(j)*cphi1.v(j)
+                             sphi1.v(j) = sin(phi1.v(j))
+                             trm1.v(j)  = C314159265358979323846264338328.v(j)* &
+                                          absp.v(j)
+                             sphi1s.v(j)= sphi1.v(j)*sphi1.v(j)
+                             trm2.v(j)  = k02a2.v(j)*sphi1s.v(j)+ &
+                                          k02b2.v(j)*cphi1s.v(j)
+                             x0.v(j)    = trm2.v(j)** & 
+                                          C0166666666666666666666666666667.v(j)
+                             rt6.v(j)   = v16_1.v(j)/x0.v(j)
+                             mre(j)     = (trm1.v(j)>=rt6.v(j))
+                      end do
+                      msk = all(mre)
+#else
                    k02.v   = k0.v*k0.v
                    a2.v    = a.v*a.v
                    k0a2.v  = k02.v*a2.v
@@ -10245,6 +10273,7 @@ module rcs_cylinder_zmm16r4
                    rt6.v   = v16_1.v/x0.v
                    mre     = (trm1.v>=rt6.v)
                    msk     = all(mre)
+#endif
             end function TM_f4415_helper_zmm16r4
             
             
@@ -10425,6 +10454,28 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),  automatic :: arg,carg,carg2
                    type(ZMM16r4_t),  automatic :: sarg,sarg2
                    type(ZMM16r4_t),  automatic :: pow32,x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                           a2.v(j)    = a.v(j)*a.v(j)
+                           arg.v(j)   = C05.v(j)*(phi2.v(j)+phi1.v(j))
+                           b2.v(j)    = b.v(j)*b.v(j)
+                           carg.v(j)  = cos(arg.v(j))
+                           num.v(j)   = C314159265358979323846264338328.v(j)* &
+                                        a2.v(j)*b2.v(j)
+                           sarg.v(j)  = sin(arg.v(j))
+                           carg2.v(j) = carg.v(j)*carg.v(j)
+                           sarg2.v(j) = sarg.v(j)*sarg.v(j)
+                           x0.v(j)    = a2.v(j)*carg2.v(j)+ & 
+                                        b2.v(j)*sarg2.v(j)
+                           pow32.v(j) = x0.v(j)**C15.v(j)
+                           rcs.v(j)   = num.v(j)/pow32.v(j)
+                      end do
+#else
                    a2.v    = a.v*a.v
                    arg.v   = C05.v*(phi2.v+phi1.v)
                    b2.v    = b.v*b.v
@@ -10437,6 +10488,7 @@ module rcs_cylinder_zmm16r4
                    x0.v    = a2.v*carg2.v+b2.v*sarg2.v
                    pow32.v = x0.v**C15.v
                    rcs.v   = num.v/pow32.v
+#endif
             end function rcs_f4419_zmm16r4
             
            
