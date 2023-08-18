@@ -9696,6 +9696,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C40 =   ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t),   parameter :: C20 =   ZMM16r4_t(-2.0_sp)
                    type(ZMM16r4_t),   automatic :: inv,arg,carg,x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                             arg.v(j) = C0333333333333333333333333333333333333333333.v(j)* &
+                                          C40.v(j)*psi.v(j)
+                             carg.v(j) = cos(arg.v(j))
+                             x0.v(j)   = C05.v(j)+carg.v(j)
+                             inv.v(j)  = v16_1.v(j)/x0.v(j)
+                             F.v(j)    = C0577350269189625764509148780502.v(j)* &
+                                         (C20.v(j)+inv.v(j))
+                      end do
+#else                   
                    arg.v   = C0333333333333333333333333333333333333333333.v* &
                              C40.v*psi.v
                    carg.v  = cos(arg.v)
@@ -9703,6 +9719,7 @@ module rcs_cylinder_zmm16r4
                    inv.v   = v16_1.v/x0.v
                    F.v     = C0577350269189625764509148780502.v* &
                              (C20.v+inv.v)
+#endif
            end function F_f4352_zmm16r4
            
            
@@ -9746,6 +9763,32 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: cphi,cpsis,c2psis
                    type(ZMM16r4_t),   automatic :: c2psii,spsii,spsis
                    type(ZMM16r4_t),   automatic :: arg,sarg,x0,x1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                          x0.v(j)     = h.v(j)*h.v(j)
+                          cpsii.v(j)  = cos(psii.v(j))
+                          x1.v(j)     = C05.v(j)*phi.v(j)
+                          cphi.v(j)   = cos(phi.v(j))
+                          trm1.v(j)   = C40.v(j)*k0a.v(j)*x0.v(j)
+                          spsii.v(j)  = sin(psi.v(j))
+                          spsis.v(j)  = sin(psis.v(j))
+                          x0.v(j)     = spsii.v(j)+spsis.v(j)
+                          c2psis.v(j) = cpsis.v(j)*cpsis.v(j)
+                          arg.v(j)    = k0.v(j)*x0.v(j)*h.v(j)
+                          x1.v(j)     = c2psis.v(j)*cphi.v(j)
+                          sarg.v(j)   = sin(arg.v(j))
+                          trm2.v(j)   = x1.v(j)/cpsii.v(j)
+                          trm3.v(j)   = sarg.v(j)/arg.v(j)
+                          x1.v(j)     = trm1.v(j)*trm2.v(j)
+                          x0.v(j)     = trm3.v(j)*trm3.v(j)
+                          rcs.v(j)    = x1.v(j)*x0.v(j)
+                      end do
+#else                   
                    x0.v     = h.v*h.v
                    cpsii.v  = cos(psii.v)
                    x1.v     = C05.v*phi.v
@@ -9763,6 +9806,7 @@ module rcs_cylinder_zmm16r4
                    x1.v     = trm1.v*trm2.v
                    x0.v     = trm3.v*trm3.v
                    rcs.v    = x1.v*x0.v
+#endif
           end function rcs_f4353_zmm16r4
           
          
