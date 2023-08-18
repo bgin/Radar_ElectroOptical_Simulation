@@ -9839,6 +9839,22 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   parameter :: C40 = ZMM16r4_t(4.0_sp)
                    type(ZMM16r4_t),   automatic :: trm1,phi2,h2
                    type(ZMM16r4_t),   automatic :: cpsii,cphi,x0
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15  
+                           h2.v(j)   = h.v(j)*h.v(j)
+                           cphi.v(j) = cos(phi.v(j))
+                           phi2.v(j) = C05.v(j)*phi.v(j)
+                           trm1.v(j) = C40.v(j)*k0a.v(j)*h2.v(j)
+                           cpsii.v(j)= cos(psii.v(j))
+                           x0.v(j)   = trm1.v(j)*cpsii.v(j)
+                           rcs.v(j)  = x0.v(j)*cphi.v(j)
+                      end do
+#else                   
                    h2.v   = h.v*h.v
                    cphi.v = cos(phi.v)
                    phi2.v = C05.v*phi.v
@@ -9846,6 +9862,7 @@ module rcs_cylinder_zmm16r4
                    cpsii.v= cos(psii.v)
                    x0.v   = trm1.v*cpsii.v
                    rcs.v  = x0.v*cphi.v
+#endif
           end function rcs_f4354_zmm16r4
           
           
