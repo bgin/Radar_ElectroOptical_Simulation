@@ -10875,6 +10875,25 @@ module rcs_cylinder_zmm16r4
                    type(ZMM16r4_t),   automatic :: k04,a2,b2
                    type(ZMM16r4_t),   automatic :: sphi,sphi2
                    type(ZMM16r4_t),   automatic :: cphi,cphi2
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15    
+                           a2.v(j)   = a.v(j)*a.v(j)
+                           sphi.v(j) = sin(phi.v(j))
+                           b2.v(j)   = b.v(j)*b.v(j)
+                           cphi.v(j) = cos(phi.v(j))
+                           k04.v(j)  = C40.v(j)*k0.v(j)
+                           cphi2.v(j)= cphi.v(j)*cphi.v(j)
+                           sphi2.v(j)= sphi.v(j)*sphi.v(j)
+                           x0.v(j)   = a2.v(j)*sphi2.v(j)+ &
+                                       b2.v(j)*cphi2.v(j)
+                           rcs.v(j)  = k04.v(j)*x0.v(j) 
+                      end do 
+#else                  
                    a2.v   = a.v*a.v
                    sphi.v = sin(phi.v)
                    b2.v   = b.v*b.v
@@ -10884,6 +10903,7 @@ module rcs_cylinder_zmm16r4
                    sphi2.v= sphi.v*sphi.v
                    x0.v   = a2.v*sphi2.v+b2.v*cphi2.v
                    rcs.v  = k04.v*x0.v 
+#endif
             end function rcs_f4425_zmm16r4
             
             !  /*
