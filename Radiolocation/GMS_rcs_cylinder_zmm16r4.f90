@@ -10702,6 +10702,33 @@ module rcs_cylinder_zmm16r4
                       stat = tmp
                       return
                    end if
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+                      integer(kind=i4) :: j
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+                      do j=0,15    
+                          a2.v(j)    = a.v(j)*a.v(j)
+                          sphi.v(j)  = sin(phi1.v(j))
+                          alp.v(j)   = C314159265358979323846264338328.v(j)* &
+                                       (phi2.v(j)-phi1.v(j))
+                          sphi2.v(j) = sphi.v*sphi.v(j)
+                          cphi.v(j)  = cos(phi1.v(j))
+                          b2.v(j)    = b.v(j)*b.v(j)
+                          cphi2.v(j) = cphi.v(j)*cphi.v(j)
+                          x0.v(j)    = a2.v(j)*cphi2.v(j)+ &
+                                       b2.v(j)*sphi2.v(j)
+                          c.v(j)     = sqrt(x0.v(j))
+                          k0c.v(j)   = k0.v(j)*c.v(j)
+                          arg.v(j)   = k0c.v(j)*alp.v(j)
+                          sarg.v(j)  = sin(arg.v(j))
+                          k0c.v(j)   = -k0c.v(j)
+                          rat.v(j)   = sarg.v(j)/arg.v(j)
+                          T.v(j)     = k0c.v(j)*rat.v(j)
+                      end do
+                   stat    = .true.
+#else                   
                    a2.v    = a.v*a.v
                    sphi.v  = sin(phi1.v)
                    alp.v   = C314159265358979323846264338328.v* &
@@ -10719,6 +10746,7 @@ module rcs_cylinder_zmm16r4
                    rat.v   = sarg.v/arg.v
                    T.v     = k0c.v*rat.v
                    stat    = .true.
+#endif
             end subroutine T_f4423_zmm16r4
             
             
