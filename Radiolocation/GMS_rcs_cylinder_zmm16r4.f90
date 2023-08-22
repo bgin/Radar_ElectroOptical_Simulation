@@ -10919,7 +10919,7 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes code_align : 32 :: TM_f4426_zmm16r4
                    !dir$ attributes forceinline :: TM_f4426_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4426_zmm16r4
-                   use mod_vecconsts, only : v16_1.v16_0
+                   use mod_vecconsts, only : v16_1,v16_0
                    type(ZMM16r4_t),   intent(in) :: k0
                    type(ZMM16r4_t),   intent(in) :: a
                    type(ZMM16r4_t),   intent(in) :: b
@@ -10999,7 +10999,7 @@ module rcs_cylinder_zmm16r4
                    !dir$ attributes code_align : 32 :: TE_f4426_zmm16r4
                    !dir$ attributes forceinline :: TM_f4426_zmm16r4
                    !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4426_zmm16r4
-                   use mod_vecconsts, only : v16_1.v16_0
+                   use mod_vecconsts, only : v16_1,v16_0
                    type(ZMM16r4_t),   intent(in) :: k0
                    type(ZMM16r4_t),   intent(in) :: a
                    type(ZMM16r4_t),   intent(in) :: b
@@ -11064,6 +11064,116 @@ module rcs_cylinder_zmm16r4
                    tmp     = tc0*tc3
                    TE      = fac*tmp
             end subroutine TE_f4427_zmm16r4
+            
+           !  /*
+           !               Infinitely long homogenous cylinder at normal
+           !               incidence.
+           !               Low frequency approximation (k0a<0.5,k0b<0.5,k1a<0.5,k1b<0.5)
+           !               Bistatic scattering width (RCS).
+           !               TM-case.
+           !               Formula 4.4-28
+           !         */
+           
+           
+           subroutine rcs_f4428_zmm16r4(k0,a,b,phi1,phi2,eps,mu,rcs) 
+               
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: rcs_f4428_zmm16r4
+                   !dir$ attributes forceinline :: rcs_f4428_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rcs_f4428_zmm16r4
+                   use mod_vecconsts, only : v16_1,v16_0
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16c4),     intent(in) :: eps
+                   type(ZMM16c4),     intent(in) :: mu
+                   type(ZMM16r4_t),   intent(out):: rcs
+                    !dir$ attributes align : 64 :: C078539816339744830961566084582 
+                   type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   type(ZMM16r4_t),   parameter :: C314159265358979323846264338328 = &
+                                                        ZMM16r4_t(3.14159265358979323846264338328_sp)
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: mupba
+                   !dir$ attributes align : 64 :: mumba
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: tc2
+                   !dir$ attributes align : 64 :: tc3
+                   !dir$ attributes align : 64 :: tmp
+                   !dir$ attributes align : 64 :: k0a
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: k0a3
+                   !dir$ attributes align : 64 :: cphi2
+                   !dir$ attributes align : 64 :: cphi1
+                   !dir$ attributes align : 64 :: sphi2
+                   !dir$ attributes align : 64 :: sphi1
+                   !dir$ attributes align : 64 :: b2
+                   !dir$ attributes align : 64 :: a2
+                   !dir$ attributes align : 64 :: pia
+                   !dir$ attributes align : 64 :: b2a2
+                   !dir$ attributes align : 64 :: fac
+                   !dir$ attributes align : 64 :: ba1
+                   !dir$ attributes align : 64 :: cphit
+                   !dir$ attributes align : 64 :: sphit
+                   !dir$ attributes align : 64 :: cab
+                   type(ZMM16c4),     automatic :: epsm1,mum1
+                   type(ZMM16c4),     automatic :: mupba,mumba
+                   type(ZMM16c4),     automatic :: tc0,tc1
+                   type(ZMM16c4),     automatic :: tc2,tc3
+                   type(ZMM16c4),     automatic :: tmp
+                   type(ZMM16r4_t),   automatic :: k0a,k0a2
+                   type(ZMM16c4),     automatic :: k0a3,cphi2
+                   type(ZMM16c4),     automatic :: cphi1,sphi2
+                   type(ZMM16c4),     automatic :: sphi1,b2
+                   type(ZMM16c4),     automatic :: a2,pia
+                   type(ZMM16c4),     automatic :: b2a2,fac
+                   type(ZMM16c4),     automatic :: ba1,cphit
+                   type(ZMM16c4),     automatic :: sphit,cab
+                   b2.v    = b.v*b.v
+                   k0a.v   = k0.v*a.v
+                   cphi1.v = cos(phi1.v)
+                   ba.v    = b.v/a.v
+                   pia.v   = C314159265358979323846264338328.v* &
+                             a.v
+                   a2.v    = a.v*a.v
+                   epsm1   = eps-v16_1
+                   sphi2.v = sin(phi2.v)
+                   b2a2.v  = b2.v/a2.v
+                   k0a2.v  = k0a.v*k0a.v
+                   cphi2.v = cos(phi2.v)
+                   cphit.v = cphi2.v*cphi1.v
+                   k0a3.v  = k0a2.v*k0a.v
+                   mum1    = mu-v16_1
+                   ba1.v   = ba.v+v16_1.v
+                   tc0     = epsm1-mum1
+                   sphi2.v = sin(phi2.v)
+                   sphit.v = sphi2.v*sphi1.v
+                   fac.v   = (pia.v*C078539816339744830961566084582.v)* &
+                             (k0a3.v*b2a2.v)
+                   mupba   = mu+ba
+                   tc1     = cphit/mupba
+                   mumba   = mu*ba
+                   tc2     = sphit/mumba
+                   tc3     = ba1*(tc1+tc2)
+                   tmp     = tc0*tc3
+                   cab     = cabs_c16(tmp)
+                   rcs     = fac.v*cab.v
+           end subroutine rcs_f4428_zmm16r4
+           
+           
+           !      /*
+           !               Infinitely long homogenous cylinder at normal
+           !               incidence.
+           !               Low frequency approximation (k0a<0.5,k0b<0.5,k1a<0.5,k1b<0.5)
+           !               Bistatic scattering width (RCS).
+           !               TE-case.
+           !               Formula 4.4-29
+           !!
+           !         */
 
 
             
