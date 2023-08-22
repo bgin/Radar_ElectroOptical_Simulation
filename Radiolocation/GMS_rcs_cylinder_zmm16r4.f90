@@ -10984,6 +10984,86 @@ module rcs_cylinder_zmm16r4
                    tmp     = tc0*tc3
                    TM      = fac*tmp
             end subroutine TM_f4426_zmm16r4
+            
+            
+            !  /*
+            !              Infinitely long homogenous cylinder at normal
+            !              incidence.
+            !              Low frequency approximation (k0a<0.5,k0b<0.5,k1a<0.5,k1b<0.5)
+            !              TE-case, formula 4.4-27
+            !         */
+            
+            subroutine TE_f4427_zmm16r4(k0,a,b,phi1,phi2,eps,mu,TE)
+                
+                   !dir$ optimize:3
+                   !dir$ attributes code_align : 32 :: TE_f4426_zmm16r4
+                   !dir$ attributes forceinline :: TM_f4426_zmm16r4
+                   !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: TM_f4426_zmm16r4
+                   use mod_vecconsts, only : v16_1.v16_0
+                   type(ZMM16r4_t),   intent(in) :: k0
+                   type(ZMM16r4_t),   intent(in) :: a
+                   type(ZMM16r4_t),   intent(in) :: b
+                   type(ZMM16r4_t),   intent(in) :: phi1
+                   type(ZMM16r4_t),   intent(in) :: phi2
+                   type(ZMM16c4),     intent(in) :: eps
+                   type(ZMM16c4),     intent(in) :: mu
+                   type(ZMM16c4),     intent(out):: TM
+                   !dir$ attributes align : 64 :: C078539816339744830961566084582 
+                   type(ZMM16r4_t),   parameter :: C078539816339744830961566084582 = &
+                                                        ZMM16r4_t(0.78539816339744830961566084582_sp)
+                   !dir$ attributes align : 64 :: epsm1
+                   !dir$ attributes align : 64 :: mum1
+                   !dir$ attributes align : 64 :: mupba
+                   !dir$ attributes align : 64 :: mumba
+                   !dir$ attributes align : 64 :: tc0
+                   !dir$ attributes align : 64 :: tc1
+                   !dir$ attributes align : 64 :: tc2
+                   !dir$ attributes align : 64 :: fac
+                   !dir$ attributes align : 64 :: tc3
+                   !dir$ attributes align : 64 :: tmp
+                   !dir$ attributes align : 64 :: k0a
+                   !dir$ attributes align : 64 :: k0a2
+                   !dir$ attributes align : 64 :: ba
+                   !dir$ attributes align : 64 :: cphi2
+                   !dir$ attributes align : 64 :: cphi1
+                   !dir$ attributes align : 64 :: sphi2
+                   !dir$ attributes align : 64 :: sphi1
+                   !dir$ attributes align : 64 :: ba1
+                   !dir$ attributes align : 64 :: cphit
+                   !dir$ attributes align : 64 :: sphit
+                   type(ZMM16c4),     automatic :: epsm1,mum1
+                   type(ZMM16c4),     automatic :: epspba,epsmba
+                   type(ZMM16c4),     automatic :: tc0,tc1
+                   type(ZMM16c4),     automatic :: tc2,tc3
+                   type(ZMM16c4),     automatic :: fac,tmp
+                   type(ZMM16r4_t),   automatic :: k0a,k0a2
+                   type(ZMM16r4_t),   automatic :: ba,cphi2
+                   type(ZMM16r4_t),   automatic :: cphi1,sphi2
+                   type(ZMM16r4_t),   automatic :: sphi1,ba1
+                   type(ZMM16r4_t),   automatic :: cphit,sphit
+                   k0a.v   = k0.v*a.v
+                   cphi1.v = cos(phi1.v)
+                   ba.v    = b.v/a.v
+                   epsm1   = eps-v16_1
+                   sphi1.v = sin(phi1.v)
+                   k0a2.v  = k0a.v*k0a.v
+                   cphi2.v = cos(phi2.v)
+                   cphit.v = cphi2.v*cphi1.v
+                   mum1    = mu-v16_1
+                   ba1.v   = v16_1.v+ba.v
+                   tc0     = mum1-epsm1
+                   fac.im  = v16_0.v
+                   sphi2.v = sin(phi2.v)
+                   fac.re  = C078539816339744830961566084582.v* &
+                             k0a2.v*ba.v
+                   epspba  = eps+ba
+                   tc1     = cphit/epspba
+                   epsmba  = eps*ba
+                   tc2     = sphit/epsmba
+                   tc3     = ba1*(tc1+tc2)
+                   tmp     = tc0*tc3
+                   TE      = fac*tmp
+            end subroutine TE_f4427_zmm16r4
 
 
             
