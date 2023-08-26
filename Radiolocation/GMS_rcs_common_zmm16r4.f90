@@ -223,9 +223,9 @@ module rcs_common_zmm16r4
         pure function preload_fn() result(s)
              
               !dir$ optimize:3
-              !dir$ attributes code_align : 32 :: preload_cd
-              !dir$ attributes forceinline :: preload_cd
-              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_cd
+              !dir$ attributes code_align : 32 :: preload_fn
+              !dir$ attributes forceinline :: preload_fn
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_fn
               type(ZMM16r4_t) :: s
               type(ZMM16r4_t), automatic :: t0,t1,t2,t3,t4
               t0.v = fn0.v+fn1.v
@@ -235,6 +235,27 @@ module rcs_common_zmm16r4
               t4.v = fn8.v+fn9.v
               s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
         end function preload_fn
+        
+        
+          !!
+        !! Helper function for bringing into L1D cache the
+        !! 'saved' constant data , i.e. fd.
+        !!
+        pure function preload_fd() result(s)
+             
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_fd
+              !dir$ attributes forceinline :: preload_fd
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_fd
+              type(ZMM16r4_t) :: s
+              type(ZMM16r4_t), automatic :: t0,t1,t2,t3,t4
+              t0.v = fd0.v+fd1.v
+              t1.v = fd2.v+fd3.v
+              t2.v = fd4.v+fd5.v
+              t3.v = fd6.v+fd7.v
+              t4.v = fd8.v+fd9.v
+              s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
+        end function preload_fd
         
         
         
