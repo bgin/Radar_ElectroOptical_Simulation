@@ -114,13 +114,56 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: cd5 = ZMM16r4_t(4.12142090722199792936E-2)
      type(ZMM16r4_t), save :: cd6 = ZMM16r4_t(1.00000000000000000118E0_sp)
      
+     type(ZMM16r4_t), save :: fn0 = ZMM16r4_t(4.21543555043677546506E-1_sp)
+     type(ZMM16r4_t), save :: fn1 = ZMM16r4_t(1.43407919780758885261E-1_sp)
+     type(ZMM16r4_t), save :: fn2 = ZMM16r4_t(1.15220955073585758835E-2_sp)
+     type(ZMM16r4_t), save :: fn3 = ZMM16r4_t(3.45017939782574027900E-4_sp)
+     type(ZMM16r4_t), save :: fn4 = ZMM16r4_t(4.63613749287867322088E-6_sp)
+     type(ZMM16r4_t), save :: fn5 = ZMM16r4_t(3.05568983790257605827E-8_sp)
+     type(ZMM16r4_t), save :: fn6 = ZMM16r4_t(1.02304514164907233465E-10_sp)
+     type(ZMM16r4_t), save :: fn7 = ZMM16r4_t(1.72010743268161828879E-13_sp)
+     type(ZMM16r4_t), save :: fn8 = ZMM16r4_t(1.34283276233062758925E-16_sp)
+     type(ZMM16r4_t), save :: fn9 = ZMM16r4_t(3.76329711269987889006E-20_sp)
+     
+     type(ZMM16r4_t), save :: fd0 = ZMM16r4_t(7.51586398353378947175E-1_sp)
+     type(ZMM16r4_t), save :: fd1 = ZMM16r4_t(1.16888925859191382142E-1_sp)
+     type(ZMM16r4_t), save :: fd2 = ZMM16r4_t(6.44051526508858611005E-3_sp)
+     type(ZMM16r4_t), save :: fd3 = ZMM16r4_t(1.55934409164153020873E-4_sp)
+     type(ZMM16r4_t), save :: fd4 = ZMM16r4_t(1.84627567348930545870E-6_sp)
+     type(ZMM16r4_t), save :: fd5 = ZMM16r4_t(1.12699224763999035261E-8_sp)
+     type(ZMM16r4_t), save :: fd6 = ZMM16r4_t(3.60140029589371370404E-11_sp)
+     type(ZMM16r4_t), save :: fd7 = ZMM16r4_t(5.88754533621578410010E-14_sp)
+     type(ZMM16r4_t), save :: fd8 = ZMM16r4_t(4.52001434074129701496E-17_sp)
+     type(ZMM16r4_t), save :: fd9 = ZMM16r4_t(1.25443237090011264384E-20_sp)
+     
      contains
      
+     
+     
+        !!
+        !! Helper function for bringing into L1D cache the
+        !! 'saved' constant data , i.e. sn.
+        !!
+        pure function reference_sn() result(s)
+             
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: reference_sn
+              !dir$ attributes forceinline :: reference_sn
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: reference_sn
+              type(ZMM16r4_t) :: s
+              type(ZMM16r4_t), automatic :: t0,t1,t2
+              t0.v = sn0.v+sn1.v
+              t1.v = sn2.v+sn3.v
+              t2.v = sn4.v+sn5.v
+              s.v  = t0.v+t1.v+t2.v
+        end function reference_sn
      
         ! /*
         !                Complex wavenumber, vector of 16 varying values of
         !                complex permeability and permitivity.
         !            */
+        
+        
         
         
         pure function k_zmm16c4(mu,eps,om) result(k)
