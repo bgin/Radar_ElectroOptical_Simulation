@@ -144,7 +144,7 @@ module rcs_common_zmm16r4
         !! Helper function for bringing into L1D cache the
         !! 'saved' constant data , i.e. sn.
         !!
-        pure function reference_sn() result(s)
+        pure function preload_sn() result(s)
              
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: reference_sn
