@@ -147,16 +147,18 @@ module rcs_common_zmm16r4
         pure function preload_sn() result(s)
              
               !dir$ optimize:3
-              !dir$ attributes code_align : 32 :: reference_sn
-              !dir$ attributes forceinline :: reference_sn
-              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: reference_sn
+              !dir$ attributes code_align : 32 :: preload_sn
+              !dir$ attributes forceinline :: preload_sn
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_sn
               type(ZMM16r4_t) :: s
               type(ZMM16r4_t), automatic :: t0,t1,t2
               t0.v = sn0.v+sn1.v
               t1.v = sn2.v+sn3.v
               t2.v = sn4.v+sn5.v
               s.v  = t0.v+t1.v+t2.v
-        end function reference_sn
+        end function preload_sn
+        
+        
      
         ! /*
         !                Complex wavenumber, vector of 16 varying values of
