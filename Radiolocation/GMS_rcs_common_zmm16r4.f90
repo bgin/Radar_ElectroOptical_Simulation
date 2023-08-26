@@ -99,6 +99,21 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: sd4 = ZMM16r4_t(2.24411795645340920940E10_sp)
      type(ZMM16r4_t), save :: sd5 = ZMM16r4_t(6.07366389490084639049E11_sp)
      
+     type(ZMM16r4_t), save :: cn0 = ZMM16r4_t(-4.98843114573573548651E-8_sp)
+     type(ZMM16r4_t), save :: cn1 = ZMM16r4_t(9.50428062829859605134E-6_sp)
+     type(ZMM16r4_t), save :: cn2 = ZMM16r4_t(-6.45191435683965050962E-4_sp)
+     type(ZMM16r4_t), save :: cn3 = ZMM16r4_t(1.88843319396703850064E-2_sp)
+     type(ZMM16r4_t), save :: cn4 = ZMM16r4_t(-2.05525900955013891793E-1_sp)
+     type(ZMM16r4_t), save :: cn5 = ZMM16r4_t(9.99999999999999998822E-1_sp)
+     
+     type(ZMM16r4_t), save :: cd0 = ZMM16r4_t(3.99982968972495980367E-12_sp)
+     type(ZMM16r4_t), save :: cd1 = ZMM16r4_t(9.15439215774657478799E-10_sp)
+     type(ZMM16r4_t), save :: cd2 = ZMM16r4_t(1.25001862479598821474E-7_sp)
+     type(ZMM16r4_t), save :: cd3 = ZMM16r4_t(1.22262789024179030997E-5_sp)
+     type(ZMM16r4_t), save :: cd4 = ZMM16r4_t(8.68029542941784300606E-4_sp)
+     type(ZMM16r4_t), save :: cd5 = ZMM16r4_t(4.12142090722199792936E-2)
+     type(ZMM16r4_t), save :: cd6 = ZMM16r4_t(1.00000000000000000118E0_sp)
+     
      contains
      
      
