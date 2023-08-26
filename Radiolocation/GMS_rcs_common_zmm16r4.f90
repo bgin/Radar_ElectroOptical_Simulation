@@ -85,6 +85,12 @@ module rcs_common_zmm16r4
      ! Short description
      character(*),        parameter :: RCS_CYLINDER_ZMM16R4_SYNOPSIS  = "Helper functions for the RCS implementations" 
      
+     !dir$ attributes align : 64 :: sn0
+     !dir$ attributes align : 64 :: sn1
+     !dir$ attributes align : 64 :: sn2
+     !dir$ attributes align : 64 :: sn3
+     !dir$ attributes align : 64 :: sn4
+     !dir$ attributes align : 64 :: sn5
      type(ZMM16r4_t), save :: sn0 = ZMM16r4_t(-2.99181919401019853726E3_sp)
      type(ZMM16r4_t), save :: sn1 = ZMM16r4_t(7.08840045257738576863E5_sp)
      type(ZMM16r4_t), save :: sn2 = ZMM16r4_t(-6.29741486205862506537E7_sp)
@@ -92,6 +98,12 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: sn4 = ZMM16r4_t(-4.42979518059697779103E10_sp)
      type(ZMM16r4_t), save :: sn5 = ZMM16r4_t(3.18016297876567817986E11_sp)
      
+     !dir$ attributes align : 64 :: sd0
+     !dir$ attributes align : 64 :: sd1
+     !dir$ attributes align : 64 :: sd2
+     !dir$ attributes align : 64 :: sd3
+     !dir$ attributes align : 64 :: sd4
+     !dir$ attributes align : 64 :: sd5
      type(ZMM16r4_t), save :: sd0 = ZMM16r4_t(2.81376268889994315696E2_sp)
      type(ZMM16r4_t), save :: sd1 = ZMM16r4_t(4.55847810806532581675E4_sp)
      type(ZMM16r4_t), save :: sd2 = ZMM16r4_t(5.17343888770096400730E6_sp)
@@ -99,6 +111,12 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: sd4 = ZMM16r4_t(2.24411795645340920940E10_sp)
      type(ZMM16r4_t), save :: sd5 = ZMM16r4_t(6.07366389490084639049E11_sp)
      
+     !dir$ attributes align : 64 :: cn0
+     !dir$ attributes align : 64 :: cn1
+     !dir$ attributes align : 64 :: cn2
+     !dir$ attributes align : 64 :: cn3
+     !dir$ attributes align : 64 :: cn4
+     !dir$ attributes align : 64 :: cn5
      type(ZMM16r4_t), save :: cn0 = ZMM16r4_t(-4.98843114573573548651E-8_sp)
      type(ZMM16r4_t), save :: cn1 = ZMM16r4_t(9.50428062829859605134E-6_sp)
      type(ZMM16r4_t), save :: cn2 = ZMM16r4_t(-6.45191435683965050962E-4_sp)
@@ -106,6 +124,12 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: cn4 = ZMM16r4_t(-2.05525900955013891793E-1_sp)
      type(ZMM16r4_t), save :: cn5 = ZMM16r4_t(9.99999999999999998822E-1_sp)
      
+     !dir$ attributes align : 64 :: cd0
+     !dir$ attributes align : 64 :: cd1
+     !dir$ attributes align : 64 :: cd2
+     !dir$ attributes align : 64 :: cd3
+     !dir$ attributes align : 64 :: cd4
+     !dir$ attributes align : 64 :: cd5
      type(ZMM16r4_t), save :: cd0 = ZMM16r4_t(3.99982968972495980367E-12_sp)
      type(ZMM16r4_t), save :: cd1 = ZMM16r4_t(9.15439215774657478799E-10_sp)
      type(ZMM16r4_t), save :: cd2 = ZMM16r4_t(1.25001862479598821474E-7_sp)
@@ -114,6 +138,16 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: cd5 = ZMM16r4_t(4.12142090722199792936E-2)
      type(ZMM16r4_t), save :: cd6 = ZMM16r4_t(1.00000000000000000118E0_sp)
      
+     !dir$ attributes align : 64 :: fn0
+     !dir$ attributes align : 64 :: fn1
+     !dir$ attributes align : 64 :: fn2
+     !dir$ attributes align : 64 :: fn3
+     !dir$ attributes align : 64 :: fn4
+     !dir$ attributes align : 64 :: fn5
+     !dir$ attributes align : 64 :: fn6
+     !dir$ attributes align : 64 :: fn7
+     !dir$ attributes align : 64 :: fn8
+     !dir$ attributes align : 64 :: fn9
      type(ZMM16r4_t), save :: fn0 = ZMM16r4_t(4.21543555043677546506E-1_sp)
      type(ZMM16r4_t), save :: fn1 = ZMM16r4_t(1.43407919780758885261E-1_sp)
      type(ZMM16r4_t), save :: fn2 = ZMM16r4_t(1.15220955073585758835E-2_sp)
@@ -125,6 +159,16 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: fn8 = ZMM16r4_t(1.34283276233062758925E-16_sp)
      type(ZMM16r4_t), save :: fn9 = ZMM16r4_t(3.76329711269987889006E-20_sp)
      
+     !dir$ attributes align : 64 :: fd0
+     !dir$ attributes align : 64 :: fd1
+     !dir$ attributes align : 64 :: fd2
+     !dir$ attributes align : 64 :: fd3
+     !dir$ attributes align : 64 :: fd4
+     !dir$ attributes align : 64 :: fd5
+     !dir$ attributes align : 64 :: fd6
+     !dir$ attributes align : 64 :: fd7
+     !dir$ attributes align : 64 :: fd8
+     !dir$ attributes align : 64 :: fd9
      type(ZMM16r4_t), save :: fd0 = ZMM16r4_t(7.51586398353378947175E-1_sp)
      type(ZMM16r4_t), save :: fd1 = ZMM16r4_t(1.16888925859191382142E-1_sp)
      type(ZMM16r4_t), save :: fd2 = ZMM16r4_t(6.44051526508858611005E-3_sp)
@@ -136,6 +180,17 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: fd8 = ZMM16r4_t(4.52001434074129701496E-17_sp)
      type(ZMM16r4_t), save :: fd9 = ZMM16r4_t(1.25443237090011264384E-20_sp)
      
+     !dir$ attributes align : 64 :: gn0
+     !dir$ attributes align : 64 :: gn1
+     !dir$ attributes align : 64 :: gn2
+     !dir$ attributes align : 64 :: gn3
+     !dir$ attributes align : 64 :: gn4
+     !dir$ attributes align : 64 :: gn5
+     !dir$ attributes align : 64 :: gn6
+     !dir$ attributes align : 64 :: gn7
+     !dir$ attributes align : 64 :: gn8
+     !dir$ attributes align : 64 :: gn9
+     !dir$ attributes align : 64 :: gn10
      type(ZMM16r4_t), save :: gn0 = ZMM16r4_t(5.04442073643383265887E-1_sp)
      type(ZMM16r4_t), save :: gn1 = ZMM16r4_t(1.97102833525523411709E-1_sp)
      type(ZMM16r4_t), save :: gn2 = ZMM16r4_t(1.87648584092575249293E-2_sp)
@@ -148,6 +203,17 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: gn9 = ZMM16r4_t(8.36354435630677421531E-19_sp)
      type(ZMM16r4_t), save :: gn10= ZMM16r4_t(1.86958710162783235106E-22_sp)
      
+     !dir$ attributes align : 64 :: gd0
+     !dir$ attributes align : 64 :: gd1
+     !dir$ attributes align : 64 :: gd2
+     !dir$ attributes align : 64 :: gd3
+     !dir$ attributes align : 64 :: gd4
+     !dir$ attributes align : 64 :: gd5
+     !dir$ attributes align : 64 :: gd6
+     !dir$ attributes align : 64 :: gd7
+     !dir$ attributes align : 64 :: gd8
+     !dir$ attributes align : 64 :: gd9
+     !dir$ attributes align : 64 :: gd10
      type(ZMM16r4_t), save :: gd0 = ZMM16r4_t(1.47495759925128324529E0_sp)
      type(ZMM16r4_t), save :: gd1 = ZMM16r4_t(3.37748989120019970451E-1_sp)
      type(ZMM16r4_t), save :: gd2 = ZMM16r4_t(2.53603741420338795122E-2_sp)
@@ -808,6 +874,19 @@ c    1, abnormal termination.
  */
 
 #endif     
+
+
+       subroutine fresnel_zmm16r4(xxa,ssa,cca)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: fresnel_zmm16r4
+              !dir$ attributes forceinline :: fresnel_zmm16r4
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fresnel_zmm16r4
+              type(ZMM16r4_t),  intent(in) :: xxa
+              type(ZMM16r4_t),  intent(out):: ssa
+              type(ZMM16r4_t),  intent(out):: cca
+              
+       end subroutine fresnel_zmm16r4
 
 
              
