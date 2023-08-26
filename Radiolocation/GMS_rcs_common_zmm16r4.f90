@@ -136,6 +136,30 @@ module rcs_common_zmm16r4
      type(ZMM16r4_t), save :: fd8 = ZMM16r4_t(4.52001434074129701496E-17_sp)
      type(ZMM16r4_t), save :: fd9 = ZMM16r4_t(1.25443237090011264384E-20_sp)
      
+     type(ZMM16r4_t), save :: gn0 = ZMM16r4_t(5.04442073643383265887E-1_sp)
+     type(ZMM16r4_t), save :: gn1 = ZMM16r4_t(1.97102833525523411709E-1_sp)
+     type(ZMM16r4_t), save :: gn2 = ZMM16r4_t(1.87648584092575249293E-2_sp)
+     type(ZMM16r4_t), save :: gn3 = ZMM16r4_t(6.84079380915393090172E-4_sp)
+     type(ZMM16r4_t), save :: gn4 = ZMM16r4_t(1.15138826111884280931E-5_sp)
+     type(ZMM16r4_t), save :: gn5 = ZMM16r4_t(9.82852443688422223854E-8_sp)
+     type(ZMM16r4_t), save :: gn6 = ZMM16r4_t(4.45344415861750144738E-10_sp)
+     type(ZMM16r4_t), save :: gn7 = ZMM16r4_t(1.08268041139020870318E-12_sp)
+     type(ZMM16r4_t), save :: gn8 = ZMM16r4_t(1.37555460633261799868E-15_sp)
+     type(ZMM16r4_t), save :: gn9 = ZMM16r4_t(8.36354435630677421531E-19_sp)
+     type(ZMM16r4_t), save :: gn10= ZMM16r4_t(1.86958710162783235106E-22_sp)
+     
+     type(ZMM16r4_t), save :: gd0 = ZMM16r4_t(1.47495759925128324529E0_sp)
+     type(ZMM16r4_t), save :: gd1 = ZMM16r4_t(3.37748989120019970451E-1_sp)
+     type(ZMM16r4_t), save :: gd2 = ZMM16r4_t(2.53603741420338795122E-2_sp)
+     type(ZMM16r4_t), save :: gd3 = ZMM16r4_t(8.14679107184306179049E-4_sp)
+     type(ZMM16r4_t), save :: gd4 = ZMM16r4_t(1.27545075667729118702E-5_sp)
+     type(ZMM16r4_t), save :: gd5 = ZMM16r4_t(1.04314589657571990585E-7_sp)
+     type(ZMM16r4_t), save :: gd6 = ZMM16r4_t(4.60680728146520428211E-10_sp)
+     type(ZMM16r4_t), save :: gd7 = ZMM16r4_t(1.10273215066240270757E-12_sp)
+     type(ZMM16r4_t), save :: gd8 = ZMM16r4_t(1.38796531259578871258E-15_sp)
+     type(ZMM16r4_t), save :: gd9 = ZMM16r4_t(8.39158816283118707363E-19_sp)
+     type(ZMM16r4_t), save :: gd10= ZMM16r4_t( 1.86958710162783236342E-22_sp)
+     
      contains
      
      
@@ -256,6 +280,30 @@ module rcs_common_zmm16r4
               t4.v = fd8.v+fd9.v
               s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
         end function preload_fd
+        
+        
+        !!
+        !! Helper function for bringing into L1D cache the
+        !! 'saved' constant data , i.e. gn.
+        !!
+        pure function preload_gn() result(s)
+             
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_gn
+              !dir$ attributes forceinline :: preload_gn
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_gn
+              type(ZMM16r4_t) :: s
+              type(ZMM16r4_t), automatic :: t0,t1,t2,t3,t4
+              t0.v = gn0.v+gn1.v
+              t1.v = gn2.v+gn3.v
+              t2.v = gn4.v+gn5.v
+              t3.v = gn6.v+gn7.v
+              t4.v = gn8.v+gn9.v+g10.v
+              s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
+        end function preload_gn
+        
+        
+        
         
         
         
