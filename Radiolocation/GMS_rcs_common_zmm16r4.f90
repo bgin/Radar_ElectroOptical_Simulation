@@ -298,9 +298,30 @@ module rcs_common_zmm16r4
               t1.v = gn2.v+gn3.v
               t2.v = gn4.v+gn5.v
               t3.v = gn6.v+gn7.v
-              t4.v = gn8.v+gn9.v+g10.v
+              t4.v = gn8.v+gn9.v+gn10.v
               s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
         end function preload_gn
+        
+        
+        !!
+        !! Helper function for bringing into L1D cache the
+        !! 'saved' constant data , i.e. gn.
+        !!
+        pure function preload_gd() result(s)
+             
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_gd
+              !dir$ attributes forceinline :: preload_gd
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_gd
+              type(ZMM16r4_t) :: s
+              type(ZMM16r4_t), automatic :: t0,t1,t2,t3,t4
+              t0.v = gd0.v+gd1.v
+              t1.v = gd2.v+gd3.v
+              t2.v = gd4.v+gd5.v
+              t3.v = gd6.v+gd7.v
+              t4.v = gd8.v+gd9.v+gd10.v
+              s.v  = t0.v+t1.v+t2.v+t3.v+t4.v
+        end function preload_gd
         
         
         
