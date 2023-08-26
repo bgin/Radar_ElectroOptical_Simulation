@@ -85,6 +85,19 @@ module rcs_common_zmm16r4
      ! Short description
      character(*),        parameter :: RCS_CYLINDER_ZMM16R4_SYNOPSIS  = "Helper functions for the RCS implementations" 
      
+     type(ZMM16r4_t), save :: sn0 = ZMM16r4_t(-2.99181919401019853726E3_sp)
+     type(ZMM16r4_t), save :: sn1 = ZMM16r4_t(7.08840045257738576863E5_sp)
+     type(ZMM16r4_t), save :: sn2 = ZMM16r4_t(-6.29741486205862506537E7_sp)
+     type(ZMM16r4_t), save :: sn3 = ZMM16r4_t(2.54890880573376359104E9_sp)
+     type(ZMM16r4_t), save :: sn4 = ZMM16r4_t(-4.42979518059697779103E10_sp)
+     type(ZMM16r4_t), save :: sn5 = ZMM16r4_t(3.18016297876567817986E11_sp)
+     
+     type(ZMM16r4_t), save :: sd0 = ZMM16r4_t(2.81376268889994315696E2_sp)
+     type(ZMM16r4_t), save :: sd1 = ZMM16r4_t(4.55847810806532581675E4_sp)
+     type(ZMM16r4_t), save :: sd2 = ZMM16r4_t(5.17343888770096400730E6_sp)
+     type(ZMM16r4_t), save :: sd3 = ZMM16r4_t(4.19320245898111231129E8_sp)
+     type(ZMM16r4_t), save :: sd4 = ZMM16r4_t(2.24411795645340920940E10_sp)
+     type(ZMM16r4_t), save :: sd5 = ZMM16r4_t(6.07366389490084639049E11_sp)
      
      contains
      
@@ -563,7 +576,10 @@ c    1, abnormal termination.
  *   DEC        C(x)      0, 10        5000       2.3e-16     3.9e-17
  */
 
-#endif        
+#endif     
+
+
+             
 
 
 
