@@ -178,6 +178,25 @@ module rcs_common_zmm16r4
         end function preload_sd
         
         
+        !!
+        !! Helper function for bringing into L1D cache the
+        !! 'saved' constant data , i.e. cn.
+        !!
+        pure function preload_cn() result(s)
+             
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_cn
+              !dir$ attributes forceinline :: preload_cn
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_cn
+              type(ZMM16r4_t) :: s
+              type(ZMM16r4_t), automatic :: t0,t1,t2
+              t0.v = cn0.v+cn1.v
+              t1.v = cn2.v+cn3.v
+              t2.v = cn4.v+cn5.v
+              s.v  = t0.v+t1.v+t2.v
+        end function preload_cn
+        
+        
      
         ! /*
         !                Complex wavenumber, vector of 16 varying values of
