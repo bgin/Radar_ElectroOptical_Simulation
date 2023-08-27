@@ -948,92 +948,92 @@ c    1, abnormal termination.
                       t0.v(j)   = acc1.v(j)/acc2.v(j)
                       ss.v(j)   = x.v(j)*x2.v(j)*t0.v(j)
                       acc3.v(j) = acc3.v(j)*t.v(j)+cn1.v(j)
-                 acc4.v = acc4.v*t.v+cd1.v
-                 acc3.v = acc3.v*t.v+cn2.v
-                 acc4.v = acc4.v*t.v+cd2.v
-                 acc3.v = acc3.v*t.v+cn3.v
-                 acc4.v = acc4.v*t.v+cd3.v
-                 acc3.v = acc3.v*t.v+cn4.v
-                 acc4.v = acc4.v*t.v+cd4.v
-                 acc4.v = acc4.v*t.v+cd5.v
-                 t1.v   = acc3.v/acc4.v
-                 cc.v   = x.v*t1.v
-                 goto 999
+                      acc4.v(j) = acc4.v(j)*t.v(j)+cd1.v(j)
+                      acc3.v(j) = acc3.v(j)*t.v(j)+cn2.v(j)
+                      acc4.v(j) = acc4.v(j)*t.v(j)+cd2.v(j)
+                      acc3.v(j) = acc3.v(j)*t.v(j)+cn3.v(j)
+                      acc4.v(j) = acc4.v(j)*t.v(j)+cd3.v(j)
+                      acc3.v(j) = acc3.v(j)*t.v(j)+cn4.v(j)
+                      acc4.v(j) = acc4.v(j)*t.v(j)+cd4.v(j)
+                      acc4.v(j) = acc4.v(j)*t.v(j)+cd5.v(j)
+                      t1.v(j)   = acc3.v(j)/acc4.v(j)
+                      cc.v(j)   = x.v(j)*t1.v(j)
+                      goto 999
               end if
-              msk.m = (x.v>C369740.v)
-              if(all(msk.m)) then
-                 cc.v = C05.v
-                 ss.v = cc.v
+              msk.m(j) = (x.v(j)>C369740.v(j))
+              if(msk.m(j)) then
+                 cc.v(j) = C05.v(j)
+                 ss.v(j) = cc.v(j)
                  goto 999
               end if
               !!
               !!Asymptotic power series auxiliary functions
               !!         *		for large argument
               !! 
-              t.v    = C314159265358979323846264338328.v* &
-                       x2.v
-              u.v    = v16_1.v*t.v*t.v
-              acc1.v = fn0.v
-              acc2.v = u.v*fd0.v
-              acc3.v = gn0.v
-              acc4.v = u.v+gd0.v
-              t.v    = v16_1.v/t.v
-              acc1.v = acc1.v*u.v+fn1.v
-              acc2.v = acc2.v*u.v+fd1.v
-              acc1.v = acc1.v*u.v+fn2.v
-              acc2.v = acc2.v*u.v+fd2.v
-              acc1.v = acc1.v*u.v+fn3.v
-              acc2.v = acc2.v*u.v+fd3.v
-              acc1.v = acc1.v*u.v+fn4.v
-              acc2.v = acc2.v*u.v+fd4.v
-              acc1.v = acc1.v*u.v+fn5.v
-              acc2.v = acc2.v*u.v+fd5.v
-              acc1.v = acc1.v*u.v+fn6.v
-              acc2.v = acc2.v*u.v+fd6.v
-              acc1.v = acc1.v*u.v+fn7.v
-              acc2.v = acc2.v*u.v+fd7.v
-              acc1.v = acc1.v*u.v+fn8.v
-              acc2.v = acc2.v*u.v+fd8.v
-              acc2.v = acc2.v*u.v+fd9.v
-              t0.v   = acc1.v/acc2.v
-              f.v    = v16_1.v-(u.v*t0.v)
-              acc3.v = acc3.v*u.v+gn1.v
-              acc4.v = acc4.v*u.v+gd1.v
-              acc3.v = acc3.v*u.v+gn2.v
-              acc4.v = acc4.v*u.v+gd2.v 
-              acc3.v = acc3.v*u.v+gn3.v
-              acc4.v = acc4.v*u.v+gd3.v
-              acc3.v = acc3.v*u.v+gn4.v
-              acc4.v = acc4.v*u.v+gd4.v
-              acc3.v = acc3.v*u.v+gn5.v
-              acc4.v = acc4.v*u.v+gd5.v
-              acc3.v = acc3.v*u.v+gn6.v
-              acc4.v = acc4.v*u.v+gd6.v
-              acc3.v = acc3.v*u.v+gn7.v
-              acc4.v = acc4.v*u.v+gd7.v
-              acc3.v = acc3.v*u.v+gn8.v
-              acc4.v = acc4.v*u.v+gd8.v
-              acc3.v = acc3.v*u.v+gn9.v
-              acc4.v = acc4.v*u.v+gd10.v 
-              t1.v   = acc3.v/acc4.v
-              g.v    = t.v*t1.v
-              t.v    = C157079632679489661923132169164.v* &
-                       x2.v
-              c.v    = cos(t.v)
-              s.v    = sin(t.v)
-              t.v    = C314159265358979323846264338328.v* &
-                       x.v
-              t0.v(j)   = f.v(j)*s.v(j)-(g.v(j)*c.v(j))
-              cc.v(j)   = C05.v(j)+(t0.v(j)/t.v(j))
-              t1.v(j)   = f.v(j)*c.v(j)+(g.v(j)*s.v(j))
-              ss.v(j)   = C05.v(j)-(t1.v(j)/t.v(j))
-999           msk.m(j)  = (xxa.v(j)<v16_0.v(j))
-              if(msk.m(j)) then
-                  cc.v(j) = -cc.v(j)
-                  ss.v(j) = -ss.v(j)
-              end if
-              cca.v(j) = cc.v(j)
-              ssa.v(j) = ss.v(j)
+                      t.v(j)    = C314159265358979323846264338328.v(j)* &
+                                  x2.v(j)
+                      u.v(j)    = v16_1.v(j)*t.v(j)*t.v(j)
+                      acc1.v(j) = fn0.v(j)
+                      acc2.v(j) = u.v(j)*fd0.v(j)
+                      acc3.v(j) = gn0.v(j)
+                      acc4.v(j) = u.v(j)+gd0.v(j)
+                      t.v(j)    = v16_1.v(j)/t.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn1.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd1.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn2.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd2.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn3.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd3.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn4.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd4.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn5.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd5.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn6.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd6.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn7.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd7.v(j)
+                      acc1.v(j) = acc1.v(j)*u.v(j)+fn8.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd8.v(j)
+                      acc2.v(j) = acc2.v(j)*u.v(j)+fd9.v(j)
+                      t0.v(j)   = acc1.v(j)/acc2.v(j)
+                      f.v(j)    = v16_1.v(j)-(u.v(j)*t0.v(j))
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn1.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd1.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn2.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd2.v(j) 
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn3.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd3.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn4.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd4.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn5.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd5.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn6.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd6.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn7.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd7.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn8.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd8.v(j)
+                      acc3.v(j) = acc3.v(j)*u.v(j)+gn9.v(j)
+                      acc4.v(j) = acc4.v(j)*u.v(j)+gd10.v(j) 
+                      t1.v(j)   = acc3.v(j)/acc4.v(j)
+                      g.v(j)    = t.v(j)*t1.v(j)
+                      t.v(j)    = C157079632679489661923132169164.v(j)* &
+                                 x2.v(j)
+                      c.v(j)    = cos(t.v(j))
+                      s.v(j)    = sin(t.v(j))
+                      t.v(j)    = C314159265358979323846264338328.v(j)* &
+                                  x.v(j)
+                      t0.v(j)   = f.v(j)*s.v(j)-(g.v(j)*c.v(j))
+                      cc.v(j)   = C05.v(j)+(t0.v(j)/t.v(j))
+                      t1.v(j)   = f.v(j)*c.v(j)+(g.v(j)*s.v(j))
+                      ss.v(j)   = C05.v(j)-(t1.v(j)/t.v(j))
+999                   msk.m(j)  = (xxa.v(j)<v16_0.v(j))
+                      if(msk.m(j)) then
+                          cc.v(j) = -cc.v(j)
+                          ss.v(j) = -ss.v(j)
+                       end if
+                       cca.v(j) = cc.v(j)
+                       ssa.v(j) = ss.v(j)
               end do
 #else             
               x.v   = abs(xxa.v)
