@@ -137,6 +137,55 @@ module spec_funcs_zmm8r8
               jint = 2
               val  = calci0_zmm8r8(x,jint)
           end function besei0_zmm8r8
+          
+
+#if 0
+ /*
+!*****************************************************************************80
+!
+!! BESEI1 evaluates the exponentially scaled Bessel I1(X) function.
+!
+!  Discussion:
+!
+!    This routine computes approximate values for the
+!    modified Bessel function of the first kind of order one
+!    multiplied by EXP(-ABS(X)).
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the function.
+!
+!    Output, real ( kind = 8 ) BESEI1, the value of the function.
+*/	         
+
+#endif      
+
+
+          pure function besei1_zmm8r8(x) result(val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: besei1_zmm8r8
+              !dir$ attributes forceinline :: besei1_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besei1_zmm8r8
+              type(ZMM8r8),   intent(in) :: x
+              type(ZMM8r8)  :: val
+              integer(kind=i4), automatic :: jint
+              jint = 2
+              val  = calci1_zmm8r8(x,jint) 
+          end function besei1_zmm8r8
 
 
 
