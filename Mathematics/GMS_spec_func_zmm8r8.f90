@@ -234,8 +234,56 @@ module spec_funcs_zmm8r8
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calck0_zmm8r8(x,jint) 
-          end function besek0_zmm8r8     
+          end function besek0_zmm8r8    
+          
 
+#if 0          
+/*
+!*****************************************************************************80
+!
+!! BESEK1 evaluates the exponentially scaled Bessel K1(X) function.
+!
+!  Discussion:
+!
+!    This routine computes approximate values for the
+!    modified Bessel function of the second kind of order one
+!    multiplied by the exponential function, for arguments
+!    XLEAST <= ARG <= XMAX.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the function.
+!
+!    Output, real ( kind = 8 ) BESEK1, the value of the function.
+*/	             
+#endif
+
+
+          pure function besek1_zmm8r8(x) result(val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: besek1_zmm8r8
+              !dir$ attributes forceinline :: besek1_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besek1_zmm8r8
+              type(ZMM8r8),   intent(in) :: x
+              type(ZMM8r8)  :: val
+              integer(kind=i4), automatic :: jint
+              jint = 2
+              val  = calck1_zmm8r8(x,jint) 
+          end function besek1_zmm8r8    
 
 
 end module spec_funcs_zmm8r8
