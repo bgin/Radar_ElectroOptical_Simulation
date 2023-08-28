@@ -1145,6 +1145,139 @@ c    1, abnormal termination.
               ssa.v = ss.v
 #endif
        end subroutine fresnel_zmm16r4
+       
+       
+       !  /*
+       !                    Same as above -- divided into Fresnel 'C' integral
+       !                    and Fresnel 'S' integral.
+       !              */
+       
+       
+       pure function fresnel_C_zmm16r4(xxa) result(cca)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: fresnel_C_zmm16r4
+              !dir$ attributes forceinline :: fresnel_C_zmm16r4
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fresnel_C_zmm16r4 
+              use mod_vecconsts, only : v16_1, v16_0
+              type(ZMM16r4_t),    intent(in) :: xxa
+              type(ZMM16r4_t)  :: cca
+              !dir$ attributes align : 64 :: C25625
+              !dir$ attributes align : 64 :: C369740
+              !dir$ attributes align : 64 :: C05
+              !dir$ attributes align : 64 :: C314159265358979323846264338328
+              !dir$ attributes align : 64 :: C157079632679489661923132169164
+              !dir$ attributes align : 64 :: f
+              !dir$ attributes align : 64 :: g
+              !dir$ attributes align : 64 :: cc
+              !dir$ attributes align : 64 :: c
+              !dir$ attributes align : 64 :: t
+              !dir$ attributes align : 64 :: u
+              !dir$ attributes align : 64 :: t0
+              !dir$ attributes align : 64 :: t1
+              !dir$ attributes align : 64 :: x
+              !dir$ attributes align : 64 :: x2
+              !dir$ attributes align : 64 :: acc1
+              !dir$ attributes align : 64 :: acc2
+              !dir$ attributes align : 64 :: acc3
+              !dir$ attributes align : 64 :: acc4
+              type(ZMM16r4_t),  parameter :: C25625 = ZMM16r4_t(2.5625_sp)
+              type(ZMM16r4_t),  parameter :: C369740= ZMM16r4_t(36974.0_sp)
+              type(ZMM16r4_t),  parameter :: C05    = ZMM16r4_t(0.5_sp)
+              type(ZMM16r4_t),  parameter :: C314159265358979323846264338328 = &
+                                                    ZMM16r4_t(3.14159265358979323846264338328_sp)
+              type(ZMM16r4_t),  parameter :: C157079632679489661923132169164 = &
+                                                    ZMM16r4_t(1.57079632679489661923132169164_sp)
+              type(ZMM16r4_t),  automatic :: f,g
+              type(ZMM16r4_t),  automatic :: cc,c
+              type(ZMM16r4_t),  automatic :: t,u
+              type(ZMM16r4_t),  automatic :: t0,t1
+              type(ZMM16r4_t),  automatic :: x,x2
+              type(ZMM16r4_t),  automatic :: acc1,acc2
+              type(ZMM16r4_t),  automatic :: acc3,acc4
+              type(Mask16_t),   automatic :: msk
+              x.v  = abs(xxa.v)
+              x2.v = x.v*x.v
+              msk.m= (x.v<C25625.v)
+              if(all(msk.m)) then
+                 t.v    = x2.v*x2.v
+                 acc3.v = cn0.v
+                 acc4.v = cd0.v
+                 acc3.v = acc3.v*t.v+cn1.v
+                 acc4.v = acc4.v*t.v+cd1.v
+                 acc3.v = acc3.v*t.v+cn2.v
+                 acc4.v = acc4.v*t.v+cd2.v
+                 acc3.v = acc3.v*t.v+cn3.v
+                 acc4.v = acc4.v*t.v+cd3.v
+                 acc3.v = acc3.v*t.v+cn4.v
+                 acc4.v = acc4.v*t.v+cd5.v
+                 acc4.v = acc4.v*t.v+cd6.v
+                 goto 999
+             end if
+             msk.m = (x.v>C369740.v)
+             if(all(msk.m)) then
+                 cc.v = C05.v
+                 goto 999
+             end if
+             !/*		Asymptotic power series auxiliary functions
+             !          *		for large argument
+             !          */
+             
+             t.v    = C314159265358979323846264338328.v*x2.v
+             u.v    = v16_1.v/(t.v*t.v)
+             acc1.v = fn0.v
+             acc2.v = u.v+fd0.v
+             acc3.v = gn0.v
+             acc4.v = u.v+gd0.v
+             t.v    = v16_1.v/t.v
+             acc1.v = acc1.v*u.v+fn1.v
+             acc2.v = acc2.v*u.v+fd1.v
+             acc1.v = acc1.v*u.v+fn2.v
+             acc2.v = acc2.v*u.v+fd2.v
+             acc1.v = acc1.v*u.v+fn3.v
+             acc2.v = acc2.v*u.v+fd3.v
+             acc1.v = acc1.v*u.v+fn4.v
+             acc2.v = acc2.v*u.v+fd4.v
+             acc1.v = acc1.v*u.v+fn5.v
+             acc2.v = acc2.v*u.v+fd5.v
+             acc1.v = acc1.v*u.v+fn6.v
+             acc2.v = acc2.v*u.v+fd6.v
+             acc1.v = acc1.v*u.v+fn7.v
+             acc2.v = acc2.v*u.v+fd7.v
+             acc1.v = acc1.v*u.v+fn8.v
+             acc2.v = acc2.v*u.v+fd8.v
+             acc2.v = acc2.v*u.v+fd9.v
+             t0.v   = acc1.v/acc2.v
+             f.v    = v16_1.v-(u.v*t0.v)
+             acc3.v = acc3.v*u.v+gn1.v
+             acc4.v = acc4.v*u.v+gd1.v
+             acc3.v = acc3.v*u.v+gn2.v
+             acc4.v = acc4.v*u.v+gd2.v
+             acc3.v = acc3.v*u.v+gn3.v
+             acc4.v = acc4.v*u.v+gd3.v
+             acc3.v = acc3.v*u.v+gn4.v
+             acc4.v = acc4.v*u.v+gd4.v
+             acc3.v = acc3.v*u.v+gn5.v
+             acc4.v = acc4.v*u.v+gd5.v
+             acc3.v = acc3.v*u.v+gn6.v
+             acc4.v = acc4.v*u.v+gd6.v
+             acc3.v = acc3.v*u.v+gn7.v
+             acc4.v = acc4.v*u.v+gd7.v
+             acc3.v = acc3.v*u.v+gn8.v
+             acc4.v = acc4.v*u.v+gd8.v
+             acc3.v = acc3.v*u.v+gd9.v
+             acc4.v = acc4.v*u.v+gd10.v
+             t1.v   = acc3.v/acc4.v
+             g.v    = t.v*t1.v
+             t.v    = C157079632679489661923132169164.v*x2.v
+             c.v    = cos(t.v)
+             t.v    = C314159265358979323846264338328.v*x.v
+             t0.v   = f.v*s.v-g.v*c.v
+             cc.v   = C05.v+t0.v/t.v
+999          msk.m  = (xxa.v<v16_0.v)
+             if(all(msk.m)) cc.v = -cc.v
+             cca.v = cc.v
+       end function fresnel_C_zmm16r4
 
 
              
