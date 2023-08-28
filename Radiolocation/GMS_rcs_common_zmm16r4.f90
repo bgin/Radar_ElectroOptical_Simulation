@@ -1196,6 +1196,99 @@ c    1, abnormal termination.
               type(ZMM16r4_t),  automatic :: acc1,acc2
               type(ZMM16r4_t),  automatic :: acc3,acc4
               type(Mask16_t),   automatic :: msk
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+              integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+                      !dir$ loop_count(16)
+                      !dir$ vector aligned
+                      !dir$ vector vectorlength(4)
+                      !dir$ vector always
+              do j=0,15  
+                    x.v(j)   = abs(xxa.v(j))
+                    x2.v(j)  = x.v(j)*x.v(j)
+                    msk.m(j) = (x.v(j)<C25625.v(j))
+                    if(msk.m(j)) then
+                        t.v(j)    = x2.v(j)*x2.v(j)
+                        acc3.v(j) = cn0.v(j)
+                        acc4.v(j) = cd0.v(j)
+                        acc3.v(j) = acc3.v(j)*t.v(j)+cn1.v(j)
+                        acc4.v(j) = acc4.v(j)*t.v(j)+cd1.v(j)
+                        acc3.v(j) = acc3.v(j)*t.v(j)+cn2.v(j)
+                        acc4.v(j) = acc4.v(j)*t.v(j)+cd2.v(j)
+                        acc3.v(j) = acc3.v(j)*t.v(j)+cn3.v(j)
+                        acc4.v(j) = acc4.v(j)*t.v(j)+cd3.v(j)
+                        acc3.v(j) = acc3.v(j)*t.v(j)+cn4.v(j)
+                        acc4.v(j) = acc4.v(j)*t.v(j)+cd5.v(j)
+                        acc4.v(j) = acc4.v(j)*t.v(j)+cd6.v(j)
+                        goto 999
+                        end if
+                        msk.m(j) = (x.v(j)>C369740.v(j))
+                        if(msk.m(j)) then
+                        cc.v(j) = C05.v(j)
+                        goto 999
+                     end if
+             !/*		Asymptotic power series auxiliary functions
+             !          *		for large argument
+             !          */
+             
+                     t.v(j)    = C314159265358979323846264338328.v(j)*x2.v(j)
+                     u.v(j)    = v16_1.v(j)/(t.v(j)*t.v(j))
+                     acc1.v(j) = fn0.v(j)
+                     acc2.v(j) = u.v(j)+fd0.v(j)
+                     acc3.v(j) = gn0.v(j)
+                     acc4.v(j) = u.v+gd0.v(j)
+                     t.v(j)    = v16_1.v(j)/t.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn1.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd1.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn2.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd2.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn3.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd3.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn4.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd4.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn5.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd5.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn6.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd6.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn7.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd7.v(j)
+                     acc1.v(j) = acc1.v(j)*u.v(j)+fn8.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd8.v(j)
+                     acc2.v(j) = acc2.v(j)*u.v(j)+fd9.v(j)
+                     t0.v(j)   = acc1.v(j)/acc2.v(j)
+                     f.v(j)    = v16_1.v(j)-(u.v(j)*t0.v(j))
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn1.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd1.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn2.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd2.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn3.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd3.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn4.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd4.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn5.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd5.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn6.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd6.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn7.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd7.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gn8.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd8.v(j)
+                     acc3.v(j) = acc3.v(j)*u.v(j)+gd9.v(j)
+                     acc4.v(j) = acc4.v(j)*u.v(j)+gd10.v(j)
+                     t1.v(j)   = acc3.v(j)/acc4.v(j)
+                     g.v(j)    = t.v(j)*t1.v(j)
+                     t.v(j)    = C157079632679489661923132169164.v(j)*x2.v(j)
+                     c.v(j)    = cos(t.v(j))
+                     t.v(j)    = C314159265358979323846264338328.v(j)*x.v(j)
+                     t0.v(j)   = f.v(j)*s.v(j)-g.v(j)*c.v(j)
+                     cc.v(j)   = C05.v(j)+t0.v(j)/t.v(j)
+999                  msk.m(j)  = (xxa.v(j)<v16_0.v(j))
+                     if(msk.m(j)) cc.v(j) = -cc.v(j)
+                     cca.v(j) = cc.v(j)
+              end do
+#else
               x.v  = abs(xxa.v)
               x2.v = x.v*x.v
               msk.m= (x.v<C25625.v)
@@ -1277,6 +1370,7 @@ c    1, abnormal termination.
 999          msk.m  = (xxa.v<v16_0.v)
              if(all(msk.m)) cc.v = -cc.v
              cca.v = cc.v
+#endif
        end function fresnel_C_zmm16r4
 
 
