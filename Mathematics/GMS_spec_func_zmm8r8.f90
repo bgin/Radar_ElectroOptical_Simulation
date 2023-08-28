@@ -186,6 +186,55 @@ module spec_funcs_zmm8r8
               jint = 2
               val  = calci1_zmm8r8(x,jint) 
           end function besei1_zmm8r8
+          
+
+#if 0         
+/*
+   !*****************************************************************************80
+!
+!! BESEK0 evaluates the exponentially scaled Bessel K0(X) function.
+!
+!  Discussion:
+!
+!    This routine computes approximate values for the
+!    modified Bessel function of the second kind of order zero
+!    multiplied by the exponential function.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the function.
+!    0 < X.
+!
+!    Output, real ( kind = 8 ) BESK0, the value of the function.
+*/   
+#endif
+
+
+           pure function besek0_zmm8r8(x) result(val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: besek0_zmm8r8
+              !dir$ attributes forceinline :: besek0_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besek0_zmm8r8
+              type(ZMM8r8),   intent(in) :: x
+              type(ZMM8r8)  :: val
+              integer(kind=i4), automatic :: jint
+              jint = 2
+              val  = calck0_zmm8r8(x,jint) 
+          end function besek0_zmm8r8     
 
 
 
