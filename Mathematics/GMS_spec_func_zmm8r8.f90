@@ -283,7 +283,56 @@ module spec_funcs_zmm8r8
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calck1_zmm8r8(x,jint) 
-          end function besek1_zmm8r8    
+          end function besek1_zmm8r8   
+          
+#if 0          
+/*
+     !*****************************************************************************80
+!
+!! BESI0 evaluates the Bessel I0(X) function.
+!
+!  Discussion:
+!
+!    This routine computes approximate values for
+!    modified Bessel functions of the first kind of order zero for
+!    arguments ABS(ARG) <= XMAX.
+!
+!    See comments heading CALCI0.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the function.
+!
+!    Output, real ( kind = 8 ) BESI0, the value of the function.
+*/ 
+#endif
+
+
+          pure function besi0_zmm8r8(x) result(val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: besi0_zmm8r8
+              !dir$ attributes forceinline :: besi0_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besi0_zmm8r8
+              type(ZMM8r8),   intent(in) :: x
+              type(ZMM8r8)  :: val
+              integer(kind=i4), automatic :: jint
+              jint = 1
+              val  = calci0_zmm8r8(x,jint) 
+          end function besi0_zmm8r8  
 
 
 end module spec_funcs_zmm8r8
