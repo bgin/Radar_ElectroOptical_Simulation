@@ -87,7 +87,23 @@ module spec_funcs_zmm8r8
      
      
      !! calcei_zm8r8 constants arrays (saved).
+     
      !dir$ attributes align : 64 :: calcei_a
+     !dir$ attributes align : 64 :: calcei_b
+     !dir$ attributes align : 64 :: calcei_c
+     !dir$ attributes align : 64 :: calcei_d
+     !dir$ attributes align : 64 :: calcei_e
+     !dir$ attributes align : 64 :: calcei_f
+     !dir$ attributes align : 64 :: calcei_plg
+     !dir$ attributes align : 64 :: calcei_qlg
+     !dir$ attributes align : 64 :: calcei_p
+     !dir$ attributes align : 64 :: calcei_q
+     !dir$ attributes align : 64 :: calcei_r
+     !dir$ attributes align : 64 :: calcei_s
+     !dir$ attributes align : 64 :: calcei_p1
+     !dir$ attributes align : 64 :: calcei_q1
+     !dir$ attributes align : 64 :: calcei_p2
+     !dir$ attributes align : 64 :: calcei_q2
       type(ZMM8r8_t), dimension(0:6), save :: calcei_a = [ZMM8r8_t(1.1669552669734461083368e+2_dp),   &
 	                                                  ZMM8r8_t(2.1500672908092918123209e+3_dp),   &
                                                           ZMM8r8_t(1.5924175980637303639884e+4_dp),   &
@@ -454,6 +470,61 @@ module spec_funcs_zmm8r8
               t4.v    = calcei_p1(8).v+calcei_p1(9).v
               summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
        end function preload_calcei_p1 
+       
+       
+       pure function preload_calcei_q1() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_q1
+              !dir$ attributes forceinline :: preload_calcei_q1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_q1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v    = calcei_q1(0).v+calcei_q1(1).v
+              t1.v    = calcei_q1(2).v+calcei_q1(3).v
+              t2.v    = calcei_q1(4).v+calcei_q1(5).v
+              t3.v    = calcei_q1(6).v+calcei_q1(7).v+ &
+                        calcei_q1(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calcei_q1 
+       
+       
+        pure function preload_calcei_p2() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_p2
+              !dir$ attributes forceinline :: preload_calcei_p2
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_p2
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_p2(0).v+calcei_p2(1).v
+              t1.v    = calcei_p2(2).v+calcei_p2(3).v
+              t2.v    = calcei_p2(4).v+calcei_p2(5).v
+              t3.v    = calcei_p2(6).v+calcei_p2(7).v
+              t4.v    = calcei_p2(8).v+calcei_p2(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_p2 
+       
+       
+       pure function preload_calcei_q2() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_q2
+              !dir$ attributes forceinline :: preload_calcei_q2
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_q2
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v    = calcei_q2(0).v+calcei_q2(1).v
+              t1.v    = calcei_q2(2).v+calcei_q2(3).v
+              t2.v    = calcei_q2(4).v+calcei_q2(5).v
+              t3.v    = calcei_q2(6).v+calcei_q2(7).v+ &
+                        calcei_q2(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calcei_q2 
+       
        
        
        
@@ -1120,17 +1191,256 @@ module spec_funcs_zmm8r8
 #endif   
 
 
-           pure function calcei_zmm8r8(arg,jint) result(val)
+         subroutine calcei_zmm8r8(arg,val,jint) 
            
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: calcei_zmm8r8
               !dir$ attributes forceinline :: calcei_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calcei_zmm8r8  
-               type(ZMM8r8_t),   intent(in) :: arg
-               integer(kind=i4), intent(in) :: jint
-               type(ZMM8r8_t)  :: val
-              
-           end function calcei_zmm8r8
+               type(ZMM8r8_t),   intent(in)   :: arg
+               type(ZMM8r8_t),   intent(out)  :: val
+               integer(kind=i4), intent(in)   :: jint
+               
+               !dir$ attributes align : 64 :: q
+               !dir$ attributes align : 64 :: qlq
+               !dir$ attributes align : 64 :: qx
+               !dir$ attributes align : 64 :: px
+               type(ZMM8r8_t), dimension(0:9), automatic  :: q
+               type(ZMM8r8_t), dimension(0:9), automatic  :: qlq
+               type(ZMM8r8_t), dimension(0:9), automatic  :: qx
+               type(ZMM8r8_t), dimension(0:9), automatic  :: px
+               !dir$ attributes align : 64 :: zero
+               !dir$ attributes align : 64 :: p037
+               !dir$ attributes align : 64 :: half
+               !dir$ attributes align : 64 :: one
+               !dir$ attributes align : 64 :: two
+               !dir$ attributes align : 64 :: three
+               !dir$ attributes align : 64 :: four
+               !dir$ attributes align : 64 :: six
+               !dir$ attributes align : 64 :: twlve
+               !dir$ attributes align : 64 :: two4
+               !dir$ attributes align : 64 :: frty
+               !dir$ attributes align : 64 :: exp40
+               !dir$ attributes align : 64 :: x01
+               !dir$ attributes align : 64 :: x11
+               !dir$ attributes align : 64 :: x02
+               !dir$ attributes align : 64 :: x0
+               !dir$ attributes align : 64 :: xinf
+               !dir$ attributes align : 64 :: xmax
+               !dir$ attributes align : 64 :: xbig
+               type(ZMM8r8_t), parameter :: zero = ZMM8r8_t(0.0e+0_dp)
+               type(ZMM8r8_t), parameter :: p037 = ZMM8r8_t(0.037e+0_dp)
+               type(ZMM8r8_t), parameter :: half = ZMM8r8_t(0.5e+0_dp)
+               type(ZMM8r8_t), parameter :: one  = ZMM8r8_t(1.0e+0_dp)
+               type(ZMM8r8_t), parameter :: two  = ZMM8r8_t(2.0e+0_dp)
+               type(ZMM8r8_t), parameter :: three= ZMM8r8_t(3.0e+0_dp)
+               type(ZMM8r8_t), parameter :: four = ZMM8r8_t(4.0e+0_dp)
+               type(ZMM8r8_t), parameter :: six  = ZMM8r8_t(6.0e+0_dp)
+               type(ZMM8r8_t), parameter :: twlve= ZMM8r8_t(12.0e+0_dp)
+               type(ZMM8r8_t), parameter :: two4 = ZMM8r8_t(24.0e+0_dp)
+               type(ZMM8r8_t), parameter :: frty = ZMM8r8_t(40.0e+0_dp)
+               type(ZMM8r8_t), parameter :: exp40= ZMM8r8_t(2.3538526683701998541e+17)
+               type(ZMM8r8_t), parameter :: x01  = ZMM8r8_t(381.5e+0_dp)
+               type(ZMM8r8_t), parameter :: x11  = ZMM8r8_t(1024.0e+0_dp)
+               type(ZMM8r8_t), parameter :: x02  = ZMM8r8_t(-5.1182968633365538008e-5_dp)
+               type(ZMM8r8_t), parameter :: x0   = ZMM8r8_t(3.7250741078136663466e-1_dp)
+               type(ZMM8r8_t), parameter :: xinf = ZMM8r8_t(1.79e+308_dp)
+               type(ZMM8r8_t), parameter :: xmax = ZMM8r8_t(716.351e+0_dp)
+               type(ZMM8r8_t), parameter :: xbig = ZMM8r8_t(701.84e+0_dp)
+               !dir$ attributes align : 64 :: ei
+               !dir$ attributes align : 64 :: frac
+               !dir$ attributes align : 64 :: res
+               !dir$ attributes align : 64 :: sump
+               !dir$ attributes align : 64 :: sumq
+               !dir$ attributes align : 64 :: t
+               !dir$ attributes align : 64 :: w
+               !dir$ attributes align : 64 :: x
+               !dir$ attributes align : 64 :: mx0
+               !dir$ attributes align : 64 :: y
+               !dir$ attributes align : 64 :: ysq
+               !dir$ attributes align : 64 :: t0
+               !dir$ attributes align : 64 :: t1
+               type(ZMM8r8_t), automatic :: ei,frac
+               type(ZMM8r8_t), automatic :: res
+               type(ZMM8r8_t), automatic :: sump,sumq
+               type(ZMM8r8_t), automatic :: t,w
+               type(ZMM8r8_t), automatic :: x,mx0
+               type(ZMM8r8_t), automatic :: y,ysq
+               type(ZMM8r8_t), automatic :: t0,t1
+               type(Mask8_t),  automatic :: msk1
+               type(Mask8_t),  automatic :: msk2
+               type(Mask8_t),  automatic :: msk3
+               type(Mask8_t),  automatic :: msk4
+               type(Mask8_t),  automatic :: msk5
+               type(Mask8_t),  automatic :: msk6
+               type(Mask8_t),  automatic :: msk7
+               type(Mask8_t),  automatic :: msk8
+               x.v    = arg.v
+               msk1.m = (x.v==zero.v)
+               msk2.m = (x.v<zero.v)
+               msk6.m = (x.v<six.v)
+               msk8.m = (x.v<twlve.v)
+               if(all(msk1.m)) then
+               
+                   ei.v = -xinf.v
+                   if(jint==2) ei.v = -ei.v
+                   ! /*
+	           !             !
+                   !              !  Calculate EI for negative argument or for E1.
+                   !             !   
+	           !          */
+	       else if(all(msk2.m).or.jint==2) then
+	       
+	             y.v    = abs(x.v)
+	             msk3.m = (y.v<one.v)
+	             msk4.m = (y.v<=four.v)
+	             msk5.m = (xbig.v<y.v)
+	             if(all(msk3.m)) then
+	           
+	                sump.v = calcei_a[6].v,y.v,calcei_a(0).v)
+	                sumq.v = y.v+calcei_b(0).v
+	                sump.v = sump.v*y.v+calcei_a(1).v
+	                sumq.v = sumq.v*y.v+calcei_b(1).v
+	                sump.v = sump.v*y.v+calcei_a(2).v
+	                sumq.v = sumq.v*y.v+calcei_b(2).v
+	                sump.v = sump.v*y.v+calcei_a(3).v
+	                sumq.v = sumq.v*y.v+calcei_b(3).v
+	                sump.v = sump.v*y.v+calcei_a(4).v
+	                sumq.v = sumq.v*y.v+calcei_b(4).v
+	                sump.v = sump.v*y.v+calcei_a(5).v
+	                sumq.v = sumq.v*y.v+calcei_b(5).v
+	                ei.v   = log(y.v)-(sump.v/sumq.v)
+	                if(jint==3) ei.v = ei.v*exp(y.v)
+	              
+	             else if(all(msk4.m)) then
+	              
+	                w.v    = one.v/y.v
+	                sump.v = calcei_c(0).v
+	                sumq.v = calcei_d(0).v
+	                sump.v = sump.v*w.v+calcei_c(1).v
+	                sumq.v = sumq.v*w.v+calcei_d(1).v
+	                sump.v = sump.v*w.v+calcei_c(2).v
+	                sumq.v = sumq.v*w.v+calcei_d(2).v
+	                sump.v = sump.v*w.v+calcei_c(3).v
+	                sumq.v = sumq.v*w.v+calcei_d(3).v
+	                sump.v = sump.v*w.v+calcei_c(4).v
+	                sumq.v = sumq.v*w.v+calcei_d(4).v
+	                sump.v = sump.v*w.v+calcei_c(5).v
+	                sumq.v = sumq.v*w.v+calcei_d(5).v
+	                sump.v = sump.v*w.v+calcei_c(6).v
+	                sumq.v = sumq.v*w.v+calcei_d(6).v
+	                sump.v = sump.v*w.v+calcei_c(7).v
+	                sumq.v = sumq.v*w.v+calcei_d(7).v
+	                sump.v = sump.v*w.v+calcei_c(8).v
+	                sumq.v = sumq.v*w.v+calcei_d(8).v
+	                ei.v   = -sump.v/sumq.v
+	              
+	                if(jint/=3) ei.v = ei.v*exp(-y.v) 
+	              
+	             else 
+	               
+	                if(all(msk5.m).and.jint<3) then
+	              
+	                    ei.v = zero.v
+	               
+	                else
+	               
+	                    w.v    = one.v/y.v
+	                    sump.v = calcei_e(0).v
+	                    sumq.v = calcei_f(0).v
+	                    sump.v = sump.v*w.v+calcei_e(1).v
+	                    sumq.v = sumq.v*w.v+calcei_f(1).v
+	                    sump.v = sump.v*w.v+calcei_e(2).v
+	                    sumq.v = sumq.v*w.v+calcei_f(2).v
+	                    sump.v = sump.v*w.v+calcei_e(3).v
+	                    sumq.v = sumq.v*w.v+calcei_f(3).v 
+	                    sump.v = sump.v*w.v+calcei_e(4).v
+	                    sumq.v = sumq.v*w.v+calcei_f(4).v
+	                    sump.v = sump.v*w.v+calcei_e(5).v
+	                    sumq.v = sumq.v*w.v+calcei_f(5).v
+	                    sump.v = sump.v*w.v+calcei_e(6).v
+	                    sumq.v = sumq.v*w.v+calcei_f(6).v
+	                    sump.v = sump.v*w.v+calcei_e(7).v
+	                    sumq.v = sumq.v*w.v+calcei_f(7).v
+	                    sump.v = sump.v*w.v+calcei_e(8).v
+	                    sumq.v = sumq.v*w.v+calcei_f(8).v
+	                    sump.v = sump.v*w.v+calcei_e(9).v
+	                    sumq.v = sumq.v*w.v+calcei_f(9).v
+	                    t0.v   = sump.v/sumq.v
+	                    t1.v   = one.v-w.v
+	                    ei.v   = -w.v*t0.v*t1.v
+	               
+	                    if(jint/=3) ei.v = -y.v*ei.v
+	               
+	                end if
+	           
+	             end if
+	       
+	             if(jint==2) ei.v = -ei.v
+	              !    /*
+	              !                  !
+                      !                  !  To improve conditioning, rational approximations are expressed
+                      !                  !  in terms of Chebyshev polynomials for 0 <= X < 6, and in
+                      !                  !  continued fraction form for larger X.
+                      !                  !
+	              !               */
+	       else if(all(msk6.m)) then
+	             
+	             t.v     = x.v+x.v
+	             t.v     = (t.v/three.v)-two.v
+	             px(0).v = zero.v
+	             qx(0).v = zero.v
+	             px(1).v = p(0).v
+	             qx(1).v = q(0).v
+	             px(2).v = t.v*px(1).v-px(0).v+p(1).v
+	             qx(2).v = t.v*qx(1).v-qx(0).v+q(1).v
+	             px(3).v = t.v*px(2).v-px(1).v+p(2).v
+	             qx(3).v = t.v*qx(2).v-qx(1).v+q(2).v
+	             px(4).v = t.v*px(3).v-px(2).v+p(3).v
+	             qx(4).v = t.v*qx(3).v-qx(2).v+q(3).v
+	             px(5).v = t.v*px(4).v-px(3).v+p(4).v
+	             qx(5).v = t.v*qx(4).v-qx(3).v+q(4).v
+	             px(6).v = t.v*px(5).v-px(4).v+p(5).v
+	             qx(6).v = t.v*qx(5).v-qx(4).v+q(5).v
+	             px(7).v = t.v*px(6).v-px(5).v+p(6).v
+	             qx(7).v = t.v*qx(6).v-qx(5).v+q(6).v
+	             px(8).v = t.v*px(7).v-px(6).v+p(7).v
+	             qx(8).v = t.v*qx(7).v-qx(6).v+q(7).v
+	             t0.v    = half.v*t.v
+	             sump.v  = t0.v*px(9).v-px(8).v+p(9).v
+	             sumq.v  = t0.v*qx(9).v-qx(8).v+q(9).v
+	             frac.v  = sump.v/sumq.v
+	             t0.v    = x.v-x01.v/x11.v
+	             xmx0.v  = t0.v-x02.v
+	             msk7.m  = (p037.v<=abs(xmx0.v)
+	             
+	             if(all(msk7.m)) then
+	                   t0.v = x.v/x0.v
+	                   ei.v = frac.v*xmx0.v+log(t0.v)
+	                   if(jint==3) ei.v = exp(-x.v)*ei.v
+	             else
+	                 !  //Special approximation to ln(X/X0) for X close to X0. 
+	                 y.v    = xmx0.v/(x.v+x0.v)
+	                 ysq.v  = y.v*y.v
+	                 sump.v = calcei_plg(0).v
+	                 sumq.v = ysq.v+calcei_qlg(0).v
+	                 sump.v = sump.v*ysq.v+calcei_plg(1).v
+	                 sumq.v = sumq.v*ysq.v+calcei_qlg(1).v
+	                 sump.v = sump.v*ysq.v+calcei_plg(2).v
+	                 sumq.v = sumq.v*ysq.v+calcei_qlg(2).v
+	                 sump.v = sump.v*ysq.v+calcei_plg(3).v
+	                 sumq.v = sumq.v*ysq.v+calcei_qlg(3).v
+	                 t0.v   = sumq.v*(x.v+x0.v)+frac.v
+	                 ei.v   = (sump.v/t0.v)*xmx0.v
+	                 
+	                 if(jint==3) ei.v = exp(-x.v)*ei.v 
+	             end if
+	             
+	       else if(all(msk8.m)) then
+	       
+	              frac.v = zero.v
+	              frac.v= calcei_s(0).v/(calcei_r(0).v
+       end subroutine calcei_zmm8r8
 
 
            
