@@ -264,7 +264,7 @@ module spec_funcs_zmm8r8
        end function preload_calcei_b 
        
        
-       pure function preload_calcei_c() result(summa)
+      pure function preload_calcei_c() result(summa)
             
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_calcei_c
@@ -276,9 +276,190 @@ module spec_funcs_zmm8r8
               t0.v    = calcei_c(0).v+calcei_c(1).v
               t1.v    = calcei_c(2).v+calcei_c(3).v
               t2.v    = calcei_c(4).v+calcei_c(5).v
-              t3.v    = calcei_c(6).v+calcei_c(7).v
+              t3.v    = calcei_c(6).v+calcei_c(7).v+ &
+                        calcei_c(8).v
               summa.v = t0.v+t1.v+t2.v+t3.v
        end function preload_calcei_c 
+       
+       
+       pure function preload_calcei_d() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_d
+              !dir$ attributes forceinline :: preload_calcei_d
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_d
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v    = calcei_d(0).v+calcei_d(1).v
+              t1.v    = calcei_d(2).v+calcei_d(3).v
+              t2.v    = calcei_d(4).v+calcei_d(5).v
+              t3.v    = calcei_d(6).v+calcei_d(7).v+ &
+                        calcei_d(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calcei_d 
+       
+       
+       pure function preload_calcei_e() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_e
+              !dir$ attributes forceinline :: preload_calcei_e
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_e
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_e(0).v+calcei_e(1).v
+              t1.v    = calcei_e(2).v+calcei_e(3).v
+              t2.v    = calcei_e(4).v+calcei_e(5).v
+              t3.v    = calcei_e(6).v+calcei_e(7).v
+              t4.v    = calcei_e(8).v+calcei_e(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_e 
+       
+       
+       pure function preload_calcei_f() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_f
+              !dir$ attributes forceinline :: preload_calcei_f
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_f
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_f(0).v+calcei_f(1).v
+              t1.v    = calcei_f(2).v+calcei_f(3).v
+              t2.v    = calcei_f(4).v+calcei_f(5).v
+              t3.v    = calcei_f(6).v+calcei_f(7).v
+              t4.v    = calcei_f(8).v+calcei_f(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_f 
+       
+       
+       pure function preload_calcei_plg() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_plg
+              !dir$ attributes forceinline :: preload_calcei_plg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_plg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v    = calcei_plg(0).v+calcei_plg(1).v
+              t1.v    = calcei_plg(2).v+calcei_plg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_calcei_plg 
+       
+       
+       pure function preload_calcei_qlg() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_qlg
+              !dir$ attributes forceinline :: preload_calcei_qlg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_qlg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v    = calcei_qlg(0).v+calcei_qlg(1).v
+              t1.v    = calcei_qlg(2).v+calcei_qlg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_calcei_qlg 
+       
+       
+       pure function preload_calcei_p() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_p
+              !dir$ attributes forceinline :: preload_calcei_p
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_p
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_p(0).v+calcei_p(1).v
+              t1.v    = calcei_p(2).v+calcei_p(3).v
+              t2.v    = calcei_p(4).v+calcei_p(5).v
+              t3.v    = calcei_p(6).v+calcei_p(7).v
+              t4.v    = calcei_p(8).v+calcei_p(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_p 
+       
+       
+       pure function preload_calcei_q() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_q
+              !dir$ attributes forceinline :: preload_calcei_q
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_q
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_q(0).v+calcei_q(1).v
+              t1.v    = calcei_q(2).v+calcei_q(3).v
+              t2.v    = calcei_q(4).v+calcei_q(5).v
+              t3.v    = calcei_q(6).v+calcei_q(7).v
+              t4.v    = calcei_q(8).v+calcei_q(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_q 
+       
+       
+       pure function preload_calcei_r() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_r
+              !dir$ attributes forceinline :: preload_calcei_r
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_r
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_r(0).v+calcei_r(1).v
+              t1.v    = calcei_r(2).v+calcei_r(3).v
+              t2.v    = calcei_r(4).v+calcei_r(5).v
+              t3.v    = calcei_r(6).v+calcei_r(7).v
+              t4.v    = calcei_r(8).v+calcei_r(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_r 
+       
+       
+       pure function preload_calcei_s() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_s
+              !dir$ attributes forceinline :: preload_calcei_s
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_s
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v    = calcei_r(0).v+calcei_r(1).v
+              t1.v    = calcei_r(2).v+calcei_r(3).v
+              t2.v    = calcei_r(4).v+calcei_r(5).v
+              t3.v    = calcei_r(6).v+calcei_r(7).v+ &
+                        calcei_r(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calcei_s 
+       
+       
+       pure function preload_calcei_p1() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_p1
+              !dir$ attributes forceinline :: preload_calcei_p1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_p1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v    = calcei_p1(0).v+calcei_p1(1).v
+              t1.v    = calcei_p1(2).v+calcei_p1(3).v
+              t2.v    = calcei_p1(4).v+calcei_p1(5).v
+              t3.v    = calcei_p1(6).v+calcei_p1(7).v
+              t4.v    = calcei_p1(8).v+calcei_p1(9).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calcei_p1 
+       
+       
+       
+       
+       
+       
        
        
        
