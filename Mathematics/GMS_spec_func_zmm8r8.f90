@@ -224,6 +224,7 @@ module spec_funcs_zmm8r8
                                                           ZMM8r8_t(-7.99243595776339741065e+00_dp),   &
                                                           ZMM8r8_t(-2.99999894040324959612e+00_dp),   &
                                                           ZMM8r8_t(1.99999999999048104167e+00_dp)]
+       
      contains
      
 !! =============================================================================================================== //
@@ -231,7 +232,7 @@ module spec_funcs_zmm8r8
 !!================================================================================================================ //  
 
 
-       pure function preload_calcei_a() result(summa)
+      pure function preload_calcei_a() result(summa)
             
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: preload_calcei_a
@@ -245,6 +246,43 @@ module spec_funcs_zmm8r8
               t2.v    = calcei_a(4).v+calcei_a(5).v
               summa.v = t0.v+t1.v+t2.v
        end function preload_calcei_a 
+       
+       
+       pure function preload_calcei_b() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_b
+              !dir$ attributes forceinline :: preload_calcei_b
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_b
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v    = calcei_b(0).v+calcei_b(1).v
+              t1.v    = calcei_b(2).v+calcei_b(3).v
+              t2.v    = calcei_b(4).v+calcei_b(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_calcei_b 
+       
+       
+       pure function preload_calcei_c() result(summa)
+            
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calcei_c
+              !dir$ attributes forceinline :: preload_calcei_c
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calcei_c
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v    = calcei_c(0).v+calcei_c(1).v
+              t1.v    = calcei_c(2).v+calcei_c(3).v
+              t2.v    = calcei_c(4).v+calcei_c(5).v
+              t3.v    = calcei_c(6).v+calcei_c(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calcei_c 
+       
+       
+       
+       
      
 #if 0
 /*
