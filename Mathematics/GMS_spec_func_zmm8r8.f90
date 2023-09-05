@@ -240,11 +240,52 @@ module spec_funcs_zmm8r8
                                                           ZMM8r8_t(-7.99243595776339741065e+00_dp),   &
                                                           ZMM8r8_t(-2.99999894040324959612e+00_dp),   &
                                                           ZMM8r8_t(1.99999999999048104167e+00_dp)]
+                                                          
+                                                          
+     !!
+     !! calci0_zmm8r8 constant arrays (saved)
+     !!
+     
+     type(ZMM8r8_t), dimension(0:14), save :: calci0_p  =[ZMM8r8_t(-5.2487866627945699800e-18_dp),        &
+                                                          ZMM8r8_t(-1.5982226675653184646e-14_dp),        &
+                                                          ZMM8r8_t(-2.6843448573468483278e-11_dp),        &
+                                                          ZMM8r8_t(-3.0517226450451067446e-08_dp),        &
+                                                          ZMM8r8_t(-2.5172644670688975051e-05_dp),        &
+                                                          ZMM8r8_t(-1.5453977791786851041e-02_dp),        &
+                                                          ZMM8r8_t(-7.0935347449210549190e+00_dp),        &
+                                                          ZMM8r8_t(-2.4125195876041896775e+03_dp),        &
+                                                          ZMM8r8_t(-5.9545626019847898221e+05_dp),        &
+                                                          ZMM8r8_t(-1.0313066708737980747e+08_dp),        &
+                                                          ZMM8r8_t(-1.1912746104985237192e+10_dp),        &
+                                                          ZMM8r8_t(-8.4925101247114157499e+11_dp),        &
+                                                          ZMM8r8_t(-3.2940087627407749166e+13_dp),        &
+                                                          ZMM8r8_t(-5.5050369673018427753e+14_dp),        &
+                                                          ZMM8r8_t(-2.2335582639474375249e+15_dp)]
+      type(ZMM8r8_t), dimension(0:4), save ::  calci0_q =[ZMM8r8_t(3.7277560179962773046e+03_dp),         &
+                                                          ZMM8r8_t(6.5158506418655165707e+06_dp),         &
+                                                          ZMM8r8_t(-6.5626560740833869295e+09_dp),        &
+                                                          ZMM8r8_t(3.7604188704092954661e+12_dp),         &
+                                                          ZMM8r8_t(-9.7087946179594019126d+14_dp)]
+      type(ZMM8r8_t), dimension(0:7), save ::  calci0_pp=[ZMM8r8_t(3.9843750000000000000e-01_dp),         & 
+                                                          ZMM8r8_t(2.9205384596336793945e+00_dp),         &
+                                                          ZMM8r8_t(-2.4708469169133954315e+00_dp),        &
+                                                          ZMM8r8_t(4.7914889422856814203e-01_dp),         &
+                                                          ZMM8r8_t(-3.7384991926068969150e-03_dp),        &
+                                                          ZMM8r8_t(-2.6801520353328635310e-03_dp),        &
+                                                          ZMM8r8_t(9.9168777670983678974e-05_dp),         &
+                                                          ZMM8r8_t(-2.1877128189032726730e-06_dp)]
+      type(ZMM8r8_t), dimension(0:6), save ::  calci0_qq=[ZMM8r8_t(-3.1446690275135491500e+01_dp),        & 
+                                                          ZMM8r8_t(8.5539563258012929600e+01_dp),         &
+                                                          ZMM8r8_t(-6.0228002066743340583e+01_dp),        &
+                                                          ZMM8r8_t(1.3982595353892851542e+01_dp),         &
+                                                          ZMM8r8_t(-1.1151759188741312645e+00_dp),        &
+                                                          ZMM8r8_t(3.2547697594819615062e-02_dp),         &
+                                                          ZMM8r8_t(-5.5194330231005480228e-04_dp)] 
        
      contains
      
 !! =============================================================================================================== //
-!!                                  'Saved' arrays preload routines.
+!!                                  'Saved' arrays preload_calcei routines.
 !!================================================================================================================ //  
 
 
@@ -525,9 +566,33 @@ module spec_funcs_zmm8r8
               summa.v = t0.v+t1.v+t2.v+t3.v
        end function preload_calcei_q2 
        
+!! =============================================================================================================== //
+!!                                  'Saved' arrays preload_calci0 routines.
+!!================================================================================================================ //        
        
        
+       pure function preload_calci0_p() result(summa)
        
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calci0_p
+              !dir$ attributes forceinline :: preload_calci0_p
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calci0_p
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              !dir$ attributes align : 64 :: t4,t5,t6
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t4,t5,t6
+              t0.v = calci0_p(0).v+calci0_p(1).v
+              t1.v = calci0_p(2).v+calci0_p(3).v
+              t2.v = calci0_p(4).v+calci0_p(5).v
+              t3.v = calci0_p(6).v+calci0_p(7).v
+              t4.v = calci0_p(8).v+calci0_p(9).v
+              t5.v = calci0_p(10).v+calci0_p(11).v
+              t6.v = calci0_p(12).v+calci0_p(13).v+ &
+                     calc0_p(14)
+              summa.v = t0.v+t1.v+t2.v+t3.v+ &
+                        t4.v+t5.v+t6.v
+       end function preload_calci0_p
        
        
        
@@ -1531,6 +1596,56 @@ module spec_funcs_zmm8r8
 	           end if
 	           val.v = ei.v
        end subroutine calcei_zmm8r8
+       
+       
+#if 0
+   *
+    !*****************************************************************************80
+!
+!! CALCI0 computes various I0 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes modified Bessel functions of the first kind
+!    and order zero, I0(X) and EXP(-ABS(X))*I0(X), for real
+!    arguments X.
+!
+!    The main computation evaluates slightly modified forms of
+!    minimax approximations generated by Blair and Edwards, Chalk
+!    River (Atomic Energy of Canada Limited) Report AECL-4928,
+!    October, 1974.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.  If JINT = 1, then
+!    the argument must be less than XMAX.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    1, RESULT = I0(x);
+!    2, RESULT = exp(-x) * I0(x);
+!
+!    Input, integer ( kind = 4 ) JINT, chooses the function to be computed.
+!    1, I0(x);
+!    2, exp(-x) * I0(x);      
+*/
+#endif
+
+
+        
 
 
            
