@@ -1275,11 +1275,14 @@ module spec_funcs_zmm8r8
                type(Mask8_t),  automatic :: msk6
                type(Mask8_t),  automatic :: msk7
                type(Mask8_t),  automatic :: msk8
+               type(Mask8_t),  automatic :: msk9
+               type(Mask8_t),  automatic :: msk10
                x.v    = arg.v
                msk1.m = (x.v==zero.v)
                msk2.m = (x.v<zero.v)
                msk6.m = (x.v<six.v)
                msk8.m = (x.v<twlve.v)
+               msk9.m = (x.v<=two4.v)
                if(all(msk1.m)) then
                
                    ei.v = -xinf.v
@@ -1439,7 +1442,94 @@ module spec_funcs_zmm8r8
 	       else if(all(msk8.m)) then
 	       
 	              frac.v = zero.v
-	              frac.v= calcei_s(0).v/(calcei_r(0).v
+	              frac.v= calcei_s(0).v/(calcei_r(0).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(1).v/(calcei_r(1).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(2).v/(calcei_r(2).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(3).v/(calcei_r(3).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(4).v/(calcei_r(4).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(5).v/(calcei_r(5).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(6).v/(calcei_r(6).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(7).v/(calcei_r(7).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_s(8).v/(calcei_r(8).v+ &
+	                                          x.v+frac.v)
+	              ei.v  = (calcei_r(9).v+frac.v)/x.v
+	              
+	              if(jint==3) ei.v = ei.v*exp(x.v)
+	              
+	        else if(all(msk9.m)) then
+	        
+	              frac.v = zero.v
+	              frac.v= calcei_q1(0).v/(calcei_p1(0).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(1).v/(calcei_p1(1).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(2).v/(calcei_p1(2).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(3).v/(calcei_p1(3).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(4).v/(calcei_p1(4).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(5).v/(calcei_p1(5).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(6).v/(calcei_p1(6).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(7).v/(calcei_p1(7).v+ &
+	                                          x.v+frac.v)
+	              frac.v= calcei_q1(8).v/(calcei_p1(8).v+ &
+	                                          x.v+frac.v)
+	              ei.v  = (calcei_p1(9).v+frac.v)/x.v
+	              
+	              if(jint/=3) ei.v = ei.v*exp(x.v)
+	                                     
+	        else
+	             
+	               msk10.m = (xmax.v<=x.v)
+	               if(all(msk10.m).and.jint==3) then
+	                   ei.v = xinf.v
+	               else
+	                   y.v    = one.v/x.v
+	                   frac.v = zero.v
+	                   frac.v= calcei_q2(0).v/(calcei_p2(0).v+ &
+	                                               x.v+frac.v)
+	                   frac.v= calcei_q2(1).v/(calcei_p2(1).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(2).v/(calcei_p2(2).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(3).v/(calcei_p2(3).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(4).v/(calcei_p2(4).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(5).v/(calcei_p2(5).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(6).v/(calcei_p2(6).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(7).v/(calcei_p2(7).v+ &
+	                                          x.v+frac.v)
+	                   frac.v= calcei_q2(8).v/(calcei_p2(8).v+ &
+	                                          x.v+frac.v)   
+	                   frac.v= calcei_p2(9).v+frac.v
+	                   ei.v  = frac.v*y.v*y.v+y.v
+	                   
+	                   if(jint/=3) then
+	                      msk10.m = (x.v<=(xmax.v-two4.v))
+	                      if(all(msk10.m)) then
+	                          ei.v = ei.v*exp(x.v)
+	                      else
+	                          t0.v = x.v-frty.v
+	                          ei.v = ei.v*t0.v*exp40.v
+	                      end if
+	                   end if
+	               end if
+	           end if
+	           val.v = ei.v
        end subroutine calcei_zmm8r8
 
 
