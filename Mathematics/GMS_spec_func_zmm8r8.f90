@@ -245,7 +245,10 @@ module spec_funcs_zmm8r8
      !!
      !! calci0_zmm8r8 constant arrays (saved)
      !!
-     
+     !dir$ attributes align : 64 :: calci0_p
+     !dir$ attributes align : 64 :: calci0_q
+     !dir$ attributes align : 64 :: calci0_pp
+     !dir$ attributes align : 64 :: calci0_qq
      type(ZMM8r8_t), dimension(0:14), save :: calci0_p  =[ZMM8r8_t(-5.2487866627945699800e-18_dp),        &
                                                           ZMM8r8_t(-1.5982226675653184646e-14_dp),        &
                                                           ZMM8r8_t(-2.6843448573468483278e-11_dp),        &
@@ -594,6 +597,55 @@ module spec_funcs_zmm8r8
                         t4.v+t5.v+t6.v
        end function preload_calci0_p
        
+       
+       pure function preload_calci0_q() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calci0_q
+              !dir$ attributes forceinline :: preload_calci0_q
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calci0_q
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = calci0_p(0).v+calci0_p(1).v
+              t1.v = calci0_p(2).v+calci0_p(3).v+ &
+                     calci0_p(4)
+              summa.v = t0.v+t1.v
+       end function preload_calci0_q
+       
+       
+       pure function preload_calci0_pp() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calci0_pp
+              !dir$ attributes forceinline :: preload_calci0_pp
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calci0_pp
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = calci0_pp(0).v+calci0_pp(1).v
+              t1.v = calci0_pp(2).v+calci0_pp(3).v
+              t2.v = calci0_pp(4).v+calci0_pp(5).v
+              t3.v = calci0_pp(6).v+calci0_pp(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calci0_pp
+       
+       
+       pure function preload_calci0_qq() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calci0_qq
+              !dir$ attributes forceinline :: preload_calci0_qq
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calci0_qq
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = calci0_qq(0).v+calci0_qq(1).v
+              t1.v = calci0_qq(2).v+calci0_qq(3).v
+              t2.v = calci0_qq(4).v+calci0_qq(5).v+ &
+                     calci0_qq(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_calci0_qq
        
        
        
@@ -1645,7 +1697,71 @@ module spec_funcs_zmm8r8
 #endif
 
 
-        
+        subroutine calci0_zmm8r8(arg,val,jint)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: calci0_zmm8r8
+              !dir$ attributes forceinline :: calci0_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_zmm8r8  
+               type(ZMM8r8_t),   intent(in)   :: arg
+               type(ZMM8r8_t),   intent(out)  :: val
+               integer(kind=i4), intent(in)   :: jint 
+               !dir$ attributes align : 64 :: one
+               !dir$ attributes align : 64 :: one5
+               !dir$ attributes align : 64 :: exp40
+               !dir$ attributes align : 64 :: frty
+               !dir$ attributes align : 64 :: rec15
+               !dir$ attributes align : 64 :: two25
+               !dir$ attributes align : 64 :: xsmall
+               !dir$ attributes align : 64 :: xinf
+               !dir$ attributes align : 64 :: xmax
+               type(ZMM8r8_t),   parameter    :: one   = ZMM8r8_t(1.0e+0_dp)
+               type(ZMM8r8_t),   parameter    :: one5  = ZMM8r8_t(15.0e+0_dp)
+               type(ZMM8r8_t),   parameter    :: exp40 = ZMM8r8_t(2.353852668370199854e+17_dp)
+               type(ZMM8r8_t),   parameter    :: frty  = ZMM8r8_t(40.0e+0_dp)
+               type(ZMM8r8_t),   parameter    :: rec15 = ZMM8r8_t(6.6666666666666666666e-2_dp)
+               type(ZMM8r8_t),   parameter    :: two25 = ZMM8r8_t(225.0e+0_dp)
+               type(ZMM8r8_t),   parameter    :: xsmall= ZMM8r8_t(5.55e-17_dp)
+               type(ZMM8r8_t),   parameter    :: xinf  = ZMM8r8_t(1.79e+308_dp)
+               type(ZMM8r8_t),   parameter    :: xmax  = ZMM8r8_t(713.986e+0_dp)
+               type(ZMM8r8_t),   automatic    :: a,b
+               type(ZMM8r8_t),   automatic    :: sump,sumq
+               type(ZMM8r8_t),   automatic    :: x,xx
+               type(Mask8_t),    automatic    :: msk1,msk2
+               type(Mask8_t),    automatic    :: msk3,msk4
+               x.v    = abs(arg.v)
+               msk1.m = (x.v<xsmall.v)
+               msk2.m = (x.v<one5.v)
+               msk3.m = (one5.v<=x.v)
+               if(all(msk1.m)) then
+                  val.v = one.v
+               else if(all(msk2.m)) then
+                  xx.v   = x.v*x.v
+                  sump.v = calci0_p(0).v
+                  sump.v = sump.v*xx.v+calci0_p(1).v
+                  sump.v = sump.v*xx.v+calci0_p(2).v
+                  sump.v = sump.v*xx.v+calci0_p(3).v
+                  sump.v = sump.v*xx.v+calci0_p(4).v
+                  sump.v = sump.v*xx.v+calci0_p(5).v
+                  sump.v = sump.v*xx.v+calci0_p(6).v
+                  sump.v = sump.v*xx.v+calci0_p(7).v
+                  sump.v = sump.v*xx.v+calci0_p(8).v
+                  sump.v = sump.v*xx.v+calci0_p(9).v
+                  sump.v = sump.v*xx.v+calci0_p(10).v
+                  sump.v = sump.v*xx.v+calci0_p(11).v
+                  sump.v = sump.v*xx.v+calci0_p(12).v
+                  sump.v = sump.v*xx.v+calci0_p(13).v
+                  sump.v = sump.v*xx.v+calci0_p(14).v
+                  xx.v   = xx.v-two25.v
+                  sumq.v = (((( &
+                             xx.v+calcei0_q(0).v) &
+                           * xx.v+calcei0_q(1).v) &
+                           * xx.v+calcei0_q(2).v) &
+                           * xx.v+calcei0_q(3).v) &
+                           * xx.v+calcei0_q(4)
+                  val.v  = sump.v/sumq.v
+                  if(jint==2) val.v = val.v*exp(-x.v)
+             else if
+        end subrourine calci0_zmm8r8
 
 
            
