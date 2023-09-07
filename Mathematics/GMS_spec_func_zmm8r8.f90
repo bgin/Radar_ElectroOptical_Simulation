@@ -1967,6 +1967,124 @@ module spec_funcs_zmm8r8
 #endif
 
 
+        subroutine calci1_zmm8r8(arg,val,jint)
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: calci1_zmm8r8
+              !dir$ attributes forceinline :: calci1_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci1_zmm8r8  
+              type(ZMM8r8_t),   intent(in)   :: arg
+              type(ZMM8r8_t),   intent(out)  :: val
+              integer(kind=i4), intent(in)   :: jint 
+              !dir$ attributes align : 64 :: one
+              !dir$ attributes align : 64 :: one5
+              !dir$ attributes align : 64 :: exp40
+              !dir$ attributes align : 64 :: frty
+              !dir$ attributes align : 64 :: rec15
+              !dir$ attributes align : 64 :: two25
+              !dir$ attributes align : 64 :: xsmall
+              !dir$ attributes align : 64 :: xinf
+              !dir$ attributes align : 64 :: xmax
+              !dir$ attributes align : 64 :: half
+              !dir$ attributes align : 64 :: zero
+              !dir$ attributes align : 64 :: pbar
+              type(ZMM8r8_t),   parameter    :: one   = ZMM8r8_t(1.0e+0_dp)
+              type(ZMM8r8_t),   parameter    :: one5  = ZMM8r8_t(15.0e+0_dp)
+              type(ZMM8r8_t),   parameter    :: exp40 = ZMM8r8_t(2.353852668370199854e+17_dp)
+              type(ZMM8r8_t),   parameter    :: frty  = ZMM8r8_t(40.0e+0_dp)
+              type(ZMM8r8_t),   parameter    :: rec15 = ZMM8r8_t(6.6666666666666666666e-2_dp)
+              type(ZMM8r8_t),   parameter    :: two25 = ZMM8r8_t(225.0e+0_dp)
+              type(ZMM8r8_t),   parameter    :: xsmall= ZMM8r8_t(5.55e-17_dp)
+              type(ZMM8r8_t),   parameter    :: xinf  = ZMM8r8_t(1.79e+308_dp)
+              type(ZMM8r8_t),   parameter    :: xmax  = ZMM8r8_t(713.986e+0_dp)
+              type(ZMM8r8_t),   parameter    :: half  = ZMM8r8_t(0.5e+00_dp)
+              type(ZMM8r8_t),   parameter    :: zero  = ZMM8r8_t(0.0e+00_dp)
+              type(ZMM8r8_t),   parameter    :: pbar  = ZMM8r8_t(3.98437500e-01_dp)
+              !dir$ attributes align : 64 :: sump
+              !dir$ attributes align : 64 :: sumq
+              !dir$ attributes align : 64 :: x
+              !dir$ attributes align : 64 :: a
+              !dir$ attributes align : 64 :: b
+              !dir$ attributes align : 64 :: t0
+              !dir$ attributes align : 64 :: xx 
+              type(ZMM8r8_t),   automatic    :: sump,sumq
+              type(ZMM8r8_t),   automatic    :: x,a
+              type(ZMM8r8_t),   automatic    :: b,t0
+              type(ZMM8r8_t),   automatic    :: xx
+              type(Mask8_t),    automatic    :: msk1,msk2
+              type(Mask8_t),    automatic    :: msk3,msk4
+              type(Mask8_t),    automatic    :: msk5
+              x.v    = abs(arg.v)
+              msk1.m = (x.v<small.v)
+              msk2.m = (x.v<one5.v)
+              msk3.m = (xmax.v<x.v)
+              if(all(msk1.m)) then
+                  val.v = half.v*x.v
+              else if(all(msk2.m)) then
+                  xx.v  = x.v*x.v
+                  sump.v= calci1.p(0).v
+                  sump.v= sump.v*xx.v+calci1.p(1).v
+                  sump.v= sump.v*xx.v+calci1.p(2).v
+                  sump.v= sump.v*xx.v+calci1.p(3).v
+                  sump.v= sump.v*xx.v+calci1.p(4).v
+                  sump.v= sump.v*xx.v+calci1.p(6).v
+                  sump.v= sump.v*xx.v+calci1.p(7).v
+                  sump.v= sump.v*xx.v+calci1.p(8).v
+                  sump.v= sump.v*xx.v+calci1.p(9).v
+                  sump.v= sump.v*xx.v+calci1.p(10).v
+                  sump.v= sump.v*xx.v+calci1.p(11).v
+                  sump.v= sump.v*xx.v+calci1.p(12).v
+                  sump.v= sump.v*xx.v+calci1.p(13).v
+                  sump.v= sump.v*xx.v+calci1.p(14).v
+                  xx.v  = xx.v-two25.v
+                  sumq.v= (((((  &
+                            xx.v+calci1.q(0).v)  &
+                          * xx.v+calci1.q(1).v)  &
+                          * xx.v+calci1.q(2).v)  &
+                          * xx.v+calci1.q(3).v)  &
+                          * xx.v+calci1.q(4).v
+                  val.v = (sump.v/sumq.v)*x.v
+                  if(jint==2) val.v = val.v*exp(-x.v)
+              else if(jint==1.and.all(msk3.m)) then
+                      val.v = xinf.v        
+              else
+                      xx.v   = one.v/x.v-rec15.v
+                      sump.v = ((((((   &
+                                      calci1.pp(0)     &
+                               * xx.v+calci1.pp(1).v)  &
+                               * xx.v+calci1.pp(2).v)  &
+                               * xx.v+calci1.pp(3).v)  &
+                               * xx.v+calci1.pp(4).v)  &
+                               * xx.v+calci1.pp(5).v)  &
+                               * xx.v+calci1.pp(6).v)  &
+                               * xx.v+calci1.pp(7)
+                      sumq.v = (((((    &
+                                 xx.v+calci1.qq(0).v)  &
+                               * xx.v+calci1.qq(1).v)  &
+                               * xx.v+calci1.qq(2).v)  &
+                               * xx.v+calci1.qq(3).v)  &
+                               * xx.v+calci1.qq(4).v)  &
+                               * xx.v+calci1.qq(5).v
+                      val.v  = sump.v/sumq.v
+                      msk4.m = (xmax.v-one.v<x.v)
+                      if(jint/=1) then 
+                         val.v = val.v+pbar.v/sqrt(x.v)
+                      else
+                         
+                         if(all(msk4.m)) then
+                            a.v = exp(x.v-frty.40)
+                            b.v = exp40.v
+                         else
+                            a.v = exp(x.v)
+                            b.v = one.v
+                         end if
+                      t0.v   = val.v*a.v+pbar.v*a.v
+                      val.v  = (t0.v/sqrt(x.v))*b.v
+                  end if
+              end if
+              msk5.m = (arg.v<zero.v)
+              if(all(msk5.m)) val.v = -val.v
+        end subroutine calci1_zmm8r8
+
            
 
 end module spec_funcs_zmm8r8
