@@ -322,6 +322,46 @@ module spec_funcs_zmm8r8
                                                           ZMM8r8_t(7.4212010813186530069e-02_dp),            &
                                                           ZMM8r8_t(-2.2835624489492512649e-03_dp),           &
                                                           ZMM8r8_t(3.7510433111922824643e-05_dp)]
+    !!
+    !! calck0_zmm8r8 constant arrays (saved)
+    !!
+     type(ZMM8r8_t), dimension(0:5), save ::  calck0_p = [ZMM8r8_t(5.8599221412826100000e-04_dp),            & 
+	                                                  ZMM8r8_t(1.3166052564989571850e-01_dp),            &
+                                                          ZMM8r8(1.1999463724910714109e+01_dp),              & 
+                                                          ZMM8r8(4.6850901201934832188e+02_dp),              & 
+                                                          ZMM8r8(5.9169059852270512312e+03_dp),              &
+                                                          ZMM8r8(2.4708152720399552679e+03_dp)]
+     type(ZMM8r8_t), dimension(0:1), save ::  calck0_q = [ZMM8r8_t(-2.4994418972832303646e+02_dp),           & 
+	                                                  ZMM8r8_t(2.1312714303849120380e+04_dp)] 
+     type(ZMM8r8_t), dimension(0:3), save ::  calck0_f = [ZMM8r8_t(-1.6414452837299064100e+00_dp),           &
+	                                                  ZMM8r8_t(-2.9601657892958843866e+02_dp),           &
+                                                          ZMM8r8_t(-1.7733784684952985886e+04_dp),           &           
+                                                          ZMM8r8_t(-4.0320340761145482298e+05_dp)]
+     type(ZMM8r8_t), dimension(0:2), save ::  calck0_g = [ZMM8r8_t(2.5064972445877992730e+02_dp),            &
+	                                                 [ZMM8r8_t(2.9865713163054025489e+04_dp),            & 
+                                                         [ZMM8r8_t(-1.6128136304458193998e+06_dp)]
+     type(ZMM8r8_t), dimension(0:9), save ::  calck0_pp= [ZMM8r8_t(1.1394980557384778174e+02_dp),            & 
+	                                                  ZMM8r8_t(3.6832589957340267940e+03_dp),            & 
+                                                          ZMM8r8_t(3.1075408980684392399e+04_dp),            & 
+                                                          ZMM8r8_t(1.0577068948034021957e+05_dp),            & 
+                                                          ZMM8r8_t(1.7398867902565686251e+05_dp),            &
+                                                          ZMM8r8_t(1.5097646353289914539e+05_dp),            & 
+                                                          ZMM8r8_t(7.1557062783764037541e+04_dp),            & 
+                                                          ZMM8r8_t(1.8321525870183537725e+04_dp),            & 
+                                                          ZMM8r8_t(2.3444738764199315021e+03_dp),            & 
+                                                          ZMM8r8_t(1.1600249425076035558e+02_dp)]
+     type(ZMM8r8_t), dimension(0:9), save ::  calck0_qq= [ZMM8r8_t(2.0013443064949242491e+02_dp),            & 
+	                                                  ZMM8r8_t(4.4329628889746408858e+03_dp),            & 
+                                                          ZMM8r8_t(3.1474655750295278825e+04_dp),            &
+                                                          ZMM8r8_t(9.7418829762268075784e+04_dp),            & 
+                                                          ZMM8r8_t(1.5144644673520157801e+05_dp),            & 
+                                                          ZMM8r8_t(1.2689839587977598727e+05_dp),            & 
+                                                          ZMM8r8_t(5.8824616785857027752e+04_dp),            & 
+                                                          ZMM8r8_t(1.4847228371802360957e+04_dp),            & 
+                                                          ZMM8r8_t(1.8821890840982713696e+03_dp),            & 
+                                                          ZMM8r8_t(9.2556599177304839811e+01_dp)]
+     
+                                         
      contains
      
 !! =============================================================================================================== //
@@ -761,7 +801,14 @@ module spec_funcs_zmm8r8
               
               summa.v = t0.v+t1.v+t2.v
        end function preload_calci1_qq
+
+!! =============================================================================================================== //
+!!                                  'Saved' arrays preload_calck0 routines.
+!!================================================================================================================ //         
+     
+        
        
+     
      
 #if 0
 /*
@@ -2084,6 +2131,68 @@ module spec_funcs_zmm8r8
               msk5.m = (arg.v<zero.v)
               if(all(msk5.m)) val.v = -val.v
         end subroutine calci1_zmm8r8
+        
+        
+#if 0
+/*
+*****************************************************************************80
+!
+!! CALCK0 computes various K0 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes modified Bessel functions of the second kind
+!    and order zero, K0(X) and EXP(X)*K0(X), for real
+!    arguments X.
+!
+!    The main computation evaluates slightly modified forms of near
+!    minimax rational approximations generated by Russon and Blair,
+!    Chalk River (Atomic Energy of Canada Limited) Report AECL-3461,
+!    1969.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.  0 < ARG is
+!    always required.  If JINT = 1, then the argument must also be
+!    less than XMAX.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    1, RESULT = K0(x);
+!    2, RESULT = exp(x) * K0(x);
+!
+!    Input, integer ( kind = 4 ) JINT, chooses the function to be computed.
+!    1, K0(x);
+!    2, exp(x) * K0(x);
+*/
+#endif
+
+
+      
+         subroutine calck0_zmm8r8(val,arg,jint)
+              
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: calck0_zmm8r8
+              !dir$ attributes forceinline :: calck0_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calck0_zmm8r8  
+              type(ZMM8r8_t),   intent(in)   :: arg
+              type(ZMM8r8_t),   intent(out)  :: val
+              integer(kind=i4), intent(in)   :: jint  
+              
+         end subroutine calck0_zmm8r8
 
            
 
