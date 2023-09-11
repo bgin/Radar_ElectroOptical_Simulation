@@ -104,7 +104,7 @@ module spec_funcs_zmm8r8
      !dir$ attributes align : 64 :: calcei_q1
      !dir$ attributes align : 64 :: calcei_p2
      !dir$ attributes align : 64 :: calcei_q2
-      type(ZMM8r8_t), dimension(0:6), save :: calcei_a = [ZMM8r8_t(1.1669552669734461083368e+2_dp),   &
+     type(ZMM8r8_t), dimension(0:6), save :: calcei_a = [ZMM8r8_t(1.1669552669734461083368e+2_dp),   &
 	                                                  ZMM8r8_t(2.1500672908092918123209e+3_dp),   &
                                                           ZMM8r8_t(1.5924175980637303639884e+4_dp),   &
                                                           ZMM8r8_t(8.9904972007457256553251e+4_dp),   &
@@ -288,6 +288,10 @@ module spec_funcs_zmm8r8
     !!
     !! calci1_zmm8r8 constant arrays (saved)
     !!
+     !dir$ attributes align : 64 :: calci1_p
+     !dir$ attributes align : 64 :: calci1_q
+     !dir$ attributes align : 64 :: calci1_pp
+     !dir$ attributes align : 64 :: calci1_qq
      type(ZMM8r8_t), dimension(0:14), save :: calci1_p = [ZMM8r8_t(-1.9705291802535139930e-19_dp),           &
                                                           ZMM8r8_t(-6.5245515583151902910e-16_dp),           &
                                                           ZMM8r8_t(-1.1928788903603238754e-12_dp),           &
@@ -325,6 +329,12 @@ module spec_funcs_zmm8r8
     !!
     !! calck0_zmm8r8 constant arrays (saved)
     !!
+    !dir$ attributes align : 64 :: calck0_p
+    !dir$ attributes align : 64 :: calck0_q
+    !dir$ attributes align : 64 :: calck0_f
+    !dir$ attributes align : 64 :: calck0_g
+    !dir$ attributes align : 64 :: calck0_pp
+    !dir$ attributes align : 64 :: calck0_qq
      type(ZMM8r8_t), dimension(0:5), save ::  calck0_p = [ZMM8r8_t(5.8599221412826100000e-04_dp),            & 
 	                                                  ZMM8r8_t(1.3166052564989571850e-01_dp),            &
                                                           ZMM8r8(1.1999463724910714109e+01_dp),              & 
@@ -363,6 +373,12 @@ module spec_funcs_zmm8r8
     !!
     !! calck0_zmm8r8 constant arrays (saved)
     !!
+    !dir$ attributes align : 64 :: calck1_p
+    !dir$ attributes align : 64 :: calck1_q
+    !dir$ attributes align : 64 :: calck1_f
+    !dir$ attributes align : 64 :: calck1_g
+    !dir$ attributes align : 64 :: calck1_pp
+    !dir$ attributes align : 64 :: calck1_qq
      type(ZMM8r8_t), dimension(0:4), save ::  calck1_p = [ZMM8r8_t(4.8127070456878442310e-1_dp), & 
                                                           ZMM8r8_t(9.9991373567429309922e+1_dp), &
                                                           ZMM8r8_t(7.1885382604084798576e+3_dp), &
@@ -398,7 +414,122 @@ module spec_funcs_zmm8r8
                                                           ZMM8r8_t(9.6929165726802648634e+2_dp),  &
                                                           ZMM8r8_t(2.5951223655579051357e+2_dp),  &
                                                           ZMM8r8_t(3.4552228452758912848e+1_dp),  &
-                                                          ZMM8r8_t(1.7710478032601086579e+0_dp)]                               
+                                                          ZMM8r8_t(1.7710478032601086579e+0_dp)]    
+    !!
+    !! caljy0_zmm8r8 constant arrays (saved)
+    !!  
+     !dir$ attributes align : 64 :: caljy0_plg
+     !dir$ attributes align : 64 :: caljy0_qlg
+     !dir$ attributes align : 64 :: caljy0_pj0
+     !dir$ attributes align : 64 :: caljy0_qj0
+     !dir$ attributes align : 64 :: caljy0_pj1
+     !dir$ attributes align : 64 :: caljy0_qj1
+     !dir$ attributes align : 64 :: caljy0_py0
+     !dir$ attributes align : 64 :: caljy0_qy0
+     !dir$ attributes align : 64 :: caljy0_py1
+     !dir$ attributes align : 64 :: caljy0_qy1
+     !dir$ attributes align : 64 :: caljy0_py2
+     !dir$ attributes align : 64 :: caljy0_qy2
+     !dir$ attributes align : 64 :: caljy0_p0
+     !dir$ attributes align : 64 :: caljy0_q0
+     !dir$ attributes align : 64 :: caljy0_p1
+     !dir$ attributes align : 64 :: caljy0_q1
+     type(ZMM8r8_t), dimension(0:3), save ::  caljy0_plg=[ZMM8r8_t(2.4562334077563243311e+1_dp), &
+	                                                  ZMM8r8_t(2.3642701335621505212e+2_dp), &
+                                                          ZMM8r8_t(-5.4989956895857911039e+2_dp),&
+                                                          ZMM8r8_t(3.5687548468071500413e+2_dp)]
+     type(ZMM8r8_t), dimension(0:3), save ::  caljy0_qlg=[ZMM8r8_t(3.5553900764052419184e+1_dp), &
+	                                                  ZMM8r8_t(1.9400230218539473193e+2_dp), &
+                                                          ZMM8r8_t(-3.3442903192607538956e+2_dp),&
+                                                          ZMM8r8_t(1.7843774234035750207e+2_dp)]  
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy0_pj0=[ZMM8r8_t(6.6302997904833794242e+6_dp), &
+	                                                  ZMM8r8_t(-6.2140700423540120665e+8_dp),& 
+                                                          ZMM8r8_t(2.7282507878605942706e+10_dp),&
+                                                          ZMM8r8_t(-4.1298668500990866786e+11_dp),& 
+                                                          ZMM8r8_t(-1.2117036164593528341e-1_dp), &
+                                                          ZMM8r8_t(1.0344222815443188943e+2_dp),  &
+                                                          ZMM8r8_t(-3.6629814655107086448e+4_dp)]
+     type(ZMM8r8_t), dimension(0:4), save ::  caljy0_qj0=[ZMM8r8_t(4.5612696224219938200e+5_dp),  & 
+	                                                  ZMM8r8_t(1.3985097372263433271e+8_dp),  & 
+                                                          ZMM8r8_t(2.6328198300859648632e+10_dp), & 
+                                                          ZMM8r8_t(2.3883787996332290397e+12_dp), & 
+                                                          ZMM8r8_t(9.3614022392337710626e+2_dp)]
+     type(ZMM8r8_t), dimension(0:7), save ::  caljy0_pj1=[ZMM8r8_t(4.4176707025325087628e+3_dp),  & 
+	                                                  ZMM8r8_t(1.1725046279757103576e+4_dp),  &
+                                                          ZMM8r8_t(1.0341910641583726701e+4_dp),  &
+                                                          ZMM8r8_t(-7.2879702464464618998e+3_dp), & 
+                                                          ZMM8r8_t(-1.2254078161378989535e+4_dp), &
+                                                          ZMM8r8_t(-1.8319397969392084011e+3_dp), & 
+                                                          ZMM8r8_t(4.8591703355916499363e+1_dp),  & 
+                                                          ZMM8r8_t(7.4321196680624245801e+2_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy0_qj1=[ZMM8r8_t(3.3307310774649071172e+2_dp),  &
+	                                                  ZMM8r8_t(-2.9458766545509337327e+3_dp), &
+                                                          ZMM8r8_t(1.8680990008359188352e+4_dp),  &
+                                                          ZMM8r8_t(-8.4055062591169562211e+4_dp), & 
+                                                          ZMM8r8_t(2.4599102262586308984e+5_dp),  &
+                                                          ZMM8r8_t(-3.5783478026152301072e+5_dp), & 
+                                                          ZMM8r8_t(-2.5258076240801555057e+1_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy0_py0=[ZMM8r8_t(1.0102532948020907590e+4_dp),  &
+	                                                  ZMM8r8_t(-2.1287548474401797963e+6_dp), & 
+                                                          ZMM8r8_t(2.0422274357376619816e+8_dp),  &
+                                                          ZMM8r8_t(-8.3716255451260504098e+9_dp), & 
+                                                          ZMM8r8_t(1.0723538782003176831e+11_dp), &
+                                                          ZMM8r8_t(-1.8402381979244993524e+1_dp)]
+     type(ZMM8r8_t), dimension(0:4), save ::  caljy0_qy0=[ZMM8r8_t(6.6475986689240190091e+2_dp),  & 
+	                                                  ZMM8r8_t(2.3889393209447253406e+5_dp),  & 
+                                                          ZMM8r8_t(5.5662956624278251596e+7_dp),  & 
+                                                          ZMM8r8_t(8.1617187777290363573e+9_dp),  & 
+                                                          ZMM8r8_t(5.8873865738997033405e+11_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy0_py1=[ZMM8r8_t(1.4566865832663635920e+4_dp),  & 
+	                                                  ZMM8r8_t(4.6905288611678631510e+6_dp),  & 
+                                                          ZMM8r8_t(-6.9590439394619619534e+8_dp), &
+                                                          ZMM8r8_t(4.3600098638603061642e+10_dp), &
+                                                          ZMM8r8_t(-5.5107435206722644429e+11_dp),&
+                                                          ZMM8r8_t(-2.2213976967566192242e+13_dp),& 
+                                                          ZMM8r8_t(1.7427031242901594547e+1_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy0_qy1=[ZMM8r8_t(8.3030857612070288823e+2_dp),  & 
+	                                                  ZMM8r8_t(4.0669982352539552018e+5_dp),  & 
+                                                          ZMM8r8_t(1.3960202770986831075e+8_dp),  & 
+                                                          ZMM8r8_t(3.4015103849971240096e+10_dp), &
+                                                          ZMM8r8_t(5.4266824419412347550e+12_dp), & 
+                                                          ZMM8r8_t(4.3386146580707264428e+14_dp)]
+     type(ZMM8r8_t), dimension(0:7), save ::  caljy0_py2=[ZMM8r8_t(2.1363534169313901632e+4_dp),  &
+	                                                  ZMM8r8_t(-1.0085539923498211426e+7_dp), & 
+                                                          ZMM8r8_t(2.1958827170518100757e+9_dp),  &
+                                                          ZMM8r8_t(-1.9363051266772083678e+11_dp),& 
+                                                          ZMM8r8_t(-1.2829912364088687306e+11_dp),& 
+                                                          ZMM8r8_t(6.7016641869173237784e+14_dp), & 
+                                                          ZMM8r8_t(-8.0728726905150210443e+15_dp),&
+                                                          ZMM8r8_t(-1.7439661319197499338e+1_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy0_qy2=[ZMM8r8_t(8.7903362168128450017e+2_dp),  & 
+	                                                  ZMM8r8_t(5.3924739209768057030e+5_dp),  &
+                                                          ZMM8r8_t(2.4727219475672302327e+8_dp),  & 
+                                                          ZMM8r8_t(8.6926121104209825246e+10_dp), &
+                                                          ZMM8r8_t(2.2598377924042897629e+13_dp), & 
+                                                          ZMM8r8_t(3.9272425569640309819e+15_dp), &
+                                                          ZMM8r8_t(3.4563724628846457519e+17_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy0_p0 =[ZMM8r8_t(3.4806486443249270347e+3_dp),  & 
+	                                                  ZMM8r8_t(2.1170523380864944322e+4_dp),  & 
+                                                          ZMM8r8_t(4.1345386639580765797e+4_dp),  & 
+                                                          ZMM8r8_t(2.2779090197304684302e+4_dp),  &
+                                                          ZMM8r8_t(8.8961548424210455236e-1_dp),  & 
+                                                          ZMM8r8_t(1.5376201909008354296e+2_dp)]
+     type(ZMM8r8_t), dimension(0:4), save ::  caljy0_q0 =[ZMM8r8_t(3.5028735138235608207e+3_dp),  & 
+	                                                  ZMM8r8_t(2.1215350561880115730e+4_dp),  & 
+                                                          ZMM8r8_t(4.1370412495510416640e+4_dp),  & 
+                                                          ZMM8r8_t(2.2779090197304684318e+4_dp),  &
+                                                          ZMM8r8_t(1.5711159858080893649e+2_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy0_p1 =[ZMM8r8_t(-2.2300261666214198472e+1_dp), &
+	                                                  ZMM8r8_t(-1.1183429920482737611e+2_dp), & 
+                                                          ZMM8r8_t(-1.8591953644342993800e+2_dp), &
+                                                          ZMM8r8_t(-8.9226600200800094098e+1_dp), &
+                                                          ZMM8r8_t(-8.8033303048680751817e+3_dp), &
+                                                          ZMM8r8_t(-1.2441026745835638459e+00_dp)]
+     type(ZMM8r8_t), dimension(0:4), save ::  caljy0_q1 =[ZMM8r8_t(1.4887231232283756582e+3_dp),  & 
+	                                                  ZMM8r8_t(7.2642780169211018836e+3_dp),  &
+                                                          ZMM8r8_t(1.1951131543434613647e+4_dp),  & 
+                                                          ZMM8r8_t(5.7105024128512061905e+3_dp),  &
+                                                          ZMM8r8_t(9.0593769594993125859e+1_dp)]
      contains
      
 !! =============================================================================================================== //
@@ -1052,7 +1183,274 @@ module spec_funcs_zmm8r8
               summa.v = t0.v+t1.v+t2.v+t3.v
          
          
-       end function preload_calck1_qq                   
+       end function preload_calck1_qq   
+       
+!! =============================================================================================================== //
+!!                                  'Saved' arrays preload_caljy0 routines.
+!!================================================================================================================ //   
+
+
+      pure function preload_caljy0_plg() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_plg
+              !dir$ attributes forceinline :: preload_calcjy0_plg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_plg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy0_plg(0).v+caljy0_plg(1).v
+              t1.v = caljy0_plg(2).v+caljy0_plg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy0_plg      
+       
+       
+       pure function preload_caljy0_qlg() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qlg
+              !dir$ attributes forceinline :: preload_calcjy0_qlg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qlg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy0_qlg(0).v+caljy0_qlg(1).v
+              t1.v = caljy0_qlg(2).v+caljy0_qlg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy0_qlg  
+       
+       
+       pure function preload_caljy0_pj0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_pj0
+              !dir$ attributes forceinline :: preload_calcjy0_pj0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_pj0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy0_pj0(0).v+caljy0_pj0(1).v
+              t1.v = caljy0_pj0(2).v+caljy0_pj0(3).v
+              t2.v = caljy0_pj0(4).v+caljy0_pj0(5).v
+              t3.v = caljy0_pj0(6).v+caljy0_pj0(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy0_pj0   
+       
+       
+       pure function preload_caljy0_qj0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qj0
+              !dir$ attributes forceinline :: preload_calcjy0_qj0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qj0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_qj0(0).v+caljy0_qj0(1).v
+              t1.v = caljy0_qj0(2).v+caljy0_qj0(3).v
+              t2.v = caljy0_qj0(4).v+caljy0_qj0(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_qj0 
+       
+       
+       pure function preload_caljy0_pj1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_pj1
+              !dir$ attributes forceinline :: preload_calcjy0_pj1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_pj1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy0_pj1(0).v+caljy0_pj1(1).v
+              t1.v = caljy0_pj1(2).v+caljy0_pj1(3).v
+              t2.v = caljy0_pj1(4).v+caljy0_pj1(5).v
+              t3.v = caljy0_pj1(6).v+caljy0_pj1(7).v+ &
+                     caljy0_pj1(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy0_pj1   
+       
+       
+       pure function preload_caljy0_qj1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qj1
+              !dir$ attributes forceinline :: preload_calcjy0_qj1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qj1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_qj1(0).v+caljy0_qj1(1).v
+              t1.v = caljy0_qj1(2).v+caljy0_qj1(3).v
+              t2.v = caljy0_qj1(4).v+caljy0_qj1(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_qj1 
+       
+       
+       pure function preload_caljy0_py0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_py0
+              !dir$ attributes forceinline :: preload_calcjy0_py0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_py0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_py0(0).v+caljy0_py0(1).v
+              t1.v = caljy0_py0(2).v+caljy0_py0(3).v
+              t2.v = caljy0_py0(4).v+caljy0_py0(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_py0 
+       
+       
+       pure function preload_caljy0_qy0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qy0
+              !dir$ attributes forceinline :: preload_calcjy0_qy0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qy0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_qy0(0).v+caljy0_qy0(1).v
+              t1.v = caljy0_qy0(2).v+caljy0_qy0(3).v+ &
+              t2.v = caljy0_qy0(4).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy0_qy0 
+       
+       
+       pure function preload_caljy0_py1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_py1
+              !dir$ attributes forceinline :: preload_calcjy0_py1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_py1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_py1(0).v+caljy0_py1(1).v
+              t1.v = caljy0_py1(2).v+caljy0_py1(3).v
+              t2.v = caljy0_py1(4).v+caljy0_py1(5).v+ &
+                     caljy0_py1(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_py1 
+       
+       
+       pure function preload_caljy0_qy1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qy1
+              !dir$ attributes forceinline :: preload_calcjy0_qy1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qy1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_qy1(0).v+caljy0_qy1(1).v
+              t1.v = caljy0_qy1(2).v+caljy0_qy1(3).v
+              t2.v = caljy0_qy1(4).v+caljy0_qy1(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_qy1 
+       
+       
+       pure function preload_caljy0_py2() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_py2
+              !dir$ attributes forceinline :: preload_calcjy0_py2
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_py2
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy0_py1(0).v+caljy0_py1(1).v
+              t1.v = caljy0_py1(2).v+caljy0_py1(3).v
+              t2.v = caljy0_py1(4).v+caljy0_py1(5).v
+              t3.v = caljy0_py2(6).v+caljy0_py1(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy0_py2 
+       
+       
+       pure function preload_caljy0_qy2() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_qy2
+              !dir$ attributes forceinline :: preload_calcjy0_qy2
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_qy2
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_qy2(0).v+caljy0_qy2(1).v
+              t1.v = caljy0_qy2(2).v+caljy0_qy2(3).v
+              t2.v = caljy0_qy2(4).v+caljy0_qy2(5).v+ &
+                     caljy0_qy2(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_qy2
+       
+       
+       pure function preload_caljy0_p0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_p0
+              !dir$ attributes forceinline :: preload_calcjy0_p0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_p0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_p0(0).v+caljy0_p0(1).v
+              t1.v = caljy0_p0(2).v+caljy0_p0(3).v
+              t2.v = caljy0_p0(4).v+caljy0_p0(5).v+ &
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_p0
+       
+       
+       pure function preload_caljy0_q0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_q0
+              !dir$ attributes forceinline :: preload_calcjy0_q0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_q0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy0_q0(0).v+caljy0_q0(1).v
+              t1.v = caljy0_q0(2).v+caljy0_q0(3).v+ &
+                     caljy0_q0(4).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy0_q0
+       
+       
+       pure function preload_caljy0_p1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_p1
+              !dir$ attributes forceinline :: preload_calcjy0_p1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_p1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy0_p1(0).v+caljy0_p1(1).v
+              t1.v = caljy0_p1(2).v+caljy0_p1(3).v
+              t2.v = caljy0_p1(4).v+caljy0_p1(5).v+ &
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy0_p1
+       
+       
+       pure function preload_caljy0_q1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy0_q1
+              !dir$ attributes forceinline :: preload_calcjy0_q1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy0_q1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy0_q1(0).v+caljy0_q1(1).v
+              t1.v = caljy0_q1(2).v+caljy0_q1(3).v+ &
+                     caljy0_q1(4).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy0_q1
+       
+       
+                              
        
        
 #if 0
@@ -2680,9 +3078,164 @@ module spec_funcs_zmm8r8
                       sumq.v= (sumq.v+calck1_qq(7).v)*xx.v
                       sumq.v= sumq.v+calck1_qq(8).v
                       val.v = sump.v/sumq.v/t0.v
-                      if(jint==1) val.v = val.v*exp(x.v)
+                      if(jint==1) val.v = val.v*exp(-x.v)
               end if
         end subroutine calck1_zmm8r8
+        
+        
+#if 0
+    /*
+    !*****************************************************************************80
+!
+!! CALJY0 computes various J0 and Y0 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes zero-order Bessel functions of the first and
+!    second kind (J0 and Y0), for real arguments X, where 0 < X <= XMAX
+!    for Y0, and |X| <= XMAX for J0.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    John Hart, Ward Cheney, Charles Lawson, Hans Maehly,
+!    Charles Mesztenyi, John Rice, Henry Thatcher,
+!    Christoph Witzgall,
+!    Computer Approximations,
+!    Wiley, 1968,
+!    LC: QA297.C64.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.  If JINT = 0, ARG
+!    must satisfy
+!     -XMAX < ARG < XMAX;
+!    If JINT = 1, then ARG must satisfy
+!      0 < ARG < XMAX.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    0, RESULT = J0(x);
+!    1, RESULT = Y0(x);
+!
+!    Input, integer ( kind = 4 ) JINT, chooses the function to be computed.
+!    0, J0(x);
+!    1, Y0(x);  
+#endif
+
+
+        subroutine caljy0_zmm8r8(arg,jint,val)
+        
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: caljy0_zmm8r8
+              !dir$ attributes forceinline :: caljy0_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: caljy0_zmm8r8  
+              type(ZMM8r8_t),   intent(in)   :: arg
+              type(ZMM8r8_t),   intent(out)  :: val
+              integer(kind=i4), intent(in)   :: jint 
+              !dir$ attributes align : 64 :: zero
+              !dir$ attributes align : 64 :: one
+              !dir$ attributes align : 64 :: three
+              !dir$ attributes align : 64 :: four
+              !dir$ attributes align : 64 :: eight
+              !dir$ attributes align : 64 :: five5
+              !dir$ attributes align : 64 :: sixty4
+              !dir$ attributes align : 64 :: oneov8
+              !dir$ attributes align : 64 :: p17
+              !dir$ attributes align : 64 :: two56
+              !dir$ attributes align : 64 :: cons
+              !dir$ attributes align : 64 :: pi2
+              !dir$ attributes align : 64 :: twopi
+              !dir$ attributes align : 64 :: twopi1
+              !dir$ attributes align : 64 :: twopi2
+              !dir$ attributes align : 64 :: xmax
+              !dir$ attributes align : 64 :: xsmall
+              !dir$ attributes align : 64 :: xinf
+              !dir$ attributes align : 64 :: xj0
+              !dir$ attributes align : 64 :: xj1
+              !dir$ attributes align : 64 :: xy0
+              !dir$ attributes align : 64 :: xy1
+              !dir$ attributes align : 64 :: xy2
+              !dir$ attributes align : 64 :: xj01
+              !dir$ attributes align : 64 :: xj02
+              !dir$ attributes align : 64 :: xj11
+              !dir$ attributes align : 64 :: xj12
+              !dir$ attributes align : 64 :: xy01
+              !dir$ attributes align : 64 :: xy02
+              !dir$ attributes align : 64 :: xy11
+              !dir$ attributes align : 64 :: xy12
+              !dir$ attributes align : 64 :: xy21
+              !dir$ attributes align : 64 :: xy22
+              type(ZMM8r8_t),   parameter :: zero  = ZMM8r8_t(0.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: one   = ZMM8r8_t(1.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: three = ZMM8r8_t(3.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: four  = ZMM8r8_t(4.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: eight = ZMM8r8_t(8.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: five5 = ZMM8r8_t(5.5e+0_dp); 
+              type(ZMM8r8_t),   parameter :: sixty4= ZMM8r8_t(64.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: oneov8= ZMM8r8_t(0.125e+0_dp); 
+              type(ZMM8r8_t),   parameter :: p17   = ZMM8r8_t(1.716e-1_dp);
+              type(ZMM8r8_t),   parameter :: two56 = ZMM8r8_t(256.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: cons  = ZMM8r8_t(-1.1593151565841244881e-1_dp);
+              type(ZMM8r8_t),   parameter :: pi2   = ZMM8r8_t(6.3661977236758134308e-1_dp);
+              type(ZMM8r8_t),   parameter :: twopi = ZMM8r8_t(6.2831853071795864769e+0_dp);
+              type(ZMM8r8_t),   parameter :: twopi1= ZMM8r8_t(6.28125e+0_dp);
+              type(ZMM8r8_t),   parameter :: twopi2= ZMM8r8_t(1.9353071795864769253e-3_dp);
+              type(ZMM8r8_t),   parameter :: xmax  = ZMM8r8_t(1.07e+09_dp);
+              type(ZMM8r8_t),   parameter :: xsmall= ZMM8r8_t(9.31e-10_dp);
+              type(ZMM8r8_t),   parameter :: xinf  = ZMM8r8_t(1.7e+38_dp);
+              type(ZMM8r8_t),   parameter :: xj0   = ZMM8r8_t(2.4048255576957727686e+0_dp);
+              type(ZMM8r8_t),   parameter :: xj1   = ZMM8r8_t(5.5200781102863106496e+0_dp);
+              type(ZMM8r8_t),   parameter :: xy0   = ZMM8r8_t(8.9357696627916752158e-1_dp);
+              type(ZMM8r8_t),   parameter :: xy1   = ZMM8r8_t(3.9576784193148578684e+0_dp);
+              type(ZMM8r8_t),   parameter :: xy2   = ZMM8r8_t(7.0860510603017726976e+0_dp);
+              type(ZMM8r8_t),   parameter :: xj01  = ZMM8r8_t(616.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: xj02  = ZMM8r8_t(-1.4244423042272313784e-3_dp);
+              type(ZMM8r8_t),   parameter :: xj11  = ZMM8r8_t(1413.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: xj12  = ZMM8r8_t(5.4686028631064959660e-4_dp);
+              type(ZMM8r8_t),   parameter :: xy01  = ZMM8r8_t(228.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: xy02  = ZMM8r8_t(2.9519662791675215849e-3_dp);
+              type(ZMM8r8_t),   parameter :: xy11  = ZMM8r8_t(1013.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: xy12  = ZMM8r8_t(6.4716931485786837568e-4_dp);
+              type(ZMM8r8_t),   parameter :: xy21  = ZMM8r8_t(1814.0e+0_dp);
+              type(ZMM8r8_t),   parameter :: xy22  = ZMM8r8_t(1.1356030177269762362e-4_dp);  
+              !dir$ attributes align : 64 :: ax
+              !dir$ attributes align : 64 :: down
+              !dir$ attributes align : 64 :: prod
+              !dir$ attributes align : 64 :: resj
+              !dir$ attributes align : 64 :: r0
+              !dir$ attributes align : 64 :: r1
+              !dir$ attributes align : 64 :: up
+              !dir$ attributes align : 64 :: w
+              !dir$ attributes align : 64 :: wsq
+              !dir$ attributes align : 64 :: xden
+              !dir$ attributes align : 64 :: xy
+              !dir$ attributes align : 64 :: z
+              !dir$ attributes align : 64 :: zsq
+              !dir$ attributes align : 64 :: t0
+              !dir$ attributes align : 64 :: t1
+              type(ZMM8r8_t),   automatic :: ax,down
+              type(ZMM8r8_t),   automatic :: prod,resj
+              type(ZMM8r8_t),   automatic :: r0,r1
+              type(ZMM8r8_t),   automatic :: up,w
+              type(ZMM8r8_t),   automatic :: wsq,xden
+              type(ZMM8r8_t),   automatic :: xy,z,zsq
+              type(ZMM8r8_t),   automatic :: t0,t1
+              type(Mask8_t),    automatic :: m0,m1,m2,m3
+              type(Mask8_t),    automatic :: m4,m5
+        end subroutine caljy0_zmm8r8
 
            
 
