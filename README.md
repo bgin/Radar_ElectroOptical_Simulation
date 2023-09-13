@@ -6,12 +6,14 @@ computational kernels.
 The helper code execution path rely on libSIMD which collects various manually vectorized algorithms written in C and may provide a collection of helper routines for some tasks, albeit at the cost of losing the possibility of function body inlining.
 Compiler-level autovectorization is of secondary importance and is being inserted mainly to vectorize descriptive statistics routines and profiling metrics calculations. The second code path beside the packed arrays of structures aka PAOS is the GPGPU Cuda implementation counting so far close to 15000 lines of code of computational and helper routines and kernels.
 The main programming language of this project is Fortran 90 helped by C language implementation.
+
 I envision four main components:
 
-Radar system modeling and simulation.
-Radio altimeter modeling and simulation.
-Propagation of laser and IR radiation through the turbulent atmospheric channels.
-Optical signals processing (background noise extraction).
+1) Radar system modeling and simulation.
+2) Radio altimeter modeling and simulation.
+3) Propagation of laser and IR radiation through the turbulent atmospheric channels.
+4) Optical signals processing (background noise extraction).
+   
 The main structure of the projects is a collection of free standing 'modules' programmatically describing various modelled components. It is a software library of framework and may be used as computational backend of larger program of be connected to GUI front-end. Currently only hundreds (circa 400) kernels belonging to AVX512 double and single precision executing path were implemented. All of these kernels compute analytical Radar Cross Section of simple and to lesser extent complex objects
 
 List of references:
