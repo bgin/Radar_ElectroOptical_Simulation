@@ -3137,11 +3137,12 @@ module spec_funcs_zmm8r8
 
 
         subroutine caljy0_zmm8r8(arg,jint,val)
-        
+               
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: caljy0_zmm8r8
               !dir$ attributes forceinline :: caljy0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: caljy0_zmm8r8  
+              use mod_vectypes, only : ZMM8i8_t
               type(ZMM8r8_t),   intent(in)   :: arg
               type(ZMM8r8_t),   intent(out)  :: val
               integer(kind=i4), intent(in)   :: jint 
@@ -3226,6 +3227,10 @@ module spec_funcs_zmm8r8
               !dir$ attributes align : 64 :: zsq
               !dir$ attributes align : 64 :: t0
               !dir$ attributes align : 64 :: t1
+              !dir$ attributes align : 64 :: pi2ax
+              !dir$ attributes align : 64 :: t2
+              !dir$ attributes align : 64 :: t3
+              !dir$ attributes align : 64 :: ti
               type(ZMM8r8_t),   automatic :: ax,down
               type(ZMM8r8_t),   automatic :: prod,resj
               type(ZMM8r8_t),   automatic :: r0,r1
@@ -3233,8 +3238,206 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic :: wsq,xden
               type(ZMM8r8_t),   automatic :: xy,z,zsq
               type(ZMM8r8_t),   automatic :: t0,t1
-              type(Mask8_t),    automatic :: m0,m1,m2,m3
-              type(Mask8_t),    automatic :: m4,m5
+              type(ZMM8r8_t),   automatic :: pi2ax,t2
+              type(ZMM8r8_t),   automatic :: t3
+              type(ZMM8i8_t),   automatic :: ti
+              type(Mask8_t),    automatic :: m0,m1
+              ax.v   = abs(arg.v)
+              m0.m   = (arg.v<=zero.v)
+              pi2ax.v= pi2.v/ax.v
+              m1.m   = (xmax.v<ax.v)
+              if(all(m0.m).and.jint==1) then
+                  val.v = -xinf.v
+                  return
+              else if(all(m1.m)) then
+                  val.v = zero.v
+                  return
+              end if
+              m0.m = (eight.v<ax.v)
+              m1.m = (ax.v<=small.v)
+              if(all(m0.m)) goto 800
+              if(all(m1.m)) then
+                 if(jint==0) then
+                     val.v = one.v
+                 else
+                     val.v = pi2.v*log(ax.v)+cons.v
+                     return
+                 end if
+              end if
+!               /*
+!                            !  Calculate J0 for appropriate interval, preserving
+!                            !  accuracy near the zero of J0.
+!                        
+! */                     
+              m0.m  = (ax.v<=four.v)
+              zsq.v = ax.v*ax.v
+              if(all(m0.m)) then
+                  xnum.v = caljy0_pj0(4).v*zsq.v+ &
+                           caljy0_pj0(5).v*zsq.v+ &
+                           caljy0_pj0(6).v
+                  xden.v = zsq.v+caljy0_qj0(4).v
+                  xnum.v = xnum.v*zsq.v+caljy0_pj0(0).v
+                  xden   = xden.v*zsq.v+caljy0_qj0(0).v
+                  xnum.v = xnum.v*zsq.v+caljy0_pj0(1).v
+                  xden   = xden.v*zsq.v+caljy0_qj0(1).v
+                  xnum.v = xnum.v*zsq.v+caljy0_pj0(2).v
+                  xden   = xden.v*zsq.v+caljy0_qj0(2).v
+                  xnum.v = xnum.v*zsq.v+caljy0_pj0(3).v
+                  xden   = xden.v*zsq.v+caljy0_qj0(3).v
+                  t0.v   = ax.v-(xj01.v/two56.v)
+                  t1.v   = ax.v+xj0.v
+                  prod.v = (t0.v-xj02.v)*t1.v
+              else
+                  wsq.v  = one.v-(zsq.v/sixty4.v)
+                  xnum.v = caljy0_pj1(6).v*wsq.v+ &
+                           caljy0_pji(7).v
+                  xden.v = wsq.v+caljy0_qj1(6).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(0).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(0).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(1).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(1).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(2).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(2).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(3).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(3).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(4).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(4).v
+                  xnum.v = xnum.v*wsq.v+caljy0_pj1(5).v
+                  xden.v = xden.v*wsq.v+caljy0_qj1(5).v
+                  t0.v   = ax.v-(xj11.v/two56.v)
+                  t1.v   = ax.v+xj1.v
+                  prod.v = (t0.v*t1.v)-xj12.v
+              end if
+              val.v  = prod.v*(xnum.v/xden.v)
+              if(jint==0) return
+!    /*
+!                          Calculate Y0.  First find  RESJ = pi/2 ln(x/xn) J0(x),
+!                          !  where xn is a zero of Y0.
+!                       */      
+              m0.m  = (ax.v<=three.v)       
+              m1.m  = (ax.v<=five.v)
+              if(all(m0.m)) then
+                  up.v = (ax.v-xy01.v/two56.v)-xy02.v
+                  xy.v = xy0.v
+              else if(all(m1.m)) then
+                  up.v = (ax.v-xy11.v/two56.v)-xy12.v
+                  xy.v = xy1.v
+              else
+                  up.v = (ax.v-xy21.v/two56.v)-xy22.v
+                  xy.v = xy1.v
+              end if
+              down.v   = ax.v*xy.v
+              t0.v     = abs(up.v)
+              t1.v     = p17.v*down.v
+              m0.m     = (t0.v<t1.v)
+              if(all(m0.m)) then
+                  w.v   = up.v/down.v
+                  wsq.v = w.v*w.v
+                  xnum.v= wsq.v+caljy0_qlg(0).v
+                  xnum.v= caljy0_plg(0).v
+                  xden.v= wsq.v+caljy0_qlg(0).v
+                  xnum.v= xnum.v*wsq.v+caljy0_plg(1).v
+                  xden.v= xden.v*wsq.v+caljy0_qlg(1).v
+                  xnum.v= xnum.v*wsq.v+caljy0_plg(2).v
+                  xden.v= xden.v*wsq.v+caljy0_qlg(2).v
+                  xnum.v= xnum.v*wsq.v+caljy0_plg(3).v
+                  xden.v= xden.v*wsq.v+caljy0_qlg(3).v
+                  t0.v  = xnum.v/xden.v
+                  t1.v  = pi.v*val.v
+                  resj.v= t1.v*w.v*t0.v
+              else
+                  t0.v  = xnum.v/xden.v
+                  t1.v  = pi.v*val.v
+                  resj.v= t1.v*log(t0.v)
+              end if
+!               /*
+!                           Now calculate Y0 for appropriate interval, preserving
+!                           !  accuracy near the zero of Y0.
+!                       */
+              m0.v = (ax.v<=three.v)
+              m1.v = (ax.v<=five5.v)
+              if(all(m0.m)) then
+                  xnum.v = caljy0_py0(5).v*zsq.v+ &
+                           caljy0_py0(0).v
+                  xden.v = zsq.v+caljy0_qy0(0).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py0(1).v
+                  xden.v = xden.v*zsq.v+caljy0_qy0(1).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py0(2).v
+                  xden.v = xden.v*zsq.v+caljy0_qy0(2).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py0(3).v
+                  xden.v = xden.v*zsq.v+caljy0_qy0(3).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py0(4).v
+                  xden.v = xden.v*zsq.v+caljy0_qy0(4).v
+              else if(all(m1.m)) then
+                  xnum.v = caljy0_py1(6).v*zsq.v+ &
+                           caljy0_py1(0).v
+                  xden.v = zsq.v+caljy0_qy1(0).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py1(1).v
+                  xden.v = xden.v*zsq.v+caljy0_qy1(1).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py1(2).v
+                  xden.v = xden.v*zsq.v+caljy0_qy1(2).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py1(3).v
+                  xden.v = xden.v*zsq.v+caljy0_qy1(3).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py1(4).v
+                  xden.v = xden.v*zsq.v+caljy0_qy1(4).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py1(5).v
+                  xden.v = xden.v*zsq.v+caljy0_qy1(5).v
+              else
+                  xnum.v = caljy0_py2(7).v*zsq.v+ &
+                           caljy0_py2(0).v
+                  xden.v = zsq.v+caljy0_qy2(0).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(1).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(1).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(2).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(2).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(3).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(3).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(4).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(4).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(5).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(5).v
+                  xnum.v = xnum.v*zsq.v+caljy0_py2(6).v
+                  xden.v = xnum.v*zsq.v+caljy0_qy2(6).v
+              end if
+              t0.v  = xnum.v/xden.v
+              t1.v  = up.v*down.v
+              val.v = t0.v*t1.v+resj.v
+              return
+800           z.v   = eight.v/ax.v
+              w.v   = ax.v/twopi.v
+              t1.v  = int(w.v,kind=i8)
+              w.v   = real(t1.v,kind=dp)+oneov8.v
+              t0.v  = w.v*twopi2.v
+              t1.v  = ax.v-w.v
+              w.v   = t1.v*twopi1.v-t0.v
+              zsq.v = z.v*z.v
+              xnum.v= caljy0_p0(4).v*zsq.v+ &
+                      caljy0_p0(5).v
+              xden.v= zsq.v+caljy0_q0(4).v
+              up.v  = caljy0_p1(4).v*zsq.v+ &
+                      caljy0_p1(5).v
+              down.v= zsq.v+caljy0_q1(4).v
+              xnum.v= xnum.v*zsq.v+caljy0_p0(0).v
+              xden.v= xden.v*zsq.v+caljy0_q0(0).v
+              xnum.v= xnum.v*zsq.v+caljy0_p0(1).v
+              xden.v= xden.v*zsq.v+caljy0_q0(1).v
+              xnum.v= xnum.v*zsq.v+caljy0_p0(2).v
+              xden.v= xden.v*zsq.v+caljy0_q0(2).v
+              xnum.v= xnum.v*zsq.v+caljy0_p0(3).v
+              xden.v= xden.v*zsq.v+caljy0_q0(3).v
+              r0.v  = xnum.v/xden.v
+              t1.v  = cos(w.v)
+              r1.v  = up.v/down.v
+              t0.v  = sqrt(pi2ax.v)
+              t2.v  = sin(w.v)
+              t3.v  = z.v*r1.v
+              if(jint==0) then
+                  val.v = t0.v*r0.v*t1.v- &
+                          t3.v*t2.v
+              else
+                  val.v = t0.v*r0.v*t2.v+ &
+                          t3.v*t1.v
+              end if
         end subroutine caljy0_zmm8r8
 
            
