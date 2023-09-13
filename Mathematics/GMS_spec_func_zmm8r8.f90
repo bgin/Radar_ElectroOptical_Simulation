@@ -530,6 +530,115 @@ module spec_funcs_zmm8r8
                                                           ZMM8r8_t(1.1951131543434613647e+4_dp),  & 
                                                           ZMM8r8_t(5.7105024128512061905e+3_dp),  &
                                                           ZMM8r8_t(9.0593769594993125859e+1_dp)]
+    !!
+    !! caljy1_zmm8r8 constant arrays (saved)
+    !!  
+     !dir$ attributes align : 64 :: caljy1_plg
+     !dir$ attributes align : 64 :: caljy1_qlg
+     !dir$ attributes align : 64 :: caljy1_pj0
+     !dir$ attributes align : 64 :: caljy1_qj0
+     !dir$ attributes align : 64 :: caljy1_pj1
+     !dir$ attributes align : 64 :: caljy1_qj1
+     !dir$ attributes align : 64 :: caljy1_py0
+     !dir$ attributes align : 64 :: caljy1_qy0
+     !dir$ attributes align : 64 :: caljy1_py1
+     !dir$ attributes align : 64 :: caljy1_qy1
+     !dir$ attributes align : 64 :: caljy1_py2
+     !dir$ attributes align : 64 :: caljy1_qy2
+     !dir$ attributes align : 64 :: caljy1_p0
+     !dir$ attributes align : 64 :: caljy1_q0
+     !dir$ attributes align : 64 :: caljy1_p1
+     !dir$ attributes align : 64 :: caljy1_q1
+     type(ZMM8r8_t), dimension(0:3), save ::  caljy1_plg =[ZMM8r8_t(-2.4562334077563243311e+1_dp), &
+	                                                   ZMM8r8_t(2.3642701335621505212e+2_dp),  &
+                                                           ZMM8r8_t(-5.4989956895857911039e+2_dp), &
+                                                           ZMM8r8_t(3.5687548468071500413e+2_dp)]
+     type(ZMM8r8_t), dimension(0:3), save ::  caljy1_qlg =[ZMM8r8_t(-3.5553900764052419184e+1_dp), &
+	                                                   ZMM8r8_t(1.9400230218539473193e+2_dp),  &
+                                                           ZMM8r8_t(-3.3442903192607538956e+2_dp), &
+                                                           ZMM8r8_t(1.7843774234035750207e+2_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy1_pj0 =[ZMM8r8_t(9.8062904098958257677e+5_dp),  &
+	                                                   ZMM8r8_t(-1.1548696764841276794e+8_dp), & 
+                                                           ZMM8r8_t(6.6781041261492395835e+9_dp),  &
+                                                           ZMM8r8_t(-1.4258509801366645672e+11_dp),& 
+                                                           ZMM8r8_t(-4.4615792982775076130e+3_dp), & 
+                                                           ZMM8r8_t(1.0650724020080236441e+1_dp),  &
+                                                           ZMM8r8_t(-1.0767857011487300348e-2_dp)]
+     type(ZMM8r8_t), dimension(0:4), save ::  caljy1_qj0 =[ZMM8r8_t(5.9117614494174794095e+5_dp),  & 
+	                                                   ZMM8r8_t(2.0228375140097033958e+8_dp),  & 
+                                                           ZMM8r8_t(4.2091902282580133541e+10_dp), & 
+                                                           ZMM8r8_t(4.1868604460820175290e+12_dp), & 
+                                                           ZMM8r8_t(1.0742272239517380498e+03_dp)]
+     type(ZMM8r8_t), dimension(0:7), save ::  caljy1_pj1 =[ZMM8r8_t(4.6179191852758252280e+00_dp), &
+	                                                   ZMM8r8_t(-7.1329006872560947377e+3_dp), &
+                                                           ZMM8r8_t(4.5039658105749078904e+6_dp),  &
+                                                           ZMM8r8_t(-1.4437717718363239107e+9_dp), &
+                                                           ZMM8r8_t(2.3569285397217157313e+11_dp), &
+                                                           ZMM8r8_t(-1.6324168293282543629e+13_dp),&
+                                                           ZMM8r8_t(1.1357022719979468624e+14_dp), & 
+                                                           ZMM8r8_t(1.0051899717115285432e+15_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy1_qj1 =[ZMM8r8_t(1.1267125065029138050e+6_dp),  & 
+	                                                   ZMM8r8_t(6.4872502899596389593e+8_dp),  &
+                                                           ZMM8r8_t(2.7622777286244082666e+11_dp), & 
+                                                           ZMM8r8_t(8.4899346165481429307e+13_dp), &
+                                                           ZMM8r8_t(1.7128800897135812012e+16_dp), & 
+                                                           ZMM8r8_t(1.7253905888447681194e+18_dp), & 
+                                                           ZMM8r8_t(1.3886978985861357615e+3_dp)]
+     type(ZMM8r8_t), dimension(0:6), save ::  caljy1_py0 =[ZMM8r8_t(2.2157953222280260820e+5_dp),  &
+	                                                   ZMM8r8_t(-5.9157479997408395984e+7_dp), & 
+                                                           ZMM8r8_t(7.2144548214502560419e+9_dp),  &
+                                                           ZMM8r8_t(-3.7595974497819597599e+11_dp),&
+                                                           ZMM8r8_t(5.4708611716525426053e+12_dp), & 
+                                                           ZMM8r8_t(4.0535726612579544093e+13_dp), & 
+                                                           ZMM8r8_t(-3.1714424660046133456e+2_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy1_qy0 =[ZMM8r8_t(8.2079908168393867438e+2_dp),  & 
+	                                                   ZMM8r8_t(3.8136470753052572164e+5_dp),  &
+                                                           ZMM8r8_t(1.2250435122182963220e+8_dp),  & 
+                                                           ZMM8r8_t(2.7800352738690585613e+10_dp), &
+                                                           ZMM8r8_t(4.1272286200406461981e+12_dp), & 
+                                                           ZMM8r8_t(3.0737873921079286084e+14_dp)]
+     type(ZMM8r8_t), dimension(0:8), save ::  caljy1_py1 =[ZMM8r8_t(1.9153806858264202986e+6_dp),  &
+	                                                   ZMM8r8_t(-1.1957961912070617006e+9_dp), & 
+                                                           ZMM8r8_t(3.7453673962438488783e+11_dp), &
+                                                           ZMM8r8_t(-5.9530713129741981618e+13_dp),& 
+                                                           ZMM8r8_t(4.0686275289804744814e+15_dp), &
+                                                           ZMM8r8_t(-2.3638408497043134724e+16_dp),&
+                                                           ZMM8r8_t(-5.6808094574724204577e+18_dp),& 
+                                                           ZMM8r8_t(1.1514276357909013326e+19_dp), & 
+                                                           ZMM8r8_t(-1.2337180442012953128e+3_dp)]
+     type(ZMM8r8_t), dimension(0:7), save ::  caljy1_qy1 =[ZMM8r8_t(1.2855164849321609336e+3_dp),  & 
+	                                                   ZMM8r8_t(1.0453748201934079734e+6_dp),  & 
+                                                           ZMM8r8_t(6.3550318087088919566e+8_dp),  & 
+                                                           ZMM8r8_t(3.0221766852960403645e+11_dp), & 
+                                                           ZMM8r8_t(1.1187010065856971027e+14_dp), & 
+                                                           ZMM8r8_t(3.0837179548112881950e+16_dp), &
+                                                           ZMM8r8_t(5.6968198822857178911e+18_dp), & 
+                                                           ZMM8r8_t(5.3321844313316185697e+20_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy1_p0  =[ZMM8r8_t(1.0982405543459346727e+5_dp),  &
+	                                                   ZMM8r8_t(-1.5235293511811373833e+6_dp), &
+                                                           ZMM8r8_t(-6.6033732483649391093e+06_dp),&
+                                                           ZMM8r8_t(-9.9422465050776411957e+6_dp), &
+                                                           ZMM8r8_t(-4.4357578167941278571e+6_dp), &
+                                                           ZMM8r8_t(-1.6116166443246101165e+3_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy1_q0  =[ZMM8r8_t(-1.0726385991103820119e+5_dp), &
+	                                                   ZMM8r8_t(-1.5118095066341608816e+6_dp), &
+                                                           ZMM8r8_t(-6.5853394797230870728e+6_dp), &
+                                                           ZMM8r8_t(-9.9341243899345856590e+6_dp), & 
+                                                           ZMM8r8_t(-4.4357578167941278568e+6_dp), &
+                                                           ZMM8r8_t(-1.4550094401904961825e+3_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy1_p1  =[ZMM8r8_t(1.7063754290207680021e+3_dp),  & 
+	                                                   ZMM8r8_t(1.8494262873223866797e+4_dp),  & 
+                                                           ZMM8r8_t(6.6178836581270835179e+4_dp),  & 
+                                                           ZMM8r8_t(8.5145160675335701966e+4_dp),  &
+                                                           ZMM8r8_t(3.3220913409857223519e+4_dp),  & 
+                                                           ZMM8r8_t(3.5265133846636032186e+1_dp)]
+     type(ZMM8r8_t), dimension(0:5), save ::  caljy1_q1  =[ZMM8r8_t(3.7890229745772202641e+4_dp),  & 
+	                                                   ZMM8r8_t(4.0029443582266975117e+5_dp),  &
+                                                           ZMM8r8_t(1.4194606696037208929e+6_dp),  & 
+                                                           ZMM8r8_t(1.8194580422439972989e+6_dp),  &
+                                                           ZMM8r8_t(7.0871281941028743574e+5_dp),  & 
+                                                           ZMM8r8_t(8.6383677696049909675e+2_dp)]
+     
      contains
      
 !! =============================================================================================================== //
@@ -1449,8 +1558,11 @@ module spec_funcs_zmm8r8
               summa.v = t0.v+t1.v
        end function preload_caljy0_q1
        
-       
+!! =============================================================================================================== //
+!!                                  'Saved' arrays preload_caljy1 routines.
+!!================================================================================================================ //       
                               
+     
        
        
 #if 0
@@ -3439,6 +3551,59 @@ module spec_funcs_zmm8r8
                           t3.v*t1.v
               end if
         end subroutine caljy0_zmm8r8
+        
+        
+#if 0
+      /*
+	             !*****************************************************************************80
+!
+!! CALJY1 computes various J1 and Y1 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes first-order Bessel functions of the first and
+!    second kind (J1 and Y1), for real arguments X, where 0 < X <= XMAX
+!    for Y1, and |X| <= XMAX for J1.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    John Hart, Ward Cheney, Charles Lawson, Hans Maehly,
+!    Charles Mesztenyi, John Rice, Henry Thatcher,
+!    Christoph Witzgall,
+!    Computer Approximations,
+!    Wiley, 1968,
+!    LC: QA297.C64.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.  If JINT = 0, ARG
+!    must satisfy
+!     -XMAX < ARG < XMAX;
+!    If JINT = 1, then ARG must satisfy
+!      0 < ARG < XMAX.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    0, RESULT = J1(x);
+!    1, RESULT = Y1(x);
+!
+!    Input, integer ( kind = 4 ) JINT, chooses the function to be computed.
+!    0, J1(x);
+!    1, Y1(x);  
+#endif
 
            
 
