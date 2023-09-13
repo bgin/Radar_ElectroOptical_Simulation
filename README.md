@@ -16,7 +16,7 @@ I envision four main components:
    
 The main structure of the projects is a collection of free standing 'modules' programmatically describing various modelled components. It is a software library of framework and may be used as computational backend of larger program of be connected to GUI front-end. Currently only hundreds (circa 400) kernels belonging to AVX512 double and single precision executing path were implemented. All of these kernels compute analytical Radar Cross Section of simple and to lesser extent complex objects
 
-List of references:
+List of references (incomplete):
 
 1) Detection, Estimation, and Modulation Theory Part III: Radar-Sonar Signal Processing and Gaussian Signals in Noise
    Harry L. van Trees
@@ -53,5 +53,7 @@ List of references:
   12) Вайнштейн Л. А., Зубаков В. Д. Выделение сигналов на фоне случайных помех. «Сов. радио», 1960.
 
   13) Зубковнч С. Г. Статистические характеристики радиосигналов, отраженных от земной поверхности. «Сов. радио», 1968
+
+  14) Шестов Н.С. - Выделение оптических сигналов на фоне случайных помех (1967, Москва Изд. Советское радио) 
 
 
