@@ -1423,7 +1423,7 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t), automatic :: t0,t1,t2
               t0.v = caljy0_qy0(0).v+caljy0_qy0(1).v
               t1.v = caljy0_qy0(2).v+caljy0_qy0(3).v+ &
-              t2.v = caljy0_qy0(4).v
+                     caljy0_qy0(4).v
               summa.v = t0.v+t1.v
        end function preload_caljy0_qy0 
        
@@ -1506,7 +1506,7 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t), automatic :: t0,t1,t2
               t0.v = caljy0_p0(0).v+caljy0_p0(1).v
               t1.v = caljy0_p0(2).v+caljy0_p0(3).v
-              t2.v = caljy0_p0(4).v+caljy0_p0(5).v+ &
+              t2.v = caljy0_p0(4).v+caljy0_p0(5).v
               summa.v = t0.v+t1.v+t2.v
        end function preload_caljy0_p0
        
@@ -1562,7 +1562,234 @@ module spec_funcs_zmm8r8
 !!                                  'Saved' arrays preload_caljy1 routines.
 !!================================================================================================================ //       
                               
-     
+       
+       pure function preload_caljy1_plg() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_plg
+              !dir$ attributes forceinline :: preload_calcjy1_plg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_plg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy1_plg(0).v+caljy1_plg(1).v
+              t1.v = caljy1_plg(2).v+caljy1_plg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy1_plg 
+       
+       
+       pure function preload_caljy1_qlg() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_qlg
+              !dir$ attributes forceinline :: preload_calcjy1_qlg
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_qlg
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy1_qlg(0).v+caljy1_qlg(1).v
+              t1.v = caljy1_qlg(2).v+caljy1_qlg(3).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy1_qlg  
+       
+       
+       pure function preload_caljy1_pj0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_pj0
+              !dir$ attributes forceinline :: preload_calcjy1_pj0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_pj0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_pj0(0).v+caljy1_pj0(1).v
+              t1.v = caljy1_pj0(2).v+caljy1_pj0(3).v
+              t2.v = caljy1_pj0(4).v+caljy1_pj0(5).v+ &
+                     caljy1_pj0(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_pj0  
+       
+       
+       pure function preload_caljy1_qj0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_qj0
+              !dir$ attributes forceinline :: preload_calcjy1_qj0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_qj0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = caljy1_qj0(0).v+caljy1_qj0(1).v
+              t1.v = caljy1_qj0(2).v+caljy1_qj0(3).v+ &
+                     caljy1_qj0(4).v
+              summa.v = t0.v+t1.v
+       end function preload_caljy1_qj0 
+       
+       
+       pure function preload_caljy1_pj1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_pj1
+              !dir$ attributes forceinline :: preload_calcjy1_pj1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_pj1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy1_pj1(0).v+caljy1_pj1(1).v
+              t1.v = caljy1_pj1(2).v+caljy1_pj1(3).v
+              t2.v = caljy1_pj1(4).v+caljy1_pj1(5).v
+              t3.v = caljy1_pj1(6).v+caljy1_pj1(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy1_pj1   
+       
+       
+       pure function preload_caljy1_qj1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_qj1
+              !dir$ attributes forceinline :: preload_calcjy1_qj1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_qj1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_qj1(0).v+caljy1_qj1(1).v
+              t1.v = caljy1_qj1(2).v+caljy1_qj1(3).v
+              t2.v = caljy1_qj1(4).v+caljy1_qj1(5).v+ &
+                     caljy1_qj1(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_qj1   
+       
+       
+       pure function preload_caljy1_py0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_py0
+              !dir$ attributes forceinline :: preload_calcjy1_py0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_py0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_py0(0).v+caljy1_py0(1).v
+              t1.v = caljy1_py0(2).v+caljy1_py0(3).v
+              t2.v = caljy1_py0(4).v+caljy1_py0(5).v+ &
+                     caljy1_py0(6).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_py0  
+       
+       
+       pure function preload_caljy1_qy0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_qy0
+              !dir$ attributes forceinline :: preload_calcjy1_qy0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_qy0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_qy0(0).v+caljy1_qy0(1).v
+              t1.v = caljy1_qy0(2).v+caljy1_qy0(3).v
+              t2.v = caljy1_qy0(4).v+caljy1_qy0(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_qy0   
+       
+       
+       pure function preload_caljy1_py1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_py1
+              !dir$ attributes forceinline :: preload_calcjy1_py1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_py1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy1_py1(0).v+caljy1_py1(1).v
+              t1.v = caljy1_py1(2).v+caljy1_py1(3).v
+              t2.v = caljy1_py1(4).v+caljy1_py1(5).v
+              t3.v = caljy1_py1(6).v+caljy1_py1(7).v+ &
+                     caljy1_py1(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy1_py1  
+       
+       
+       pure function preload_caljy1_qy1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_qy1
+              !dir$ attributes forceinline :: preload_calcjy1_qy1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_qy1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = caljy1_qy1(0).v+caljy1_qy1(1).v
+              t1.v = caljy1_qy1(2).v+caljy1_qy1(3).v
+              t2.v = caljy1_qy1(4).v+caljy1_qy1(5).v
+              t3.v = caljy1_qy1(6).v+caljy1_qy1(7).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_caljy1_qy1 
+       
+       
+       pure function preload_caljy1_p0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_p0
+              !dir$ attributes forceinline :: preload_calcjy1_p0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_p0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_p0(0).v+caljy1_p0(1).v
+              t1.v = caljy1_p0(2).v+caljy1_p0(3).v
+              t2.v = caljy1_p0(4).v+caljy1_p0(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_p0
+       
+       
+       pure function preload_caljy1_q0() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_q0
+              !dir$ attributes forceinline :: preload_calcjy1_q0
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_q0
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_q0(0).v+caljy1_q0(1).v
+              t1.v = caljy1_q0(2).v+caljy1_q0(3).v
+              t2.v = caljy1_q0(4).v+caljy1_q0(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_q0
+       
+       
+       pure function preload_caljy1_p1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_p1
+              !dir$ attributes forceinline :: preload_calcjy1_p1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_p1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_p1(0).v+caljy1_p1(1).v
+              t1.v = caljy1_p1(2).v+caljy1_p1(3).v
+              t2.v = caljy1_p1(4).v+caljy1_p1(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_p1
+       
+       
+       pure function preload_caljy1_q1() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_caljy1_q1
+              !dir$ attributes forceinline :: preload_calcjy1_q1
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_caljy1_q1
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2
+              type(ZMM8r8_t), automatic :: t0,t1,t2
+              t0.v = caljy1_q1(0).v+caljy1_q1(1).v
+              t1.v = caljy1_q1(2).v+caljy1_q1(3).v
+              t2.v = caljy1_q1(4).v+caljy1_q1(5).v
+              summa.v = t0.v+t1.v+t2.v
+       end function preload_caljy1_q1
        
        
 #if 0
@@ -3605,6 +3832,287 @@ module spec_funcs_zmm8r8
 !    1, Y1(x);  
 #endif
 
+
+          subroutine caljy1_zmm8r8(arg,jint,val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: caljy1_zmm8r8
+              !dir$ attributes forceinline :: caljy1_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: caljy1_zmm8r8  
+              use mod_vectypes, only : ZMM8i8_t
+              type(ZMM8r8_t),   intent(in)   :: arg
+              type(ZMM8r8_t),   intent(out)  :: val
+              integer(kind=i4), intent(in)   :: jint 
+              !dir$ attributes align : 64 :: eight
+              !dir$ attributes align : 64 :: four
+              !dir$ attributes align : 64 :: half
+              !dir$ attributes align : 64 :: throv8
+              !dir$ attributes align : 64 :: pi2
+              !dir$ attributes align : 64 :: p17
+              !dir$ attributes align : 64 :: twopi
+              !dir$ attributes align : 64 :: zero
+              !dir$ attributes align : 64 :: twopi1
+              !dir$ attributes align : 64 :: twopi2
+              !dir$ attributes align : 64 :: two56
+              !dir$ attributes align : 64 :: rtpi2
+              !dir$ attributes align : 64 :: xmax
+              !dir$ attributes align : 64 :: xsmall
+              !dir$ attributes align : 64 :: xinf
+              !dir$ attributes align : 64 :: xj0
+              !dir$ attributes align : 64 :: xj1
+              !dir$ attributes align : 64 :: xy0
+              !dir$ attributes align : 64 :: xy1
+              !dir$ attributes align : 64 :: xj01
+              !dir$ attributes align : 64 :: xj02
+              !dir$ attributes align : 64 :: xj11
+              !dir$ attributes align : 64 :: xj12
+              !dir$ attributes align : 64 :: xy01
+              !dir$ attributes align : 64 :: xy02
+              !dir$ attributes align : 64 :: xy11
+              !dir$ attributes align : 64 :: xy12
+              !dir$ attributes align : 64 :: ax
+              !dir$ attributes align : 64 :: down
+              !dir$ attributes align : 64 :: prod
+              !dir$ attributes align : 64 :: resj
+              !dir$ attributes align : 64 :: r0
+              !dir$ attributes align : 64 :: r1
+              !dir$ attributes align : 64 :: up
+              !dir$ attributes align : 64 :: w
+              !dir$ attributes align : 64 :: wsq
+              !dir$ attributes align : 64 :: xden
+              !dir$ attributes align : 64 :: xnum
+              !dir$ attributes align : 64 :: t0
+              !dir$ attributes align : 64 :: t1
+              !dir$ attributes align : 64 :: z
+              !dir$ attributes align : 64 :: zsq
+              !dir$ attributes align : 64 :: t2
+              !dir$ attributes align : 64 :: t3
+              type(ZMM8r8_t),   parameter    :: eight = ZMM8r8_t(8.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: four  = ZMM8r8_t(4.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: half  = ZMM8r8_t(0.5_dp);
+              type(ZMM8r8_t),   parameter    :: throv8= ZMM8r8_t(0.375_dp);
+              type(ZMM8r8_t),   parameter    :: pi2   = ZMM8r8_t(6.3661977236758134308e-1_dp);
+              type(ZMM8r8_t),   parameter    :: p17   = ZMM8r8_t(1.716e-1_dp);
+              type(ZMM8r8_t),   parameter    :: twopi = ZMM8r8_t(6.2831853071795864769e+0_dp);
+              type(ZMM8r8_t),   parameter    :: zero  = ZMM8r8_t(0.0_dp);
+              type(ZMM8r8_t),   parameter    :: twopi1= ZMM8r8_t(6.28125e+0_dp);
+              type(ZMM8r8_t),   parameter    :: twopi2= ZMM8r8_t(1.9353071795864769253e-3_dp);
+              type(ZMM8r8_t),   parameter    :: two56 = ZMM8r8_t(256.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: rtpi2 = ZMM8r8_t(7.9788456080286535588e-1_dp);
+              type(ZMM8r8_t),   parameter    :: xmax  = ZMM8r8_t(1.07e+9_dp);
+              type(ZMM8r8_t),   parameter    :: xsmall= ZMM8r8_t(9.31e-10_dp);
+              type(ZMM8r8_t),   parameter    :: xinf  = ZMM8r8_t(1.7e+38_dp);  
+              type(ZMM8r8_t),   parameter    :: xj0   = ZMM8r8_t(3.8317059702075123156e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xj1   = ZMM8r8_t(7.0155866698156187535e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xy0   = ZMM8r8_t(2.1971413260310170351e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xy1   = ZMM8r8_t(5.4296810407941351328e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xj01  = ZMM8r8_t(981.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xj02  = ZMM8r8_t(-3.2527979248768438556e-4_dp);
+              type(ZMM8r8_t),   parameter    :: xj11  = ZMM8r8_t(1796.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xj12  = ZMM8r8_t(-3.8330184381246462950e-5_dp);
+              type(ZMM8r8_t),   parameter    :: xy01  = ZMM8r8_t(562.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xy02  = ZMM8r8_t(1.8288260310170351490e-3_dp);
+              type(ZMM8r8_t),   parameter    :: xy11  = ZMM8r8_t(1390.0e+0_dp);
+              type(ZMM8r8_t),   parameter    :: xy12  = ZMM8r8_t(-6.4592058648672279948e-6_dp);
+              type(ZMM8r8_t),   automatic    :: ax,down
+              type(ZMM8r8_t),   automatic    :: prod,resj
+              type(ZMM8r8_t),   automatic    :: r0,r1
+              type(ZMM8r8_t),   automatic    :: up,w
+              type(ZMM8r8_t),   automatic    :: wsq,xden
+              type(ZMM8r8_t),   automatic    :: xnum,t0
+              type(ZMM8r8_t),   automatic    :: t1,z
+              type(ZMM8r8_t),   automatic    :: zsq,t2
+              type(ZMM8r8_t),   automatic    :: t3
+              type(Mask8_t),    automatic    :: m0,m1,m2,m3
+              ax.v  = arg.v
+              m3.m  = (xmax.v<ax.v)
+              t0.v  = ax.v*xinf.v
+              m0.m  = (arg.v<=zero.v)
+              m1.m  = (arg.v<half.v)
+              m2.m  = (t0.v<pi2.v)
+              if(all(m0.m).or.                 &
+                 (all(m1.m).and.all(m2.m))) then
+                    val.v = -xinf.v
+                    return
+              else if(all(m3.m)) then
+                    val.v = zero.v
+                    return
+              end if
+              m0.m  = (eight.v<ax.v)
+              m1.m  = (ax.v<=xsmall.v)
+              if(all(m0.m)) then
+                  goto 800
+              else if(all(m1.m)) then
+                   if(jint==0) then
+                       val.v = arg.v*half.v
+                       return
+                   else
+                       val.v = -pi2.v/ax.v 
+                       return
+                   end if
+              end if 
+              ! /*
+              !                Calculate J1 for appropriate interval, preserving
+              !                !  accuracy near the zero of J1.
+              !           */
+              zsq.v = ax.v*ax.v
+              m0.m  = (ax.v<=four.v)
+              if(all(m0.m)) then
+                   xnum.v = caljy1_pj0(6).v*zsq.v+ &
+                                  caljy1_pj0(5).v*zsq.v+ &
+                                  caljy1_pj0(4).v
+                   xden.v = zsq.v+caljy1_qj0(4).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj0(0).v
+                   xden.v = xden.v*zsq.v+caljy1_qj0(0).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj0(1).v
+                   xden.v = xden.v*zsq.v+caljy1_qj0(1).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj0(2).v
+                   xden.v = xden.v*zsq.v+caljy1_qj0(2).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj0(3).v
+                   xden.v = xden.v*zsq.v+caljy1_qj0(3).v
+                   t0.v   = ax.v-(xj01.v/two56.v)
+                   t1.v   = ax.v+xj0.v
+                   prod.v = (t0.v-xj02.v)*t1.v
+              else
+                   xnum.v = caljy1_pj1(0).v
+                   xden.v = (zsq.v+caljy1_qj1(6).v)* &
+                            (zsq.v+caljy1_qj1(0).v)
+                   xnum.v = xnum.v*zsq.v+caljy1_pj1(1).v
+                   xden.v = xden.v*zsq.v+caljy1_qj1(1).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj1(2).v
+                   xden.v = xden.v*zsq.v+caljy1_qj1(2).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj1(3).v
+                   xden.v = xden.v*zsq.v+caljy1_qj1(3).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj1(4).v
+                   xden.v = xden.v*zsq.v+caljy1_qj1(4).v
+                   xnum.v = xnum.v*zsq.v+caljy1_pj1(5).v
+                   xden.v = xden.v*zsq.v+caljy1_qj1(5).v
+                   t0.v   = xnum.v*(ax.v-eight.v)
+                   t1.v   = (ax.v+eight.v)+caljy1_pj1(6).v
+                   xnum.v = t0.v*t1.v
+                   t0.v   = xnum.v*(ax.v-four.v)
+                   t1.v   = (ax.v+four.v)+caljy1_pj1(7).v
+                   xnum.v = t0.v*t1.v
+                   t0.v   = ax.v-(xj11.v/two56.v)-xj12.v
+                   t1.v   = ax.v+xj1.v
+                   prod.v = arg.v*t0.v*t1.v
+              endif
+              val.v = prod.v*(xnum.v/xden.v)
+              if(jint==0) return
+              ! /*
+              !               Calculate Y1.  First find RESJ = pi/2 ln(x/xn) J1(x),
+              !               !  where xn is a zero of Y1.
+              !           */
+              m0.m = (ax.v<=four.v)
+              if(all(m0.m)) then
+                  t0.v = ax.v-(xy01.v/two56.v)
+                  up.v = t0.v-xy02.v
+                  xy.v = xy0.v
+              else
+                  t0.v = ax.v-(xy11.v/two56.v)
+                  up.v = t0.v-xy12.v
+                  xy.v = xy01.v
+              endif
+              down.v   = ax.v+xy.v
+              t1.v     = p17.v*down.v)
+              m0.m     = (abs(up.v)<t1.v)
+              if(all(m0.m)) then
+                  w.v   = up.v/down.v
+                  wsq.v = w.v*w.v
+                  xnum.v= caljy1_plg(0).v
+                  xden.v= wsq.v+caljy1_qlg(0).v
+                  xnum.v= xnum.v*wsq.v+caljy1_plg(1).v
+                  xden.v= xden.v*wsq.v+caljy1_qlg(1).v
+                  xnum.v= xnum.v*wsq.v+caljy1_plg(2).v
+                  xden.v= xden.v*wsq.v+caljy1_qlg(2).v
+                  xnum.v= xnum.v*wsq.v+caljy1_plg(3).v
+                  xden.v= xden.v*wsq.v+caljy1_qlg(3).v
+                  t0.v  = w.v*(xnum.v/xden.v)
+                  t1.v  = pi2.v*val.v
+                  resj.v= t0.v*t1.v
+              else
+                  t0.v  = log(ax.v/xy.v)
+                  resj.v= pi12.v*val.v*t0.v
+              end if
+              !  /*
+              !               Now calculate Y1 for appropriate interval, preserving
+              !               !  accuracy near the zero of Y1.
+              !           */   
+              m0.m = (ax.v<=four.v)
+              if(all(m0.m)) then
+                   xnum.v = caljy1_py0(6).v*zsq.v+ &
+                            caljy1_py0(0).v         
+                   xden.v = zsq.v+caljy1_qy0(0).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py0(1).v
+                   xden.v = xden.v*zsq.v+caljy1_qy0(1).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py0(2).v
+                   xden.v = xden.v*zsq.v+caljy1_qy0(2).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py0(3).v
+                   xden.v = xden.v*zsq.v+caljy1_qy0(3).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py0(4).v
+                   xden.v = xden.v*zsq.v+caljy1_qy0(4).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py0(5).v
+                   xden.v = xden.v*zsq.v+caljy1_qy0(5).v  
+              else
+                   xnum.v = caljy1_py1(8).v*zsq.v+ &
+                            caljy1_py1(0).v
+                   xden.v = zsq.v+caljy1_qy1(0).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(1).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(1).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(2).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(2).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(3).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(3).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(4).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(4).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(5).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(5).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(6).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(6).v
+                   xnum.v = xnum.v*zsq.v+caljy1_py1(7).v
+                   xden.v = xden.v*zsq.v+caljy1_qy1(7).v
+              end if
+              t0.v = xnum.v/xden.v
+              t1.v = up.v*(down.v/ax.v)
+              val.v= t0.v*t1.v+resj.v
+              return
+800           z.v  = eight.v/ax.v
+              t0.v = ax.v/twopi.v
+              ti.v = int(t0.v,kind=i8)
+              w.v  = real(ti.v,kind=dp)*throv8.v
+              t0.v = ax.v-w.v
+              w.v  = t0.v*twopi1.v-w.v*twopi2
+              zsq.v= z.v*z.v
+              xnum.v=caljy1_p0(5).v
+              xden.v=zsq/v+caljy1_q0(5).v
+              up.v  = caljy1_p1(5).v
+              xnum.v= xnum.v*zsq.v+caljy1_p0(0).v
+              t0.v  = rtpi2.v/sqrt(ax.v)
+              xden.v= xden.v*zsq.v+caljy1_q0(0).v
+              xnum.v= xnum.v*zsq.v+caljy1_p0(1).v
+              xden.v= xden.v*zsq.v+caljy1_q0(1).v
+              xnum.v= xnum.v*zsq.v+caljy1_p0(2).v
+              xden.v= xden.v*zsq.v+caljy1_q0(2).v
+              xnum.v= xnum.v*zsq.v+caljy1_p0(3).v
+              xden.v= xden.v*zsq.v+caljy1_q0(3).v
+              xnum.v= xnum.v*zsq.v+caljy1_p0(4).v
+              t1.v  = sin(w.v)
+              xden.v= xden.v*zsq.v+caljy1_q0(4).v
+              r0.v  = xnum.v/xden.v
+              r1.v  = up.v/down.v
+              t2.v  = cos(w.v)
+              t3.v  = z.v*r1.v
+              if(jint==1) then
+                   val.v = t0.v*r0.v*t2.v- &
+                           t3.v*t1.v
+              else
+                   val.v = t0.v*r0.v*t1.v- &
+                           t3.v*t2.v
+              end if
+              m0.m  = (arg.v<zero.v)
+              if(jint==0.and.all(m0.m)) val.v = -val.v
+                   
+       end subroutine caljy1_zmm8r8
            
 
 end module spec_funcs_zmm8r8
