@@ -683,6 +683,52 @@ module spec_funcs_zmm8r8
                                                            ZMM8r8_t(1.4847228371802360957e+04_dp), &
                                                            ZMM8r8_t(1.8821890840982713696e+03_dp), & 
                                                            ZMM8r8_t(9.2556599177304839811e+01_dp)] 
+    !!
+    !! calck1_zmm8r8 constant arrays (saved)
+    !!   
+     !dir$ attributes align : 64 :: calck0_p
+     !dir$ attributes align : 64 :: calck0_q
+     !dir$ attributes align : 64 :: calck0_f
+     !dir$ attributes align : 64 :: calck0_g
+     !dir$ attributes align : 64 :: calck0_pp
+     !dir$ attributes align : 64 :: calck0_qq
+     type(ZMM8r8_t), dimension(0:4), save :: calck1_p  =[ZMM8r8_t(4.8127070456878442310e-1_dp),   & 
+	                                                 ZMM8r8_t(9.9991373567429309922e+1_dp),   & 
+                                                         ZMM8r8_t(7.1885382604084798576e+3_dp),   & 
+                                                         ZMM8r8_t(1.7733324035147015630e+5_dp),   & 
+                                                         ZMM8r8_t(7.1938920065420586101e+5_dp)]
+     type(ZMM8r8_t), dimension(0:2), save :: calck1_q  =[ZMM8r8_t(-2.8143915754538725829e+2_dp),  & 
+	                                                 ZMM8r8_t(3.7264298672067697862e+4_dp),   & 
+                                                         ZMM8r8_t(-2.2149374878243304548e+6_dp)]
+     type(ZMM8r8_t), dimension(0:4), save :: calck1_f  =[ZMM8r8_t(-2.2795590826955002390e-1_dp),  &
+	                                                 ZMM8r8_t(-5.3103913335180275253e+1_dp),  & 
+                                                         ZMM8r8_t(-4.5051623763436087023e+3_dp),  &
+                                                         ZMM8r8_t(-1.4758069205414222471e+5_dp),  &
+                                                         ZMM8r8_t(-1.3531161492785421328e+6_dp)]
+     type(ZMM8r8_t), dimension(0:2), save :: calck1_g  =[ZMM8r8_t(-3.0507151578787595807e+2_dp),  & 
+	                                                 ZMM8r8_t(4.3117653211351080007e+4_dp),   & 
+                                                         ZMM8r8_t(-2.7062322985570842656e+6_dp)]
+     type(ZMM8r8_t), dimension(0:10), save :: calck1_pp=[ZMM8r8_t(6.4257745859173138767e-2_dp),   &
+	                                                 ZMM8r8_t(7.5584584631176030810e+0_dp),   & 
+                                                         ZMM8r8_t(1.3182609918569941308e+2_dp),   & 
+                                                         ZMM8r8_t(8.1094256146537402173e+2_dp),   &
+                                                         ZMM8r8_t(2.3123742209168871550e+3_dp),   & 
+                                                         ZMM8r8_t(3.4540675585544584407e+3_dp),   & 
+                                                         ZMM8r8_t(2.8590657697910288226e+3_dp),   & 
+                                                         ZMM8r8_t(1.3319486433183221990e+3_dp),   & 
+                                                         ZMM8r8_t(3.4122953486801312910e+2_dp),   & 
+                                                         ZMM8r8_t(4.4137176114230414036e+1_dp),   & 
+                                                         ZMM8r8_t(2.2196792496874548962e+0_dp)]
+     type(ZMM8r8_t), dimension(0:8), save :: calck1_qq =[ZMM8r8_t(3.6001069306861518855e+1_dp),   & 
+	                                                 ZMM8r8_t(3.3031020088765390854e+2_dp),   & 
+                                                         ZMM8r8_t(1.2082692316002348638e+3_dp),   & 
+                                                         ZMM8r8_t(2.1181000487171943810e+3_dp),   &
+                                                         ZMM8r8_t(1.9448440788918006154e+3_dp),   & 
+                                                         ZMM8r8_t(9.6929165726802648634e+2_dp),   & 
+                                                         ZMM8r8_t(2.5951223655579051357e+2_dp),   & 
+                                                         ZMM8r8_t(3.4552228452758912848e+1_dp),   & 
+                                                         ZMM8r8_t(1.7710478032601086579e+0_dp)]
+      
      contains
      
 !! =============================================================================================================== //
@@ -1864,7 +1910,7 @@ module spec_funcs_zmm8r8
               !dir$ attributes forceinline :: preload_calck0_q
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck0_q
               type(ZMM8r8_t) :: summa
-              !dir$ attributes align : 64 :: t0,t1,t2
+              !dir$ attributes align : 64 :: t0
               type(ZMM8r8_t), automatic :: t0
               t0.v = calck0_p(0).v+calck0_p(1).v
               summa.v = t0.v
@@ -1937,7 +1983,108 @@ module spec_funcs_zmm8r8
        end function preload_calck0_qq
        
        
+!! =============================================================================================================== //
+!!                                  'Saved' arrays preload_calck1 routines.
+!!================================================================================================================ //   
+
+
+       pure function preload_calck1_p() result(summa)
        
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_p
+              !dir$ attributes forceinline :: preload_calck1_p
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_p
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = calck1_p(0).v+calck1_p(1).v
+              t1.v = calck1_p(2).v+calck1_p(3).v+ &
+                     calck1_p(4).v
+              summa.v = t0.v+t1.v
+       end function preload_calck1_p    
+       
+       
+       pure function preload_calck1_q() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_q
+              !dir$ attributes forceinline :: preload_calck1_q
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_q
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0
+              type(ZMM8r8_t), automatic :: t0
+              t0.v = calck1_p(0).v+calck1_p(1).v+ &
+                     calck1_p(2).v
+              summa.v = t0.v
+       end function preload_calck1_q 
+       
+       
+       pure function preload_calck1_f() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_f
+              !dir$ attributes forceinline :: preload_calck1_f
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_f
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1
+              type(ZMM8r8_t), automatic :: t0,t1
+              t0.v = calck1_f(0).v+calck1_f(1).v
+              t1.v = calck1_f(2).v+calck1_f(3).v+ &
+                     calck1_f(4).v
+              summa.v = t0.v+t1.v
+       end function preload_calck1_f
+       
+       
+       pure function preload_calck1_g() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_g
+              !dir$ attributes forceinline :: preload_calck1_g
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_g
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0
+              type(ZMM8r8_t), automatic :: t0
+              t0.v = calck1_f(0).v+calck1_f(1).v+ &
+                     calck1_f(2).v
+              summa.v = t0.v
+       end function preload_calck1_g
+       
+       
+       pure function preload_calck1_pp() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_pp
+              !dir$ attributes forceinline :: preload_calck1_pp
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_pp
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3,t4
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3,t4
+              t0.v = calck1_pp(0).v+calck1_pp(1).v
+              t1.v = calck1_pp(2).v+calck1_pp(3).v
+              t2.v = calck1_pp(4).v+calck1_pp(5).v
+              t3.v = calck1_pp(6).v+calck1_pp(7).v
+              t4.v = calck1_pp(8).v+calck1_pp(9).v+ &
+                     calck1_pp(10).v
+              summa.v = t0.v+t1.v+t2.v+t3.v+t4.v
+       end function preload_calck1_pp
+       
+       
+       pure function preload_calck1_qq() result(summa)
+       
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: preload_calck1_qq
+              !dir$ attributes forceinline :: preload_calck1_qq
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: preload_calck1_qq
+              type(ZMM8r8_t) :: summa
+              !dir$ attributes align : 64 :: t0,t1,t2,t3
+              type(ZMM8r8_t), automatic :: t0,t1,t2,t3
+              t0.v = calck1_qq(0).v+calck1_qq(1).v
+              t1.v = calck1_qq(2).v+calck1_qq(3).v
+              t2.v = calck1_qq(4).v+calck1_qq(5).v
+              t3.v = calck1_qq(6).v+calck1_qq(7).v+ &
+                     calck1_qq(8).v
+              summa.v = t0.v+t1.v+t2.v+t3.v
+       end function preload_calck1_qq
        
        
 #if 0
@@ -4413,6 +4560,159 @@ module spec_funcs_zmm8r8
                  val.v = xinf.v
              end if
          end subroutine calck0_zmm8r8
-           
+         
+         
+#if 0
+/*
+!*****************************************************************************80
+!
+!! CALCK1 computes various K1 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes modified Bessel functions of the second kind
+!    and order one, K1(X) and EXP(X)*K1(X), for real arguments X.
+!
+!    The main computation evaluates slightly modified forms of near
+!    minimax rational approximations generated by Russon and Blair,
+!    Chalk River (Atomic Energy of Canada Limited) Report AECL-3461,
+!    1969.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.  XLEAST < ARG is
+!    always required.  If JINT = 1, then the argument must also be
+!    less than XMAX.
+!
+!    Output, real ( kind = 8 ) RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    1, RESULT = K1(x);
+!    2, RESULT = exp(x) * K1(x);
+!
+!    Input, integer ( kind = 4 ) JINT, chooses the function to be computed.
+!    1, K1(x);
+!    2, exp(x) * K1(x);
+*/      
+#endif    
+
+
+          subroutine calck1_zmm8r8(arg,jint,val)
+               
+              !dir$ optimize:3
+              !dir$ attributes code_align : 32 :: calck1_zmm8r8
+              !dir$ attributes forceinline :: calck1_zmm8r8
+              !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calck1_zmm8r8  
+              type(ZMM8r8_t),   intent(in)   :: arg
+              type(ZMM8r8_t),   intent(out)  :: val
+              integer(kind=i4), intent(in)   :: jint  
+              !dir$ attributes align : 64 :: one
+              !dir$ attributes align : 64 :: zero
+              !dir$ attributes align : 64 :: xleast
+              !dir$ attributes align : 64 :: xsmall
+              !dir$ attributes align : 64 :: xinf
+              !dir$ attributes align : 64 :: xmax
+              !dir$ attributes align : 64 :: sumf
+              !dir$ attributes align : 64 :: sumg
+              !dir$ attributes align : 64 :: sump
+              !dir$ attributes align : 64 :: sumq
+              !dir$ attributes align : 64 :: x
+              !dir$ attributes align : 64 :: xx
+              !dir$ attributes align : 64 :: t0
+              !dir$ attributes align : 64 :: t1
+              !dir$ attributes align : 64 :: t2
+              type(ZMM8r8_t),   parameter :: one   = ZMM8r8_t(1.0e+0_dp)
+              type(ZMM8r8_t),   parameter :: zero  = ZMM8r8_t(0.0e+0_dp)
+              type(ZMM8r8_t),   parameter :: xleast= ZMM8r8_t(2.23e-308_dp)
+              type(ZMM8r8_t),   parameter :: xsmall= ZMM8r8_t(1.11e-16_dp)
+              type(ZMM8r8_t),   parameter :: xinf  = ZMM8r8_t(1.79e+308_dp)
+              type(ZMM8r8_t),   parameter :: xmax  = ZMM8r8_t(705.343e+0_dp)
+              type(ZMM8r8_t),   automatic :: sumf,sumg
+              type(ZMM8r8_t),   automatic :: sump,sumq
+              type(ZMM8r8_t),   automatic :: x,xx
+              type(ZMM8r8_t),   automatic :: t0,t1
+              type(ZMM8r8_t),   automatic :: t2 
+              type(Mask8_t),    automatic :: m0,m1,m2 
+              x.v  = arg.v
+              m0.m = (x.v<xleast.v)
+              m1.m = (x.v<=one.v)
+              if(all(m0.m)) then
+                  val.v = xinf.v
+                  m0.m = (xmax.v<x.v)
+              else if(m1.m)) then
+                  m2.m = (x.v<small.v)
+                  if(all(m2.m)) then
+                      val.v = one.v/x.v
+                  else
+                      xx.v   = x.v*x.v
+                      sump.v = ((((                &
+                                    calck1_p(0).v  &
+                             * xx.v+calck1_p(1).v) &
+                             * xx.v+calck1_p(2).v) &
+                             * xx.v+calck1_p(3).v) &
+                             * xx.v+calck1_p(4).v) &
+                             * xx.v+calck1_q(2).v
+                      sumq.v = ((                  &
+                               xx.v+calck1_q(0).v) &
+                             * xx.v+calck1_q(1).v) &
+                             * xx.v+calck1_q(2).v)
+                      t2.v   = sump.v/sumq.v
+                      sumf.v = (((                 &
+                                    calck1_f(0).v  &
+                             * xx.v+calck1_f(1).v) &
+                             * xx.v+calck1_f(2).v) &
+                             * xx.v+calck1_f(3).v)
+                             * xx.v+calck1_f(4).v
+                      sumg.v = ((                  &
+                                    xx.v+calck1_g(1).v) &
+                                  * xx.v+calck1_g(2).v) &
+                                  * xx.v+calck1_g(3)
+                      t0.v   = xx.v+log(x.v)
+                      t1.v   = sumf.v/sumg.v
+                      val.v  = (t0.v*t1.v+t2.v)/x.v
+                      if(jint==2) val.v = val.v*exp(x.v)
+                  end if
+              else if(jint==1.and.all(m0.m)) then
+                  val.v = zero.v
+              else
+                  xx.v  = one.v/x.v
+                  sumq.v= xx.v
+                  sump.v= calck1_pp(0).v
+                  sump.v= sump.v*xx.v+calck1_pp(1).v
+                  sumq.v= (sumq.v+calck1_qq(0).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(2).v
+                  sumq.v= (sumq.v+calck1_qq(1).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(3).v
+                  sumq.v= (sumq.v+calck1_qq(2).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(4).v
+                  sumq.v= (sumq.v+calck1_qq(3).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(5).v
+                  sumq.v= (sumq.v+calck1_qq(4).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(6).v
+                  sumq.v= (sumq.v+calck1_qq(5).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(7).v
+                  sumq.v= (sumq.v+calck1_qq(6).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(8).v
+                  sumq.v= (sumq.v+calck1_qq(7).v)*xx.v
+                  sump.v= sump.v*xx.v+calck1_pp(9).v
+                  sump.v= sump.v*xx.v+calck1_pp(10).v
+                  sumq.v= sumq.v+calck1_qq(8).v
+                  t0.v  = sqrt(x.v)
+                  t1.v  = sumq.v/sump.v
+                  if(jint==1) val.v = val.v*exp(-x.v)
+               end if
+          end subroutine calck1_zmm8r8 
 
 end module spec_funcs_zmm8r8
