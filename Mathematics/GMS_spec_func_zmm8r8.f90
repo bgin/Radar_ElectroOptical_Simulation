@@ -3437,6 +3437,90 @@ module spec_funcs_zmm8r8
                type(ZMM8r8_t),   automatic    :: t0,t1
                type(Mask8_t),    automatic    :: msk1,msk2
                type(Mask8_t),    automatic    :: msk3,msk4
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15  
+                   x.v(j)    = abs(arg.v(j))
+                   msk1.m(j) = (x.v(j)<xsmall.v(j))
+                   msk2.m(j) = (x.v(j)<one5.v(j))
+                   msk3.m(j) = (one5.v(j)<=x.v(j))
+                   if(all(msk1.m(j))) then
+                       val.v(j) = one.v(j)
+                   else if(all(msk2.m(j))) then
+                       xx.v(j)   = x.v(j)*x.v(j)
+                       sump.v(j) = calci0_p(0).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(1).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(2).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(3).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(4).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(5).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(6).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(7).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(8).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(9).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(10).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(11).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(12).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(13).v(j)
+                       sump.v(j) = sump.v(j)*xx.v(j)+calci0_p(14).v(j)
+                       xx.v(j)   = xx.v(j)-two25.v(j)
+                       sumq.v(j) = (((( &
+                             xx.v(j)+calcei0_q(0).v(j)) &
+                           * xx.v(j)+calcei0_q(1).v(j)) &
+                           * xx.v(j)+calcei0_q(2).v(j)) &
+                           * xx.v(j)+calcei0_q(3).v(j)) &
+                           * xx.v(j)+calcei0_q(4).v(j)
+                       val.v(j)  = sump.v(j)/sumq.v(j)
+                       if(jint==2) val.v(j) = val.v(j)*exp(-x.v(j))
+                   else if(all(msk3.m(j))) then
+                           msk4.m(j) = (xmax.v(j)<=x.v(j))
+                           if(jint==1.and.all(msk4.m(j))) then
+                               val.v = xinf.v
+                           else
+                               xx.v(j)    = one.v(j)/(x.v(j)-rec15.v(j))
+                               sump.v(j)  = ((((((   &
+                                      calci0_pp(0).v(j)      &
+                                   * xx.v(j)+calci0_pp(1).v(j))   &
+                                   * xx.v(j)+calci0_pp(2).v(j))   &
+                                   * xx.v(j)+calci0_pp(3).v(j))   &
+                                   * xx.v(j)+calci0_pp(4).v(j))   &
+                                   * xx.v(j)+calci0_pp(5).v(j))   &
+                                   * xx.v(j)+calci0_pp(6).v(j))   &
+                                   * xx.v(j)+calci0_pp(7).v(j)
+                                sumq.v(j)  = ((((((    &
+                                     xx.v(j)+calci0_qq(0).v(j)) &
+                                   * xx.v(j)+calci0_qq(1).v(j)) &
+                                   * xx.v(j)+calci0_qq(2).v(j)) &
+                                   * xx.v(j)+calci0_qq(3).v(j)) &
+                                   * xx.v(j)+calci0_qq(4).v(j)) &
+                                   * xx.v(j)+calci0_qq(5).v(j)) &
+                                   * xx.v(j)+calci0_qq(6).v(j)
+                                val.v(j) = sump.v(j)/sumq.v(j)
+                                if(jint==2) val.v(j) = (val.v(j)-calci0_pp(0).v(j)/sqrt(x.v(j)))
+                   else
+                        msk4.m(j) = (x.v(j)<=(xmamx.v(j)-one5.v(j)))
+                        if(all(msk4.m(j))) then
+                            a.v(j) = exp(x.v(j))
+                            b.v(j) = one.v(j)
+                        else
+                            a.v(j) = exp(x.v(j)-frty.v(j))
+                            b.v(j) = exp40.v(j)
+                        end if
+                        t0.v(j)  = calci0_pp(1).v(j)*a.v(j)
+                        t1.v(j)  = sqrt(x.v(j))
+                        val.v(j) = ((val.v(j)*a.v(j)-t0.v(j))/t1.v(j))*b.v(j)
+                    end if
+                  end if
+               end if
+           end do
+#else
                x.v    = abs(arg.v)
                msk1.m = (x.v<xsmall.v)
                msk2.m = (x.v<one5.v)
@@ -3477,13 +3561,13 @@ module spec_funcs_zmm8r8
                          xx.v    = one.v/(x.v-rec15.v)
                          sump.v  = ((((((   &
                                       calci0_pp(0).v      &
-                                   * xx.v+calci0_pp(1))   &
-                                   * xx.v+calci0_pp(2))   &
-                                   * xx.v+calci0_pp(3))   &
-                                   * xx.v+calci0_pp(4))   &
-                                   * xx.v+calci0_pp(5))   &
-                                   * xx.v+calci0_pp(6))   &
-                                   * xx.v+calci0_pp(7)
+                                   * xx.v+calci0_pp(1).v)   &
+                                   * xx.v+calci0_pp(2).v)   &
+                                   * xx.v+calci0_pp(3).v)   &
+                                   * xx.v+calci0_pp(4).v)   &
+                                   * xx.v+calci0_pp(5).v)   &
+                                   * xx.v+calci0_pp(6).v)   &
+                                   * xx.v+calci0_pp(7).v
                          sumq.v  = ((((((    &
                                      xx.v+calci0_qq(0).v) &
                                    * xx.v+calci0_qq(1).v) &
@@ -3493,7 +3577,7 @@ module spec_funcs_zmm8r8
                                    * xx.v+calci0_qq(5).v) &
                                    * xx.v+calci0_qq(6).v
                         val.v    = sump.v/sumq.v
-                        if(jint==2) val.v = (val.v-calci0_pp(0)/sqrt(x.v))
+                        if(jint==2) val.v = (val.v-calci0_pp(0).v/sqrt(x.v))
                     else
                         msk4.m = (x.v<=(xmamx.v-one5.v))
                         if(all(msk4.m)) then
@@ -3509,6 +3593,7 @@ module spec_funcs_zmm8r8
                     end if
                   end if
                end if
+#endif
         end subroutine calci0_zmm8r8
         
         
@@ -3603,6 +3688,88 @@ module spec_funcs_zmm8r8
               type(Mask8_t),    automatic    :: msk1,msk2
               type(Mask8_t),    automatic    :: msk3,msk4
               type(Mask8_t),    automatic    :: msk5
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15  
+                     x.v(j)    = abs(arg.v(j))
+                     msk1.m(j) = (x.v(j)<small.v(j))
+                     msk2.m(j) = (x.v(j)<one5.v(j))
+                     msk3.m(j) = (xmax.v(j)<x.v(j))
+                     if(all(msk1.m(j))) then
+                         val.v(j) = half.v(j)*x.v(j)
+                     else if(all(msk2.m)) then
+                         xx.v(j)  = x.v(j)*x.v(j)
+                         sump.v(j)= calci1.p(0).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(1).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(2).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(3).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(4).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(6).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(7).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(8).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(9).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(10).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(11).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(12).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(13).v(j)
+                         sump.v(j)= sump.v(j)*xx.v(j)+calci1.p(14).v(j)
+                         xx.v(j)  = xx.v(j)-two25.v(j)
+                         sumq.v(j)= (((((  &
+                            xx.v(j)+calci1.q(0).v(j))  &
+                          * xx.v(j)+calci1.q(1).v(j))  &
+                          * xx.v(j)+calci1.q(2).v(j))  &
+                          * xx.v(j)+calci1.q(3).v(j))  &
+                          * xx.v(j)+calci1.q(4).v(j)
+                         val.v(j) = (sump.v(j)/sumq.v(j))*x.v(j)
+                         if(jint==2) val.v(j) = val.v(j)*exp(-x.v(j))
+                    else if(jint==1.and.all(msk3.m(j))) then
+                         val.v(j) = xinf.v(j)        
+                    else
+                         xx.v(j)   = one.v(j)/x.v(j)-rec15.v(j)
+                         sump.v(j) = ((((((   &
+                                      calci1.pp(0).v(j)     &
+                               * xx.v(j)+calci1.pp(1).v(j))  &
+                               * xx.v(j)+calci1.pp(2).v(j))  &
+                               * xx.v(j)+calci1.pp(3).v(j))  &
+                               * xx.v(j)+calci1.pp(4).v(j))  &
+                               * xx.v(j)+calci1.pp(5).v(j))  &
+                               * xx.v(j)+calci1.pp(6).v(j))  &
+                               * xx.v(j)+calci1.pp(7).v(j)
+                         sumq.v(j) = (((((    &
+                                 xx.v(j)+calci1.qq(0).v(j))  &
+                               * xx.v(j)+calci1.qq(1).v(j))  &
+                               * xx.v(j)+calci1.qq(2).v(j))  &
+                               * xx.v(j)+calci1.qq(3).v(j))  &
+                               * xx.v(j)+calci1.qq(4).v(j))  &
+                               * xx.v(j)+calci1.qq(5).v(j)
+                         val.v(j)  = sump.v(j)/sumq.v(j)
+                         msk4.m(j) = (xmax.v(j)-one.v(j)<x.v(j))
+                         if(jint/=1) then 
+                             val.v(j) = val.v(j)+pbar.v(j)/sqrt(x.v(j))
+                         else
+                         
+                             if(all(msk4.m(j))) then
+                                a.v(j) = exp(x.v(j)-frty40.v(j))
+                                b.v(j) = exp40.v(j)
+                             else
+                                a.v(j) = exp(x.v(j))
+                                b.v(j) = one.v(j)
+                         end if
+                         t0.v(j)   = val.v(j)*a.v(j)+pbar.v(j)*a.v(j)
+                         val.v  = (t0.v(j)/sqrt(x.v(j)))*b.v(j)
+                     end if
+                 end if
+                 msk5.m(j) = (arg.v(j)<zero.v(j))
+                 if(all(msk5.m(j))) val.v(j) = -val.v(j)
+            end do
+#else              
               x.v    = abs(arg.v)
               msk1.m = (x.v<small.v)
               msk2.m = (x.v<one5.v)
@@ -3639,14 +3806,14 @@ module spec_funcs_zmm8r8
               else
                       xx.v   = one.v/x.v-rec15.v
                       sump.v = ((((((   &
-                                      calci1.pp(0)     &
+                                      calci1.pp(0).v     &
                                * xx.v+calci1.pp(1).v)  &
                                * xx.v+calci1.pp(2).v)  &
                                * xx.v+calci1.pp(3).v)  &
                                * xx.v+calci1.pp(4).v)  &
                                * xx.v+calci1.pp(5).v)  &
                                * xx.v+calci1.pp(6).v)  &
-                               * xx.v+calci1.pp(7)
+                               * xx.v+calci1.pp(7).v
                       sumq.v = (((((    &
                                  xx.v+calci1.qq(0).v)  &
                                * xx.v+calci1.qq(1).v)  &
@@ -3661,7 +3828,7 @@ module spec_funcs_zmm8r8
                       else
                          
                          if(all(msk4.m)) then
-                            a.v = exp(x.v-frty.40)
+                            a.v = exp(x.v-frty40.v)
                             b.v = exp40.v
                          else
                             a.v = exp(x.v)
@@ -3673,6 +3840,7 @@ module spec_funcs_zmm8r8
               end if
               msk5.m = (arg.v<zero.v)
               if(all(msk5.m)) val.v = -val.v
+#endif
         end subroutine calci1_zmm8r8
         
         
@@ -3760,6 +3928,86 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic    :: xx,t0,t1,t2
               type(Mask8_t),    automatic    :: msk1,msk2
               type(Mask8_t),    automatic    :: msk3,msk4
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15  
+                   x.v(j)    = arg.v(j) 
+                   msk1.m(j)  = (zero.v(j)<x.v(j))
+                   msk4.m(j) = (xmax.v(j)<x.v(j))
+                   if(all(msk1.m(j))) then
+                       msk2.m(j) = (x.v(j)<=one.v(j))
+                       if(all(msk2.m(j))) then
+                           temp.v(j) = log(x.v(j))
+                           msk3.m(j) = (x.v(j)<=xsmall.v(j))
+                           if(all(msk3.m(j))) then
+                              val.v(j) = calck0_p(5).v(j)/calck0_q(1).v(j)- &
+                                         temp.v(j)
+                           else
+                      
+                               xx.v(j)   = x.v(j)*x.v(j)
+                               sump.v(j) = ((((  &
+                                        calck0_p(0).v(j)   &
+                                 * xx.v(j)+calck0_p(1).v(j))  &
+                                 * xx.v(j)+calck0_p(2).v(j))  &
+                                 * xx.v(j)+calck0_p(3).v(j))  &
+                                 * xx.v(j)+calck0_p(4).v(j))  &
+                                 * xx.v(j)+calck0_p(5).v(j)
+                               sumq.v(j) = (xx.v(j)+calck0_q(0).v(j)) * &
+                                   xx.v(j)+calck0_q(1).v(j)
+                               sumf.v(j) = ((  &
+                                         calck0_f(0).v(j)) &
+                                  * xx.v(j)+calck0_f(1).v(j)) &
+                                  * xx.v(j)+calck0_f(2).v(j)) &
+                                  * xx.v(j)+calck0_f(3).v(j)
+                               sumg.v(j) = ((xx.v(j)+calck0_g(0).v(j)) * &
+                                    xx.v(j)+calck0_g(1).v(j)) * &
+                                    xx.v(j)+calck0_g(2).v(j)
+                               t0.v(j)   = sump.v(j)/sumq.v(j)
+                               t1.v(j)   = xx.v(j)*sumf.v(j)
+                               t2.v(j)   = temp.v(j)/sumg.v(j)-temp.v(j)
+                               val.v(j)  = t0.v(j)-t1.v(j)*t2.v(j)
+                               if(jint==2) val.v(j) = val.v(j)*exp(x.v(j))
+                          end if
+                    else if(jint==1.and.all(msk4.m(j))) then
+                          val.v(j) = zero.v(j)
+                    else
+                          xx.v(j)  = one.v(j)/x.v(j)
+                          t0.v(j)  = sqrt(x.v(j))
+                          sump.v(j)= calck0_pp(0).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(1).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(2).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(3).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(4).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(5).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(6).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(7).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(8).v(j)
+                          sump.v(j)= sump.v(j)*xx.v(j)+calck0_pp(9).v(j)
+                          sumq.v(j)= xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(1).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(2).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(3).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(4).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(5).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(6).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(7).v(j))*xx.v(j)
+                          sumq.v(j)= (sumq.v(j)+calck0_qq(8).v(j))*xx.v(j)
+                          sumq.v(j)= sumq.v(j)+calck0_qq(9).v(j)
+                          val.v(j) = sump.v(j)/sumq.v(j)/t0.v(j)
+                          if(jint==1) val.v(j) = val.v(j)*exp(x.v(j))
+                 end if
+              else
+                 val.v(j) = xinf.v(j)
+              end if
+          end do
+#else              
               x.v    = arg.v
               msk1.m = (zero.v<x.v)
               msk4.m = (xmax.v<x.v)
@@ -3769,7 +4017,7 @@ module spec_funcs_zmm8r8
                       temp.v = log(x.v)
                       msk3.m = (x.v<=xsmall.v)
                       if(all(msk3.m)) then
-                         val.v = calck0_p(5).v/calck0_q(1)- &
+                         val.v = calck0_p(5).v/calck0_q(1).v- &
                                  temp.v
                       else
                       
@@ -3828,6 +4076,7 @@ module spec_funcs_zmm8r8
               else
                  val.v = xinf.v
               end if
+#endif
          end subroutine calck0_zmm8r8
          
          
