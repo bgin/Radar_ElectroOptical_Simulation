@@ -2828,6 +2828,271 @@ module spec_funcs_zmm8r8
                type(Mask8_t),  automatic :: msk8
                type(Mask8_t),  automatic :: msk9
                type(Mask8_t),  automatic :: msk10
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15  
+                   x.v(j)    = arg.v(j)
+                   msk1.m(j) = (x.v(j)==zero.v(j))
+                   msk2.m(j) = (x.v(j)<zero.v(j))
+                   msk6.m(j) = (x.v(j)<six.v(j))
+                   msk8.m(j) = (x.v(j)<twlve.v(j))
+                   msk9.m(j) = (x.v(j)<=two4.v(j))
+                   if(all(msk1.m(j))) then
+               
+                       ei.v(j) = -xinf.v(j)
+                       if(jint==2) ei.v(j) = -ei.v(j)
+                   ! /*
+	           !             !
+                   !              !  Calculate EI for negative argument or for E1.
+                   !             !   
+	           !          */
+	           else if(all(msk2.m(j)).or.jint==2) then
+	       
+	                  y.v(j)    = abs(x.v(j))
+	                  msk3.m(j) = (y.v(j)<one.v(j))
+	                  msk4.m(j) = (y.v(j)<=four.v(j))
+	                  msk5.m(j) = (xbig.v(j)<y.v(j))
+	                  if(all(msk3.m(j))) then
+	           
+	                     sump.v(j) = calcei_a(6).v(j)*y.v(j)+calcei_a(0).v(j))
+	                     sumq.v(j) = y.v(j)+calcei_b(0).v(j)
+	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(1).v(j)
+	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(1).v(j)
+	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(2).v(j)
+	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(2).v(j)
+	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(3).v(j)
+	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(3).v(j)
+	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(4).v(j)
+	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(4).v(j)
+	                     sump.v(j) = sump.v(j)*y.v(j)+calcei_a(5).v(j)
+	                     sumq.v(j) = sumq.v(j)*y.v(j)+calcei_b(5).v(j)
+	                     ei.v(j)   = log(y.v(j))-(sump.v(j)/sumq.v(j))
+	                     if(jint==3) ei.v(j) = ei.v(j)*exp(y.v(j))
+	              
+	                 else if(all(msk4.m(j))) then
+	              
+	                     w.v(j)    = one.v(j)/y.v(j)
+	                     sump.v(j) = calcei_c(0).v(j)
+	                     sumq.v(j) = calcei_d(0).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(1).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(1).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(2).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(2).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(3).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(3).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(4).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(4).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(5).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(5).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(6).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(6).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(7).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(7).v(j)
+	                     sump.v(j) = sump.v(j)*w.v(j)+calcei_c(8).v(j)
+	                     sumq.v(j) = sumq.v(j)*w.v(j)+calcei_d(8).v(j)
+	                     ei.v(j)   = -sump.v(j)/sumq.v(j)
+	              
+	                     if(jint/=3) ei.v(j) = ei.v(j)*exp(-y.v(j)) 
+	              
+	               else 
+	               
+	                     if(all(msk5.m(j)).and.jint<3) then
+	              
+	                         ei.v(j) = zero.v(j)
+	               
+	                    else
+	               
+	                         w.v(j)    = one.v(j)/y.v(j)
+	                         sump.v(j) = calcei_e(0).v(j)
+	                         sumq.v(j) = calcei_f(0).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(1).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(1).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(2).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(2).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(3).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(3).v(j) 
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(4).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(4).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(5).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(5).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(6).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(6).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(7).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(7).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(8).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(8).v(j)
+	                         sump.v(j) = sump.v(j)*w.v(j)+calcei_e(9).v(j)
+	                         sumq.v(j) = sumq.v(j)*w.v(j)+calcei_f(9).v(j)
+	                         t0.v(j)   = sump.v(j)/sumq.v(j)
+	                         t1.v(j)   = one.v(j)-w.v(j)
+	                         ei.v(j)   = -w.v(j)*t0.v(j)*t1.v(j)
+	               
+	                         if(jint/=3) ei.v(j) = -y.v(j)*ei.v(j)
+	               
+	                 end if
+	           
+	             end if
+	       
+	             if(jint==2) ei.v(j) = -ei.v(j)
+	              !    /*
+	              !                  !
+                      !                  !  To improve conditioning, rational approximations are expressed
+                      !                  !  in terms of Chebyshev polynomials for 0 <= X < 6, and in
+                      !                  !  continued fraction form for larger X.
+                      !                  !
+	              !               */
+	       else if(all(msk6.m(j))) then
+	             
+	             t.v(j)     = x.v(j)+x.v(j)
+	             t.v(j)     = (t.v(j)/three.v(j))-two.v(j)
+	             px(0).v(j) = zero.v(j)
+	             qx(0).v(j) = zero.v(j)
+	             px(1).v(j) = p(0).v(j)
+	             qx(1).v(j) = q(0).v(j)
+	             px(2).v(j) = t.v(j)*px(1).v(j)-px(0).v(j)+p(1).v(j)
+	             qx(2).v(j) = t.v(j)*qx(1).v(j)-qx(0).v(j)+q(1).v(j)
+	             px(3).v(j) = t.v(j)*px(2).v(j)-px(1).v(j)+p(2).v(j)
+	             qx(3).v(j) = t.v(j)*qx(2).v(j)-qx(1).v(j)+q(2).v(j)
+	             px(4).v(j) = t.v(j)*px(3).v(j)-px(2).v(j)+p(3).v(j)
+	             qx(4).v(j) = t.v(j)*qx(3).v(j)-qx(2).v(j)+q(3).v(j)
+	             px(5).v(j) = t.v(j)*px(4).v(j)-px(3).v(j)+p(4).v(j)
+	             qx(5).v(j) = t.v(j)*qx(4).v(j)-qx(3).v(j)+q(4).v(j)
+	             px(6).v(j) = t.v(j)*px(5).v(j)-px(4).v(j)+p(5).v(j)
+	             qx(6).v(j) = t.v(j)*qx(5).v(j)-qx(4).v(j)+q(5).v(j)
+	             px(7).vv(j) = t.v(j)*px(6).v(j)-px(5).v(j)+p(6).v(j)
+	             qx(7).v(j) = t.v*qx(6).v-qx(5).v+q(6).v(j)
+	             px(8).v(j) = t.v(j)*px(7).v(j)-px(6).v(j)+p(7).v(j)
+	             qx(8).v(j) = t.v(j)*qx(7).v(j)-qx(6).v(j)+q(7).v(j)
+	             t0.v(j)    = half.v(j)*t.v(j)
+	             sump.v(j)  = t0.v(j)*px(9).v(j)-px(8).v(j)+p(9).v(j)
+	             sumq.v(j)  = t0.v(j)*qx(9).v(j)-qx(8).v(j)+q(9).v(j)
+	             frac.v(j)  = sump.v(j)/sumq.v(j)
+	             t0.v(j)    = x.v(j)-x01.v(j)/x11.v(j)
+	             xmx0.v(j)  = t0.v(j)-x02.v(j)
+	             msk7.m(j)  = (p037.v(j)<=abs(xmx0.v(j))
+	             
+	             if(all(msk7.m(j))) then
+	                   t0.v(j) = x.v(j)/x0.v(j)
+	                   ei.v(j) = frac.v(j)*xmx0.v(j)+log(t0.v(j))
+	                   if(jint==3) ei.v(j) = exp(-x.v(j))*ei.v(j)
+	             else
+	                 !  //Special approximation to ln(X/X0) for X close to X0. 
+	                 y.v(j)    = xmx0.v(j)/(x.v(j)+x0.v(j))
+	                 ysq.v(j)  = y.v(j)*y.v(j)
+	                 sump.v(j) = calcei_plg(0).v(j)
+	                 sumq.v(j) = ysq.v(j)+calcei_qlg(0).v(j)
+	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(1).v(j)
+	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(1).v(j)
+	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(2).v(j)
+	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(2).v(j)
+	                 sump.v(j) = sump.v(j)*ysq.v(j)+calcei_plg(3).v(j)
+	                 sumq.v(j) = sumq.v(j)*ysq.v(j)+calcei_qlg(3).v(j)
+	                 t0.v(j)   = sumq.v(j)*(x.v(j)+x0.v(j))+frac.v(j)
+	                 ei.v(j)   = (sump.v(j)/t0.v(j))*xmx0.v(j)
+	                 
+	                 if(jint==3) ei.v(j) = exp(-x.v(j))*ei.v(j) 
+	             end if
+	             
+	       else if(all(msk8.m(j))) then
+	       
+	              frac.v(j)= zero.v(j)
+	              frac.v(j)= calcei_s(0).v(j)/(calcei_r(0).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(1).v(j)/(calcei_r(1).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(2).v(j)/(calcei_r(2).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(3).v(j)/(calcei_r(3).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(4).v(j)/(calcei_r(4).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(5).v(j)/(calcei_r(5).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(6).v(j)/(calcei_r(6).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(7).v(j)/(calcei_r(7).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_s(8).v(j)/(calcei_r(8).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              ei.v(j)  = (calcei_r(9).v(j)+frac.v(j))/x.v(j)
+	              
+	              if(jint==3) ei.v(j) = ei.v(j)*exp(x.v(j))
+	              
+	        else if(all(msk9.m(j))) then
+	        
+	              frac.v(j) = zero.v(j)
+	              frac.v(j)= calcei_q1(0).v(j)/(calcei_p1(0).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(1).v(j)/(calcei_p1(1).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(2).v(j)/(calcei_p1(2).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(3).v(j)/(calcei_p1(3).v(j)+ &
+	                                          x.v+frac.v(j))
+	              frac.v(j)= calcei_q1(4).v(j)/(calcei_p1(4).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(5).v(j)/(calcei_p1(5).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(6).v(j)/(calcei_p1(6).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(7).v(j)/(calcei_p1(7).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              frac.v(j)= calcei_q1(8).v(j)/(calcei_p1(8).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	              ei.v(j)  = (calcei_p1(9).v(j)+frac.v(j))/x.v(j)
+	              
+	              if(jint/=3) ei.v(j) = ei.v(j)*exp(x.v(j))
+	                                     
+	        else
+	             
+	               msk10.m(j) = (xmax.v(j)<=x.v(j))
+	               if(all(msk10.m).and.jint==3) then
+	                   ei.v(j) = xinf.v(j)
+	               else
+	                   y.v(j)    = one.v(j)/x.v(j)
+	                   frac.v(j) = zero.v(j)
+	                   frac.v(j)= calcei_q2(0).v(j)/(calcei_p2(0).v(j)+ &
+	                                               x.v+frac.v(j))
+	                   frac.v(j)= calcei_q2(1).v(j)/(calcei_p2(1).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	                   frac.v(j)= calcei_q2(2).v(j)/(calcei_p2(2).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	                   frac.v(j)= calcei_q2(3).v(j)/(calcei_p2(3).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	                   frac.v(j)= calcei_q2(4).v(j)/(calcei_p2(4).v(j)+ &
+	                                          x.v+frac.v(j))
+	                   frac.v(j)= calcei_q2(5).v(j)/(calcei_p2(5).v(j)+ &
+	                                          x.v+frac.v(j))
+	                   frac.v(j)= calcei_q2(6).v(j)/(calcei_p2(6).v(j)+ &
+	                                          x.v+frac.v(j))
+	                   frac.v(j)= calcei_q2(7).v(j)/(calcei_p2(7).v(j)+ &
+	                                          x.v(j)+frac.v(j))
+	                   frac.v(j)= calcei_q2(8).v(j)/(calcei_p2(8).v(j)+ &
+	                                          x.v(j)+frac.v(j))   
+	                   frac.v(j)= calcei_p2(9).v(j)+frac.v(j)
+	                   ei.v(j)  = frac.v(j)*y.v(j)*y.v(j)+y.v(j)
+	                   
+	                   if(jint/=3) then
+	                      msk10.m(j) = (x.v(j)<=(xmax.v(j)-two4.v(j)))
+	                      if(all(msk10.m(j))) then
+	                          ei.v(j) = ei.v(j)*exp(x.v(j))
+	                      else
+	                          t0.v(j) = x.v(j)-frty.v(j)
+	                          ei.v(j) = ei.v(j)*t0.v(j)*exp40.v(j)
+	                      end if
+	                   end if
+	               end if
+	           end if
+	           val.v(j) = ei.v(j) 
+               end do
+#else
                x.v    = arg.v
                msk1.m = (x.v==zero.v)
                msk2.m = (x.v<zero.v)
@@ -2851,7 +3116,7 @@ module spec_funcs_zmm8r8
 	             msk5.m = (xbig.v<y.v)
 	             if(all(msk3.m)) then
 	           
-	                sump.v = calcei_a[6].v,y.v,calcei_a(0).v)
+	                sump.v = calcei_a(6).v*y.v+calcei_a(0).v
 	                sumq.v = y.v+calcei_b(0).v
 	                sump.v = sump.v*y.v+calcei_a(1).v
 	                sumq.v = sumq.v*y.v+calcei_b(1).v
@@ -3081,6 +3346,7 @@ module spec_funcs_zmm8r8
 	               end if
 	           end if
 	           val.v = ei.v
+#endif
        end subroutine calcei_zmm8r8
        
        
@@ -4714,5 +4980,8 @@ module spec_funcs_zmm8r8
                   if(jint==1) val.v = val.v*exp(-x.v)
                end if
           end subroutine calck1_zmm8r8 
+          
+          
+          
 
 end module spec_funcs_zmm8r8
