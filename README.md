@@ -14,7 +14,7 @@ I envision five main components:
 2) Radio altimeter modeling and simulation.
 3) Propagation of laser and IR radiation through the turbulent atmospheric channels.
 4) Optical signals processing (background noise extraction).
-5) EO sensor modeling and simulation
+5) Electro-optical sensor modeling and simulation.
    
 The main structure of the projects is a collection of free standing 'modules' programmatically describing various modelled components. It is a software library of framework and may be used as computational backend of larger program of be connected to GUI front-end. Currently only hundreds (circa 400) kernels belonging to AVX512 double and single precision executing path were implemented. All of these kernels compute analytical Radar Cross Section of simple and to lesser extent complex objects
 
