@@ -4161,6 +4161,86 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic    :: t0,t1,t2
               type(Mask8_t),    automatic    :: msk1,msk2
               type(Mask8_t),    automatic    :: msk3,msk4   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15       
+                    x.v(j)     = arg.v(j) 
+                    msk1.m(j)  = (x.v(j)<=least.v(j))
+                    msk2.m(j) = (x.v(j)<=one.v(j))
+                    msk4.m(j) = (xmax.v(j)<x.v(j))
+                    if(all(msk1.m(j))) then
+                        val.v(j) = xinf.v(j)
+                    else if(all(msk2.m(j))) then
+                            msk3.m(j) = (x.v(j)<=xsmall.v(j))
+                            if(all(msk3.m(j))) then
+                                  val.v(j) = one.v(j)/x.v(j)
+                            else
+                                  xx.v(j)    = x.v(j)*x.v(j)
+                                  sump.v(j)  = ((((    &
+                                               calck1_p(0).v(j)       &
+                                          *    xx.v(j)+calck1_p(1).v(j)) & 
+                                          *    xx.v(j)+calck1_p(2).v(j)) &
+                                          *    xx.v(j)+calck1_p(3).v(j)) &
+                                          *    xx.v(j)+calck1_p(4).v(j)) &
+                                          *    xx.v(j)+calck1_q(2).v(j)
+                                  sumq.v(j)   = ((     &
+                                               xx.v(j)+calck1_q(0).v(j)) &
+                                          * xx.v(j)+calck1_q(1).v(j)) &
+                                          * xx.v(j)+calck1_q(2).v(j))
+                                  t1.v(j)     = sump.v(j)/sumq.v(j)  
+                                  sumf.v(j)   = (((    &
+                                              calck1_f(0).v(j)       &
+                                          *    xx.v(j)+calck1_f(1).v(j)) &
+                                          *    xx.v(j)+calck1_f(2).v(j)) &
+                                          *    xx.v(j)+calck1_f(3).v(j)) &
+                                          *    xx.v(j)+calck1_f(4).v(j)
+                                  t2.v(j)     = xx.v(j)*log(x.v(j))
+                                  sumg.v(j)   = (((    &
+                                               xx.v(j)+calck1_g(0).v(j)) &
+                                          *    xx.v(j)+calck1_g(1).v(j)) &
+                                          *    xx.v(j)+calck1_g(2).v(j)
+                                  t0.v(j)     = sumf.v(j)/sumg.v(j)
+                                  val.v(j)    = (t2.v(j)*t0.v(j)+t1.v(j))/x.v(j)
+                                  if(jint==2) val.v(j) = val.v(j)*exp(x.v(j))
+                            end if
+                 else if(all(msk4.m(j)).and.jint==1) then
+                            val.v(j) = zero.v(j)
+                 else
+                            xx.v(j)  = one.v(j)/x.v(j)
+                            sump.v(j)= calck1_pp(0).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(1).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(2).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(3).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(4).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(5).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(6).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(7).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(8).v(j)
+                            sump.v(j)= sump.v(j)*xx.v+calck1_pp(9).v(j)
+                            sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(10).v(j)
+                            t0.v(j)  = sqrt(x.v(j))
+                            sumq.v(j)= xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(0).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(1).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(2).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(3).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(4).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(5).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(6).v(j))*xx.v(j)
+                            sumq.v(j)= (sumq.v(j)+calck1_qq(7).v(j))*xx.v(j)
+                            sumq.v(j)= sumq.v(j)+calck1_qq(8).v(j)
+                            val.v = sump.v(j)/sumq.v(j)/t0.v(j)
+                            if(jint==1) val.v(j) = val.v(j)*exp(-x.v(j))
+                end if
+            end do
+#else         
               x.v    = arg.v
               msk1.m = (x.v<=least.v)
               msk2.m = (x.v<=one.v)
@@ -4229,6 +4309,7 @@ module spec_funcs_zmm8r8
                       val.v = sump.v/sumq.v/t0.v
                       if(jint==1) val.v = val.v*exp(-x.v)
               end if
+#endif
         end subroutine calck1_zmm8r8
         
         
