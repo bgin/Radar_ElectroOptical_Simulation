@@ -4472,6 +4472,9 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic :: t3
               type(ZMM8i8_t),   automatic :: ti
               type(Mask8_t),    automatic :: m0,m1
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
               ax.v   = abs(arg.v)
               m0.m   = (arg.v<=zero.v)
               pi2ax.v= pi2.v/ax.v
@@ -4494,6 +4497,185 @@ module spec_funcs_zmm8r8
                      return
                  end if
               end if
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+               !dir$ loop_count(16)
+               !dir$ vector aligned
+               !dir$ vector vectorlength(8)
+               !dir$ vector always
+               do j=0,15       
+                    m0.m(j)  = (ax.v(j)<=four.v(j))
+                    zsq.v(j) = ax.v(j)*ax.v(j)
+                    if(all(m0.m(j))) then
+                        xnum.v(j) = caljy0_pj0(4).v(j)*zsq.v(j)+ &
+                                 caljy0_pj0(5).v(j)*zsq.v(j)+ &
+                                 caljy0_pj0(6).v(j)
+                        xden.v(j) = zsq.v(j)+caljy0_qj0(4).v(j)
+                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(0).v(j)
+                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(0).v(j)
+                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(1).v(j)
+                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(1).v(j)
+                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(2).v(j)
+                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(2).v(j)
+                        xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_pj0(3).v(j)
+                        xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qj0(3).v(j)
+                        t0.v(j)   = ax.v(j)-(xj01.v(j)/two56.v(j))
+                        t1.v(j)   = ax.v(j)+xj0.v(j)
+                        prod.v(j) = (t0.v(j)-xj02.v(j))*t1.v(j)
+                    else
+                        wsq.v(j)  = one.v(j)-(zsq.v(j)/sixty4.v(j))
+                        xnum.v(j) = caljy0_pj1(6).v(j)*wsq.v(j)+ &
+                                    caljy0_pji(7).v(j)
+                        xden.v(j) = wsq.v(j)+caljy0_qj1(6).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(0).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(0).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(1).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(1).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(2).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(2).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(3).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(3).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(4).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(4).v(j)
+                        xnum.v(j) = xnum.v(j)*wsq.v(j)+caljy0_pj1(5).v(j)
+                        xden.v(j) = xden.v(j)*wsq.v(j)+caljy0_qj1(5).v(j)
+                        t0.v(j)   = ax.v(j)-(xj11.v(j)/two56.v(j))
+                        t1.v(j)   = ax.v(j)+xj1.v(j)
+                        prod.v(j) = (t0.v(j)*t1.v(j))-xj12.v(j)
+                   end if
+                   val.v(j)  = prod.v(j)*(xnum.v(j)/xden.v(j))
+                   if(jint==0) return
+!    /*
+!                          Calculate Y0.  First find  RESJ = pi/2 ln(x/xn) J0(x),
+!                          !  where xn is a zero of Y0.
+!                       */      
+                   m0.m(j)  = (ax.v(j)<=three.v(j))       
+                   m1.m(j)  = (ax.v(j)<=five.v(j))
+                   if(all(m0.m(j))) then
+                       up.v(j) = (ax.v(j)-xy01.v(j)/two56.v(j))-xy02.v(j)
+                       xy.v(j) = xy0.v(j)
+                   else if(all(m1.m(j))) then
+                       up.v(j) = (ax.v(j)-xy11.v(j)/two56.v(j))-xy12.v(j)
+                       xy.v(j) = xy1.v(j)
+                   else
+                       up.v(j) = (ax.v(j)-xy21.v(j)/two56.v(j))-xy22.v(j)
+                       xy.v(j) = xy1.v(j)
+                   end if
+                   down.v(j)   = ax.v(j)*xy.v(j)
+                   t0.v(j)     = abs(up.v(j))
+                   t1.v(j)     = p17.v(j)*down.v(j)
+                   m0.m(j)     = (t0.v(j)<t1.v(j))
+                   if(all(m0.m(j))) then
+                        w.v(j)   = up.v(j)/down.v(j)
+                        wsq.v(j) = w.v(j)*w.v(j)
+                        xnum.v(j)= wsq.v(j)+caljy0_qlg(0).v(j)
+                        xnum.v(j)= caljy0_plg(0).v(j)
+                        xden.v(j)= wsq.v(j)+caljy0_qlg(0).v(j)
+                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(1).v(j)
+                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(1).v(j)
+                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(2).v(j)
+                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(2).v(j)
+                        xnum.v(j)= xnum.v(j)*wsq.v(j)+caljy0_plg(3).v(j)
+                        xden.v(j)= xden.v(j)*wsq.v(j)+caljy0_qlg(3).v(j)
+                        t0.v(j)  = xnum.v(j)/xden.v(j)
+                        t1.v(j)  = pi.v(j)*val.v(j)
+                        resj.v(j)= t1.v(j)*w.v(j)*t0.v(j)
+                  else
+                        t0.v(j)  = xnum.v(j)/xden.v(j)
+                        t1.v(j)  = pi.v(j)*val.v(j)
+                        resj.v(j)= t1.v(j)*log(t0.v(j))
+                  end if
+!               /*
+!                           Now calculate Y0 for appropriate interval, preserving
+!                           !  accuracy near the zero of Y0.
+!                       */
+                   m0.v(j) = (ax.v(j)<=three.v(j))
+                   m1.v(j) = (ax.v(j)<=five5.v(j))
+                   if(all(m0.m(j))) then
+                      xnum.v(j) = caljy0_py0(5).v(j)*zsq.v(j)+ &
+                                  caljy0_py0(0).v(j)
+                      xden.v(j) = zsq.v(j)+caljy0_qy0(0).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(1).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(1).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(2).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(2).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(3).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(3).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py0(4).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy0(4).v(j)
+                  else if(all(m1.m(j))) then
+                      xnum.v(j) = caljy0_py1(6).v(j)*zsq.v(j)+ &
+                                  caljy0_py1(0).v(j)
+                      xden.v(j) = zsq.v(j)+caljy0_qy1(0).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(1).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(1).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(2).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(2).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(3).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(3).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(4).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(4).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py1(5).v(j)
+                      xden.v(j) = xden.v(j)*zsq.v(j)+caljy0_qy1(5).v(j)
+                 else
+                      xnum.v(j) = caljy0_py2(7).v(j)*zsq.v(j)+ &
+                                  caljy0_py2(0).v(j)
+                      xden.v(j) = zsq.v(j)+caljy0_qy2(0).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(1).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(1).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(2).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(2).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(3).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(3).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(4).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(4).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(5).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(5).v(j)
+                      xnum.v(j) = xnum.v(j)*zsq.v(j)+caljy0_py2(6).v(j)
+                      xden.v(j) = xnum.v(j)*zsq.v(j)+caljy0_qy2(6).v(j)
+                 end if
+                 t0.v(j)  = xnum.v(j)/xden.v(j)
+                 t1.v(j)  = up.v(j)*down.v(j)
+                 val.v(j) = t0.v(j)*t1.v(j)+resj.v(j)
+                 return
+800              z.v(j)   = eight.v(j)/ax.v(j)
+                 w.v(j)   = ax.v(j)/twopi.v(j)
+                 t1.v(j)  = int(w.v(j),kind=i8)
+                 w.v(j)   = real(t1.v(j),kind=dp)+oneov8.v(j)
+                 t0.v(j)  = w.v(j)*twopi2.v(j)
+                 t1.v(j)  = ax.v(j)-w.v(j)
+                 w.v(j)   = t1.v(j)*twopi1.v(j)-t0.v(j)
+                 zsq.v(j) = z.v(j)*z.v(j)
+                 xnum.v(j)= caljy0_p0(4).v(j)*zsq.v(j)+ &
+                      caljy0_p0(5).v(j)
+                 xden.v(j)= zsq.v(j)+caljy0_q0(4).v(j)
+                 up.v(j)  = caljy0_p1(4).v(j)*zsq.v(j)+ &
+                      caljy0_p1(5).v(j)
+                 down.v(j)= zsq.v(j)+caljy0_q1(4).v(j)
+                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(0).v(j)
+                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(0).v(j)
+                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(1).v(j)
+                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(1).v(j)
+                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(2).v(j)
+                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(2).v(j)
+                 xnum.v(j)= xnum.v(j)*zsq.v(j)+caljy0_p0(3).v(j)
+                 xden.v(j)= xden.v(j)*zsq.v(j)+caljy0_q0(3).v(j)
+                 r0.v(j)  = xnum.v(j)/xden.v(j)
+                 t1.v(j)  = cos(w.v(j))
+                 r1.v(j)  = up.v(j)/down.v(j)
+                 t0.v(j)  = sqrt(pi2ax.v(j))
+                 t2.v(j)  = sin(w.v(j))
+                 t3.v(j)  = z.v(j)*r1.v(j)
+                 if(jint==0) then
+                     val.v(j) = t0.v(j)*r0.v(j)*t1.v(j)- &
+                          t3.v(j)*t2.v(j)
+                 else
+                     val.v(j) = t0.v(j)*r0.v(j)*t2.v(j)+ &
+                             t3.v(j)*t1.v(j)
+                 end if
+           end do
+#else
+             
 !               /*
 !                            !  Calculate J0 for appropriate interval, preserving
 !                            !  accuracy near the zero of J0.
@@ -4668,6 +4850,7 @@ module spec_funcs_zmm8r8
                   val.v = t0.v*r0.v*t2.v+ &
                           t3.v*t1.v
               end if
+#endif
         end subroutine caljy0_zmm8r8
         
         
