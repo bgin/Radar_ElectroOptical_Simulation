@@ -5038,7 +5038,8 @@ module spec_funcs_zmm8r8
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15    
+               do j=0,15   
+               
                    zsq.v(j) = ax.v(j)*ax.v(j)
                    m0.m(j)  = (ax.v(j)<=four.v(j))
                    if(all(m0.m(j))) then
@@ -5437,7 +5438,87 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic    :: temp,t0
               type(ZMM8r8_t),   automatic    :: t1,t2
               type(Mask8_t),    automatic    :: m0,m1,m2
-              
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+              !dir$ loop_count(16)
+              !dir$ vector aligned
+              !dir$ vector vectorlength(8)
+              !dir$ vector always
+              do j=0,15   
+                   x.v(j)  = arg.v(j)
+                   m0.m(j) = (zero.v(j)<x.v(j))
+                   if(all(m0.m(j))) then
+                      m1.m(j) = (x.v(j)<one.v(j))
+                      m0.m(j) = (xmax.v(j)<x.v(j))
+                      if(all(m1.m(j))) then
+                         temp.v(j) = log(x.v(j))
+                         m2.m(j)   = (x.v(j)<small.v(j))
+                         if(all(m2.m(j))) then
+                            val.v(j) = (calck0_p(5).v(j)/calck0_p(1).v(j))- &
+                                       temp.v(j)
+                         else
+                            xx.v(j)  = x.v(j)*x.v(j)
+                            sump.v(j)= ((((                 &
+                                   calck0_p(0).v(j)         &
+                                * xx.v(j)+calck0_p(1).v(j)) &
+                                * xx.v(j)+calck0_p(2).v(j)) &
+                                * xx.v(j)+calck0_p(3).v(j)) &
+                                * xx.v(j)+calck0_p(4).v(j)) &
+                                * xx.v(j)+calck0_p(5).v(j)
+                            sumq.v(j)= (xx.v(j)+calck0_q(0).v(j))* &
+                                  xx.v(j)+calck0_q(1).v(j)
+                            sumf.v(j)= ((    &
+                                    calck0_f(0).v(j)      &
+                                *  xx.v(j)+calck0_f(1).v(j)) &
+                                *  xx.v(j)+calck0_f(2).v(j)) &
+                                *  xx.v(j)+calck0_f(3).v(j)
+                            sumg.v(j)= ((xx.v(j)+calck0_g(0).v(j)) &
+                                *   xx.v(j)+calck0_g(1).v(j)) &
+                                *   xx.v(j)+calck0_g(2).v(j)
+                            t0.v(j)  = sump.v(j)/sumq.v(j)
+                            t1.v(j)  = xx.v(j)*sumf.v(j)
+                            t2.v(j)  = temp.v(j)/sumg.v(j)-temp.v(j)
+                            val.v(j) = t0.v(j)-t1.v(j)*t2.v(j)
+                            if(jint==2) val.v(j) = exp(val.v(j))
+                       end if
+                  else if(jint==1.and.all(m0.m(j))) then
+                        val.v(j) = zero.v(j)
+                  else
+                        xx.v(j)   = one.v(j)/x.v(j)
+                        sumq.v(j) = xx.v(j)
+                        sump.v(j) = calck0_pp(0).v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(1).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(0).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(2).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(1).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(3).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(2).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(4).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(3).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(5).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(4).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(6).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(5).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(7).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(6).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(8).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(7).v(j))*xx.v(j)
+                        sump.v(j) = sump.v(j)*xx.v(j)+calck0_pp(9).v(j)
+                        sumq.v(j) = (sumq.v(j)+calck0_qq(8).v(j))*xx.v(j)
+                        sumq.v(j) = sumq.v(j)+calck0_qq(9).v(j)
+                        t0.v(j)   = sqrt(x.v(j))
+                        t1.v(j)   = sump.v(j)/sumq.v(j)
+                        val.v(j)  = t1.v(j)/t0.v(j)
+                        if(jint==1) val.v(j) = val.v(j)*exp(-x.v(j))
+                 end if
+             else
+                 val.v(j) = xinf.v(j)
+              end if
+         end do      
+#else         
               x.v  = arg.v
               m0.m = (zero.v<x.v)
               if(all(m0.m)) then
@@ -5447,7 +5528,7 @@ module spec_funcs_zmm8r8
                       temp.v = log(x.v)
                       m2.m   = (x.v<small.v)
                       if(all(m2.m)) then
-                          val.v = (calck0_p(5).v/calck0_p(1))- &
+                          val.v = (calck0_p(5).v/calck0_p(1).v)- &
                                    temp.v
                       else
                           xx.v  = x.v*x.v
@@ -5507,6 +5588,7 @@ module spec_funcs_zmm8r8
              else
                  val.v = xinf.v
              end if
+#endif
          end subroutine calck0_zmm8r8
          
          
