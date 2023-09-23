@@ -2129,8 +2129,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besei0_zmm8r8
               !dir$ attributes forceinline :: besei0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besei0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calci0_zmm8r8(x,jint)
@@ -2178,8 +2178,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besei1_zmm8r8
               !dir$ attributes forceinline :: besei1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besei1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calci1_zmm8r8(x,jint) 
@@ -2227,8 +2227,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besek0_zmm8r8
               !dir$ attributes forceinline :: besek0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besek0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calck0_zmm8r8(x,jint) 
@@ -2276,8 +2276,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besek1_zmm8r8
               !dir$ attributes forceinline :: besek1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besek1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 2
               val  = calck1_zmm8r8(x,jint) 
@@ -2325,8 +2325,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besi0_zmm8r8
               !dir$ attributes forceinline :: besi0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besi0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = calci0_zmm8r8(x,jint) 
@@ -2375,8 +2375,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besi1_zmm8r8
               !dir$ attributes forceinline :: besi1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besi1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = calci1_zmm8r8(x,jint) 
@@ -2424,8 +2424,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besj0_zmm8r8
               !dir$ attributes forceinline :: besj0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besj0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 0
               val  = calcjy0_zmm8r8(x,jint) 
@@ -2474,8 +2474,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besj1_zmm8r8
               !dir$ attributes forceinline :: besj1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besj1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 0
               val  = calcjy1_zmm8r8(x,jint) 
@@ -2524,8 +2524,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besk0_zmm8r8
               !dir$ attributes forceinline :: besk0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besk0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = calck0_zmm8r8(x,jint) 
@@ -2572,8 +2572,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besk1_zmm8r8
               !dir$ attributes forceinline :: besk1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besk1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = calck1_zmm8r8(x,jint) 
@@ -2621,8 +2621,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besy0_zmm8r8
               !dir$ attributes forceinline :: besy0_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besy0_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = caly0_zmm8r8(x,jint) 
@@ -2671,8 +2671,8 @@ module spec_funcs_zmm8r8
               !dir$ attributes code_align : 32 :: besy1_zmm8r8
               !dir$ attributes forceinline :: besy1_zmm8r8
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: besy1_zmm8r8
-              type(ZMM8r8),   intent(in) :: x
-              type(ZMM8r8)  :: val
+              type(ZMM8r8_t),   intent(in) :: x
+              type(ZMM8r8_t)  :: val
               integer(kind=i4), automatic :: jint
               jint = 1
               val  = caly1_zmm8r8(x,jint) 
@@ -2833,11 +2833,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15  
+               do j=0,7
                    x.v(j)    = arg.v(j)
                    msk1.m(j) = (x.v(j)==zero.v(j))
                    msk2.m(j) = (x.v(j)<zero.v(j))
@@ -3442,11 +3442,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15  
+               do j=0,7
                    x.v(j)    = abs(arg.v(j))
                    msk1.m(j) = (x.v(j)<xsmall.v(j))
                    msk2.m(j) = (x.v(j)<one5.v(j))
@@ -3693,11 +3693,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15  
+               do j=0,7
                      x.v(j)    = abs(arg.v(j))
                      msk1.m(j) = (x.v(j)<small.v(j))
                      msk2.m(j) = (x.v(j)<one5.v(j))
@@ -3933,11 +3933,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15  
+               do j=0,7
                    x.v(j)    = arg.v(j) 
                    msk1.m(j)  = (zero.v(j)<x.v(j))
                    msk4.m(j) = (xmax.v(j)<x.v(j))
@@ -4166,11 +4166,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15       
+               do j=0,7
                     x.v(j)     = arg.v(j) 
                     msk1.m(j)  = (x.v(j)<=least.v(j))
                     msk2.m(j) = (x.v(j)<=one.v(j))
@@ -4499,11 +4499,11 @@ module spec_funcs_zmm8r8
               end if
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15       
+               do j=0,7
                     m0.m(j)  = (ax.v(j)<=four.v(j))
                     zsq.v(j) = ax.v(j)*ax.v(j)
                     if(all(m0.m(j))) then
@@ -5034,11 +5034,11 @@ module spec_funcs_zmm8r8
               !           */
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-               !dir$ loop_count(16)
+               !dir$ loop_count(8)
                !dir$ vector aligned
                !dir$ vector vectorlength(8)
                !dir$ vector always
-               do j=0,15   
+               do j=0,7  
                
                    zsq.v(j) = ax.v(j)*ax.v(j)
                    m0.m(j)  = (ax.v(j)<=four.v(j))
@@ -5443,11 +5443,11 @@ module spec_funcs_zmm8r8
 #endif   
 #if (GMS_EXPLICIT_VECTORIZE) == 1
            
-              !dir$ loop_count(16)
+              !dir$ loop_count(8)
               !dir$ vector aligned
               !dir$ vector vectorlength(8)
               !dir$ vector always
-              do j=0,15   
+              do j=0,7
                    x.v(j)  = arg.v(j)
                    m0.m(j) = (zero.v(j)<x.v(j))
                    if(all(m0.m(j))) then
@@ -5675,6 +5675,86 @@ module spec_funcs_zmm8r8
               type(ZMM8r8_t),   automatic :: t0,t1
               type(ZMM8r8_t),   automatic :: t2 
               type(Mask8_t),    automatic :: m0,m1,m2 
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+               integer(kind=i4) :: j
+#endif   
+#if (GMS_EXPLICIT_VECTORIZE) == 1
+           
+              !dir$ loop_count(8)
+              !dir$ vector aligned
+              !dir$ vector vectorlength(8)
+              !dir$ vector always
+              do j=0,7   
+                    x.v(j)  = arg.v(j) 
+                    m0.m(j) = (x.v(j)<xleast.v(j))
+                    m1.m(j) = (x.v(j)<=one.v(j))
+                    if(all(m0.m(j))) then
+                        val.v(j) = xinf.v(j)
+                        m0.m(j) = (xmax.v(j)<x.v(j))
+                    else if(m1.m)) then
+                        m2.m(j) = (x.v(j)<small.v(j))
+                        if(all(m2.m(j))) then
+                            val.v(j) = one.v(j)/x.v(j)
+                        else
+                            xx.v(j)   = x.v(j)*x.v(j)
+                            sump.v(j) = ((((                &
+                                    calck1_p(0).v(j)  &
+                             * xx.v(j)+calck1_p(1).v(j)) &
+                             * xx.v(j)+calck1_p(2).v(j)) &
+                             * xx.v(j)+calck1_p(3).v(j)) &
+                             * xx.v(j)+calck1_p(4).v(j)) &
+                             * xx.v(j)+calck1_q(2).v(j)
+                             sumq.v(j) = ((                  &
+                               xx.v(j)+calck1_q(0).v(j)) &
+                             * xx.v(j)+calck1_q(1).v(j)) &
+                             * xx.v(j)+calck1_q(2).v(j))
+                             t2.v(j)   = sump.v(j)/sumq.v(j)
+                             sumf.v(j) = (((                 &
+                                    calck1_f(0).v(j)  &
+                             * xx.v(j)+calck1_f(1).v(j)) &
+                             * xx.v(j)+calck1_f(2).v(j)) &
+                             * xx.v(j)+calck1_f(3).v(j))
+                             * xx.v(j)+calck1_f(4).v(j)
+                             sumg.v(j) = ((                  &
+                                    xx.v(j)+calck1_g(1).v(j)) &
+                                  * xx.v(j)+calck1_g(2).v(j)) &
+                                  * xx.v(j)+calck1_g(3).v(j)
+                             t0.v(j)   = xx.v(j)+log(x.v(j))
+                             t1.v(j)   = sumf.v(j)/sumg.v(j)
+                             val.v(j)  = (t0.v(j)*t1.v(j)+t2.v(j))/x.v(j)
+                             if(jint==2) val.v(j) = val.v(j)*exp(x.v(j))
+                       end if
+              else if(jint==1.and.all(m0.m(j))) then
+                      val.v(j) = zero.v(j)
+              else
+                      xx.v(j)  = one.v(j)/x.v(j)
+                      sumq.v(j)= xx.v(j)
+                      sump.v(j)= calck1_pp(0).v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(1).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(0).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(2).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(1).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(3).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(2).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(4).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(3).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(5).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(4).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(6).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(5).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(7).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(6).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(8).v(j)
+                      sumq.v(j)= (sumq.v(j)+calck1_qq(7).v(j))*xx.v(j)
+                      sump.v(j)= sump.v(j)*xx.vv+calck1_pp(9).v(j)
+                      sump.v(j)= sump.v(j)*xx.v(j)+calck1_pp(10).v(j)
+                      sumq.v(j)= sumq.v(j)+calck1_qq(8).v(j)
+                      t0.v(j)  = sqrt(x.v(j))
+                      t1.v(j)  = sumq.v(j)/sump.v(j)
+                      if(jint==1) val.v(j) = val.v(j)*exp(-x.v(j))
+               end if
+          end do
+#else
               x.v  = arg.v
               m0.m = (x.v<xleast.v)
               m1.m = (x.v<=one.v)
@@ -5708,7 +5788,7 @@ module spec_funcs_zmm8r8
                       sumg.v = ((                  &
                                     xx.v+calck1_g(1).v) &
                                   * xx.v+calck1_g(2).v) &
-                                  * xx.v+calck1_g(3)
+                                  * xx.v+calck1_g(3).v
                       t0.v   = xx.v+log(x.v)
                       t1.v   = sumf.v/sumg.v
                       val.v  = (t0.v*t1.v+t2.v)/x.v
@@ -5743,6 +5823,7 @@ module spec_funcs_zmm8r8
                   t1.v  = sumq.v/sump.v
                   if(jint==1) val.v = val.v*exp(-x.v)
                end if
+#endif
           end subroutine calck1_zmm8r8 
           
           
