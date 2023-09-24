@@ -66,10 +66,40 @@ module  ndiff_tabular
 
     
     contains
+    
+#if 0
+
+
+#endif
 
     !n,            NUMBER OF POINTS AT WICH DERIVATIVE IS TO BE FOUND.
     !x0,           FIRST POINT AT WHICH DERIVATIVE IS TO BE FOUND
     !step,         INTERVAL BETWEEN POINTS AT WHICH DERIVATIVE IS TO BE found
+    !h0,           INITIAL GUESS AT OPTIMUM STEP-SIZE(SEE ARTICLE 10
+    !              OF' TEXT).
+    !ne,           NUMRER OF POTNTS AT WHICH FUNCTTON IS TABULATED
+    !xi,           FIRST POINT A WHICH FUNCTION IS TABULATED
+    !ht,           INTERVAL AT WHICH FUNCTIONS IS TABULATED (MUST BE POSITIVE)
+    !y,            (ARRAY OF DIMENSION AT LEAST NE). FUNCTION VALUES I.E.
+    !              y(i) CONTAINS VALUE AT X=XI+(I-1)*HT
+    !              (X0-XI),STEP,AND HO MUST BE MULTIPLES OF HT.
+    !               X0 AND (X0+(N-1)*STEP) MUST LIE WITHIN RANGE OF TABLE
+    !              Output
+    !dy,           DERVATIVES AT REQUIRED POINTS
+    !r1,           MAXIMUM ESTIMATED ERROR OVER THE WHOLE RANGE OF POINTS.
+    !s1,           AVERAGE ESTIMATED ERROR OVER THE WHOLE RANGE OF POINTS.
+    !npitl,        NUMBER OF POINTS AT WHICH INTERVAL OF TABULATION IS TOO
+    !              LARGE.
+    !nprts,        NUMBER OF POINTS AT WHICH RANGE OF TARLE IS TOO SMALL.
+    !ierrfl,       A NON-ZERO VALUE INDICATES A FATAL ERROR AS FOLLOWS:
+    !             -1 MEANS X DOES NOT COINCIDE WITH A TABULAR POINT
+    !                (WITHIN RELATIVE TOLERANCE OF .00001).
+    !             -2 MEANS X IS OUTSIDE RANGE OF TABLE.
+    !             -3 MEANS HT IS NON-POSITIVE.
+    !nerest,       NUMBER OF POINTS AT WHICH ERROR ESTIMATE COULD NOT BE
+    !              MADE.
+    !itmany,       NUMBER OF POINTS AT WHICH THERE WERE TOO MANY ITERATIONS
+    !              (I.E., CHANGES OF STEP-SIZE).
     subroutine diff_r4(n,x0,step,h0,ne,x1,ht,y,dy,r1,s1,npitl, &
                        nprts,ierrfl,nerest,itmany)
        !dir$ optimize:3
@@ -266,7 +296,10 @@ module  ndiff_tabular
           s1 = s1/real(n,kind=sp)
     end subroutine diff_r4
 
-
+!z,  VALUE OF ABSCISSA.
+!x1, FIRST POINT AT WHICH FUNCTION IS TABULATED.
+!ht, INTERVAL OF TABULATION OF FUNCTION
+!y,  (ARRAY OF DIMENSION AT LEAST NE). TABLE OF VALUES OF FUNCTION.
     pure function f_r4(z,x1,ht,y) result(fz)
        !dir$ optimize:3
        !dir$ attributes forceinline :: f_r4
@@ -283,6 +316,19 @@ module  ndiff_tabular
        fz = y(i) 
     end function f_r4 
 
+!x,  POINT AT WHICH DY/DX REQUIRED.
+!h,  STEP-SIZE TO BE USED IN NUMERICAL DIFFERENTIATION FORMULAS.
+!f,  TABLE-LOOKUP FUNCTION
+!y,  ARRAY CONTAINING TABLE OY FUNCTION VALUES.
+!x1, FIRST POINT AT WHICH FUNCTION IS TABULATED.
+!ht, INTERVAL AT WHICH FUNCTION IS TABULATED.
+!ne, NUMBER OF POINTS AT WHICH FUNCTION IS TABULATED.
+!xe, LAST POINT AT WHICH FUNCTION IS TABULATED.
+!d,  ESTIMATED VALUE OF DY/DX
+!isf,FLAG TO INDICATE RANGE OF TABLE TOO SMALL.
+!ief,FLAG TO INDICATE TABULAR INTERVAL LARGER THAN H.
+!npitl, NUMBER OF POINTS AT WHICH TABULAR INTERVAT, TOO LARGE.
+!nprts,NUMBER OF POINTS AT WHICH RANGE OF TABLE TOO SMALL.
 
     subroutine deriv_r4(x,h,d,isf,ief,y,x1,  &
                         ht,ne,xe,npitl,nprts)
