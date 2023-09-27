@@ -156,10 +156,299 @@ module isst_iface
 	       integer(c_int) ::  enabled
          end type isst_pkg_ctdp
          
+         type, bind(c) :: _cpu_map
+               integer(c_short) :: core_id
+               integer(c_short) :: pkg_id
+               integer(c_short) :: die_id
+               integer(c_short) :: punit_id
+               integer(c_short) :: punit_cpu
+               integer(c_short) :: punit_cpu_core
+               integer(c_short) :: initialized 
+         end type _cpu_map
+         
+         type(c_ptr), bind(c), public :: cpu_map = c_null_ptr
+         
+         type, bind(c) :: cpu_topology
+               integer(c_short) :: cpu
+               integer(c_short) :: core_id
+               integer(c_short) :: pkg_id
+               integer(c_short) :: die_id
+         end type cpu_topology
+         
          enum, bind(c)
              enumerator :: ISST_PARAM_MBOX_DELAY
 	     enumerator :: ISST_PARAM_MBOX_RETRIES
          end enum
+         
+         
+         interface
+             function is_clx_n_platform() result(val) &
+                            bind(c,name='is_clx_n_platform')
+                      use, intrinsic :: ISO_C_BINDING
+                      integer(c_int) :: val
+             end function is_clx_n_platform
+         end interface
+         
+         interface
+             function is_skx_n_platform() result(val) &
+                            bind(c,name='is_skx_n_platform')
+                      use, intrinsic :: ISO_C_BINDING
+                      integer(c_int) :: val
+             end function is_skx_n_platform
+         end interface
+         
+         interface
+             function is_spr_n_platform() result(val) &
+                            bind(c,name='is_spr_n_platform')
+                      use, intrinsic :: ISO_C_BINDING
+                      integer(c_int) :: val
+             end function is_spr_n_platform
+         end interface
+         
+         interface
+             function is_emr_n_platform() result(val) &
+                            bind(c,name='is_emr_n_platform')
+                      use, intrinsic :: ISO_C_BINDING
+                      integer(c_int) :: val
+             end function is_emr_n_platform
+         end interface
+         
+         interface
+             function is_icx_n_platform() result(val) &
+                            bind(c,name='is_icx_n_platform')
+                      use, intrinsic :: ISO_C_BINDING
+                      integer(c_int) :: val
+             end function is_icx_n_platform
+         end interface
+         
+         interface
+             function cpufreq_sysfs_present() result(val) &
+                            bind(c,name='cpufreq_sysfs_present')
+                       use, intrinsic :: ISO_C_BINDING
+                       integer(c_int) :: val
+             end function cpufreq_sysfs_present
+         end interface
+         
+         ! Defined as a static (in original file, i.e. isst-config.c), but in my version
+         ! those functions (rather part of them) as redefined as a non static.
+         
+         ! static int get_stored_topology_info(int cpu, int *core_id, int *pkg_id, int *die_id)
+         interface
+             function get_stored_topology_info(cpu,core_id, &
+                                               pkg_id,die_id) result(val) &
+                            bind(c,name='get_stored_topology_info')
+                       use, intrinsic :: ISO_C_BINDING
+                       integer(c_int),   intent(in), value :: cpu
+                       integer(c_int),   intent(out)       :: core_id
+                       integer(c_int),   intent(out)       :: pkg_id
+                       integer(c_int),   intent(out)       :: die_id
+             end function get_stored_topology_info
+         end interface
+         
+         
+         interface 
+             subroutine store_cpu_topology() 
+                            bind(c,name='store_cpu_topology')
+                        use, intrinsic :: ISO_C_BINDING
+             end subroutine store_cpu_topology
+         end interface
+         
+         interface
+             function get_physical_package_id(cpu) result(val) &
+                            bind(c,name='get_physical_package_id')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),   intent(in), value :: cpu
+                        integer(c_int) :: val
+             end function get_physical_package_id
+         end interface
+         
+         interface
+             function get_physical_core_id(cpu) result(val) &
+                            bind(c,name='get_physical_core_id')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),   intent(in), value :: cpu
+                        integer(c_int) :: val
+             end function get_physical_core_id
+         end interface
+         
+         interface
+             function get_physical_die_id(cpu) result(val) &
+                            bind(c,name='get_physical_die_id')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),   intent(in), value :: cpu
+                        integer(c_int) :: val
+             end function get_physical_die_id
+         end interface
+         
+         interface
+             function get_physical_punit_id(cpu) result(val) &
+                            bind(c,name='get_physical_punit_id')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),   intent(in), value :: cpu
+                        integer(c_int) :: val
+             end function get_physical_punit_id
+         end interface
+         
+         interface
+             subroutine set_isst_id(id,cpu) &
+                            bind(c,name='set_isst_id')
+                        use, intrinsic :: ISO_C_BINDING
+                        type(c_ptr),     intent(in)        :: id
+                        integer(c_int),  intent(in), value :: cpu
+             end subroutine set_isst_id
+         end interface
+         
+         interface
+             function is_cpu_in_power_domain(cpu,id) result(val) &
+                             bind(c,name='is_cpu_in_power_domain')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),  intent(in), value :: cpu
+                        type(c_ptr),     intent(in)        :: id
+             end function is_cpu_in_power_domain
+         end interface
+         
+         interface
+             function get_cpufreq_base_freq(cpu) result(val) &
+                             bind(c,name='get_cpufreq_base_freq')
+                       use, intrinsic :: ISO_C_BINDING
+                       integer(c_int),   intent(in), value :: cpu 
+                       integer(c_int)  :: val
+             end function get_cpufreq_base_freq
+        end interface
+        
+        interface
+             function get_topo_max_cpus() result(val) &
+                              bind(c,name='get_topo_max_cpus')
+                       use, intrinsic :: ISO_C_BINDING
+                       integer(c_int) :: val
+             end function get_topo_max_cpus
+        end interface
+        
+        interface
+              function is_cpu_online(cpu) result(val) &
+                              bind(c,name='is_cpu_online')
+                       use, intrinsic :: ISO_C_BINDING
+                       integer(c_int),   intent(in), value :: cpu
+                       integer(c_int) :: val
+              end function is_cpu_online
+        end interface
+        
+        interface
+              function get_kernel_version(major,minor) result(val) &
+                              bind(c,name='get_kernel_version')
+                        use, intrinsic :: ISO_C_BINDING
+                        integer(c_int),   intent(out) :: major
+                        integer(c_int),   intent(out) :: minor
+                        integer(c_int) :: val
+              end function get_kernel_version 
+        end interface
+        
+        interface
+              subroutine set_cpu_online_offline(cpu,state) &
+                               bind(c,name='set_cpu_online_offline')
+                           use, intrinsic :: ISO_C_BINDING
+                           integer(c_int),  intent(in), value :: cpu
+                           integer(c_int),  intent(in), value :: state
+              end subroutine set_cpu_online_offline
+        end interface
+        
+        interface
+              subroutine force_all_cpus_online() &
+                                bind(c,name='force_all_cpus_online')
+                             use, intrinsic :: ISO_C_BINDING
+              end subroutine force_all_cpus_online
+        end interface
+        
+        interface
+              subroutine set_max_cpu_num() &
+                                bind(c,name='set_max_cpu_num')
+                              use, intrinsic :: ISO_C_BINDING
+              end subroutine set_max_cpu_num
+        end interface
+        
+        interface
+              function get_max_punit_core_id(id) result(val) &
+                                bind(c,name='get_max_punit_core_id')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(in) :: id
+                             integer(c_int)  :: val
+              end function get_max_punit_core_id
+        end interface
+        
+        interface
+              function get_cpu_count(id) result(val) &
+                                bind(c,name='get_cpu_count')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(in) :: id
+                             integer(c_int)  :: val
+              end function get_cpu_count
+        end interface
+        
+        interface
+              subroutine create_cpu_map() & 
+                                bind(c,name='create_cpu_map')
+                              use, intrinsic :: ISO_C_BINDING
+              end subroutine create_cpu_map
+        end interface
+        
+        interface
+              function find_phy_core_num(logical_cpu) result(val) &
+                                bind(c,name='find_phy_core_num')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in), value :: logical_cpu
+                              integer(c_int) :: val
+              end function find_phy_core_num
+        end interface
+        
+        interface
+              function enable_cpuset_controller() result(val) &
+                                bind(c,name='enable_cpuset_controller')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int) :: val
+              end function enable_cpuset_controller
+        end interface
+        
+        interface
+              function isst_fill_platform_info() result(val) &
+                                bind(c,name='isst_fill_platform_info')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int) :: val
+              end function isst_fill_platform_info
+        end interface
+        
+        interface
+              subroutine isst_print_extended_platform_info() & 
+                                bind(c,name='isst_print_extended_platform_info')
+                              use, intrinsic :: ISO_C_BINDING
+              end subroutine isst_print_extended_platform_info
+        end interface
+        
+        interface
+              subroutine isst_print_platform_information() & 
+                                bind(c,name='isst_print_platform_information')
+                              use, intrinsic :: ISO_C_BINDING
+              end subroutine isst_print_platform_information
+        end interface
+        
+        interface
+              function clx_n_get_base_ratio() result(val) &
+                                bind(c,name='clx_n_get_base_ratio')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int) :: val
+              end function clx_n_get_base_ratio 
+        end interface
+        
+        interface
+              function clx_n_config(id) result(val) &
+                                bind(c,name='clx_n_config')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(in) :: id
+                              integer(c_int) :: val
+              end function clx_n_config
+        end interface
+        
+        
+         
 
 
 
