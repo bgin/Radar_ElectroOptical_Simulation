@@ -293,8 +293,8 @@ module isst_iface
              subroutine set_isst_id(id,cpu) &
                             bind(c,name='set_isst_id')
                         use, intrinsic :: ISO_C_BINDING
-                        type(c_ptr),     intent(in)        :: id
-                        integer(c_int),  intent(in), value :: cpu
+                        type(c_ptr),     intent(inout), value :: id
+                        integer(c_int),  intent(in), value    :: cpu
              end subroutine set_isst_id
          end interface
          
@@ -302,8 +302,8 @@ module isst_iface
              function is_cpu_in_power_domain(cpu,id) result(val) &
                              bind(c,name='is_cpu_in_power_domain')
                         use, intrinsic :: ISO_C_BINDING
-                        integer(c_int),  intent(in), value :: cpu
-                        type(c_ptr),     intent(in)        :: id
+                        integer(c_int),  intent(in), value    :: cpu
+                        type(c_ptr),     intent(inout), value :: id
              end function is_cpu_in_power_domain
          end interface
          
@@ -370,7 +370,7 @@ module isst_iface
               function get_max_punit_core_id(id) result(val) &
                                 bind(c,name='get_max_punit_core_id')
                              use, intrinsic :: ISO_C_BINDING
-                             type(c_ptr),      intent(in) :: id
+                             type(c_ptr),      intent(inout), value :: id
                              integer(c_int)  :: val
               end function get_max_punit_core_id
         end interface
@@ -379,7 +379,7 @@ module isst_iface
               function get_cpu_count(id) result(val) &
                                 bind(c,name='get_cpu_count')
                              use, intrinsic :: ISO_C_BINDING
-                             type(c_ptr),      intent(in) :: id
+                             type(c_ptr),      intent(inout), value :: id
                              integer(c_int)  :: val
               end function get_cpu_count
         end interface
@@ -439,17 +439,374 @@ module isst_iface
         end interface
         
         interface
-              function clx_n_config(id) result(val) &
+              function clx_n_config(id) result(val) result(val) &
                                 bind(c,name='clx_n_config')
                               use, intrinsic :: ISO_C_BINDING
-                              type(c_ptr),   intent(in) :: id
+                              type(c_ptr),   intent(inout), value :: id
                               integer(c_int) :: val
               end function clx_n_config
         end interface
         
+        interface
+              subroutine dump_clx_n_config_for_cpu(id,arg1,arg2, &
+                                                   arg3,arg4) &
+                                bind(c,name='dump_clx_n_config_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4
+              end subroutine dump_clx_n_config_for_cpu
+        end interface
         
-         
-
+        interface
+              subroutine dump_isst_config_for_cpu(id,arg1,arg2, &
+                                                   arg3,arg4) &
+                                bind(c,name='dump_isst_config_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4
+              end subroutine dump_isst_config_for_cpu
+        end interface
+        
+        interface
+            subroutine dump_isst_config(arg) & 
+                              bind(c,name='dump_isst_config')
+                            use, intrinsic :: ISO_C_BINDING
+                            integer(c_int),   intent(in) :: arg
+            end subroutine dump_isst_config
+        end interface
+        
+        interface
+              subroutine set_tdp_level_for_cpu(id,arg1,arg2, &
+                                                   arg3,arg4) &
+                                bind(c,name='set_tdp_level_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4
+              end subroutine set_tdp_level_for_cpu
+        end interface
+        
+        interface
+            subroutine set_tdp_level(arg)  &
+                                bind(c,name='set_tdp_level')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in) :: arg
+                            
+            end subroutine set_tdp_level
+        end interface
+        
+        interface
+            subroutine set_tdp_level(arg)  &
+                                bind(c,name='set_tdp_level')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in) :: arg
+                            
+            end subroutine set_tdp_level
+        end interface
+        
+        interface
+            function set_cpufreq_scaling_min_max(cpu,max,freq) result(val) &
+                                  bind(c,name='set_cpufreq_scaling_min_max')
+                                use, intrinsic :: ISO_C_BINDING
+                                integer(c_int),   intent(in) :: cpu
+                                integer(c_int),   intent(in) :: max
+                                integer(c_int),   intent(in) :: freq
+                                integer(c_int) :: val
+            end function set_cpufreq_scaling_min_max
+        end interface
+        
+        interface
+            subroutine adjust_scaling_max_from_base_freq(cpu)  &
+                                bind(c,name='adjust_scaling_max_from_base_freq')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in) :: cpu
+            end subroutine adjust_scaling_max_from_base_freq
+        end interface
+        
+        interface
+            subroutine adjust_scaling_min_from_base_freq(cpu)  &
+                                bind(c,name='adjust_scaling_min_from_base_freq')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in) :: cpu
+            end subroutine adjust_scaling_min_from_base_freq
+        end interface
+        
+        interface
+            function set_cpufreq_scaling_min_max_from_cpuinfo(cpu,
+                                                cpuinfo_max,scaling_max) & result(val) &
+                                bind(c,name='set_cpufreq_scaling_min_max_from_cpuinfo')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in) :: cpu
+                              integer(c_int),   intent(in) :: cpuinfo_max
+                              integer(c_int),   intent(in) :: scaling_max
+                              integer(c_int) :: val                         
+            end function set_cpufreq_scaling_min_max_from_cpuinfo
+                               
+        end interface
+        
+        interface
+             subroutine set_scaling_min_to_cpuinfo_max(id) &
+                                bind(c,name='set_scaling_min_to_cpuinfo_max')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(inout), value :: id     
+             end subroutine set_scaling_min_to_cpuinfo_max
+        end interface
+        
+        interface
+             subroutine set_scaling_min_to_cpuinfo_min(id) &
+                                bind(c,name='set_scaling_min_to_cpuinfo_min')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(inout), value :: id     
+             end subroutine set_scaling_min_to_cpuinfo_min
+        end interface
+        
+        interface
+             subroutine set_scaling_max_to_cpuinfo_max(id) &
+                                bind(c,name='set_scaling_max_to_cpuinfo_max')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(inout), value :: id     
+             end subroutine set_scaling_max_to_cpuinfo_max
+        end interface
+        
+        interface
+            function set_core_priority_and_min(id,mask_size,cpu_mask, &
+                                               min_high,min_low) result(val) &
+                                bind(c,name='set_core_priority_and_min')
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(inout), value :: id
+                             integer(c_int),   intent(in),    value :: mask_size
+                             type(c_ptr),      intent(inout), value :: cpu_mask
+                             integer(c_int),   intent(in),    value :: min_high
+                             integer(c_int),   intent(in),    value :: min_low
+                             integer(c_int) :: val     
+            end function set_core_priority_and_min
+        end interface
+        
+        interface
+             function set_pbf_core_power(id) result(val) &
+                                bind(c,name='set_pbf_core_power') 
+                             use, intrinsic :: ISO_C_BINDING
+                             type(c_ptr),      intent(inout), value :: id
+                             integer(c_int) :: val
+             end function set_pbf_core_power
+        end interface
+        
+        interface
+             subroutine set_pbf_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                 bind(c,name='set_pbf_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4  
+             end subroutine set_pbf_for_cpu
+        end interface
+        
+        interface
+             subroutine set_pbf_enable(arg) &
+                                 bind(c,name='set_pbf_enable')
+                              use, intrinsic :: ISO_C_BINDING
+                              integer(c_int),   intent(in), value :: arg
+             end subroutine set_pbf_enable
+        end interface
+        
+        interface
+             subroutine dump_fact_config_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='dump_fact_config_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine dump_fact_config_for_cpu
+        end interface
+        
+        interface
+             subroutine set_fact_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='set_fact_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine set_fact_for_cpu
+        end interface
+        
+        interface
+            subroutine set_fact_enable(arg) &
+                                  bind(c,name='set_fact_enable')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine set_fact_enable 
+        end interface
+        
+        interface
+             subroutine enable_clos_qos_config(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='enable_clos_qos_config')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine enable_clos_qos_config
+        end interface
+        
+         interface
+            subroutine set_clos_enable(arg) &
+                                  bind(c,name='set_clos_enable')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine set_clos_enable 
+        end interface
+        
+        interface
+             subroutine dump_clos_config_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='dump_clos_config_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine dump_clos_config_for_cpu
+        end interface
+        
+        interface
+            subroutine dump_clos_config(arg) &
+                                  bind(c,name='dump_clos_config')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine dump_clos_config
+        end interface
+        
+        interface
+             subroutine get_clos_info_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='get_clos_info_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine get_clos_info_for_cpu
+        end interface
+        
+        interface
+            subroutine dump_clos_info(arg) &
+                                  bind(c,name='dump_clos_info')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine dump_clos_info
+        end interface
+        
+        interface
+             subroutine set_clos_config_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='set_clos_config_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine set_clos_config_for_cpu
+        end interface
+        
+        interface
+            subroutine set_clos_config(arg) &
+                                  bind(c,name='set_clos_config')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine set_clos_config
+        end interface
+        
+        interface
+             subroutine set_clos_assoc_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='set_clos_assoc_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine set_clos_assoc_for_cpu
+        end interface
+        
+        interface
+            subroutine set_clos_assoc(arg) &
+                                  bind(c,name='set_clos_assoc')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine set_clos_assoc
+        end interface
+        
+        interface
+             subroutine get_clos_assoc_for_cpu(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='get_clos_assoc_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine get_clos_assoc_for_cpu
+        end interface
+        
+        interface
+            subroutine get_clos_assoc(arg) &
+                                  bind(c,name='get_clos_assoc')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine get_clos_assoc
+        end interface
+        
+        interface
+             subroutine set_turbo_mode_for_cpu(id,status) &
+                                  bind(c,name='set_turbo_mode_for_cpu')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              integer(c_int),intent(in),    value :: status     
+             end subroutine set_turbo_mode_for_cpu
+        end interface
+        
+        interface
+            subroutine set_turbo_mode(arg) &
+                                  bind(c,name='set_turbo_mode')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine set_turbo_mode
+        end interface
+        
+        interface
+             subroutine get_set_trl(id,arg1,arg2,arg3,arg4) &
+                                  bind(c,name='get_set_trl')
+                              use, intrinsic :: ISO_C_BINDING
+                              type(c_ptr),   intent(inout), value :: id
+                              type(c_ptr),   intent(inout), value :: arg1
+                              type(c_ptr),   intent(inout), value :: arg2
+                              type(c_ptr),   intent(inout), value :: arg3
+                              type(c_ptr),   intent(inout), value :: arg4       
+             end subroutine get_set_trl
+        end interface
+        
+        interface
+            subroutine process_trl(arg) &
+                                  bind(c,name='process_trl')
+                                use, intrinsic :: ISO_C_BINDING   
+                                integer(c_int),   intent(in), value :: arg   
+            end subroutine process_trl
+        end interface
 
 
 end module isst_iface
