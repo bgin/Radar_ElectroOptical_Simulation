@@ -807,6 +807,190 @@ module isst_iface
                                 integer(c_int),   intent(in), value :: arg   
             end subroutine process_trl
         end interface
+        
+        interface
+            function tpmi_process_ioctl(ioctl_no,info) result(val) &
+                                  bind(c,name='tpmi_process_ioctl')
+                                use, intrinsic :: ISO_C_BINDING
+                                integer(c_int),   intent(in),    value :: ioctl_no
+                                type(c_ptr),      intent(inout), value :: info
+                                integer(c_int) :: val
+            end function tpmi_process_ioctl
+        end interface
+        
+        interface
+             function tpmi_is_punit_valid(id) result(val) &
+                                 bind(c,name='tpmi_is_punit_valid')
+                               use, intrinsic :: ISO_C_BINDING
+                               type(c_ptr),      intent(inout), value :: id
+                               integer(c_int) :: val
+             end function tpmi_is_punit_valid
+        end interface
+        
+        interface
+             function tpmi_read_pm_config(id,cp_state,cp_cap) result(val) &
+                                  bind(c,name='tpmi_read_pm_config')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id
+                                integer(c_int),   intent(out)          :: cp_state
+                                integer(c_int),   intent(out)          :: cp_cap
+                                integer(c_int) :: val
+             end function tpmi_read_pm_config
+        end interface
+        
+        interface
+             function tpmi_get_config_levels(id,pkg_dev) result(val) &
+                                  bind(c,name='tpmi_get_config_levels')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                type(c_ptr),      intent(inout), value :: pkg_dev
+                                integer(c_int) :: val
+             end function tpmi_get_config_levels
+        end interface
+        
+        interface
+             function tpmi_get_ctdp_control(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_ctdp_control')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_ctdp_control
+        end interface
+        
+        interface
+             function tpmi_get_tdp_info(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_tdp_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_tdp_info
+        end interface
+        
+        interface
+             function tpmi_get_tdp_info(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_tdp_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_tdp_info
+        end interface
+        
+        interface
+             function tpmi_get_pwr_info(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_pwr_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_pwr_info
+        end interface
+        
+        interface
+             function tpmi_coremask_tdp_info(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_coremask_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_coremask_info
+        end interface
+        
+        interface
+             function tpmi_get_get_trls(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='tpmi_get_get_trls')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                                integer(c_int) :: val
+             end function tpmi_get_get_trls
+        end interface
+        
+       interface 
+             function tpmi_set_tdp_level(id,tdp_level) result(val) &
+                                 bind(c,name='tpmi_set_tdp_level')
+                               use, intrinsic :: ISO_C_BINDING
+                               type(c_ptr),      intent(inout), value :: id 
+                               integer(c_int),   intent(in),    value :: td_level
+                               integer(c_int) :: val
+             end function tpmi_set_tdp_level
+       end interface
+       
+       interface
+             function _pbf_get_coremask_info(id,config_index,ctdp_level) result(val) &
+                                  bind(c,name='_pbf_get_coremask_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: pbf_info
+                                integer(c_int) :: val
+             end function _pbf_get_coremask_info
+        end interface
+        
+        interface
+             function tpmi_get_pbf_info(id,level,pbf_info) result(val) &
+                                  bind(c,name='tpmi_get_pbf_info')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: level
+                                type(c_ptr),      intent(inout), value :: pbf_info
+                                integer(c_int) :: val
+             end function tpmi_get_pbf_info
+        end interface
+        
+        interface
+             function tpmi_set_pbf_fact_status(id,pbf,enable) result(val) &
+                                  bind(c,name='tpmi_set_pbf_fact_status')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: pbf
+                                integer(c_int),   intent(in),    value :: enable
+                                integer(c_int) :: val
+             end function tpmi_set_pbf_fact_status
+        end interface
+        
+        interface
+            function tpmi_get_fact_info(id,level,fact_buckets, &
+                                        fact_info) result(val) &
+                                 bind(c,name='tpmi_get_fact_info')
+                               use, intrinsic :: ISO_C_BINDING
+                               type(c_ptr),      intent(inout), value :: id  
+                               integer(c_int),   intent(in),    value :: level
+                               integer(c_int),   intent(in),    value :: fact_buckets
+                               type(c_ptr),      intent(inout), value :: fact_info 
+                               integer(c_int) :: val      
+            end function tpmi_get_fact_info
+        end interface
+        
+        interface
+             subroutine _set_uncore_min_max(id,max,freq) &
+                                  bind(c,name='_set_uncore_min_max')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: max
+                                integer(c_int),   intent(in),    value :: freq
+                               
+             end subroutine _set_uncore_min_max
+        end interface
+        
+        interface
+             subroutine tpmi_adjust_uncore_freq(id,config_index,ctdp_level) &
+                                  bind(c,name='tpmi_adjust_uncore_freq')
+                                use, intrinsic :: ISO_C_BINDING
+                                type(c_ptr),      intent(inout), value :: id 
+                                integer(c_int),   intent(in),    value :: config_index
+                                type(c_ptr),      intent(inout), value :: ctdp_level
+                               
+             end subroutine tpmi_adjust_uncore_freq
+        end interface
 
 
 end module isst_iface
