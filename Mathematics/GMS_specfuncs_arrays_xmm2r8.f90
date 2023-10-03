@@ -226,6 +226,170 @@ module  specfuncs_arrays_xmm2r8
              end do
        end subroutine calcei_unroll12x_nonblock_xmm2r8
     
+    
+       subroutine calcei_unroll8x_nonblock_xmm2r8(parg,pval,n,jint,PF_DIST)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calcei_unroll8x_nonblock_xmm2r8
+             !dir$ attributes forceinline :: calcei_unroll8x_nonblock_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calcei_unroll8x_nonblock_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             !dir$ attributes align : 16 :: arg0
+             !dir$ attributes align : 16 :: arg1
+             !dir$ attributes align : 16 :: arg2
+             !dir$ attributes align : 16 :: arg3
+             !dir$ attributes align : 16 :: val0
+             !dir$ attributes align : 16 :: val1
+             !dir$ attributes align : 16 :: val2
+             !dir$ attributes align : 16 :: val3
+             type(XMM2r8_t), automatic :: arg0
+             type(XMM2r8_t), automatic :: arg1
+             type(XMM2r8_t), automatic :: arg2
+             type(XMM2r8_t), automatic :: arg3
+             type(XMM2r8_t), automatic :: val0
+             type(XMM2r8_t), automatic :: val1
+             type(XMM2r8_t), automatic :: val2
+             type(XMM2r8_t), automatic :: val3
+             type(XMM2r8_t), automatic :: val3
+             integer(kind=i4) :: i,m,m1
+             m = mod(n,8)
+             if(m/=0) then
+                val0.v = 0.0_dp
+                do i=1,m
+                    arg0.v = parg(i).v
+                    call calcei_xmm2r8(arg0,val0,jint)
+                    pval(i).v = val0.v
+                end do
+                if(n<8) return
+             end if
+             m1=m+1
+             val0.v = 0.0_dp
+             val1.v = 0.0_dp
+             val2.v = 0.0_dp
+             val3.v = 0.0_dp
+             !dir$ assume_aligned parg:16
+             !dir$ assume_aligned pval:16
+             !dir$ vector aligned
+             !dir$ ivdep
+             !dir$ vector vectorlength(8)
+             !dir$ vector multiple_gather_scatter_by_shuffles 
+             !dir$ vector always
+             do i=m1,n,8
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                    arg0.v = parg(i+0).v
+                    call calcei_xmm2r8(arg0,val0,jint)
+                    pval(i+0).v = val0.v 
+                    arg1.v = parg(i+1).v
+                    call calcei_xmm2r8(arg1,val1,jint)
+                    pval(i+1).v = val1.v  
+                    arg2.v = parg(i+2).v
+                    call calcei_xmm2r8(arg2,val2,jint)
+                    pval(i+2).v = val2.v
+                    arg3.v = parg(i+3).v
+                    call calcei_xmm2r8(arg3,val3,jint)
+                    pval(i+3).v = val3.v
+                    arg0.v = parg(i+4).v
+                    call calcei_xmm2r8(arg0,val0,jint)
+                    pval(i+4).v = val0.v 
+                    arg1.v = parg(i+5).v
+                    call calcei_xmm2r8(arg1,val1,jint)
+                    pval(i+5).v = val1.v  
+                    arg2.v = parg(i+6).v
+                    call calcei_xmm2r8(arg2,val2,jint)
+                    pval(i+6).v = val2.v
+                    arg3.v = parg(i+7).v
+                    call calcei_xmm2r8(arg3,val3,jint)
+                    pval(i+7).v = val3.v
+              end do
+       end subroutine calcei_unroll8x_nonblock_xmm2r8
+       
+       
+       subroutine calcei_unroll4x_nonblock_xmm2r8(parg,pval,n,jint,PF_DIST)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calcei_unroll4x_nonblock_xmm2r8
+             !dir$ attributes forceinline :: calcei_unroll4x_nonblock_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calcei_unroll4x_nonblock_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             !dir$ attributes align : 16 :: arg0
+             !dir$ attributes align : 16 :: arg1
+             !dir$ attributes align : 16 :: arg2
+             !dir$ attributes align : 16 :: arg3
+             !dir$ attributes align : 16 :: val0
+             !dir$ attributes align : 16 :: val1
+             !dir$ attributes align : 16 :: val2
+             !dir$ attributes align : 16 :: val3
+             type(XMM2r8_t), automatic :: arg0
+             type(XMM2r8_t), automatic :: arg1
+             type(XMM2r8_t), automatic :: arg2
+             type(XMM2r8_t), automatic :: arg3
+             type(XMM2r8_t), automatic :: val0
+             type(XMM2r8_t), automatic :: val1
+             type(XMM2r8_t), automatic :: val2
+             type(XMM2r8_t), automatic :: val3
+             type(XMM2r8_t), automatic :: val3
+             integer(kind=i4) :: i,m,m1
+             m = mod(n,4)
+             if(m/=0) then
+                val0.v = 0.0_dp
+                do i=1,m
+                    arg0.v = parg(i).v
+                    call calcei_xmm2r8(arg0,val0,jint)
+                    pval(i).v = val0.v
+                end do
+                if(n<4) return
+             end if
+             m1=m+1
+             val0.v = 0.0_dp
+             val1.v = 0.0_dp
+             val2.v = 0.0_dp
+             val3.v = 0.0_dp
+             !dir$ assume_aligned parg:16
+             !dir$ assume_aligned pval:16
+             !dir$ vector aligned
+             !dir$ ivdep
+             !dir$ vector vectorlength(8)
+             !dir$ vector multiple_gather_scatter_by_shuffles 
+             !dir$ vector always
+             do i=m1,n,4
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                    arg0.v = parg(i+0).v
+                    call calcei_xmm2r8(arg0,val0,jint)
+                    pval(i+0).v = val0.v 
+                    arg1.v = parg(i+1).v
+                    call calcei_xmm2r8(arg1,val1,jint)
+                    pval(i+1).v = val1.v  
+                    arg2.v = parg(i+2).v
+                    call calcei_xmm2r8(arg2,val2,jint)
+                    pval(i+2).v = val2.v
+                    arg3.v = parg(i+3).v
+                    call calcei_xmm2r8(arg3,val3,jint)
+                    pval(i+3).v = val3.v
+                end do
+       end subroutine calcei_unroll4x_nonblock_xmm2r8
+    
 
 
 end module specfuncs_arrays_xmm2r8
