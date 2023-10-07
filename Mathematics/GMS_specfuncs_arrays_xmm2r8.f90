@@ -1490,6 +1490,539 @@ module  specfuncs_arrays_xmm2r8
        end subroutine calci0_blocked64x32x16x8x_xmm2r8
        
        
+       subroutine calci0_blocked64x32x16x8x_omp_xmm2r8(parg,pval,n,jint,PF_DIST,which)         
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calci0_blocked64x32x16x8x_omp_xmm2r8
+             !dir$ attributes forceinline :: calci0_blocked64x32x16x8x_omp_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_blocked64x32x16x8x_omp_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             logical(kind=i4),               intent(in) :: which
+             integer(kind=i4), parameter :: BLOCK64X = 64
+             integer(kind=i4), parameter :: BLOCK32X = 32
+             integer(kind=i4), parameter :: BLOCK16X = 16
+             integer(kind=i4), parameter :: BLOCK8X  = 8 
+             !dir$ attributes align : 16 :: arg0
+             type(XMM2r8_t), automatic :: arg0
+             !dir$ attributes align : 16 :: arg0
+             type(XMM2r8_t), automatic :: val0
+             integer(kind=i4) :: i,ii
+             
+            
+             select case(which)
+             case (0)
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+!$omp parallel do schedule(static,BLOCK64X) default(none)                &
+!$omp firstprivate(BLOCK64X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T0,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2 
+!$omp parallel do schedule(static,BLOCK64X) default(none)                &
+!$omp firstprivate(BLOCK64X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T1,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+!$omp parallel do schedule(static,BLOCK64X) default(none)                &
+!$omp firstprivate(BLOCK64X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T2,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+!$omp parallel do schedule(static,BLOCK64X) default(none)                &
+!$omp firstprivate(BLOCK64X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_NTA,parg,pval)
+#endif
+                  do i=1,n,BLOCK64X
+
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2   
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif   
+         
+                        !dir$ assume_aligned parg:16
+                        !dir$ assume_aligned pval:16
+                        !dir$ vector aligned
+                        !dir$ ivdep
+                        !dir$ vector vectorlength(8)
+                        !dir$ vector multiple_gather_scatter_by_shuffles 
+                        !dir$ vector always
+                       do ii=i,min(i+BLOCK64X-1,n)
+                          arg0.v = parg(ii).v
+                          call calci0_xmm2r8(arg0,val0,jint)
+                          pval(ii).v = val0.v 
+                       end do
+                  end do
+             case (1)
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+!$omp parallel do schedule(static,BLOCK32X) default(none)                &
+!$omp firstprivate(BLOCK32X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T0,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2 
+!$omp parallel do schedule(static,BLOCK32X) default(none)                &
+!$omp firstprivate(BLOCK32X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T1,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+!$omp parallel do schedule(static,BLOCK32X) default(none)                &
+!$omp firstprivate(BLOCK32X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T2,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+!$omp parallel do schedule(static,BLOCK32X) default(none)                &
+!$omp firstprivate(BLOCK32X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_NTA,parg,pval)
+#endif             
+                  do i=1,n,BLOCK32X
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2   
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif             
+                        !dir$ assume_aligned parg:16
+                        !dir$ assume_aligned pval:16
+                        !dir$ vector aligned
+                        !dir$ ivdep
+                        !dir$ vector vectorlength(8)
+                        !dir$ vector multiple_gather_scatter_by_shuffles 
+                        !dir$ vector always
+                       do ii=i,min(i+BLOCK32X-1,n)
+                          arg0.v = parg(ii).v
+                          call calci0_xmm2r8(arg0,val0,jint)
+                          pval(ii).v = val0.v 
+                       end do
+                  end do 
+             case (2)
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+!$omp parallel do schedule(static,BLOCK16X) default(none)                &
+!$omp firstprivate(BLOCK16X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T0,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2 
+!$omp parallel do schedule(static,BLOCK16X) default(none)                &
+!$omp firstprivate(BLOCK16X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T1,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+!$omp parallel do schedule(static,BLOCK16X) default(none)                &
+!$omp firstprivate(BLOCK16X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T2,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+!$omp parallel do schedule(static,BLOCK16X) default(none)                &
+!$omp firstprivate(BLOCK16X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_NTA,parg,pval)
+#endif                
+                  do i=1,n,BLOCK16X
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2   
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif             
+                        !dir$ assume_aligned parg:16
+                        !dir$ assume_aligned pval:16
+                        !dir$ vector aligned
+                        !dir$ ivdep
+                        !dir$ vector vectorlength(8)
+                        !dir$ vector multiple_gather_scatter_by_shuffles 
+                        !dir$ vector always
+                       do ii=i,min(i+BLOCK16X-1,n)
+                          arg0.v = parg(ii).v
+                          call calci0_xmm2r8(arg0,val0,jint)
+                          pval(ii).v = val0.v 
+                       end do
+                  end do 
+             case (3)
+#if (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 1
+!$omp parallel do schedule(static,BLOCK8X) default(none)                &
+!$omp firstprivate(BLOCK8X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T0,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 2 
+!$omp parallel do schedule(static,BLOCK8X) default(none)                &
+!$omp firstprivate(BLOCK8X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T1,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 3
+!$omp parallel do schedule(static,BLOCK8X) default(none)                &
+!$omp firstprivate(BLOCK8X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_T2,parg,pval)
+#elif (__SPECFUNC_ARRAYS_XMM2R8_PF_CACHE_HINT__) == 4
+!$omp parallel do schedule(static,BLOCK8X) default(none)                &
+!$omp firstprivate(BLOCK8X) private(i,ii,arg0,val0)                     &
+!$omp shared(n,PF_DIST,jint,FOR_K_PREFETCH_NTA,parg,pval)
+#endif                  
+                  do i=1,n,BLOCK8X
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                         call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif             
+                        !dir$ assume_aligned parg:16
+                        !dir$ assume_aligned pval:16
+                        !dir$ vector aligned
+                        !dir$ ivdep
+                        !dir$ vector vectorlength(8)
+                        !dir$ vector multiple_gather_scatter_by_shuffles 
+                        !dir$ vector always
+                       do ii=i,min(i+BLOCK8X-1,n)
+                          arg0.v = parg(ii).v
+                          call calci0_xmm2r8(arg0,val0,jint)
+                          pval(ii).v = val0.v 
+                       end do
+                  end do
+             case default
+                  return
+             end select
+             
+       end subroutine calci0_blocked64x32x16x8x_omp_xmm2r8
+       
+       
+       subroutine calci0_unroll12x_omp_xmm2r8(parg,pval,n,jint,PF_DIST)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calci0_unroll12x_omp_xmm2r8
+             !dir$ attributes forceinline :: calci0_unroll12x_omp_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_unroll12x_omp_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             !dir$ attributes align : 16 :: arg0
+             !dir$ attributes align : 16 :: arg1
+             !dir$ attributes align : 16 :: arg2
+             !dir$ attributes align : 16 :: arg3
+             !dir$ attributes align : 16 :: arg4
+             !dir$ attributes align : 16 :: arg5
+             !dir$ attributes align : 16 :: arg6
+             !dir$ attributes align : 16 :: arg7
+             !dir$ attributes align : 16 :: arg8
+             !dir$ attributes align : 16 :: arg9
+             !dir$ attributes align : 16 :: arg10
+             !dir$ attributes align : 16 :: arg11
+             !dir$ attributes align : 16 :: val0
+             !dir$ attributes align : 16 :: val1
+             !dir$ attributes align : 16 :: val2
+             !dir$ attributes align : 16 :: val3
+             !dir$ attributes align : 16 :: val4
+             !dir$ attributes align : 16 :: val5
+             !dir$ attributes align : 16 :: val6
+             !dir$ attributes align : 16 :: val7
+             !dir$ attributes align : 16 :: val8
+             !dir$ attributes align : 16 :: val9
+             !dir$ attributes align : 16 :: val10
+             !dir$ attributes align : 16 :: val11
+             type(XMM2r8_t), automatic :: arg0
+             type(XMM2r8_t), automatic :: arg1
+             type(XMM2r8_t), automatic :: arg2
+             type(XMM2r8_t), automatic :: arg3
+             type(XMM2r8_t), automatic :: arg4
+             type(XMM2r8_t), automatic :: arg5
+             type(XMM2r8_t), automatic :: arg6
+             type(XMM2r8_t), automatic :: arg7
+             type(XMM2r8_t), automatic :: arg8
+             type(XMM2r8_t), automatic :: arg9
+             type(XMM2r8_t), automatic :: arg10
+             type(XMM2r8_t), automatic :: arg11
+             type(XMM2r8_t), automatic :: val0
+             type(XMM2r8_t), automatic :: val1
+             type(XMM2r8_t), automatic :: val2
+             type(XMM2r8_t), automatic :: val3
+             type(XMM2r8_t), automatic :: val4
+             type(XMM2r8_t), automatic :: val5
+             type(XMM2r8_t), automatic :: val6
+             type(XMM2r8_t), automatic :: val7
+             type(XMM2r8_t), automatic :: val8
+             type(XMM2r8_t), automatic :: val9
+             type(XMM2r8_t), automatic :: val10
+             type(XMM2r8_t), automatic :: val11
+             integer(kind=i4) :: i,m,m1
+             m = mod(n,12)
+             if(m/=0) then
+                val0.v = 0.0_dp
+                do i=1,m
+                    arg0.v = parg(i).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i).v = val0.v
+                end do
+                if(n<12) return
+             end if
+             m1=m+1
+             val0.v = 0.0_dp
+             val1.v = 0.0_dp
+             val2.v = 0.0_dp
+             val3.v = 0.0_dp
+             val4.v = 0.0_dp
+             val5.v = 0.0_dp
+             val6.v = 0.0_dp
+             val7.v = 0.0_dp
+             val8.v = 0.0_dp
+             val9.v = 0.0_dp
+             val10.v= 0.0_dp
+             val11.v= 0.0_dp
+             !dir$ assume_aligned parg:16
+             !dir$ assume_aligned pval:16
+             !dir$ vector aligned
+             !dir$ ivdep
+             !dir$ vector vectorlength(8)
+             !dir$ vector multiple_gather_scatter_by_shuffles 
+             !dir$ vector always
+!$omp parallel do proc_bind(close) schedule(static) default(none) firstprivate(m1)       &
+!$omp firstprivate(val0,val1,val2,val3,val4,val5,val6,val7)                              &
+!$omp firstprivate(val8,val9,val10,val11) private(i,arg0,arg1,arg2,arg3,arg4,arg5,arg6)  &
+!$omp private(arg7,arg8,arg9,arg10,arg11) shared(parg,pval,jint,n,PF_DIST)               &
+!$omp private(FOR_K_PREFETCH_T0,FOR_K_PREFETCH_T1,FOR_K_PREFETCH_T2,FOR_K_PREFETCH_NTA)  
+             do i=m1,n,12
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                    arg0.v = parg(i+0).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i+0).v = val0.v 
+                    arg1.v = parg(i+1).v
+                    call calci0_xmm2r8(arg1,val1,jint)
+                    pval(i+1).v = val1.v  
+                    arg2.v = parg(i+2).v
+                    call calci0_xmm2r8(arg2,val2,jint)
+                    pval(i+2).v = val2.v
+                    arg3.v = parg(i+3).v
+                    call calci0_xmm2r8(arg3,val3,jint)
+                    pval(i+3).v = val3.v
+                    arg4.v = parg(i+4).v
+                    call calci0_xmm2r8(arg4,val4,jint)
+                    pval(i+4).v = val4.v 
+                    arg5.v = parg(i+5).v
+                    call calci0_xmm2r8(arg5,val5,jint)
+                    pval(i+5).v = val5.v  
+                    arg6.v = parg(i+6).v
+                    call calci0_xmm2r8(arg6,val6,jint)
+                    pval(i+6).v = val6.v
+                    arg7.v = parg(i+7).v
+                    call calci0_xmm2r8(arg7,val7,jint)
+                    pval(i+7).v = val7.v
+                    arg8.v = parg(i+8).v
+                    call calci0_xmm2r8(arg8,val8,jint)
+                    pval(i+8).v = val8.v 
+                    arg9.v = parg(i+9).v
+                    call calci0_xmm2r8(arg9,val9,jint)
+                    pval(i+9).v = val9.v  
+                    arg10.v = parg(i+10).v
+                    call calci0_xmm2r8(arg10,val10,jint)
+                    pval(i+10).v = val10.v
+                    arg11.v = parg(i+11).v
+                    call calci0_xmm2r8(arg11,val11,jint)
+                    pval(i+11).v = val11.v
+             end do
+!$omp end parallel do
+       end subroutine calci0_unroll12x_omp_xmm2r8
+       
+       
+       subroutine calci0_unroll8x_omp_xmm2r8(parg,pval,n,jint,PF_DIST)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calci0_unroll8x_omp_xmm2r8
+             !dir$ attributes forceinline :: calci0_unroll8x_omp_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_unroll8x_omp_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             !dir$ attributes align : 16 :: arg0
+             !dir$ attributes align : 16 :: arg1
+             !dir$ attributes align : 16 :: arg2
+             !dir$ attributes align : 16 :: arg3
+             !dir$ attributes align : 16 :: arg4
+             !dir$ attributes align : 16 :: arg5
+             !dir$ attributes align : 16 :: arg6
+             !dir$ attributes align : 16 :: arg7
+             !dir$ attributes align : 16 :: val0
+             !dir$ attributes align : 16 :: val1
+             !dir$ attributes align : 16 :: val2
+             !dir$ attributes align : 16 :: val3
+             !dir$ attributes align : 16 :: val4
+             !dir$ attributes align : 16 :: val5
+             !dir$ attributes align : 16 :: val6
+             !dir$ attributes align : 16 :: val7
+             type(XMM2r8_t), automatic :: arg0
+             type(XMM2r8_t), automatic :: arg1
+             type(XMM2r8_t), automatic :: arg2
+             type(XMM2r8_t), automatic :: arg3
+             type(XMM2r8_t), automatic :: arg4
+             type(XMM2r8_t), automatic :: arg5
+             type(XMM2r8_t), automatic :: arg6
+             type(XMM2r8_t), automatic :: arg7
+             type(XMM2r8_t), automatic :: val0
+             type(XMM2r8_t), automatic :: val1
+             type(XMM2r8_t), automatic :: val2
+             type(XMM2r8_t), automatic :: val3
+             type(XMM2r8_t), automatic :: val4
+             type(XMM2r8_t), automatic :: val5
+             type(XMM2r8_t), automatic :: val6
+             type(XMM2r8_t), automatic :: val7
+             integer(kind=i4) :: i,m,m1
+             m = mod(n,8)
+             if(m/=0) then
+                val0.v = 0.0_dp
+                do i=1,m
+                    arg0.v = parg(i).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i).v = val0.v
+                end do
+                if(n<8) return
+             end if
+             m1=m+1
+             val0.v = 0.0_dp
+             val1.v = 0.0_dp
+             val2.v = 0.0_dp
+             val3.v = 0.0_dp
+             val4.v = 0.0_dp
+             val5.v = 0.0_dp
+             val6.v = 0.0_dp
+             val7.v = 0.0_dp
+             !dir$ assume_aligned parg:16
+             !dir$ assume_aligned pval:16
+             !dir$ vector aligned
+             !dir$ ivdep
+             !dir$ vector vectorlength(8)
+             !dir$ vector multiple_gather_scatter_by_shuffles 
+             !dir$ vector always
+!$omp parallel do proc_bind(close) schedule(static) default(none) firstprivate(m1)       &
+!$omp firstprivate(val0,val1,val2,val3,val4,val5,val6,val7)                              &
+!$omp private(i,arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7)  &
+!$omp shared(parg,pval,jint,n,PF_DIST)               &
+!$omp private(FOR_K_PREFETCH_T0,FOR_K_PREFETCH_T1,FOR_K_PREFETCH_T2,FOR_K_PREFETCH_NTA)  
+             do i=m1,n,8
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                    arg0.v = parg(i+0).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i+0).v = val0.v 
+                    arg1.v = parg(i+1).v
+                    call calci0_xmm2r8(arg1,val1,jint)
+                    pval(i+1).v = val1.v  
+                    arg2.v = parg(i+2).v
+                    call calci0_xmm2r8(arg2,val2,jint)
+                    pval(i+2).v = val2.v
+                    arg3.v = parg(i+3).v
+                    call calci0_xmm2r8(arg3,val3,jint)
+                    pval(i+3).v = val3.v
+                    arg4.v = parg(i+4).v
+                    call calci0_xmm2r8(arg4,val4,jint)
+                    pval(i+4).v = val4.v 
+                    arg5.v = parg(i+5).v
+                    call calci0_xmm2r8(arg5,val5,jint)
+                    pval(i+5).v = val5.v  
+                    arg6.v = parg(i+6).v
+                    call calci0_xmm2r8(arg6,val6,jint)
+                    pval(i+6).v = val6.v
+                    arg7.v = parg(i+7).v
+                    call calci0_xmm2r8(arg7,val7,jint)
+                    pval(i+7).v = val7.v
+              end do
+!$omp end parallel do
+       end subroutine calci0_unroll8x_omp_xmm2r8
+       
+       
+       subroutine calci0_unroll4x_omp_xmm2r8(parg,pval,n,jint,PF_DIST)
+             !dir$ optimize:3
+             !dir$ attributes code_align : 32 :: calci0_unroll4x_omp_xmm2r8
+             !dir$ attributes forceinline :: calci0_unroll4x_omp_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_unroll4x_omp_xmm2r8
+             type(XMM2r8_t), dimension(1:n), intent(in) :: parg
+             type(XMM2r8_t), dimension(1:n), intent(out):: pval
+             integer(kind=i4),               intent(in) :: n
+             integer(kind=i4),               intent(in) :: jint
+             integer(kind=i4),               intent(in) :: PF_DIST
+             !dir$ attributes align : 16 :: arg0
+             !dir$ attributes align : 16 :: arg1
+             !dir$ attributes align : 16 :: arg2
+             !dir$ attributes align : 16 :: arg3
+             !dir$ attributes align : 16 :: val0
+             !dir$ attributes align : 16 :: val1
+             !dir$ attributes align : 16 :: val2
+             !dir$ attributes align : 16 :: val3
+             type(XMM2r8_t), automatic :: arg0
+             type(XMM2r8_t), automatic :: arg1
+             type(XMM2r8_t), automatic :: arg2
+             type(XMM2r8_t), automatic :: arg3
+             type(XMM2r8_t), automatic :: val0
+             type(XMM2r8_t), automatic :: val1
+             type(XMM2r8_t), automatic :: val2
+             type(XMM2r8_t), automatic :: val3
+             integer(kind=i4) :: i,m,m1
+             m = mod(n,4)
+             if(m/=0) then
+                val0.v = 0.0_dp
+                do i=1,m
+                    arg0.v = parg(i).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i).v = val0.v
+                end do
+                if(n<4) return
+             end if
+             m1=m+1
+             val0.v = 0.0_dp
+             val1.v = 0.0_dp
+             val2.v = 0.0_dp
+             val3.v = 0.0_dp
+             !dir$ assume_aligned parg:16
+             !dir$ assume_aligned pval:16
+             !dir$ vector aligned
+             !dir$ ivdep
+             !dir$ vector vectorlength(8)
+             !dir$ vector multiple_gather_scatter_by_shuffles 
+             !dir$ vector always
+!$omp parallel do proc_bind(close) schedule(static) default(none) firstprivate(m1)       &
+!$omp firstprivate(val0,val1,val2,val3)                              &
+!$omp private(i,arg0,arg1,arg2,arg3)  &
+!$omp shared(parg,pval,jint,n,PF_DIST)               &
+!$omp private(FOR_K_PREFETCH_T0,FOR_K_PREFETCH_T1,FOR_K_PREFETCH_T2,FOR_K_PREFETCH_NTA)  
+             do i=m1,n,4
+#if (__RCS_CYLINDER_PF_CACHE_HINT__) == 1
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T0,.true.,.false.)
+#elif (__RCS_CYLINDER_PF_CACHE_HINT__) == 2   
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T1,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 3
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_T2,.true.,.false.)
+#elif (_RCS_CYLINDER_PF_CACHE_HINT__) == 4
+                       call mm_prefetch(parg(i+PF_DIST),FOR_K_PREFETCH_NTA,.true.,.false.)
+#endif                 
+                    arg0.v = parg(i+0).v
+                    call calci0_xmm2r8(arg0,val0,jint)
+                    pval(i+0).v = val0.v 
+                    arg1.v = parg(i+1).v
+                    call calci0_xmm2r8(arg1,val1,jint)
+                    pval(i+1).v = val1.v  
+                    arg2.v = parg(i+2).v
+                    call calci0_xmm2r8(arg2,val2,jint)
+                    pval(i+2).v = val2.v
+                    arg3.v = parg(i+3).v
+                    call calci0_xmm2r8(arg3,val3,jint)
+                    pval(i+3).v = val3.v
+               end do
+!$omp end parallel do
+       end subroutine calci0_unroll4x_omp_xmm2r8
        
        
     
