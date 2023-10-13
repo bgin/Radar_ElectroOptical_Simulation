@@ -60,7 +60,7 @@ module spec_funcs_xmm2r8
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
 
-    use mod_kinds,    only : i4,dp
+    use mod_kinds,    only : i4,i8,dp
     use mod_vectypes, only : XMM2r8_t,Mask2_t
     
     public
@@ -4366,7 +4366,7 @@ module spec_funcs_xmm2r8
 #endif
 
 
-        subroutine caljy0_xmm2r8(arg,jint,val)
+        subroutine caljy0_xmm2r8(arg,val,jint)
                
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: caljy0_xmm2r8
@@ -4907,7 +4907,7 @@ module spec_funcs_xmm2r8
 #endif
 
 
-          subroutine caljy1_xmm2r8(arg,jint,val)
+          subroutine caljy1_xmm2r8(arg,val,jint)
                
               !dir$ optimize:3
               !dir$ attributes code_align : 32 :: caljy1_xmm2r8
