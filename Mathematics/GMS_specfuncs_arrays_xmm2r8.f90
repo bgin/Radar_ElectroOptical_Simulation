@@ -517,7 +517,7 @@ module  specfuncs_arrays_xmm2r8
                   return
              end select
              
-       end subroutine calci0_blocked64x32x16x8x_xmm2r8
+       end subroutine calcei_blocked64x32x16x8x_xmm2r8
        
        
        subroutine calcei_blocked64x32x16x8x_omp_xmm2r8(parg,pval,n,jint,PF_DIST,which)         
@@ -2655,7 +2655,7 @@ module  specfuncs_arrays_xmm2r8
              !dir$ optimize:3
              !dir$ attributes code_align : 32 :: calci1_unroll12x_omp_xmm2r8
              !dir$ attributes forceinline :: calci1_unroll12x_omp_xmm2r8
-             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci0_unroll12x_omp_xmm2r8
+             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: calci1_unroll12x_omp_xmm2r8
              type(XMM2r8_t), dimension(1:n), intent(in) :: parg
              type(XMM2r8_t), dimension(1:n), intent(out):: pval
              integer(kind=i4),               intent(in) :: n
@@ -6871,6 +6871,11 @@ module  specfuncs_arrays_xmm2r8
                end do
 !$omp end parallel do
        end subroutine caljy1_unroll4x_omp_xmm2r8
+       
+       
+
+
+         
        
        
        
