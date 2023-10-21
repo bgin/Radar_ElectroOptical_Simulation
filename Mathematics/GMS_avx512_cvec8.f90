@@ -1,6 +1,6 @@
 
 
-module mod_avx512_cvec8
+module avx512_cvec8
 
  !===================================================================================85
  !---------------------------- DESCRIPTION ------------------------------------------85
@@ -8,7 +8,7 @@ module mod_avx512_cvec8
  !
  !
  !          Module  name:
- !                         'mod_avx512_cvec8
+ !                         'avx512_cvec8
  !          
  !          Purpose:
  !                      This module contains a decomposed to real and imaginary
@@ -51,22 +51,22 @@ module mod_avx512_cvec8
      !=====================================================59
 
      ! Major version
-     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MAJOR = 1
+     integer(kind=i4),  parameter :: AVX512_CVEC8_MAJOR = 1
      ! Minor version
-     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MINOR = 0
+     integer(kind=i4),  parameter :: AVX512_CVEC8_MINOR = 0
      ! Micro version
-     integer(kind=i4),  parameter :: MOD_AVX512C8F64_MICRO = 0
+     integer(kind=i4),  parameter :: AVX512_CVEC8_MICRO = 0
      ! Full version
-     integer(kind=i4),  parameter :: MOD_AVX512C8F64_FULLVER =   &
-            1000*MOD_AVX512C8F64_MAJOR+100*MOD_AVX512C8F64_MINOR+10*MOD_AVX512C8F64
+     integer(kind=i4),  parameter :: AVX512_CVEC8_FULLVER =   &
+            1000*AVX512_CVEC8_MAJOR+100*AVX512_CVEC8_MINOR+10*AVX512_CVEC8_MICRO
      ! Module creation date
-     character(*),        parameter :: MOD_AVX512C8F64_CREATE_DATE = "03-11-2019 15:54 +00200 (SUN 03 NOV 2019 GMT+2)"
+     character(*),        parameter :: AVX512_CVEC8_CREATE_DATE = "03-11-2019 15:54 +00200 (SUN 03 NOV 2019 GMT+2)"
      ! Module build date
-     character(*),        parameter :: MOD_AVX512C8F64_BUILD_DATE  = __DATE__ " " __TIME__
+     character(*),        parameter :: AVX512_CVEC8_BUILD_DATE  = __DATE__ " " __TIME__
      ! Module author info
-     character(*),        parameter :: MOD_AVX512C8F64_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+     character(*),        parameter :: AVX512_CVEC8_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: MOD_AVX512C8F64_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
+     character(*),        parameter :: AVX512_CVEC8_SYNOPSIS    = "Packed complex vector of 8 elements (complex numbers)"
 
      ! public operators
 
@@ -736,7 +736,7 @@ module mod_avx512_cvec8
        iq.im = x.im
      end function conjugate
      
-#if (USE_INTRINSIC_VECTOR_COMPARE) == 1
+#if (USE_INTRINSIC_VECTOR_COMPARE) == 0
      
 !DIR$ ATTRIBUTES INLINE :: c8_eq_c8     
      pure elemental function c8_eq_c8(lhs,rhs) result(mmask8)
