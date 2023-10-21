@@ -792,7 +792,7 @@ module  avx512_cvec16
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_div_c16
 
         complex(kind=sp),      intent(in) :: x
-        type(AVX512c16f32_t),  intent(in) :: y
+        type(ZMM16c4),  intent(in) :: y
 
         !DIR$ ATTRIBUTES ALIGN : 64 :: iq
         type(ZMM16c4) :: iq
