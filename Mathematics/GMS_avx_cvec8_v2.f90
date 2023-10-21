@@ -658,8 +658,15 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: C00
        type(YMM8r4_t), parameter :: C00 = YMM8r4_t(0.0_sp)
-       iq.re = lhs.v-rhs.re
-       iq.im = C00.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs.v(i)-rhs.re(i)
+          iq.im(i) = C00.v(i)
+       end do
      end function ymm8r4_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_sub_ymm8c4
@@ -672,8 +679,15 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: C00
        type(YMM8r4_t), parameter :: C00 = YMM8r4_t(0.0_sp)
-       iq.re = lhs-rhs.re
-       iq.im = C00.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs-rhs.re(i)
+          iq.im(i) = C00.v(i)
+       end do
      end function  s1_sub_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_ymm8c4
@@ -686,12 +700,19 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: ymm0,ymm1,ymm2,ymm3
        type(YMM8r4_t) :: ymm0,ymm1,ymm2,ymm3
-       ymm0.v = lhs.re*rhs.re
-       ymm1.v = lhs.im*rhs.im
-       iq.re  = ymm0.v-ymm1.v
-       ymm2.v = lhs.im*rhs.re
-       ymm3.v = lhs.re*rhs.im
-       iq.im  = ymm2.v-ymm3.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          ymm0.v(i) = lhs.re(i)*rhs.re(i)
+          ymm1.v(i) = lhs.im(i)*rhs.im(i)
+          iq.re(i)  = ymm0.v(i)-ymm1.v(i)
+          ymm2.v(i) = lhs.im(i)*rhs.re(i)
+          ymm3.v(i) = lhs.re(i)*rhs.im(i)
+          iq.im(i)  = ymm2.v(i)-ymm3.v(i)
+       end do
      end function ymm8c4_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_c1
@@ -699,17 +720,27 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_mul_c1
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_mul_c1
        type(YMM8c4),     intent(in) :: lhs
-       complex(kind=sp),        intent(in) :: rhs
+       complex(kind=sp), intent(in), value :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: ymm0,ymm1,ymm2,ymm3
        type(YMM8r4_t) :: ymm0,ymm1,ymm2,ymm3
-       ymm0.v = lhs.re*real(rhs,kind=dp)
-       ymm1.v = lhs.im*aimag(rhs,kind=dp)
-       iq.re  = ymm0.v-ymm1.v
-       ymm2.v = lhs.im*real(rhs,kind=dp)
-       ymm3.v = lhs.re*aimag(rhs,kind=dp)
-       iq.im  = ymm2.v-ymm3.v
+       real(kind=sp), automatic :: cr,ci
+       integer(kind=i4) :: i
+       cr = real(rhs,kind=dp)
+       ci = aimag(rhs,kind=dp)
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          ymm0.v(i) = lhs.re(i)*cr
+          ymm1.v(i) = lhs.im(i)*ci
+          iq.re(i)  = ymm0.v(i)-ymm1.v(i)
+          ymm2.v(i) = lhs.im(i)*cr
+          ymm3.v(i) = lhs.re(i)*ci
+          iq.im(i)  = ymm2.v(i)-ymm3.v(i)
+       end do
      end function  ymm8c4_mul_c1
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_ymm8r4
@@ -720,8 +751,15 @@ module avx_cvec8_v2
        type(YMM8r4_t),         intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       iq.re = lhs.re*rhs.v
-       iq.im = lhs.im*rhs.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs.re(i)*rhs.v(i)
+          iq.im(i) = lhs.im(i)*rhs.v(i)
+       end do
      end function ymm8c4_mul_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_mul_s1
@@ -729,53 +767,84 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8c4_mul_s1
        !DIR$ ATTRIBUTES VECTOR ::  ymm8c4_mul_s1
        type(YMM8c4),    intent(in) :: lhs
-       real(kind=sp),   intent(in) :: rhs
+       real(kind=sp),   intent(in), :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       iq.re = lhs.re*rhs
-       iq.im = lhs.im*rhs
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs.re(i)*rhs
+          iq.im(i) = lhs.im(i)*rhs
+       end do
      end function  ymm8c4_mul_s1
 
 !DIR$ ATTRIBUTES INLINE :: c1_mul_ymm8c4
      pure function c1_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c1_mul_ymm8c4
-       complex(kind=sp),        intent(in) :: lhs
+       complex(kind=sp), intent(in), value :: lhs
        type(YMM8c4),     intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: ymm0,ymm1,ymm2,ymm3
        type(YMM8r4_t) :: ymm0,ymm1,ymm2,ymm3
-       ymm0.v = real(lhs,kind=sp)*rhs.re
-       ymm1.v = aimag(lhs,kind=sp)*rhs.im
-       iq.re  = ymm0.v+ymm1.v
-       ymm2.v = real(lhs,kind=sp)*rhs.im
-       ymm3.v = aimag(lhs,kind=sp)*rhs.re
-       iq.im  = ymm2.v-ymm3.v
+       real(kind=sp), automatic :: cr,ci
+       integer(kind=i4) :: i
+       cr = real(lhs,kind=sp)
+       ci = aimag(lhs,kind=sp)
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+           ymm0.v(i) = cr*rhs.re(i)
+           ymm1.v(i) = ci*rhs.im(i)
+           iq.re(i)  = ymm0.v(i)+ymm1.v(i)
+           ymm2.v(i) = cr*rhs.im(i)
+           ymm3.v(i) = ci*rhs.re(i)
+           iq.im(i)  = ymm2.v(i)-ymm3.v(i)
+       end do
      end function c1_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8r4_mul_ymm8c4
      pure function  ymm8r4_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 ::  ymm8r4_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR ::  ymm8r4_mul_ymm8c4
-       type(YMM8r4_t),        intent(in) :: lhs
+       type(YMM8r4_t), intent(in), value :: lhs
        type(YMM8c4),   intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 64 ::  ymm8r4_mul_ymm8c4
        type(YMM8c4) :: iq
-       iq.re = lhs.v*rhs.re
-       iq.im = lhs.v*rhs.im
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs.v(i)*rhs.re(i)
+          iq.im(i) = lhs.v(i)*rhs.im(i)
+       end do
      end function  ymm8r4_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_mul_ymm8c4
      pure function s1_mul_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: s1_mul_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: s1_mul_ymm8c4
-       real(kind=sp),       intent(in) :: lhs
+       real(kind=sp),intent(in), value :: lhs
        type(YMM8c4), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       iq.re = lhs*rhs.re
-       iq.im = lhs*rhs.im
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs*rhs.re(i)
+          iq.im(i) = lhs*rhs.im(i)
+       end do
      end function s1_mul_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_ymm8c4    
@@ -788,16 +857,24 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: ymm0,ymm1,ymm2,ymm3,den
        type(YMM8r4_t), automatic :: ymm0,ymm1,ymm2,ymm3,den
+       integer(kind=i4) :: i
 #if (USE_SAFE_COMPLEX_DIVISION) == 1
        iq = cdiv_smith(lhs,rhs)
 #else
-       ymm0.v = lhs.re*rhs.re
-       ymm1.v = lhs.im*rhs.im
-       ymm2.v = lhs.im*rhs.re
-       ymm3.v = lhs.re*rhs.im
-       den.v  = (rhs.re*rhs.re)+(rhs.im*rhs.im)
-       iq.re  = (ymm0.v+ymm1.v)/den.v
-       iq.im  = (ymm2.v-ymm3.v)/den.v
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          ymm0.v(i) = lhs.re(i)*rhs.re(i)
+          ymm1.v(i) = lhs.im(i)*rhs.im(i)
+          ymm2.v(i) = lhs.im(i)*rhs.re(i)
+          ymm3.v(i) = lhs.re(i)*rhs.im(i)
+          den.v(i)  = (rhs.re(i)*rhs.re(i))+ &
+                      (rhs.im(i)*rhs.im(i))
+          iq.re(i)  = (ymm0.v(i)+ymm1.v(i))/den.v(i)
+          iq.im(i)  = (ymm2.v(i)-ymm3.v(i))/den.v(i)
+       end do
 #endif
      end function  ymm8c4_div_ymm8c4   
 
@@ -806,19 +883,28 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_c1
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_c1
        type(YMM8c4),   intent(in) :: lhs
-       complex(kind=sp),      intent(in) :: rhs
+       complex(kind=sp),intent(in), value :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 64 :: ymm0,ymm1,ymm2,ymm3,den
        type(YMM8c4), automatic :: ymm0,ymm1,ymm2,ymm3,den
-       ymm0.v = lhs.re*real(rhs,kind=sp)
-       ymm1.v = lhs.im*aimag(rhs,kind=sp)
-       ymm2.v = lhs.im*real(rhs,kind=sp)
-       ymm3.v = lhs.re*aimag(rhs,kind=sp)
-       den.v  = (real(rhs,kind=sp)*real(rhs,kind=sp))+ &
-            (aimag(rhs,kind=sp)*aimag(rhs,kind=sp))
-       iq.re = (ymm0.v+ymm1.v)/den.v
-       iq.im = (ymm2.v-ymm3.v)/den.v
+       real(kind=sp), automatic :: cr,ci
+       integer(kind=i4) :: i
+       cr = real(rhs,kind=sp)
+       ci = aimag(rhs,kind=sp)
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          ymm0.v(i) = lhs.re(i)*cr
+          ymm1.v(i) = lhs.im(i)*ci
+          ymm2.v(i) = lhs.im(i)*cr
+          ymm3.v(i) = lhs.re(i)*ci
+          den.v(i)  = (cr*cr)+(ci*ci)
+          iq.re(i) = (ymm0.v(i)+ymm1.v(i))/den.v(i)
+          iq.im(i) = (ymm2.v(i)-ymm3.v(i))/den.v(i)
+       end do
      end function ymm8c4_div_c1
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_ymm8r4
@@ -826,52 +912,74 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_ymm8r4
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_ymm8r4
        type(YMM8c4),  intent(in) :: lhs
-       type(YMM8r8_t),       intent(in) :: rhs
+       type(YMM8r8_t),intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       iq.re = lhs.re/rhs.v
-       iq.im = lhs.im/rhs.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = lhs.re(i)/rhs.v(i)
+          iq.im(i) = lhs.im(i)/rhs.v(i)
+       end do
      end function ymm8c4_div_ymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_div_s1
      pure function ymm8c4_div_s1(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8c4_div_s1
        !DIR$ ATTRIBUTES VECTOR :: ymm8c4_div_s1
-       type(YMM8c4),     intent(in) :: lhs
-       real(kind=sp),           intent(in) :: rhs
+       type(YMM8c4),  intent(in) :: lhs
+       real(kind=sp), intent(in), value :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       iq.re = lhs.re/rhs
-       iq.im = lhs.im/rhs
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re = lhs.re(i)/rhs
+          iq.im = lhs.im(i)/rhs
+       end do
      end function ymm8c4_div_s1
 
 !DIR$ ATTRIBUTES INLINE :: c1_div_ymm8c4
      pure function c1_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: c1_div_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: c1_div_ymm8c4
-       complex(kind=sp),       intent(in) :: lhs
+       complex(kind=sp), intent(in), value :: lhs
        type(YMM8c4),      intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: ymm0,ymm1,ymm2,ymm3,den
        type(YMM8c4), automatic :: ymm0,ymm1,ymm2,ymm3,den
-       real(kind=sp), automatic :: r,i
-       r = real(lhs,kind=sp)
-       i = aimag(lhs,kind=sp)
-       ymm0.v = r*rhs.re
-       ymm1.v = i*rhs.im
-       ymm2.v = i*rhs.re
-       ymm3.v = r*rhs.im
-       den.v  = (rhs.re*rhs.re)+(rhs.im*rhs.im)
-       iq.re  = (ymm0.v+ymm1.v)/den.v
-       iq.im  = (ymm2.v-ymm3.v)/den.v
+       real(kind=sp), automatic :: cr,ci
+       integer(kind=i4) :: i
+       cr = real(lhs,kind=sp)
+       ci = aimag(lhs,kind=sp)
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+           ymm0.v(i) = cr*rhs.re(i)
+           ymm1.v(i) = ci*rhs.im(i)
+           ymm2.v(i) = ci*rhs.re(i)
+           ymm3.v(i) = cr*rhs.im(i)
+           den.v(i)  = (rhs.re(i)*rhs.re(i))+ &
+                       (rhs.im(i)*rhs.im(i))
+           iq.re(i)  = (ymm0.v(i)+ymm1.v(i))/den.v(i)
+           iq.im(i)  = (ymm2.v(i)-ymm3.v(i))/den.v(i)
+       end do
      end function c1_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ymm8r4_div_ymm8c4
      pure function ymm8r4_div_ymm8c4(lhs,rhs) result(iq)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ymm8r4_div_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: ymm8r4_div_ymm8c4
-       type(YMM8r4_t),      intent(in) :: lhs
+       type(YMM8r4_t),intent(in) :: lhs
        type(YMM8c4), intent(in) :: rhs
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
@@ -879,9 +987,16 @@ module avx_cvec8_v2
        type(YMM8r4_t), parameter :: C00 = YMM8r4_t(0.0_sp)
        !DIR$ ATTRIBUTES ALIGN : 32 :: t0
        type(YMM8c4), automatic :: t0
-       t0.re = lhs.v 
-       t0.im = C00.v
-       iq    = t0/rhs
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          t0.re(i) = lhs.v(i) 
+          t0.im(i) = C00.v(i)
+       end do
+       iq = t0/rhs
      end function ymm8r4_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: s1_div_ymm8c4
@@ -896,9 +1011,16 @@ module avx_cvec8_v2
        type(YMM8r4_t), parameter :: C00 = YMM8r4_t(0.0_sp)
        !DIR$ ATTRIBUTES ALIGN : 32 :: t0
        type(YMM8c4), automatic :: t0
-       t0.re = lhs
-       t0.im = C00.v
-       iq    = t0/rhs
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          t0.re(i) = lhs
+          t0.im(i) = C00.v(i)
+       end do
+       iq = t0/rhs
      end function s1_div_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: conjugate
@@ -910,353 +1032,18 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: C00
        type(YMM8r4_t), parameter :: C00 = YMM8r4_t(0.0_sp)
-       iq.re = C00.v-x.re
-       iq.im = x.im
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = C00.v(i)-x.re(i)
+          iq.im(i) = x.im(i)
+       end do
      end function conjugate
      
-!#if (USE_INTRINSIC_VECTOR_COMPARE) == 0
-     
-!!DIR$ ATTRIBUTES INLINE :: c8_eq_c8     
-!     pure function c8_eq_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
-!     end function c8_eq_c8
 
-!!DIR$ ATTRIBUTES INLINE :: c8_eq_c1
-!     pure function c8_eq_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_eq_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c1
-!       type(ZMM8c8),  intent(in) :: lhs
-!       complex(kind=dp),     intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
-!     end function c8_eq_c1
-
-!!DIR$ ATTRIBUTES INLINE :: c1_eq_c8
-!     pure function c1_eq_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_eq_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_eq_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
-!     end function c1_eq_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_neq_c8     
-!     pure function c8_neq_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
-!     end function c8_neq_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_neq_c1
-!     pure function c8_neq_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_neq_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_neq_c1
-!       type(ZMM8c8),  intent(in) :: lhs
-!       complex(kind=dp),     intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
-!     end function c8_neq_c1
-
-!!DIR$ ATTRIBUTES INLINE :: c1_neq_c8
-!     pure function c1_neq_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_neq_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_neq_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,12)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,12)
-!     end function c1_neq_c8
-     
-!!DIR$ ATTRIBUTES INLINE :: c8_gt_c8     
-!     pure function c8_gt_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
-!     end function c8_gt_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_gt_c1
-!     pure function c8_gt_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_gt_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_gt_c1
-!1 !      type(ZMM8c8),  intent(in) :: lhs
-! !      complex(kind=dp),     intent(in) :: rhs
-! !      integer(c_char), dimension(0:1) :: mmask8
-! !      !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
-!     end function c8_gt_c1
-
-!!DIR$ ATTRIBUTES INLINE :: c1_gt_c8
-!     pure function c1_eq_c8(lhs,rhs) result(mmask8)
-!!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_gt_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_gt_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,30)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,30)
-!     end function c1_gt_c8
-     
-!!DIR$ ATTRIBUTES INLINE :: c8_lt_c8     
-!     pure function c8_lt_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_eq_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,17)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,17)
-!     end function c8_lt_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_lt_c1
-!     pure function c8_lt_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_lt_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_lt_c1
-!       type(ZMM8c8),  intent(in) :: lhs
-!       complex(kind=dp),     intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,17)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,17)
-!     end function c8_lt_c1
-
-!DIR$ ATTRIBUTES INLINE :: c1_lt_c8
-!     pure function c1_lt_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_lt_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_lt_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
-!     end function c1_lt_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_ge_c8     
-!     pure function c8_ge_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
-!     end function c8_ge_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_ge_c1
-!     pure function c8_ge_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_ge_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_ge_c1
-!       type(ZMM8c8),  intent(in) :: lhs
-!       complex(kind=dp),     intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
-!     end function c8_ge_c1
-
-!!DIR$ ATTRIBUTES INLINE :: c1_ge_c8
-!     pure function c1_ge_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_ge_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_ge_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,29)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,29)
-!     end function c1_ge_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_le_c8     
-!     pure function c8_le_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c8_le_c8
-!       type(ZMM8c8),   intent(in) :: lhs
-!       type(ZMM8c8),   intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,18)
-!       lim.ymm = lhs.im
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,18)
-!     end function c8_le_c8
-
-!!DIR$ ATTRIBUTES INLINE :: c8_le_c1
-!     pure function c8_le_c1(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c8_le_c1
-!       !DIR$ ATTRIBUTES VECTOR :: c8_le_c1
-!       type(ZMM8c8),  intent(in) :: lhs
-!       complex(kind=dp),     intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = lhs.re
-!       rre.ymm = real(rhs,kind=dp)
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,18)
-!       lim.ymm = lhs.im
-!       rim.ymm = aimag(rhs,kind=dp)
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,18)
-!     end function c8_le_c1
-
-!!DIR$ ATTRIBUTES INLINE :: c1_le_c8
-!     pure function c1_le_c8(lhs,rhs) result(mmask8)
-!       use mod_avx512_bindings, only : v8f64, v8f64_cmp_pd_mask
-!       !DIR$ ATTRIBUTES CODE_ALIGN : 16 :: c1_le_c8
-!       !DIR$ ATTRIBUTES VECTOR :: c1_le_c8
-!       complex(kind=dp),     intent(in) :: lhs
-!       type(ZMM8c8),  intent(in) :: rhs
-!       integer(c_char), dimension(0:1) :: mmask8
-!       !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!       type(v8f64), automatic :: lre,lim,rre,rim
-!       mmask8 = 0
-!       lre.ymm = real(lhs,kind=dp)
-!       rre.ymm = rhs.re
-!       mmask8(0) = v8f64_cmp_pd_mask(lre,rre,0)
-!       lim.ymm = aimag(lhs,kind=dp)
-!       rim.ymm = rhs.im
-!       mmask8(1) = v8f64_cmp_pd_mask(lim,rim,0)
-!     end function c1_le_c8
      
 !DIR$ ATTRIBUTES INLINE :: ymm8c4_eq_ymm8c4
      pure function ymm8c4_eq_ymm8c4(lhs,rhs) result(bres)
@@ -1592,9 +1379,15 @@ module avx_cvec8_v2
        type(YMM8r4_t), intent(in) :: theta
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       ! EXec code ....
-       iq.re = rho.v*cos(theta.v)
-       iq.im = rho.v*sin(theta.v) 
+        integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = rho.v(i)*cos(theta.v(i))
+          iq.im(i) = rho.v(i)*sin(theta.v(i)) 
+       end do
      end function polar
      
 !DIR$ ATTRIBUTES INLINE :: carg_ymm8c4
@@ -1604,9 +1397,14 @@ module avx_cvec8_v2
        type(YMM8c4),   intent(in) :: c8
        !DIR$ ATTRIBUTES ALIGN : 32 :: arg
        type(YMM8r4_t) :: arg
-       ! EXec code ....
-       arg.v  = atan2(c8.im,c8.re)
-       
+        integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          arg.v(i)  = atan2(c8.im(i),c8.re(i))
+       end do
      end function carg_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: carg_2xymm8r4     
@@ -1617,8 +1415,14 @@ module avx_cvec8_v2
        type(YMM8r4_t),  intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 32 :: arg
        type(YMM8r4_t) :: arg
-       ! EXec code ....
-       arg.v = atan2(im.v,re.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          arg.v(i) = atan2(im.v(i),re.v(i))
+       end do
      end function carg_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: csin_ymm8c4
@@ -1631,11 +1435,17 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre
        type(YMM8r4_t) :: tim
-       ! Exec code ....
-       tre = c8.re
-       tim = c8.im
-       iq.re = sin(tre.v)*cosh(tim.v)
-       iq.im = cos(tre.v)*sinh(tim.v)
+        integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          tre.v(i) = c8.re(i)
+          tim.v(i) = c8.im(i)
+          iq.re(i) = sin(tre.v(i))*cosh(tim.v(i))
+          iq.im(i) = cos(tre.v(i))*sinh(tim.v(i))
+       end do
      end function csin_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: csin_2xymm8r4
@@ -1646,9 +1456,15 @@ module avx_cvec8_v2
        type(YMM8r4_t),   intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
        type(YMM8c4) :: iq
-       ! Exec code ...
-       iq.re = sin(re.v)*cosh(im.v)
-       iq.im = cos(re.v)*sinh(im.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          iq.re(i) = sin(re.v(i))*cosh(im.v(i))
+          iq.im(i) = cos(re.v(i))*sinh(im.v(0))
+       end do
      end function csin_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: csinh_ymm8c4
@@ -1661,11 +1477,17 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre
        type(YMM8r4_t) :: tim
-       ! EXec code ....
-       tre = c8.re
-       tim = c8.im
-       iq.re = sinh(tre.v)*cos(tim.v)
-       iq.im = cosh(tre.v)*sin(tim.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          tre.v(i) = c8.re(i)
+          tim.v(i) = c8.im(i)
+          iq.re(i) = sinh(tre.v(i))*cos(tim.v(i))
+          iq.im(i) = cosh(tre.v(i))*sin(tim.v(i))
+       end do
      end function csinh_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: csinh_2xymm8r4
@@ -1676,9 +1498,15 @@ module avx_cvec8_v2
        type(YMM8r4_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
        type(ZMM8c8) :: iq
-       ! EXec code ....
-       iq.re = sinh(re.v)*cos(im.v)
-       iq.im = cosh(re.v)*sin(im.v
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           iq.re(i) = sinh(re.v(i))*cos(im.v(i))
+           iq.im(i) = cosh(re.v(i))*sin(im.v(i))
+        end do
      end function csinh_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ccos_ymm8c4
@@ -1691,11 +1519,17 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre
        type(YMM8r4_t) :: tim
-       ! EXec code ....
-       tre = c8.re
-       tim = c8.im
-       iq.re = cos(tre.v)*cosh(tim.v)
-       iq.im = sin(tre.v)*sinh(tim.v)
+        integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           tre.v(i) = c8.re(i)
+           tim.v(i) = c8.im(i)
+           iq.re = cos(tre.v(i))*cosh(tim.v(i))
+           iq.im = sin(tre.v(i))*sinh(tim.v(i))
+        end do
      end function ccos_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ccos_2xymm8r4
@@ -1706,9 +1540,15 @@ module avx_cvec8_v2
        type(YMM8r4_t), intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       ! EXec code .....
-       iq.re = cos(re.v)*cosh(im.v)
-       iq.im = sin(re.v)*sinh(im.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           iq.re(i) = cos(re.v(i))*cosh(im.v(i))
+           iq.im(i) = sin(re.v(i))*sinh(im.v(i))
+        end do
      end function ccos_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_ymm8c4
@@ -1721,11 +1561,17 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre
        type(YMM8r4_t) :: tim
-       ! EXec code ....
-       tre = c8.re
-       tim = c8.im
-       iq.re = cosh(tre.v)*cos(tim.v)
-       iq.im = sinh(tre.v)*sin(tim.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           tre.v(i) = c8.re(i)
+           tim.v(i) = c8.im(i)
+           iq.re(i) = cosh(tre.v(i))*cos(tim.v(i))
+           iq.im(i) = sinh(tre.v(i))*sin(tim.v(i))
+        end do
      end function ccosh_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ccosh_2xymm8r4
@@ -1736,9 +1582,15 @@ module avx_cvec8_v2
        type(YMM8r4_t),   intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 32 :: iq
        type(YMM8c4) :: iq
-       ! EXec code ....
-       iq.re = cosh(re.v)*cos(im.v)
-       iq.im = sinh(re.v)*sin(im.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           iq.re(i) = cosh(re.v(i))*cos(im.v(i))
+           iq.im(i) = sinh(re.v(i))*sin(im.v(i))
+        end do
      end function ccosh_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cexp_ymm8c4
@@ -1751,11 +1603,17 @@ module avx_cvec8_v2
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre
        type(YMM8r4_t) :: tim
-       ! Exec code ....
-       tre = c8.re
-       tim = c8.im
-       iq.re = exp(tre.v)*cos(tim.v)
-       iq.im = exp(tre.v)*sin(tim.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           tre.v(i) = c8.re(i)
+           tim.v(i) = c8.im(i)
+           iq.re(i) = exp(tre.v(i))*cos(tim.v(i))
+           iq.im(i) = exp(tre.v(i))*sin(tim.v(i))
+        end do
      end function cexp_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: ctan_ymm8c4
@@ -1786,9 +1644,15 @@ module avx_cvec8_v2
        type(YMM8r4_t),  intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
        type(YMM8c4) :: iq
-       ! Exec code ....
-       iq.re = exp(re.v)*cos(im.v)
-       iq.im = exp(re.v)*sin(im.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           iq.re(i) = exp(re.v(i))*cos(im.v(i))
+           iq.im(i) = exp(re.v(i))*sin(im.v(i))
+        end do
      end function cexp_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cabs_ymm8c4
@@ -1800,10 +1664,17 @@ module avx_cvec8_v2
        type(YMM8r4_t) :: val
        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
        type(YMM8r4_t) :: tre,tim
-       ! Exec code ...
-       tre = c8.re
-       tim = c8.im
-       val.v = sqrt(tre.v*tre.v+tim.v*tim.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           tre.v(i) = c8.re(i)
+           tim.v(i) = c8.im(i)
+           val.v(i) = sqrt(tre.v(i)*tre.v(i)+ &
+                          tim.v(i)*tim.v(i))
+        end do
      end function  cabs_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: cabs_2xymm8r4
@@ -1814,8 +1685,14 @@ module avx_cvec8_v2
        type(YMM8r4_t),  intent(in) :: im
        !DIR$ ATTRIBUTES ALIGN : 32 :: val
        type(YMM8r4_t) :: val
-       ! EXec code ....
-       val.v = sqrt(re.v*re.v+im.v*im.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           val.v(i) = sqrt(re.v(i)*re.v(i)+im.v(i)*im.v(i))
+        end do
      end function cabs_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: cpow_ymm8c4
@@ -1830,16 +1707,23 @@ module avx_cvec8_v2
        type(YMM8r4_t) :: tre,tim
        !DIR$ ATTRIBUTES ALIGN : 32 :: r,theta,pow,trig
        type(YMM8r4_t) :: r,theta,pow,trig
-       !EXec code ....
-       tre = c8.re
-       tim = c8.im
-       r.v = sqrt(tre.v*tre.v+tim.v*tim.v)
-       pow.v   = r.v**n
-       theta.v = atan(tim.v/tre.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           tre.v(i) = c8.re(i)
+           tim.v(i) = c8.im(i)
+           r.v(i) = sqrt(tre.v(i)*tre.v(i)+
+                         tim.v(i)*tim.v(i))
+           pow.v(i)   = r.v(i)**n
+           theta.v(i) = atan(tim.v(i)/tre.v(i))
        ! 
-       trig.v  = theta.v*n
-       iq.re = pow.v*cos(trig.v)
-       iq.im = pow.v*sin(trig.v)
+           trig.v(i)  = theta.v(i)*n
+           iq.re(i) = pow.v(i)*cos(trig.v(i))
+           iq.im(i) = pow.v(i)*sin(trig.v(i))
+        end do
      end function cpow_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: cpow_2xymm8r4
@@ -1855,14 +1739,19 @@ module avx_cvec8_v2
        type(YMM8r4_t) :: tre,tim
        !DIR$ ATTRIBUTES ALIGN : 32 :: r,theta,pow,trig
        type(YMM8r4_t) :: r,theta,pow,trig
-       !EXec code ....
-       r.v = sqrt(re.v*re.v+im.v*im.v)
-       pow.v   = r.v**n
-       theta.v = atan(im.v/re.v)
-       !
-       trig.v  = theta.v*n
-       iq.re = pow.v*cos(trig.v)
-       iq.im = pow.v*sin(trig.v)
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+        do i=0,7
+           r.v(i) = sqrt(re.v(i)*re.v(i)+im.v(i)*im.v(i))
+           pow.v(i)   = r.v(i)**n
+           theta.v(i) = atan(im.v(i)/re.v(i))
+           trig.v(i)  = theta.v(i)*n
+           iq.re(i) = pow.v(i)*cos(trig.v(i))
+           iq.im(i) = pow.v(i)*sin(trig.v(i))
+        end do
      end function cpow_2xymm8r4
 
 !DIR$ ATTRIBUTES INLINE :: clog_ymm8c4    
@@ -1874,8 +1763,7 @@ module avx_cvec8_v2
        type(YMM8c4) :: iq
        !DIR$ ATTRIBUTES ALIGN : 32 :: t0
        type(YMM8r4_t) :: t0
-       !
-       ! EXec code ....
+       
        t0 = cabs_ymm8c4(c8)
        iq.re = log(t0.v)
        iq.im = carg_ymm8c4(c8)
@@ -1938,74 +1826,7 @@ module avx_cvec8_v2
         t2.v = v8_1over2*(t0.v-re.v)
       end function csqrt_2xymm8r4
 
-!!DIR$ ATTRIBUTES INLINE :: select_ymm8c8
-!      pure function select_ymm8c8(lhs,rhs,mask) result(iq)
-!        use, intrinsic :: ISO_C_BINDING
-!        use mod_avx512_bindings, only : v8f64, v8f64_mask_blend_pd
-!        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: select_ymm8c8
-!        !DIR$ ATTRIBUTES VECTOR :: select_ymm8c8
-!        type(ZMM8c8),  intent(in) :: lhs
-!        type(ZMM8c8),  intent(in) :: ths
-!        integer(c_char),      intent(in) :: mask
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-!        type(ZMM8c8) :: iq
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: lre,lim,rre,rim
-!        type(v8f64) :: lre,lim,rre,rim,tre,tim
-!        ! EXec code ....
-!        lre.ymm = lhs.re
-!        rre.ymm = rhs.re
-!        tre = v8f64_mask_blend_pd(mask,lre,rre)
-!        iq.re = tre.ymm
-!        lim.ymm = lhs.im
-!        rim.ymm = rhs.im
-!        tim = v8f64_mask_blend_pd(mask,lim,rim)
-!        iq.im = tim.ymm
-!      end function select_ymm8c8
-       
-       
 
-!!DIR$ ATTRIBUTES INLINE :: permute_ymm8c8
-!      pure function permute_ymm8c8(c8,k,imm) result(iq)
-!        use, intrinsic :: ISO_C_BINDING
-!        use mod_avx512_bindings, only : v8f64, v8f64_mask_permute_pd
-!        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: permute_ymm8c8
-!        !DIR$ ATTIRBUTES VECTOR :: permute_ymm8c8
-!        type(ZMM8c8), intent(in) :: c8
-!        integer(c_char),     intent(in) :: k
-!        integer(c_int),      intent(in) :: imm
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-!        type(ZMM8c8) :: iq
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim,rre,rim
-!        type(v8f64) :: tre,tim,rre,rim
-!        ! EXec code ....
-!        tre.ymm = c8.re
-!        tim.ymm = c8.im
-!        rre = v8f64_mask_permute_pd(tre,k,tim,imm)
-!        iq.re = rre.ymm
-!        rim = v8f64_mask_permute_pd(tim,k,tre,imm)
-!        iq.im = rim.ymm
-!      end function permute_ymm8c8
-
-!!DIR$ ATTRIBUTES INLINE :: expand_ymm8c8
-!      pure function maskz_expand_ymm8c8(c8,k) result(iq)
-!        use, intrinsic :: ISO_C_BINDING
-!        use mod_avx512_bindings, only : v8f64, v8f64_maskz_expand_pd
-!        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: maskz_expand_ymm8c8
-!        !DIR$ ATTRIBUTES VECTOR :: maskz_expand_ymm8c8
-!        type(ZMM8c8),  intent(in) :: c8
-!        integer(c_char),      intent(in) :: k
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: iq
-!        type(ZMM8c8) :: iq
-!        !DIR$ ATTRIBUTES ALIGN : 64 :: tre,tim,rre,rim
-!        type(v8f64) :: tre,tim,rre,rim
-!        ! EXec code ....
-!        tre.ymm = c8.re
-!        rre = v8f64_maskz_expand_pd(k,tre)
-!        iq.re = rre.ymm
-!        tim.ymm = c8.im
-!        rim = v8f64_maskz_expand_pd(k,tim)
-!        iq.im = rim.ymm
-!      end function maskz_expand_ymm8c8
 
 !DIR$ ATTRIBUTES INLINE :: cdiv_smith
       pure function cdiv_smith(lhs,rhs) result(iq)
@@ -2026,6 +1847,9 @@ module avx_cvec8_v2
         type(YMM8r4_t) :: ratio,denom
         !DIR$ ATTRIBUTES ALIGN : 32 :: bres
         logical(kind=i1), dimension(0:7) :: bres
+        integer(kind=i4) :: i
+     
+        
 !#if   (USE_INTRINSIC_VECTOR_COMPARE) == 1
 !        !DIR$ ATTRIBUTES ALIGN : 32 :: tre,tim
 !        type(v8f64) :: tre,tim
@@ -2049,15 +1873,27 @@ module avx_cvec8_v2
 !#elif
         if(all(bres)) then
 !#endif
-           ratio.v   = rhs.im/rhs.re
-           denom.v   = rhs.re+(ratio.v*rhs.im)
-           iq.re     = (lhs.re+lhs.im*ratio.v)/denom.v
-           iq.im     = (lhs.im-lhs.re*ratio.v)/denom.v
+           !dir$ loop_count(8)
+           !dir$ vector aligned
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=0,7
+              ratio.v(i)   = rhs.im(i)/rhs.re(i)
+              denom.v(i)   = rhs.re(i)+(ratio.v(i)*rhs.im(i))
+              iq.re(i)     = (lhs.re(i)+lhs.im(i)*ratio.v(i))/denom.v(i)
+              iq.im(i)     = (lhs.im(i)-lhs.re(i)*ratio.v(i))/denom.v(i)
+           end do
         else
-           ratio.v   = rhs.re/rhs.im
-           denom.v   = rhs.im+ratio.v*rhs.re
-           iq.re     = (lhs.re*ratio.v+lhs.im)/denom.v
-           iq.im     = (lhs.im*ratio.v-lhs.re)/denom.v
+           !dir$ loop_count(8)
+           !dir$ vector aligned
+           !dir$ vector vectorlength(4)
+           !dir$ vector always
+           do i=0,7
+              ratio.v(i)   = rhs.re(i)/rhs.im(i)
+              denom.v(i)   = rhs.im(i)+ratio.v(i)*rhs.re(i)
+              iq.re(i)     = (lhs.re(i)*ratio.v(i)+lhs.im(i))/denom.v(i)
+              iq.im(i)     = (lhs.im(i)*ratio.v(i)-lhs.re(i))/denom.v(i)
+           end do
         end if
       end function cdiv_smith
 
