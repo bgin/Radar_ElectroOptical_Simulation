@@ -38,7 +38,7 @@ module mod_avx512_bindings
 
  ! Tab:5 col - Type and etc.. definitions
  ! Tab:10,11 col - Type , function and subroutine code blocks.
-     use mod_kinds, only : int4
+     use mod_kinds, only : i4
      use, intrinsic :: ISO_C_BINDING
      implicit none
      public
@@ -49,13 +49,13 @@ module mod_avx512_bindings
     !=====================================================59
     
     ! Major version
-    integer(kind=int4),  parameter :: MOD_AVX512_BINDINGS_MAJOR = 1
+    integer(kind=i4),  parameter :: MOD_AVX512_BINDINGS_MAJOR = 1
     ! Minor version
-    integer(kind=int4),  parameter :: MOD_AVX512_BINDINGS_MINOR = 0
+    integer(kind=i4),  parameter :: MOD_AVX512_BINDINGS_MINOR = 0
     ! Micro version
-    integer(kind=int4),  parameter :: MOD_AVX512_BINDINGS_MICRO = 0
+    integer(kind=i4),  parameter :: MOD_AVX512_BINDINGS_MICRO = 0
     ! Full version
-    integer(kind=int4),  parameter :: MOD_AVX512_BINDINGS_FULLVER =  &
+    integer(kind=i4),  parameter :: MOD_AVX512_BINDINGS_FULLVER =  &
          1000*MOD_AVX512_BINDINGS_MAJOR+100*MOD_AVX512_BINDINGS_MINOR+10*MOD_AVX512_BINDINGS_MICRO
     ! Module creation date
     character(*),        parameter :: MOD_AVX512_BINDINGS_CREATE_DATE = "06-11-2019 10:21 +00200 (WED 06 NOV 2019 GMT+2)"
@@ -68,12 +68,12 @@ module mod_avx512_bindings
 
     ! Interoperable with C-side v8f64 and v16f32 structs
     type, bind(c), public :: v8f64
-       public
+       
        real(c_double), dimension(0:7) :: zmm
     end type v8f64
 
     type, bind(c), public :: v16f32
-       public
+       
        real(c_float), dimension(0:15) :: zmm
     end type v16f32
 
