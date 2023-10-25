@@ -68,13 +68,11 @@ module mod_avx512_bindings
 
     ! Interoperable with C-side v8f64 and v16f32 structs
     type, bind(c), public :: v8f64
-       
-       real(c_double), dimension(0:7) :: zmm
+          real(c_double), dimension(0:7) :: zmm
     end type v8f64
 
     type, bind(c), public :: v16f32
-       
-       real(c_float), dimension(0:15) :: zmm
+          real(c_float), dimension(0:15) :: zmm
     end type v16f32
 
     interface
