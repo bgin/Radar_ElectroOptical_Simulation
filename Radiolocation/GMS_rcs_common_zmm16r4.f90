@@ -83,7 +83,7 @@ module rcs_common_zmm16r4
      ! Module author info
      character(*),        parameter :: RCS_COMMON_ZMM16R4_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
      ! Short description
-     character(*),        parameter :: RCS_CYLINDER_ZMM16R4_SYNOPSIS  = "Helper functions for the RCS implementations" 
+     character(*),        parameter :: RCS_COMMON_ZMM16R4_SYNOPSIS  = "Helper functions for the RCS implementations" 
      
      !dir$ attributes align : 64 :: sn0
      !dir$ attributes align : 64 :: sn1
