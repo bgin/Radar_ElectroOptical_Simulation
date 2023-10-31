@@ -411,7 +411,7 @@ module rcs_common_ymm8r4
               !dir$ attributes code_align : 32 :: k_ymm8c4
               !dir$ attributes forceinline :: k_ymm8c4
               !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: k_ymm8c4
-              use avx512_cvec8
+              use avx_cvec8
               type(YMM8c4),  intent(in) :: mu
               type(YMM8c4),  intent(in) :: eps
               type(YMM8r4_t),intent(in) :: om
@@ -421,7 +421,7 @@ module rcs_common_ymm8r4
               type(YMM8c4), automatic :: sqr
               type(YMM8c4), automatic :: tc0
               tc0 = mu*eps
-              sqr = csqrt_c8(tc0)
+              sqr = csqrt_ymm8c4(tc0)
               k   = sqr*om
         end function k_ymm8c4
         
