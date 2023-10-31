@@ -171,10 +171,11 @@ module mod_vecconsts
     
     type(ZMM8r8_t), parameter, public  :: v8_pi         = ZMM8r8_t(3.1415926535897932384626_dp)
     
-    type(ZMM8r8_t), parameter, public  :: v8_0         = ZMM8r8_t(0.0E+00_dp)
+    type(ZMM8r8_t), parameter, public  :: v8_neg1       = ZMM8r8_t(-1.0_dp)
     
-    type(ZMM8r8_t), parameter, public  :: v8_n1         = ZMM8r8_t(1.0E+00_dp)
+    type(ZMM8r8_t), parameter, public  :: v8_0          = ZMM8r8_t(0.0E+00_dp)
     
+      
     type(ZMM8r8_t), parameter, public  :: v8_hugep      = ZMM8r8_t(1.0E+300_dp)
     
     type(ZMM8r8_t), parameter, public  :: v8_hugen      = ZMM8r8_t(-1.0E+300_dp)
