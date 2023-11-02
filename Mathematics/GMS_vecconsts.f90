@@ -77,7 +77,7 @@ module mod_vecconsts
     
     type(YMM4r8_t), parameter, public  :: v4r8_pi         = YMM4r8_t(pi_const)
     
-    type(YMM4r8_t), parameter, public  :: v4r8_n0         = YMM4r8_t(0.0_dp)
+    type(YMM4r8_t), parameter, public  :: v4r8_0         = YMM4r8_t(0.0_dp)
     
     type(YMM4r8_t), parameter, public  :: v4r8_airyc1     = YMM4r8_t(0.355028053887817_dp)
     
@@ -103,9 +103,11 @@ module mod_vecconsts
     
     type(YMM4r8_t), parameter, public  :: v4r8_1over8     = YMM4r8_t(0.125E+00_dp)
     
-    type(YMM4r8_t), parameter, public  :: v4r8_n2         = YMM4r8_t(2.0E+00_dp)
+    type(YMM4r8_t), parameter, public  :: v4r8_2         = YMM4r8_t(2.0E+00_dp)
     
-    type(YMM4r8_t), parameter, public  :: v4r8_n1         = YMM4r8_t(1.0E+00_dp)
+    type(YMM4r8_t), parameter, public  :: v4r8_1         = YMM4r8_t(1.0E+00_dp)
+    
+    
     
     type(YMM4r8_t), parameter, public  :: v4r8_hugep      = YMM4r8_t(1.0E+300_dp)
     
@@ -125,13 +127,15 @@ module mod_vecconsts
     
     type(YMM4r8_t), parameter, public  :: v4r8_ln4        = YMM4r8_t( 1.3862943611198906188344642429164E+00_dp)
 
-    type(YMM8r4_t), parameter, public  :: v8r4_n0       = YMM8r4_t(0.0_sp)
+    type(YMM8r4_t), parameter, public  :: v8r4_0       = YMM8r4_t(0.0_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_quart    = YMM8r4_t(0.25_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_half     = YMM8r4_t(0.5_sp)
 
-    type(YMM8r4_t), parameter, public  :: v8r4_n1       = YMM8r4_t(1.0_sp)
+    type(YMM8r4_t), parameter, public  :: v8r4_1       = YMM8r4_t(1.0_sp)
+    
+    type(YMM8r4_t), parameter, public  :: v8r4_n1       = YMM8r4_t(-1.0_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_n2       = YMM8r4_t(2.0_sp)
 
@@ -149,7 +153,7 @@ module mod_vecconsts
 
     type(YMM8r4_t), parameter, public  :: v8r4_1over3   = YMM8r4_t(0.3333333333333333333333_sp)
 
-    type(YMM8r4_t), parameter, public  :: v8r4_pi       = YMM8r4_t(pir4_const)
+    type(YMM8r4_t), parameter, public  :: v8r4_pi       = YMM8r4_t(3.14159265358979323846264_sp)
 
     type(YMM8r4_t), parameter, public  :: v8r4_2pi      = YMM8r4_t(twopir4_const)
 
