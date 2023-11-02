@@ -1712,7 +1712,7 @@ module avx_cvec8
        r.v = sqrt(re.v*re.v+im.v*im.v)
        pow.v   = r.v**n
        theta.v = atan(im.v/re.v)
-       !
+       ! 
        trig.v  = theta.v*n
        iq.re = pow.v*cos(trig.v)
        iq.im = pow.v*sin(trig.v)
