@@ -73,6 +73,82 @@ module mod_vecconsts
     character(*),       parameter, public :: MOD_VECCONSTS_SYNOPSIS = " SIMD-like derived types constants."
     
     
+    type(XMM2r8_t), parameter, public  :: v2r8_invpi      = XMM2r8_t(0.31830988618379067153777_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_pi         = XMM2r8_t(3.14159265358979323846264_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_0          = XMM2r8_t(0.0_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_airyc1     = XMM2r8_t(0.355028053887817_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_airyc2     = XMM2r8_t( 0.258819403792807_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_airysr3    = XMM2r8_t( 1.732050807568877_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1em100     = XMM2r8_t(1.0E-100_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_eps1e15    = XMM2r8_t(1.0E-15_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1over1_5   = XMM2r8_t(0.66666666666666666666666666666667E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1over2     = XMM2r8_t(0.5_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_n1over2    = XMM2r8_t(-0.5_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1over3     = XMM2r8_t(0.333333333333333333333333333E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1over4     = XMM2r8_t(0.25E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_n1over4    = XMM2r8_t(-0.25E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1over8     = XMM2r8_t(0.125E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_2         = XMM2r8_t(2.0E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_1         = XMM2r8_t(1.0E+00_dp)
+    
+    type(XMM2r8_t), parameter, public  :: v2r8_n1         = XMM2r8_t(-1.0E+00_dp)
+    
+    ! //////////////////////////////////////////////////////////////////////////////// ! 
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_invpi      = XMM4r4_t(0.31830988618379067153777_sp)
+    
+    type(XXMM4r4_t), parameter, public  :: v4r4_pi        = XMM4r4_t(3.14159265358979323846264_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_0          = XMM4r4_t(0.0_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_airyc1     = XMM4r4_t(0.355028053887817_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_airyc2     = XMM4r4_t( 0.258819403792807_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_airysr3    = XMM4r4_t( 1.732050807568877_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1em100     = XMM4r4_t(1.0E-100_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_eps1e15    = XMM4r4_t(1.0E-15_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1over1_5   = XMM4r4_t(0.66666666666666666666666666666667E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1over2     = XMM4r4_t(0.5_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_n1over2    = XMM4r4_t(-0.5_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1over3     = XMM4r4_t(0.333333333333333333333333333E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1over4     = XMM4r4_t(0.25E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_n1over4    = XMM4r4_t(-0.25E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1over8     = XMM4r4_t(0.125E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_2         = XMM4r4_t(2.0E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_1         = XMM4r4_t(1.0E+00_sp)
+    
+    type(XMM4r4_t), parameter, public  :: v4r4_n1         = XMM4r4_t(-1.0E+00_sp)
+    
+    !/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     type(YMM4r8_t), parameter, public  :: v4r8_invpi      = YMM4r8_t(v1_over_pi)
     
     type(YMM4r8_t), parameter, public  :: v4r8_pi         = YMM4r8_t(pi_const)
