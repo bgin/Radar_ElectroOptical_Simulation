@@ -2512,7 +2512,7 @@ module eos_sensor_avx
         !dir$ assume_aligned SN:64
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(48
+        !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
         do i=1,n
@@ -2543,7 +2543,7 @@ module eos_sensor_avx
         !dir$ assume_aligned SM:64
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always
         !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
         !$omp private(i)  shared(n,phi,gamma,SN)      
