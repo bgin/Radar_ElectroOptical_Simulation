@@ -17199,4 +17199,4 @@ module eos_sensor_avx512
 
 
 
-end module eos_sensor_simd_avx512
+end module eos_sensor_avx512
