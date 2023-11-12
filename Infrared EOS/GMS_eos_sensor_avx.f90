@@ -272,7 +272,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
         !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
@@ -420,7 +420,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
         !$omp shared(n,phi,gamma,SN)
@@ -530,7 +530,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3)                                           &
         !$omp shared(n,phi,gamma,SN)
@@ -622,7 +622,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
         !$omp shared(n,phi,gamma,SN)
         do i=m1,n,2
@@ -690,7 +690,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp private(i)  shared(n,phi,gamma,SN)      
         do i=1,n
            p0      = phi(i)
@@ -880,7 +880,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
         !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
@@ -1028,7 +1028,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
         !$omp shared(n,phi,gamma,SN)
@@ -1138,7 +1138,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3)                                           &
         !$omp shared(n,phi,gamma,SN)
@@ -1230,7 +1230,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
         !$omp shared(n,phi,gamma,SN)
         do i=m1,n,2
@@ -1298,7 +1298,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp private(i)  shared(n,phi,gamma,SN)      
         do i=1,n
            p0      = phi(i)
@@ -1521,7 +1521,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
         !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
@@ -1669,7 +1669,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
         !$omp shared(n,phi,gamma,SM)
@@ -1779,7 +1779,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3)                                           &
         !$omp shared(n,phi,gamma,SM)
@@ -1871,7 +1871,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
         !$omp shared(n,phi,gamma,SM)
         do i=m1,n,2
@@ -1939,7 +1939,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(4)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp private(i)  shared(n,phi,gamma,SM)      
         do i=1,n
            p0      = phi(i)
@@ -2128,7 +2128,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7,p8,g8)             &
         !$omp private(p9,g9,p10,g10,p11,g11,p12,g12,p13)               &
@@ -2276,7 +2276,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3,p4,g4,p5,g5,p6,g6,p7,g7)                   &
         !$omp shared(n,phi,gamma,SM)
@@ -2386,7 +2386,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1,p2,g2)            &
         !$omp private(p3,g3)                                           &
         !$omp shared(n,phi,gamma,SM)
@@ -2478,7 +2478,7 @@ module eos_sensor_avx
         !dir$ vector vectorlength(8)
         !dir$ vector multiple_gather_scatter_by_shuffles 
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp firstprivate(m1) private(i,p0,g0,p1,g1)            &
         !$omp shared(n,phi,gamma,SM)
         do i=m1,n,2
@@ -2545,7 +2545,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256)   &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024)   &
         !$omp private(i)  shared(n,phi,gamma,SN)      
         do i=1,n
            p0      = phi(i)
@@ -2752,7 +2752,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
         !$omp private(ps8,ph8,ps9,ph9,ps10,ph10,ps11,ph11,ps12,ph12) &
@@ -2903,7 +2903,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
         !$omp shared(n,psi,phi,FH)
@@ -3016,7 +3016,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3)                                       &
         !$omp shared(n,psi,phi,FH)
@@ -3112,7 +3112,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1)            &
         !$omp shared(n,psi,phi,FH)
         do i=m1,n,2
@@ -3180,7 +3180,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0)                    &
         !$omp shared(n,psi,phi,FH)
         do i=1,n
@@ -3377,7 +3377,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
         !$omp private(ps8,ph8,ps9,ph9,ps10,ph10,ps11,ph11,ps12,ph12) &
@@ -3528,7 +3528,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3,ps4,ph4,ps5,ph5,ps6,ph6,ps7,ph7)       &
         !$omp shared(n,psi,phi,FH)
@@ -3641,7 +3641,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1,ps2,ph2)    &
         !$omp private(ps3,ph3)                                       &
         !$omp shared(n,psi,phi,FH)
@@ -3737,7 +3737,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0,ps1,ph1)            &
         !$omp shared(n,psi,phi,FH)
         do i=m1,n,2
@@ -3805,7 +3805,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(i,ps0,ph0)                    &
         !$omp shared(n,psi,phi,FH)
         do i=1,n
@@ -4052,7 +4052,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
          !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
          !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
@@ -4242,7 +4242,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
          !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
          !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
@@ -4381,7 +4381,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3) &
          !$omp private(ph0,ph1,ph2,ph3)                  &
          !$omp private(g0,g1,g2,g3)                      &
@@ -4496,7 +4496,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1) &
          !$omp private(ph0,ph1)                  &
          !$omp private(g0,g1)                    &
@@ -4580,7 +4580,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp  private(i,ps0) &
          !$omp private(ph0)                  &
          !$omp private(g0)                    &
@@ -4816,13 +4816,13 @@ module eos_sensor_avx
          m1 = m+1
            !dir$ assume_aligned gam0:32
            !dir$ assume_aligned phi:32
-           !dir$ assume_aligned psi:31
+           !dir$ assume_aligned psi:32
            !dir$ assume_aligned gamma:32
            !dir$ vector aligned
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
          !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
          !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
@@ -5012,7 +5012,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3,ps4,ps5,ps6,ps7) &
          !$omp private(ph0,ph1,ph2,ph3,ph4,ph5,ph6,ph7)                  &
          !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                          &
@@ -5151,7 +5151,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1,ps2,ps3) &
          !$omp private(ph0,ph1,ph2,ph3)                  &
          !$omp private(g0,g1,g2,g3)                      &
@@ -5207,13 +5207,13 @@ module eos_sensor_avx
            if(n<2) return
          end if
          m1 = m+1
-           !dir$ assume_aligned gam0:64
-           !dir$ assume_aligned phi:64
-           !dir$ assume_aligned psi:64
-           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned gam0:32
+           !dir$ assume_aligned phi:32
+           !dir$ assume_aligned psi:32
+           !dir$ assume_aligned gamma:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,2
             g0         = gam0(i)
@@ -5258,15 +5258,15 @@ module eos_sensor_avx
            if(n<2) return
          end if
          m1 = m+1
-           !dir$ assume_aligned gam0:64
-           !dir$ assume_aligned phi:64
-           !dir$ assume_aligned psi:64
-           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned gam0:32
+           !dir$ assume_aligned phi:32
+           !dir$ assume_aligned psi:32
+           !dir$ assume_aligned gamma:32
            !dir$ vector aligned
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(ps0,ps1) &
          !$omp private(ph0,ph1)                  &
          !$omp private(g0,g1)                    &
@@ -5305,10 +5305,10 @@ module eos_sensor_avx
         !dir$ attributes align : 32 :: g0
         integer(kind=i4) :: i
       
-           !dir$ assume_aligned gam0:64
-           !dir$ assume_aligned phi:64
-           !dir$ assume_aligned psi:64
-           !dir$ assume_aligned gamma:64
+           !dir$ assume_aligned gam0:32
+           !dir$ assume_aligned phi:32
+           !dir$ assume_aligned psi:32
+           !dir$ assume_aligned gamma:32
            !dir$ vector aligned
            !dir$ ivdep
            !dir$ vector vectorlength(8)
@@ -5350,7 +5350,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp  private(i,ps0) &
          !$omp private(ph0)                  &
          !$omp private(g0)                    &
@@ -5537,7 +5537,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
         !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)
         !$omp shared(n,alpha,dc,O,inf)
@@ -5658,7 +5658,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,8
@@ -5754,7 +5754,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,4
@@ -5841,7 +5841,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,2
@@ -5903,7 +5903,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0)
         !$omp shared(n,alpha,dc,O,inf)
         do i=1,n
@@ -6082,7 +6082,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
         !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)
         !$omp shared(n,alpha,dc,O,inf)
@@ -6151,7 +6151,7 @@ module eos_sensor_avx
         !dir$ assume_aligned dc:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(48
+        !dir$ vector vectorlength(8)
         !dir$ vector always
         do i=m1,n,8
             a0      =  alpha(i)
@@ -6203,7 +6203,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,8
@@ -6255,7 +6255,7 @@ module eos_sensor_avx
         !dir$ assume_aligned dc:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always
         do i=m1,n,4
             a0      =  alpha(i)
@@ -6299,7 +6299,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,4
@@ -6386,7 +6386,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1)
         !$omp shared(n,alpha,dc,O,inf)
         do i=m1,n,2
@@ -6448,7 +6448,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(8)
         !dir$ vector always
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0)
         !$omp shared(n,alpha,dc,O,inf)
         do i=1,n
@@ -6635,7 +6635,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
         !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
@@ -6760,7 +6760,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,8
@@ -6860,7 +6860,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,4
@@ -6948,7 +6948,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,2
@@ -7013,7 +7013,7 @@ module eos_sensor_avx
         !dir$ ivdep
         !dir$ vector vectorlength(4)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp private(a0)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=1,n
@@ -7124,7 +7124,7 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
         do i=m1,n,16
              a0        = alpha(i)
@@ -7194,9 +7194,9 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
         !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
@@ -7267,7 +7267,7 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
         do i=m1,n,8
              a0        = alpha(i)
@@ -7319,9 +7319,9 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,8
@@ -7375,7 +7375,7 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
         do i=m1,n,4
              a0        = alpha(i)
@@ -7419,9 +7419,9 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,4
@@ -7467,7 +7467,7 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
         do i=m1,n,2
              a0        = alpha(i)
@@ -7507,9 +7507,9 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp firstprivate(m1) private(a0,a1)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=m1,n,2
@@ -7543,7 +7543,7 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
         do i=1,n
              a0        = alpha(i)
@@ -7572,9 +7572,9 @@ module eos_sensor_avx
         !dir$ assume_aligned rho:32
         !dir$ vector aligned
         !dir$ ivdep
-        !dir$ vector vectorlength(4)
+        !dir$ vector vectorlength(8)
         !dir$ vector always 
-        !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+        !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
         !$omp private(a0)      &
         !$omp shared(n,d,l1,l2,O,inf,rho,alpha)
         do i=1,n
@@ -7761,7 +7761,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
          !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
@@ -7886,7 +7886,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,8
@@ -7985,7 +7985,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,4
@@ -8072,7 +8072,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,2
@@ -8136,7 +8136,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp private(a0)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=1,n
@@ -8244,7 +8244,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,16
              a0         = alpha(i)
@@ -8314,9 +8314,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
          !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
@@ -8387,7 +8387,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,8
              a0         = alpha(i)
@@ -8439,9 +8439,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,8
@@ -8495,7 +8495,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,4
              a0         = alpha(i)
@@ -8538,9 +8538,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,4
@@ -8586,7 +8586,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,2
              a0         = alpha(i)
@@ -8625,9 +8625,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(a0,a1)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=m1,n,2
@@ -8661,7 +8661,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=1,n
              a0         = alpha(i)
@@ -8689,9 +8689,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ratio:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp private(a0)      &
          !$omp shared(n,l1,l2,alpha,O,inf,ratio)
          do i=1,n
@@ -8901,7 +8901,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
@@ -9054,7 +9054,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9169,7 +9169,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
          !$omp private(g0,g1,g2,g3)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9266,7 +9266,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1)      &
          !$omp private(g0,g1)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9337,7 +9337,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp  private(d0)      &
          !$omp private(g0)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9449,7 +9449,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,16
             d0      = delta(i)
@@ -9538,9 +9538,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
@@ -9630,7 +9630,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,8
             d0      = delta(i)
@@ -9691,9 +9691,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9757,7 +9757,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,4
             d0      = delta(i)
@@ -9806,9 +9806,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
          !$omp private(g0,g1,g2,g3)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9860,7 +9860,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,2
             d0      = delta(i)
@@ -9903,9 +9903,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1)      &
          !$omp private(g0,g1)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -9943,7 +9943,7 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=1,n
             d0      = delta(i)
@@ -9974,9 +9974,9 @@ module eos_sensor_avx
            !dir$ assume_aligned ax:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp  private(d0)      &
          !$omp private(g0)                        &
          !$omp shared(n,H,delta,gamma,ax)
@@ -10185,7 +10185,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
@@ -10338,7 +10338,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -10453,7 +10453,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
          !$omp private(g0,g1,g2,g3)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -10551,7 +10551,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1)      &
          !$omp private(g0,g1)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -10620,7 +10620,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp private(d0)      &
          !$omp private(g0)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -10822,7 +10822,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(d8,d9,d10,d11,d12,d13,d14,d15)                 &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
@@ -10912,7 +10912,7 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,8
             d0      = delta(i)
@@ -10973,9 +10973,9 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3,d4,d5,d6,d7)      &
          !$omp private(g0,g1,g2,g3,g4,g,g6,g7)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -11039,7 +11039,7 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,4
             d0      = delta(i)
@@ -11088,9 +11088,9 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1,d2,d3)      &
          !$omp private(g0,g1,g2,g3)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -11143,7 +11143,7 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=m1,n,2
             d0      = delta(i)
@@ -11186,9 +11186,9 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp firstprivate(m1) private(d0,d1)      &
          !$omp private(g0,g1)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -11224,7 +11224,7 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
          do i=1,n
             d0      = delta(i)
@@ -11255,9 +11255,9 @@ module eos_sensor_avx
            !dir$ assume_aligned B:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-         !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+         !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
          !$omp private(d0)      &
          !$omp private(g0)                        &
          !$omp shared(n,delta,theta,B,H)
@@ -11529,7 +11529,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
            !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
            !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
@@ -11720,7 +11720,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
            !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
            !$omp private(n0,n1,n2,n3,n4,n5,n6,n7)                       &
@@ -11793,10 +11793,10 @@ module eos_sensor_avx
             if(len<4) return
             end if
            m1 = m+1
-           !dir$ assume_aligned alfa:64
-           !dir$ assume_aligned gamma:64
-           !dir$ assume_aligned n:64
-           !dir$ assume_aligned l:64
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
            !dir$ vector vectorlength(4)
@@ -11860,7 +11860,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
            !$omp private(g0,g1,g2,g3)                        &
            !$omp private(n0,n1,n2,n3)                       &
@@ -11976,7 +11976,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,)      &
            !$omp private(g0,g1)                        &
            !$omp private(n0,n1)                       &
@@ -12060,7 +12060,7 @@ module eos_sensor_avx
            !dir$ ivdep
            !dir$ vector vectorlength(4)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp private(a0)      &
            !$omp private(g0)                        &
            !$omp private(n0)                       &
@@ -12213,7 +12213,7 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
            do i=m1,len,16
              a0     = alfa(i)
@@ -12326,9 +12326,9 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
            !$omp private(a8,a9,a10,a11,a12,a13,a14,a15)                 &
            !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
@@ -12442,7 +12442,7 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
            do i=m1,len,8
              a0     = alfa(i)
@@ -12517,9 +12517,9 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3,a4,a5,a6,a7)      &
            !$omp private(g0,g1,g2,g3,g4,g5,g6,g7)                        &
            !$omp private(n0,n1,n2,n3,n4,n5,n6,n7)                       &
@@ -12592,13 +12592,13 @@ module eos_sensor_avx
             if(len<4) return
             end if
            m1 = m+1
-           !dir$ assume_aligned alfa:64
-           !dir$ assume_aligned gamma:64
-           !dir$ assume_aligned n:64
-           !dir$ assume_aligned l:64
+           !dir$ assume_aligned alfa:32
+           !dir$ assume_aligned gamma:32
+           !dir$ assume_aligned n:32
+           !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
            do i=m1,len,4
              a0     = alfa(i)
@@ -12657,9 +12657,9 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,a2,a3)      &
            !$omp private(g0,g1,g2,g3)                        &
            !$omp private(n0,n1,n2,n3)                       &
@@ -12722,7 +12722,7 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
            do i=m1,len,2
              a0     = alfa(i)
@@ -12773,9 +12773,9 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp firstprivate(m1) private(a0,a1,)      &
            !$omp private(g0,g1)                        &
            !$omp private(n0,n1)                       &
@@ -12820,7 +12820,7 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
            do i=1,len
              a0     = alfa(i)
@@ -12857,9 +12857,9 @@ module eos_sensor_avx
            !dir$ assume_aligned l:32
            !dir$ vector aligned
            !dir$ ivdep
-           !dir$ vector vectorlength(4)
+           !dir$ vector vectorlength(8)
            !dir$ vector always
-           !$omp parallel do schedule(dynamic) default(none) if(n>=256) &
+           !$omp parallel do schedule(dynamic) default(none) if(n>=1024) &
            !$omp private(a0)      &
            !$omp private(g0)                        &
            !$omp private(n0)                       &
@@ -13056,7 +13056,7 @@ module eos_sensor_avx
            type(YMM8r4_t) :: sp
            type(YMM8r4_t), parameter :: one = YMM8r4_t(1.0_sp)
            type(YMM8r4_t), automatic :: ag,num,den,n2,sag,sin2
-           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 32 :: ag,num,den,n2,sag,sin2
            ag  = abs(alpha.v)-gamma.v
            n2  = n.v*n.v
            num = cos(ag.v)
@@ -13079,7 +13079,7 @@ module eos_sensor_avx
            type(YMM4r8_t) :: sp
            type(YMM4r8_t), parameter :: one = YMM4r8_t(1.0_dp)
            type(YMM4r8_t), automatic :: ag,num,den,n2,sag,sin2
-           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 32 :: ag,num,den,n2,sag,sin2
            ag  = abs(alpha.v)-gamma.v
            n2  = n.v*n.v
            num = cos(ag.v)
@@ -13129,7 +13129,7 @@ module eos_sensor_avx
            type(YMM4r8_t) :: sn
            type(YMM4r8_t), parameter :: one = YMM4r8_t(1.0_dp)
            type(YMM4r8_t), automatic :: ag,num,den,n2,sag,sin2
-           !dir$ attributes align : 64 :: ag,num,den,n2,sag,sin2
+           !dir$ attributes align : 32 :: ag,num,den,n2,sag,sin2
            ag  = abs(alpha.v)+gamma.v
            n2  = n.v*n.v
            num = cos(ag.v)
@@ -13502,7 +13502,7 @@ module eos_sensor_avx
             type(YMM8r8_t),   intent(out):: dy
             type(YMM8r8_t), parameter :: half = YMM4r8_t(0.5_dp)
             type(YMM8r8_t), automatic :: d0x,d0y,phi2
-            !dir$ attributes align : 64 :: d0x,d0y,phi2
+            !dir$ attributes align : 32 :: d0x,d0y,phi2
             d0y    = y.v/F.v
             phi2   = half.v*phi.v
             d0x    = x.v/F.v
@@ -13606,8 +13606,8 @@ module eos_sensor_avx
               return
            else if(n>8 .and. n<=128) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(7)),8
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -13778,8 +13778,8 @@ module eos_sensor_avx
               return
            else if(n>8 .and. n<=64) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(7)),8
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -13883,7 +13883,7 @@ module eos_sensor_avx
            integer(kind=i4),              intent(in)  :: n
            type(YMM8r4_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
            type(YMM8r4_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_sp)
-           type(YMM8r4_r), parameter :: half  = YMM8r4_t(0.5_sp)
+           type(YMM8r4_t), parameter :: half  = YMM8r4_t(0.5_sp)
            type(YMM8r4_t), parameter :: one   = YMM8r4_t(1.0_sp)
            type(YMM8r4_t) :: arg0,arg1,arg2,arg3
            !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3
@@ -13912,8 +13912,8 @@ module eos_sensor_avx
               return
            else if(n>8 .and. n<=32) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(7)),8
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -13938,9 +13938,9 @@ module eos_sensor_avx
               end do
               return
             else if(n>32) then
-              ! 16x-unrolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              ! 8x-unrolled version
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(7)),32
                   call mm_prefetch(freq(i*32),FOR_K_PREFETCH_T1)
                  !dir$ vector aligned
@@ -13995,9 +13995,9 @@ module eos_sensor_avx
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(YMM4r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(YMM4r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(YMM4r8_t), parameter :: twopi = YMM4r8(6.283185307179586476925286766559_dp)
+           type(YMM4r8_r), parameter :: half  = YMM4r8(0.5_dp)
+           type(YMM4r8_t), parameter :: one   = YMM4r8(1.0_dp)
            type(YMM4r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(YMM4r8_t) :: arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15
@@ -14033,8 +14033,8 @@ module eos_sensor_avx
               return
            else if(n>4 .and. n<=64) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),4
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -14060,8 +14060,8 @@ module eos_sensor_avx
               return
             else if(n>64) then
               ! 16x-unrolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),64
                   call mm_prefetch(freq(i*64),FOR_K_PREFETCH_T1)
                  !dir$ vector aligned
@@ -14175,9 +14175,9 @@ module eos_sensor_avx
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(YMM4r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(YMM4r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(YMM4r8_t), parameter :: twopi = YMM4r8(6.283185307179586476925286766559_dp)
+           type(YMM4r8_r), parameter :: half  = YMM4r8(0.5_dp)
+           type(YMM4r8_t), parameter :: one   = YMM4r8(1.0_dp)
            type(YMM4r8_t) :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3,arg4,arg5,arg6,arg7
            type(YMM4r8_t) :: f0,f1,f2,f3,f4,f5,f6,f7
@@ -14205,8 +14205,8 @@ module eos_sensor_avx
               return
            else if(n>4 .and. n<=32) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),4
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -14232,8 +14232,8 @@ module eos_sensor_avx
               return
             else if(n>32) then
               ! 16x-unrolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),32
                   call mm_prefetch(freq(i*32),FOR_K_PREFETCH_T1)
                  !dir$ vector aligned
@@ -14308,9 +14308,9 @@ module eos_sensor_avx
            real(kind=dp), dimension(1:n), intent(in)  :: freq
            integer(kind=i4),              intent(in)  :: n
            type(YMM4r8_t),                intent(in)  :: T      !vector enhanced i.e. broadcast
-           type(YMM4r8_t), parameter :: twopi = YMM8r4_t(6.283185307179586476925286766559_dp)
-           type(YMM4r8_r), parameter :: half  = YMM8r4_t(0.5_dp)
-           type(YMM4r8_t), parameter :: one   = YMM8r4_t(1.0_dp)
+           type(YMM4r8_t), parameter :: twopi = YMM4r8(6.283185307179586476925286766559_dp)
+           type(YMM4r8_t), parameter :: half  = YMM4r8(0.5_dp)
+           type(YMM4r8_t), parameter :: one   = YMM4r8(1.0_dp)
            type(YMM4r8_t) :: arg0,arg1,arg2,arg3
            !dir$ attributes align : 32 :: arg0,arg1,arg2,arg3
            type(YMM4r8_t) :: f0,f1,f2,f3
@@ -14338,8 +14338,8 @@ module eos_sensor_avx
               return
            else if(n>4 .and. n<=16) then
               ! rolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),4
                  !dir$ vector aligned
                  !dir$ ivdep
@@ -14365,8 +14365,8 @@ module eos_sensor_avx
               return
             else if(n>16) then
               ! 16x-unrolled version
-              !dir$ assume_aligned Phi0f:64
-              !dir$ assume_aligned freq:64
+              !dir$ assume_aligned Phi0f:32
+              !dir$ assume_aligned freq:32
               do i=1,iand(n,not(3)),16
                   call mm_prefetch(freq(i*16),FOR_K_PREFETCH_T1)
                  !dir$ vector aligned
@@ -14407,7 +14407,7 @@ module eos_sensor_avx
               end do
               return
             end if
-       end subroutine const_flux_spectr_unroll_4x_ymm8r4
+       end subroutine const_flux_spectr_unroll_4x_ymm4r8
 
 
       
