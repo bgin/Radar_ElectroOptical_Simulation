@@ -3100,6 +3100,7 @@ function box_contains_point_nd ( dim_num, p1, p2, p )
         !dir$ attribute forceinline :: box_contains_point_nd
         !dir$ attribute code_align : 32 :: box_contains_point_nd
         !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: box_contains_point_nd
 !*****************************************************************************80
 !
 !! BOX_CONTAINS_POINT_ND determines if a point is inside a box in ND.
@@ -3158,5 +3159,1589 @@ function box_contains_point_nd ( dim_num, p1, p2, p )
 
  
 end function
+
+subroutine lines_par_angle_2d ( f1, g1, x01, y01, f2, g2, x02, y02, theta )
+         !dir$ attribute forceinline :: lines_par_angle_2d 
+        !dir$ attribute code_align : 32 :: lines_par_angle_2d 
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_angle_2d 
+!*****************************************************************************80
+!
+!! LINES_PAR_ANGLE_2D finds the angle between two parametric lines in 2D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 2D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!
+!    We normalize by always choosing F*F + G*G = 1, and F nonnegative.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    24 January 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, X01, Y01, the parametric parameters of the
+!    first line.
+!
+!    Input, real(kind=dp) F2, G2, X02, Y02, the parametric parameters of the
+!    second line.
+!
+!    Output, real(kind=dp) THETA, the angle between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+  real(kind=dp) theta
+  real(kind=dp) x01
+  real(kind=dp) x02
+  real(kind=dp) y01
+  real(kind=dp) y02
+
+  pdotq = f1 * f2 + g1 * g2
+  pnorm = sqrt ( f1 * f1 + g1 * g1 )
+  qnorm = sqrt ( f2 * f2 + g2 * g2 )
+
+  theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
+
+  return
+end
+subroutine lines_par_angle_3d ( f1, g1, h1, x01, y01, z01, f2, g2, h2, &
+  x02, y02, z02, theta )
+        !dir$ attribute forceinline :: lines_par_angle_3d 
+        !dir$ attribute code_align : 32 :: lines_par_angle_3d 
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_angle_3d 
+!*****************************************************************************80
+!
+!! LINES_PAR_ANGLE_3D finds the angle between two parametric lines in 3D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 3D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!      Z = Z0 + H * T
+!
+!    We normalize by always choosing F*F + G*G + H*H = 1, and F nonnegative.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    06 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, H1, X01, Y01, Z01, the parametric
+!    parameters of the first line.
+!
+!    Input, real(kind=dp) F2, G2, H2, X02, Y02, Z02, the parametric
+!    parameters of the second line.
+!
+!    Output, real(kind=dp) THETA, the angle between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) h1
+  real(kind=dp) h2
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+  real(kind=dp) theta
+  real(kind=dp) x01
+  real(kind=dp) x02
+  real(kind=dp) y01
+  real(kind=dp) y02
+  real(kind=dp) z01
+  real(kind=dp) z02
+
+  pdotq = f1 * f2 + g1 * g2 + h1 * h2
+  pnorm = sqrt ( f1 * f1 + g1 * g1 + h1 * h1 )
+  qnorm = sqrt ( f2 * f2 + g2 * g2 + h2 * h2 )
+
+  theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
+
+  return
+end
+subroutine lines_par_dist_3d ( f1, g1, h1, x01, y01, z01, f2, g2, h2, &
+  x02, y02, z02, dist )
+        !dir$ attribute forceinline :: lines_par_dist_2d 
+        !dir$ attribute code_align : 32 :: lines_par_dist_2d 
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_dist_2d 
+!*****************************************************************************80
+!
+!! LINES_PAR_DIST_3D finds the distance between two parametric lines in 3D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 3D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!      Z = Z0 + H * T
+!
+!    We normalize by always choosing F*F + G*G + H*H = 1, and F nonnegative.
+!
+!    This code does not work for parallel or near parallel lines.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    06 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, H1, X01, Y01, Z01, the parametric
+!    parameters of the first line.
+!
+!    Input, real(kind=dp) F2, G2, H2, X02, Y02, Z02, the parametric
+!    parameters of the second line.
+!
+!    Output, real(kind=dp) DIST, the distance between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) dist
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) h1
+  real(kind=dp) h2
+  real(kind=dp) x01
+  real(kind=dp) x02
+  real(kind=dp) y01
+  real(kind=dp) y02
+  real(kind=dp) z01
+  real(kind=dp) z02
+
+  dist = abs ( ( x02 - x01 ) * ( g1 * h2 - g2 * h1 ) &
+             + ( y02 - y01 ) * ( h1 * f2 - h2 * f1 ) &
+             + ( z02 - z01 ) * ( f1 * g2 - f2 * g1 ) )  / &
+             ( ( f1 * g2 - f2 * g1 )**2 &
+             + ( g1 * h2 - g2 * h1 )**2 &
+             + ( h1 * f2 - h2 * f1 )**2 )
+
+  return
+end
+subroutine lines_par_int_2d ( f1, g1, x1, y1, f2, g2, x2, y2, t1, t2, pint )
+        !dir$ attribute forceinline :: lines_par_int_2d 
+        !dir$ attribute code_align : 32 :: lines_par_int_2d 
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_int_2d 
+!*****************************************************************************80
+!
+!! LINES_PAR_INT_2D determines where two parametric lines intersect in 2D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 2D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!
+!    We normalize by always choosing F*F + G*G = 1, and F nonnegative.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    26 January 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, X1, Y1, define the first parametric line.
+!
+!    Input, real(kind=dp) F2, G2, X2, Y2, define the second parametric line.
+!
+!    Output, real(kind=dp) T1, T2, the T parameters on the first and second
+!    lines of the intersection point.
+!
+!    Output, real(kind=dp) PINT(2), the intersection point.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) det
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) pint(dim_num)
+  real(kind=dp) t1
+  real(kind=dp) t2
+  real(kind=dp) x1
+  real(kind=dp) x2
+  real(kind=dp) y1
+  real(kind=dp) y2
+
+  det = f2 * g1 - f1 * g2
+
+  if ( det == 0.0D+00 ) then
+    t1 = 0.0D+00
+    t2 = 0.0D+00
+    pint(1:dim_num) = 0.0D+00
+  else
+    t1 = ( f2 * ( y2 - y1 ) - g2 * ( x2 - x1 ) ) / det
+    t2 = ( f1 * ( y2 - y1 ) - g1 * ( x2 - x1 ) ) / det
+    pint(1) = x1 + f1 * t1
+    pint(2) = y1 + g1 * t1
+  end if
+
+  return
+end
+
+subroutine lines_exp_angle_3d ( p1, p2, q1, q2, angle )
+        !dir$ attribute forceinline :: lines_exp_angle_3d
+        !dir$ attribute code_align : 32 :: lines_exp_angle_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_angle_3d
+!*****************************************************************************80
+!
+!! LINES_EXP_ANGLE_3D finds the angle between two explicit lines in 3D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 3D is:
+!
+!      the line through the points P1 and P2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(3), P2(3), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(3), Q2(3), two points on the second line.
+!
+!    Output, real(kind=dp) ANGLE, the angle in radians between the two
+!    lines.  The angle is computed using the ACOS function, and so lies between
+!    0 and PI.  But if one of the lines is degenerate, the angle is 
+!    returned as -1.0.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) angle
+  real(kind=dp) ctheta
+  logical line_exp_is_degenerate_nd
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+
+  if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
+!   write ( *, '(a)' ) ' '
+!   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Fatal error!'
+!   write ( *, '(a)' ) '  The line (P1,P2) is degenerate!'
+    angle = -1.0D+00
+    return
+  end if
+
+  if ( line_exp_is_degenerate_nd ( dim_num, q1, q2 ) ) then
+!   write ( *, '(a)' ) ' '
+!   write ( *, '(a)' ) 'LINES_EXP_ANGLE_3D - Warning!'
+!   write ( *, '(a)' ) '  The line (Q1,Q2) is degenerate!'
+    angle = -1.0D+00
+    return
+  end if
+
+  pnorm = sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
+
+  qnorm = sqrt ( sum ( ( q2(1:dim_num) - q1(1:dim_num) )**2 ) )
+
+  pdotq = sum ( ( p2(1:dim_num) - p1(1:dim_num) ) &
+              * ( q2(1:dim_num) - q1(1:dim_num) ) )
+
+  ctheta = pdotq / ( pnorm * qnorm )
+
+  angle = r8_acos ( ctheta )
+
+  return
+end
+subroutine lines_exp_angle_nd ( dim_num, p1, p2, q1, q2, angle )
+        !dir$ attribute forceinline :: lines_exp_angle_nd
+        !dir$ attribute code_align : 32 :: lines_exp_angle_nd
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_angle_nd
+!*****************************************************************************80
+!
+!! LINES_EXP_ANGLE_ND returns the angle between two explicit lines in ND.
+!
+!  Discussion:
+!
+!    The explicit form of a line in ND is:
+!
+!      the line through the points P1 and P2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer (kind=i4 ) DIM_NUM, the spatial dimension.
+!
+!    Input, real(kind=dp) P1(DIM_NUM), P2(DIM_NUM), two points 
+!    on the first line.
+!
+!    Input, real(kind=dp) Q1(DIM_NUM), Q2(DIM_NUM), two points 
+!    on the second line.
+!
+!    Output, real(kind=dp) ANGLE, the angle in radians between the two
+!    lines.  The angle is computed using the ACOS function, and so lies
+!    between 0 and PI.  But if one of the lines is degenerate, the angle
+!    is returned as -1.0.
+!
+  implicit none
+
+  integer (kind=i4 ) dim_num
+
+  real(kind=dp) angle
+  real(kind=dp) ctheta
+  logical line_exp_is_degenerate_nd
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+
+  if ( line_exp_is_degenerate_nd ( dim_num, p1, p2 ) ) then
+    angle = -1.0D+00
+    return
+  end if
+
+  if ( line_exp_is_degenerate_nd ( dim_num, q1, q2 ) ) then
+    angle = -1.0D+00
+    return
+  end if
+
+  pnorm = sqrt ( sum ( ( p2(1:dim_num) - p1(1:dim_num) )**2 ) )
+  qnorm = sqrt ( sum ( ( q2(1:dim_num) - q1(1:dim_num) )**2 ) )
+
+  pdotq = sum ( ( p2(1:dim_num) - p1(1:dim_num) ) &
+              * ( q2(1:dim_num) - q1(1:dim_num) ) )
+
+  ctheta = pdotq / ( pnorm * qnorm )
+  angle = r8_acos ( ctheta )
+
+  return
+end
+subroutine lines_exp_dist_3d ( p1, p2, q1, q2, dist )
+         !dir$ attribute forceinline :: lines_exp_dist_3d
+        !dir$ attribute code_align : 32 :: lines_exp_dist_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_dist_3d
+!*****************************************************************************80
+!
+!! LINES_EXP_DIST_3D computes the distance between two explicit lines in 3D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 3D is:
+!
+!      the line through the points P1 and P2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(3), P2(3), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(3), Q2(3), two points on the second line.  
+!
+!    Output, real(kind=dp) DIST, the distance between the lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) a11
+  real(kind=dp) a12
+  real(kind=dp) a13
+  real(kind=dp) a21
+  real(kind=dp) a22
+  real(kind=dp) a23
+  real(kind=dp) a31
+  real(kind=dp) a32
+  real(kind=dp) a33
+  real(kind=dp) bot
+  real(kind=dp) cr1
+  real(kind=dp) cr2
+  real(kind=dp) cr3
+  real(kind=dp) dist
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) top
+!
+!  The distance is found by computing the volume of a parallelipiped,
+!  and dividing by the area of its base.
+!
+!  But if the lines are parallel, we compute the distance by
+!  finding the distance between the first line and any point
+!  on the second line.
+!
+  a11 = q1(1) - p1(1)
+  a12 = q1(2) - p1(2)
+  a13 = q1(3) - p1(3)
+
+  a21 = p2(1) - p1(1)
+  a22 = p2(2) - p1(2)
+  a23 = p2(3) - p1(3)
+
+  a31 = q2(1) - q1(1)
+  a32 = q2(2) - q1(2)
+  a33 = q2(3) - q1(3)
+!
+!  Compute the cross product.
+!
+  cr1 = a22 * a33 - a23 * a32
+  cr2 = a23 * a31 - a21 * a33
+  cr3 = a21 * a32 - a22 * a31
+
+  bot = sqrt ( cr1 * cr1 + cr2 * cr2 + cr3 * cr3 )
+
+  if ( bot == 0.0D+00 ) then
+
+    call line_exp_point_dist_3d ( p1, p2, q1, dist )
+
+  else
+
+    top = abs (   a11 * ( a22 * a33 - a23 * a32 ) &
+                - a12 * ( a21 * a33 - a23 * a31 ) &
+                + a13 * ( a21 * a32 - a22 * a31 ) )
+
+    dist = top / bot
+
+  end if
+
+  return
+end
+subroutine lines_exp_dist_3d_2 ( p1, p2, q1, q2, dist )
+        !dir$ attribute forceinline :: lines_exp_dist_3d_2
+        !dir$ attribute code_align : 32 :: lines_exp_dist_3d_2
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_dist_3d_2
+!*****************************************************************************80
+!
+!! LINES_EXP_DIST_3D_2 computes the distance between two explicit lines in 3D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 3D is:
+!
+!      the line through the points P1 and P2.
+!
+!    This routine uses a method that is essentially independent of dimension.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    07 August 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(3), P2(3), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(3), Q2(3), two points on the second line.  
+!
+!    Output, real(kind=dp) DIST, the distance between the lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) a
+  real(kind=dp) b
+  real(kind=dp) c
+  real(kind=dp) d
+  real(kind=dp) det
+  real(kind=dp) dist
+  real(kind=dp) e
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) pn(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) qn(dim_num)
+  real(kind=dp) sn
+  real(kind=dp) tn
+  real(kind=dp) u(dim_num)
+  real(kind=dp) v(dim_num)
+  real(kind=dp) w0(dim_num)
+!
+!  Let U = (P2-P1) and V = (Q2-Q1) be the direction vectors on
+!  the two lines.
+!
+  u(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
+  v(1:dim_num) = q2(1:dim_num) - q1(1:dim_num)
+!
+!  Let SN be the unknown coordinate of the nearest point PN on line 1,
+!  so that PN = P(SN) = P1 + SN * (P2-P1).
+!
+!  Let TN be the unknown coordinate of the nearest point QN on line 2,
+!  so that QN = Q(TN) = Q1 + TN * (Q2-Q1).
+!
+!  Let W0 = (P1-Q1).
+!
+  w0(1:dim_num) = p1(1:dim_num) - q1(1:dim_num)
+!
+!  The vector direction WC = P(SN) - Q(TC) is unique (among directions)
+!  perpendicular to both U and V, so
+!
+!    U dot WC = 0
+!    V dot WC = 0
+!
+!  or, equivalently:
+!
+!    U dot ( P1 + SN * (P2 - P1) - Q1 - TN * (Q2 - Q1) ) = 0
+!    V dot ( P1 + SN * (P2 - P1) - Q1 - TN * (Q2 - Q1) ) = 0
+!
+!  or, equivalently:
+!
+!    (u dot u ) * sn - (u dot v ) tc = -u * w0
+!    (v dot u ) * sn - (v dot v ) tc = -v * w0
+!
+!  or, equivalently:
+!
+!   ( a  -b ) * ( sn ) = ( -d )
+!   ( b  -c )   ( tc )   ( -e )
+!
+  a = dot_product ( u, u )
+  b = dot_product ( u, v )
+  c = dot_product ( v, v )
+  d = dot_product ( u, w0 )
+  e = dot_product ( v, w0 )
+!
+!  Check the determinant.
+!
+  det = - a * c + b * b
+
+  if ( det == 0.0D+00 ) then
+    sn = 0.0D+00
+    if ( abs ( b ) < abs ( c ) ) then
+      tn = e / c
+    else
+      tn = d / b
+    end if
+  else
+    sn = ( c * d - b * e ) / det
+    tn = ( b * d - a * e ) / det
+  end if
+
+  pn(1:dim_num) = p1(1:dim_num) + sn * ( p2(1:dim_num) - p1(1:dim_num) )
+  qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
+
+  dist = sqrt ( sum ( ( pn(1:dim_num) - qn(1:dim_num) )**2 ) )
+
+  return
+end
+function lines_exp_equal_2d ( p1, p2, q1, q2 )
+        !dir$ attribute forceinline :: lines_exp_equal_2d
+        !dir$ attribute code_align : 32 :: lines_exp_equal_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_equal_2d
+!*****************************************************************************80
+!
+!! LINES_EXP_EQUAL_2D determines if two explicit lines are equal in 2D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 2D is:
+!
+!      the line through the points P1 and P2.
+!
+!    It is essentially impossible to accurately determine whether two
+!    explicit lines are equal in 2D.  However, for form's sake, and
+!    because occasionally the correct result can be determined, we
+!    provide this routine.  Since divisions are avoided, if the
+!    input data is exactly representable, the result should be
+!    correct.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    20 July 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(2), P2(2), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(2), Q2(2), two points on the second line.
+!
+!    Output, logical LINES_EXP_EQUAL_2D, is TRUE if the two lines are
+!    determined to be identical.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  logical lines_exp_equal_2d
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) test1
+  real(kind=dp) test2
+  real(kind=dp) test3
+  real(kind=dp) test4
+!
+!  Slope (P1,P2) = Slope (P2,Q1).
+!
+  test1 = ( p2(2) - p1(2) ) * ( q1(1) - p2(1) ) &
+        - ( p2(1) - p1(1) ) * ( q1(2) - p2(2) )
+
+  if ( test1 /= 0.0D+00 ) then
+    lines_exp_equal_2d = .false.
+    return
+  end if
+!
+!  Slope (Q1,Q2) = Slope (P2,Q1).
+!
+  test2 = ( q2(2) - q1(2) ) * ( q1(1) - p2(1) ) &
+        - ( q2(1) - q1(1) ) * ( q1(2) - p2(2) ) 
+
+  if ( test2 /= 0.0D+00 ) then
+    lines_exp_equal_2d = .false.
+    return
+  end if
+!
+!  Slope (P1,P2) = Slope (P1,Q2).
+!
+  test3 = ( p2(2) - p1(2) ) * ( q2(1) - p1(1) ) &
+        - ( p2(1) - p1(1) ) * ( q2(2) - p1(2) )
+
+  if ( test3 /= 0.0D+00 ) then
+    lines_exp_equal_2d = .false.
+    return
+  end if
+!
+!  Slope (Q1,Q2) = Slope (P1,Q2).
+!
+  test4 = ( q2(2) - q1(2) ) * ( q2(1) - p1(1) ) &
+        - ( q2(1) - q1(1) ) * ( q2(2) - p1(2) ) 
+
+  if ( test4 /= 0.0D+00 ) then
+    lines_exp_equal_2d = .false.
+    return
+  end if
+
+  lines_exp_equal_2d = .true.
+
+  return
+end
+subroutine lines_exp_int_2d ( p1, p2, q1, q2, ival, p )
+        !dir$ attribute forceinline :: lines_exp_int_2d
+        !dir$ attribute code_align : 32 :: lines_exp_int_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_int_2d
+!*****************************************************************************80
+!
+!! LINES_EXP_INT_2D determines where two explicit lines intersect in 2D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 2D is:
+!
+!      the line through the points P1 and P2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(2), P2(2), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(2), Q2(2), two points on the second line.
+!
+!    Output, integer (kind=i4 ) IVAL, reports on the intersection:
+!    0, no intersection, the lines may be parallel or degenerate.
+!    1, one intersection point, returned in P.
+!    2, infinitely many intersections, the lines are identical.
+!
+!    Output, real(kind=dp) P(2), if IVAl = 1, P is
+!    the intersection point.  Otherwise, P = 0.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) a1
+  real(kind=dp) a2
+  real(kind=dp) b1
+  real(kind=dp) b2
+  real(kind=dp) c1
+  real(kind=dp) c2
+  integer (kind=i4 ) ival
+  logical point_1
+  logical point_2
+  real(kind=dp) p(dim_num)
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+
+  ival = 0
+  p(1:dim_num) = 0.0D+00
+!
+!  Check whether either line is a point.
+!
+  if ( all ( p1(1:dim_num) == p2(1:dim_num) ) ) then
+    point_1 = .true.
+  else
+    point_1 = .false.
+  end if
+
+  if ( all ( q1(1:dim_num) == q2(1:dim_num) ) ) then
+    point_2 = .true.
+  else
+    point_2 = .false.
+  end if
+!
+!  Convert the lines to ABC format.
+!
+  if ( .not. point_1 ) then
+    call line_exp2imp_2d ( p1, p2, a1, b1, c1 )
+  end if
+
+  if ( .not. point_2 ) then
+    call line_exp2imp_2d ( q1, q2, a2, b2, c2 )
+  end if
+!
+!  Search for intersection of the lines.
+!
+  if ( point_1 .and. point_2 ) then
+    if ( all ( p1(1:dim_num) == q1(1:dim_num) ) ) then
+      ival = 1
+      p(1:dim_num) = p1(1:dim_num)
+    end if
+  else if ( point_1 ) then
+    if ( a2 * p1(1) + b2 * p1(2) == c2 ) then
+      ival = 1
+      p(1:dim_num) = p1(1:dim_num)
+    end if
+  else if ( point_2 ) then
+    if ( a1 * q1(1) + b1 * q1(2) == c1 ) then
+      ival = 1
+      p(1:dim_num) = q1(1:dim_num)
+    end if
+  else
+    call lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p )
+  end if
+
+  return
+end
+subroutine lines_exp_near_3d ( p1, p2, q1, q2, pn, qn )
+        !dir$ attribute forceinline :: lines_exp_near_2d
+        !dir$ attribute code_align : 32 :: lines_exp_near_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_near_2d
+!*****************************************************************************80
+!
+!! LINES_EXP_NEAR_3D computes the nearest points on two explicit lines in 3D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 3D is:
+!
+!      the line through the points P1 and P2.
+!
+!    This routine uses a method that is essentially independent of dimension.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    07 August 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(3), P2(3), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(3), Q2(3), two points on the second line.  
+!
+!    Output, real(kind=dp) PN(3), QN(3), the points on the first and
+!    second lines that are nearest.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) a
+  real(kind=dp) b
+  real(kind=dp) c
+  real(kind=dp) d
+  real(kind=dp) det
+  real(kind=dp) e
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) pn(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) qn(dim_num)
+  real(kind=dp) sn
+  real(kind=dp) tn
+  real(kind=dp) u(dim_num)
+  real(kind=dp) v(dim_num)
+  real(kind=dp) w0(dim_num)
+!
+!  Let U = (P2-P1) and V = (Q2-Q1) be the direction vectors on
+!  the two lines.
+!
+  u(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
+  v(1:dim_num) = q2(1:dim_num) - q1(1:dim_num)
+!
+!  Let SN be the unknown coordinate of the nearest point PN on line 1,
+!  so that PN = P(SN) = P1 + SN * (P2-P1).
+!
+!  Let TN be the unknown coordinate of the nearest point QN on line 2,
+!  so that QN = Q(TN) = Q1 + TN * (Q2-Q1).
+!
+!  Let W0 = (P1-Q1).
+!
+  w0(1:dim_num) = p1(1:dim_num) - q1(1:dim_num)
+!
+!  The vector direction WC = P(SN) - Q(TC) is unique (among directions)
+!  perpendicular to both U and V, so
+!
+!    U dot WC = 0
+!    V dot WC = 0
+!
+!  or, equivalently:
+!
+!    U dot ( P1 + SN * (P2 - P1) - Q1 - TN * (Q2 - Q1) ) = 0
+!    V dot ( P1 + SN * (P2 - P1) - Q1 - TN * (Q2 - Q1) ) = 0
+!
+!  or, equivalently:
+!
+!    (u dot u ) * sn - (u dot v ) tc = -u * w0
+!    (v dot u ) * sn - (v dot v ) tc = -v * w0
+!
+!  or, equivalently:
+!
+!   ( a  -b ) * ( sn ) = ( -d )
+!   ( b  -c )   ( tc )   ( -e )
+!
+  a = dot_product ( u, u )
+  b = dot_product ( u, v )
+  c = dot_product ( v, v )
+  d = dot_product ( u, w0 )
+  e = dot_product ( v, w0 )
+!
+!  Check the determinant.
+!
+  det = - a * c + b * b
+
+  if ( det == 0.0D+00 ) then
+    sn = 0.0D+00
+    if ( abs ( b ) < abs ( c ) ) then
+      tn = e / c
+    else
+      tn = d / b
+    end if
+  else
+    sn = ( c * d - b * e ) / det
+    tn = ( b * d - a * e ) / det
+  end if
+
+  pn(1:dim_num) = p1(1:dim_num) + sn * ( p2(1:dim_num) - p1(1:dim_num) )
+  qn(1:dim_num) = q1(1:dim_num) + tn * ( q2(1:dim_num) - q1(1:dim_num) )
+
+  return
+end
+function lines_exp_parallel_2d ( p1, p2, q1, q2 )
+        !dir$ attribute forceinline :: lines_exp_parallel_2d
+        !dir$ attribute code_align : 32 :: lines_exp_parallel_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_parallel_2d
+!*****************************************************************************80
+!
+!! LINES_EXP_PARALLEL_2D determines if two lines are parallel in 2D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 2D is:
+!
+!      the line through the points P1 and P2.
+!
+!    The test is essentially a comparison of slopes, but should be
+!    more accurate than an explicit slope comparison, and unfazed
+!    by degenerate cases.
+!
+!    On the other hand, there is NO tolerance for error.  If the
+!    slopes differ by a single digit in the last place, then the
+!    lines are judged to be nonparallel.  A more robust test would
+!    be to compute the angle between the lines, because then it makes
+!    sense to say the lines are "almost" parallel: the angle is small.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    02 January 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(2), P2(2), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(2), Q2(2), two points on the second line.
+!
+!    Output, logical LINES_EXP_PARALLEL_2D is TRUE if the lines are parallel.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  logical lines_exp_parallel_2d
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+
+  lines_exp_parallel_2d = ( p2(1) - p1(1) ) * ( q2(2) - q1(2) ) == &
+                          ( q2(1) - q1(1) ) * ( p2(2) - p1(2) )
+
+  return
+end
+function lines_exp_parallel_3d ( p1, p2, q1, q2 )
+        !dir$ attribute forceinline :: lines_exp_parallel_3d
+        !dir$ attribute code_align : 32 :: lines_exp_parallel_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_exp_parallel_3d
+!*****************************************************************************80
+!
+!! LINES_EXP_PARALLEL_3D determines if two lines are parallel in 3D.
+!
+!  Discussion:
+!
+!    The explicit form of a line in 3D is:
+!
+!      the line through the points P1 and P2.
+!
+!    The points P1, P2 define a direction (P2-P1).  Similarly, the
+!    points (Q1,Q2) define a direction (Q2-Q1).  The quantity
+!
+!      (P2-P1) dot (Q2-Q1) = norm(P2-P1) * norm(Q2-Q1) * cos ( angle )
+!
+!    Therefore, the following value is between 0 and 1;
+!
+!      abs ( (P2-P1) dot (Q2-Q1) / ( norm(P2-P1) * norm(Q2-Q1) ) )
+!
+!    and the lines are parallel if
+!
+!      abs ( (P2-P1) dot (Q2-Q1) / ( norm(P2-P1) * norm(Q2-Q1) ) ) = 1
+!
+!    We can rephrase this as requiring:
+!
+!      ( (P2-P1)dot(Q2-Q1) )^2 = (P2-P1)dot(P2-P1) * (Q2-Q1)dot(Q2-Q1)
+!
+!    which avoids division and square roots.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    12 August 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) P1(3), P2(3), two points on the first line.
+!
+!    Input, real(kind=dp) Q1(3), Q2(3), two points on the second line.
+!
+!    Output, logical LINES_EXP_PARALLEL_3D is TRUE if the lines are parallel.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  logical lines_exp_parallel_3d
+  real(kind=dp) p1(dim_num)
+  real(kind=dp) p2(dim_num)
+  real(kind=dp) pdotp
+  real(kind=dp) pdotq
+  real(kind=dp) q1(dim_num)
+  real(kind=dp) q2(dim_num)
+  real(kind=dp) qdotq
+
+  pdotq = dot_product ( p2(1:dim_num) - p1(1:dim_num), &
+                        q2(1:dim_num) - q1(1:dim_num) )
+
+  pdotp = dot_product ( p2(1:dim_num) - p1(1:dim_num), &
+                        p2(1:dim_num) - p1(1:dim_num) )
+
+  qdotq = dot_product ( q2(1:dim_num) - q1(1:dim_num), &
+                        q2(1:dim_num) - q1(1:dim_num) )
+
+  lines_exp_parallel_3d = ( pdotq * pdotq == pdotp * qdotq )
+
+  return
+end
+subroutine lines_imp_angle_2d ( a1, b1, c1, a2, b2, c2, theta )
+        !dir$ attribute forceinline :: lines_imp_angle_2d
+        !dir$ attribute code_align : 32 :: lines_imp_angle_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_imp_angle_2d
+!*****************************************************************************80
+!
+!! LINES_IMP_ANGLE_2D finds the angle between two implicit lines in 2D.
+!
+!  Discussion:
+!
+!    The implicit form of a line in 2D is:
+!
+!      A * X + B * Y + C = 0
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    24 January 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) A1, B1, C1, the implicit parameters of the 
+!    first line.
+!
+!    Input, real(kind=dp) A2, B2, C2, the implicit parameters of the
+!    second line.
+!
+!    Output, real(kind=dp) THETA, the angle between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) a1
+  real(kind=dp) a2
+  real(kind=dp) b1
+  real(kind=dp) b2
+  real(kind=dp) c1
+  real(kind=dp) c2
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+  real(kind=dp) theta
+
+  pdotq = a1 * a2 + b1 * b2
+  pnorm = sqrt ( a1 * a1 + b1 * b1 )
+  qnorm = sqrt ( a2 * a2 + b2 * b2 )
+
+  theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
+
+  return
+end
+subroutine lines_imp_dist_2d ( a1, b1, c1, a2, b2, c2, dist )
+        !dir$ attribute forceinline :: lines_imp_dist_2d
+        !dir$ attribute code_align : 32 :: lines_imp_dist_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_imp_dist_2d
+!*****************************************************************************80
+!
+!! LINES_IMP_DIST_2D determines the distance between two implicit lines in 2D.
+!
+!  Discussion:
+!
+!    If the lines intersect, then their distance is zero.
+!    If the two lines are parallel, then they have a nonzero distance.
+!
+!    The implicit form of a line in 2D is:
+!
+!      A * X + B * Y + C = 0
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    12 January 2001
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) A1, B1, C1, define the first line.
+!    At least one of A1 and B1 must be nonzero.
+!
+!    Input, real(kind=dp) A2, B2, C2, define the second line.
+!    At least one of A2 and B2 must be nonzero.
+!
+!    Output, real(kind=dp) DIST, the distance between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) a1
+  real(kind=dp) a2
+  real(kind=dp) b1
+  real(kind=dp) b2
+  real(kind=dp) c1
+  real(kind=dp) c2
+  real(kind=dp) dist
+  logical line_imp_is_degenerate_2d
+!
+!  Refuse to handle degenerate lines.
+!
+  if ( line_imp_is_degenerate_2d ( a1, b1, c1 ) ) then
+        return
+  end if
+
+  if ( line_imp_is_degenerate_2d ( a2, b2, c2 ) ) then
+       return
+  end if
+!
+!  Determine if the lines intersect.
+!
+  if ( a1 * b2 /= a2 * b1 ) then
+    dist = 0.0D+00
+    return
+  end if
+!
+!  Determine the distance between the parallel lines.
+!
+  dist = abs ( c2 / sqrt ( a2 * a2 + b2 * b2 ) &
+             - c1 / sqrt ( a1 * a1 + b1 * b1 ) )
+
+  return
+end
+subroutine lines_imp_int_2d ( a1, b1, c1, a2, b2, c2, ival, p )
+        !dir$ attribute forceinline :: lines_imp_int_2d
+        !dir$ attribute code_align : 32 :: lines_imp_int_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_imp_int_2d
+!*****************************************************************************80
+!
+!! LINES_IMP_INT_2D determines where two implicit lines intersect in 2D.
+!
+!  Discussion:
+!
+!    The implicit form of a line in 2D is:
+!
+!      A * X + B * Y + C = 0
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    25 February 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) A1, B1, C1, define the first line.
+!    At least one of A1 and B1 must be nonzero.
+!
+!    Input, real(kind=dp) A2, B2, C2, define the second line.
+!    At least one of A2 and B2 must be nonzero.
+!
+!    Output, integer (kind=i4 ) IVAL, reports on the intersection.
+!
+!    -1, both A1 and B1 were zero.
+!    -2, both A2 and B2 were zero.
+!     0, no intersection, the lines are parallel.
+!     1, one intersection point, returned in P.
+!     2, infinitely many intersections, the lines are identical.
+!
+!    Output, real(kind=dp) P(2), if IVAL = 1, then P is
+!    the intersection point.  Otherwise, P = 0.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) a(dim_num,dim_num+1)
+  real(kind=dp) a1
+  real(kind=dp) a2
+  real(kind=dp) b1
+  real(kind=dp) b2
+  real(kind=dp) c1
+  real(kind=dp) c2
+  integer (kind=i4 ) info
+  integer (kind=i4 ) ival
+  logical line_imp_is_degenerate_2d
+  real(kind=dp) p(dim_num)
+
+  p(1:dim_num) = 0.0D+00
+!
+!  Refuse to handle degenerate lines.
+!
+  if ( line_imp_is_degenerate_2d ( a1, b1, c1 ) ) then
+    ival = -1
+    return
+  end if
+
+  if ( line_imp_is_degenerate_2d ( a2, b2, c2 ) ) then
+    ival = -2
+    return
+  end if
+!
+!  Set up and solve a linear system.
+!
+  a(1,1) = a1
+  a(1,2) = b1
+  a(1,3) = -c1
+
+  a(2,1) = a2
+  a(2,2) = b2
+  a(2,3) = -c2
+
+  call r8mat_solve ( 2, 1, a, info )
+!
+!  If the inverse exists, then the lines intersect at the solution point.
+!
+  if ( info == 0 ) then
+
+    ival = 1
+    p(1:dim_num) = a(1:dim_num,3)
+!
+!  If the inverse does not exist, then the lines are parallel
+!  or coincident.  Check for parallelism by seeing if the
+!  C entries are in the same ratio as the A or B entries.
+!
+  else
+
+    ival = 0
+
+    if ( a1 == 0.0D+00 ) then
+      if ( b2 * c1 == c2 * b1 ) then
+        ival = 2
+      end if
+    else
+      if ( a2 * c1 == c2 * a1 ) then
+        ival = 2
+      end if
+    end if
+
+  end if
+
+  return
+end
+subroutine lines_par_angle_2d ( f1, g1, x01, y01, f2, g2, x02, y02, theta )
+        !dir$ attribute forceinline :: lines_par_angle_2d
+        !dir$ attribute code_align : 32 :: lines_par_angle_2d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_angle_2d
+!*****************************************************************************80
+!
+!! LINES_PAR_ANGLE_2D finds the angle between two parametric lines in 2D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 2D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!
+!    We normalize by always choosing F*F + G*G = 1, and F nonnegative.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    24 January 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, X01, Y01, the parametric parameters of the
+!    first line.
+!
+!    Input, real(kind=dp) F2, G2, X02, Y02, the parametric parameters of the
+!    second line.
+!
+!    Output, real(kind=dp) THETA, the angle between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 2
+
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+  real(kind=dp) theta
+  real(kind=dp) x01
+  real(kind=dp) x02
+  real(kind=dp) y01
+  real(kind=dp) y02
+
+  pdotq = f1 * f2 + g1 * g2
+  pnorm = sqrt ( f1 * f1 + g1 * g1 )
+  qnorm = sqrt ( f2 * f2 + g2 * g2 )
+
+  theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
+
+  return
+end
+subroutine lines_par_angle_3d ( f1, g1, h1, x01, y01, z01, f2, g2, h2, &
+  x02, y02, z02, theta )
+         !dir$ attribute forceinline :: lines_par_angle_3d
+        !dir$ attribute code_align : 32 :: lines_par_angle_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: lines_par_angle_3d
+!*****************************************************************************80
+!
+!! LINES_PAR_ANGLE_3D finds the angle between two parametric lines in 3D.
+!
+!  Discussion:
+!
+!    The parametric form of a line in 3D is:
+!
+!      X = X0 + F * T
+!      Y = Y0 + G * T
+!      Z = Z0 + H * T
+!
+!    We normalize by always choosing F*F + G*G + H*H = 1, and F nonnegative.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    06 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Adrian Bowyer, John Woodwark,
+!    A Programmer's Geometry,
+!    Butterworths, 1983.
+!
+!  Parameters:
+!
+!    Input, real(kind=dp) F1, G1, H1, X01, Y01, Z01, the parametric
+!    parameters of the first line.
+!
+!    Input, real(kind=dp) F2, G2, H2, X02, Y02, Z02, the parametric
+!    parameters of the second line.
+!
+!    Output, real(kind=dp) THETA, the angle between the two lines.
+!
+  implicit none
+
+  integer (kind=i4 ), parameter :: dim_num = 3
+
+  real(kind=dp) f1
+  real(kind=dp) f2
+  real(kind=dp) g1
+  real(kind=dp) g2
+  real(kind=dp) h1
+  real(kind=dp) h2
+  real(kind=dp) pdotq
+  real(kind=dp) pnorm
+  real(kind=dp) qnorm
+  real(kind=dp) r8_acos
+  real(kind=dp) theta
+  real(kind=dp) x01
+  real(kind=dp) x02
+  real(kind=dp) y01
+  real(kind=dp) y02
+  real(kind=dp) z01
+  real(kind=dp) z02
+
+  pdotq = f1 * f2 + g1 * g2 + h1 * h2
+  pnorm = sqrt ( f1 * f1 + g1 * g1 + h1 * h1 )
+  qnorm = sqrt ( f2 * f2 + g2 * g2 + h2 * h2 )
+
+  theta = r8_acos ( pdotq / ( pnorm * qnorm ) )
+
+  return
+end
 
 end module geodesic_helpers
