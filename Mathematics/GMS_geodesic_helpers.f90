@@ -3160,6 +3160,703 @@ function box_contains_point_nd ( dim_num, p1, p2, p )
  
 end function
 
+
+function degrees_to_radians ( angle_deg )
+        !dir$ attribute forceinline :: degrees_to_radians
+        !dir$ attribute code_align : 32 :: degrees_to_radians
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: degrees_to_radians   
+!*****************************************************************************80
+!
+!! DEGREES_TO_RADIANS converts an angle from degrees to radians.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    10 July 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ANGLE_DEG, an angle in degrees.
+!
+!    Output, real ( kind = 8 ) DEGREES_TO_RADIANS, the equivalent angle
+!    in radians.
+!
+  implicit none
+
+  real ( kind = dp ) angle_deg
+  real ( kind = dp ) degrees_to_radians
+  real ( kind = dp ), parameter :: pi = 3.141592653589793D+00
+
+  degrees_to_radians = ( angle_deg / 180.0D+00 ) * pi
+
+  return
+end
+
+
+subroutine conv3d ( axis, theta, n, cor3, cor2 )
+        !dir$ attribute forceinline :: conv3d
+        !dir$ attribute code_align : 32 :: conv3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: conv3d
+!*****************************************************************************80
+!
+!! CONV3D converts 3D data to a 2D projection.
+!
+!  Discussion:
+!
+!    A "presentation angle" THETA is used to project the 3D point
+!    (X3D, Y3D, Z3D) to the 2D projection (XVAL,YVAL).
+!
+!    If AXIS = 'X':
+!
+!      X2D = Y3D - sin ( THETA ) * X3D
+!      Y2D = Z3D - sin ( THETA ) * X3D
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    24 February 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, character AXIS, the coordinate axis to be projected.
+!    AXIS should be 'X', 'Y', or 'Z'.
+!
+!    Input, real ( kind = 8 ) THETA, the presentation angle in degrees.
+!
+!    Input, integer ( kind = 4 ) N, the number of points.
+!
+!    Input, real ( kind = 8 ) COR3(3,N), the 3D points.
+!
+!    Output, real ( kind = 8 ) COR2(2,N), the 2D projections.
+!
+  implicit none
+
+  integer ( kind = i4 ) n
+
+  character axis
+  real ( kind = dp ) cor2(2,n)
+  real ( kind = dp ) cor3(3,n)
+  real ( kind = dp ) degrees_to_radians
+  real ( kind = dp ) stheta
+  real ( kind = dp ) theta
+
+  stheta = sin ( degrees_to_radians ( theta ) )
+
+  if ( axis == 'X' .or. axis == 'x' ) then
+
+    cor2(1,1:n) = cor3(2,1:n) - stheta * cor3(1,1:n)
+    cor2(2,1:n) = cor3(3,1:n) - stheta * cor3(1,1:n)
+
+  else if ( axis == 'Y' .or. axis == 'y' ) then
+
+    cor2(1,1:n) = cor3(1,1:n) - stheta * cor3(2,1:n)
+    cor2(2,1:n) = cor3(3,1:n) - stheta * cor3(2,1:n)
+
+  else if ( axis == 'Z' .or. axis == 'z' ) then
+
+    cor2(1,1:n) = cor3(1,1:n) - stheta * cor3(3,1:n)
+    cor2(2,1:n) = cor3(2,1:n) - stheta * cor3(3,1:n)
+
+  else
+
+   return
+  end if
+
+end
+
+subroutine rotation_axis_vector_3d ( axis, angle, v, w )
+        !dir$ attribute forceinline :: rotation_axis_vector_3d
+        !dir$ attribute code_align : 32 :: rotation_axis_vector_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: rotation_axis_vector_3d
+!*****************************************************************************80
+!
+!! ROTATION_AXIS_VECTOR_3D rotates a vector around an axis vector in 3D.
+!
+!  Discussion:
+!
+!    Thanks to Cody Farnell for correcting some mistakes in an earlier
+!    version of this routine.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    18 May 2007
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) AXIS(3), the axis vector for the rotation.
+!
+!    Input, real ( kind = 8 ) ANGLE, the angle, in radians, of the rotation.
+!
+!    Input, real ( kind = 8 ) V(3), the vector to be rotated.
+!
+!    Output, real ( kind = 8 ) W(3), the rotated vector.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 3
+
+  real ( kind = dp ) angle
+  real ( kind = dp ) axis(dim_num)
+  real ( kind = dp ) axis_norm
+  real ( kind = dp ) dot
+  real ( kind = dp ) norm
+  real ( kind = dp ) normal(dim_num)
+  real ( kind = dp ) normal_component
+  real ( kind = dp ) normal2(dim_num)
+  real ( kind = dp ) parallel(dim_num)
+  real ( kind = dp ) rot(dim_num)
+  real ( kind = dp ) u(dim_num)
+  real ( kind = dp ) v(dim_num)
+  real ( kind = dp ) w(dim_num)
+!
+!  Compute the length of the rotation axis.
+!
+  u(1:dim_num) = axis(1:dim_num)
+
+  axis_norm = sqrt ( sum ( u(1:dim_num)**2 ) )
+
+  if ( axis_norm == 0.0D+00 ) then
+    w(1:dim_num) = 0.0D+00
+    return
+  end if
+
+  u(1:dim_num) = u(1:dim_num) / axis_norm
+!
+!  Compute the dot product of the vector and the unit rotation axis.
+!
+  dot = dot_product ( u(1:dim_num), v(1:dim_num) )
+!
+!  Compute the parallel component of the vector.
+!
+  parallel(1:dim_num) = dot * u(1:dim_num)
+!
+!  Compute the normal component of the vector.
+!
+  normal(1:dim_num) = v(1:dim_num) - parallel(1:dim_num)
+
+  normal_component = sqrt ( sum ( normal(1:dim_num)**2 ) )
+
+  if ( normal_component == 0.0D+00 ) then
+    w(1:dim_num) = parallel(1:dim_num)
+    return
+  end if
+
+  normal(1:dim_num) = normal(1:dim_num) / normal_component
+!
+!  Compute a second vector, lying in the plane, perpendicular
+!  to V, and forming a right-handed system, as the cross product
+!  of the first two vectors.
+!
+  normal2(1) = u(2) * normal(3) - u(3) * normal(2)
+  normal2(2) = u(3) * normal(1) - u(1) * normal(3)
+  normal2(3) = u(1) * normal(2) - u(2) * normal(1)
+
+  norm = sqrt ( sum ( normal2(1:dim_num)**2 ) )
+
+  normal2(1:dim_num) = normal2(1:dim_num) / norm
+!
+!  Rotate the normal component by the angle.
+!
+  rot(1:dim_num) = normal_component * ( &
+      cos ( angle ) * normal(1:dim_num) &
+    + sin ( angle ) * normal2(1:dim_num) )
+!
+!  The rotated vector is the parallel component plus the rotated component.
+!
+  w(1:dim_num) = parallel(1:dim_num) + rot(1:dim_num)
+
+  return
+end
+
+subroutine r8vec_any_normal ( dim_num, v1, v2 )
+        !dir$ attribute forceinline :: r8vec_any_normal
+        !dir$ attribute code_align : 32 :: r8vec_any_normal
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: r8vec_any_normal
+!*****************************************************************************80
+!
+!! R8VEC_ANY_NORMAL returns some normal vector to V1.
+!
+!  Discussion:
+!
+!    If DIM_NUM < 2, then no normal vector can be returned.
+!
+!    If V1 is the zero vector, then any unit vector will do.
+!
+!    No doubt, there are better, more robust algorithms.  But I will take
+!    just about ANY reasonable unit vector that is normal to V1.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    23 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) DIM_NUM, the spatial dimension.
+!
+!    Input, real ( kind = 8 ) V1(DIM_NUM), the vector.
+!
+!    Output, real ( kind = 8 ) V2(DIM_NUM), a vector that is
+!    normal to V2, and has unit Euclidean length.
+!
+  implicit none
+
+  integer ( kind = i4 ) dim_num
+
+  real ( kind = dp ) r8vec_norm
+  integer ( kind = i4 ) i
+  integer ( kind = i4 ) j
+  integer ( kind = i4 ) k
+  real ( kind = dp ) v1(dim_num)
+  real ( kind = dp ) v2(dim_num)
+  real ( kind = dp ) vj
+  real ( kind = dp ) vk
+
+  
+
+  if ( r8vec_norm ( dim_num, v1 ) == 0.0D+00 ) then
+    v2(1) = 1.0D+00
+    v2(2:dim_num) = 0.0D+00
+    return
+  end if
+!
+!  Seek the largest entry in V1, VJ = V1(J), and the
+!  second largest, VK = V1(K).
+!
+!  Since V1 does not have zero norm, we are guaranteed that
+!  VJ, at least, is not zero.
+!
+  j = -1
+  vj = 0.0D+00
+
+  k = -1
+  vk = 0.0D+00
+
+  do i = 1, dim_num
+
+    if ( abs ( vk ) < abs ( v1(i) ) .or. k < 1 ) then
+
+      if ( abs ( vj ) < abs ( v1(i) ) .or. j < 1 ) then
+        k = j
+        vk = vj
+        j = i
+        vj = v1(i)
+      else
+        k = i
+        vk = v1(i)
+      end if
+
+    end if
+
+  end do
+!
+!  Setting V2 to zero, except that V2(J) = -VK, and V2(K) = VJ,
+!  will just about do the trick.
+!
+  v2(1:dim_num) = 0.0D+00
+
+  v2(j) = -vk / sqrt ( vk * vk + vj * vj )
+  v2(k) =  vj / sqrt ( vk * vk + vj * vj )
+
+  return
+end
+
+subroutine direction_pert_3d ( sigma, vbase, seed, vran )
+        !dir$ attribute forceinline :: direction_pert_3d
+        !dir$ attribute code_align : 32 :: direction_pert_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: direction_pert_3d
+!*****************************************************************************80
+!
+!! DIRECTION_PERT_3D randomly perturbs a direction vector in 3D.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    26 August 2003
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) SIGMA, determines the strength of the
+!    perturbation.
+!    SIGMA <= 0 results in a completely random direction.
+!    1 <= SIGMA results in VBASE.
+!    0 < SIGMA < 1 results in a perturbation from VBASE, which is
+!    large when SIGMA is near 0, and small when SIGMA is near 1.
+!
+!    Input, real ( kind = 8 ) VBASE(3), the base direction vector, which
+!    should have unit norm.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random number 
+!    generator.
+!
+!    Output, real ( kind = 8 ) VRAN(3), the perturbed vector, which will
+!    have unit norm.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 3
+
+  real ( kind = dp ) r8_uniform_01
+  real ( kind = dp ) dphi
+  real ( kind = dp ) phi
+  real ( kind = dp ), parameter :: pi = 3.14159265358979323846264e+00_dp
+  real ( kind = dp ) psi
+  real ( kind = dp ) r
+  real ( kind = dp ) r8_acos
+  integer ( kind = i4 ) seed
+  real ( kind = dp ) sigma
+  real ( kind = dp ) theta
+  real ( kind = dp ) v(dim_num)
+  real ( kind = dp ) vbase(dim_num)
+  real ( kind = dp ) vdot
+  real ( kind = dp ) vran(dim_num)
+  real ( kind = dp ) x
+  real (kind=dp) :: sphi,sphid
+!
+!  1 <= SIGMA, just use the base vector.
+!
+  if ( 1.0D+00 <= sigma ) then
+
+    vran(1:dim_num) = vbase(1:dim_num)
+
+  else if ( sigma <= 0.0D+00 ) then
+    
+    vdot = r8_uniform_01 ( seed )
+    vdot = 2.0D+00 * vdot - 1.0D+00
+
+    phi = r8_acos ( vdot )
+    sphi = sin(phi)
+    theta = r8_uniform_01 ( seed )
+    theta = 2.0D+00 * pi * theta
+
+    vran(1) = cos ( theta ) * sphi
+    vran(2) = sin ( theta ) * sphi
+    vran(3) = cos ( phi )
+
+  else
+
+    phi = r8_acos ( vbase(3) )
+    theta = atan2 ( vbase(2), vbase(1) )
+!
+!  Pick VDOT, which must be between -1 and 1.  This represents
+!  the dot product of the perturbed vector with the base vector.
+!
+!  R8_UNIFORM_01 returns a uniformly random value between 0 and 1.
+!  The operations we perform on this quantity tend to bias it
+!  out towards 1, as SIGMA grows from 0 to 1.
+!
+!  VDOT, in turn, is a value between -1 and 1, which, for large
+!  SIGMA, we want biased towards 1.
+!
+    r = r8_uniform_01 ( seed )
+    x = exp ( ( 1.0D+00 - sigma ) * log ( r ) )
+    dphi = r8_acos ( 2.0D+00 * x - 1.0D+00 )
+    sphid = sin(phi+dphi)
+!
+!  Now we know enough to write down a vector that is rotated DPHI
+!  from the base vector.
+!
+    v(1) = cos ( theta ) * sphid
+    v(2) = sin ( theta ) * sphid
+    v(3) = cos ( phi + dphi )
+!
+!  Pick a uniformly random rotation between 0 and 2 Pi around the
+!  axis of the base vector.
+!
+    psi = r8_uniform_01 ( seed )
+    psi = 2.0D+00 * pi * psi
+!
+!  Carry out the rotation.
+!
+    call rotation_axis_vector_3d ( vbase, psi, v, vran )
+
+  end if
+
+  return
+end
+
+subroutine r8vec_cross_product_3d ( v1, v2, v3 )
+        !dir$ attribute forceinline :: r8vec_cross_product_3d
+        !dir$ attribute code_align : 32 :: r8vec_cross_product_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: r8vec_cross_product_3d
+!*****************************************************************************80
+!
+!! R8VEC_CROSS_PRODUCT_3D computes the cross product of two vectors in 3D.
+!
+!  Discussion:
+!
+!    The cross product in 3D can be regarded as the determinant of the
+!    symbolic matrix:
+!
+!          |  i  j  k |
+!      det | x1 y1 z1 |
+!          | x2 y2 z2 |
+!
+!      = ( y1 * z2 - z1 * y2 ) * i
+!      + ( z1 * x2 - x1 * z2 ) * j
+!      + ( x1 * y2 - y1 * x2 ) * k
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    07 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) V1(3), V2(3), the two vectors.
+!
+!    Output, real ( kind = 8 ) V3(3), the cross product vector.
+!
+  implicit none
+
+  real ( kind = dp ) v1(3)
+  real ( kind = dp ) v2(3)
+  real ( kind = dp ) v3(3)
+
+  v3(1) = v1(2) * v2(3) - v1(3) * v2(2)
+  v3(2) = v1(3) * v2(1) - v1(1) * v2(3)
+  v3(3) = v1(1) * v2(2) - v1(2) * v2(1)
+
+  return
+end
+
+subroutine plane_normal_basis_3d ( pp, normal, pq, pr )
+        !dir$ attribute forceinline :: plane_normal_basis_3d
+        !dir$ attribute code_align : 32 :: plane_normal_basis_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: plane_normal_basis_3d
+!*****************************************************************************80
+!
+!! PLANE_NORMAL_BASIS_3D finds two perpendicular vectors in a plane in 3D.
+!
+!  Discussion:
+!
+!    The normal form of a plane in 3D is:
+!
+!      PP is a point on the plane,
+!      N is a normal vector to the plane.
+!
+!    The two vectors to be computed, PQ and PR, can be regarded as
+!    the basis of a Cartesian coordinate system for points in the plane.
+!    Any point in the plane can be described in terms of the "origin" 
+!    point PP plus a weighted sum of the two vectors PQ and PR:
+!
+!      P = PP + a * PQ + b * PR.
+!
+!    The vectors PQ and PR have unit length, and are perpendicular to N
+!    and to each other.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    27 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) PP(3), a point on the plane.  (Actually,
+!    we never need to know these values to do the calculation!)
+!
+!    Input, real ( kind = 8 ) NORMAL(3), a normal vector N to the plane.  The
+!    vector must not have zero length, but it is not necessary for N
+!    to have unit length.
+!
+!    Output, real ( kind = 8 ) PQ(3), a vector of unit length,
+!    perpendicular to the vector N and the vector PR.
+!
+!    Output, real ( kind = 8 ) PR(3), a vector of unit length,
+!    perpendicular to the vector N and the vector PQ.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 3
+
+  real ( kind = dp ) r8vec_norm
+  real ( kind = dp ) normal(dim_num)
+  real ( kind = dp ) normal_norm
+  real ( kind = dp ) pp(dim_num)
+  real ( kind = dp ) pq(dim_num)
+  real ( kind = dp ) pr(dim_num)
+  real ( kind = dp ) pr_norm
+!
+!  Compute the length of NORMAL.
+!
+  normal_norm = r8vec_norm ( dim_num, normal )
+
+  if ( normal_norm == 0.0D+00 ) then
+       return
+  end if
+!
+!  Find a vector PQ that is normal to NORMAL and has unit length.
+!
+  call r8vec_any_normal ( dim_num, normal, pq )
+!
+!  Now just take the cross product NORMAL x PQ to get the PR vector.
+!
+  call r8vec_cross_product_3d ( normal, pq, pr )
+
+  pr_norm = r8vec_norm ( dim_num, pr )
+
+  pr(1:dim_num) = pr(1:dim_num) / pr_norm
+
+  return
+end
+
+subroutine cylinder_sample_3d ( p1, p2, r, n, seed, p )
+        !dir$ attribute forceinline :: cylinder_sample_3d
+        !dir$ attribute code_align : 32 :: cylinder_sample_3d
+        !dir$ optimize : 3
+        !dir$ attribute optimization_parameter: target_arch=AVX :: cylinder_sample_3d
+!*****************************************************************************80
+!
+!! CYLINDER_SAMPLE_3D samples a cylinder in 3D.
+!
+!  Discussion:
+!
+!    We are sampling the interior of a right finite cylinder in 3D.
+!
+!    The interior of a (right) (finite) cylinder in 3D is defined by an axis,
+!    which is the line segment from point P1 to P2, and a radius R.  The points 
+!    on or inside the cylinder are:
+!    * points whose distance from the line through P1 and P2 is less than
+!      or equal to R, and whose nearest point on the line through P1 and P2
+!      lies (nonstrictly) between P1 and P2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license. 
+!
+!  Modified:
+!
+!    27 August 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) P1(3), P2(3), the first and last points
+!    on the axis line of the cylinder.
+!
+!    Input, real ( kind = 8 ) R, the radius of the cylinder.
+!
+!    Input, integer ( kind = 4 ) N, the number of sample points to compute.
+!
+!    Input/output, integer ( kind = 4 ) SEED, the random number seed.
+!
+!    Input, real ( kind = 8 ) P(3,N), the sample points.
+!
+  implicit none
+
+  integer ( kind = i4 ), parameter :: dim_num = 3
+  integer ( kind = i4 ) n
+
+  real ( kind = dp ) axis(dim_num)
+  real ( kind = dp ) axis_length
+  real ( kind = dp ) r8vec_norm
+  integer ( kind = i4 ) i
+  real ( kind = dp ) p(dim_num,n)
+  real ( kind = dp ), parameter :: pi = 3.14159265358979323846264e+00_dp
+  real ( kind = dp ) p1(dim_num)
+  real ( kind = dp ) p2(dim_num)
+  real ( kind = dp ) r
+  real ( kind = dp ) radius(n)
+  integer ( kind = i4 ) seed
+  real ( kind = dp ) theta(n)
+  real ( kind = dp ) v2(dim_num)
+  real ( kind = dp ) v3(dim_num)
+  real ( kind = dp ) z(n)
+!
+!  Compute the axis vector.
+!
+  axis(1:dim_num) = p2(1:dim_num) - p1(1:dim_num)
+  axis_length = r8vec_norm ( dim_num, axis )
+  axis(1:dim_num) = axis(1:dim_num) / axis_length
+!
+!  Compute vectors V2 and V3 that form an orthogonal triple with AXIS.
+!
+  call plane_normal_basis_3d ( p1, axis, v2, v3 )
+!
+!  Assemble the randomized information.
+!
+  call random_number ( harvest = radius(1:n) )
+  radius(1:n) = r * sqrt ( radius(1:n) )
+
+  call random_number ( harvest = theta(1:n) )
+  theta(1:n) = 2.0D+00 * pi * theta(1:n)
+
+  call random_number ( harvest = z(1:n) )
+  z(1:n) = axis_length * z(1:n)
+
+  do i = 1, dim_num
+
+    p(i,1:n) =                                       p1(i)   &
+              + z(1:n)                             * axis(i) &
+              + radius(1:n) * cos ( theta(1:n) )   * v2(i)   &
+              + radius(1:n) * sin ( theta(1:n) )   * v3(i)
+
+  end do
+
+
+  return
+end
+
 subroutine lines_par_angle_2d ( f1, g1, x01, y01, f2, g2, x02, y02, theta )
          !dir$ attribute forceinline :: lines_par_angle_2d 
         !dir$ attribute code_align : 32 :: lines_par_angle_2d 
