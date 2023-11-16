@@ -15906,7 +15906,7 @@ module eos_sensor_avx
                   Phik(j)  = Phi0fk.v(0)*sinc
                end do
                return
-           else if(n>64) then
+           else if(n>32) then
               !dir$ assume_aligned fk:32           
               !dir$ assume_aligned Phik:32
               do i=1,iand(n,not(3)),32
@@ -15949,6 +15949,7 @@ module eos_sensor_avx
                       fk7          = fk(idx+28)
                       arg7         = twopi.v(ii)*fk7.v(ii)*hThin.v(ii)
                       sinc7        = sin(arg7.v(ii))/arg7.v(ii)
+                      Phik(idx+28) = Phi0fk.v(ii)*sinc7.v(ii) 
                    end do
                end do
                 ! Remainder loop
@@ -15962,8 +15963,6 @@ module eos_sensor_avx
               return
            end if
        end subroutine rect_pulse_flux_unroll_8x_ymm4r8
-
-
 
        subroutine rect_pulse_flux_unroll_4x_ymm4r8(Phik,fk,Phi0,n,Tin)
            !dir$ optimize:3
@@ -16019,7 +16018,7 @@ module eos_sensor_avx
                   Phik(j)  = Phi0fk.v(0)*sinc
                end do
                return
-           else if(n>64) then
+           else if(n>16) then
               !dir$ assume_aligned fk:32           
               !dir$ assume_aligned Phik:32
               do i=1,iand(n,not(3)),16
@@ -16249,7 +16248,7 @@ module eos_sensor_avx
                     call mm_prefetch(Phik(i*128),FOR_K_PREFETCH_T1)
                       !dir$ vector aligned
                       !dir$ ivdep
-                      !dir$ vector vectorlength(8)
+                      !dir$ vector vectorlength(4)
                       !dir$ vector always
                       do ii=0,7
                          idx = i+ii
