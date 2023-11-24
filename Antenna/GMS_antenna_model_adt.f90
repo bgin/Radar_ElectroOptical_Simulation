@@ -167,7 +167,35 @@ module antenna_model_adt
     integer(kind=i4) :: nmf293  ! number of terms (2.93)
     integer(kind=i4) :: nrf293  ! number of 'r' coordinate values (2.93)
     integer(kind=i4) :: nfxf294 ! number of values i.e. f(x,y) for amplitude field of aperture (2.94) 
-    
+    integer(kind=i4) :: nft240  ! number of values of elementary electric dipole (2.40)
+    integer(kind=i4) :: ndf240  ! number of elementary dipoles (2.40)
+    integer(kind=i4) :: nft241  ! number of values of elementary electric frame (2.41)
+    integer(kind=i4) :: nff241  ! number of elementary frames (2.41)
+    integer(kind=i4) :: nzf243  ! number of current distribution 'z' values (2.43)
+    integer(kind=i4) :: ntf296  ! number of theta values (2.96)
+    integer(kind=i4) :: npf296  ! number of phi values (2.96)
+    integer(kind=i4) :: npf298  ! number of linear phase error values apperture edge (2.98)
+    integer(kind=i4) :: nftf2100 ! number of values for radiation pattern linear phase error (2.100)
+    integer(kind=i4) :: nftf2102 ! number of values for radiation pattern quadratic phase error (2.102)
+    integer(kind=i4) :: nftf2105 ! number of values for radiation pattern quadratic phase error
+                                 ! and cosinusoidal amplitude distribution (2.105)
+    integer(kind=i4) :: nfuf2107 ! number of values for radiation pattern cubic phase error
+                                 ! and cosinusoidal amplitude distribution (2.107)
+    integer(kind=i4) :: ntf2107  ! number of approximation terms (2.107)
+    integer(kind=i4) :: ntf2110  ! number of theta values 2D array (2.110)
+    integer(kind=i4) :: npf2110  ! number of phi values 2D array (2.110)
+    integer(kind=i4) :: ntf2110a ! number of theta values 1D array (2.110a)
+    integer(kind=i4) :: ntf2111  ! number of theta values 2D array (2.111)
+    integer(kind=i4) :: npf2111  ! number of phi values 2D array (2.111) 
+    integer(kind=i4) :: ntf211a  ! number of theta values 1D array (2.111a)
+    integer(kind=i4) :: nuf2125  ! number of values sinusoidal phase error (2.125)
+    integer(kind=i4) :: nuf2126  ! number of values cosinusoidal phase error (2.126)
+    integer(kind=i4) :: npf2127  ! number of phi values of coefficient of directional pattern (2.127)
+    integer(kind=i4) :: ntf2127  ! number of theta values of coefficient of directional pattern (2.127)
+    integer(kind=i4) :: naf2127  ! number of radiating elements or discrete antennas (2.127)
+    integer(kind=i4) :: nrmnf2143 ! number of real parts of m-th and n-th antenna impedance (2.143)
+    integer(kind=i4) :: nxmnf2144 ! number of imaginary parts of m-th and n-th antenna impedance (2.144)
+    integer(kind=i4) :: nrf2145   ! number of values of mutual impedance of two antennas as a function of their distance (2.145)
     
     ! Complex Electric Field (complex-single)
     ! First dimension nth field, second dimension number of sample points
@@ -537,24 +565,100 @@ module antenna_model_adt
     real(kind=dp), dimension(:,:,:), allocatable :: psir8a
     !dir$ attributes align : 64 :: psir8a
     
+    ! Elementary electric dipoles (radiation patterns)
+    real(kind=sp), dimension(:,:), allocatable :: f240r4
+    !dir$ attributes align : 64 :: f240r4
+    real(kind=dp), dimension(:,:), allocatable :: f240r8
+    !dir$ attributes align : 64 :: f240r8
     
+    ! SInusoidal current distribution (2.43)
+    real(kind=sp), dimension(:), allocatable :: f243r4
+    !dir$ attributes align : 64 :: f243r4
+    real(kind=dp), dimension(:), allocatable :: f243r8
+    !dir$ attributes align : 64 :: f243r8
     
+    ! Radiation pattern of similiar EM radiators (2.96)
+    real(kind=sp), dimension(:,:), allocatable :: f296r4
+    !dir$ attributes align : 64 :: f296r4
+    real(kind=dp), dimension(:,:), allocatable :: f296r8
+    !dir$ attributes align : 64 :: f296r8
+    
+    !Linear phase error values apperture edge (2.98)
+    real(kind=sp), dimension(:),   allocatable :: f298r4
+    !dir$ attributes align : 64 :: f298r4
+    real(kind=dp), dimension(:),   allocatable :: f298r8
+    !dir$ attributes align : 64 :: f298r8
+    
+    !Radiation pattern including linear phase error term (2.100)
+    real(kind=sp), dimension(:),   allocatable :: f2100r4
+    !dir$ attributes align : 64 :: f2100r4
+    real(kind=dp), dimension(:),   allocatable :: f2100r8
+    !dir$ attributes align : 64 :: f2100r8
 
+    !Radiation pattern including quadratic phase error term (2.102)
+    real(kind=sp), dimension(:),   allocatable :: f2102r4
+    !dir$ attributes align : 64 :: f2102r4
+    real(kind=dp), dimension(:),   allocatable :: f2102r8
+    !dir$ attributes align : 64 :: f2102r8
 
+    ! Radiation pattern cubic phase error and cosinusoidal amplitude distribution (2.107)
+    real(kind=sp), dimension(:),   allocatable :: f2107r4
+    !dir$ attributes align : 64 :: f2107r4
+    real(kind=dp), dimension(:),   allocatable :: f2107r8
+    !dir$ attributes align : 64 :: f2107r8  
+    
+    ! Average of radiation pattern of 2D (single) array (2.110)
+    real(kind=sp), dimension(:,:), allocatable :: f2110r4
+    !dir$ attributes align : 64 :: f2110r4
+    real(kind=dp), dimension(:,:), allocatable :: f2110r8
+    !dir$ attributes align : 64 :: f2110r8
+    
+    ! Average of radiation pattern of 2D (single) array (2.110)
+    real(kind=sp), dimension(:,:), allocatable :: f2110r4
+    !dir$ attributes align : 64 :: f2110r4
+    real(kind=dp), dimension(:,:), allocatable :: f2110r8
+    !dir$ attributes align : 64 :: f2110r8
+    
+    ! Average of radiation pattern of 1D (single) array (2.110a)
+    real(kind=sp), dimension(:), allocatable :: f2110ar4
+    !dir$ attributes align : 64 :: f2110ar4
+    real(kind=dp), dimension(:), allocatable :: f2110ar8
+    !dir$ attributes align : 64 :: f2110ar8
+    
+    ! Power-averaged of radiation pattern of 2D (single) array (2.111)
+    real(kind=sp), dimension(:,:), allocatable :: f2111r4
+    !dir$ attributes align : 64 :: f2111r4
+    real(kind=dp), dimension(:,:), allocatable :: f2111r8
+    !dir$ attributes align : 64 :: f2111r8
+    
+    ! Power-average of radiation pattern of 1D (single) array (2.111a)
+    real(kind=sp), dimension(:), allocatable :: f2111ar4
+    !dir$ attributes align : 64 :: f2111ar4
+    real(kind=dp), dimension(:), allocatable :: f2111ar8
+    !dir$ attributes align : 64 :: f2111ar8                          
 
+    !Phi values of coefficient of directional pattern (2.127)
+    real(kind=sp), dimension(:,:,:), allocatable :: f2127r4
+    !dir$ attributes align : 64 :: f2127r4
+    real(kind=dp), dimension(:,:,:), allocatable :: f2127r8
+    !dir$ attributes align : 64 :: f2127r8
+    
+    ! Values of real parts of m-th and n-th antenna impedance (2.143)
+    real(kind=sp), dimension(:), allocatable :: rmnf2143r4
+     !dir$ attributes align : 64 :: rmnf2143
+    real(kind=dp), dimension(:), allocatable :: rmnf2143r8
+    
+    ! Values of imaginary parts of m-th and n-th antenna impedance (2.144)
+    real(kind=sp), dimension(:), allocatable :: rmnf2144r4
+     !dir$ attributes align : 64 :: rmnf2144
+    real(kind=dp), dimension(:), allocatable :: rmnf2144r8
+     !dir$ attributes align : 64 :: rmnf2144r8
 
-
-
-
-
-
-
-
-
-
-
-
-
+    ! Values of mutual impedance of two antennas as a function of their distance (2.145)
+    real(kind=sp), dimension(:), allocatable :: rf2145r4
+    !dir$ attributes align : 64 :: rf2145r4
+    real(kind=dp), dimension(:), allocatable :: rf2145r8
+    !dir$ attributes align : 64 :: rf2145r8
 
 
 
