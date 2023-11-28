@@ -68,79 +68,174 @@ module mod_dipole_antenna
     
     integer(kind=i4) :: nIzf31 ! number of 'z' values of current distribution of symmetric
                                ! dipole (3.1)
+    integer(kind=i4) :: ndf31  ! number of dipoles in dipole array (3.1)
     integer(kind=i4) :: nIzf34 ! number of 'z' values of current distribution of symmetric
                                ! very thin dipole (3.4)
+    integer(kind=i4) :: ndf34  ! number of dipoles in dipole array (3.4)
     integer(kind=i4) :: nFtf35 ! number of 'theta' values of sinusoidal current distribution
                                ! for dipole radiation pattern (3.5)
+    integer(kind=i4) :: ndf35  ! number of dipoles in dipole array (3.5)
     integer(kind=i4) :: nDf36  ! number of 'D' values of directed coefficients (KND, rus.)
                                ! for symmetric dipole (3.6)
+    integer(kind=i4) :: ndf36  ! number of dipoles in dipole array (3.6)
     integer(kind=i4) :: nRf38  ! number of 'R' values of symmetric dipole impedance (function of length)
                                ! (3.8)
+    integer(kind=i4) :: ndf38  ! number of dipoles in dipole array (3.8)                         
     integer(kind=i4) :: nXf39  ! number of 'X' values of symmetric dipole reactive 
                                ! impedance (function of length) (3.9)
+    integer(kind=i4) :: ndf39  ! number of dipoles in dipole array (3.9)
+    integer(kind=i4) :: nRf311 ! number of values for dipole impedance 'R' (function of length) (3.11)
+    integer(kind=i4) :: ndf311 ! number of dipoles in dipole array (3.11)
+    integer(kind=i4) :: nXf311 ! number of values for dipole impedance 'X' (function of length) (3.11)
+    integer(kind=i4) :: nZf312 ! number of values for short dipole impedance 'Z' (total value) (3.12)    
+    integer(kind=i4) :: ndf313 ! number of dipoles in dipole array (3.12)                      
+    integer(kind=i4) :: nrf313 ! number of values for 'wave' dipole impedance (function of length) (3.13)
+    integer(kind=i4) :: ndf313 ! number of dipoles in dipole array (3.13)
+    integer(kind=i4) :: nRf314 ! number of values for 'R' length-invariant dipole impedance (3.14)
+    integer(kind=i4) :: ndf314 ! number of dipoles in dipole array (3.14)
+    integer(kind=i4) :: nXf315 ! number of values for 'X' length-invariant dipole impedance (3.15)
+    integer(kind=i4) :: ndf315 ! number of dipoles in dipole array (3.15)
+    integer(kind=i4) :: nbf316 ! number of beta ratio values (part of 3.15,3.14 formulae) (3.16)
+    integer(kind=i4) :: ndf316 ! number of dipoles in dipole array (3.16)
+    integer(kind=i4) :: nGf321 ! number of values of scattering coefficient 'Gamma' (3.21)
+    integer(kind=i4) :: ndf321 ! number of dipoles in dipole array (3.21)
+    integer(kind=i4) :: nFt327 ! number of values of radiation pattern of charged dipole (3.27)
+    integer(kind=i4) :: ndf327 ! number of dipoles in dipole array (3.27)
+    integer(kind=i4) :: nRf328 ! number of values for 'R' active impedance of charged vibrator (3.28)
+    integer(kind=i4) :: ndf328 ! number of dipoles in dipole array (3.28)
+    integer(kind=i4) :: nrf331 ! number of values of ingress impedance of thin biconic dipole (3.31)
+    integer(kind=i4) :: ndf331 ! number of dipoles in dipole array (3.31)
+    integer(kind=i4) :: nZf333 ! number of values of total impedance of dipole (active,reactive) (3.33)
+    integer(kind=i4) :: ndf333 ! number of dipoles in dipole array (3.31)
+    integer(kind=i4) :: nRf334 ! number of values of active impedance component of dipole (3.34, a part of 3.33)
+    integer(kind=i4) :: nXf334 ! number of values of reactive impedance component of dipole (3.34, a part of 3.33)
 
-
+   ! First dimension -- number of dipole radiating elements in the dipole array!!
+   
    ! 'z' values of current distribution of symmetric
                                       ! dipole (3.1)
-    real(kind=sp), dimension(:), allocatable :: Izf31r4
+    real(kind=sp), dimension(:,:), allocatable :: Izf31r4
     !dir$ attributes align : 64 :: Izf31r4
-    real(kind=dp), dimension(:), allocatable :: Izf31r8
+    real(kind=dp), dimension(:,:), allocatable :: Izf31r8
     !dir$ attributes align : 64 :: Izf31r8
     
    ! 'z' values of current distribution of symmetric
                                ! very thin dipole (3.4)
-    real(kind=sp), dimension(:), allocatable :: Izf34r4
+    real(kind=sp), dimension(:,:), allocatable :: Izf34r4
     !dir$ attributes align : 64 :: Izf34r4
-    real(kind=dp), dimension(:), allocatable :: Izf34r8
+    real(kind=dp), dimension(:,:), allocatable :: Izf34r8
     !dir$ attributes align : 64 :: Izf34r8    
     
    ! 'theta' values of sinusoidal current distribution
                                ! for dipole radiation pattern (3.5)                        
-    real(kind=sp), dimension(:), allocatable :: Ftf35r4
+    real(kind=sp), dimension(:,:), allocatable :: Ftf35r4
     !dir$ attributes align : 64 :: Ftf35r4
-    real(kind=dp), dimension(:), allocatable :: Ftf35r8
+    real(kind=dp), dimension(:,:), allocatable :: Ftf35r8
     !dir$ attributes align : 64 :: Ftf35r8     
 
    ! 'D' values of directed coefficients (KND, rus.)
                                ! for symmetric dipole (3.6)
-    real(kind=sp), dimension(:), allocatable :: Df36r4
+    real(kind=sp), dimension(:,:), allocatable :: Df36r4
     !dir$ attributes align : 64 :: Df36r4
-    real(kind=dp), dimension(:), allocatable :: Df36r8
+    real(kind=dp), dimension(:,:), allocatable :: Df36r8
     !dir$ attributes align : 64 :: Df36r8    
     
    ! 'R' values of symmetric dipole impedance (function of length)
                                ! (3.8) 
-    real(kind=sp), dimension(:), allocatable :: Rf38r4
+    real(kind=sp), dimension(:,:), allocatable :: Rf38r4
     !dir$ attributes align : 64 :: Rf38r4
-    real(kind=dp), dimension(:), allocatable :: Rf38r8
+    real(kind=dp), dimension(:,:), allocatable :: Rf38r8
     !dir$ attributes align : 64 :: Rf38r8    
     
-   ! number of 'X' values of symmetric dipole reactive 
+   !  'X' values of symmetric dipole reactive 
                                ! impedance (function of length) (3.9)
-    real(kind=sp), dimension(:), allocatable :: Xf39r4
+    real(kind=sp), dimension(:,:), allocatable :: Xf39r4
     !dir$ attributes align : 64 :: Xf39r4
-    real(kind=dp), dimension(:), allocatable :: Xf39r8
+    real(kind=dp), dimension(:,:), allocatable :: Xf39r8
     !dir$ attributes align : 64 :: Xf39r8 
+    
+  ! Values for dipole impedance 'R' (function of length) (3.11)
+    real(kind=sp), dimension(:,:), allocatable :: Rf311r4
+    !dir$ attributes align : 64 :: Rf311r4
+    real(kind=dp), dimension(:,:), allocatable :: Rf311r8
+    !dir$ attributes align : 64 :: Rf311r8 
+    
+  ! Values for dipole impedance 'X' (function of length) (3.11)
+    real(kind=sp), dimension(:,:), allocatable :: Xf311r4
+    !dir$ attributes align : 64 :: Xf311r4
+    real(kind=dp), dimension(:,:), allocatable :: Xf311r8
+    !dir$ attributes align : 64 :: Xf311r8 
 
+  ! values for short dipole impedance 'Z' (total value) (3.12)  
+    real(kind=sp), dimension(:,:), allocatable :: Zf312r4
+    !dir$ attributes align : 64 :: Zf312r4
+    real(kind=dp), dimension(:,:), allocatable :: Zf312r8
+    !dir$ attributes align : 64 :: Zf312r8 
+  
+  ! values for 'wave' dipole impedance (function of length) (3.13)
+    real(kind=sp), dimension(:,:), allocatable :: rf313r4
+    !dir$ attributes align : 64 :: rf313r4
+    real(kind=dp), dimension(:,:), allocatable :: rf313r8
+    !dir$ attributes align : 64 :: rf313r8
 
+  ! values for 'R' length-invariant dipole impedance (3.14)
+    real(kind=sp), dimension(:,:), allocatable :: Rf314r4
+    !dir$ attributes align : 64 :: Rf314r4
+    real(kind=dp), dimension(:,:), allocatable :: Rf314r8
+    !dir$ attributes align : 64 :: Rf314r8
+    
+  ! values for 'X' length-invariant dipole impedance (3.15)
+    real(kind=sp), dimension(:,:), allocatable :: Xf315r4
+    !dir$ attributes align : 64 :: Xf315r4
+    real(kind=dp), dimension(:,:), allocatable :: Xf315r8
+    !dir$ attributes align : 64 :: Xf315r8
+ 
+  ! Beta ratio values (part of 3.15,3.14 formulae) (3.16)
+    real(kind=sp), dimension(:,:), allocatable :: Bf316r4
+    !dir$ attributes align : 64 :: Bf316r4
+    real(kind=dp), dimension(:,:), allocatable :: Bf316r8
+    !dir$ attributes align : 64 :: Bf316r8
 
+  ! Values of scattering coefficient 'Gamma' (3.21)
+    real(kind=sp), dimension(:,:), allocatable :: Gf321r4
+    !dir$ attributes align : 64 :: Gf321r4
+    real(kind=dp), dimension(:,:), allocatable :: Gf321r8
+    !dir$ attributes align : 64 :: Gf321r8
 
+  ! Values of radiation pattern of charged dipole (3.27)
+    real(kind=sp), dimension(:,:), allocatable :: Ftf327r4
+    !dir$ attributes align : 64 :: Ftf327r4
+    real(kind=dp), dimension(:,:), allocatable :: Ftf327r8
+    !dir$ attributes align : 64 :: Ftf327r8
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  ! Values for 'R' active impedance of charged vibrator (3.28)
+    real(kind=sp), dimension(:,:), allocatable :: Rf328r4
+    !dir$ attributes align : 64 :: Rf328r4
+    real(kind=dp), dimension(:,:), allocatable :: Rf328r8
+    !dir$ attributes align : 64 :: Rf328r8
+    
+  ! Values of ingress impedance of thin biconic dipole (3.31) 
+    real(kind=sp), dimension(:,:), allocatable :: rf331r4
+    !dir$ attributes align : 64 :: rf331r4
+    real(kind=dp), dimension(:,:), allocatable :: rf331r8
+    !dir$ attributes align : 64 :: rf331r8
+    
+  ! Values of total impedance of dipole (i.e. active,reactive) (3.33)
+    real(kind=sp), dimension(:,:), allocatable :: Zf333r4
+    !dir$ attributes align : 64 :: Zf333r4
+    real(kind=dp), dimension(:,:), allocatable :: Zf333r8
+    !dir$ attributes align : 64 :: Zf333r8
+    
+  ! Values of active impedance component of dipole (3.34, a part of 3.33)
+    real(kind=sp), dimension(:,:), allocatable :: Rf334r4
+    !dir$ attributes align : 64 :: Rf334r4
+    real(kind=dp), dimension(:,:), allocatable :: Rf334r8
+    !dir$ attributes align : 64 :: Rf334r8
+    
+  ! Values of reactive impedance component of dipole (3.34, a part of 3.33)
+    real(kind=sp), dimension(:,:), allocatable :: Xf334r4
+    !dir$ attributes align : 64 :: Xf334r4
+    real(kind=dp), dimension(:,:), allocatable :: Xf334r8
+    !dir$ attributes align : 64 :: Xf334r8
 
 end module mod_dipole_antenna
