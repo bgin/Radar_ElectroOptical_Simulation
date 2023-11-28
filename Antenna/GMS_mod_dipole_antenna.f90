@@ -109,7 +109,29 @@ module mod_dipole_antenna
     integer(kind=i4) :: ndf333 ! number of dipoles in dipole array (3.31)
     integer(kind=i4) :: nRf334 ! number of values of active impedance component of dipole (3.34, a part of 3.33)
     integer(kind=i4) :: nXf334 ! number of values of reactive impedance component of dipole (3.34, a part of 3.33)
-
+    integer(kind=i4) :: nZf335 ! number of values of input impedance of the biconic dipole (3.35)
+    integer(kind=i4) :: ndf335 ! number of dipoles in dipole array (3.35)
+    integer(kind=i4) :: npf345 ! number of phi values [radiation pattern] of symmetric horizontal dipole (plane-parallel) (3.45)
+    integer(kind=i4) :: ntf345 ! number of delta values [radiation pattern] of symmetric horizontal dipole (plane-parallel) (3.45)
+    integer(kind=i4) :: ndf345 ! number of dipoles in dipole array (3.45)
+    integer(kind=i4) :: npf346 ! number of phi values horizontal-part [radiation pattern] of symmetric horizontal dipole (plane-parallel) (3.46)
+    integer(kind=i4) :: ntf346 ! number of delta values horizontal-part [radiation pattern] of symmetric horizontal dipole (plane-parallel) (3.46)
+    integer(kind=i4) :: ndf346 ! number of dipoles in dipole array (3.46)
+    integer(kind=i4) :: nFf349 ! number of values of vertical-component of radiation pattern [ideally conducting earth] (3.49)
+    integer(kind=i4) :: ndf349 ! number of dipoles in dipole array (3.4,3.50)
+    integer(kind=i4) :: nFf350 ! number of values of horizontal-component of radiation pattern [ideally conducting earth] (3.50)
+    integer(kind=i4) :: nFf352 ! number of values of vertical-component of radiation pattern of vertical symmetric dipole (3.52)
+    integer(kind=i4) :: ndf352 ! number of dipoles in dipole array (3.52)
+    integer(kind=i4) :: nFf366 ! number of values of vertical-component of radiation pattern for assymetrical cylindrical dipole (3.66)
+    integer(kind=i4) :: ndf366 ! number of dipoles in dipole array (3.66)
+    integer(kind=i4) :: npf397 ! number of azimuthal 'phi' coordinate values of radiation pattern for V-antenna (3.97)
+    integer(kind=i4) :: ntf397 ! number of azimuthal 'theta' coordinate values of radiation pattern for V-antenna (3.97)
+    integer(kind=i4) :: ndf397 ! number of dipoles in dipole array (3.97)
+    integer(kind=i4) :: npf398 ! number of meridional 'phi' coordinate values of radiation pattern for V-antenna (3.98)
+    integer(kind=i4) :: ntf398 ! number of meridional 'theta' coordinate values of radiation pattern for V-antenna (3.98)
+    integer(kind=i4) :: ndf398 ! number of dipoles in dipole array (3.98)
+    integer(kind=i4) :: nRf399 ! number of impedance values of V-antenna located in the free space (3.99)
+    integer(kind=i4) :: ndf399 ! number of dipoles in dipole array (3.99)
    ! First dimension -- number of dipole radiating elements in the dipole array!!
    
    ! 'z' values of current distribution of symmetric
@@ -237,5 +259,67 @@ module mod_dipole_antenna
     !dir$ attributes align : 64 :: Xf334r4
     real(kind=dp), dimension(:,:), allocatable :: Xf334r8
     !dir$ attributes align : 64 :: Xf334r8
+    
+  ! Values of input impedance of the biconic dipole (3.35)
+    real(kind=sp), dimension(:,:), allocatable :: Zf335r4
+    !dir$ attributes align : 64 :: Zf335r4
+    real(kind=dp), dimension(:,:), allocatable :: Zf335r8
+    !dir$ attributes align : 64 :: Zf335r8
+    
+  ! Values horizontal-component [phi,delta, radiation pattern] 
+  ! of symmetric horizontal dipole (plane-parallel) (3.45)
+    real(kind=sp), dimension(:,:,:), allocatable :: Ff345r4
+    !dir$ attributes align : 64 :: Ff345r4
+    real(kind=dp), dimension(:,:,:), allocatable :: Ff345r8
+    !dir$ attributes align : 64 :: Ff345r8
+    
+  ! Values vertical-component [phi,delta, radiation pattern] 
+  ! of symmetric horizontal dipole (plane-parallel) (3.46)
+    real(kind=sp), dimension(:,:,:), allocatable :: Ff346r4
+    !dir$ attributes align : 64 :: Ff346r4
+    real(kind=dp), dimension(:,:,:), allocatable :: Ff346r8
+    !dir$ attributes align : 64 :: Ff346r8
+    
+  ! Values of vertical-component of radiation pattern [ideally conducting earth] (3.49)
+    real(kind=sp), dimension(:,:), allocatable :: Ff349r4
+    !dir$ attributes align : 64 :: Ff349r4
+    real(kind=dp), dimension(:,:), allocatable :: Ff349r8
+    !dir$ attributes align : 64 :: Zf349r8
+    
+  ! Values of horizontal-component of radiation pattern [ideally conducting earth] (3.50)
+    real(kind=sp), dimension(:,:), allocatable :: Ff350r4
+    !dir$ attributes align : 64 :: Ff350r4
+    real(kind=dp), dimension(:,:), allocatable :: Ff350r8
+    !dir$ attributes align : 64 :: Zf350r8
+    
+  ! Values of vertical-component of radiation pattern of vertical symmetric dipole (3.52)
+    real(kind=sp), dimension(:,:), allocatable :: Ff352r4
+    !dir$ attributes align : 64 :: Ff352r4
+    real(kind=dp), dimension(:,:), allocatable :: Ff352r8
+    !dir$ attributes align : 64 :: Ff352r8
+    
+  ! Values of vertical-component of radiation pattern for assymetrical cylindrical dipole (3.66)
+    real(kind=sp), dimension(:,:), allocatable :: Ff366r4
+    !dir$ attributes align : 64 :: Ff366r4
+    real(kind=dp), dimension(:,:), allocatable :: Ff366r8
+    !dir$ attributes align : 64 :: Ff366r8
+    
+  ! Azimuthal 'phi' and 'theta' coordinate values of radiation pattern for V-antenna (3.97)
+    real(kind=sp), dimension(:,:,:), allocatable :: Ff397r4
+    !dir$ attributes align : 64 :: Ff397r4
+    real(kind=dp), dimension(:,:,:), allocatable :: Ff397r8
+    !dir$ attributes align : 64 :: Ff397r8
+    
+   ! Meridional 'phi' and 'theta' coordinate values of radiation pattern for V-antenna (3.98)
+    real(kind=sp), dimension(:,:,:), allocatable :: Ff398r4
+    !dir$ attributes align : 64 :: Ff398r4
+    real(kind=dp), dimension(:,:,:), allocatable :: Ff398r8
+    !dir$ attributes align : 64 :: Ff398r8
+    
+   ! Impedance values of V-antenna located in the free space (3.99)
+    real(kind=sp), dimension(:,:), allocatable :: Rf399r4
+    !dir$ attributes align : 64 :: Rf399r4
+    real(kind=dp), dimension(:,:), allocatable :: Rf399r8
+    !dir$ attributes align : 64 :: Rf399r8
 
 end module mod_dipole_antenna
