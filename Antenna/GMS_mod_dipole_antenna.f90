@@ -132,6 +132,22 @@ module mod_dipole_antenna
     integer(kind=i4) :: ndf398 ! number of dipoles in dipole array (3.98)
     integer(kind=i4) :: nRf399 ! number of impedance values of V-antenna located in the free space (3.99)
     integer(kind=i4) :: ndf399 ! number of dipoles in dipole array (3.99)
+    integer(kind=i4) :: npf3100! number of phi values of radiation pattern for V-antenna (Pistolkors antenna) (3.100)
+    integer(kind=i4) :: ntf3100! number of theta values of radiation pattern for V-antenna (Pistolkors antenna) (3.100)
+    integer(kind=i4) :: ndf3100! number of dipoles in dipole array (3.100)
+    integer(kind=i4) :: npf3101! number of phi values [horizontal plane] of radiation pattern 
+                               ! for V-antenna (Pistolkors antenna) (3.101)
+    integer(kind=i4) :: ndf3101! number of dipoles in dipole array (3.101) 
+    integer(kind=i4) :: nEf3104! number of values (W/cm) of critical voltage for dipole antenna (3.104)
+    integer(kind=i4) :: nZf3110! number of values for mutual impedance of two dipole antennae (3.110)
+    integer(kind=i4) :: ntf3122! number of phi values of radiation pattern for two-dipole antenna (horizontal plane)(3.122)
+    integer(kind=i4) :: ntf3123! number of phi values of radiation pattern for two-dipole antenna 
+                               ! plane-perpendicular to antennae axis(3.123)
+    integer(kind=i4) :: ntf3124! number of phi values of radiation pattern for two-dipole antenna (vertical plane)(3.124)
+    integer(kind=i4) :: ntf3126! number of theta values of radiation pattern for 2D array of dipoles (horizontal plane) (3.126)
+    integer(kind=i4) :: ntf3127! number of theta values of radiation pattern for 2D array of dipoles (vertical plane) (3.127)
+    integer(kind=i4) :: ntf3136! number of theta values (horizontal-plane) of radiation pattern for aperiodic reflector (3.136)
+    integer(kind=i4) :: ntf3137! number of delta values (vertical-plane) of radiation pattern for aperiodic reflector (3.137)
    ! First dimension -- number of dipole radiating elements in the dipole array!!
    
    ! 'z' values of current distribution of symmetric
@@ -321,5 +337,73 @@ module mod_dipole_antenna
     !dir$ attributes align : 64 :: Rf399r4
     real(kind=dp), dimension(:,:), allocatable :: Rf399r8
     !dir$ attributes align : 64 :: Rf399r8
-
+    
+  ! Phi and theta values of radiation pattern for V-antenna (Pistolkors antenna) (3.100)
+    real(kind=sp), dimension(:,:,:), allocatable :: Ff3100r4
+    !dir$ attributes align : 64 :: Ff3100r4
+    real(kind=dp), dimension(:,:,:), allocatable :: Ff3100r8
+    !dir$ attributes align : 64 :: Ff3100r8
+    
+  ! Phi values [horizontal plane] of radiation pattern 
+                               ! for V-antenna (Pistolkors antenna) (3.101)
+    real(kind=sp), dimension(:,:), allocatable :: Ff3101r4
+    !dir$ attributes align : 64 :: Ff3101r4
+    real(kind=dp), dimension(:,:), allocatable :: Ff3101r8
+    !dir$ attributes align : 64 :: Ff3101r8
+    
+  ! Values (W/cm) of critical voltage for dipole antenna (3.104)
+    real(kind=sp), dimension(:), allocatable :: Ef3104r4
+    !dir$ attributes align : 64 :: Ef3104r4
+    real(kind=dp), dimension(:), allocatable :: Ef3104r8
+    !dir$ attributes align : 64 :: Ef3104r8
+    
+  ! Values for mutual impedance of two dipole antennae (3.110)
+    real(kind=sp), dimension(:), allocatable :: Zf31104r4
+    !dir$ attributes align : 64 :: Zf31104r4
+    real(kind=dp), dimension(:), allocatable :: Zf3110r8
+    !dir$ attributes align : 64 :: Zf31104r8
+    
+  ! Phi values of radiation pattern for two-dipole antenna (horizontal-plane) (3.122)
+    real(kind=sp), dimension(:), allocatable :: Ff3122r4
+    !dir$ attributes align : 64 :: Ff3122r4
+    real(kind=dp), dimension(:), allocatable :: Ff3122r8
+    !dir$ attributes align : 64 :: Ff3122r8
+    
+  ! Phi values of radiation pattern for two-dipole antenna 
+                               ! plane-perpendicular to antennae axis(3.123)
+    real(kind=sp), dimension(:), allocatable :: Ff3123r4
+    !dir$ attributes align : 64 :: Ff3123r4
+    real(kind=dp), dimension(:), allocatable :: Ff3123r8
+    !dir$ attributes align : 64 :: Ff3123r8
+    
+  ! Phi values of radiation pattern for two-dipole antenna (vertical-plane) (3.124)
+    real(kind=sp), dimension(:), allocatable :: Ff3124r4
+    !dir$ attributes align : 64 :: Ff3124r4
+    real(kind=dp), dimension(:), allocatable :: Ff3124r8
+    !dir$ attributes align : 64 :: Ff3124r8
+    
+  ! Theta values of radiation pattern for 2D array of dipoles (horizontal plane) (3.126)
+    real(kind=sp), dimension(:), allocatable :: Ff3126r4
+    !dir$ attributes align : 64 :: Ff3126r4
+    real(kind=dp), dimension(:), allocatable :: Ff3126r8
+    !dir$ attributes align : 64 :: Ff3126r8
+    
+   ! Theta values of radiation pattern for 2D array of dipoles (vertical plane) (3.127)
+    real(kind=sp), dimension(:), allocatable :: Ff3127r4
+    !dir$ attributes align : 64 :: Ff3127r4
+    real(kind=dp), dimension(:), allocatable :: Ff3127r8
+    !dir$ attributes align : 64 :: Ff3127r8
+    
+  ! Theta values (horizontal-plane) of radiation pattern for aperiodic reflector (3.136)
+    real(kind=sp), dimension(:), allocatable :: Ff3136r4
+    !dir$ attributes align : 64 :: Ff3136r4
+    real(kind=dp), dimension(:), allocatable :: Ff3136r8
+    !dir$ attributes align : 64 :: Ff3136r8
+    
+   ! Delta values (vertical-plane) of radiation pattern for aperiodic reflector (3.137)
+    real(kind=sp), dimension(:), allocatable :: Ff3137r4
+    !dir$ attributes align : 64 :: Ff3137r4
+    real(kind=dp), dimension(:), allocatable :: Ff3137r8
+    !dir$ attributes align : 64 :: Ff3137r8
+    
 end module mod_dipole_antenna
