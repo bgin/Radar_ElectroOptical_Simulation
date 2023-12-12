@@ -57,13 +57,13 @@ module dipole_ant_types_sse
     integer(kind=i4),  parameter :: DIPOLE_ANT_TYPES_SSE_FULLVER =   &
             1000*DIPOLE_ANT_TYPES_SSE_MAJOR+100*DIPOLE_ANT_TYPES_SSE_MINOR+10*DIPOLE_ANT_TYPES_SSE_MICRO
     ! Module creation date
-    character(*),        parameter :: DIPOLE_ANT_TYPES_CREATE_DATE = "12-12-2023 09:47 +00200 (TUE 12 DEC 20223 GMT+2)"
+    character(*),        parameter :: DIPOLE_ANT_TYPES_SSE_CREATE_DATE = "12-12-2023 09:47 +00200 (TUE 12 DEC 20223 GMT+2)"
     ! Module build date
-    character(*),        parameter :: DIPOLE_ANT_TYPES_BUILD_DATE  = __DATE__ " " __TIME__
+    character(*),        parameter :: DIPOLE_ANT_TYPES_SSE_BUILD_DATE  = __DATE__ " " __TIME__
     ! Module author info
-    character(*),        parameter :: DIPOLE_ANT_TYPES_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
+    character(*),        parameter :: DIPOLE_ANT_TYPES_SSE_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
     ! Short description
-    character(*),        parameter :: DIPOLE_ANT_TYPES_SYNOPSIS    = "Data describing various dipole antenna characteristics -- type based, SSE(128-bit)-sized."
+    character(*),        parameter :: DIPOLE_ANT_TYPES_SSE_SYNOPSIS    = "Data describing various dipole antenna characteristics -- type based, SSE(128-bit)-sized."
     
 ! default floating-point precision is 32-bit.
 #if !defined(DIPOLE_ANT_TYPES_USE_PRECISION_REAL8)
