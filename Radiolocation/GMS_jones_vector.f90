@@ -38,7 +38,7 @@ module jonesvec
  ! Tab:10,11 col - Type , function and subroutine code blocks.
 
     implicit none
-    use mod_kinds, only : i4,r4
+    use mod_kinds, only : i4,sp
     
     
     !=====================================================59
@@ -71,7 +71,7 @@ module jonesvec
     ! Module short description
     character(*),  parameter, public :: JONESVEC_DESCRIPT = "Implementation of Jones Vector"
     
-    complex(r4), parameter, private :: ZC = CMPLX(0._r4,0._r4)
+    complex(sp), parameter, private :: ZC = CMPLX(0._sp,0._sp)
     
     !============================================50
     ! Type: JonesVector_t
@@ -82,10 +82,10 @@ module jonesvec
          public
          
          ! Horizontal component of Electric Field Hx
-         complex(r4) :: m_h
+         complex(sp) :: m_h
          
          ! Vertical component of Electric Field Hy
-         complex(r4) :: m_v
+         complex(sp) :: m_v
          
         
         !============================================================70
@@ -198,8 +198,8 @@ module jonesvec
     type(JonesVector_t) function default_jvec()
           implicit none
           ! Start of executable statements
-          default_jvec%m_h = CMPLX(0._r4,0._r4)
-          default_jvec%m_v = CMPLX(0._r4,0._r4)
+          default_jvec%m_h = CMPLX(0._sp,0._sp)
+          default_jvec%m_v = CMPLX(0._sp,0._sp)
     end function
     
     !======================================================60
@@ -209,7 +209,7 @@ module jonesvec
     !======================================================60
     type(JonesVector_t) function create_jvec(h,v)
           implicit none
-          complex(r4), intent(in) :: h,v
+          complex(sp), intent(in) :: h,v
           ! Start of executable statements
           create_jvec%m_h = h
           create_jvec%m_v = v
@@ -240,9 +240,9 @@ module jonesvec
           implicit none
           class(JonesVector_t), intent(inout) :: this
           ! Locals
-          real(r4) :: nan
+          real(sp) :: nan
           ! Start of executable statements
-          nan = IEEE_VALUE(1._r4,IEEE_QUIET_NAN)
+          nan = IEEE_VALUE(1._sp,IEEE_QUIET_NAN)
           this%m_h = CMPLX(nan,nan)
           this%m_v = CMPLX(nan,nan)
      end subroutine
@@ -254,7 +254,7 @@ module jonesvec
           implicit none
           class(JonesVector_t), intent(in) :: this
           ! Locals
-          complex(r4) :: h
+          complex(sp) :: h
           ! Start of executable statements
           h = this%m_h
     end function
@@ -266,7 +266,7 @@ module jonesvec
           implicit none
           class(JonesVector_t), intent(in) :: this
           ! Locals
-          complex(r4) :: v
+          complex(sp) :: v
           ! Start of executable statements
           v = this%m_v
     end function
@@ -281,13 +281,13 @@ module jonesvec
           implicit none
           class(JonesVector_t), intent(in) :: this
           ! Locals
-          real(r4) :: norm,th,vh,hr,hi,vr,vi
+          real(sp) :: norm,th,vh,hr,hi,vr,vi
           ! Start of executable statements
-          vr   = real(this%m_v,kind=r4)
-          hr   = real(this%m_h,kind=r4)
-          vi   = aimag(this%m_v,kind=r4)
+          vr   = real(this%m_v,kind=sp)
+          hr   = real(this%m_h,kind=sp)
+          vi   = aimag(this%m_v,kind=sp)
           vh   = sqrt(vr*vr+vi*vi)
-          hi   = aimag(this%m_h,kind=r4)
+          hi   = aimag(this%m_h,kind=sp)
           th   = sqrt(hr*hr+hi*hi)
           norm = th+vh
     end function
@@ -300,14 +300,14 @@ module jonesvec
           implicit none
           class(JonesVector_t), intent(in) :: this
           ! Locals
-          real(r4) :: vr,vi,hr,hi
-          real(r4) :: ang,tmp,mh,mv
+          real(sp) :: vr,vi,hr,hi
+          real(sp) :: ang,tmp,mh,mv
           ! Start of executable statements
-          vr = real(this%m_v,kind=r4)
-          vi = aimag(this%m_v,kind=r4)
+          vr = real(this%m_v,kind=sp)
+          vi = aimag(this%m_v,kind=sp)
           mv = sqrt(vr*vr+vi*vi)
-          hr = real(this%m_h,kind=r4)
-          hi = aimag(this%m_h,kind=r4)
+          hr = real(this%m_h,kind=sp)
+          hi = aimag(this%m_h,kind=sp)
           mh = sqrt(hr*hr+hi*hi)
           tmp = mv/mh
           ang = ATAN(tmp)
@@ -321,13 +321,13 @@ module jonesvec
          implicit none
          class(JonesVector_t), intent(in) :: this
          ! Locals
-         real(r4) :: pdiff,hr,hi,vr,vi,ch,cv
+         real(sp) :: pdiff,hr,hi,vr,vi,ch,cv
          ! Start of executable statements
-         vr = real(this%m_v,kind=r4)
-         vi = aimag(this%m_v,kind=r4)
+         vr = real(this%m_v,kind=sp)
+         vi = aimag(this%m_v,kind=sp)
          cv = atan2(vr,vi)
-         hr = real(this%m_h,kind=r4)
-         hi = aimag(this%m_h,kind=r4) 
+         hr = real(this%m_h,kind=sp)
+         hi = aimag(this%m_h,kind=sp) 
          ch = atan2(hr,hi)
          pdiff = cv-ch
     end function
@@ -338,8 +338,8 @@ module jonesvec
      pure function polarization_degree() return(val)
           implicit none
           ! Locals
-          real(r4) :: val
-          val = 1._r4
+          real(sp) :: val
+          val = 1._sp
     end function
     
     !======================================================60
@@ -393,7 +393,7 @@ module jonesvec
           class(JonesVector_t), intent(in) :: this
           class(JonesVector_t), intent(in) :: jv1
           ! Locals
-          complex(r4) :: c
+          complex(sp) :: c
           ! Start of executable statements
           c = this%m_h*jv1%m_h+this%m_v*jv1%m_v
     end function
@@ -404,7 +404,7 @@ module jonesvec
     pure function jvec_mul_complex(this,c) result(njvec)
           implicit none
           class(JonesVector_t), intent(in) :: this
-          complex(r4),        intent(in) :: c
+          complex(sp),        intent(in) :: c
           ! Locals
           class(JonesVector_t) :: njvec
           ! Start of executable statements
@@ -421,7 +421,7 @@ module jonesvec
     pure function jvec_div_complex(this,c) result(njvec)
           implicit none
           class(JonesVector_t), intent(in) :: this
-          complex(r4),        intent(in) :: c
+          complex(sp),        intent(in) :: c
           ! Start of executable statements
          njvec%m_h = this%m_h/c 
          njvec%m_v = this%m_v/c
