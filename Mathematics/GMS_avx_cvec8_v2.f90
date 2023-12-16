@@ -1391,10 +1391,10 @@ module avx_cvec8_v2
      end function polar
      
 !DIR$ ATTRIBUTES INLINE :: carg_ymm8c4
-     pure function carg_ymm8c4(c8) result(arg)
+     pure function carg_ymm8c4(c4) result(arg)
        !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: carg_ymm8c4
        !DIR$ ATTRIBUTES VECTOR :: carg_ymm8c4
-       type(YMM8c4),   intent(in) :: c8
+       type(YMM8c4),   intent(in) :: c4
        !DIR$ ATTRIBUTES ALIGN : 32 :: arg
        type(YMM8r4_t) :: arg
         integer(kind=i4) :: i
@@ -1403,9 +1403,30 @@ module avx_cvec8_v2
        !dir$ vector vectorlength(4)
        !dir$ vector always
        do i=0,7
-          arg.v(i)  = atan2(c8.im(i),c8.re(i))
+          arg.v(i)  = atan2(c4.im(i),c4.re(i))
        end do
      end function carg_ymm8c4
+     
+!DIR$ ATTRIBUTES INLINE :: carg_ymm8c4     
+     pure function cmag_ymm8c4(c4) result(mag)
+       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: cmag_ymm8c4
+       !DIR$ ATTRIBUTES VECTOR :: cmag_ymm8c4
+       type(YMM8c4),   intent(in) :: c4
+       !DIR$ ATTRIBUTES ALIGN : 32 :: mag
+       type(YMM8r4_t) :: mag
+       type(YMM8r4_t), automatic :: tre,tim
+       integer(kind=i4) :: i
+       !dir$ loop_count(8)
+       !dir$ vector aligned
+       !dir$ vector vectorlength(4)
+       !dir$ vector always
+       do i=0,7
+          tre.v(i) = c4.re(i)
+          tim.v(i) = c4.im(i)
+          mag.v(i) = sqrt(tre.v(i)*tre.v(i)+ &
+                          tim.v(i)*tim.v(i))
+       end do
+     end function cmag_ymm8c4
 
 !DIR$ ATTRIBUTES INLINE :: carg_2xymm8r4     
      pure function carg_2xymm8r4(re,im) result(arg)
