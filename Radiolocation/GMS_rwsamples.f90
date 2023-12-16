@@ -47,7 +47,7 @@ module rwsamples
  ! Tab:10,11 col - Type , function and subroutine code blocks.
     implicit none
     public
-    use mod_kinds,       only : i4,r4
+    use mod_kinds,       only : i4,sp
      
     
     
@@ -101,10 +101,10 @@ module rwsamples
         integer(i4) :: m_scatnum
         
         ! Time duration of samples interval
-        real(r4)    :: m_Ts
+        real(sp)    :: m_Ts
         
         ! Time duration of single sample
-        real(r4)    :: m_ths
+        real(sp)    :: m_ths
         
         ! Samples indexing integral array
         integer(i4), allocatable, dimension(:) :: m_sampID
@@ -112,25 +112,25 @@ module rwsamples
         
         ! Cached sample signal components
         ! Complex amplitude
-        complex(r4), allocatable, dimension(:) :: m_Ai
+        complex(sp), allocatable, dimension(:) :: m_Ai
 !DIR$   ATTRIBUTES ALIGN : 64 :: m_Ai
         
         ! Samples (IQ) components one per sample
-        complex(r4), allocatable, dimension(:) :: m_Wi
+        complex(sp), allocatable, dimension(:) :: m_Wi
 !DIR$   ATTRIBUTES ALIGN : 64 :: m_Wi
         
         ! Complex exponential term itself beign a single complex value
         ! of function related to scaterrer distance and to specific bandwidth
-        complex(r4), allocatable, dimension(:,:) :: m_cexpt
+        complex(sp), allocatable, dimension(:,:) :: m_cexpt
 !DIR$   ATTRIBUTES ALIGN : 64 :: m_cexpt
         
         ! Output members
         ! Power signal composition of sample train (per single sample)
-        complex(r4), allocatable, dimension(:) :: m_Vsamp
+        complex(sp), allocatable, dimension(:) :: m_Vsamp
 !DIR$   ATTRIBUTES ALIGN : 64 :: m_Vsamp
         
          ! Averaged power specific frequencies of sample train
-        complex(r4), allocatable, dimension(:) :: m_Vsampavg
+        complex(sp), allocatable, dimension(:) :: m_Vsampavg
 !DIR$   ATTRIBUTES ALIGN : 64 :: m_Vsampavg
         
         ! built indicator
@@ -213,12 +213,12 @@ module rwsamples
           implicit none
           class(RSWSamples_t),               intent(out)   :: this
           integer(i4),                       intent(in)    :: nechoes,size,scatnum
-          real(r4),                          intent(in)    :: Ts
-          complex(r4), dimension(size),      intent(in)    :: Ai
+          real(sp),                          intent(in)    :: Ts
+          complex(sp), dimension(size),      intent(in)    :: Ai
 !DIR$     ASSUME_ALIGNED Ai:64
-          complex(r4), dimension(size),      intent(in)    :: Wi
+          complex(sp), dimension(size),      intent(in)    :: Wi
 !DIR$     ASSUME_ALIGNED Wi:64
-          complex(r4), dimension(size,size), intent(in)    :: cexpt
+          complex(sp), dimension(size,size), intent(in)    :: cexpt
           integer(i4),                       intent(inout) :: ierr
 !DIR$     ASSUME_ALIGNED cexpt:64
           ! Locals
@@ -230,7 +230,7 @@ module rwsamples
           end if
           if(nechoes< 1 .OR. &
              size  <= 1 .OR. &
-             Ts    <= 0._r4 ) then
+             Ts    <= 0._sp ) then
               ierr = -2
               return
           end if
@@ -239,7 +239,7 @@ module rwsamples
           this%m_size    = size
           this%m_scatnum = scatnum
           this%m_Ts      = Ts
-          this%m_ths     = this%m_Ts/REAL(size,kind=r4)
+          this%m_ths     = this%m_Ts/REAL(size,kind=sp)
           ! Array members
           associate(dim1=>this%m_size)
               allocate(this%m_sampID(dim1),     &
@@ -331,8 +331,8 @@ module rwsamples
           this%m_nechoes = 0
           this%m_size    = 0
           this%m_scatnum = 0
-          this%m_Ts      = 0.0_r4
-          this%m_ths     = 0.0_r4
+          this%m_Ts      = 0.0_sp
+          this%m_ths     = 0.0_sp
           deallocate(this%m_sampID,   &
                      this%m_Ai,       &
                      this%m_Wi,       &
@@ -361,16 +361,16 @@ module rwsamples
           logical(i4), dimension(5), intent(inout),optional :: fpflags
           logical(i4),               intent(in)             :: verbose
           ! Locals
-          complex(r4) :: tmp
+          complex(sp) :: tmp
           integer(i4) :: i,j
 
           ! Start of executable statements
-          tmp = (0.0_r4,0.0_r4)
+          tmp = (0.0_sp,0.0_sp)
           do j = 1, this%m_size
 !DIR$     SIMD
               do i = 1, this%m_size
                   tmp = tmp+(this%m_Ai(j)*this%m_Wi(j)*this%m_cexpt(i,j))
-                  tmp = tmp*0.70710678118654752440084_r4
+                  tmp = tmp*0.70710678118654752440084_sp
                   this%m_Vsamp(j) = tmp
               end do
           end do
@@ -390,15 +390,15 @@ module rwsamples
           class(RSWSamples_t),         intent(inout)         :: this
           integer(i4),               intent(inout)           :: ierr
           ! locals
-          complex(r4) :: tmp
+          complex(sp) :: tmp
           integer(i4) :: i,j
-          tmp = (0.0_r4,0.0_r4)
+          tmp = (0.0_sp,0.0_sp)
           do j = 1, this%m_size
 !DIR$     SIMD
               do i = 1, this%m_size
                   tmp = tmp+(this%m_Ai(j)*CONJG(this%m_Ai(j))* &
                       this%m_Wi(j)*CONJG(this%m_Wi(j))*this%m_cexpt(i,j))
-                  tmp = tmp*0.5_r4
+                  tmp = tmp*0.5_sp
                   this%m_Vsampavg(j) = tmp
               end do
           end do
