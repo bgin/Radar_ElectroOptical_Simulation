@@ -79,10 +79,10 @@ module dipole_ant_types
                                ! dipole (3.1)
           integer(kind=i4) :: ndf31  ! number of dipoles in dipole array (3.1)
 #if (DIPOLE_ANT_TYPES_USE_PRECISION_REAL8) == 1
-          real(kind=dp), dimension(:,:), allocatable :: Iz
+          complex(kind=dp), dimension(:,:), allocatable :: Iz
           !dir$ attributes align : 64 :: Iz
 #else
-          real(kind=sp), dimension(:,:), allocatable :: Iz
+          complex(kind=sp), dimension(:,:), allocatable :: Iz
           !dir$ attributes align : 64 :: Iz  
 #endif   
     end type Izf31
@@ -94,10 +94,10 @@ module dipole_ant_types
                                ! very thin dipole (3.4)
           integer(kind=i4) :: ndf34  ! number of dipoles in dipole array (3.4)
 #if (DIPOLE_ANT_TYPES_USE_PRECISION_REAL8) == 1
-          real(kind=dp), dimension(:,:), allocatable :: Iz
+          complex(kind=dp), dimension(:,:), allocatable :: Iz
           !dir$ attributes align : 64 :: Iz
 #else
-          real(kind=sp), dimension(:,:), allocatable :: Iz
+          complex(kind=sp), dimension(:,:), allocatable :: Iz
           !dir$ attributes align : 64 :: Iz 
 #endif
     end type Izf34
