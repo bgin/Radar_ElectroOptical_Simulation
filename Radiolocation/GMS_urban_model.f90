@@ -100,6 +100,8 @@ module urban_model
     integer(i4) :: nlstr
     ! Width of every street
     integer(i4) :: nwstr
+    ! An area of every street
+    integer(i4) :: narstr
     ! Moisture of every street  at each ellipsoidal cell
     integer(i4) :: nwtstr
     ! Percent of moist to dry area of evey street at each ellipsoidal cell
@@ -108,27 +110,28 @@ module urban_model
     integer(i4) :: ncstr
     ! Percent of covered to non-covered portion of every street
     integer(i4) :: npcns
-    ! Average thickness of each layer (cover) of every street
+    ! Average thickness of each layer (cover) of every street at each irradiated cell
     integer(i4) :: natcstr
-    ! Thickness of cover along street (number of values)
+    ! Thickness of cover along street (number of values) each irradiated cell
     integer(i4) :: ntcstr
-    ! Mu0 for 'clean' street interpolated along the street length
-    integer(i4) :: nmu0str1
-    ! Eps0 for clean street street length interpolated
-    integer(i4) :: neps0str1
-    ! Mu for covered street interpolated along the street length
-    integer(i4) :: nmu0str2
-    ! Eps for covered street street length interpolated
-    integer(i4) :: neps0str2
+    ! Mu for 'clean' street interpolated along the street length at each irradiated cell
+    integer(i4) :: nmustr1
+    ! Eps for 'clean' street street length interpolated at each irradiated cell
+    integer(i4) :: nepsstr1
+    ! Mu for covered (i.e. by mud,snow,clay, ..etc) street interpolated along the street length
+    integer(i4) :: nmustr2
+    ! Eps for covered (i.e. by mud,snow,clay, ..etc) street street length interpolated
+    integer(i4) :: nepsstr2
     ! Street curvature parametric equation u-parameter
     integer(i4) :: nupstr
     ! Street curvature parametric equation v-parameter
     integer(i4) :: nvpstr
-    ! Street surface normal vectors x-components along the street length
-    integer(i4) :: nvxstr
-    ! Street surface normal vectors y-components along the street length
-    integer(i4) :: nvystr
-    ! Street surface normal vectors z-components along the street length
+    ! Street surface normal vectors x-components along the street length at each irradiated cell
+    integer(i4) :: nnxstr
+    ! Street surface normal vectors y-components along the street length at each irradiated cell
+    integer(i4) :: nnystr
+    ! Street surface normal vectors z-components along the street length at each irradiated cell
+    integer(i4) :: nnzstr
      ! Number of latitude   values (deg), per street length (at irradiance point)
     integer(i4) :: nslatd
     ! Number of longtitude values (deg), per street length (at irradiance point)
@@ -188,6 +191,10 @@ module urban_model
     real(sp), dimension(:), allocatable :: wstr
     !dir$ attributes align : 64 :: wstr
     
+    ! An area of every street
+    real(sp), dimension(:), allocatable :: arstr
+    !dir$ attributes align :: 64 :: arstr
+    
     ! Moisture of every street (2D array)
     ! 1st dimension humidity values (per street), 2nd dimension street numbers
     real(sp), dimension(:,:), allocatable :: wtstr
@@ -204,5 +211,48 @@ module urban_model
     ! Percent of covered to non-covered portion of every street (at irradiated cell)
     real(sp),  dimension(:,:),  allocatable :: pcns
     !dir$ attributes align : 64 :: pcns
+    
+    ! Average thickness of each layer (cover) of every street at each irradiated cell
+    real(sp),  dimension(:,:),  allocatable :: atcstr
+    !dir$ attributes align : 64 :: atcstr
+    
+    ! Thickness of cover along street (number of values) at each irradiated cell
+    real(sp),  dimension(:,:),  allocatable :: tcstr
+    !dir$ attributes align : 64 :: tcstr
+    
+    ! Mu values for 'clean' street interpolated along the street length at each irradiated cell
+    complex(sp), dimension(:,:), allocatable :: mustr1
+    !dir$ attributes align : 64 :: mustr1
+    
+    ! Eps for 'clean' street street length interpolated at each irradiated cell
+    complex(sp), dimension(:,:), allocatable :: epsstr1
+    !dir$ attributes align : 64 :: epsstr1
+    
+    ! Mu for covered (i.e. by mud,snow,clay, ..etc) street interpolated along the street length at each irradiated cell
+    complex(sp), dimension(:,:), allocatable :: mustr2
+    !dir$ attributes align : 64 :: mustr2
+    
+    ! Eps for covered (i.e. by mud,snow,clay, ..etc) street  length interpolated at each irradiated cell
+    complex(sp), dimension(:,:), allocatable :: epsstr2
+    !dir$ attributes align : 64 :: epsstr2
+    
+    ! ! Street curvature parametric equation u-parameter
+    real(sp),  dimension(:,:), allocatable :: upstr
+    !dir$ attributes align : 64 :: upstr
+    
+    ! ! Street curvature parametric equation v-parameter
+    real(sp), dimension(:,:), allocatable :: vpstr
+    !dir$ attributes align : 64 :: vpstr
+    
+    ! Street surface normal vectors x-components along the street length at each irradiated cell
+    real(sp), dimension(:,:), allocatable :: nxstr
+    !dir$ attributes align : 64 :: nxstr
+    
+    ! Street surface normal vectors y-components along the street length at each irradiated cell
+    real(sp), dimension(:,:), allocatable :: nystr
+    !dir$ attributes align : 64 :: nystr
+    
+    ! Street surface normal vectors z-components along the street length at each irradiated cell
+    real(sp), dimension(:,:), allocatable :: nzstr
     
 end module urban_model
