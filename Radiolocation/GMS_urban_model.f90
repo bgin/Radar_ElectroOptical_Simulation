@@ -47,6 +47,9 @@ module urban_model
     public
     implicit none
 
+#if !defined(URBAN_MODEL_USE_FLAT_ARRAYS)
+#define URBAN_MODEL_USE_FLAT_ARRAYS 0
+#endif
 
      ! Major version
     integer(kind=i4),  parameter :: URBAN_MODEL_MAJOR = 1
@@ -140,6 +143,18 @@ module urban_model
     integer(i4) :: nslatr
     ! Number of longtitude values (rad), per street length (at irradiance point)
     integer(i4) :: nslonr
+    ! Urban area height map (at single building resolution), x-coordinate
+    integer(i4) :: nxbh
+    ! Urban area height map (at single building resolution), y-coordinate
+    integer(i4) :: nybh
+    ! ! Urban area height map (at single building resolution), x-coordinate, its first derivative
+    integer(i4) :: ndxbh
+    ! Urban area height map (at single building resolution), y-coordinate, its first derivative
+    integer(i4) :: ndybh
+    ! Height field gradient x-components
+    integer(i4) :: ngradxbh
+    ! Height field gradient y-components
+    integer(i4) :: ngradybh
     
     ! latitude   values (deg), per building
     real(sp), dimension(:), allocatable :: blatd
@@ -157,6 +172,22 @@ module urban_model
     real(sp), dimension(:), allocatable :: blonr
     !dir$ attributes align : 64 :: blonr
     
+#if (URBAN_MODEL_USE_FLAT_ARRAYS) == 1
+    ! ellipsoidal (radar waveform irradiating field) cells for building column
+    integer(i4), dimension(:), allocatable :: ellpb
+    !dir$ attributes align : 64 :: ellpb
+    
+    ! Parametric equation x (acos(t)) values (building)
+    ! 1st dimension building column, 2nd dimension 'x' parameter values
+    real(sp), dimension(:),    allocatable :: pxb
+    !dir$ attributes align : 64 :: pxb
+    
+    ! Parametric equation y (b(sin(t)) values (building)
+    ! 1st dimension building column, 2nd dimension 'y' parameter values
+    real(sp), dimension(:),    allocatable :: pyb
+    !dir$ attributes align : 64 :: pyb
+#else
+    
     ! ellipsoidal (radar waveform irradiating field) cells for building column
     integer(i4), dimension(:,:), allocatable :: ellpb
     !dir$ attributes align : 64 :: ellpb
@@ -170,7 +201,8 @@ module urban_model
     ! 1st dimension building column, 2nd dimension 'y' parameter values
     real(sp), dimension(:,:),    allocatable :: pyb
     !dir$ attributes align : 64 :: pyb
-    
+#endif
+   
     ! building units per column
     integer(i4), dimension(:), allocatable :: bpc
     !dir$ attributes align : 64 :: bpc
@@ -194,7 +226,76 @@ module urban_model
     ! An area of every street
     real(sp), dimension(:), allocatable :: arstr
     !dir$ attributes align :: 64 :: arstr
+#if (URBAN_MODEL_USE_FLAT_ARRAYS) == 1
+    ! Moisture of every street (2D array)
+    ! 1st dimension humidity values (per street), 2nd dimension street numbers
+    real(sp), dimension(:), allocatable :: wtstr
+    !dir$ attributes align : 64 :: wtstr
     
+    ! Percent of moist to dry area of evey street at each cell
+    real(sp), dimension(:), allocatable :: phds
+    !dir$ attributes align : 64 :: phds
+    
+    !Coverage of every street (like: snow,mud, ...etc)
+    integer(i4), dimension(:), allocatable :: cstr
+    !dir$ attributes align : 64 :: cstr
+    
+    ! Percent of covered to non-covered portion of every street (at irradiated cell)
+    real(sp),  dimension(:),  allocatable :: pcns
+    !dir$ attributes align : 64 :: pcns
+    
+    ! Average thickness of each layer (cover) of every street at each irradiated cell
+    real(sp),  dimension(:),  allocatable :: atcstr
+    !dir$ attributes align : 64 :: atcstr
+    
+    ! Thickness of cover along street (number of values) at each irradiated cell
+    real(sp),  dimension(:),  allocatable :: tcstr
+    !dir$ attributes align : 64 :: tcstr
+    
+    ! Mu values for 'clean' street interpolated along the street length at each irradiated cell
+    complex(sp), dimension(:), allocatable :: mustr1
+    !dir$ attributes align : 64 :: mustr1
+    
+    ! Eps for 'clean' street street length interpolated at each irradiated cell
+    complex(sp), dimension(:), allocatable :: epsstr1
+    !dir$ attributes align : 64 :: epsstr1
+    
+    ! Mu for covered (i.e. by mud,snow,clay, ..etc) street interpolated along the street length at each irradiated cell
+    complex(sp), dimension(:), allocatable :: mustr2
+    !dir$ attributes align : 64 :: mustr2
+    
+    ! Eps for covered (i.e. by mud,snow,clay, ..etc) street  length interpolated at each irradiated cell
+    complex(sp), dimension(:), allocatable :: epsstr2
+    !dir$ attributes align : 64 :: epsstr2
+    
+    ! ! Street curvature parametric equation u-parameter
+    real(sp),  dimension(:), allocatable :: upstr
+    !dir$ attributes align : 64 :: upstr
+    
+    ! ! Street curvature parametric equation v-parameter
+    real(sp), dimension(:), allocatable :: vpstr
+    !dir$ attributes align : 64 :: vpstr
+    
+    ! Street surface normal vectors x-components along the street length at each irradiated cell
+    real(sp), dimension(:), allocatable :: nxstr
+    !dir$ attributes align : 64 :: nxstr
+    
+    ! Street surface normal vectors y-components along the street length at each irradiated cell
+    real(sp), dimension(:), allocatable :: nystr
+    !dir$ attributes align : 64 :: nystr
+    
+    ! Street surface normal vectors z-components along the street length at each irradiated cell
+    real(sp), dimension(:), allocatable :: nzstr
+    !dir$ attributes align : 64 :: nzstr
+    
+    ! latitude   values (deg), per street length (at irradiance point)
+    real(sp), dimension(:), allocatable :: slatd
+    !dir$ attributes align : 64 :: slatd
+    
+    ! longtitude values (deg), per street length (at irradiance point)
+    real(sp), dimension(:), allocatable :: slond
+    !dir$ attributes align : 64 :: slond
+#else    
     ! Moisture of every street (2D array)
     ! 1st dimension humidity values (per street), 2nd dimension street numbers
     real(sp), dimension(:,:), allocatable :: wtstr
@@ -254,5 +355,38 @@ module urban_model
     
     ! Street surface normal vectors z-components along the street length at each irradiated cell
     real(sp), dimension(:,:), allocatable :: nzstr
+    !dir$ attributes align : 64 :: nzstr
+    
+    ! latitude   values (deg), per street length (at irradiance point)
+    real(sp), dimension(:,:), allocatable :: slatd
+    !dir$ attributes align : 64 :: slatd
+    
+    ! longtitude values (deg), per street length (at irradiance point)
+    real(sp), dimension(:,:), allocatable :: slond
+    !dir$ attributes align : 64 :: slond
+    
+    ! latitude   values (rad), per street length (at irradiance point)
+    real(sp), dimension(:,:), allocatable :: slatr
+    !dir$ attributes align : 64 :: slatr
+    
+    ! longtitude values (rad), per street length (at irradiance point)
+    real(sp), dimension(:,:), allocatable :: slonr
+    !dir$ attributes align : 64 :: slonr
+    
+    !Urban area height map (at single building resolution)
+    real(sp), dimension(:,:), allocatable :: bh
+    !dir$ attributes align : 64 :: bhmap
+    
+    !Urban area height map (at single building resolution) -- 1st derivative
+    real(sp), dimension(:,:), allocatable :: bhdxdy
+    !dir$ attributes align : 64 :: bhdxdy
+    
+    ! Urban area height map (at single building resolution) -- gradient x-component
+    real(sp), dimension(:,:), allocatable :: bhgradx
+    !dir$ attributes align : 64 :: bhgradx
+    
+    ! Urban area height map (at single building resolution) -- gradient y-component
+    real(sp), dimension(:,:), allocatable :: bhgrady
+    !dir$ attributes align : 64 :: bhgrady
     
 end module urban_model
