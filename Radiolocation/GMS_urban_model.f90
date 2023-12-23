@@ -177,12 +177,12 @@ module urban_model
     integer(i4), dimension(:), allocatable :: ellpb
     !dir$ attributes align : 64 :: ellpb
     
-    ! Parametric equation x (acos(t)) values (building)
+    ! Parametric equation x (acos(t)) values (building) of (irradiating waveform)
     ! 1st dimension building column, 2nd dimension 'x' parameter values
     real(sp), dimension(:),    allocatable :: pxb
     !dir$ attributes align : 64 :: pxb
     
-    ! Parametric equation y (b(sin(t)) values (building)
+    ! Parametric equation y (b(sin(t)) values (building) of (irradiating waveform)
     ! 1st dimension building column, 2nd dimension 'y' parameter values
     real(sp), dimension(:),    allocatable :: pyb
     !dir$ attributes align : 64 :: pyb
@@ -211,10 +211,7 @@ module urban_model
     integer(i4), dimension(:), allocatable :: bpr
     !dir$ attributes align : 64 :: bpr
     
-    ! number of streets
-    integer(i4), dimension(:), allocatable :: str
-    !dir$ attributes align : 64 :: str
-    
+        
     ! Length of every street
     real(sp), dimension(:), allocatable :: lstr
     !dir$ attributes align : 64 :: lstr
@@ -374,7 +371,7 @@ module urban_model
     !dir$ attributes align : 64 :: slonr
     
     !Urban area height map (at single building resolution)
-    real(sp), dimension(:,:), allocatable :: bh
+    real(sp), dimension(:,:), allocatable :: bhmap
     !dir$ attributes align : 64 :: bhmap
     
     !Urban area height map (at single building resolution) -- 1st derivative
