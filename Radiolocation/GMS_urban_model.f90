@@ -67,7 +67,7 @@ module urban_model
     ! Module author info
     character(*),        parameter :: URBAN_MODEL_AUTHOR      = "Programmer: Bernard Gingold, contact: beniekg@gmail.com"
     ! Short description
-    character(*),        parameter :: URBAN_MODEL_SYNOPSIS    = "Data describing various dipole antenna characteristics -- type based, AVX(256-bit)-sized."
+    character(*),        parameter :: URBAN_MODEL_SYNOPSIS    = "Data describing simplified geometry of urban built-up area."
 
     
     !************************************************************************************************!
@@ -155,7 +155,74 @@ module urban_model
     integer(i4) :: ngradxbh
     ! Height field gradient y-components
     integer(i4) :: ngradybh
+    ! Number of values of smoothing and approximating curve for linearly-piecewise height function (x-coordinate)
+    integer(i4) :: nxsmbh
+    ! Number of values of smoothing and approximating curve for linearly-piecewise height function (y-coordinate)
+    integer(i4) :: nysmbh
+    !! ********************* Building geometry ***************************** //
     
+    ! Number of values of empty space in-between of buildings (per single column)
+    integer(i4) :: nesbb
+    ! Number of area values of in-between buildings empty spaces (per single column)
+    integer(i4) :: naesbb
+    ! Number of area values of each building (per single building column)
+    integer(i4) :: nabc
+    ! Number of south-facing walls (per each column)
+    integer(i4) :: nswpc
+    ! Number of east-facing walls (per each column)
+    integer(i4) :: newpc
+    ! Number of west-facing walls (per each column)
+    integer(i4) :: nwwpc
+    ! Number of north-facing walls (per each column)
+    integer(i4) :: nnwpc
+    ! Number of building [flat] roofs (per each column)
+    integer(i4) :: nbrpc
+    ! Number of area of every building [flat] roof (per each column)
+    integer(i4) :: nbrapc
+    ! Number of angled roof -- south facing roof wall (per each column)
+    integer(i4) :: nsrwc
+    ! Number of angled roof -- east facing roof wall (per each column)
+    integer(i4) :: nerwc
+    ! Number of angled roof -- west facing roof wall (per each column)
+    integer(i4) :: nwrwc
+    ! Number of angled roof -- north facing roof wall (per each column)
+    integer(i4) :: nnrwc
+    ! Number of angled roof inclination (deg) -- south facing roof wall (per each column)
+    integer(i4) :: nidsrw
+    ! Number of angled roof inclination (deg) -- east facing roof wall (per each column)
+    integer(i4) :: niderw
+    ! Number of angled roof inclination (deg) -- west facing roof wall (per each column)
+    integer(i4) :: nidwrw
+    ! Number of angled roof inclination (deg) -- north facing roof wall (per each column)
+    integer(i4) :: nidnrw
+    ! Number of angled roof inclination (rad) -- south facing roof wall (per each column)
+    integer(i4) :: nirsrw
+    ! Number of angled roof inclination (rad) -- east facing roof wall (per each column)
+    integer(i4) :: nirerw
+    ! Number of angled roof inclination (rad) -- west facing roof wall (per each column)
+    integer(i4) :: nirwrw
+    ! Number of angled roof inclination (rad) -- north facing roof wall (per each column)
+    integer(i4) :: nirnrw
+    ! Number of angled roof inclination surface area -- south facing roof wall (per each column)
+    integer(i4) :: nisra
+    ! Number of angled roof inclination surface area -- east facing roof wall (per each column)
+    integer(i4) :: niera
+    ! Number of angled roof inclination surface area -- west facing roof wall (per each column)
+    integer(i4) :: niwra
+     ! Number of angled roof inclination surface area -- north facing roof wall (per each column)
+    integer(i4) :: ninra
+    ! Number of south wall upper-facing edge inclination (rad) -- (per each column)
+    integer(i4) :: nswue
+     ! Number of east wall upper-facing edge inclination (rad) -- (per each column)
+    integer(i4) :: newue
+     ! Number of west wall upper-facing edge inclination (rad) -- (per each column)
+    integer(i4) :: nwwue
+     ! Number of north wall upper-facing edge inclination (rad) -- (per each column)
+    integer(i4) :: nnwue
+     ! Number of shared right edge between the south wall and east wall inclination (rad) -- (per each column)
+    integer(i4) :: nsewe
+    
+!! ****************************************  Array data types ***************************************** //
     ! latitude   values (deg), per building
     real(sp), dimension(:), allocatable :: blatd
     !dir$ attributes align : 64 :: blatd
@@ -292,6 +359,133 @@ module urban_model
     ! longtitude values (deg), per street length (at irradiance point)
     real(sp), dimension(:), allocatable :: slond
     !dir$ attributes align : 64 :: slond
+    
+    ! Smoothing and approximating curve for linearly-piecewise height function (x-coordinate)
+    ! Smoothing and approximating curve for linearly-piecewise height function (y-coordinate)
+    real(sp), dimension(:), allocatable :: xysmbh
+    !dir$ attributes align : 64 :: xysmbh
+    
+    ! Empty space in-between of buildings (per single column) x number columns
+    integer(i4), dimension(:), allocatable :: esbb
+    !dir$ attributes align : 64 :: esbb
+    
+    ! An area values of in-between buildings empty spaces (per single column) x number of columns
+    real(sp), dimension(:), allocatable :: aesbb
+    !dir$ attributes align : 64 :: aesbb
+    
+    ! An area values of each building (per single building column) x number of columns
+    real(sp), dimension(:), allocatable :: abc
+    !dir$ attributes align : 64 :: abc
+    
+    ! Number of south-facing walls (per each column) x number of columns
+    integer(i4), dimension(:), allocatable :: swpc
+    !dir$ attributes align : 64 :: swpc
+    
+    ! Number of east-facing walls (per each column) x number of columns
+    integer(i4), dimension(:), allocatable :: ewpc
+    !dir$ attributes align : 64 :: ewpc
+    
+    ! Number of west-facing walls (per each column) x number of columns
+    integer(i4), dimension(:), allocatable :: wwpc
+    !dir$ attributes align : 64 :: wwpc
+    
+     ! Number of north-facing walls (per each column) x number of columns
+    integer(i4), dimension(:), allocatable :: nwpc
+    !dir$ attributes align : 64 :: nwpc
+    
+    ! Number of building roofs (per each column) x number of columns
+    integer(i4), dimension(:), allocatable :: brpc
+    !dir$ attributes align : 64 :: brpc
+    
+    ! An area of every building [flat] roof (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: brapc
+    !dir$ attributes align : 64 :: brapc
+    
+    ! Number of angled roof -- south facing roof wall (per each column)  x number of columns
+    integer(i4), dimension(:), allocatable :: srwc
+    !dir$ attributes align : 64 :: srwc
+    
+    ! Number of angled roof -- east facing roof wall (per each column)  x number of columns
+    integer(i4), dimension(:), allocatable :: erwc
+    !dir$ attributes align : 64 :: erwc
+    
+    ! Number of angled roof -- west facing roof wall (per each column)  x number of columns
+    integer(i4), dimension(:), allocatable :: wrwc
+    !dir$ attributes align : 64 :: wrwc
+    
+    ! Number angled roof -- north facing roof wall (per each column)
+    integer(i4), dimension(:), allocatable :: nrwc
+    !dir$ attributes align : 64 :: nrwc
+    
+    ! An angled roof inclination (deg) -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: idsrw
+    !dir$ attributes align : 64 :: idsrw
+    
+    ! An angled roof inclination (deg) -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: iderw
+    !dir$ attributes align : 64 :: iderw
+    
+     ! An angled roof inclination (deg) -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: idwrw
+    !dir$ attributes align : 64 :: idwrw
+    
+      ! An angled roof inclination (deg) -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: idnrw
+    !dir$ attributes align : 64 :: idnrw
+    
+     ! An angled roof inclination (rad) -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: irsrw
+    !dir$ attributes align : 64 :: irsrw
+    
+    ! An angled roof inclination (rad) -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: irerw
+    !dir$ attributes align : 64 :: irerw
+    
+     ! An angled roof inclination (rad) -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: irwrw
+    !dir$ attributes align : 64 :: irwrw
+    
+     ! An angled roof inclination (rad) -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:),  allocatable :: irnrw
+    !dir$ attributes align : 64 :: irnrw
+    
+    ! An angled roof inclination surface area -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: isra
+    !dir$ attributes align : 64 :: isra
+    
+     ! An angled roof inclination surface area -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: iwra
+    !dir$ attributes align : 64 :: iwra
+    
+     ! An angled roof inclination surface area -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: iera
+    !dir$ attributes align : 64 :: iera
+    
+    ! An angled roof inclination surface area -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: inra
+    !dir$ attributes align : 64 :: inra
+    
+    ! South wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:), allocatable :: swue
+    !dir$ attributes align : 64 :: swue
+    
+     ! East wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:), allocatable :: ewue
+    !dir$ attributes align : 64 :: swue
+    
+     ! West wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:), allocatable :: wwue
+    !dir$ attributes align : 64 :: wwue
+    
+      ! North wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:), allocatable :: nwue
+    !dir$ attributes align : 64 :: nwue
+    
+    ! Shared right edge between the south wall and east wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: sewe
+    !dir$ attributes align : 64 :: sewe 
+    
 #else    
     ! Moisture of every street (2D array)
     ! 1st dimension humidity values (per street), 2nd dimension street numbers
@@ -385,5 +579,133 @@ module urban_model
     ! Urban area height map (at single building resolution) -- gradient y-component
     real(sp), dimension(:,:), allocatable :: bhgrady
     !dir$ attributes align : 64 :: bhgrady
+    
+     ! Smoothing and approximating curve for linearly-piecewise height function (x-coordinate)
+    ! Smoothing and approximating curve for linearly-piecewise height function (y-coordinate)
+    real(sp), dimension(:,:), allocatable :: xysmbh
+    !dir$ attributes align : 64 :: xysmbh
+    
+    ! Empty space in-between of buildings (per single column) x number columns
+    integer(i4), dimension(:,:), allocatable :: esbb
+    !dir$ attributes align : 64 :: esbb
+    
+     ! An area values of in-between buildings empty spaces (per single column)
+    real(sp), dimension(:,:), allocatable :: aesbb
+    !dir$ attributes align : 64 :: aesbb
+    
+    ! An area values of each building (per single building column)
+    real(sp), dimension(:,:), allocatable :: abc
+    !dir$ attributes align : 64 :: abc
+    
+     ! Number of south-facing walls (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: swpc
+    !dir$ attributes align : 64 :: swpc
+    
+     ! Number of east-facing walls (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: ewpc
+    !dir$ attributes align : 64 :: ewpc
+    
+    ! Number of west-facing walls (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: wwpc 
+    !dir$ attributes align : 64 :: wwpc
+    
+     ! Number of north-facing walls (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: nwpc
+    !dir$ attributes align : 64 :: nwpc
+    
+     ! Number of building roofs per each column
+    integer(i4), dimension(:,:), allocatable :: brpc
+    !dir$ attributes align : 64 :: brpc
+    
+     ! An area of every building [flat] roof (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: brapc
+    !dir$ attributes align : 64 :: brapc
+    
+      ! Number of angled roof -- south facing roof wall (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: srwc
+    !dir$ attributes align : 64 :: srwc
+    
+    ! Number of angled roof -- east facing roof wall (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: erwc
+    !dir$ attributes align : 64 :: erwc
+    
+    ! Number of angled roof -- west facing roof wall (per each column)  x number of columns
+    integer(i4), dimension(:,:), allocatable :: wrwc
+    !dir$ attributes align : 64 :: wrwc
+    
+    ! Number angled roof -- north facing roof wall (per each column) x number of columns
+    integer(i4), dimension(:,:), allocatable :: nrwc
+    !dir$ attributes align : 64 :: nrwc
+    
+    !An angled roof inclination (deg) -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: idsrw
+    !dir$ attributes align : 64 :: idsrw
+    
+    ! An angled roof inclination (deg) -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: iderw
+    !dir$ attributes align : 64 :: iderw
+    
+     ! An angled roof inclination (deg) -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: idwrw
+    !dir$ attributes align : 64 :: idwrw
+    
+      ! An angled roof inclination (deg) -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: idnrw
+    !dir$ attributes align : 64 :: idnrw
+    
+     ! An angled roof inclination (rad) -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: irsrw
+    !dir$ attributes align : 64 :: irsrw
+    
+    ! An angled roof inclination (rad) -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: irerw
+    !dir$ attributes align : 64 :: irerw
+    
+     ! An angled roof inclination (rad) -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: irwrw
+    !dir$ attributes align : 64 :: irwrw
+    
+      ! An angled roof inclination (rad) -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:),  allocatable :: irnrw
+    !dir$ attributes align : 64 :: irnrw
+    
+     ! An angled roof inclination surface area -- south facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: isra
+    !dir$ attributes align : 64 :: isra
+    
+     ! An angled roof inclination surface area -- west facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: iwra
+    !dir$ attributes align : 64 :: iwra
+    
+      ! An angled roof inclination surface area -- east facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: iera
+    !dir$ attributes align : 64 :: iera
+    
+      ! An angled roof inclination surface area -- north facing roof wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: inra
+    !dir$ attributes align : 64 :: inra
+    
+     ! South wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:,:), allocatable :: swue
+    !dir$ attributes align : 64 :: swue
+    
+     ! East wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:,:), allocatable :: ewue
+    !dir$ attributes align : 64 :: swue
+    
+     ! West wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:,:), allocatable :: wwue
+    !dir$ attributes align : 64 :: wwue
+    
+      ! North wall upper-facing edge inclination (rad) -- (per each column)  x number of columns
+    real(sp), dimension(:,:), allocatable :: nwue
+    !dir$ attributes align : 64 :: nwue
+    
+     ! Shared right edge between the south wall and east wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: sewe
+    !dir$ attributes align : 64 :: sewe 
+    
+#endif
     
 end module urban_model
