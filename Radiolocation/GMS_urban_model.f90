@@ -219,10 +219,97 @@ module urban_model
     integer(i4) :: nwwue
      ! Number of north wall upper-facing edge inclination (rad) -- (per each column)
     integer(i4) :: nnwue
-     ! Number of shared right edge between the south wall and east wall inclination (rad) -- (per each column)
+     ! Number of shared right edges between the south wall and east wall inclination (rad) -- (per each column)
     integer(i4) :: nsewe
-    
+    ! Number of shared left edges between the south wall and west wall inclination (rad) -- (per each column)
+    integer(i4) :: nswwe
+    ! Number of shared right edges between the north wall and east wall inclination (rad) -- (per each column)
+    integer(i4) :: nnewe
+    ! Number of shared left edges between the north wall and west wall inclination (rad) -- (per each column)
+    integer(i4) :: nnwwe
+    ! Number of south walls surface area (for every building, per column) 
+    integer(i4) :: nswsa
+    ! Number of east walls surface area (for every building, per column) 
+    integer(i4) :: newsa
+    ! Number of west walls surface area (for every building, per column) 
+    integer(i4) :: nwwsa
+    ! Number of north walls surface area (for every building, per column) 
+    integer(i4) :: nnwsa
+    ! Number of south walls being either moist or non moist  (per column) x number of columns
+    integer(i4) :: nmnmsw
+    ! Number of east walls being either moist or non moist  (per column) x number of columns
+    integer(i4) :: nmnmew
+    ! Number of west walls being either moist or non moist  (per column) x number of columns
+    integer(i4) :: nmnmww
+    ! Number of north walls being either moist or non moist  (per column) x number of columns
+    integer(i4) :: nmnmnw
+    ! Number of values describing the ratio (percentage) of south wall moisture to dryness (per each column) 
+    integer(i4) :: nmdswr
+    ! Number of values describing the ratio (percentage) of east wall moisture to dryness (per each column) 
+    integer(i4) :: nmdewr
+    ! Number of values describing the ratio (percentage) of west wall moisture to dryness (per each column) 
+    integer(i4) :: nmdwwr
+     ! Number of values describing the ratio (percentage) of north wall moisture to dryness (per each column) 
+    integer(i4) :: nmdnwr
+    ! Number of logical values of flat roof moistness (being either moist or dry) (per column)
+    integer(i4) :: nmdr
+    ! Number of values describing the ratio (percentage) of flat roof moisture to dryness (per each column) 
+    integer(i4) :: nmdrr
+    ! Number of values describing the surface of moist part of the flat roof (per each column) 
+    integer(i4) :: nmpfr
+    ! Number of values describing the surface of dry part of the flat roof (per each column) 
+    integer(i4) :: ndpfr
+    ! Number of values describing the surface of moist part of the south wall (per each column) 
+    integer(i4) :: nmpsw
+    ! Number of values describing the surface of dry part of the south wall (per each column) 
+    integer(i4) :: ndpsw
+     ! Number of values describing the surface of moist part of the east wall (per each column) 
+    integer(i4) :: nmpew
+    ! Number of values describing the surface of dry part of the east wall (per each column) 
+    integer(i4) :: ndpew
+     ! Number of values describing the surface of moist part of the west wall (per each column) 
+    integer(i4) :: nmpww
+    ! Number of values describing the surface of dry part of the west wall (per each column) 
+    integer(i4) :: ndpww
+     ! Number of values describing the surface of moist part of the north wall (per each column) 
+    integer(i4) :: nmpnw
+    ! Number of values describing the surface of dry part of the north wall (per each column) 
+    integer(i4) :: ndpnw
 !! ****************************************  Array data types ***************************************** //
+
+    ! Simple cell-based mesh to be used
+    ! as an array of derived types per every surface.
+    type, public :: CellMesh_t
+          
+          !  // Number of divisions along the x,y,z
+          integer(i4), dimension(3) :: ndiv
+          ! Number of cells
+          integer(i4) :: nL
+          ! Numerical integration to be computed?
+          logical(i4) :: nint
+          ! Coordinates (x,y,z) of the center
+          !        // of Lth cell.
+          real(sp), dimension(:), allocatable :: cx
+          !dir$ attributes align : 64 :: cx
+          real(sp), dimension(:), allocatable :: cy
+          !dir$ attributes align : 64 :: cy
+          real(sp), dimension(:), allocatable :: cz
+          !dir$ attributes align : 64 :: cz
+          ! The volume of each cell
+          real(sp), dimension(:), allocatable :: dv
+          !dir$ attributes align : 64 :: dv
+          ! // (X,Y,Z) dimensions of the Ith
+          !        // rectangular volume cell (this is needed for
+          !        // the numerical integration)
+          real(sp), dimension(:), allocatable :: dx
+          !dir$ attributes align : 64 :: dx
+          real(sp), dimension(:), allocatable :: dy
+          !dir$ attributes align : 64 :: dy
+          real(sp), dimension(:), allocatable :: dz
+          !dir$ attributes align : 64 :: dz
+    end type CellMesh_t
+    
+    
     ! latitude   values (deg), per building
     real(sp), dimension(:), allocatable :: blatd
     !dir$ attributes align : 64 :: blatd
@@ -481,10 +568,137 @@ module urban_model
     real(sp), dimension(:), allocatable :: nwue
     !dir$ attributes align : 64 :: nwue
     
-    ! Shared right edge between the south wall and east wall inclination (rad) 
+    ! Shared right edges between the south wall and east wall inclination (rad) 
                                      ! -- (per each column) x number of columns
     real(sp), dimension(:), allocatable :: sewe
     !dir$ attributes align : 64 :: sewe 
+    
+    ! Shared left edges between the south wall and west wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: swwe
+     !dir$ attributes align : 64 :: swwe
+    
+    ! Shared right edges between the north wall and east wall inclination (rad) -- 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: nwee
+    !dir$ attributes align : 64 :: nwee
+    
+    ! Shared left edges between the north wall and west wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: nwwe
+    !dir$ attributes align : 64 :: nwwe
+    
+    ! South walls surface area (for every building, per column) x number of columns
+    real(sp), dimension(:), allocatable :: swsa
+    !dir$ attributes align : 64 :: swsa
+    
+    ! East walls surface area (for every building, per column) 
+    real(sp), dimension(:), allocatable :: ewsa
+    !dir$ attributes align : 64 :: ewsa
+    
+     ! West walls surface area (for every building, per column) 
+    real(sp), dimension(:), allocatable :: wwsa
+    !dir$ attributes align : 64 :: wwsa
+    
+     ! North walls surface area (for every building, per column) 
+    real(sp), dimension(:), allocatable :: nwsa
+    !dir$ attributes align : 64 :: nwsa
+    
+    ! South walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:), allocatable :: mnmsw
+    !dir$ attributes align : 64 :: mnmsw
+    
+     ! East walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:), allocatable :: mnmew
+    !dir$ attributes align : 64 :: mnmew
+    
+     ! West walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:), allocatable :: mnmww
+    !dir$ attributes align : 64 :: mnmww
+    
+     ! North walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:), allocatable :: mnmnw
+    !dir$ attributes align : 64 :: mnmnw
+    
+    ! The values describing the ratio (percentage) of south wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mdswr
+    !dir$ attributes align : 64 :: mdswr
+    
+     ! The values describing the ratio (percentage) of east wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mdewr
+    !dir$ attributes align : 64 :: mdewr
+    
+    ! The values describing the ratio (percentage) of west wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mdwwr
+    !dir$ attributes align : 64 :: mdwwr
+    
+    ! The values describing the ratio (percentage) of north wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mdnwr
+    !dir$ attributes align : 64 :: mdnwr
+    
+    ! The logical values of flat roof moistness (being either moist or dry) 
+                               ! (per column) x number of columns
+    logical(i4), dimension(:), allocatable :: mdr
+    !dir$ attributes align : 64 :: mdr
+    
+    ! The values describing the ratio (percentage) of flat roof moisture to dryness 
+                               ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mdrr
+    !dir$ attributes align : 64 :: mdrr
+    
+    ! The values describing the surface of moist part of the flat roof 
+                                ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpfr
+    !dir$ attributes align : 64 :: mpfr
+    
+     ! The values describing the surface of dry part of the flat roof 
+                                ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpfr
+    !dir$ attributes align : 64 :: dpfr
+    
+    ! The values describing the surface of moist part of the south wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpsw
+    !dir$ attributes align : 64 :: mpsw
+    
+    ! The values describing the surface of dry part of the south wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpsw
+    !dir$ attributes align : 64 :: dpsw
+    
+    ! The values describing the surface of moist part of the east wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpew
+    !dir$ attributes align : 64 :: mpew
+    
+    ! The values describing the surface of dry part of the east wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpew
+    !dir$ attributes align : 64 :: dpew
+    
+     ! The values describing the surface of moist part of the west wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpww
+    !dir$ attributes align : 64 :: mpww
+    
+    ! The values describing the surface of dry part of the west wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpww
+    !dir$ attributes align : 64 :: dpww
+    
+    ! The values describing the surface of moist part of the north wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpnw
+    !dir$ attributes align : 64 :: mpnw
+    
+    ! The values describing the surface of dry part of the north wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpnw
+    !dir$ attributes align : 64 :: dpnw
     
 #else    
     ! Moisture of every street (2D array)
@@ -589,11 +803,11 @@ module urban_model
     integer(i4), dimension(:,:), allocatable :: esbb
     !dir$ attributes align : 64 :: esbb
     
-     ! An area values of in-between buildings empty spaces (per single column)
+     ! An area values of in-between buildings empty spaces (per single column) x number columns
     real(sp), dimension(:,:), allocatable :: aesbb
     !dir$ attributes align : 64 :: aesbb
     
-    ! An area values of each building (per single building column)
+    ! An area values of each building (per single building column) x number columns
     real(sp), dimension(:,:), allocatable :: abc
     !dir$ attributes align : 64 :: abc
     
@@ -705,6 +919,133 @@ module urban_model
                                      ! -- (per each column) x number of columns
     real(sp), dimension(:,:), allocatable :: sewe
     !dir$ attributes align : 64 :: sewe 
+    
+    ! Shared left edges between the south wall and west wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: swwe
+     !dir$ attributes align : 64 :: swwe
+     
+    ! Shared right edges between the north wall and east wall inclination (rad) -- 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: nwee
+    !dir$ attributes align : 64 :: nwee
+    
+     ! Shared left edges between the north wall and west wall inclination (rad) 
+                                     ! -- (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: nwwe
+    !dir$ attributes align : 64 :: nwwe
+    
+    ! South walls surface area (for every building, per column) x number of columns
+    real(sp), dimension(:,:), allocatable :: swsa
+    !dir$ attributes align : 64 :: swsa
+    
+    ! East walls surface area (for every building, per column) 
+    real(sp), dimension(:,:), allocatable :: ewsa
+    !dir$ attributes align : 64 :: ewsa
+    
+     ! West walls surface area (for every building, per column) 
+    real(sp), dimension(:,:), allocatable :: wwsa
+    !dir$ attributes align : 64 :: wwsa
+    
+      ! North walls surface area (for every building, per column) 
+    real(sp), dimension(:,:), allocatable :: nwsa
+    !dir$ attributes align : 64 :: nwsa
+    
+     ! South walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:,:), allocatable :: mnmsw
+    !dir$ attributes align : 64 :: mnmsw
+    
+     ! East walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:,:), allocatable :: mnmew
+    !dir$ attributes align : 64 :: mnmew
+    
+     ! West walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:,:), allocatable :: mnmww
+    !dir$ attributes align : 64 :: mnmww
+    
+    ! North walls being either moist or non moist  (per column) x number of columns
+    logical(i4), dimension(:,:), allocatable :: mnmnw
+    !dir$ attributes align : 64 :: mnmnw
+    
+     ! The values describing the ratio (percentage) of south wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mdswr
+    !dir$ attributes align : 64 :: mdswr
+    
+     ! The values describing the ratio (percentage) of east wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mdewr
+    !dir$ attributes align : 64 :: mdewr
+    
+     ! The values describing the ratio (percentage) of west wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mdwwr
+    !dir$ attributes align : 64 :: mdwwr
+    
+     ! The values describing the ratio (percentage) of north wall 
+                             ! moisture to dryness (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mdnwr
+    !dir$ attributes align : 64 :: mdnwr
+    
+    ! The logical values of flat roof moistness (being either moist or dry) 
+                               ! (per column) x number of columns
+    logical(i4), dimension(:,:), allocatable :: mdr
+    !dir$ attributes align : 64 :: mdr
+    
+    ! The values describing the ratio (percentage) of flat roof moisture to dryness 
+                               ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mdrr
+    !dir$ attributes align : 64 :: mdrr
+    
+    ! The values describing the surface of moist part of the flat roof 
+                                ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpfr
+    !dir$ attributes align : 64 :: mpfr
+    
+       ! The values describing the surface of dry part of the flat roof 
+                                ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpfr
+    !dir$ attributes align : 64 :: dpfr
+    
+    ! The values describing the surface of moist part of the south wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpsw
+    !dir$ attributes align : 64 :: mpsw
+    
+    ! The values describing the surface of dry part of the south wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpsw
+    !dir$ attributes align : 64 :: dpsw
+    
+     ! The values describing the surface of moist part of the east wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpew
+    !dir$ attributes align : 64 :: mpew
+    
+    ! The values describing the surface of dry part of the east wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpew
+    !dir$ attributes align : 64 :: dpew
+    
+      ! The values describing the surface of moist part of the west wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpww
+    !dir$ attributes align : 64 :: mpww
+    
+    ! The values describing the surface of dry part of the west wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpww
+    !dir$ attributes align : 64 :: dpww
+    
+    ! The values describing the surface of moist part of the north wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpnw
+    !dir$ attributes align : 64 :: mpnw
+    
+    ! The values describing the surface of dry part of the north wall 
+                                 ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpnw
+    !dir$ attributes align : 64 :: dpnw
     
 #endif
     
