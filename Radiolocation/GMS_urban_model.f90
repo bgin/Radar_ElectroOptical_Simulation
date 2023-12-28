@@ -293,6 +293,54 @@ module urban_model
     integer(i4) :: nrcswar
     ! Number of RCS values for northern angled roof (per each column) 
     integer(i4) :: nrcsnar
+    ! Number of values describing the surface of moist part of the angled south roof wall
+                               !// ! (per each column)
+    integer(i4) :: nmpsar
+    ! Number of values describing the surface of dry part of the angled south roof wall
+                               !// ! (per each column)
+    integer(i4) :: ndpsar
+    ! Number of values describing the surface of moist part of the angled east roof wall
+                               !// ! (per each column) 
+    integer(i4) :: nmpear
+    ! Number of values describing the surface of dry part of the angled east roof wall
+                               !// ! (per each column) 
+    integer(i4) :: ndpear
+     ! Number of values describing the surface of moist part of the angled west roof wall
+                               !// ! (per each column) 
+    integer(i4) :: nmpwar
+    ! Number of values describing the surface of dry part of the angled west roof wall
+                               !// ! (per each column) 
+    integer(i4) :: ndpwar
+     ! Number of values describing the surface of moist part of the angled north roof wall
+                               !// ! (per each column) 
+    integer(i4) :: nmpnar
+    ! Number of values describing the surface of dry part of the angled north roof wall
+                               !// ! (per each column) 
+    integer(i4) :: ndpnar
+    ! Number of values describing the complex permittivity of south walls
+                               !// ! (per each column) 
+    integer(i4) :: ncesw
+    ! Number of values describing the complex permeabillity of south walls
+                              ! // ! (per each column) x number of columns  
+    integer(i4) :: ncmsw
+     ! Number of values describing the complex permittivity of west walls
+                               !// ! (per each column) 
+    integer(i4) :: nceww
+    ! Number of values describing the complex permeabillity of west walls
+                              ! // ! (per each column) x number of columns  
+    integer(i4) :: ncmww
+     ! Number of values describing the complex permittivity of east walls
+                               !// ! (per each column) 
+    integer(i4) :: nceew
+    ! Number of values describing the complex permeabillity of east walls
+                              ! // ! (per each column) x number of columns  
+    integer(i4) :: ncmew
+    ! Number of values describing the complex permittivity of north walls
+                               !// ! (per each column) 
+    integer(i4) :: ncenw
+    ! Number of values describing the complex permeabillity of north walls
+                              ! // ! (per each column) x number of columns  
+    integer(i4) :: ncmnw
 !! ****************************************  Array data types ***************************************** //
 
     ! Simple cell-based mesh to be used
@@ -757,6 +805,86 @@ module urban_model
                      !(per each column) x number of columns
     real(sp), dimension(:), allocatable :: rcsnar
      !dir$ attributes align : 64 :: rcsnar
+     
+    ! The values describing the surface of moist part of the angled south roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpsar
+    !dir$ attributes align : 64 :: mpsar
+    
+     ! The values describing the surface of dry part of the angled south roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpsar
+    !dir$ attributes align : 64 :: dpsar
+    
+     ! The values describing the surface of moist part of the angled east roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpear
+    !dir$ attributes align : 64 :: mpear
+    
+     ! The values describing the surface of dry part of the angled east roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpear
+    !dir$ attributes align : 64 :: dpear
+    
+     ! The values describing the surface of moist part of the angled west roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpwar
+    !dir$ attributes align : 64 :: mpwar
+    
+     ! The values describing the surface of dry part of the angled west roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpwar
+    !dir$ attributes align : 64 :: dpwar
+    
+     ! The values describing the surface of moist part of the angled north roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: mpnar
+    !dir$ attributes align : 64 :: mpnar
+    
+     ! The values describing the surface of dry part of the angled north roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: dpnar
+    !dir$ attributes align : 64 :: dpnar
+    
+   ! The values describing the complex permittivity of south walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:), allocatable :: cesw
+    !dir$ attributes align : 64 :: cesw
+    
+   ! The values describing the complex permeabillity of south walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:), allocatable :: cmsw
+    !dir$ attributes align : 64 :: cmsw
+    
+     ! The values describing the complex permittivity of west walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:), allocatable :: ceww
+    !dir$ attributes align : 64 :: ceww
+    
+   ! The values describing the complex permeabillity of west walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:), allocatable :: cmww
+    !dir$ attributes align : 64 :: cmww
+    
+     ! The values describing the complex permittivity of east walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:), allocatable :: ceew
+    !dir$ attributes align : 64 :: ceew
+    
+   ! The values describing the complex permeabillity of east walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:), allocatable :: cmew
+    !dir$ attributes align : 64 :: cmew
+    
+     ! The values describing the complex permittivity of north walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:), allocatable :: cenw
+    !dir$ attributes align : 64 :: cenw
+    
+   ! The values describing the complex permeabillity of north walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:), allocatable :: cmnw
+    !dir$ attributes align : 64 :: cmnw
     
 #else    
     ! Moisture of every street (2D array)
@@ -1144,6 +1272,86 @@ module urban_model
                      !(per each column) x number of columns
     real(sp), dimension(:,:), allocatable :: rcsnar
      !dir$ attributes align : 64 :: rcsnar
+     
+    ! The values describing the surface of moist part of the angled south roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpsar
+    !dir$ attributes align : 64 :: mpsar
+    
+     ! The values describing the surface of dry part of the angled south roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpsar
+    !dir$ attributes align : 64 :: dpsar
+    
+       ! The values describing the surface of moist part of the angled east roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpear
+    !dir$ attributes align : 64 :: mpear
+    
+     ! The values describing the surface of dry part of the angled east roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpear
+    !dir$ attributes align : 64 :: dpear
+    
+      ! The values describing the surface of moist part of the angled west roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpwar
+    !dir$ attributes align : 64 :: mpwar
+    
+     ! The values describing the surface of dry part of the angled west roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpwar
+    !dir$ attributes align : 64 :: dpwar
+    
+      ! The values describing the surface of moist part of the angled north roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: mpnar
+    !dir$ attributes align : 64 :: mpnar
+    
+     ! The values describing the surface of dry part of the angled north roof wall
+                               !// ! (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: dpnar
+    !dir$ attributes align : 64 :: dpnar
+    
+    ! The values describing the complex permittivity of south walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:,:), allocatable :: cesw
+    !dir$ attributes align : 64 :: cesw
+    
+    ! The values describing the complex permeabillity of south walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:,:), allocatable :: cmsw
+    !dir$ attributes align : 64 :: cmsw
+    
+     ! The values describing the complex permittivity of west walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:,:), allocatable :: ceww
+    !dir$ attributes align : 64 :: ceww
+    
+   ! The values describing the complex permeabillity of west walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:,:), allocatable :: cmww
+    !dir$ attributes align : 64 :: cmww
+    
+     ! The values describing the complex permittivity of east walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:,:), allocatable :: ceew
+    !dir$ attributes align : 64 :: ceew
+    
+   ! The values describing the complex permeabillity of east walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:,:), allocatable :: cmew
+    !dir$ attributes align : 64 :: cmew
+    
+     ! The values describing the complex permittivity of north walls
+                               !// ! (per each column) 
+    complex(sp), dimension(:,:), allocatable :: cenw
+    !dir$ attributes align : 64 :: cenw
+    
+   ! The values describing the complex permeabillity of north walls
+                               !// ! (per each column) x number of columns 
+    complex(sp), dimension(:,:), allocatable :: cmnw
+    !dir$ attributes align : 64 :: cmnw
     
 #endif
     
