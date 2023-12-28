@@ -275,6 +275,24 @@ module urban_model
     integer(i4) :: nmpnw
     ! Number of values describing the surface of dry part of the north wall (per each column) 
     integer(i4) :: ndpnw
+    ! Number of RCS values for south wall (per each column) 
+    integer(i4) :: nrcssw
+    ! Number of RCS values for east wall (per each column) 
+    integer(i4) :: nrcsew
+    ! Number of RCS values for west wall (per each column) 
+    integer(i4) :: nrcsww
+    ! Number of RCS values for north wall (per each column) 
+    integer(i4) :: nrcsnw
+    ! Number of RCS values for flat roof (per each column) 
+    integer(i4) :: nrcsfr
+    ! Number of RCS values for southern angled roof (per each column) 
+    integer(i4) :: nrcssar
+    ! Number of RCS values for eastern angled roof (per each column) 
+    integer(i4) :: nrcsear
+    ! Number of RCS values for western angled roof (per each column) 
+    integer(i4) :: nrcswar
+    ! Number of RCS values for northern angled roof (per each column) 
+    integer(i4) :: nrcsnar
 !! ****************************************  Array data types ***************************************** //
 
     ! Simple cell-based mesh to be used
@@ -700,6 +718,46 @@ module urban_model
     real(sp), dimension(:), allocatable :: dpnw
     !dir$ attributes align : 64 :: dpnw
     
+    ! RCS values for south wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcssw
+    !dir$ attributes align : 64 :: rcssw
+    
+    ! RCS values for east wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsew
+    !dir$ attributes align : 64 :: rcsew
+    
+     ! RCS values for west wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsww
+    !dir$ attributes align : 64 :: rcsww
+    
+     ! RCS values for north wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsnw
+    !dir$ attributes align : 64 :: rcsnw
+    
+   ! RCS values for flat roof (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsfr
+     !dir$ attributes align : 64 :: rcsfr
+     
+   ! Number of RCS values for southern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcssar
+     !dir$ attributes align : 64 :: rcssar
+    
+    ! Number of RCS values for eastern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsear
+     !dir$ attributes align : 64 :: rcsear
+     
+     ! Number of RCS values for western angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcswar
+     !dir$ attributes align : 64 :: rcswar
+     
+     ! Number of RCS values for northern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcsnar
+     !dir$ attributes align : 64 :: rcsnar
+    
 #else    
     ! Moisture of every street (2D array)
     ! 1st dimension humidity values (per street), 2nd dimension street numbers
@@ -1046,6 +1104,46 @@ module urban_model
                                  ! (per each column) x number of columns
     real(sp), dimension(:,:), allocatable :: dpnw
     !dir$ attributes align : 64 :: dpnw
+    
+    ! RCS values for south wall (per each column) x number of columns
+    real(sp), dimension(:), allocatable :: rcssw
+    !dir$ attributes align : 64 :: rcssw
+    
+    ! RCS values for east wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsew
+    !dir$ attributes align : 64 :: rcsew
+    
+    ! RCS values for west wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsww
+    !dir$ attributes align : 64 :: rcsww
+    
+     ! RCS values for north wall (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsnw
+    !dir$ attributes align : 64 :: rcsnw
+    
+     ! RCS values for flat roof (per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsfr
+     !dir$ attributes align : 64 :: rcsfr
+     
+    ! Number of RCS values for southern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcssar
+     !dir$ attributes align : 64 :: rcssar
+     
+    ! Number of RCS values for eastern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsear
+     !dir$ attributes align : 64 :: rcsear
+     
+     ! Number of RCS values for western angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcswar
+     !dir$ attributes align : 64 :: rcswar
+     
+      ! Number of RCS values for northern angled roof 
+                     !(per each column) x number of columns
+    real(sp), dimension(:,:), allocatable :: rcsnar
+     !dir$ attributes align : 64 :: rcsnar
     
 #endif
     
