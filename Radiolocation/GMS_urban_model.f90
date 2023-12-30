@@ -341,7 +341,21 @@ module urban_model
     ! Number of values describing the complex permeabillity of north walls
                               ! // ! (per each column) x number of columns  
     integer(i4) :: ncmnw
+    ! Number of wire antennas per every building (per each column)
+    integer(i4) :: nwant
+    ! Number of parabolic antennas per every building (per each column)
+    integer(i4) :: npant
+    ! Number of yagi type antennas per every building (per each column)
+    integer(i4) :: nyant
+    ! Number of log-periodic dipole array antennas per every building (per each column)
+    integer(i4) :: nlpda
+    ! Number of cell phone sector bars antennas per every building (per each column)
+    integer(i4) :: ncant
+    ! Number of cylindrical objects (e.g. ventillation) per every building (per each column)
+    integer(i4) :: ncylo
+    
 !! ****************************************  Array data types ***************************************** //
+ 
 
     ! Simple cell-based mesh to be used
     ! as an array of derived types per every surface.
@@ -886,6 +900,30 @@ module urban_model
     complex(sp), dimension(:), allocatable :: cmnw
     !dir$ attributes align : 64 :: cmnw
     
+    ! Number of wire antennas per every building (per each column)
+    integer(i4), dimension(:), allocatable :: want
+    !dir$ attributes align : 64 :: want
+    
+     ! Number of parabollic antennas per every building (per each column)
+    integer(i4), dimension(:), allocatable :: pant
+    !dir$ attributes align : 64 :: pant
+    
+      ! Number of parabollic antennas per every building (per each column)
+    integer(i4), dimension(:), allocatable :: yant
+    !dir$ attributes align : 64 :: yant
+    
+    ! Number of log-periodic dipole array antennas per every building (per each column)
+    integer(i4), dimension(:), allocatable :: lpda
+     !dir$ attributes align : 64 :: lpda
+     
+    !  Number of cell phone sector bars antennas per every building (per each column)
+    integer(i4), dimension(:), allocatable :: cant
+     !dir$ attributes align : 64 :: cant
+     
+    ! Number of cylindrical objects (e.g. ventillation) per every building (per each column)
+    integer(i4), dimension(:), allocatable :: cylo
+     !dir$ attributes align : 64 :: cylo
+     
 #else    
     ! Moisture of every street (2D array)
     ! 1st dimension humidity values (per street), 2nd dimension street numbers
@@ -1352,6 +1390,30 @@ module urban_model
                                !// ! (per each column) x number of columns 
     complex(sp), dimension(:,:), allocatable :: cmnw
     !dir$ attributes align : 64 :: cmnw
+    
+     ! Number of wire antennas per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: want
+    !dir$ attributes align : 64 :: want
+    
+     ! Number of parabollic antennas per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: pant
+    !dir$ attributes align : 64 :: pant
+    
+    ! Number of parabollic antennas per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: yant
+    !dir$ attributes align : 64 :: yant
+    
+    ! Number of log-periodic dipole array antennas per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: lpda
+     !dir$ attributes align : 64 :: lpda
+     
+     !  Number of cell phone sector bars antennas per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: cant
+     !dir$ attributes align : 64 :: cant
+     
+    ! Number of cylindrical objects (e.g. ventillation) per every building (per each column)
+    integer(i4), dimension(:,:), allocatable :: cylo
+     !dir$ attributes align : 64 :: cylo
     
 #endif
     
