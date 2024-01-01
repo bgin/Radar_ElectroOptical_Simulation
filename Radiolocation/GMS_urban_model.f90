@@ -61,7 +61,7 @@ module urban_model
     integer(kind=i4),  parameter :: URBAN_MODEL_FULLVER =   &
             1000*URBAN_MODEL_MAJOR+100*URBAN_MODEL_MINOR+10*URBAN_MODEL_MICRO
     ! Module creation date
-    character(*),        parameter :: URBAN_MODEL_CREATE_DATE = "12-12-2023 15:32 +00200 (TUE 12 DEC 20223 GMT+2)"
+    character(*),        parameter :: URBAN_MODEL_CREATE_DATE = "12-12-2023 15:32 +00200 (TUE 12 DEC 2023 GMT+2)"
     ! Module build date
     character(*),        parameter :: URBAN_MODEL_BUILD_DATE  = __DATE__ " " __TIME__
     ! Module author info
@@ -72,7 +72,10 @@ module urban_model
     
     !************************************************************************************************!
     !************************************* Arrays size parameters ***********************************!
-
+    ! Number of rows
+    integer(i4) :: nrows
+    ! Number of columns
+    integer(i4) :: ncols
     ! Number of latitude   values (deg), per building
     integer(i4) :: nblatd
     ! Number of longtitude values (deg), per building
@@ -152,9 +155,9 @@ module urban_model
     ! Urban area height map (at single building resolution), y-coordinate, its first derivative
     integer(i4) :: ndybh
     ! Height field gradient x-components
-    integer(i4) :: ngradxbh
+    integer(i4) :: ngrdxbh
     ! Height field gradient y-components
-    integer(i4) :: ngradybh
+    integer(i4) :: ngrdybh
     ! Number of values of smoothing and approximating curve for linearly-piecewise height function (x-coordinate)
     integer(i4) :: nxsmbh
     ! Number of values of smoothing and approximating curve for linearly-piecewise height function (y-coordinate)
