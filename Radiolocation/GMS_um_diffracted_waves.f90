@@ -53,9 +53,7 @@ module um_diffracted_waves
     public
     implicit none
     
-#if !defined(UM_DIFFRACTED_WAVES_USE_FLAT_ARRAYS)
-#define UM_DIFFRACTED_WAVES_USE_FLAT_ARRAYS 0
-#endif
+
 
      ! Major version
     integer(kind=i4),  parameter :: UM_DIFFRACTED_WAVES_MAJOR = 1
@@ -174,27 +172,9 @@ module um_diffracted_waves
           integer(i4) :: xnaesbb
           ! Number of area values of each building (per single building column)
           integer(i4) :: xnabc
-          ! Number of south-facing walls (per each column)
-          integer(i4) :: xnswpc
-          ! Number of east-facing walls (per each column)
-          integer(i4) :: xnewpc
-          ! Number of west-facing walls (per each column)
-          integer(i4) :: xnwwpc
-           ! Number of north-facing walls (per each column)
-          integer(i4) :: xnnwpc
-           ! Number of building [flat] roofs (per each column)
-          integer(i4) :: xnbrpc
-           ! Number of area of every building [flat] roof (per each column)
+          ! Number of area of every building [flat] roof (per each column)
           integer(i4) :: xnbrapc
-           ! Number of angled roof -- south facing roof wall (per each column)
-          integer(i4) :: xnsrwc
-           ! Number of angled roof -- east facing roof wall (per each column)
-          integer(i4) :: xnerwc
-           ! Number of angled roof -- west facing roof wall (per each column)
-          integer(i4) :: xnwrwc
-           ! Number of angled roof -- north facing roof wall (per each column)
-          integer(i4) :: xnnrwc
-           ! Number of angled roof inclination (deg) -- south facing roof wall (per each column)
+          ! Number of angled roof inclination (deg) -- south facing roof wall (per each column)
           integer(i4) :: xnidsrw
            ! Number of angled roof inclination (deg) -- east facing roof wall (per each column)
           integer(i4) :: xniderw
@@ -366,8 +346,8 @@ module um_diffracted_waves
     contains
     
     
-       subroutine allocate_um_arrays(umdh) 
-           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: allocate_um_arrays
+       subroutine init_data_length(umdh) 
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: init_data_length
            use urban_model
            type(UMDataHolder_t),       intent(in) :: umdh
            ! Executable code
@@ -391,6 +371,7 @@ module um_diffracted_waves
            ncstr    = umdh.xncstr
            npcns    = umdh.xnpcns
            natcstr  = umdh.xnatcstr
+           ntcstr   = umdh.xntcstr
            nmustr1  = umdh.xnmustr1
            nepsstr1 = umdh.xnepsstr1
            nmustr2  = umdh.xnmustr2
@@ -415,15 +396,7 @@ module um_diffracted_waves
            nesbb    = umdh.xnesbb
            naesbb   = umdh.xnaesbb
            nabc     = umdh.xnabc
-           nswpc    = umdh.xnswpc
-           newpc    = umdh.xnewpc
-           nwwpc    = umdh.xnwwpc
-           nbrpc    = umdh.xnbrpc
            nbrapc   = umdh.xnbrapc
-           nsrwc    = umdh.xnsrwc
-           nerwc    = umdh.xnerwc
-           nwrwc    = umdh.xnwrwc
-           nnrwc    = umdh.xnnrwc
            nidsrw   = umdh.xnidsrw
            niderw   = umdh.xniderw
            nidwrw   = umdh.xnidwrw
@@ -446,8 +419,126 @@ module um_diffracted_waves
            nswsa    = umdh.xnswsa
            newsa    = umdh.xnewsa
            nwwsa    = umdh.xnwwsa
-       end subroutine allocate_um_arrays
+           nmnmsw   = undh.xnmnmsw
+           nmnmew   = umdh.xnmnmsw
+           nmnmww   = umdh.xnmnmww
+           nmdswr   = umdh.xnmdswr
+           nmdewr   = umdh.xnmdewr
+           nmdwwr   = umdh.xnmdwwr
+           nmdnwr   = umdh.xnmdnwr
+           nmdr     = umdh.xnmdr
+           nmdrr    = umdh.xnmdrr
+           nmpfr    = umdh.xnmpfr
+           ndpfr    = umdh.xndpfr
+           nmpsw    = umdh.xnmpsw
+           ndpsw    = umdh.xndpsw
+           nmpew    = umdh.xnmpew
+           ndpew    = umdh.xndpew
+           nmpww    = umdh.xnmpww
+           ndpww    = umdh.xndpww
+           nmpnw    = umdh.xnmpnw
+           ndpnw    = umdh.xndpnw
+           nrcssw   = umdh.xnrcssw
+           nrcsew   = umdh.xnrcsew
+           nrcsww   = umdh.xnrcsww
+           nrcsnw   = umdh.xnrcsnw
+           nrcsfr   = umdh.xnrcsfr
+           nrcssar  = umdh.xnrcssar
+           nrcsear  = umdh.xnrcsear
+           nrcswar  = umdh.xnrcswar
+           nrcsnar  = umdh.xnrcsnar
+           nmpsar   = umdh.xnmpsar
+           ndpsar   = umdh.xndpsar
+           nmpear   = umdh.xnmpear
+           ndpear   = umdh.xndpear
+           nmpwar   = umdh.xnmpwar
+           ndpwar   = umdh.xndpwar
+           nmpnar   = umdh.xnmpnar
+           ndpnar   = umdh.xndpnar
+           ncesw    = umdh.xncesw
+           ncmsw    = umdh.xncmsw
+           nceww    = umdh.xnceww
+           ncmww    = umdh.xncmww
+           nceew    = umdh.xnceew
+           ncmew    = umdh.xncmew
+           ncenw    = umdh.xncenw
+           ncmnw    = umdh.xncmnw
+           nwant    = umdh.xnwant
+           npant    = umdh.xnpant
+           nyant    = umdh.xnyant
+           nlpda    = umdh.xnlpda
+           ncant    = umdh.xncant
+           ncylo    = umdh.xncylo
+                         
+       end subroutine init_data_length
 
+
+       subroutine alloc_um_arrays()
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: init_data_length
+           use urban_model
+           ! Executable code
+           allocate(blatd(1:nblatd))
+           allocate(blond(1:nblond))
+           allocate(blatr(1:nblatr))
+           allocate(blonr(1:nblonr))
+           allocate(bpc(1:nbpc))
+           allocate(bpr(1:nbpr))
+           allocate(lstr(1:nstr))
+           allocate(wstr(1:nstr))
+           allocate(arstr(1:nstr))
+           allocate(ellpb(1:nellpb,1:nbpc))
+           allocate(pxb(1:npxb,1:nbpc))
+           allocate(pyb(1:npyb,1:nbpc))
+           allocate(wtstr(1:nwtstr,1:nstr))
+           allocate(phds(1:nphds,1:nstr))
+           allocate(cstr(1:ncstr,1:nstr))
+           allocate(pcns(1:npcns,1:nstr))
+           allocate(atcstr(1:natcstr,1:nstr))
+           allocate(tcstr(1:ntcstr,1:nstr))
+           allocate(mustr1(1:nmustr1,1:nstr))
+           allocate(epsstr1(1:nepsstr1,1:nstr))
+           allocate(mustr2(1:nmustr2,1:nstr))
+           allocate(epsstr2(1:nepsstr2,1:nstr))
+           allocate(upstr(1:nupstr,1:nstr))
+           allocate(vpstr(1:nvpstr,1:nstr))
+           allocate(nxstr(1:nnxstr,1:nstr))
+           allocate(nystr(1:nnystr,1:nstr))
+           allocate(nzstr(1:nnzstr,1:nstr))
+           allocate(slatd(1:nslatd,1:nstr))
+           allocate(slond(1:nslond,1:nstr))
+           allocate(slatr(1:nslatr,1:nstr))
+           allocate(slonr(1:nslonr,1:nstr))
+           allocate(bhmap(1:nxbh,1:nybh))
+           allocate(bhdxdy(1:ndxbh,1:ndybh))
+           allocate(bhgrdx(1:ngrdxbh,1:ngrdybh))
+           allocate(xysmbh(1:nxsmbh,1:nysmbh))
+           allocate(esbb(1:nesbb,1:ncols))
+           allocate(aesbb(1:naesbb,1:ncols))
+           allocate(abc(1:nabc,1:ncols))
+           allocate(swpc(1:ncols))
+           allocate(ewpc(1:ncols))
+           allocate(wwpc(1:ncols))
+           allocate(nwpc(1:ncols))
+           allocate(brpc(1:ncols))
+           allocate(brapc(1:nbrapc,1:nbpc))
+           allocate(srwc(1:ncols))
+           allocate(erwc(1:ncols))
+           allocate(wrwc(1:ncols))
+           allocate(nrwc(1:ncols))
+           allocate(idsrw(1:nidsrw,1:nbpc))
+           allocate(iderw(1:niderw,1:nbpc))
+           allocate(idwrw(1:nidwrw,1:nbpc))
+           allocate(idnrw(1:nidnrw,1:nbpc))
+           allocate(irsrw(1:nirsrw,1:nbpc))
+           allocate(irerw(1:nirerw,1:nbpc))
+           allocate(irwrw(1:nirwrw,1:nbpc))
+           allocate(irnrw(1:nirnrw,1:nbpc))
+           allocate(isra(1:nisra,1:nbpc))
+           allocate(iwra(1:niwra,1:nbpc))
+           allocate(iera(1:niera,1:nbpc))
+           allocate(inra(1:ninra,1:nbpc))
+           
+       end subroutine alloc_um_arrays
 
 
 
