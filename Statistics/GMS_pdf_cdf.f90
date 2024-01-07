@@ -6026,8 +6026,11 @@ elemental subroutine cauchy_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine cauchy_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine cauchy_cdf_inv ( cdf, a, b, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_cdf_inv
+ !dir$ attributes forceinline ::  cauchy_cdf_inv
+ !$omp declare simd(cuchy_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! CAUCHY_CDF_INV inverts the Cauchy CDF.
@@ -6074,6 +6077,9 @@ subroutine cauchy_cdf_inv ( cdf, a, b, x )
   return
 end
 subroutine cauchy_cdf_values ( n_data, mu, sigma, x, fx )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_cdf_values
+ !dir$ attributes forceinline ::  cauchy_cdf_values
 
 !*****************************************************************************80
 !
@@ -6210,8 +6216,11 @@ subroutine cauchy_cdf_values ( n_data, mu, sigma, x, fx )
 
   return
 end
-function cauchy_check ( a, b )
-
+elemental function cauchy_check ( a, b )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_check
+ !dir$ attributes forceinline ::  cauchy_check
+ 
 !*****************************************************************************80
 !
 !! CAUCHY_CHECK checks the parameters of the Cauchy CDF.
@@ -6242,9 +6251,9 @@ function cauchy_check ( a, b )
   logical cauchy_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CAUCHY_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'CAUCHY_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  B <= 0.'
     cauchy_check = .false.
     return
   end if
@@ -6254,7 +6263,10 @@ function cauchy_check ( a, b )
   return
 end
 subroutine cauchy_mean ( a, b, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_mean
+ !dir$ attributes forceinline ::  cauchy_mean
+ 
 !*****************************************************************************80
 !
 !! CAUCHY_MEAN returns the mean of the Cauchy PDF.
@@ -6288,8 +6300,11 @@ subroutine cauchy_mean ( a, b, mean )
 
   return
 end
-subroutine cauchy_pdf ( x, a, b, pdf )
-
+elemental subroutine cauchy_pdf ( x, a, b, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_pdf
+ !dir$ attributes forceinline ::  cauchy_pdf
+ !$omp declare simd(cuchy_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! CAUCHY_PDF evaluates the Cauchy PDF.
@@ -6342,8 +6357,11 @@ subroutine cauchy_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine cauchy_sample ( a, b, seed, x )
-
+elemental subroutine cauchy_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_sample
+ !dir$ attributes forceinline ::  cauchy_sample
+ !$omp declare simd(cuchy_sample) uniform(seed)  linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! CAUCHY_SAMPLE samples the Cauchy PDF.
@@ -6386,6 +6404,9 @@ subroutine cauchy_sample ( a, b, seed, x )
   return
 end
 subroutine cauchy_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cauchy_variance
+ !dir$ attributes forceinline ::  cauchy_variance
 
 !*****************************************************************************80
 !
@@ -6426,8 +6447,11 @@ subroutine cauchy_variance ( a, b, variance )
 
   return
 end
-subroutine chi_cdf ( x, a, b, c, cdf )
-
+elemental subroutine chi_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_cdf
+ !dir$ attributes forceinline ::  chi_cdf
+ 
 !*****************************************************************************80
 !
 !! CHI_CDF evaluates the Chi CDF.
@@ -6482,8 +6506,11 @@ subroutine chi_cdf ( x, a, b, c, cdf )
 
   return
 end
-subroutine chi_cdf_inv ( cdf, a, b, c, x )
-
+elemental subroutine chi_cdf_inv ( cdf, a, b, c, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_cdf_inv
+ !dir$ attributes forceinline ::  chi_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! CHI_CDF_INV inverts the Chi CDF.
@@ -6531,20 +6558,20 @@ subroutine chi_cdf_inv ( cdf, a, b, c, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'CHI_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = a
-    return
-  else if ( 1.0D+00 == cdf ) then
-    x = huge ( x )
-    return
-  end if
+  !if ( cdf == 0.0D+00 ) then
+  !  x = a
+  !  return
+ ! else if ( 1.0D+00 == cdf ) then
+ !   x = huge ( x )
+ !   return
+ ! end if
 
   x1 = a
   cdf1 = 0.0D+00
@@ -6580,9 +6607,9 @@ subroutine chi_cdf_inv ( cdf, a, b, c, x )
     end if
 
     if ( it_max < it ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'CHI_CDF_INV - Fatal error!'
-      write ( *, '(a)' ) '  Iteration limit exceeded.'
+     ! write ( *, '(a)' ) ' '
+     ! write ( *, '(a)' ) 'CHI_CDF_INV - Fatal error!'
+     ! write ( *, '(a)' ) '  Iteration limit exceeded.'
       return
     end if
 
@@ -6598,8 +6625,11 @@ subroutine chi_cdf_inv ( cdf, a, b, c, x )
 
   return
 end
-function chi_check ( a, b, c )
-
+elemental function chi_check ( a, b, c )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_check
+ !dir$ attributes forceinline ::  chi_check
+ 
 !*****************************************************************************80
 !
 !! CHI_CHECK checks the parameters of the Chi CDF.
@@ -6632,17 +6662,17 @@ function chi_check ( a, b, c )
   logical chi_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.0.'
+    !write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'CHI_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  B <= 0.0.'
     chi_check = .false.
     return
   end if
 
   if ( c <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  C <= 0.0.'
+   ! write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'CHI_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  C <= 0.0.'
     chi_check = .false.
     return
   end if
@@ -6651,8 +6681,11 @@ function chi_check ( a, b, c )
 
   return
 end
-subroutine chi_mean ( a, b, c, mean )
-
+elemental subroutine chi_mean ( a, b, c, mean )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_mean
+ !dir$ attributes forceinline ::  chi_mean
+ !$omp declare simd(chi_mean)   linear(ref(a,b,c,mean))
 !*****************************************************************************80
 !
 !! CHI_MEAN returns the mean of the Chi PDF.
@@ -6690,8 +6723,11 @@ subroutine chi_mean ( a, b, c, mean )
 
   return
 end
-subroutine chi_pdf ( x, a, b, c, pdf )
-
+elemental subroutine chi_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_pdf
+ !dir$ attributes forceinline ::  chi_pdf
+ !$omp declare simd(chi_pdf)   linear(ref(x,a,b,c,pdf))
 !*****************************************************************************80
 !
 !! CHI_PDF evaluates the Chi PDF.
@@ -6754,8 +6790,11 @@ subroutine chi_pdf ( x, a, b, c, pdf )
 
   return
 end
-subroutine chi_sample ( a, b, c, seed, x )
-
+elemental subroutine chi_sample ( a, b, c, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_sample
+ !dir$ attributes forceinline ::  chi_sample
+ !$omp declare simd(chi_sample) uniform(seed)  linear(ref(a,b,c,x))
 !*****************************************************************************80
 !
 !! CHI_SAMPLE samples the Chi PDF.
@@ -6797,8 +6836,11 @@ subroutine chi_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine chi_variance ( a, b, c, variance )
-
+elemental subroutine chi_variance ( a, b, c, variance )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_variance
+ !dir$ attributes forceinline ::  chi_variance
+ !$omp declare simd(chi_variance)   linear(ref(a,b,c,variance))
 !*****************************************************************************80
 !
 !! CHI_VARIANCE returns the variance of the Chi PDF.
@@ -6836,8 +6878,11 @@ subroutine chi_variance ( a, b, c, variance )
 
   return
 end
-subroutine chi_square_cdf ( x, a, cdf )
-
+elemental subroutine chi_square_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_cdf
+ !dir$ attributes forceinline ::  chi_square_cdf
+ !$omp declare simd(chi_square_cdf)   linear(ref(x,a,cdf))
 !*****************************************************************************80
 !
 !! CHI_SQUARE_CDF evaluates the Chi squared CDF.
@@ -6883,8 +6928,11 @@ subroutine chi_square_cdf ( x, a, cdf )
 
   return
 end
-subroutine chi_square_cdf_inv ( cdf, a, x )
-
+elemental subroutine chi_square_cdf_inv ( cdf, a, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_cdf_inv
+ !dir$ attributes forceinline ::  chi_square_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! CHI_SQUARE_CDF_INV inverts the Chi squared PDF.
@@ -6992,29 +7040,29 @@ subroutine chi_square_cdf_inv ( cdf, a, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) xx
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    write ( *, '(a,g14.6)' ) '  CDF = ', cdf
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  write ( *, '(a,g14.6)' ) '  CDF = ', cdf
+   ! stop
+  !end if
 
-  if ( cdf < cdf_min ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
-    write ( *, '(a)' ) '  CDF < CDF_MIN.'
-    write ( *, '(a,g14.6)' ) '  CDF = ', cdf
-    write ( *, '(a,g14.6)' ) '  CDF_MIN = ', cdf_min
-  end if
+  !if ( cdf < cdf_min ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
+  !  write ( *, '(a)' ) '  CDF < CDF_MIN.'
+  !  write ( *, '(a,g14.6)' ) '  CDF = ', cdf
+  !  write ( *, '(a,g14.6)' ) '  CDF_MIN = ', cdf_min
+  !end if
 
-  if ( cdf_max < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
-    write ( *, '(a)' ) '  CDF_MAX < CDF.'
-    write ( *, '(a,g14.6)' ) '  CDF = ', cdf
-    write ( *, '(a,g14.6)' ) '  CDF_MAX = ', cdf_max
-  end if
+  !if ( cdf_max < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
+  !  write ( *, '(a)' ) '  CDF_MAX < CDF.'
+  !  write ( *, '(a,g14.6)' ) '  CDF = ', cdf
+  !  write ( *, '(a,g14.6)' ) '  CDF_MAX = ', cdf_max
+  !end if
 
   xx = 0.5D+00 * a
   c = xx - 1.0D+00
@@ -7136,14 +7184,15 @@ subroutine chi_square_cdf_inv ( cdf, a, x )
   end do
 
   x = ch
-  write ( *, '(a)' ) ' '
-  write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
-  write ( *, '(a)' ) '  Convergence not reached.'
+  !write ( *, '(a)' ) ' '
+  !write ( *, '(a)' ) 'CHI_SQUARE_CDF_INV - Warning!'
+  !write ( *, '(a)' ) '  Convergence not reached.'
 
   return
 end
 subroutine chi_square_cdf_values ( n_data, a, x, fx )
 
+ 
 !*****************************************************************************80
 !
 !! CHI_SQUARE_CDF_VALUES returns some values of the Chi-Square CDF.
@@ -7273,8 +7322,11 @@ subroutine chi_square_cdf_values ( n_data, a, x, fx )
 
   return
 end
-function chi_square_check ( a )
-
+elemental function chi_square_check ( a )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_check
+ !dir$ attributes forceinline ::  chi_square_check
+ 
 !*****************************************************************************80
 !
 !! CHI_SQUARE_CHECK checks the parameter of the central Chi squared PDF.
@@ -7304,9 +7356,9 @@ function chi_square_check ( a )
   logical chi_square_check
 
   if ( a < 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  A < 1.0.'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'CHI_SQUARE_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  A < 1.0.'
     chi_square_check = .false.
     return
   end if
@@ -7316,6 +7368,9 @@ function chi_square_check ( a )
   return
 end
 subroutine chi_square_mean ( a, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_mean
+ !dir$ attributes forceinline ::  chi_square_mean
 
 !*****************************************************************************80
 !
@@ -7349,8 +7404,11 @@ subroutine chi_square_mean ( a, mean )
 
   return
 end
-subroutine chi_square_pdf ( x, a, pdf )
-
+elemental subroutine chi_square_pdf ( x, a, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_pdf
+ !dir$ attributes forceinline ::  chi_square_pdf
+ !$omp declare simd(chi_square_pdf)   linear(ref(x,a,pdf))
 !*****************************************************************************80
 !
 !! CHI_SQUARE_PDF evaluates the central Chi squared PDF.
@@ -7400,8 +7458,11 @@ subroutine chi_square_pdf ( x, a, pdf )
 
   return
 end
-subroutine chi_square_sample ( a, seed, x )
-
+elemental subroutine chi_square_sample ( a, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_sample
+ !dir$ attributes forceinline ::  chi_square_sample
+ !$omp declare simd(chi_square_sample)  uniform(seed) linear(ref(a,x))
 !*****************************************************************************80
 !
 !! CHI_SQUARE_SAMPLE samples the central Chi squared PDF.
@@ -7465,7 +7526,10 @@ subroutine chi_square_sample ( a, seed, x )
 
   return
 end
-subroutine chi_square_variance ( a, variance )
+elemental subroutine chi_square_variance ( a, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_variance
+ !dir$ attributes forceinline ::  chi_square_variance
 
 !*****************************************************************************80
 !
@@ -7535,17 +7599,17 @@ function chi_square_noncentral_check ( a, b )
   logical chi_square_noncentral_check
 
   if ( a < 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_NONCENTRAL_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  A < 1.'
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'CHI_SQUARE_NONCENTRAL_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  A < 1.'
     chi_square_noncentral_check = .false.
     return
   end if
 
   if ( b < 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CHI_SQUARE_NONCENTRAL_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B < 0.'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'CHI_SQUARE_NONCENTRAL_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B < 0.'
     chi_square_noncentral_check = .false.
     return
   end if
@@ -7731,8 +7795,11 @@ subroutine chi_square_noncentral_cdf_values ( n_data, df, lambda, x, cdf )
 
   return
 end
-subroutine chi_square_noncentral_mean ( a, b, mean )
-
+elemental subroutine chi_square_noncentral_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_noncentral_mean
+ !dir$ attributes forceinline ::  chi_square_noncentral_mean
+ 
 !*****************************************************************************80
 !
 !! CHI_SQUARE_NONCENTRAL_MEAN returns the mean of the noncentral Chi squared PDF.
@@ -7769,8 +7836,11 @@ subroutine chi_square_noncentral_mean ( a, b, mean )
 
   return
 end
-subroutine chi_square_noncentral_sample ( a, b, seed, x )
-
+elemental subroutine chi_square_noncentral_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_noncentral_sample
+ !dir$ attributes forceinline ::  chi_square_noncentral_sample
+ !$omp declare simd(chi_square_noncentral_sample)  uniform(seed) linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! CHI_SQUARE_NONCENTRAL_SAMPLE samples the noncentral Chi squared PDF.
@@ -7824,8 +7894,10 @@ subroutine chi_square_noncentral_sample ( a, b, seed, x )
 
   return
 end
-subroutine chi_square_noncentral_variance ( a, b, variance )
-
+elemental subroutine chi_square_noncentral_variance ( a, b, variance )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: chi_square_noncentral_noncentral
+ !dir$ attributes forceinline ::  chi_square_noncentral_noncentral
 !*****************************************************************************80
 !
 !! CHI_SQUARE_NONCENTRAL_VARIANCE: variance of the noncentral Chi squared PDF.
@@ -7863,7 +7935,10 @@ subroutine chi_square_noncentral_variance ( a, b, variance )
   return
 end
 subroutine circle_sample ( a, b, c, seed, x1, x2 )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circle_sample
+ !dir$ attributes forceinline ::  circle_sample
+ !$omp declare simd(circle_sample)  uniform(seed) linear(ref(a,b,c,x1,x2))
 !*****************************************************************************80
 !
 !! CIRCLE_SAMPLE samples points from a circle.
@@ -7914,8 +7989,11 @@ subroutine circle_sample ( a, b, c, seed, x1, x2 )
 
   return
 end
-subroutine circular_normal_01_mean ( mean )
-
+elemental subroutine circular_normal_01_mean ( mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_01_mean
+ !dir$ attributes forceinline ::  circular_normal_01_mean
+ 
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_01_MEAN returns the mean of the Circular Normal 01 PDF.
@@ -7944,8 +8022,11 @@ subroutine circular_normal_01_mean ( mean )
 
   return
 end
-subroutine circular_normal_01_pdf ( x, pdf )
-
+elemental subroutine circular_normal_01_pdf ( x, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_01_pdf
+ !dir$ attributes forceinline ::  circle_normal_01_pdf
+ !$omp declare simd(circular_normal_01_pdf)   linear(ref(x,pdf))
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_01_PDF evaluates the Circular Normal 01 PDF.
@@ -7982,8 +8063,11 @@ subroutine circular_normal_01_pdf ( x, pdf )
 
   return
 end
-subroutine circular_normal_01_sample ( seed, x )
-
+elemental subroutine circular_normal_01_sample ( seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_01_sample
+ !dir$ attributes forceinline ::  circle_normal_01_sample
+ !$omp declare simd(circular_normal_01_sample) uniform(seed)   linear(ref(x))
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_01_SAMPLE samples the Circular Normal 01 PDF.
@@ -8025,7 +8109,9 @@ subroutine circular_normal_01_sample ( seed, x )
   return
 end
 subroutine circular_normal_01_variance ( variance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_01_variance
+ !dir$ attributes forceinline ::  circle_normal_01_variance
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_01_VARIANCE returns the variance of the Circular Normal 01 PDF.
@@ -8056,7 +8142,9 @@ subroutine circular_normal_01_variance ( variance )
   return
 end
 subroutine circular_normal_mean ( a, b, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_mean
+ !dir$ attributes forceinline ::  circle_normal_mean
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_MEAN returns the mean of the Circular Normal PDF.
@@ -8092,7 +8180,10 @@ subroutine circular_normal_mean ( a, b, mean )
   return
 end
 subroutine circular_normal_pdf ( x, a, b, pdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_pdf
+ !dir$ attributes forceinline ::  circle_normal_pdf
+ !$omp declare simd(circular_normal_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_PDF evaluates the Circular Normal PDF.
@@ -8139,8 +8230,11 @@ subroutine circular_normal_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine circular_normal_sample ( a, b, seed, x )
-
+elemental subroutine circular_normal_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_sample
+ !dir$ attributes forceinline ::  circle_normal_sample
+ !$omp declare simd(circular_normal_sample) uniform(seed)   linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_SAMPLE samples the Circular Normal PDF.
@@ -8191,7 +8285,9 @@ subroutine circular_normal_sample ( a, b, seed, x )
   return
 end
 subroutine circular_normal_variance ( a, b, variance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: circular_normal_variance
+ !dir$ attributes forceinline :: circular_normal_variance
 !*****************************************************************************80
 !
 !! CIRCULAR_NORMAL_VARIANCE returns the variance of the Circular Normal PDF.
@@ -8227,8 +8323,10 @@ subroutine circular_normal_variance ( a, b, variance )
 
   return
 end
-function combinatorial ( n, k )
-
+elemental function combinatorial ( n, k )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: combinatorial
+ !dir$ attributes forceinline :: combinatorial
 !*****************************************************************************80
 !
 !! COMBINATORIAL computes the binomial coefficient C(N,K).
@@ -8305,7 +8403,10 @@ function combinatorial ( n, k )
   return
 end
 subroutine cosine_cdf ( x, a, b, cdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cosine_cdf
+ !dir$ attributes forceinline ::  cosine_cdf
+ !$omp declare simd(cosine_cdf)    linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! COSINE_CDF evaluates the Cosine CDF.
@@ -8359,7 +8460,10 @@ subroutine cosine_cdf ( x, a, b, cdf )
   return
 end
 subroutine cosine_cdf_inv ( cdf, a, b, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cosine_cdf_inv
+ !dir$ attributes forceinline ::  cosine_cdf_inv
+ !$omp declare simd(cosine_cdf_inv)    linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! COSINE_CDF_INV inverts the Cosine CDF.
@@ -8407,12 +8511,12 @@ subroutine cosine_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'COSINE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+ !   write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'COSINE_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
   if ( cdf == 0.0D+00 ) then
     x = a - pi * b
@@ -8452,11 +8556,11 @@ subroutine cosine_cdf_inv ( cdf, a, b, x )
 
   end do
 
-  write ( *, '(a)' ) ' '
-  write ( *, '(a)' ) 'COSINE_CDF_INV - Fatal error!'
-  write ( *, '(a)' ) '  Iteration limit exceeded.'
+ ! write ( *, '(a)' ) ' '
+  !write ( *, '(a)' ) 'COSINE_CDF_INV - Fatal error!'
+ ! write ( *, '(a)' ) '  Iteration limit exceeded.'
 
-  stop
+  return
 end
 function cosine_check ( a, b )
 
@@ -8490,9 +8594,9 @@ function cosine_check ( a, b )
   logical cosine_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'COSINE_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.0'
+   ! write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'COSINE_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  B <= 0.0'
     cosine_check = .false.
     return
   end if
@@ -8536,8 +8640,11 @@ subroutine cosine_mean ( a, b, mean )
 
   return
 end
-subroutine cosine_pdf ( x, a, b, pdf )
-
+elemental subroutine cosine_pdf ( x, a, b, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cosine_pdf
+ !dir$ attributes forceinline ::  cosine_pdf
+ !$omp declare simd(cosine_pdf)    linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! COSINE_PDF evaluates the Cosine PDF.
@@ -8597,8 +8704,11 @@ subroutine cosine_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine cosine_sample ( a, b, seed, x )
-
+elemental subroutine cosine_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cosine_sample
+ !dir$ attributes forceinline ::  cosine_sample
+ !$omp declare simd(cosine_cdf)  uniform(seed)  linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! COSINE_SAMPLE samples the Cosine PDF.
@@ -8640,8 +8750,11 @@ subroutine cosine_sample ( a, b, seed, x )
 
   return
 end
-subroutine cosine_variance ( a, b, variance )
-
+elemental subroutine cosine_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: cosine_variance
+ !dir$ attributes forceinline ::  cosine_variance
+ !$omp declare simd(cosine_variance)    linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! COSINE_VARIANCE returns the variance of the Cosine PDF.
@@ -8676,6 +8789,7 @@ subroutine cosine_variance ( a, b, variance )
 
   return
 end
+#if 0
 subroutine coupon_complete_pdf ( type_num, box_num, pdf )
 
 !*****************************************************************************80
@@ -9014,8 +9128,12 @@ subroutine coupon_variance ( j, type_num, variance )
 
   return
 end
-function csc ( theta )
-
+#endif
+elemental function csc ( theta )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: csc
+ !dir$ attributes forceinline ::  csc
+ !$omp declare simd(csc)    linear(ref(theta))
 !*****************************************************************************80
 !
 !! CSC returns the cosecant of X.
@@ -9055,16 +9173,18 @@ function csc ( theta )
   csc = sin ( theta )
 
   if ( csc == 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'CSC - Fatal error!'
-    write ( *, '(a,g14.6)' ) '  CSC undefined for THETA = ', theta
-    stop
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'CSC - Fatal error!'
+   ! write ( *, '(a,g14.6)' ) '  CSC undefined for THETA = ', theta
+   ! stop
+   return
   end if
 
   csc = 1.0D+00 / csc
 
   return
 end
+#if 0
 subroutine deranged_cdf ( x, a, cdf )
 
 !*****************************************************************************80
@@ -9522,8 +9642,13 @@ subroutine deranged_variance ( a, variance )
 
   return
 end
-function digamma ( x )
+#endif
 
+elemental function digamma ( x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: digamma
+ !dir$ attributes forceinline ::  digamma
+ !$omp declare simd(digamma)    linear(ref(x))
 !*****************************************************************************80
 !
 !! DIGAMMA calculates the digamma or Psi function.
@@ -9575,17 +9700,18 @@ function digamma ( x )
 !
 !  The argument must be positive.
 !
-  if ( x <= 0.0D+00 ) then
+ !if ( x <= 0.0D+00 ) then
 
-    digamma = 0.0D+00
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'DIGAMMA - Fatal error!'
-    write ( *, '(a)' ) '  X <= 0.'
-    stop
+  !  digamma = 0.0D+00
+  
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'DIGAMMA - Fatal error!'
+  ! write ( *, '(a)' ) '  X <= 0.'
+  !  stop 'DIGAMMA'
 !
 !  Use approximation if argument <= S.
 !
-  else if ( x <= s ) then
+  if ( x <= s ) then
 
     digamma = d1 - 1.0D+00 / x
 !
@@ -9611,6 +9737,7 @@ function digamma ( x )
 
   return
 end
+#if 0
 subroutine dipole_cdf ( x, a, b, cdf )
 
 !*****************************************************************************80
@@ -9954,6 +10081,7 @@ subroutine dipole_sample ( a, b, seed, x )
 
   return
 end
+
 function dirichlet_check ( n, a )
 
 !*****************************************************************************80
@@ -9995,11 +10123,11 @@ function dirichlet_check ( n, a )
   do i = 1, n
 
     if ( a(i) <= 0.0D+00 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'DIRICHLET_CHECK - Fatal error!'
-      write ( *, '(a)' ) '  A(I) <= 0.'
-      write ( *, '(a,i8)' ) '  For I = ', i
-      write ( *, '(a,g14.6)' ) '  A(I) = ', a(i)
+      !write ( *, '(a)' ) ' '
+      !write ( *, '(a)' ) 'DIRICHLET_CHECK - Fatal error!'
+      !write ( *, '(a)' ) '  A(I) <= 0.'
+     ! write ( *, '(a,i8)' ) '  For I = ', i
+     ! write ( *, '(a,g14.6)' ) '  A(I) = ', a(i)
       dirichlet_check = .false.
       return
     else if ( 0.0D+00 < a(i) ) then
@@ -10009,9 +10137,9 @@ function dirichlet_check ( n, a )
   end do
 
   if ( .not. positive ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'DIRICHLET_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  All parameters are zero!'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'DIRICHLET_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  All parameters are zero!'
     dirichlet_check = .false.
     return
   end if
@@ -10020,8 +10148,12 @@ function dirichlet_check ( n, a )
 
   return
 end
-subroutine dirichlet_mean ( n, a, mean )
 
+subroutine dirichlet_mean ( n, a, mean )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: dirichlet_mean
+ !dir$ attributes forceinline ::  dirichlet_mean
+ 
 !*****************************************************************************80
 !
 !! DIRICHLET_MEAN returns the means of the Dirichlet PDF.
@@ -10060,6 +10192,8 @@ subroutine dirichlet_mean ( n, a, mean )
 
   return
 end
+#endif
+#if 0
 function dirichlet_mix_check ( comp_num, elem_num, a, comp_weight )
 
 !*****************************************************************************80
@@ -10158,9 +10292,14 @@ function dirichlet_mix_check ( comp_num, elem_num, a, comp_weight )
 
   return
 end
+#endif
+#if 0
 subroutine dirichlet_mix_mean ( comp_num, elem_num, a, comp_weight, &
   mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: dirichlet_mix_mean
+ !dir$ attributes forceinline ::  dirichlet_mix_mean
+ 
 !*****************************************************************************80
 !
 !! DIRICHLET_MIX_MEAN returns the means of a Dirichlet mixture PDF.
@@ -10682,8 +10821,13 @@ subroutine dirichlet_variance ( n, a, variance )
 
   return
 end
-subroutine discrete_cdf ( x, a, b, cdf )
+#endif
 
+subroutine discrete_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_cdf
+ !dir$ attributes forceinline ::  discrete_cdf
+ 
 !*****************************************************************************80
 !
 !! DISCRETE_CDF evaluates the Discrete CDF.
@@ -10730,7 +10874,10 @@ subroutine discrete_cdf ( x, a, b, cdf )
   return
 end
 subroutine discrete_cdf_inv ( cdf, a, b, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_cdf_inv
+ !dir$ attributes forceinline ::  discrete_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! DISCRETE_CDF_INV inverts the Discrete CDF.
@@ -10771,12 +10918,12 @@ subroutine discrete_cdf_inv ( cdf, a, b, x )
   integer ( kind = 4 ) j
   integer ( kind = 4 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'DISCRETE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'DISCRETE_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
   b_sum = sum ( b(1:a) )
 
@@ -10797,6 +10944,7 @@ subroutine discrete_cdf_inv ( cdf, a, b, x )
 
   return
 end
+#if 0
 function discrete_check ( a, b )
 
 !*****************************************************************************80
@@ -10857,7 +11005,11 @@ function discrete_check ( a, b )
 
   return
 end
+#endif
 subroutine discrete_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_mean
+ !dir$ attributes forceinline ::  discrete_mean
 
 !*****************************************************************************80
 !
@@ -10896,6 +11048,7 @@ subroutine discrete_mean ( a, b, mean )
   b_sum = sum ( b(1:a) )
 
   mean = 0.0D+00
+  !$omp simd reduction(+:mean)
   do j = 1, a
     mean = mean + real ( j, kind = 8 ) * b(j)
   end do
@@ -10905,7 +11058,10 @@ subroutine discrete_mean ( a, b, mean )
   return
 end
 subroutine discrete_pdf ( x, a, b, pdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_pdf
+ !dir$ attributes forceinline ::  discrete_pdf
+ 
 !*****************************************************************************80
 !
 !! DISCRETE_PDF evaluates the Discrete PDF.
@@ -10958,7 +11114,10 @@ subroutine discrete_pdf ( x, a, b, pdf )
   return
 end
 subroutine discrete_sample ( a, b, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_sample
+ !dir$ attributes forceinline ::  discrete_sample
+ 
 !*****************************************************************************80
 !
 !! DISCRETE_SAMPLE samples the Discrete PDF.
@@ -11007,7 +11166,10 @@ subroutine discrete_sample ( a, b, seed, x )
   return
 end
 subroutine discrete_variance ( a, b, variance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: discrete_variance
+ !dir$ attributes forceinline ::  discrete_variance
+ 
 !*****************************************************************************80
 !
 !! DISCRETE_VARIANCE evaluates the variance of the Discrete PDF.
@@ -11046,6 +11208,7 @@ subroutine discrete_variance ( a, b, variance )
   b_sum = sum ( b(1:a) )
 
   mean = 0.0D+00
+  !$omp simd reduction(+:mean)
   do j = 1, a
     mean = mean + real ( j, kind = 8 ) * b(j)
   end do
@@ -11053,6 +11216,7 @@ subroutine discrete_variance ( a, b, variance )
   mean = mean / b_sum
 
   variance = 0.0D+00
+  !$omp simd reduction(+:variance)
   do j = 1, a
     variance = variance + b(j) * ( j - mean )**2
   end do
@@ -11097,7 +11261,10 @@ function e_constant ( )
   return
 end
 subroutine empirical_discrete_cdf ( x, a, b, c, cdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_cdf
+ !dir$ attributes forceinline ::  empirical_discrete_cdf
+ 
 !*****************************************************************************80
 !
 !! EMPIRICAL_DISCRETE_CDF evaluates the Empirical Discrete CDF.
@@ -11143,12 +11310,12 @@ subroutine empirical_discrete_cdf ( x, a, b, c, cdf )
   cdf = 0.0D+00
 
   bsum = sum ( b(1:a) )
-
+ !$omp simd reduction(+:cdf)
   do i = 1, a
 
-    if ( x < c(i) ) then
-      return
-    end if
+    !if ( x < c(i) ) then
+    !  return
+   ! end if
 
     cdf = cdf + b(i) / bsum
 
@@ -11156,7 +11323,11 @@ subroutine empirical_discrete_cdf ( x, a, b, c, cdf )
 
   return
 end
+
 subroutine empirical_discrete_cdf_inv ( cdf, a, b, c, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_cdf_inv
+ !dir$ attributes forceinline ::  empirical_discrete_cdf_inv
 
 !*****************************************************************************80
 !
@@ -11203,18 +11374,18 @@ subroutine empirical_discrete_cdf_inv ( cdf, a, b, c, x )
   integer ( kind = 4 ) i
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EMPIRICAL_DISCRETE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'EMPIRICAL_DISCRETE_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
   bsum = sum ( b(1:a) )
 
   x = c(1)
   cdf2 = b(1) / bsum
-
+  !$omp simd reduction(+:cdf2)
   do i = 2, a
 
     if ( cdf <= cdf2 ) then
@@ -11228,6 +11399,7 @@ subroutine empirical_discrete_cdf_inv ( cdf, a, b, c, x )
 
   return
 end
+#if 0
 function empirical_discrete_check ( a, b, c )
 
 !*****************************************************************************80
@@ -11325,8 +11497,11 @@ function empirical_discrete_check ( a, b, c )
 
   return
 end
+#endif
 subroutine empirical_discrete_mean ( a, b, c, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_mean
+ !dir$ attributes forceinline ::  empirical_discrete_mean
 !*****************************************************************************80
 !
 !! EMPIRICAL_DISCRETE_MEAN returns the mean of the Empirical Discrete PDF.
@@ -11369,7 +11544,9 @@ subroutine empirical_discrete_mean ( a, b, c, mean )
   return
 end
 subroutine empirical_discrete_pdf ( x, a, b, c, pdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_pdf
+ !dir$ attributes forceinline ::  empirical_discrete_pdf
 !*****************************************************************************80
 !
 !! EMPIRICAL_DISCRETE_PDF evaluates the Empirical Discrete PDF.
@@ -11419,6 +11596,7 @@ subroutine empirical_discrete_pdf ( x, a, b, c, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
+  !$omp simd
   do i = 1, a
     if ( x == c(i) ) then
       pdf = b(i) / sum ( b(1:a) )
@@ -11431,7 +11609,9 @@ subroutine empirical_discrete_pdf ( x, a, b, c, pdf )
   return
 end
 subroutine empirical_discrete_sample ( a, b, c, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_sample
+ !dir$ attributes forceinline ::  empirical_discrete_sample
 !*****************************************************************************80
 !
 !! EMPIRICAL_DISCRETE_SAMPLE samples the Empirical Discrete PDF.
@@ -11482,7 +11662,9 @@ subroutine empirical_discrete_sample ( a, b, c, seed, x )
   return
 end
 subroutine empirical_discrete_variance ( a, b, c, variance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: empirical_discrete_variance
+ !dir$ attributes forceinline ::  empirical_discrete_variance
 !*****************************************************************************80
 !
 !! EMPIRICAL_DISCRETE_VARIANCE returns the variance of the Empirical Discrete PDF.
@@ -11528,13 +11710,14 @@ subroutine empirical_discrete_variance ( a, b, c, variance )
   call empirical_discrete_mean ( a, b, c, mean )
 
   variance = 0.0D+00
-
+  !$omp simd reduction(+:variance)
   do i = 1, a
     variance = variance + ( b(i) / bsum ) * ( c(i) - mean )**2
   end do
 
   return
 end
+#if 0
 subroutine english_sentence_length_cdf ( x, cdf )
 
 !*****************************************************************************80
@@ -12690,8 +12873,11 @@ subroutine english_word_length_variance ( variance )
 
   return
 end
+#endif
 function error_f ( x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: error_f
+ !dir$ attributes forceinline ::  error_f
 !*****************************************************************************80
 !
 !! ERROR_F evaluates the error function ERF.
@@ -12882,8 +13068,11 @@ function error_f ( x )
 
   return
 end
-function error_f_inverse ( y )
-
+elemental function error_f_inverse ( y )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: error_f_inverse
+ !dir$ attributes forceinline ::  error_f_inverse
+ !$omp declare simd(error_f_inverse)    linear(ref(y))
 !*****************************************************************************80
 !
 !! ERROR_F_INVERSE inverts the error function ERF.
@@ -12923,7 +13112,10 @@ function error_f_inverse ( y )
   return
 end
 subroutine erlang_cdf ( x, a, b, c, cdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_cdf
+ !dir$ attributes forceinline ::  erlang_cdf
+ !$omp declare simd(erlang_cdf)    linear(ref(x,a,b,c,cdf))
 !*****************************************************************************80
 !
 !! ERLANG_CDF evaluates the Erlang CDF.
@@ -12977,7 +13169,9 @@ subroutine erlang_cdf ( x, a, b, c, cdf )
   return
 end
 subroutine erlang_cdf_inv ( cdf, a, b, c, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_cdf_inv
+ !dir$ attributes forceinline :: erlang_cdf_inv
 !*****************************************************************************80
 !
 !! ERLANG_CDF_INV inverts the Erlang CDF.
@@ -13025,20 +13219,20 @@ subroutine erlang_cdf_inv ( cdf, a, b, c, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'ERLANG_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+ !   write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'ERLANG_CDF_INV - Fatal error!'
+ !   write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+ !   stop
+ ! end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = a
-    return
-  else if ( 1.0D+00 == cdf ) then
-    x = huge ( x )
-    return
-  end if
+ ! if ( cdf == 0.0D+00 ) then
+  !  x = a
+ !   return
+  !else if ( 1.0D+00 == cdf ) then
+  !  x = huge ( x )
+  !  return
+  !end if
 
   x1 = a
   cdf1 = 0.0D+00
@@ -13074,9 +13268,9 @@ subroutine erlang_cdf_inv ( cdf, a, b, c, x )
     end if
 
     if ( it_max < it ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'ERLANG_CDF_INV - Fatal error!'
-      write ( *, '(a)' ) '  Iteration limit exceeded.'
+    !  write ( *, '(a)' ) ' '
+     ! write ( *, '(a)' ) 'ERLANG_CDF_INV - Fatal error!'
+    !  write ( *, '(a)' ) '  Iteration limit exceeded.'
       return
     end if
 
@@ -13092,6 +13286,7 @@ subroutine erlang_cdf_inv ( cdf, a, b, c, x )
 
   return
 end
+#if 0
 function erlang_check ( a, b, c )
 
 !*****************************************************************************80
@@ -13145,8 +13340,11 @@ function erlang_check ( a, b, c )
 
   return
 end
+#endif
 subroutine erlang_mean ( a, b, c, mean )
-
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_mean
+ !dir$ attributes forceinline :: erlang_mean
 !*****************************************************************************80
 !
 !! ERLANG_MEAN returns the mean of the Erlang PDF.
@@ -13182,8 +13380,11 @@ subroutine erlang_mean ( a, b, c, mean )
 
   return
 end
-subroutine erlang_pdf ( x, a, b, c, pdf )
-
+elemental subroutine erlang_pdf ( x, a, b, c, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_pdf
+ !dir$ attributes forceinline ::  erlang_pdf
+ !$omp declare simd(erlang_pdf)    linear(ref(x,a,b,c,pdf))
 !*****************************************************************************80
 !
 !! ERLANG_PDF evaluates the Erlang PDF.
@@ -13227,22 +13428,25 @@ subroutine erlang_pdf ( x, a, b, c, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x <= a ) then
+  !if ( x <= a ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else
+  !else
 
     y = ( x - a ) / b
 
     pdf = y**( c - 1 ) / ( b * i4_factorial ( c - 1 ) * exp ( y ) )
 
-  end if
+  !end if
 
   return
 end
 subroutine erlang_sample ( a, b, c, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_sample
+ !dir$ attributes forceinline ::  erlang_sample
+ !$omp declare simd(erlang_sample)  uniform(seed)  linear(ref(x,a,b,c))
 !*****************************************************************************80
 !
 !! ERLANG_SAMPLE samples the Erlang PDF.
@@ -13292,8 +13496,11 @@ subroutine erlang_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine erlang_variance ( a, b, c, variance )
-
+elemental subroutine erlang_variance ( a, b, c, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: erlang_variance
+ !dir$ attributes forceinline ::  erlang_variance
+ 
 !*****************************************************************************80
 !
 !! ERLANG_VARIANCE returns the variance of the Erlang PDF.
@@ -13368,8 +13575,11 @@ function euler_constant ( )
 
   return
 end
-subroutine exponential_01_cdf ( x, cdf )
-
+elemental subroutine exponential_01_cdf ( x, cdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_01_cdf
+ !dir$ attributes forceinline ::  exponential_01_cdf
+ !$omp declare simd(exponential_01_cdf)    linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_01_CDF evaluates the Exponential 01 CDF.
@@ -13405,8 +13615,11 @@ subroutine exponential_01_cdf ( x, cdf )
 
   return
 end
-subroutine exponential_01_cdf_inv ( cdf, x )
-
+elemental subroutine exponential_01_cdf_inv ( cdf, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_01_cdf_inv
+ !dir$ attributes forceinline ::  exponential_01_cdf_inv
+ !$omp declare simd(exponential_01_cdf_inv)    linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_01_CDF_INV inverts the Exponential 01 CDF.
@@ -13435,12 +13648,12 @@ subroutine exponential_01_cdf_inv ( cdf, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EXPONENTIAL_01_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+ !   write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'EXPONENTIAL_01_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
   x = - log ( 1.0D+00 - cdf )
 
@@ -13476,8 +13689,11 @@ subroutine exponential_01_mean ( mean )
 
   return
 end
-subroutine exponential_01_pdf ( x, pdf )
-
+elemental subroutine exponential_01_pdf ( x, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_01_pdf
+ !dir$ attributes forceinline ::  exponential_01_pdf
+ !$omp declare simd(exponential_01_pdf)    linear(ref(x,pdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_01_PDF evaluates the Exponential 01 PDF.
@@ -13510,16 +13726,19 @@ subroutine exponential_01_pdf ( x, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < 0.0D+00 ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < 0.0D+00 ) then
+  !  pdf = 0.0D+00
+  !else
     pdf = exp ( - x )
-  end if
+ ! end if
 
   return
 end
-subroutine exponential_01_sample ( seed, x )
-
+elemental subroutine exponential_01_sample ( seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_01_sample
+ !dir$ attributes forceinline ::  exponential_01_sample
+ !$omp declare simd(exponential_01_sample) uniform(seed)   linear(ref(x))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_01_SAMPLE samples the Exponential PDF with parameter 1.
@@ -13586,8 +13805,11 @@ subroutine exponential_01_variance ( variance )
 
   return
 end
-subroutine exponential_cdf ( x, a, b, cdf )
-
+elemental subroutine exponential_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_cdf
+ !dir$ attributes forceinline ::  exponential_cdf
+ !$omp declare simd(exponential_cdf)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_CDF evaluates the Exponential CDF.
@@ -13620,16 +13842,19 @@ subroutine exponential_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x <= a ) then
-    cdf = 0.0D+00
-  else
+ ! if ( x <= a ) then
+  !  cdf = 0.0D+00
+ ! else
     cdf = 1.0D+00 - exp ( ( a - x ) / b )
-  end if
+ ! end if
 
   return
 end
-subroutine exponential_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine exponential_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_cdf_inv
+ !dir$ attributes forceinline ::  exponential_cdf_inv
+ !$omp declare simd(exponential_cdf_inv)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_CDF_INV inverts the Exponential CDF.
@@ -13663,12 +13888,12 @@ subroutine exponential_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EXPONENTIAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'EXPONENTIAL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
   x = a - b * log ( 1.0D+00 - cdf )
 
@@ -13816,9 +14041,9 @@ function exponential_check ( a, b )
   logical exponential_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EXPONENTIAL_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.0'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'EXPONENTIAL_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.0'
     exponential_check = .false.
     return
   end if
@@ -13862,8 +14087,11 @@ subroutine exponential_mean ( a, b, mean )
 
   return
 end
-subroutine exponential_pdf ( x, a, b, pdf )
-
+elemental subroutine exponential_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_01_cdf
+ !dir$ attributes forceinline ::  exponential_01_cdf
+ !$omp declare simd(exponential_pdf)    linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_PDF evaluates the Exponential PDF.
@@ -13920,16 +14148,19 @@ subroutine exponential_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < a ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < a ) then
+   ! pdf = 0.0D+00
+ ! else
     pdf = ( 1.0D+00 / b ) * exp ( ( a - x ) / b )
-  end if
+  !end if
 
   return
 end
-subroutine exponential_sample ( a, b, seed, x )
-
+elemental subroutine exponential_sample ( a, b, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: exponential_sample
+ !dir$ attributes forceinline ::  exponential_01_sample
+ !$omp declare simd(exponential_sample) uniform(seed)    linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! EXPONENTIAL_SAMPLE samples the Exponential PDF.
@@ -14006,8 +14237,11 @@ subroutine exponential_variance ( a, b, variance )
 
   return
 end
-subroutine extreme_values_cdf ( x, a, b, cdf )
-
+elemental subroutine extreme_values_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: extreme_values_cdf
+ !dir$ attributes forceinline ::  extreme_value_cdf
+ !$omp declare simd(extreme_values_cdf)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! EXTREME_VALUES_CDF evaluates the Extreme Values CDF.
@@ -14048,7 +14282,10 @@ subroutine extreme_values_cdf ( x, a, b, cdf )
   return
 end
 subroutine extreme_values_cdf_inv ( cdf, a, b, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: extreme_values_cdf_inv
+ !dir$ attributes forceinline ::  extreme_value_cdf_inv
+ !$omp declare simd(extreme_values_cdf_inv)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! EXTREME_VALUES_CDF_INV inverts the Extreme Values CDF.
@@ -14082,12 +14319,12 @@ subroutine extreme_values_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EXTREME_VALUES_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'EXTREME_VALUES_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
   x = a - b * log ( - log ( cdf ) )
 
@@ -14262,9 +14499,9 @@ function extreme_values_check ( a, b )
   logical extreme_values_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'EXTREME_VALUES_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
+   ! write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'EXTREME_VALUES_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.'
     extreme_values_check = .false.
     return
   end if
@@ -14309,8 +14546,11 @@ subroutine extreme_values_mean ( a, b, mean )
 
   return
 end
-subroutine extreme_values_pdf ( x, a, b, pdf )
-
+elemental subroutine extreme_values_pdf ( x, a, b, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: extreme_values_pdf
+ !dir$ attributes forceinline ::  extreme_value_pdf
+ !$omp declare simd(extreme_values_pdf)    linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! EXTREME_VALUES_PDF evaluates the Extreme Values PDF.
@@ -14367,8 +14607,11 @@ subroutine extreme_values_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine extreme_values_sample ( a, b, seed, x )
-
+elemental subroutine extreme_values_sample ( a, b, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: extreme_values_samples
+ !dir$ attributes forceinline ::  extreme_value_samples
+ !$omp declare simd(extreme_values_samples)  uniform(seed)  linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! EXTREME_VALUES_SAMPLE samples the Extreme Values PDF.
@@ -14410,8 +14653,11 @@ subroutine extreme_values_sample ( a, b, seed, x )
 
   return
 end
-subroutine extreme_values_variance ( a, b, variance )
-
+elemental subroutine extreme_values_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: extreme_values_variance
+ !dir$ attributes forceinline ::  extreme_value_variance
+ !$omp declare simd(extreme_values_variance)    linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! EXTREME_VALUES_VARIANCE returns the variance of the Extreme Values PDF.
@@ -14446,6 +14692,7 @@ subroutine extreme_values_variance ( a, b, variance )
 
   return
 end
+#if 0
 subroutine f_cdf ( x, m, n, cdf )
 
 !*****************************************************************************80
@@ -15270,8 +15517,13 @@ subroutine f_noncentral_variance ( a, m, n, variance )
 
   return
 end
-function factorial_log ( n )
+#endif
 
+function factorial_log ( n )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: factorial_log
+ !dir$ attributes forceinline ::  factorial_log
+ 
 !*****************************************************************************80
 !
 !! FACTORIAL_LOG returns the logarithm of N factorial.
@@ -15307,12 +15559,12 @@ function factorial_log ( n )
   integer ( kind = 4 ) i
   integer ( kind = 4 ) n
 
-  if ( n < 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FACTORIAL_LOG - Fatal error!'
-    write ( *, '(a)' ) '  N < 0.'
-    stop
-  end if
+  !if ( n < 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FACTORIAL_LOG - Fatal error!'
+  !  write ( *, '(a)' ) '  N < 0.'
+  !  stop
+ ! end if
 
   factorial_log = 0.0D+00
 
@@ -15323,7 +15575,10 @@ function factorial_log ( n )
   return
 end
 function factorial_stirling ( n )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: factorial_stirling
+ !dir$ attributes forceinline ::  factorial_stirling
+ 
 !*****************************************************************************80
 !
 !! FACTORIAL_STIRLING computes Stirling's approximation to N!.
@@ -15370,15 +15625,15 @@ function factorial_stirling ( n )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) value
 
-  if ( n < 0 ) then
+  !if ( n < 0 ) then
 
-    value = 0.0D+00
+   ! value = 0.0D+00
 
-  else if ( n == 0 ) then
+  !else if ( n == 0 ) then
 
-    value = 1.0D+00
+   ! value = 1.0D+00
 
-  else
+  !else
 
     value = sqrt ( 2.0D+00 * pi * real ( n, kind = 8 ) ) &
       * ( real ( n, kind = 8 ) / e_natural )**n &
@@ -15390,6 +15645,7 @@ function factorial_stirling ( n )
 
   return
 end
+#if 0
 subroutine fermi_dirac_sample ( u, v, seed, z )
 
 !*****************************************************************************80
@@ -15478,7 +15734,12 @@ subroutine fermi_dirac_sample ( u, v, seed, z )
 
   return
 end
+#endif
+
 subroutine fisher_pdf ( x, kappa, mu, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: fisher_pdf
+ !dir$ attributes forceinline ::  fisher_pdf
 
 !*****************************************************************************80
 !
@@ -15565,18 +15826,18 @@ subroutine fisher_pdf ( x, kappa, mu, pdf )
   real ( kind = 8 ) x(3)
   real ( kind = 8 ) x_norm
 
-  if ( kappa < 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FISHER_PDF - Fatal error!'
-    write ( *, '(a)' ) '  KAPPA must be nonnegative.'
-    write ( *, '(a,g14.6)' ) '  Input KAPPA = ', kappa
-    stop
-  end if
+  !if ( kappa < 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FISHER_PDF - Fatal error!'
+   ! write ( *, '(a)' ) '  KAPPA must be nonnegative.'
+   ! write ( *, '(a,g14.6)' ) '  Input KAPPA = ', kappa
+   ! stop
+ ! end if
 
-  if ( kappa == 0.0D+00 ) then
-    pdf = 1.0D+00 / ( 4.0D+00 * pi )
-    return
-  end if
+  !if ( kappa == 0.0D+00 ) then
+  !  pdf = 1.0D+00 / ( 4.0D+00 * pi )
+   ! return
+  !end if
 !
 !  Compute the normalization factor CF.
 !
@@ -15614,7 +15875,10 @@ subroutine fisher_pdf ( x, kappa, mu, pdf )
   return
 end
 subroutine fisher_sample ( kappa, mu, n, seed, xyz )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: fisher_sample
+ !dir$ attributes forceinline ::  fisher_sample
+ 
 !*****************************************************************************80
 !
 !! FISHER_SAMPLE samples the Fisher distribution.
@@ -15679,10 +15943,11 @@ subroutine fisher_sample ( kappa, mu, n, seed, xyz )
   mu_norm = sqrt ( sum ( mu(1:3)**2 ) )
 
   if ( mu_norm == 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FISHER_SAMPLE - Fatal error!'
-    write ( *, '(a)' ) '  MU(1:3) = 0.'
-    stop
+   ! write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'FISHER_SAMPLE - Fatal error!'
+   ! write ( *, '(a)' ) '  MU(1:3) = 0.'
+   ! stop
+   return 
   end if
 
   alpha = - acos ( mu(3) / mu_norm )
@@ -15734,6 +15999,7 @@ subroutine fisher_sample ( kappa, mu, n, seed, xyz )
 
   return
 end
+#if 0
 subroutine fisk_cdf ( x, a, b, c, cdf )
 
 !*****************************************************************************80
@@ -16088,6 +16354,8 @@ subroutine fisk_variance ( a, b, c, variance )
 
   return
 end
+#endif
+#if 0
 subroutine folded_normal_cdf ( x, a, b, cdf )
 
 !*****************************************************************************80
@@ -16488,8 +16756,12 @@ subroutine folded_normal_variance ( a, b, variance )
 
   return
 end
-subroutine frechet_cdf ( x, alpha, cdf )
-
+#endif
+elemental subroutine frechet_cdf ( x, alpha, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_cdf
+ !dir$ attributes forceinline ::  frechet_cdf
+ !$omp declare simd(frechet_cdf)    linear(ref(x,alpha,cdf))
 !*****************************************************************************80
 !
 !! FRECHET_CDF evaluates the Frechet CDF.
@@ -16521,23 +16793,26 @@ subroutine frechet_cdf ( x, alpha, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( alpha <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_CDF - Fatal error!'
-    write ( *, '(a)' ) '  ALPHA <= 0.0.'
-    stop
-  end if
+  !if ( alpha <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_CDF - Fatal error!'
+  !  write ( *, '(a)' ) '  ALPHA <= 0.0.'
+  !  stop
+  !end if
 
-  if ( x <= 0.0D+00 ) then
-    cdf = 0.0D+00
-  else
+ ! if ( x <= 0.0D+00 ) then
+  !  cdf = 0.0D+00
+ ! else
     cdf = exp ( - 1.0D+00 / x**alpha )
-  end if
+ ! end if
 
   return
 end
-subroutine frechet_cdf_inv ( cdf, alpha, x )
-
+elemental subroutine frechet_cdf_inv ( cdf, alpha, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_cdf_inv
+ !dir$ attributes forceinline ::  frechet_cdf_inv
+ !$omp declare simd(frechet_cdf_inv)    linear(ref(cdf,alpha,x))
 !*****************************************************************************80
 !
 !! FRECHET_CDF_INV inverts the Frechet CDF.
@@ -16570,30 +16845,33 @@ subroutine frechet_cdf_inv ( cdf, alpha, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+!  end if
 
-  if ( alpha <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  ALPHA <= 0.0.'
-    stop
-  end if
+ ! if ( alpha <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  ALPHA <= 0.0.'
+  !  stop
+  !end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = 0.0D+00
-  else
+  !if ( cdf == 0.0D+00 ) then
+  !  x = 0.0D+00
+  !else
     x =  ( - 1.0D+00 / log ( cdf ) ) ** ( 1.0D+00 / alpha )
-  end if
+ ! end if
 
   return
 end
-subroutine frechet_mean ( alpha, mean )
-
+elemental subroutine frechet_mean ( alpha, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_mean
+ !dir$ attributes forceinline ::  frechet_mean
+ !$omp declare simd(frechet_mean)    linear(ref(alpha,mean))
 !*****************************************************************************80
 !
 !! FRECHET_MEAN returns the mean of the Frechet PDF.
@@ -16627,19 +16905,22 @@ subroutine frechet_mean ( alpha, mean )
   real ( kind = 8 ) mean
   real ( kind = 8 ) r8_gamma
 
-  if ( alpha <= 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_MEAN - Fatal error!'
-    write ( *, '(a)' ) '  Mean does not exist if ALPHA <= 1.'
-    stop
-  end if
+ ! if ( alpha <= 1.0D+00 ) then
+ !   write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_MEAN - Fatal error!'
+ !   write ( *, '(a)' ) '  Mean does not exist if ALPHA <= 1.'
+  !  stop
+ ! end if
 
   mean = r8_gamma ( ( alpha - 1.0D+00 ) / alpha )
 
   return
 end
-subroutine frechet_pdf ( x, alpha, pdf )
-
+elemental subroutine frechet_pdf ( x, alpha, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_pdf
+ !dir$ attributes forceinline ::  frechet_pdf
+ !$omp declare simd(frechet_pdf)    linear(ref(x,alpha,pdf))
 !*****************************************************************************80
 !
 !! FRECHET_PDF evaluates the Frechet PDF.
@@ -16675,19 +16956,22 @@ subroutine frechet_pdf ( x, alpha, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( alpha <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_PDF - Fatal error!'
-    write ( *, '(a)' ) '  ALPHA <= 0.0.'
-    stop
-  end if
+ ! if ( alpha <= 0.0D+00 ) then
+  ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'FRECHET_PDF - Fatal error!'
+   ! write ( *, '(a)' ) '  ALPHA <= 0.0.'
+   ! stop
+  !end if
 
   pdf = alpha * exp ( - 1.0D+00 / x**alpha ) / x**( alpha + 1.0D+00 )
 
   return
 end
-subroutine frechet_sample ( alpha, seed, x )
-
+elemental subroutine frechet_sample ( alpha, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_mean
+ !dir$ attributes forceinline ::  frechet_mean
+ !$omp declare simd(frechet_sample)  uniform(seed)  linear(ref(alpha,x))
 !*****************************************************************************80
 !
 !! FRECHET_SAMPLE samples the Frechet PDF.
@@ -16722,12 +17006,12 @@ subroutine frechet_sample ( alpha, seed, x )
   integer ( kind = 4 ) seed
   real ( kind = 8 ) x
 
-  if ( alpha <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_SAMPLE - Fatal error!'
-    write ( *, '(a)' ) '  ALPHA <= 0.0.'
-    stop
-  end if
+  !if ( alpha <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_SAMPLE - Fatal error!'
+  !  write ( *, '(a)' ) '  ALPHA <= 0.0.'
+   ! stop
+  !end if
 
   cdf = r8_uniform_01 ( seed )
 
@@ -16735,8 +17019,11 @@ subroutine frechet_sample ( alpha, seed, x )
 
   return
 end
-subroutine frechet_variance ( alpha, variance )
-
+elemental subroutine frechet_variance ( alpha, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: frechet_variance
+ !dir$ attributes forceinline ::  frechet_variance
+ !$omp declare simd(frechet_variance)    linear(ref(alpha,variance))
 !*****************************************************************************80
 !
 !! FRECHET_VARIANCE returns the variance of the Frechet PDF.
@@ -16771,12 +17058,12 @@ subroutine frechet_variance ( alpha, variance )
   real ( kind = 8 ) r8_gamma
   real ( kind = 8 ) variance
 
-  if ( alpha <= 2.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'FRECHET_VARIANCE - Fatal error!'
-    write ( *, '(a)' ) '  Variance does not exist if ALPHA <= 2.'
-    stop
-  end if
+ ! if ( alpha <= 2.0D+00 ) then
+ !   write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'FRECHET_VARIANCE - Fatal error!'
+  !  write ( *, '(a)' ) '  Variance does not exist if ALPHA <= 2.'
+  !  stop
+  !end if
 
   mean = r8_gamma ( ( alpha - 1.0D+00 ) / alpha )
 
@@ -16784,8 +17071,11 @@ subroutine frechet_variance ( alpha, variance )
 
   return
 end
-subroutine gamma_cdf ( x, a, b, c, cdf )
-
+elemental subroutine gamma_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_cdf
+ !dir$ attributes forceinline ::  gamma_cdf
+ !$omp declare simd(gamma_cdf)    linear(ref(x,a,b,c,cdf))
 !*****************************************************************************80
 !
 !! GAMMA_CDF evaluates the Gamma CDF.
@@ -17002,19 +17292,19 @@ function gamma_check ( a, b, c )
   logical gamma_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GAMMA_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
-    write ( *, '(a,g14.6)' ) '  B = ', b
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GAMMA_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.'
+   ! write ( *, '(a,g14.6)' ) '  B = ', b
     gamma_check = .false.
     return
   end if
 
   if ( c <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GAMMA_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  C <= 0.'
-    write ( *, '(a,g14.6)' ) '  C = ', c
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GAMMA_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  C <= 0.'
+   ! write ( *, '(a,g14.6)' ) '  C = ', c
     gamma_check = .false.
     return
   end if
@@ -17093,12 +17383,12 @@ function gamma_inc ( p, x )
 
   gamma_inc = 0.0D+00
 
-  if ( p <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GAMMA_INC - Fatal error!'
-    write ( *, '(a)' ) '  Parameter P <= 0.'
-    stop
-  end if
+ ! if ( p <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'GAMMA_INC - Fatal error!'
+  !  write ( *, '(a)' ) '  Parameter P <= 0.'
+   ! stop
+  !end if
 
   if ( x <= 0.0D+00 ) then
     gamma_inc = 0.0D+00
