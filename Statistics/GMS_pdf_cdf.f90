@@ -17313,8 +17313,10 @@ function gamma_check ( a, b, c )
 
   return
 end
-function gamma_inc ( p, x )
-
+elemental function gamma_inc ( p, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_inc
+ !dir$ attributes forceinline :: gamma_inc
 !*****************************************************************************80
 !
 !! GAMMA_INC computes the incomplete Gamma function.
@@ -17659,8 +17661,10 @@ subroutine gamma_inc_values ( n_data, a, x, fx )
 
   return
 end
-function gamma_log ( x )
-
+elemental function gamma_log ( x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_log
+ !dir$ attributes forceinline :: gamma_log
 !*****************************************************************************80
 !
 !! GAMMA_LOG calculates the natural logarithm of GAMMA ( X ).
@@ -17922,7 +17926,9 @@ function gamma_log ( x )
   return
 end
 function gamma_log_int ( n )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_log_int
+ !dir$ attributes forceinline :: gamma_log_int
 !*****************************************************************************80
 !
 !! GAMMA_LOG_INT computes the logarithm of Gamma of an integer N.
@@ -17953,20 +17959,22 @@ function gamma_log_int ( n )
   real ( kind = 8 ) gamma_log_int
   integer ( kind = 4 ) n
 
-  if ( n <= 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GAMMA_LOG_INT - Fatal error!'
-    write ( *, '(a,i12)' ) '  Illegal input value of N = ', n
-    write ( *, '(a)' ) '  But N must be strictly positive.'
-    stop
-  end if
+  !if ( n <= 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'GAMMA_LOG_INT - Fatal error!'
+  !  write ( *, '(a,i12)' ) '  Illegal input value of N = ', n
+   ! write ( *, '(a)' ) '  But N must be strictly positive.'
+   ! stop
+  !end if
 
   gamma_log_int = gamma_log ( real ( n, kind = 8 ) )
 
   return
 end
 subroutine gamma_mean ( a, b, c, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_mean
+ !dir$ attributes forceinline :: gamma_mean
 !*****************************************************************************80
 !
 !! GAMMA_MEAN returns the mean of the Gamma PDF.
@@ -18002,8 +18010,11 @@ subroutine gamma_mean ( a, b, c, mean )
 
   return
 end
-subroutine gamma_pdf ( x, a, b, c, pdf )
-
+elemental subroutine gamma_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_pdf
+ !dir$ attributes forceinline :: gamma_pdf
+ !$omp declare simd(gamma_pdf)    linear(ref(x,a,b,c,pdf))
 !*****************************************************************************80
 !
 !! GAMMA_PDF evaluates the Gamma PDF.
@@ -18065,8 +18076,9 @@ subroutine gamma_pdf ( x, a, b, c, pdf )
 
   return
 end
-subroutine gamma_sample ( a, b, c, seed, x )
-
+elemental subroutine gamma_sample ( a, b, c, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_sample
 !*****************************************************************************80
 !
 !! GAMMA_SAMPLE samples the Gamma PDF.
@@ -18319,8 +18331,10 @@ subroutine gamma_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine gamma_variance ( a, b, c, variance )
-
+elemental subroutine gamma_variance ( a, b, c, variance )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gamma_variance
+ !dir$ attributes forceinline :: gamma_variance
 !*****************************************************************************80
 !
 !! GAMMA_VARIANCE returns the variance of the Gamma PDF.
@@ -18356,8 +18370,11 @@ subroutine gamma_variance ( a, b, c, variance )
 
   return
 end
-subroutine genlogistic_cdf ( x, a, b, c, cdf )
-
+elemental subroutine genlogistic_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_cdf
+ !dir$ attributes forceinline :: genlogistic_cdf
+ !$omp declare simd(genlogistic_cdf)    linear(ref(x,a,b,c,cdf))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_CDF evaluates the Generalized Logistic CDF.
@@ -18399,8 +18416,11 @@ subroutine genlogistic_cdf ( x, a, b, c, cdf )
 
   return
 end
-subroutine genlogistic_cdf_inv ( cdf, a, b, c, x )
-
+elemental subroutine genlogistic_cdf_inv ( cdf, a, b, c, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_cdf_inv
+ !dir$ attributes forceinline :: genlogistic_cdf_inv
+ !$omp declare simd(genlogistic_cdf_inv)    linear(ref(x,a,b,c,cdf))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_CDF_INV inverts the Generalized Logistic CDF.
@@ -18436,20 +18456,20 @@ subroutine genlogistic_cdf_inv ( cdf, a, b, c, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GENLOGISTIC_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'GENLOGISTIC_CDF_INV - Fatal error!'
+    !write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = - huge ( x )
-  else if ( cdf < 1.0D+00 ) then
+ ! if ( cdf == 0.0D+00 ) then
+ !   x = - huge ( x )
+  !else if ( cdf < 1.0D+00 ) then
     x = a - b * log ( cdf**( - 1.0D+00 / c ) - 1.0D+00 )
-  else if ( 1.0D+00 == cdf ) then
-    x = huge ( x )
-  end if
+  !else if ( 1.0D+00 == cdf ) then
+  !  x = huge ( x )
+  !end if
 
   return
 end
@@ -18487,17 +18507,17 @@ function genlogistic_check ( a, b, c )
   logical genlogistic_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GENLOGISTIC_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'GENLOGISTIC_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.'
     genlogistic_check = .false.
     return
   end if
 
   if ( c <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GENLOGISTIC_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  C <= 0.'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GENLOGISTIC_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  C <= 0.'
     genlogistic_check = .false.
     return
   end if
@@ -18506,8 +18526,11 @@ function genlogistic_check ( a, b, c )
 
   return
 end
-subroutine genlogistic_mean ( a, b, c, mean )
-
+elemental subroutine genlogistic_mean ( a, b, c, mean )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_mean
+ !dir$ attributes forceinline :: genlogistic_mean
+ !$omp declare simd(genlogistic_mean)    linear(ref(a,b,c,mean))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_MEAN returns the mean of the Generalized Logistic PDF.
@@ -18545,8 +18568,11 @@ subroutine genlogistic_mean ( a, b, c, mean )
 
   return
 end
-subroutine genlogistic_pdf ( x, a, b, c, pdf )
-
+elemental subroutine genlogistic_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_pdf
+ !dir$ attributes forceinline :: genlogistic_pdf
+ !$omp declare simd(genlogistic_pdf)    linear(ref(x,a,b,c,pdf))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_PDF evaluates the Generalized Logistic PDF.
@@ -18593,8 +18619,11 @@ subroutine genlogistic_pdf ( x, a, b, c, pdf )
 
   return
 end
-subroutine genlogistic_sample ( a, b, c, seed, x )
-
+elemental subroutine genlogistic_sample ( a, b, c, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_sample
+ !dir$ attributes forceinline :: genlogistic_sample
+ !$omp declare simd(genlogistic_sample)  uniform(seed)  linear(ref(x,a,b,c))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_SAMPLE samples the Generalized Logistic PDF.
@@ -18638,8 +18667,11 @@ subroutine genlogistic_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine genlogistic_variance ( a, b, c, variance )
-
+elemental subroutine genlogistic_variance ( a, b, c, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: genlogistic_variance
+ !dir$ attributes forceinline :: genlogistic_variance
+ !$omp declare simd(genlogistic_variance)    linear(ref(a,b,c,variance))
 !*****************************************************************************80
 !
 !! GENLOGISTIC_VARIANCE returns the variance of the Generalized Logistic PDF.
@@ -18677,8 +18709,11 @@ subroutine genlogistic_variance ( a, b, c, variance )
 
   return
 end
-subroutine geometric_cdf ( x, a, cdf )
-
+elemental subroutine geometric_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_cdf
+ !dir$ attributes forceinline :: geometric_cdf
+ !$omp declare simd(geometric_cdf)    linear(ref(a,x,cdf))
 !*****************************************************************************80
 !
 !! GEOMETRIC_CDF evaluates the Geometric CDF.
@@ -18716,20 +18751,23 @@ subroutine geometric_cdf ( x, a, cdf )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( x <= 0 ) then
-    cdf = 0.0D+00
-  else if ( a == 0.0D+00 ) then
-    cdf = 0.0D+00
-  else if ( a == 1.0D+00 ) then
-    cdf = 1.0D+00
-  else
+  !if ( x <= 0 ) then
+   ! cdf = 0.0D+00
+  !else if ( a == 0.0D+00 ) then
+   ! cdf = 0.0D+00
+  !else if ( a == 1.0D+00 ) then
+   ! cdf = 1.0D+00
+ ! else
     cdf = 1.0D+00 - ( 1.0D+00 - a )**x
-  end if
+  !end if
 
   return
 end
-subroutine geometric_cdf_inv ( cdf, a, x )
-
+elemental subroutine geometric_cdf_inv ( cdf, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_cdf_inv
+ !dir$ attributes forceinline :: geometric_cdf_inv
+ !$omp declare simd(geometric_cdf_inv)    linear(ref(a,x,cdf))
 !*****************************************************************************80
 !
 !! GEOMETRIC_CDF_INV inverts the Geometric CDF.
@@ -18762,20 +18800,20 @@ subroutine geometric_cdf_inv ( cdf, a, x )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GEOMETRIC_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GEOMETRIC_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
-  if ( a == 1.0D+00 ) then
-    x = 1
-  else if ( a == 0.0D+00 ) then
-    x = huge ( x )
-  else
+ ! if ( a == 1.0D+00 ) then
+  !  x = 1
+ ! else if ( a == 0.0D+00 ) then
+   ! x = huge ( x )
+  !else
     x = 1 + int ( log ( 1.0D+00 - cdf ) / log ( 1.0D+00 - a ) )
-  end if
+  !end if
 
   return
 end
@@ -18930,9 +18968,9 @@ function geometric_check ( a )
   logical geometric_check
 
   if ( a < 0.0D+00 .or. 1.0D+00 < a ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GEOMETRIC_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  A < 0 or 1 < A.'
+    !write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'GEOMETRIC_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  A < 0 or 1 < A.'
     geometric_check = .false.
     return
   end if
@@ -18941,8 +18979,11 @@ function geometric_check ( a )
 
   return
 end
-subroutine geometric_mean ( a, mean )
-
+elemental subroutine geometric_mean ( a, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_mean
+ !dir$ attributes forceinline :: geometric_mean
+ 
 !*****************************************************************************80
 !
 !! GEOMETRIC_MEAN returns the mean of the Geometric PDF.
@@ -18980,8 +19021,11 @@ subroutine geometric_mean ( a, mean )
 
   return
 end
-subroutine geometric_pdf ( x, a, pdf )
-
+elemental subroutine geometric_pdf ( x, a, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_pdf
+ !dir$ attributes forceinline :: geometric_pdf
+ !$omp declare simd(geometric_pdf)    linear(ref(a,x,pdf))
 !*****************************************************************************80
 !
 !! GEOMETRIC_PDF evaluates the Geometric PDF.
@@ -19024,32 +19068,35 @@ subroutine geometric_pdf ( x, a, pdf )
 !
 !  Special cases.
 !
-  if ( x < 1 ) then
+  !if ( x < 1 ) then
 
-    pdf = 0.0D+00
+  !  pdf = 0.0D+00
 
-  else if ( a == 0.0D+00 ) then
+ ! else if ( a == 0.0D+00 ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else if ( a == 1.0D+00 ) then
+  !else if ( a == 1.0D+00 ) then
 
-    if ( x == 1 ) then
-      pdf = 1.0D+00
-    else
-      pdf = 0.0D+00
-    end if
+   ! if ( x == 1 ) then
+   !   pdf = 1.0D+00
+   ! else
+   !   pdf = 0.0D+00
+   ! end if
 
-  else
+  !else
 
     pdf = a * ( 1.0D+00 - a )**( x - 1 )
 
-  end if
+  !end if
 
   return
 end
-subroutine geometric_sample ( a, seed, x )
-
+elemental subroutine geometric_sample ( a, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_sample
+ !dir$ attributes forceinline :: geometric_sample
+ !$omp declare simd(geometric_sample) uniform(seed)   linear(ref(a,x))
 !*****************************************************************************80
 !
 !! GEOMETRIC_SAMPLE samples the Geometric PDF.
@@ -19090,8 +19137,11 @@ subroutine geometric_sample ( a, seed, x )
 
   return
 end
-subroutine geometric_variance ( a, variance )
-
+elemental subroutine geometric_variance ( a, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_variance
+ !dir$ attributes forceinline :: geometric_variance
+ !$omp declare simd(geometric_variance)    linear(ref(a,variance))
 !*****************************************************************************80
 !
 !! GEOMETRIC_VARIANCE returns the variance of the Geometric PDF.
@@ -19124,8 +19174,11 @@ subroutine geometric_variance ( a, variance )
 
   return
 end
-subroutine gompertz_cdf ( x, a, b, cdf )
-
+elemental subroutine gompertz_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gompertz_cdf
+ !dir$ attributes forceinline :: gompertz_cdf
+ !$omp declare simd(gompertz_cdf)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! GOMPERTZ_CDF evaluates the Gompertz CDF.
@@ -19165,16 +19218,19 @@ subroutine gompertz_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
-    cdf = 0.0D+00
-  else
+ ! if ( x <= 0.0D+00 ) then
+ !   cdf = 0.0D+00
+ ! else
     cdf = 1.0D+00 - exp ( - b * ( a**x - 1.0D+00 ) / log ( a ) )
-  end if
+ ! end if
 
   return
 end
-subroutine gompertz_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine gompertz_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gompertz_cdf_inv
+ !dir$ attributes forceinline :: gompertz_cdf_inv
+ !$omp declare simd(gompertz_cdf_inv)    linear(ref(cdf,a,b,x))
 !*****************************************************************************80
 !
 !! GOMPERTZ_CDF_INV inverts the Gompertz CDF.
@@ -19214,18 +19270,18 @@ subroutine gompertz_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GOMPERTZ_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+ !   write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'GOMPERTZ_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
-  if ( cdf < 1.0D+00 ) then
+ ! if ( cdf < 1.0D+00 ) then
     x = log ( 1.0D+00 - log ( 1.0D+00 - cdf ) * log ( a ) / b  ) / log ( a )
-  else
-    x = huge ( x )
-  end if
+ ! else
+ !   x = huge ( x )
+ ! end if
 
   return
 end
@@ -19268,17 +19324,17 @@ function gompertz_check ( a, b )
   logical gompertz_check
 
   if ( a <= 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GOMPERTZ_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  A <= 1.0!'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GOMPERTZ_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  A <= 1.0!'
     gompertz_check = .false.
     return
   end if
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GOMPERTZ_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.0!'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'GOMPERTZ_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.0!'
     gompertz_check = .false.
     return
   end if
@@ -19287,8 +19343,11 @@ function gompertz_check ( a, b )
 
   return
 end
-subroutine gompertz_pdf ( x, a, b, pdf )
-
+elemental subroutine gompertz_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gompertz_pdf
+ !dir$ attributes forceinline :: gompertz_pdf
+ !$omp declare simd(gompertz_pdf)    linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! GOMPERTZ_PDF evaluates the Gompertz PDF.
@@ -19338,21 +19397,24 @@ subroutine gompertz_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < 0.0D+00 ) then
+ ! if ( x < 0.0D+00 ) then
 
-    pdf = 0.0D+00
+  !  pdf = 0.0D+00
 
-  else if ( 1.0D+00 < a ) then
+ ! else if ( 1.0D+00 < a ) then
 
     pdf = exp ( log ( b ) + x * log ( a ) &
       - ( b / log ( a ) ) * ( a**x - 1.0D+00 ) )
 
-  end if
+  !end if
 
   return
 end
-subroutine gompertz_sample ( a, b, seed, x )
-
+elemental subroutine gompertz_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: geometric_variance
+ !dir$ attributes forceinline :: geometric_variance
+ !$omp declare simd(gompertz_sample)  uniform(seed)  linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! GOMPERTZ_SAMPLE samples the Gompertz PDF.
@@ -19394,8 +19456,11 @@ subroutine gompertz_sample ( a, b, seed, x )
 
   return
 end
-subroutine gumbel_cdf ( x, cdf )
-
+elemental subroutine gumbel_cdf ( x, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gumbel_cdf
+ !dir$ attributes forceinline :: gumbel_cdf
+ !$omp declare simd(gumbel_cdf)    linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! GUMBEL_CDF evaluates the Gumbel CDF.
@@ -19427,8 +19492,11 @@ subroutine gumbel_cdf ( x, cdf )
 
   return
 end
-subroutine gumbel_cdf_inv ( cdf, x )
-
+elemental subroutine gumbel_cdf_inv ( cdf, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gumbel_cdf_inv
+ !dir$ attributes forceinline :: gumbel_cdf_inv
+ !$omp declare simd(gumbel_cdf_inv)    linear(ref(cdf,x))
 !*****************************************************************************80
 !
 !! GUMBEL_CDF_INV inverts the Gumbel CDF.
@@ -19457,12 +19525,12 @@ subroutine gumbel_cdf_inv ( cdf, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'GUMBEL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'GUMBEL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
   x =  - log ( - log ( cdf ) )
 
@@ -19499,8 +19567,11 @@ subroutine gumbel_mean ( mean )
 
   return
 end
-subroutine gumbel_pdf ( x, pdf )
-
+elemental subroutine gumbel_pdf ( x, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gumbel_pdf
+ !dir$ attributes forceinline :: gumbel_pdf
+ !$omp declare simd(gumbel_pdf)    linear(ref(x,pdf))
 !*****************************************************************************80
 !
 !! GUMBEL_PDF evaluates the Gumbel PDF.
@@ -19544,8 +19615,11 @@ subroutine gumbel_pdf ( x, pdf )
 
   return
 end
-subroutine gumbel_sample ( seed, x )
-
+elemental subroutine gumbel_sample ( seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gumbel_sample
+ !dir$ attributes forceinline :: gumbel_sample
+ !$omp declare simd(gumbel_sample) uniform(seed)   linear(ref(x))
 !*****************************************************************************80
 !
 !! GUMBEL_SAMPLE samples the Gumbel PDF.
@@ -19582,8 +19656,11 @@ subroutine gumbel_sample ( seed, x )
 
   return
 end
-subroutine gumbel_variance ( variance )
-
+elemental subroutine gumbel_variance ( variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: gumbel_variance
+ !dir$ attributes forceinline :: gumbel_variance
+ 
 !*****************************************************************************80
 !
 !! GUMBEL_VARIANCE returns the variance of the Gumbel PDF.
