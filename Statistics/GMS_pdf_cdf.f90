@@ -19690,8 +19690,11 @@ elemental subroutine gumbel_variance ( variance )
 
   return
 end
-subroutine half_normal_cdf ( x, a, b, cdf )
-
+elemental subroutine half_normal_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal
+ !dir$ attributes forceinline :: half_normal
+ !$omp declare simd(half_normal_cdf)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_CDF evaluates the Half Normal CDF.
@@ -19725,17 +19728,20 @@ subroutine half_normal_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf2
   real ( kind = 8 ) x
 
-  if ( x <= a ) then
-    cdf = 0.0D+00
-  else
+ ! if ( x <= a ) then
+   ! cdf = 0.0D+00
+ ! else
     call normal_cdf ( x, a, b, cdf2 )
     cdf = 2.0D+00 * cdf2 - 1.0D+00
-  end if
+  !end if
 
   return
 end
-subroutine half_normal_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine half_normal_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal_cdf_inv
+ !dir$ attributes forceinline :: half_normal_cdf_inv
+ !$omp declare simd(half_normal_cdf_inv)    linear(ref(cdf,a,b,x))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_CDF_INV inverts the Half Normal CDF.
@@ -19770,12 +19776,12 @@ subroutine half_normal_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf2
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'HALF_NORMAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'HALF_NORMAL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
   cdf2 = 0.5D+00 * ( cdf + 1.0D+00 )
 
@@ -19815,9 +19821,9 @@ function half_normal_check ( a, b )
   logical half_normal_check
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'HALF_NORMAL_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
+   ! write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'HALF_NORMAL_CHECK - Fatal error!'
+    !write ( *, '(a)' ) '  B <= 0.'
     half_normal_check = .false.
     return
   end if
@@ -19826,8 +19832,11 @@ function half_normal_check ( a, b )
 
   return
 end
-subroutine half_normal_mean ( a, b, mean )
-
+elemental subroutine half_normal_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal_mean
+ !dir$ attributes forceinline :: half_normal_mean
+ !$omp declare simd(half_normal_mean)   linear(ref(a,b,mean))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_MEAN returns the mean of the Half Normal PDF.
@@ -19862,8 +19871,11 @@ subroutine half_normal_mean ( a, b, mean )
 
   return
 end
-subroutine half_normal_pdf ( x, a, b, pdf )
-
+elemental subroutine half_normal_pdf ( x, a, b, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal_pdf
+ !dir$ attributes forceinline :: half_normal_pdf
+ !$omp declare simd(half_normal_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_PDF evaluates the Half Normal PDF.
@@ -19909,22 +19921,25 @@ subroutine half_normal_pdf ( x, a, b, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x <= a ) then
+  !if ( x <= a ) then
 
-    pdf = 0.0D+00
+  !  pdf = 0.0D+00
 
-  else
+  !else
 
     y = ( x - a ) / b
 
     pdf = sqrt ( 2.0D+00 / pi ) * ( 1.0D+00 / b ) * exp ( - 0.5D+00 * y * y )
 
-  end if
+ ! end if
 
   return
 end
-subroutine half_normal_sample ( a, b, seed, x )
-
+elemental subroutine half_normal_sample ( a, b, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal_sample
+ !dir$ attributes forceinline :: half_normal_sample
+ !$omp declare simd(half_normal_sample) uniform(seed)  linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_SAMPLE samples the Half Normal PDF.
@@ -19966,8 +19981,11 @@ subroutine half_normal_sample ( a, b, seed, x )
 
   return
 end
-subroutine half_normal_variance ( a, b, variance )
-
+elemental subroutine half_normal_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: half_normal_variance
+ !dir$ attributes forceinline :: half_normal_variance
+ !$omp declare simd(half_normal_variance)   linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! HALF_NORMAL_VARIANCE returns the variance of the Half Normal PDF.
@@ -20002,8 +20020,12 @@ subroutine half_normal_variance ( a, b, variance )
 
   return
 end
-subroutine hypergeometric_cdf ( x, n, m, l, cdf )
-
+#if 0
+elemental subroutine hypergeometric_cdf ( x, n, m, l, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: hypergeometric_cdf
+ !dir$ attributes forceinline :: hypergeometric_cdf
+ !$omp declare simd(hypergeometric_cdf)   linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! HYPERGEOMETRIC_CDF evaluates the Hypergeometric CDF.
@@ -20517,8 +20539,12 @@ subroutine hypergeometric_variance ( n, m, l, variance )
 
   return
 end
-function i4_factorial ( n )
+#endif
 
+function i4_factorial ( n )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: i4_factorial
+ !dir$ attributes forceinline :: i4_factorial
 !*****************************************************************************80
 !
 !! I4_FACTORIAL returns N!.
@@ -20552,12 +20578,12 @@ function i4_factorial ( n )
   integer ( kind = 4 ) i
   integer ( kind = 4 ) n
 
-  if ( n < 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'I4_FACTORIAL - Fatal error!'
-    write ( *, '(a)' ) '  N < 0.'
-    stop
-  end if
+ ! if ( n < 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !!  write ( *, '(a)' ) 'I4_FACTORIAL - Fatal error!'
+  !  write ( *, '(a)' ) '  N < 0.'
+  !  stop
+  !end if
 
   i4_factorial = 1.0D+00
 
@@ -20568,7 +20594,8 @@ function i4_factorial ( n )
   return
 end
 function i4_huge ( )
-
+!dir$ optimize:3
+  !dir$ attributes forceinline :: i4_huge
 !*****************************************************************************80
 !
 !! I4_HUGE returns a "huge" I4.
@@ -20623,8 +20650,10 @@ function i4_huge ( )
 
   return
 end
-function i4_uniform ( a, b, seed )
-
+elemental function i4_uniform ( a, b, seed )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: i4_uniform
+ !dir$ attributes forceinline :: i4_uniform
 !*****************************************************************************80
 !
 !! I4_UNIFORM returns a scaled pseudorandom I4.
@@ -20692,12 +20721,12 @@ function i4_uniform ( a, b, seed )
   integer ( kind = 4 ) seed
   integer ( kind = 4 ) value
 
-  if ( seed == 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'I4_UNIFORM - Fatal error!'
-    write ( *, '(a)' ) '  Input value of SEED = 0.'
-    stop
-  end if
+  !if ( seed == 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'I4_UNIFORM - Fatal error!'
+  !  write ( *, '(a)' ) '  Input value of SEED = 0.'
+   ! stop
+  !end if
 
   k = seed / 127773
 
@@ -20725,6 +20754,7 @@ function i4_uniform ( a, b, seed )
 
   return
 end
+#if 0
 subroutine i4row_max ( m, n, x, ixmax, xmax )
 
 !*****************************************************************************80
@@ -21086,6 +21116,7 @@ subroutine i4vec_min ( n, iarray, index, imin )
 
   return
 end
+#if 0
 subroutine i4vec_print ( n, a, title )
 
 !*****************************************************************************80
@@ -21146,6 +21177,7 @@ subroutine i4vec_print ( n, a, title )
 
   return
 end
+#endif
 subroutine i4vec_run_count ( n, a, run_count )
 
 !*****************************************************************************80
@@ -21252,8 +21284,13 @@ subroutine i4vec_variance ( n, x, variance )
 
   return
 end
-subroutine inverse_gaussian_cdf ( x, a, b, cdf )
+#endif
 
+elemental subroutine inverse_gaussian_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: inverse_gaussian_cdf
+ !dir$ attributes forceinline :: inverse_gaussian_cdf
+ !$omp declare simd(inverse_gaussian_cdf)   linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! INVERSE_GAUSSIAN_CDF evaluates the Inverse Gaussian CDF.
@@ -21292,11 +21329,11 @@ subroutine inverse_gaussian_cdf ( x, a, b, cdf )
   real ( kind = 8 ) x1
   real ( kind = 8 ) x2
 
-  if ( x <= 0.0D+00 ) then
+  !if ( x <= 0.0D+00 ) then
 
-    cdf = 0.0D+00
+   ! cdf = 0.0D+00
 
-  else
+  !else
 
     x1 = sqrt ( b / x ) * ( x - a ) / a
     call normal_01_cdf ( x1, cdf1 )
@@ -21306,7 +21343,7 @@ subroutine inverse_gaussian_cdf ( x, a, b, cdf )
 
     cdf = cdf1 + exp ( 2.0D+00 * b / a ) * cdf2
 
-  end if
+ ! end if
 
   return
 end
@@ -21344,17 +21381,17 @@ function inverse_gaussian_check ( a, b )
   logical inverse_gaussian_check
 
   if ( a <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'INVERSE_GAUSSIAN_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  A <= 0.'
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'INVERSE_GAUSSIAN_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  A <= 0.'
     inverse_gaussian_check = .false.
     return
   end if
 
   if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'INVERSE_GAUSSIAN_CHECK - Fatal error!'
-    write ( *, '(a)' ) '  B <= 0.'
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'INVERSE_GAUSSIAN_CHECK - Fatal error!'
+   ! write ( *, '(a)' ) '  B <= 0.'
     inverse_gaussian_check = .false.
     return
   end if
@@ -21399,8 +21436,11 @@ subroutine inverse_gaussian_mean ( a, b, mean )
 
   return
 end
-subroutine inverse_gaussian_pdf ( x, a, b, pdf )
-
+elemental subroutine inverse_gaussian_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: inverse_gaussian_pdf
+ !dir$ attributes forceinline :: inverse_gaussian_pdf
+ !$omp declare simd(inverse_gaussian_pdf)   linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! INVERSE_GAUSSIAN_PDF evaluates the Inverse Gaussian PDF.
@@ -21445,17 +21485,20 @@ subroutine inverse_gaussian_pdf ( x, a, b, pdf )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
-    pdf = 0.0D+00
-  else
+  !if ( x <= 0.0D+00 ) then
+   ! pdf = 0.0D+00
+  !else
     pdf = sqrt ( b / ( 2.0D+00 * pi * x**3 ) ) * &
       exp ( - b * ( x - a )**2 / ( 2.0D+00 * a * a * x ) )
-  end if
+  !end if
 
   return
 end
-subroutine inverse_gaussian_sample ( a, b, seed, x )
-
+elemental subroutine inverse_gaussian_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: inverse_gaussian_sample
+ !dir$ attributes forceinline :: inverse_gaussian_sample
+ !$omp declare simd(inverse_gaussian_sample) uniform(sample)  linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! INVERSE_GAUSSIAN_SAMPLE samples the Inverse Gaussian PDF.
@@ -21511,8 +21554,11 @@ subroutine inverse_gaussian_sample ( a, b, seed, x )
 
   return
 end
-subroutine inverse_gaussian_variance ( a, b, variance )
-
+elemental subroutine inverse_gaussian_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: inverse_gaussian_variance
+ !dir$ attributes forceinline :: inverse_gaussian_variance
+ 
 !*****************************************************************************80
 !
 !! INVERSE_GAUSSIAN_VARIANCE returns the variance of the Inverse Gaussian PDF.
@@ -21547,8 +21593,11 @@ subroutine inverse_gaussian_variance ( a, b, variance )
 
   return
 end
-subroutine laplace_cdf ( x, a, b, cdf )
-
+elemental subroutine laplace_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: laplace_cdf
+ !dir$ attributes forceinline :: laplace_cdf
+ !$omp declare simd(laplace_cdf)   linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! LAPLACE_CDF evaluates the Laplace CDF.
@@ -21592,8 +21641,11 @@ subroutine laplace_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine laplace_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine laplace_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: laplace_cdf_inv
+ !dir$ attributes forceinline :: laplace_cdf_inv
+ !$omp declare simd(laplace_cdf_inv)   linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! LAPLACE_CDF_INV inverts the Laplace CDF.
@@ -21627,12 +21679,12 @@ subroutine laplace_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LAPLACE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'LAPLACE_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
   if ( cdf <= 0.5D+00 ) then
     x = a + b * log ( 2.0D+00 * cdf )
@@ -21779,6 +21831,7 @@ subroutine laplace_cdf_values ( n_data, mu, beta, x, fx )
 
   return
 end
+#if 0
 function laplace_check ( a, b )
 
 !*****************************************************************************80
@@ -21822,6 +21875,7 @@ function laplace_check ( a, b )
 
   return
 end
+#endif
 subroutine laplace_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -21857,8 +21911,11 @@ subroutine laplace_mean ( a, b, mean )
 
   return
 end
-subroutine laplace_pdf ( x, a, b, pdf )
-
+elemental subroutine laplace_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: laplace_pdf
+ !dir$ attributes forceinline :: laplace_pdf
+ !$omp declare simd(laplace_pdf)   linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! LAPLACE_PDF evaluates the Laplace PDF.
@@ -21901,8 +21958,11 @@ subroutine laplace_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine laplace_sample ( a, b, seed, x )
-
+elemental subroutine laplace_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: laplace_sample
+ !dir$ attributes forceinline :: laplace_sample
+ !$omp declare simd(laplace_sample) uniform(seed)  linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! LAPLACE_SAMPLE samples the Laplace PDF.
@@ -21944,8 +22004,11 @@ subroutine laplace_sample ( a, b, seed, x )
 
   return
 end
-subroutine laplace_variance ( a, b, variance )
-
+elemental subroutine laplace_variance ( a, b, variance )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: inverse_gaussian_cdf
+ !dir$ attributes forceinline :: inverse_gaussian_cdf
+ !$omp declare simd(laplace_variance)   linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! LAPLACE_VARIANCE returns the variance of the Laplace PDF.
@@ -21979,8 +22042,11 @@ subroutine laplace_variance ( a, b, variance )
 
   return
 end
-function lerch ( a, b, c )
-
+elemental function lerch ( a, b, c )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: lerch
+ !dir$ attributes forceinline :: lerch
+ !$omp declare simd(lerch)   linear(ref(a,b,c))
 !*****************************************************************************80
 !
 !! LERCH estimates the Lerch transcendent function.
@@ -22062,8 +22128,11 @@ function lerch ( a, b, c )
 
   return
 end
-subroutine levy_cdf ( x, a, b, cdf )
-
+elemental subroutine levy_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: levy_cdf
+ !dir$ attributes forceinline :: levy_cdf
+ !$omp declare simd(levy_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LEVY_CDF evaluates the Levy CDF.
@@ -22098,23 +22167,26 @@ subroutine levy_cdf ( x, a, b, cdf )
   real ( kind = 8 ) error_f
   real ( kind = 8 ) x
 
-  if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LEVY_CDF - Fatal error!'
-    write ( *, '(a)' ) '  Input parameter B <= 0.0'
-    stop
-  end if
+  !if ( b <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'LEVY_CDF - Fatal error!'
+   ! write ( *, '(a)' ) '  Input parameter B <= 0.0'
+   ! stop
+  !end if
 
-  if ( x <= a ) then
-    cdf = 0.0D+00
-  else
+  !if ( x <= a ) then
+  !  cdf = 0.0D+00
+  !else
     cdf = 1.0D+00 - error_f ( sqrt ( b / ( 2.0D+00 * ( x - a ) ) ) )
-  end if
+ ! end if
 
   return
 end
-subroutine levy_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine levy_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: levy_cdf_inv
+ !dir$ attributes forceinline :: levy_cdf_inv
+ !$omp declare simd(levy_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LEVY_CDF_INV inverts the Levy CDF.
@@ -22150,19 +22222,19 @@ subroutine levy_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) x
   real ( kind = 8 ) x1
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LEVY_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'LEVY_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
-  if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LEVY_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  Input parameter B <= 0.0'
-    stop
-  end if
+  !if ( b <= 0.0D+00 ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'LEVY_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  Input parameter B <= 0.0'
+    !stop
+ ! end if
 
   cdf1 = 1.0D+00 - 0.5D+00 * cdf
   call normal_01_cdf_inv ( cdf1, x1 )
@@ -22170,8 +22242,11 @@ subroutine levy_cdf_inv ( cdf, a, b, x )
 
   return
 end
-subroutine levy_pdf ( x, a, b, pdf )
-
+elemental subroutine levy_pdf ( x, a, b, pdf )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: levy_cdf
+ !dir$ attributes forceinline :: levy_cdf
+ !$omp declare simd(levy_cdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! LEVY_PDF evaluates the Levy PDF.
@@ -22216,25 +22291,28 @@ subroutine levy_pdf ( x, a, b, pdf )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( b <= 0.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LEVY_PDF - Fatal error!'
-    write ( *, '(a)' ) '  Input parameter B <= 0.0'
-    stop
-  end if
+  !if ( b <= 0.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'LEVY_PDF - Fatal error!'
+  !  write ( *, '(a)' ) '  Input parameter B <= 0.0'
+  !  stop
+ ! end if
 
-  if ( x <= a ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x <= a ) then
+  !  pdf = 0.0D+00
+  !else
     pdf = sqrt ( b / ( 2.0D+00 * pi ) ) &
         * exp ( - b / ( 2.0D+00 * ( x - a ) ) ) &
         / sqrt ( ( x - a )**3 )
-  end if
+ ! end if
 
   return
 end
-subroutine levy_sample ( a, b, seed, x )
-
+elemental subroutine levy_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: levy_sample
+ !dir$ attributes forceinline :: levy_sample
+ !$omp declare simd(levy_sample) uniform(seed)  linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! LEVY_SAMPLE samples the Levy PDF.
@@ -22276,8 +22354,11 @@ subroutine levy_sample ( a, b, seed, x )
 
   return
 end
-subroutine logistic_cdf ( x, a, b, cdf )
-
+elemental subroutine logistic_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: logistic_cdf
+ !dir$ attributes forceinline :: logistic_cdf
+ !$omp declare simd(logistic_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOGISTIC_CDF evaluates the Logistic CDF.
@@ -22314,8 +22395,11 @@ subroutine logistic_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine logistic_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine logistic_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: logistic_cdf_inv
+ !dir$ attributes forceinline :: logistic_cdf_inv
+ !$omp declare simd(logistic_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOGISTIC_CDF_INV inverts the Logistic CDF.
@@ -22349,12 +22433,12 @@ subroutine logistic_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LOGISTIC_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'LOGISTIC_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   x = a - b * log ( ( 1.0D+00 - cdf ) / cdf )
 
@@ -22497,6 +22581,7 @@ subroutine logistic_cdf_values ( n_data, mu, beta, x, fx )
 
   return
 end
+#if 0
 function logistic_check ( a, b )
 
 !*****************************************************************************80
@@ -22540,6 +22625,7 @@ function logistic_check ( a, b )
 
   return
 end
+#endif
 subroutine logistic_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -22575,8 +22661,11 @@ subroutine logistic_mean ( a, b, mean )
 
   return
 end
-subroutine logistic_pdf ( x, a, b, pdf )
-
+elemental subroutine logistic_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: logistic_pdf
+ !dir$ attributes forceinline :: logistic_pdf
+ !$omp declare simd(logistic_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! LOGISTIC_PDF evaluates the Logistic PDF.
@@ -22623,8 +22712,11 @@ subroutine logistic_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine logistic_sample ( a, b, seed, x )
-
+elemental subroutine logistic_sample ( a, b, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: logistic_sample
+ !dir$ attributes forceinline :: logistic_sample
+ !$omp declare simd(logistic_sample) uniform(seed)  linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! LOGISTIC_SAMPLE samples the Logistic PDF.
