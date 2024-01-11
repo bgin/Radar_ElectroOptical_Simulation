@@ -22758,8 +22758,11 @@ elemental subroutine logistic_sample ( a, b, seed, x )
 
   return
 end
-subroutine logistic_variance ( a, b, variance )
-
+elemental subroutine logistic_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: logistic_variance
+ !dir$ attributes forceinline :: logistic_variance
+ !$omp declare simd(logistic_variance)   linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! LOGISTIC_VARIANCE returns the variance of the Logistic PDF.
@@ -22794,8 +22797,11 @@ subroutine logistic_variance ( a, b, variance )
 
   return
 end
-subroutine log_normal_cdf ( x, a, b, cdf )
-
+elemental subroutine log_normal_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_cdf
+ !dir$ attributes forceinline :: log_normal_cdf
+ !$omp declare simd(log_normal_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_CDF evaluates the Lognormal CDF.
@@ -22830,22 +22836,25 @@ subroutine log_normal_cdf ( x, a, b, cdf )
   real ( kind = 8 ) logx
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
+ ! if ( x <= 0.0D+00 ) then
 
-    cdf = 0.0D+00
+   ! cdf = 0.0D+00
 
-  else
+  !else
 
     logx = log ( x )
 
     call normal_cdf ( logx, a, b, cdf )
 
-  end if
+ ! end if
 
   return
 end
-subroutine log_normal_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine log_normal_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_cdf_inv
+ !dir$ attributes forceinline :: log_normal_cdf_inv
+ !$omp declare simd(log_normal_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_CDF_INV inverts the Lognormal CDF.
@@ -22880,12 +22889,12 @@ subroutine log_normal_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) logx
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LOG_NORMAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'LOG_NORMAL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
   call normal_cdf_inv ( cdf, a, b, logx )
 
@@ -23030,6 +23039,7 @@ subroutine log_normal_cdf_values ( n_data, mu, sigma, x, fx )
 
   return
 end
+#if 0
 function log_normal_check ( a, b )
 
 !*****************************************************************************80
@@ -23073,8 +23083,12 @@ function log_normal_check ( a, b )
 
   return
 end
-subroutine log_normal_mean ( a, b, mean )
-
+#endif
+elemental subroutine log_normal_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_mean
+ !dir$ attributes forceinline :: log_normal_mean
+ !$omp declare simd(log_normal_mean)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_MEAN returns the mean of the Lognormal PDF.
@@ -23108,8 +23122,11 @@ subroutine log_normal_mean ( a, b, mean )
 
   return
 end
-subroutine log_normal_pdf ( x, a, b, pdf )
-
+elemental subroutine log_normal_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_pdf
+ !dir$ attributes forceinline :: log_normal_pdf
+ !$omp declare simd(log_normal_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_PDF evaluates the Lognormal PDF.
@@ -23158,17 +23175,20 @@ subroutine log_normal_pdf ( x, a, b, pdf )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
-    pdf = 0.0D+00
-  else
+  !if ( x <= 0.0D+00 ) then
+  !  pdf = 0.0D+00
+  !else
     pdf = exp ( - 0.5D+00 * ( ( log ( x ) - a ) / b )**2 ) &
       / ( b * x * sqrt ( 2.0D+00 * pi ) )
-  end if
+ ! end if
 
   return
 end
-subroutine log_normal_sample ( a, b, seed, x )
-
+elemental subroutine log_normal_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_sample
+ !dir$ attributes forceinline :: log_normal_sample
+ !$omp declare simd(log_normal_sample) uniform(seed)  linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_SAMPLE samples the Lognormal PDF.
@@ -23210,8 +23230,11 @@ subroutine log_normal_sample ( a, b, seed, x )
 
   return
 end
-subroutine log_normal_variance ( a, b, variance )
-
+elemental subroutine log_normal_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_normal_variance
+ !dir$ attributes forceinline :: log_normal_variance
+ !$omp declare simd(log_normal_variance)   linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! LOG_NORMAL_VARIANCE returns the variance of the Lognormal PDF.
@@ -23245,7 +23268,10 @@ subroutine log_normal_variance ( a, b, variance )
 
   return
 end
-subroutine log_series_cdf ( x, a, cdf )
+elemental subroutine log_series_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_cdf
+ !dir$ attributes forceinline :: log_series_cdf
 
 !*****************************************************************************80
 !
@@ -23306,8 +23332,11 @@ subroutine log_series_cdf ( x, a, cdf )
 
   return
 end
-subroutine log_series_cdf_inv ( cdf, a, x )
-
+elemental subroutine log_series_cdf_inv ( cdf, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_cdf_inv
+ !dir$ attributes forceinline :: log_series_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! LOG_SERIES_CDF_INV inverts the Logarithmic Series CDF.
@@ -23349,12 +23378,12 @@ subroutine log_series_cdf_inv ( cdf, a, x )
   integer ( kind = 4 ) x
   integer ( kind = 4 ), parameter :: xmax = 1000
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LOG_SERIES_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'LOG_SERIES_CDF_INV - Fatal error!'
+ !   write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+ !   stop
+ ! end if
 
   cdf2 = 0.0D+00
   x = 1
@@ -23516,6 +23545,7 @@ subroutine log_series_cdf_values ( n_data, t, n, fx )
 
   return
 end
+#if 0
 function log_series_check ( a )
 
 !*****************************************************************************80
@@ -23558,8 +23588,12 @@ function log_series_check ( a )
 
   return
 end
-subroutine log_series_mean ( a, mean )
-
+#endif 
+elemental subroutine log_series_mean ( a, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_mean
+ !dir$ attributes forceinline :: log_series_mean
+ !$omp declare simd(log_series_mean)   linear(ref(a,mean))
 !*****************************************************************************80
 !
 !! LOG_SERIES_MEAN returns the mean of the Logarithmic Series PDF.
@@ -23592,8 +23626,11 @@ subroutine log_series_mean ( a, mean )
 
   return
 end
-subroutine log_series_pdf ( x, a, pdf )
-
+elemental subroutine log_series_pdf ( x, a, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_pdf
+ !dir$ attributes forceinline :: log_series_pdf
+ !$omp declare simd(log_series_pdf)   linear(ref(x,a,pdf))
 !*****************************************************************************80
 !
 !! LOG_SERIES_PDF evaluates the Logarithmic Series PDF.
@@ -23630,16 +23667,19 @@ subroutine log_series_pdf ( x, a, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x <= 0 ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x <= 0 ) then
+  !  pdf = 0.0D+00
+ ! else
     pdf = - a**x / ( real ( x, kind = 8 ) * log ( 1.0D+00 - a ) )
-  end if
+  !end if
 
   return
 end
-subroutine log_series_sample ( a, seed, x )
-
+elemental subroutine log_series_sample ( a, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_sample
+ !dir$ attributes forceinline :: log_series_sample
+ !$omp declare simd(log_series_sample) uniform(seed)  linear(ref(x,a))
 !*****************************************************************************80
 !
 !! LOG_SERIES_SAMPLE samples the Logarithmic Series PDF.
@@ -23688,8 +23728,11 @@ subroutine log_series_sample ( a, seed, x )
 
   return
 end
-subroutine log_series_variance ( a, variance )
-
+elemental subroutine log_series_variance ( a, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_series_variance
+ !dir$ attributes forceinline :: log_series_variance
+ !$omp declare simd(log_series_variance)   linear(ref(a,variance))
 !*****************************************************************************80
 !
 !! LOG_SERIES_VARIANCE returns the variance of the Logarithmic Series PDF.
@@ -23725,8 +23768,11 @@ subroutine log_series_variance ( a, variance )
 
   return
 end
-subroutine log_uniform_cdf ( x, a, b, cdf )
-
+elemental subroutine log_uniform_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_cdf
+ !dir$ attributes forceinline :: log_uniform_cdf
+ !$omp declare simd(log_uniform_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOG_UNIFORM_CDF evaluates the Log Uniform CDF.
@@ -23759,18 +23805,21 @@ subroutine log_uniform_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x <= a ) then
-    cdf = 0.0D+00
-  else if ( x < b ) then
+ ! if ( x <= a ) then
+  !  cdf = 0.0D+00
+ ! else if ( x < b ) then
     cdf = ( log ( x ) - log ( a ) ) / ( log ( b ) - log ( a ) )
-  else
-    cdf = 1.0D+00
-  end if
+  !else
+  !  cdf = 1.0D+00
+  !end if
 
   return
 end
-subroutine log_uniform_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine log_uniform_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_cdf_inv
+ !dir$ attributes forceinline :: log_uniform_cdf_inv
+ !$omp declare simd(log_uniform_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! LOG_UNIFORM_CDF_INV inverts the Log Uniform CDF.
@@ -23804,17 +23853,18 @@ subroutine log_uniform_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LOG_UNIFORM_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'LOG_UNIFORM_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   x = a * exp ( ( log ( b ) - log ( a ) ) * cdf )
 
   return
 end
+#if 0
 function log_uniform_check ( a, b )
 
 !*****************************************************************************80
@@ -23866,8 +23916,12 @@ function log_uniform_check ( a, b )
 
   return
 end
-subroutine log_uniform_mean ( a, b, mean )
-
+#endif
+elemental subroutine log_uniform_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_mean
+ !dir$ attributes forceinline :: log_uniform_mean
+ !$omp declare simd(log_uniform_mean)   linear(ref(a,b,mean))
 !*****************************************************************************80
 !
 !! LOG_UNIFORM_MEAN returns the mean of the Log Uniform PDF.
@@ -23901,8 +23955,11 @@ subroutine log_uniform_mean ( a, b, mean )
 
   return
 end
-subroutine log_uniform_pdf ( x, a, b, pdf )
-
+elemental subroutine log_uniform_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_pdf
+ !dir$ attributes forceinline :: log_uniform_pdf
+ !$omp declare simd(log_uniform_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! LOG_UNIFORM_PDF evaluates the Log Uniform PDF.
@@ -23939,18 +23996,21 @@ subroutine log_uniform_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < a ) then
-    pdf = 0.0D+00
-  else if ( x <= b ) then
+ ! if ( x < a ) then
+   ! pdf = 0.0D+00
+  !else if ( x <= b ) then
     pdf = 1.0D+00 / ( x * ( log ( b ) - log ( a ) ) )
-  else
-    pdf = 0.0D+00
-  end if
+ ! else
+ !   pdf = 0.0D+00
+ ! end if
 
   return
 end
-subroutine log_uniform_sample ( a, b, seed, x )
-
+elemental subroutine log_uniform_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_sample
+ !dir$ attributes forceinline :: log_uniform_sample
+ !$omp declare simd(log_uniform_sample)  uniform(seed) linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! LOG_UNIFORM_SAMPLE samples the Log Uniform PDF.
@@ -23992,8 +24052,11 @@ subroutine log_uniform_sample ( a, b, seed, x )
 
   return
 end
-subroutine lorentz_cdf ( x, cdf )
-
+elemental subroutine lorentz_cdf ( x, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: lorentz_cdf
+ !dir$ attributes forceinline :: lorentz_cdf
+ !$omp declare simd(lorentz_cdf)   linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! LORENTZ_CDF evaluates the Lorentz CDF.
@@ -24026,8 +24089,11 @@ subroutine lorentz_cdf ( x, cdf )
 
   return
 end
-subroutine lorentz_cdf_inv ( cdf, x )
-
+elemental subroutine lorentz_cdf_inv ( cdf, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: lorentz_cdf_inv
+ !dir$ attributes forceinline :: lorentz_cdf_inv
+ !$omp declare simd(lorentz_cdf_inv)   linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! LORENTZ_CDF_INV inverts the Lorentz CDF.
@@ -24057,12 +24123,12 @@ subroutine lorentz_cdf_inv ( cdf, x )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'LORENTZ_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+!    write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'LORENTZ_CDF_INV - Fatal error!'
+ !   write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+ !   stop
+ ! end if
 
   x = tan ( pi * ( cdf - 0.5D+00 ) )
 
@@ -24098,8 +24164,11 @@ subroutine lorentz_mean ( mean )
 
   return
 end
-subroutine lorentz_pdf ( x, pdf )
-
+elemental subroutine lorentz_pdf ( x, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: lorentz_ pdf
+ !dir$ attributes forceinline :: lorentz_ _pdf
+ !$omp declare simd(lorentz_pdf)   linear(ref(x,pdf))
 !*****************************************************************************80
 !
 !! LORENTZ_PDF evaluates the Lorentz PDF.
@@ -24142,8 +24211,11 @@ subroutine lorentz_pdf ( x, pdf )
 
   return
 end
-subroutine lorentz_sample ( seed, x )
-
+elemental subroutine lorentz_sample ( seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: log_uniform_pdf
+ !dir$ attributes forceinline :: log_uniform_pdf
+ !$omp declare simd(lorentz_sample)  uniform(seed) linear(ref(x))
 !*****************************************************************************80
 !
 !! LORENTZ_SAMPLE samples the Lorentz PDF.
@@ -24216,8 +24288,11 @@ subroutine lorentz_variance ( variance )
 
   return
 end
-subroutine maxwell_cdf ( x, a, cdf )
-
+elemental subroutine maxwell_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_cdf
+ !dir$ attributes forceinline :: maxwell_cdf
+ !$omp declare simd(maxwell_cdf)   linear(ref(x,a,cdf))
 !*****************************************************************************80
 !
 !! MAXWELL_CDF evaluates the Maxwell CDF.
@@ -24253,23 +24328,26 @@ subroutine maxwell_cdf ( x, a, cdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) x2
 
-  if ( x <= 0.0D+00 ) then
+  !if ( x <= 0.0D+00 ) then
 
-    cdf = 0.0D+00
+   ! cdf = 0.0D+00
 
-  else
+  !else
 
     x2 = x / a
     p2 = 1.5D+00
 
     cdf = gamma_inc ( p2, x2 )
 
-  end if
+ ! end if
 
   return
 end
-subroutine maxwell_cdf_inv ( cdf, a, x )
-
+elemental subroutine maxwell_cdf_inv ( cdf, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_cdf_inv
+ !dir$ attributes forceinline :: maxwell_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! MAXWELL_CDF_INV inverts the Maxwell CDF.
@@ -24314,20 +24392,20 @@ subroutine maxwell_cdf_inv ( cdf, a, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
+    !write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = 0.0D+00
-    return
-  else if ( 1.0D+00 == cdf ) then
-    x = huge ( x )
-    return
-  end if
+  !if ( cdf == 0.0D+00 ) then
+  !  x = 0.0D+00
+  !  return
+ ! else if ( 1.0D+00 == cdf ) then
+  !  x = huge ( x )
+  !  return
+  !end if
 
   x1 = 0.0D+00
   cdf1 = 0.0D+00
@@ -24345,10 +24423,10 @@ subroutine maxwell_cdf_inv ( cdf, a, x )
     x2 = 2.0D+00 * x2
 
     if ( 1000000.0D+00 < x2 ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
-      write ( *, '(a)' ) '  Initial bracketing effort fails.'
-      stop
+      !write ( *, '(a)' ) ' '
+     ! write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
+     ! write ( *, '(a)' ) '  Initial bracketing effort fails.'
+     return
     end if
 
   end do
@@ -24370,10 +24448,11 @@ subroutine maxwell_cdf_inv ( cdf, a, x )
     end if
 
     if ( it_max < it ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
-      write ( *, '(a)' ) '  Iteration limit exceeded.'
-      stop
+     ! write ( *, '(a)' ) ' '
+    !  write ( *, '(a)' ) 'MAXWELL_CDF_INV - Fatal error!'
+     ! write ( *, '(a)' ) '  Iteration limit exceeded.'
+     ! stop
+     return
     end if
 
     if ( sign ( 1.0D+00, cdf3 - cdf ) == sign ( 1.0D+00, cdf1 - cdf ) ) then
@@ -24388,6 +24467,7 @@ subroutine maxwell_cdf_inv ( cdf, a, x )
 
   return
 end
+#if 0
 function maxwell_check ( a )
 
 !*****************************************************************************80
@@ -24430,8 +24510,12 @@ function maxwell_check ( a )
 
   return
 end
-subroutine maxwell_mean ( a, mean )
-
+#endif
+elemental subroutine maxwell_mean ( a, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_mean
+ !dir$ attributes forceinline :: maxwell_mean
+ 
 !*****************************************************************************80
 !
 !! MAXWELL_MEAN returns the mean of the Maxwell PDF.
@@ -24465,8 +24549,11 @@ subroutine maxwell_mean ( a, mean )
 
   return
 end
-subroutine maxwell_pdf ( x, a, pdf )
-
+elemental subroutine maxwell_pdf ( x, a, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_pdf
+ !dir$ attributes forceinline :: maxwell_pdf
+ !$omp declare simd(maxwell_pdf)   linear(ref(x,a,pdf))
 !*****************************************************************************80
 !
 !! MAXWELL_PDF evaluates the Maxwell PDF.
@@ -24508,23 +24595,26 @@ subroutine maxwell_pdf ( x, a, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x <= 0.0D+00 ) then
+ ! if ( x <= 0.0D+00 ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else
+  !else
 
     y = x / a
 
     pdf = exp ( - 0.5D+00 * y * y ) * y * y &
       / ( sqrt ( 2.0D+00 ) * a * r8_gamma ( 1.5D+00 ) )
 
-  end if
+ ! end if
 
   return
 end
-subroutine maxwell_sample ( a, seed, x )
-
+elemental subroutine maxwell_sample ( a, seed, x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_sample
+ !dir$ attributes forceinline :: maxwell_sample
+ !$omp declare simd(maxwell_sample)  uniform(seed) linear(ref(x,a))
 !*****************************************************************************80
 !
 !! MAXWELL_SAMPLE samples the Maxwell PDF.
@@ -24565,8 +24655,11 @@ subroutine maxwell_sample ( a, seed, x )
 
   return
 end
-subroutine maxwell_variance ( a, variance )
-
+elemental subroutine maxwell_variance ( a, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: maxwell_variance
+ !dir$ attributes forceinline :: maxwell_variance
+ 
 !*****************************************************************************80
 !
 !! MAXWELL_VARIANCE returns the variance of the Maxwell PDF.
@@ -24601,6 +24694,7 @@ subroutine maxwell_variance ( a, variance )
 
   return
 end
+#if 0
 function multicoef_check ( nfactor, factor )
 
 !*****************************************************************************80
@@ -24663,8 +24757,12 @@ function multicoef_check ( nfactor, factor )
 
   return
 end
+#endif
 subroutine multinomial_coef1 ( nfactor, factor, ncomb )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_coef1
+ !dir$ attributes forceinline ::  multinomial_coef1
+ 
 !*****************************************************************************80
 !
 !! MULTINOMIAL_COEF1 computes a Multinomial coefficient.
@@ -24719,11 +24817,11 @@ subroutine multinomial_coef1 ( nfactor, factor, ncomb )
 
   check = multicoef_check ( nfactor, factor )
 
-  if ( .not. check ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'MULTINOMIAL_COEF1 - Fatal error!'
-    write ( *, '(a)' ) '  MULTICOEF_CHECK failed.'
-    ncomb = - i4_huge ( )
+ if ( .not. check ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'MULTINOMIAL_COEF1 - Fatal error!'
+  !  write ( *, '(a)' ) '  MULTICOEF_CHECK failed.'
+  !  ncomb = - i4_huge ( )
     return
   end if
 !
@@ -24744,7 +24842,9 @@ subroutine multinomial_coef1 ( nfactor, factor, ncomb )
   return
 end
 subroutine multinomial_coef2 ( nfactor, factor, ncomb )
-
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_coef2
+ !dir$ attributes forceinline ::  multinomial_coef2
 !*****************************************************************************80
 !
 !! MULTINOMIAL_COEF2 computes a Multinomial coefficient.
@@ -24800,10 +24900,10 @@ subroutine multinomial_coef2 ( nfactor, factor, ncomb )
   check = multicoef_check ( nfactor, factor )
 
   if ( .not. check ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'MULTINOMIAL_COEF2 - Fatal error!'
-    write ( *, '(a)' ) '  MULTICOEF_CHECK failed.'
-    ncomb = - i4_huge ( )
+    !write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'MULTINOMIAL_COEF2 - Fatal error!'
+   ! write ( *, '(a)' ) '  MULTICOEF_CHECK failed.'
+   ! ncomb = - i4_huge ( )
     return
   end if
 
@@ -24821,6 +24921,7 @@ subroutine multinomial_coef2 ( nfactor, factor, ncomb )
 
   return
 end
+#if 0
 function multinomial_check ( a, b, c )
 
 !*****************************************************************************80
@@ -24897,8 +24998,11 @@ function multinomial_check ( a, b, c )
 
   return
 end
+#endif
 subroutine multinomial_covariance ( a, b, c, covariance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_covariance
+ !dir$ attributes forceinline ::  multinomial_covariance
 !*****************************************************************************80
 !
 !! MULTINOMIAL_COVARIANCE returns the covariances of the Multinomial PDF.
@@ -24939,7 +25043,9 @@ subroutine multinomial_covariance ( a, b, c, covariance )
   integer ( kind = 4 ) i
   integer ( kind = 4 ) j
 
+
   do i = 1, b
+   !$omp simd
     do j = 1, b
 
       if ( i == j ) then
@@ -24954,7 +25060,9 @@ subroutine multinomial_covariance ( a, b, c, covariance )
   return
 end
 subroutine multinomial_mean ( a, b, c, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_mean
+ !dir$ attributes forceinline ::  multinomial_mean
 !*****************************************************************************80
 !
 !! MULTINOMIAL_MEAN returns the means of the Multinomial PDF.
@@ -24999,7 +25107,9 @@ subroutine multinomial_mean ( a, b, c, mean )
   return
 end
 subroutine multinomial_pdf ( x, a, b, c, pdf )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_pdf
+ !dir$ attributes forceinline ::  multinomial_pdf
 !*****************************************************************************80
 !
 !! MULTINOMIAL_PDF computes a Multinomial PDF.
@@ -25062,6 +25172,7 @@ subroutine multinomial_pdf ( x, a, b, c, pdf )
 !
   pdf_log = gamma_log ( real ( a + 1, kind = 8 ) )
 
+  !$omp simd reduction(+:pdf_log)
   do i = 1, b
     pdf_log = pdf_log + x(i) * log ( c(i) ) &
       - gamma_log ( real ( x(i) + 1, kind = 8 ) )
@@ -25072,7 +25183,9 @@ subroutine multinomial_pdf ( x, a, b, c, pdf )
   return
 end
 subroutine multinomial_sample ( a, b, c, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_sample
+ !dir$ attributes forceinline ::  multinomial_sample
 !*****************************************************************************80
 !
 !! MULTINOMIAL_SAMPLE samples the Multinomial PDF.
@@ -25158,7 +25271,9 @@ subroutine multinomial_sample ( a, b, c, seed, x )
   return
 end
 subroutine multinomial_variance ( a, b, c, variance )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_variance
+ !dir$ attributes forceinline ::  multinomial_variance
 !*****************************************************************************80
 !
 !! MULTINOMIAL_VARIANCE returns the variances of the Multinomial PDF.
@@ -25199,6 +25314,7 @@ subroutine multinomial_variance ( a, b, c, variance )
   integer ( kind = 4 ) i
   real ( kind = 8 ) variance(b)
 
+  !$omp simd
   do i = 1, b
     variance(i) = real ( a, kind = 8 ) * c(i) * ( 1.0D+00 - c(i) )
   end do
@@ -25206,7 +25322,9 @@ subroutine multinomial_variance ( a, b, c, variance )
   return
 end
 subroutine multivariate_normal_sample ( n, mean, covar_factor, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  multinomial_normal_sample
+ !dir$ attributes forceinline ::  multinomial_normal_sample
 !*****************************************************************************80
 !
 !! MULTIVARIATE_NORMAL_SAMPLE samples the Multivariate Normal PDF.
@@ -25275,7 +25393,7 @@ subroutine multivariate_normal_sample ( n, mean, covar_factor, seed, x )
     call normal_01_sample ( seed, z )
 
     x(i) = mean(i)
-
+    !$ompo simd reduction(+:x)
     do j = 1, i
       x(i) = x(i) + covar_factor(i,j) * z
     end do
@@ -25284,8 +25402,10 @@ subroutine multivariate_normal_sample ( n, mean, covar_factor, seed, x )
 
   return
 end
-subroutine nakagami_cdf ( x, a, b, c, cdf )
-
+elemental subroutine nakagami_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  nakagami_cdf
+ !dir$ attributes forceinline ::  nakagami_cdf
 !*****************************************************************************80
 !
 !! NAKAGAMI_CDF evaluates the Nakagami CDF.
@@ -25324,11 +25444,11 @@ subroutine nakagami_cdf ( x, a, b, c, cdf )
   real ( kind = 8 ) x2
   real ( kind = 8 ) y
 
-  if ( x <= 0.0D+00 ) then
+ ! if ( x <= 0.0D+00 ) then
 
-    cdf = 0.0D+00
+   ! cdf = 0.0D+00
 
-  else if ( 0.0D+00 < x ) then
+ ! else if ( 0.0D+00 < x ) then
 
     y = ( x - a ) / b
     x2 = c * y * y
@@ -25336,10 +25456,11 @@ subroutine nakagami_cdf ( x, a, b, c, cdf )
 
     cdf = gamma_inc ( p2, x2 )
 
-  end if
+ ! end if
 
   return
 end
+#if 0
 function nakagami_check ( a, b, c )
 
 !*****************************************************************************80
@@ -25393,8 +25514,11 @@ function nakagami_check ( a, b, c )
 
   return
 end
+#endif
 subroutine nakagami_mean ( a, b, c, mean )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  nakagami_mean
+ !dir$ attributes forceinline ::  nakagami_mean
 !*****************************************************************************80
 !
 !! NAKAGAMI_MEAN returns the mean of the Nakagami PDF.
@@ -25431,8 +25555,10 @@ subroutine nakagami_mean ( a, b, c, mean )
 
   return
 end
-subroutine nakagami_pdf ( x, a, b, c, pdf )
-
+elemental subroutine nakagami_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  nakagami_pdf
+ !dir$ attributes forceinline ::  nakagami_pdf
 !*****************************************************************************80
 !
 !! NAKAGAMI_PDF evaluates the Nakagami PDF.
@@ -25469,11 +25595,11 @@ subroutine nakagami_pdf ( x, a, b, c, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x <= 0.0D+00 ) then
+  !if ( x <= 0.0D+00 ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else if ( 0.0D+00 < x ) then
+  !else if ( 0.0D+00 < x ) then
 
     y = ( x - a ) / b
 
@@ -25481,12 +25607,14 @@ subroutine nakagami_pdf ( x, a, b, c, pdf )
       * y**( 2.0D+00 * c - 1.0D+00 ) &
       * exp ( - c * y * y )
 
-  end if
+  !end if
 
   return
 end
-subroutine nakagami_variance ( a, b, c, variance )
-
+elemental subroutine nakagami_variance ( a, b, c, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  nakagami_variance
+ !dir$ attributes forceinline ::  nakagami_variance
 !*****************************************************************************80
 !
 !! NAKAGAMI_VARIANCE returns the variance of the Nakagami PDF.
@@ -25528,8 +25656,10 @@ subroutine nakagami_variance ( a, b, c, variance )
 
   return
 end
-subroutine negative_binomial_cdf ( x, a, b, cdf )
-
+elemental subroutine negative_binomial_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  negative_binomial_cdf
+ !dir$ attributes forceinline ::  negative_binomial_cdf
 !*****************************************************************************80
 !
 !! NEGATIVE_BINOMIAL_CDF evaluates the Negative Binomial CDF.
@@ -25586,8 +25716,10 @@ subroutine negative_binomial_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine negative_binomial_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine negative_binomial_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  negative_binomial_cdf_inv
+ !dir$ attributes forceinline ::  negative_binomial_cdf_inv
 !*****************************************************************************80
 !
 !! NEGATIVE_BINOMIAL_CDF_INV inverts the Negative Binomial CDF.
@@ -25631,12 +25763,12 @@ subroutine negative_binomial_cdf_inv ( cdf, a, b, x )
   integer ( kind = 4 ) x
   integer ( kind = 4 ), parameter :: x_max = 1000
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'NEGATIVE_BINOMIAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'NEGATIVE_BINOMIAL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
 
   cum = 0.0D+00
@@ -25832,6 +25964,7 @@ subroutine negative_binomial_cdf_values ( n_data, f, s, p, cdf )
 
   return
 end
+#if 0
 function negative_binomial_check ( a, b )
 
 !*****************************************************************************80
@@ -25887,6 +26020,7 @@ function negative_binomial_check ( a, b )
 
   return
 end
+#endif
 subroutine negative_binomial_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -25925,8 +26059,10 @@ subroutine negative_binomial_mean ( a, b, mean )
 
   return
 end
-subroutine negative_binomial_pdf ( x, a, b, pdf )
-
+elemental subroutine negative_binomial_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  negative_binomial_pdf
+ !dir$ attributes forceinline ::  negative_binomial_pdf
 !*****************************************************************************80
 !
 !! NEGATIVE_BINOMIAL_PDF evaluates the Negative Binomial PDF.
@@ -25977,22 +26113,24 @@ subroutine negative_binomial_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x < a ) then
+ ! if ( x < a ) then
 
-    pdf = 0.0D+00
+  !  pdf = 0.0D+00
 
-  else
+ ! else
 
     call binomial_coef ( x - 1, a - 1, cnk )
 
     pdf = real ( cnk, kind = 8 ) * b**a * ( 1.0D+00 - b )**( x - a )
 
-  end if
+  !end if
 
   return
 end
-subroutine negative_binomial_sample ( a, b, seed, x )
-
+elemental subroutine negative_binomial_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  negative_binomial_sample
+ !dir$ attributes forceinline ::  negative_binomial_sample
 !*****************************************************************************80
 !
 !! NEGATIVE_BINOMIAL_SAMPLE samples the Negative Binomial PDF.
@@ -26057,8 +26195,10 @@ subroutine negative_binomial_sample ( a, b, seed, x )
 
   return
 end
-subroutine negative_binomial_variance ( a, b, variance )
-
+elemental subroutine negative_binomial_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  negative_binomial_variance
+ !dir$ attributes forceinline ::  negative_binomial_variance
 !*****************************************************************************80
 !
 !! NEGATIVE_BINOMIAL_VARIANCE returns the variance of the Negative Binomial PDF.
@@ -26095,8 +26235,11 @@ subroutine negative_binomial_variance ( a, b, variance )
 
   return
 end
-subroutine normal_01_cdf ( x, cdf )
-
+elemental subroutine normal_01_cdf ( x, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_01_cdf
+ !dir$ attributes forceinline ::  normal_01_cdf
+ !$omp declare simd(normal_01_cdf)   linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! NORMAL_01_CDF evaluates the Normal 01 CDF.
@@ -26193,8 +26336,10 @@ subroutine normal_01_cdf ( x, cdf )
 
   return
 end
-subroutine normal_01_cdf_inv ( p, x )
-
+elemental subroutine normal_01_cdf_inv ( p, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_01_cdf_inv
+ !dir$ attributes forceinline ::  normal_01_cdf_inv
 !*****************************************************************************80
 !
 !! NORMAL_01_CDF_INV inverts the standard normal CDF.
@@ -26300,15 +26445,15 @@ subroutine normal_01_cdf_inv ( p, x )
   real ( kind = 8 ), parameter :: split2 = 5.0D+00
   real ( kind = 8 ) x
 
-  if ( p <= 0.0D+00 ) then
-    x = - huge ( x )
-    return
-  end if
+ ! if ( p <= 0.0D+00 ) then
+  !  x = - huge ( x )
+   ! return
+  !end if
 
-  if ( 1.0D+00 <= p ) then
-    x = huge ( x )
-    return
-  end if
+ ! if ( 1.0D+00 <= p ) then
+  !  x = huge ( x )
+ !   return
+  !end if
 
   q = p - 0.5D+00
 
@@ -26496,8 +26641,11 @@ subroutine normal_01_mean ( mean )
 
   return
 end
-subroutine normal_01_pdf ( x, pdf )
-
+elemental subroutine normal_01_pdf ( x, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_01_pdf
+ !dir$ attributes forceinline ::  normal_01_pdf
+ !$omp declare simd(normal_01_pdf)   linear(ref(x,pdf))
 !*****************************************************************************80
 !
 !! NORMAL_01_PDF evaluates the Normal 01 PDF.
@@ -26537,8 +26685,11 @@ subroutine normal_01_pdf ( x, pdf )
 
   return
 end
-subroutine normal_01_sample ( seed, x )
-
+elemental subroutine normal_01_sample ( seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_01_sample
+ !dir$ attributes forceinline ::  normal_01_sample
+ !$omp declare simd(normal_01_sample)  uniform(seed) linear(ref(x))
 !*****************************************************************************80
 !
 !! NORMAL_01_SAMPLE samples the standard normal probability distribution.
@@ -26740,14 +26891,14 @@ subroutine normal_01_vector ( n, seed, x )
 !  explicitly that any internal memory should be flushed,
 !  by passing in a negative value for N.
 !
-  if ( n < 0 ) then
-    made = 0
-    saved = 0
-    y = 0.0D+00
-    return
-  else if ( n == 0 ) then
-    return
-  end if
+ ! if ( n < 0 ) then
+   ! made = 0
+   ! saved = 0
+   ! y = 0.0D+00
+   ! return
+  !else if ( n == 0 ) then
+   ! return
+  !end if
 !
 !  Record the range of X we need to fill in.
 !
@@ -26833,8 +26984,11 @@ subroutine normal_01_vector ( n, seed, x )
 
   return
 end
-subroutine normal_cdf ( x, a, b, cdf )
-
+elemental subroutine normal_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_cdf
+ !dir$ attributes forceinline ::  normal_cdf
+ !$omp declare simd(normal_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! NORMAL_CDF evaluates the Normal CDF.
@@ -26874,8 +27028,11 @@ subroutine normal_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine normal_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine normal_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_cdf_inv
+ !dir$ attributes forceinline ::  normal_cdf_inv
+ !$omp declare simd(normal_cdf_inv)   linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! NORMAL_CDF_INV inverts the Normal CDF.
@@ -26910,12 +27067,12 @@ subroutine normal_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) x
   real ( kind = 8 ) x2
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'NORMAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'NORMAL_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   call normal_01_cdf_inv ( cdf, x2 )
 
@@ -27060,6 +27217,7 @@ subroutine normal_cdf_values ( n_data, mu, sigma, x, fx )
 
   return
 end
+#if 0
 function normal_check ( a, b )
 
 !*****************************************************************************80
@@ -27103,6 +27261,7 @@ function normal_check ( a, b )
 
   return
 end
+#endif
 subroutine normal_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -27138,8 +27297,11 @@ subroutine normal_mean ( a, b, mean )
 
   return
 end
-subroutine normal_pdf ( x, a, b, pdf )
-
+elemental subroutine normal_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_pdf
+ !dir$ attributes forceinline ::  normal_pdf
+ !$omp declare simd(normal_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! NORMAL_PDF evaluates the Normal PDF.
@@ -27187,8 +27349,11 @@ subroutine normal_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine normal_sample ( a, b, seed, x )
-
+elemental subroutine normal_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  normal_sample
+ !dir$ attributes forceinline ::  normal_sample
+ !$omp declare simd(normal_sample)  uniform(seed) linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! NORMAL_SAMPLE samples the Normal PDF.
@@ -27485,8 +27650,11 @@ subroutine owen_values ( n_data, h, a, t )
 
   return
 end
-subroutine pareto_cdf ( x, a, b, cdf )
-
+elemental subroutine pareto_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_cdf
+ !dir$ attributes forceinline ::  pareto_cdf
+ !$omp declare simd(pareto_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! PARETO_CDF evaluates the Pareto CDF.
@@ -27520,16 +27688,19 @@ subroutine pareto_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x < a ) then
-    cdf = 0.0D+00
-  else
+ ! if ( x < a ) then
+  !  cdf = 0.0D+00
+ ! else
     cdf = 1.0D+00 - ( a / x )**b
-  end if
+  !end if
 
   return
 end
-subroutine pareto_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine pareto_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_cdf_inv
+ !dir$ attributes forceinline ::  pareto_cdf_inv
+ !$omp declare simd(pareto_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! PARETO_CDF_INV inverts the Pareto CDF.
@@ -27564,17 +27735,18 @@ subroutine pareto_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PARETO_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'PARETO_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+    !stop
+  !end if
 
   x = a / ( 1.0D+00 - cdf )**( 1.0D+00 / b )
 
   return
 end
+#if 0
 function pareto_check ( a, b )
 
 !*****************************************************************************80
@@ -27627,8 +27799,12 @@ function pareto_check ( a, b )
 
   return
 end
-subroutine pareto_mean ( a, b, mean )
-
+#endif
+elemental subroutine pareto_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_mean
+ !dir$ attributes forceinline ::  pareto_mean
+ !$omp declare simd(pareto_mean)   linear(ref(mean,a,b))
 !*****************************************************************************80
 !
 !! PARETO_MEAN returns the mean of the Pareto PDF.
@@ -27659,20 +27835,23 @@ subroutine pareto_mean ( a, b, mean )
   real ( kind = 8 ) b
   real ( kind = 8 ) mean
 
-  if ( b <= 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PARETO_MEAN - Fatal error!'
-    write ( *, '(a)' ) '  For B <= 1, the mean does not exist.'
-    mean = 0.0D+00
-    return
-  end if
+ ! if ( b <= 1.0D+00 ) then
+ !   write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'PARETO_MEAN - Fatal error!'
+  !  write ( *, '(a)' ) '  For B <= 1, the mean does not exist.'
+  !  mean = 0.0D+00
+  !  return
+  !end if
 
   mean = b * a / ( b - 1.0D+00 )
 
   return
 end
-subroutine pareto_pdf ( x, a, b, pdf )
-
+elemental subroutine pareto_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_pdf
+ !dir$ attributes forceinline ::  pareto_pdf
+ !$omp declare simd(pareto_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! PARETO_PDF evaluates the Pareto PDF.
@@ -27711,16 +27890,19 @@ subroutine pareto_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < a ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x < a ) then
+   ! pdf = 0.0D+00
+  !else
     pdf = b * a**b / x**( b + 1.0D+00 )
-  end if
+  !end if
 
   return
 end
-subroutine pareto_sample ( a, b, seed, x )
-
+elemental subroutine pareto_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_sample
+ !dir$ attributes forceinline ::  pareto_sample
+ !$omp declare simd(pareto_sample) uniform(seed)   linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! PARETO_SAMPLE samples the Pareto PDF.
@@ -35249,6 +35431,7 @@ function tfn ( h, a )
 
   return
 end
+#if 0
 subroutine timestamp ( )
 
 !*****************************************************************************80
@@ -35285,6 +35468,8 @@ subroutine timestamp ( )
 
   return
 end
+#endif
+#if 0
 subroutine timestring ( string )
 
 !*****************************************************************************80
@@ -35368,6 +35553,7 @@ subroutine timestring ( string )
 
   return
 end
+#endif
 subroutine triangle_cdf ( x, a, b, c, cdf )
 
 !*****************************************************************************80
