@@ -27945,8 +27945,11 @@ elemental subroutine pareto_sample ( a, b, seed, x )
 
   return
 end
-subroutine pareto_variance ( a, b, variance )
-
+elemental subroutine pareto_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pareto_variance
+ !dir$ attributes forceinline ::  pareto_variance
+ !$omp declare simd(pareto_variance)   linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! PARETO_VARIANCE returns the variance of the Pareto PDF.
@@ -27977,18 +27980,19 @@ subroutine pareto_variance ( a, b, variance )
   real ( kind = 8 ) b
   real ( kind = 8 ) variance
 
-  if ( b <= 2.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PARETO_VARIANCE - Warning!'
-    write ( *, '(a)' ) '  For B <= 2, the variance does not exist.'
-    variance = 0.0D+00
-    return
-  end if
+ ! if ( b <= 2.0D+00 ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'PARETO_VARIANCE - Warning!'
+  !  write ( *, '(a)' ) '  For B <= 2, the variance does not exist.'
+  !  variance = 0.0D+00
+  !  return
+  !end if
 
   variance = a * a * b / ( ( b - 1.0D+00 )**2 * ( b - 2.0D+00 ) )
 
   return
 end
+#if 0
 function pearson_05_check ( a, b, c )
 
 !*****************************************************************************80
@@ -28041,7 +28045,8 @@ function pearson_05_check ( a, b, c )
 
   return
 end
-subroutine pearson_05_mean ( a, b, c, mean )
+#endif
+elemental  subroutine pearson_05_mean ( a, b, c, mean )
 
 !*****************************************************************************80
 !
@@ -28078,9 +28083,9 @@ subroutine pearson_05_mean ( a, b, c, mean )
   real ( kind = 8 ) mean
 
   if ( b <= 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'PEARSON_05_MEAN - Warning!'
-    write ( *, '(a)' ) '  MEAN undefined for B <= 1.'
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'PEARSON_05_MEAN - Warning!'
+  !  write ( *, '(a)' ) '  MEAN undefined for B <= 1.'
     mean = c
     return
   end if
@@ -28089,8 +28094,11 @@ subroutine pearson_05_mean ( a, b, c, mean )
 
   return
 end
-subroutine pearson_05_pdf ( x, a, b, c, pdf )
-
+elemental subroutine pearson_05_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pearson_05_pdf
+ !dir$ attributes forceinline ::  pearson_05_pdf
+ !$omp declare simd(pearson_05_pdf)    linear(ref(x,a,b,c,pdf))
 !*****************************************************************************80
 !
 !! PEARSON_05_PDF evaluates the Pearson 5 PDF.
@@ -28131,17 +28139,20 @@ subroutine pearson_05_pdf ( x, a, b, c, pdf )
   real ( kind = 8 ) r8_gamma
   real ( kind = 8 ) x
 
-  if ( x <= c ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x <= c ) then
+  !  pdf = 0.0D+00
+  !else
     pdf = a**b * ( x - c )**( - b - 1.0D+00 ) &
       * exp ( - a / ( x - c ) ) / r8_gamma ( b )
-  end if
+ ! end if
 
   return
 end
-subroutine pearson_05_sample ( a, b, c, seed, x )
-
+elemental subroutine pearson_05_sample ( a, b, c, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  pearson_sample
+ !dir$ attributes forceinline ::  pearson_05_sample
+ !$omp declare simd(pearson_05_sample) uniform(seed)   linear(ref(x,a,b,c))
 !*****************************************************************************80
 !
 !! PEARSON_05_SAMPLE samples the Pearson 5 PDF.
@@ -28190,6 +28201,7 @@ subroutine pearson_05_sample ( a, b, c, seed, x )
 
   return
 end
+#if 0
 function planck_check ( a, b )
 
 !*****************************************************************************80
@@ -28242,8 +28254,12 @@ function planck_check ( a, b )
 
   return
 end
-subroutine planck_mean ( a, b, mean )
-
+#endif
+elemental subroutine planck_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  planck_mean
+ !dir$ attributes forceinline ::  planck_mean
+ !$omp declare simd(planck_mean)    linear(ref(a,b,mean))
 !*****************************************************************************80
 !
 !! PLANCK_MEAN returns the mean of the Planck PDF.
@@ -28278,8 +28294,11 @@ subroutine planck_mean ( a, b, mean )
 
   return
 end
-subroutine planck_pdf ( x, a, b, pdf )
-
+elemental subroutine planck_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  planck_pdf
+ !dir$ attributes forceinline ::  planck_pdf
+ !$omp declare simd(planck_pdf)    linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! PLANCK_PDF evaluates the Planck PDF.
@@ -28346,17 +28365,20 @@ subroutine planck_pdf ( x, a, b, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) zeta
 
-  if ( x < 0.0D+00 ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < 0.0D+00 ) then
+   ! pdf = 0.0D+00
+  !else
     k = r8_gamma ( b + 1.0D+00 ) * zeta ( b + 1.0D+00 )
     pdf = a**( b + 1.0D+00 ) * x**b / ( exp ( a * x ) - 1.0D+00 ) / k
-  end if
+  !end if
 
   return
 end
-subroutine planck_sample ( a, b, seed, x )
-
+elemental subroutine planck_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  planck_sample
+ !dir$ attributes forceinline ::  planck_sample
+ !$omp declare simd(planck_sample) uniform(seed)   linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! PLANCK_SAMPLE samples the Planck PDF.
@@ -28419,8 +28441,11 @@ subroutine planck_sample ( a, b, seed, x )
 
   return
 end
-subroutine planck_variance ( a, b, variance )
-
+elemental subroutine planck_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  planck_variance
+ !dir$ attributes forceinline ::  planck_variance
+ !$omp declare simd(pareto_sample)    linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! PLANCK_VARIANCE returns the variance of the Planck PDF.
@@ -28459,6 +28484,7 @@ subroutine planck_variance ( a, b, variance )
 
   return
 end
+#if 0
 subroutine point_distance_1d_pdf ( x, a, b, pdf )
 
 !*****************************************************************************80
@@ -28704,8 +28730,12 @@ subroutine point_distance_3d_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine poisson_cdf ( x, a, cdf )
-
+#endif
+elemental subroutine poisson_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  poisson_cdf
+ !dir$ attributes forceinline ::  poisson_cdf
+ 
 !*****************************************************************************80
 !
 !! POISSON_CDF evaluates the Poisson CDF.
@@ -28907,8 +28937,11 @@ subroutine poisson_cdf_values ( n_data, a, x, fx )
 
   return
 end
-subroutine poisson_cdf_inv ( cdf, a, x )
-
+elemental subroutine poisson_cdf_inv ( cdf, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  poisson_cdf_inv
+ !dir$ attributes forceinline ::  poisson_cdf_inv
+ 
 !*****************************************************************************80
 !
 !! POISSON_CDF_INV inverts the Poisson CDF.
@@ -28947,12 +28980,12 @@ subroutine poisson_cdf_inv ( cdf, a, x )
   integer ( kind = 4 ) x
   integer ( kind = 4 ), parameter :: xmax = 100
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'POISSON_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'POISSON_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 !
 !  Now simply start at X = 0, and find the first value for which
 !  CDF(X-1) <= CDF <= CDF(X).
@@ -28979,14 +29012,15 @@ subroutine poisson_cdf_inv ( cdf, a, x )
 
   end do
 
-  write ( *, '(a)' ) ' '
-  write ( *, '(a)' ) 'POISSON_CDF_INV - Warning!'
-  write ( *, '(a,i8)' ) '  Exceeded XMAX = ', xmax
+  !write ( *, '(a)' ) ' '
+  !write ( *, '(a)' ) 'POISSON_CDF_INV - Warning!'
+  !write ( *, '(a,i8)' ) '  Exceeded XMAX = ', xmax
 
   x = xmax
 
   return
 end
+#if 0
 function poisson_check ( a )
 
 !*****************************************************************************80
@@ -29029,6 +29063,7 @@ function poisson_check ( a )
 
   return
 end
+#endif
 subroutine poisson_mean ( a, mean )
 
 !*****************************************************************************80
@@ -29063,6 +29098,7 @@ subroutine poisson_mean ( a, mean )
 
   return
 end
+#if 0
 subroutine poisson_kernel ( r, n, c, x, y, p )
 
 !*****************************************************************************80
@@ -29129,8 +29165,12 @@ subroutine poisson_kernel ( r, n, c, x, y, p )
 
   return
 end
-subroutine poisson_pdf ( x, a, pdf )
-
+#endif
+elemental subroutine poisson_pdf ( x, a, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  poisson_pdf
+ !dir$ attributes forceinline ::  poisson_pdf
+ !$omp declare simd(poisson_pdf)    linear(ref(a,x,pdf))
 !*****************************************************************************80
 !
 !! POISSON_PDF evaluates the Poisson PDF.
@@ -29179,16 +29219,19 @@ subroutine poisson_pdf ( x, a, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x < 0 ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x < 0 ) then
+ !   pdf = 0.0D+00
+  !else
     pdf = exp ( - a ) * a**x / i4_factorial ( x )
-  end if
+ ! end if
 
   return
 end
-subroutine poisson_sample ( a, seed, x )
-
+elemental subroutine poisson_sample ( a, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 ::  poisson_sample
+ !dir$ attributes forceinline ::  poisson_sample
+ !$omp declare simd(poisson_sample)    uniform(seed) linear(ref(a,x))
 !*****************************************************************************80
 !
 !! POISSON_SAMPLE samples the Poisson PDF.
@@ -29263,6 +29306,7 @@ subroutine poisson_variance ( a, variance )
 
   return
 end
+#if 0
 subroutine power_cdf ( x, a, b, cdf )
 
 !*****************************************************************************80
@@ -29576,6 +29620,7 @@ subroutine power_variance ( a, b, variance )
 
   return
 end
+#endif
 subroutine psi_values ( n_data, x, fx )
 
 !*****************************************************************************80
@@ -29683,8 +29728,11 @@ subroutine psi_values ( n_data, x, fx )
 
   return
 end
-subroutine quasigeometric_cdf ( x, a, b, cdf )
-
+elemental subroutine quasigeometric_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_cdf
+ !dir$ attributes forceinline ::  quasigeometric_cdf
+ !$omp declare simd(quasigeometric_cdf)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_CDF evaluates the Quasigeometric CDF.
@@ -29720,20 +29768,23 @@ subroutine quasigeometric_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( x < 0 ) then
-    cdf = 0.0D+00
-  else if ( x == 0 ) then
-    cdf = a
-  else if ( b == 0.0D+00 ) then
-    cdf = 1.0D+00
-  else
+ ! if ( x < 0 ) then
+ !   cdf = 0.0D+00
+ ! else if ( x == 0 ) then
+ !   cdf = a
+ ! else if ( b == 0.0D+00 ) then
+  !  cdf = 1.0D+00
+!  else
     cdf = a + ( 1.0D+00 - a ) * ( 1.0D+00 - b**x )
-  end if
+ ! end if
 
   return
 end
 subroutine quasigeometric_cdf_inv ( cdf, a, b, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_cdf_inv
+ !dir$ attributes forceinline ::  quasigeometric_cdf_inv
+ !$omp declare simd(quasigeometric_cdf_inv)    linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_CDF_INV inverts the Quasigeometric CDF.
@@ -29770,23 +29821,24 @@ subroutine quasigeometric_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'QUASIGEOMETRIC_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  ! write ( *, '(a)' ) 'QUASIGEOMETRIC_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
-  if ( cdf < a ) then
+ ! if ( cdf < a ) then
     x = 0
-  else if ( b == 0.0D+00 ) then
+ ! else if ( b == 0.0D+00 ) then
     x = 1
-  else
+ ! else
     x = 1 + int ( ( log ( 1.0D+00 - cdf ) - log ( 1.0D+00 - a ) ) / log ( b ) )
-  end if
+ ! end if
 
   return
 end
+#if 0
 function quasigeometric_check ( a, b )
 
 !*****************************************************************************80
@@ -29841,8 +29893,12 @@ function quasigeometric_check ( a, b )
 
   return
 end
-subroutine quasigeometric_mean ( a, b, mean )
-
+#endif
+elemental subroutine quasigeometric_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_mean
+ !dir$ attributes forceinline ::  quasigeometric_mean
+ !$omp declare simd(quasigeometric_mean)    linear(ref(a,b,mean))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_MEAN returns the mean of the Quasigeometric PDF.
@@ -29879,8 +29935,11 @@ subroutine quasigeometric_mean ( a, b, mean )
 
   return
 end
-subroutine quasigeometric_pdf ( x, a, b, pdf )
-
+elemental subroutine quasigeometric_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_pdf
+ !dir$ attributes forceinline ::  quasigeometric_pdf
+ !$omp declare simd(quasigeometric_pdf)    linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_PDF evaluates the Quasigeometric PDF.
@@ -29935,32 +29994,35 @@ subroutine quasigeometric_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x < 0 ) then
+  !if ( x < 0 ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else if ( x == 0 ) then
+  !else if ( x == 0 ) then
 
-    pdf = a
+   ! pdf = a
 
-  else if ( b == 0.0D+00 ) then
+ ! else if ( b == 0.0D+00 ) then
 
-    if ( x == 1 ) then
-      pdf = 1.0D+00
-    else
-      pdf = 0.0D+00
-    end if
+   ! if ( x == 1 ) then
+  !   pdf = 1.0D+00
+  !  else
+   !   pdf = 0.0D+00
+   ! end if
 
-  else
+ ! else
 
     pdf = ( 1.0D+00 - a ) * ( 1.0D+00 - b ) * b**( x - 1 )
 
-  end if
+ ! end if
 
   return
 end
-subroutine quasigeometric_sample ( a, b, seed, x )
-
+elemental subroutine quasigeometric_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_sample
+ !dir$ attributes forceinline ::  quasigeometric_sample
+ !$omp declare simd(quasigeometric_sample)   uniform(seed) linear(ref(x,a,b))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_SAMPLE samples the Quasigeometric PDF.
@@ -30005,8 +30067,11 @@ subroutine quasigeometric_sample ( a, b, seed, x )
 
   return
 end
-subroutine quasigeometric_variance ( a, b, variance )
-
+elemental subroutine quasigeometric_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: quasigeometric_variance
+ !dir$ attributes forceinline ::  quasigeometric_variance
+ !$omp declare simd(quasigeometric_variance)    linear(ref(a,b,variance))
 !*****************************************************************************80
 !
 !! QUASIGEOMETRIC_VARIANCE returns the variance of the Quasigeometric PDF.
@@ -30043,8 +30108,10 @@ subroutine quasigeometric_variance ( a, b, variance )
 
   return
 end
-function r4_uniform ( a, b, seed )
-
+elemental function r4_uniform ( a, b, seed )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r4_uniform
+ !dir$ attributes forceinline :: r4_uniform
 !*****************************************************************************80
 !
 !! R4_UNIFORM returns a scaled real ( kind = 4 ) pseudorandom number.
@@ -30096,8 +30163,10 @@ function r4_uniform ( a, b, seed )
 
   return
 end
-function r4_uniform_01 ( seed )
-
+elemental function r4_uniform_01 ( seed )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r4_uniform_01
+ !dir$ attributes forceinline :: r4_uniform_01
 !*****************************************************************************80
 !
 !! R4_UNIFORM_01 returns a unit real ( kind = 4 ) pseudorandom number.
@@ -30236,8 +30305,10 @@ function r8_ceiling ( r )
 
   return
 end
-function r8_gamma ( x )
-
+elemental  function r8_gamma ( x )
+ !dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r8_gamma
+ !dir$ attributes forceinline :: r8_gamma
 !*****************************************************************************80
 !
 !! R8_GAMMA evaluates Gamma(X) for a real argument.
@@ -30547,8 +30618,10 @@ function r8_pi ( )
 
   return
 end
-function r8_uniform ( a, b, seed )
-
+elemental function r8_uniform ( a, b, seed )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r8_uniform
+ !dir$ attributes forceinline :: r8_uniform
 !*****************************************************************************80
 !
 !! R8_UNIFORM returns a scaled pseudorandom R8.
@@ -30592,12 +30665,12 @@ function r8_uniform ( a, b, seed )
   real ( kind = 8 ) r8_uniform
   integer ( kind = 4 )seed
 
-  if ( seed == 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'R8_UNIFORM - Fatal error!'
-    write ( *, '(a)' ) '  Input value of SEED = 0.'
-    stop
-  end if
+ ! if ( seed == 0 ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'R8_UNIFORM - Fatal error!'
+    !write ( *, '(a)' ) '  Input value of SEED = 0.'
+    !stop
+  !end if
 
   k = seed / 127773
 
@@ -30611,8 +30684,10 @@ function r8_uniform ( a, b, seed )
 
   return
 end
-function r8_uniform_01 ( seed )
-
+elemental function r8_uniform_01 ( seed )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r8_uniform
+ !dir$ attributes forceinline :: r8_uniform
 !*****************************************************************************80
 !
 !! R8_UNIFORM_01 returns a unit pseudorandom R8.
@@ -30691,12 +30766,12 @@ function r8_uniform_01 ( seed )
   real ( kind = 8 ) r8_uniform_01
   integer ( kind = 4 ) seed
 
-  if ( seed == 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'R8_UNIFORM_01 - Fatal error!'
-    write ( *, '(a)' ) '  Input value of SEED = 0.'
-    stop
-  end if
+  !if ( seed == 0 ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'R8_UNIFORM_01 - Fatal error!'
+    !write ( *, '(a)' ) '  Input value of SEED = 0.'
+    !stop
+ ! end if
 
   k = seed / 127773
 
@@ -30713,6 +30788,7 @@ function r8_uniform_01 ( seed )
 
   return
 end
+#if 0
 subroutine r8mat_print ( m, n, a, title )
 
 !*****************************************************************************80
@@ -30855,8 +30931,12 @@ subroutine r8mat_print_some ( m, n, a, ilo, jlo, ihi, jhi, title )
 
   return
 end
-function r8poly_value ( n, a, x )
+#endif
 
+elemental function r8poly_value ( n, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: r8_poly_value
+ !dir$ attributes forceinline ::
 !*****************************************************************************80
 !
 !! R8POLY_VALUE evaluates an R8POLY
@@ -30912,6 +30992,7 @@ function r8poly_value ( n, a, x )
 
   return
 end
+#if 0 
 subroutine r8row_max ( m, n, x, ixmax, xmax )
 
 !*****************************************************************************80
@@ -31409,6 +31490,8 @@ subroutine r8vec_print ( n, a, title )
 
   return
 end
+#endif
+
 subroutine r8vec_uniform ( n, a, b, seed, r )
 
 !*****************************************************************************80
@@ -31474,12 +31557,12 @@ subroutine r8vec_uniform ( n, a, b, seed, r )
   integer ( kind = 4 ) seed
   real ( kind = 8 ) r(n)
 
-  if ( seed == 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'R8VEC_UNIFORM - Fatal error!'
-    write ( *, '(a)' ) '  Input value of SEED = 0.'
-    stop
-  end if
+  !if ( seed == 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'R8VEC_UNIFORM - Fatal error!'
+  !  write ( *, '(a)' ) '  Input value of SEED = 0.'
+   ! stop
+ ! end if
 
   do i = 1, n
 
@@ -31558,12 +31641,12 @@ subroutine r8vec_uniform_01 ( n, seed, r )
   integer ( kind = 4 ) seed
   real ( kind = 8 ) r(n)
 
-  if ( seed == 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'R8VEC_UNIFORM_01 - Fatal error!'
-    write ( *, '(a)' ) '  Input value of SEED = 0.'
-    stop
-  end if
+ ! if ( seed == 0 ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'R8VEC_UNIFORM_01 - Fatal error!'
+   ! write ( *, '(a)' ) '  Input value of SEED = 0.'
+   ! stop
+ ! end if
 
   do i = 1, n
 
@@ -31581,6 +31664,7 @@ subroutine r8vec_uniform_01 ( n, seed, r )
 
   return
 end
+#if 0
 subroutine r8vec_unit_sum ( n, a )
 
 !*****************************************************************************80
@@ -31673,6 +31757,7 @@ subroutine r8vec_variance ( n, x, variance )
 
   return
 end
+#endif
 subroutine random_initialize ( seed_input )
 
 !*****************************************************************************80
@@ -31789,11 +31874,11 @@ subroutine random_initialize ( seed_input )
 !
   if ( seed /= 0 ) then
 
-    if ( debug ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'RANDOM_INITIALIZE'
-      write ( *, '(a,i20)' ) '  Initialize RANDOM_NUMBER, user SEED = ', seed
-    end if
+   ! if ( debug ) then
+    !  write ( *, '(a)' ) ' '
+     ! write ( *, '(a)' ) 'RANDOM_INITIALIZE'
+     ! write ( *, '(a,i20)' ) '  Initialize RANDOM_NUMBER, user SEED = ', seed
+   ! end if
 
   else
 
@@ -31801,12 +31886,12 @@ subroutine random_initialize ( seed_input )
 
     seed = count
 
-    if ( debug ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'RANDOM_INITIALIZE'
-      write ( *, '(a,i20)' ) '  Initialize RANDOM_NUMBER, arbitrary SEED = ', &
-        seed
-    end if
+  !  if ( debug ) then
+   !  write ( *, '(a)' ) ' '
+    ! write ( *, '(a)' ) 'RANDOM_INITIALIZE'
+    !  write ( *, '(a,i20)' ) '  Initialize RANDOM_NUMBER, arbitrary SEED = ', &
+     !   seed
+   ! end if
 
   end if
 !
@@ -31832,8 +31917,11 @@ subroutine random_initialize ( seed_input )
 
   return
 end
-subroutine rayleigh_cdf ( x, a, cdf )
-
+elemental subroutine rayleigh_cdf ( x, a, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_cdf
+ !dir$ attributes forceinline :: rayleigh_cdf
+  !$omp declare simd(rayleigh_cdf)   linear(ref(x,a,cdf))
 !*****************************************************************************80
 !
 !! RAYLEIGH_CDF evaluates the Rayleigh CDF.
@@ -31866,16 +31954,19 @@ subroutine rayleigh_cdf ( x, a, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x < 0.0D+00 ) then
-    cdf = 0.0D+00
-  else
+  !if ( x < 0.0D+00 ) then
+   ! cdf = 0.0D+00
+ ! else
     cdf = 1.0D+00 - exp ( - x**2 / ( 2.0D+00 * a**2 ) )
-  end if
+ ! end if
 
   return
 end
-subroutine rayleigh_cdf_inv ( cdf, a, x )
-
+elemental subroutine rayleigh_cdf_inv ( cdf, a, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_cdf_inv
+ !dir$ attributes forceinline :: rayleigh_cdf_inv
+  !$omp declare simd(rayleigh_cdf_inv)   linear(ref(x,a,cdf))
 !*****************************************************************************80
 !
 !! RAYLEIGH_CDF_INV inverts the Rayleigh CDF.
@@ -31908,12 +31999,12 @@ subroutine rayleigh_cdf_inv ( cdf, a, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'RAYLEIGH_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'RAYLEIGH_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   x = sqrt ( - 2.0D+00 * a * a * log ( 1.0D+00 - cdf ) )
 
@@ -32029,6 +32120,7 @@ subroutine rayleigh_cdf_values ( n_data, sigma, x, fx )
 
   return
 end
+#if 0
 function rayleigh_check ( a )
 
 !*****************************************************************************80
@@ -32071,8 +32163,12 @@ function rayleigh_check ( a )
 
   return
 end
-subroutine rayleigh_mean ( a, mean )
-
+#endif
+elemental subroutine rayleigh_mean ( a, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_mean
+ !dir$ attributes forceinline :: rayleigh_mean
+  !$omp declare simd(rayleigh_mean)   linear(ref(a,mean))
 !*****************************************************************************80
 !
 !! RAYLEIGH_MEAN returns the mean of the Rayleigh PDF.
@@ -32106,8 +32202,11 @@ subroutine rayleigh_mean ( a, mean )
 
   return
 end
-subroutine rayleigh_pdf ( x, a, pdf )
-
+elemental subroutine rayleigh_pdf ( x, a, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_pdf
+ !dir$ attributes forceinline :: rayleigh_pdf
+  !$omp declare simd(rayleigh_pdf)   linear(ref(x,a,pdf))
 !*****************************************************************************80
 !
 !! RAYLEIGH_PDF evaluates the Rayleigh PDF.
@@ -32144,16 +32243,19 @@ subroutine rayleigh_pdf ( x, a, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < 0.0D+00 ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < 0.0D+00 ) then
+  !  pdf = 0.0D+00
+  !else
     pdf = ( x / a**2 ) * exp ( - x**2 / ( 2.0D+00 * a**2 ) )
-  end if
+  !end if
 
   return
 end
-subroutine rayleigh_sample ( a, seed, x )
-
+elemental subroutine rayleigh_sample ( a, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_sample
+ !dir$ attributes forceinline :: rayleigh_cdf_sample
+  !$omp declare simd(rayleigh_sample) uniform(seed)   linear(ref(x,a))
 !*****************************************************************************80
 !
 !! RAYLEIGH_SAMPLE samples the Rayleigh PDF.
@@ -32194,8 +32296,11 @@ subroutine rayleigh_sample ( a, seed, x )
 
   return
 end
-subroutine rayleigh_variance ( a, variance )
-
+elemental subroutine rayleigh_variance ( a, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_variance
+ !dir$ attributes forceinline :: rayleigh_variance
+  !$omp declare simd(rayleigh_variance)   linear(ref(a,variance))
 !*****************************************************************************80
 !
 !! RAYLEIGH_VARIANCE returns the variance of the Rayleigh PDF.
@@ -32229,8 +32334,11 @@ subroutine rayleigh_variance ( a, variance )
 
   return
 end
-subroutine reciprocal_cdf ( x, a, b, cdf )
-
+elemental subroutine reciprocal_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: reciprocal_cdf
+ !dir$ attributes forceinline :: reciprocal_cdf
+  !$omp declare simd(reciprocal_cdf)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! RECIPROCAL_CDF evaluates the Reciprocal CDF.
@@ -32263,20 +32371,23 @@ subroutine reciprocal_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
+  !if ( x <= 0.0D+00 ) then
 
-    cdf = 0.0D+00
+    !cdf = 0.0D+00
 
-  else if ( 0.0D+00 < x ) then
+ ! else if ( 0.0D+00 < x ) then
 
     cdf = log ( a / x ) / log ( a / b )
 
-  end if
+  !end if
 
   return
 end
-subroutine reciprocal_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine reciprocal_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: reciprocal_cdf_inv
+ !dir$ attributes forceinline :: reciprocal_cdf_inv
+  !$omp declare simd(reciprocal_cdf_inv)   linear(ref(x,a,b,cdf))
 !*****************************************************************************80
 !
 !! RECIPROCAL_CDF_INV inverts the Reciprocal CDF.
@@ -32309,21 +32420,22 @@ subroutine reciprocal_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'RECIPROCAL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'RECIPROCAL_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+!  end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = 0.0D+00
-  else if ( 0.0D+00 < cdf ) then
+ ! if ( cdf == 0.0D+00 ) then
+  !  x = 0.0D+00
+  !else if ( 0.0D+00 < cdf ) then
     x = b**cdf / a**( cdf - 1.0D+00 )
-  end if
+  !end if
 
   return
 end
+#if 0
 function reciprocal_check ( a, b )
 
 !*****************************************************************************80
@@ -32375,8 +32487,12 @@ function reciprocal_check ( a, b )
 
   return
 end
-subroutine reciprocal_mean ( a, b, mean )
-
+#endif
+elemental subroutine reciprocal_mean ( a, b, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: rayleigh_mean
+ !dir$ attributes forceinline :: rayleigh_mean
+  !$omp declare simd(rayleigh_mean)   linear(ref(a,b,mean))
 !*****************************************************************************80
 !
 !! RECIPROCAL_MEAN returns the mean of the Reciprocal PDF.
@@ -32410,8 +32526,11 @@ subroutine reciprocal_mean ( a, b, mean )
 
   return
 end
-subroutine reciprocal_pdf ( x, a, b, pdf )
-
+elemental subroutine reciprocal_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: reciprocal_pdf
+ !dir$ attributes forceinline :: reciprocal_pdf
+  !$omp declare simd(reciprocal_pdf)   linear(ref(x,a,b,pdf))
 !*****************************************************************************80
 !
 !! RECIPROCAL_PDF evaluates the Reciprocal PDF.
@@ -32449,16 +32568,19 @@ subroutine reciprocal_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x <= 0.0D+00 ) then
-    pdf = 0.0D+00
-  else if ( 0.0D+00 < x ) then
+  !if ( x <= 0.0D+00 ) then
+  !  pdf = 0.0D+00
+  !else if ( 0.0D+00 < x ) then
     pdf = 1.0D+00 / ( x * log ( b / a ) )
-  end if
+  !end if
 
   return
 end
-subroutine reciprocal_sample ( a, b, seed, x )
-
+elemental subroutine reciprocal_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: reciprocal_sample
+ !dir$ attributes forceinline :: reciprocal_sample
+  !$omp declare simd(reciprocal_sample)  uniform(seed) linear(ref(x,b,a))
 !*****************************************************************************80
 !
 !! RECIPROCAL_SAMPLE samples the Reciprocal PDF.
@@ -32500,8 +32622,11 @@ subroutine reciprocal_sample ( a, b, seed, x )
 
   return
 end
-subroutine reciprocal_variance ( a, b, variance )
-
+elemental subroutine reciprocal_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: reciprocal_variance
+ !dir$ attributes forceinline :: reciprocal_variance
+  !$omp declare simd(reciprocal_variance)   linear(ref(variance,b,a))
 !*****************************************************************************80
 !
 !! RECIPROCAL_VARIANCE returns the variance of the Reciprocal PDF.
@@ -33174,6 +33299,7 @@ subroutine ribesl ( x, alpha, nb, ize, b, ncalc )
 
   return
 end
+#if 0
 subroutine runs_mean ( m, n, mean )
 
 !*****************************************************************************80
@@ -33478,8 +33604,12 @@ subroutine runs_variance ( m, n, variance )
 
   return
 end
-function sech ( x )
-
+#endif
+elemental function sech ( x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech
+ !dir$ attributes forceinline :: sech
+  !$omp declare simd(sech)   linear(ref(x))
 !*****************************************************************************80
 !
 !! SECH returns the hyperbolic secant.
@@ -33519,8 +33649,11 @@ function sech ( x )
 
   return
 end
-subroutine sech_cdf ( x, a, b, cdf )
-
+elemental subroutine sech_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech_cdf
+ !dir$ attributes forceinline :: sech_cdf
+  !$omp declare simd(sech_cdf)   linear(ref(x,b,a,cdf))
 !*****************************************************************************80
 !
 !! SECH_CDF evaluates the Hyperbolic Secant CDF.
@@ -33562,7 +33695,10 @@ subroutine sech_cdf ( x, a, b, cdf )
   return
 end
 subroutine sech_cdf_inv ( cdf, a, b, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech_cdf_inv
+ !dir$ attributes forceinline :: sech_cdf_inv
+  !$omp declare simd(sech_cdf_inv)  linear(ref(x,b,a,cdf))
 !*****************************************************************************80
 !
 !! SECH_CDF_INV inverts the Hyperbolic Secant CDF.
@@ -33596,23 +33732,24 @@ subroutine sech_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'SECH_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'SECH_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+ !   stop
+ ! end if
 
-  if ( cdf == 0.0D+00 ) then
-    x = - huge ( x )
-  else if ( cdf < 1.0D+00 ) then
+  !if ( cdf == 0.0D+00 ) then
+  !  x = - huge ( x )
+ ! else if ( cdf < 1.0D+00 ) then
     x = a + b * log ( tan ( 0.5D+00 * pi * cdf ) )
-  else if ( 1.0D+00 == cdf ) then
-    x = huge ( x )
-  end if
+ ! else if ( 1.0D+00 == cdf ) then
+ !   x = huge ( x )
+ ! end if
 
   return
 end
+#if 0
 function sech_check ( a, b )
 
 !*****************************************************************************80
@@ -33656,6 +33793,7 @@ function sech_check ( a, b )
 
   return
 end
+#endif
 subroutine sech_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -33691,8 +33829,12 @@ subroutine sech_mean ( a, b, mean )
 
   return
 end
-subroutine sech_pdf ( x, a, b, pdf )
 
+elemental subroutine sech_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech_pdf
+ !dir$ attributes forceinline :: sech_pdf
+  !$omp declare simd(sech_pdf)  linear(ref(x,b,a,pdf))
 !*****************************************************************************80
 !
 !! SECH_PDF evaluates the Hypebolic Secant PDF.
@@ -33738,8 +33880,12 @@ subroutine sech_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine sech_sample ( a, b, seed, x )
 
+elemental subroutine sech_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech_sample
+ !dir$ attributes forceinline :: sech_sample
+  !$omp declare simd(sech_sample)  uniform(seed) linear(ref(x,b,a))
 !*****************************************************************************80
 !
 !! SECH_SAMPLE samples the Hyperbolic Secant PDF.
@@ -33782,8 +33928,11 @@ subroutine sech_sample ( a, b, seed, x )
 
   return
 end
-subroutine sech_variance ( a, b, variance )
-
+elemental subroutine sech_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sech_variance
+ !dir$ attributes forceinline :: sech_variance
+  !$omp declare simd(sech_variance)  linear(ref(b,a,variance))
 !*****************************************************************************80
 !
 !! SECH_VARIANCE returns the variance of the Hyperbolic Secant PDF.
@@ -33818,6 +33967,7 @@ subroutine sech_variance ( a, b, variance )
 
   return
 end
+#if 0
 subroutine semicircular_cdf ( x, a, b, cdf )
 
 !*****************************************************************************80
@@ -34193,8 +34343,12 @@ subroutine semicircular_variance ( a, b, variance )
 
   return
 end
-function sin_power_int ( a, b, n )
-
+#endif
+elemental function sin_power_int ( a, b, n )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: sin_power_int
+ !dir$ attributes forceinline :: sin_power_int
+ 
 !*****************************************************************************80
 !
 !! SIN_POWER_INT evaluates the sine power integral.
@@ -34244,13 +34398,13 @@ function sin_power_int ( a, b, n )
   real ( kind = 8 ) sin_power_int
   real ( kind = 8 ) value
 
-  if ( n < 0 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'SIN_POWER_INT - Fatal error!'
-    write ( *, '(a)' ) '  Power N < 0.'
-    value = 0.0D+00
-    stop
-  end if
+  !if ( n < 0 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'SIN_POWER_INT - Fatal error!'
+  !  write ( *, '(a)' ) '  Power N < 0.'
+  !  value = 0.0D+00
+   ! stop
+  !end if
 
   sa = sin ( a )
   sb = sin ( b )
@@ -34276,6 +34430,7 @@ function sin_power_int ( a, b, n )
 
   return
 end
+#if 0
 function sphere_unit_area_nd ( dim_num )
 
 !*****************************************************************************80
@@ -34351,6 +34506,7 @@ function sphere_unit_area_nd ( dim_num )
 
   return
 end
+#endif
 function stirling2_value ( n, m )
 
 !*****************************************************************************80
@@ -34481,8 +34637,11 @@ function stirling2_value ( n, m )
 
   return
 end
-subroutine student_cdf ( x, a, b, c, cdf )
-
+elemental subroutine student_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: student_cdf
+ !dir$ attributes forceinline :: student_cdf
+  !$omp declare simd(student_cdf)  linear(ref(x,b,a,c,cdf))
 !*****************************************************************************80
 !
 !! STUDENT_CDF evaluates the central Student T CDF.
@@ -34534,11 +34693,11 @@ subroutine student_cdf ( x, a, b, c, cdf )
   b2 = 0.5D+00
   c2 = c / ( c + y * y )
 
-  if ( y <= 0.0D+00 ) then
-    cdf = 0.5D+00 * beta_inc ( a2, b2, c2 )
-  else
+  !if ( y <= 0.0D+00 ) then
+  !  cdf = 0.5D+00 * beta_inc ( a2, b2, c2 )
+  !else
     cdf = 1.0D+00 - 0.5D+00 * beta_inc ( a2, b2, c2 )
-  end if
+  !end if
 
   return
 end
@@ -34658,6 +34817,7 @@ subroutine student_cdf_values ( n_data, c, x, fx )
 
   return
 end
+#if 0
 function student_check ( a, b, c )
 
 !*****************************************************************************80
@@ -34715,6 +34875,7 @@ function student_check ( a, b, c )
 
   return
 end
+#endif
 subroutine student_mean ( a, b, c, mean )
 
 !*****************************************************************************80
@@ -34760,8 +34921,11 @@ subroutine student_mean ( a, b, c, mean )
 
   return
 end
-subroutine student_pdf ( x, a, b, c, pdf )
-
+elemental subroutine student_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: student_pdf
+ !dir$ attributes forceinline :: student_pdf
+  !$omp declare simd(student_pdf)  linear(ref(x,b,a,c,pdf))
 !*****************************************************************************80
 !
 !! STUDENT_PDF evaluates the central Student T PDF.
@@ -34819,8 +34983,11 @@ subroutine student_pdf ( x, a, b, c, pdf )
 
   return
 end
-subroutine student_sample ( a, b, c, seed, x )
-
+elemental subroutine student_sample ( a, b, c, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: student_sample
+ !dir$ attributes forceinline :: student_sample
+  !$omp declare simd(student_sample)  uniform(seed) linear(ref(x,b,a,c))
 !*****************************************************************************80
 !
 !! STUDENT_SAMPLE samples the central Student T PDF.
@@ -34870,12 +35037,12 @@ subroutine student_sample ( a, b, c, seed, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( c < 3.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'STUDENT_SAMPLE - Fatal error!'
-    write ( *, '(a)' ) '  Sampling fails for C <= 2.'
-    return
-  end if
+ ! if ( c < 3.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'STUDENT_SAMPLE - Fatal error!'
+  !  write ( *, '(a)' ) '  Sampling fails for C <= 2.'
+  !  return
+ ! end if
 
   a2 = 0.0D+00
   b2 = c / ( c - 2 )
@@ -34889,8 +35056,11 @@ subroutine student_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine student_variance ( a, b, c, variance )
-
+elemental subroutine student_variance ( a, b, c, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: student_variance
+ !dir$ attributes forceinline :: student_variance
+  !$omp declare simd(student_variance)   linear(ref(c,b,a,variance))
 !*****************************************************************************80
 !
 !! STUDENT_VARIANCE returns the variance of the central Student T PDF.
@@ -34932,19 +35102,22 @@ subroutine student_variance ( a, b, c, variance )
   real ( kind = 8 ) c
   real ( kind = 8 ) variance
 
-  if ( c <= 2.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'STUDENT_VARIANCE - Fatal error!'
-    write ( *, '(a)' ) '  Variance not defined for C <= 2.'
-    stop
-  end if
+ ! if ( c <= 2.0D+00 ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'STUDENT_VARIANCE - Fatal error!'
+  !  write ( *, '(a)' ) '  Variance not defined for C <= 2.'
+  !  stop
+  !end if
 
   variance = b * b * c / ( c - 2.0D+00 )
 
   return
 end
-subroutine student_noncentral_cdf ( x, idf, d, cdf )
-
+elemental subroutine student_noncentral_cdf ( x, idf, d, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: student_noncentral_cdf
+ !dir$ attributes forceinline :: student_noncentral_cdf
+  
 !*****************************************************************************80
 !
 !! STUDENT_NONCENTRAL_CDF evaluates the noncentral Student T CDF.
@@ -35554,6 +35727,7 @@ subroutine timestring ( string )
   return
 end
 #endif
+#if 0
 subroutine triangle_cdf ( x, a, b, c, cdf )
 
 !*****************************************************************************80
@@ -36223,6 +36397,7 @@ subroutine triangular_variance ( a, b, variance )
 
   return
 end
+#endif
 function trigamma ( x )
 
 !*****************************************************************************80
@@ -36277,17 +36452,17 @@ function trigamma ( x )
 !
 !  1): If X is not positive, fail.
 !
-  if ( x <= 0.0D+00 ) then
+  !if ( x <= 0.0D+00 ) then
 
-    trigamma = 0.0D+00
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'TRIGAMMA - Fatal error!'
-    write ( *, '(a)' ) '  X <= 0.'
-    stop
-!
+   ! trigamma = 0.0D+00
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'TRIGAMMA - Fatal error!'
+   ! write ( *, '(a)' ) '  X <= 0.'
+  !  stop
+!!
 !  2): If X is smaller than A, use a small value approximation.
 !
-  else if ( x <= a ) then
+  if ( x <= a ) then
 
     trigamma = 1.0D+00 / x**2
 !
@@ -36318,8 +36493,11 @@ function trigamma ( x )
 
   return
 end
-subroutine uniform_01_cdf ( x, cdf )
-
+elemental subroutine uniform_01_cdf ( x, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_01_cdf
+ !dir$ attributes forceinline :: uniform_01_cdf
+  !$omp declare simd(uniform_01_cdf)  linear(ref(x,cdf))
 !*****************************************************************************80
 !
 !! UNIFORM_01_CDF evaluates the Uniform 01 CDF.
@@ -36387,12 +36565,12 @@ subroutine uniform_01_cdf_inv ( cdf, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'UNIFORM_01_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'UNIFORM_01_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
   x = cdf
 
@@ -36429,7 +36607,10 @@ subroutine uniform_01_mean ( mean )
   return
 end
 subroutine uniform_01_order_sample ( n, seed, x )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_01_orde_sample
+ !dir$ attributes forceinline :: uniform_01_order_sample
+  
 !*****************************************************************************80
 !
 !! UNIFORM_01_ORDER_SAMPLE samples the Uniform 01 Order PDF.
@@ -36486,6 +36667,7 @@ subroutine uniform_01_order_sample ( n, seed, x )
   real ( kind = 8 ) x(n)
 
   v = 1.0D+00
+   !$omp simd
   do i = n, 1, -1
     u = r8_uniform_01 ( seed )
     v = v * u**( 1.0D+00 / real ( i, kind = 8 ) )
@@ -36538,7 +36720,10 @@ subroutine uniform_01_pdf ( x, pdf )
   return
 end
 function uniform_01_sample ( seed )
-
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_01_sample
+ !dir$ attributes forceinline :: uniform_01_sample
+  
 !*****************************************************************************80
 !
 !! UNIFORM_01_SAMPLE is a portable random number generator.
@@ -36662,8 +36847,10 @@ subroutine uniform_01_variance ( variance )
 
   return
 end
-subroutine uniform_cdf ( x, a, b, cdf )
-
+elemental subroutine uniform_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_cdf
+ !dir$ attributes forceinline :: uniform_cdf
 !*****************************************************************************80
 !
 !! UNIFORM_CDF evaluates the Uniform CDF.
@@ -36696,18 +36883,21 @@ subroutine uniform_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( x < a ) then
-    cdf = 0.0D+00
-  else if ( b < x ) then
-    cdf = 1.0D+00
-  else
+  !if ( x < a ) then
+  !  cdf = 0.0D+00
+  !else if ( b < x ) then
+  !  cdf = 1.0D+00
+ ! else
     cdf = ( x - a ) / ( b - a )
-  end if
+ ! end if
 
   return
 end
-subroutine uniform_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine uniform_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_cdf_inv
+ !dir$ attributes forceinline :: uniform_cdf_inv
+  !$omp declare simd(uniform_cdf_inv)  linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! UNIFORM_CDF_INV inverts the Uniform CDF.
@@ -36741,17 +36931,18 @@ subroutine uniform_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'UNIFORM_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+    !write ( *, '(a)' ) 'UNIFORM_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+  !end if
 
   x = a + ( b - a ) * cdf
 
   return
 end
+#if 0
 function uniform_check ( a, b )
 
 !*****************************************************************************80
@@ -36795,6 +36986,7 @@ function uniform_check ( a, b )
 
   return
 end
+#endif
 subroutine uniform_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -36871,16 +37063,19 @@ subroutine uniform_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   real ( kind = 8 ) x
 
-  if ( x < a .or. b < x ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < a .or. b < x ) then
+    !pdf = 0.0D+00
+ ! else
     pdf = 1.0D+00 / ( b - a )
-  end if
+ ! end if
 
   return
 end
-subroutine uniform_sample ( a, b, seed, x )
-
+elemental subroutine uniform_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_sample
+ !dir$ attributes forceinline :: uniform_sample
+  !$omp declare simd(uniform_sample)  uniform(seed) linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! UNIFORM_SAMPLE samples the Uniform PDF.
@@ -36922,8 +37117,11 @@ subroutine uniform_sample ( a, b, seed, x )
 
   return
 end
-subroutine uniform_variance ( a, b, variance )
-
+elemental subroutine uniform_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_variance
+ !dir$ attributes forceinline :: uniform_variance
+  
 !*****************************************************************************80
 !
 !! UNIFORM_VARIANCE returns the variance of the Uniform PDF.
@@ -36957,8 +37155,11 @@ subroutine uniform_variance ( a, b, variance )
 
   return
 end
-subroutine uniform_discrete_cdf ( x, a, b, cdf )
-
+elemental subroutine uniform_discrete_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_discrete_cdf
+ !dir$ attributes forceinline :: uniform_discrete_cdf
+  
 !*****************************************************************************80
 !
 !! UNIFORM_DISCRETE_CDF evaluates the Uniform Discrete CDF.
@@ -36991,18 +37192,21 @@ subroutine uniform_discrete_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( x < a ) then
-    cdf = 0.0D+00
-  else if ( b < x ) then
-    cdf = 1.0D+00
-  else
+  !if ( x < a ) then
+   ! cdf = 0.0D+00
+ ! else if ( b < x ) then
+  !  cdf = 1.0D+00
+!  else
     cdf = real ( x + 1 - a, kind = 8 ) / real ( b + 1 - a, kind = 8 )
-  end if
+ ! end if
 
   return
 end
-subroutine uniform_discrete_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine uniform_discrete_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_discrete_cdf_inv
+ !dir$ attributes forceinline :: uniform_discrete_cdf_inv
+  
 !*****************************************************************************80
 !
 !! UNIFORM_DISCRETE_CDF_INV inverts the Uniform Discrete CDF.
@@ -37040,12 +37244,12 @@ subroutine uniform_discrete_cdf_inv ( cdf, a, b, x )
   integer ( kind = 4 ) x
   real ( kind = 8 ) x2
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'UNIFORM_DISCRETE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'UNIFORM_DISCRETE_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   a2 = real ( a, kind = 8 ) - 0.5D+00
   b2 = real ( b, kind = 8 ) + 0.5D+00
@@ -37058,6 +37262,7 @@ subroutine uniform_discrete_cdf_inv ( cdf, a, b, x )
 
   return
 end
+#if 0
 function uniform_discrete_check ( a, b )
 
 !*****************************************************************************80
@@ -37102,6 +37307,7 @@ function uniform_discrete_check ( a, b )
 
   return
 end
+#endif
 subroutine uniform_discrete_mean ( a, b, mean )
 
 !*****************************************************************************80
@@ -37137,8 +37343,11 @@ subroutine uniform_discrete_mean ( a, b, mean )
 
   return
 end
-subroutine uniform_discrete_pdf ( x, a, b, pdf )
-
+elemental subroutine uniform_discrete_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_discrete_pdf
+ !dir$ attributes forceinline :: uniform_discrete_pdf
+  
 !*****************************************************************************80
 !
 !! UNIFORM_DISCRETE_PDF evaluates the Uniform discrete PDF.
@@ -37181,16 +37390,19 @@ subroutine uniform_discrete_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x < a .or. b < x ) then
-    pdf = 0.0D+00
-  else
+  !if ( x < a .or. b < x ) then
+  !  pdf = 0.0D+00
+ ! else
     pdf = 1.0D+00 / real ( b + 1 - a, kind = 8 )
-  end if
+ ! end if
 
   return
 end
-subroutine uniform_discrete_sample ( a, b, seed, x )
-
+elemental subroutine uniform_discrete_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_discrete_sample
+ !dir$ attributes forceinline :: uniform_discrete_sample
+  
 !*****************************************************************************80
 !
 !! UNIFORM_DISCRETE_SAMPLE samples the Uniform discrete PDF.
@@ -37232,8 +37444,11 @@ subroutine uniform_discrete_sample ( a, b, seed, x )
 
   return
 end
-subroutine uniform_discrete_variance ( a, b, variance )
-
+elemental subroutine uniform_discrete_variance ( a, b, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: uniform_discrete_variance
+ !dir$ attributes forceinline :: uniform_discrete_variance
+  
 !*****************************************************************************80
 !
 !! UNIFORM_DISCRETE_VARIANCE returns the variance of the Uniform discrete PDF.
@@ -37267,6 +37482,7 @@ subroutine uniform_discrete_variance ( a, b, variance )
 
   return
 end
+#if 0
 subroutine uniform_nsphere_sample ( n, seed, x )
 
 !*****************************************************************************80
@@ -37317,8 +37533,12 @@ subroutine uniform_nsphere_sample ( n, seed, x )
 
   return
 end
-subroutine von_mises_cdf ( x, a, b, cdf )
-
+#endif
+elemental subroutine von_mises_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: von_mises_cdf
+ !dir$ attributes forceinline :: von_mises_cdf
+  
 !*****************************************************************************80
 !
 !! VON_MISES_CDF evaluates the von Mises CDF.
@@ -37398,15 +37618,15 @@ subroutine von_mises_cdf ( x, a, b, cdf )
 !
 !  We expect -PI <= X - A <= PI.
 !
-  if ( x - a <= -pi ) then
-    cdf = 0.0D+00
-    return
-  end if
+  !if ( x - a <= -pi ) then
+  !  cdf = 0.0D+00
+   ! return
+ ! end if
 
-  if ( pi <= x - a ) then
-    cdf = 1.0D+00
-    return
-  end if
+ ! if ( pi <= x - a ) then
+ !   cdf = 1.0D+00
+  !  return
+ ! end if
 !
 !  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
 !
@@ -37475,8 +37695,11 @@ subroutine von_mises_cdf ( x, a, b, cdf )
 
   return
 end
-subroutine von_mises_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine von_mises_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: von_mises_cdf_inv
+ !dir$ attributes forceinline :: von_mises_cdf_inv
+  
 !*****************************************************************************80
 !
 !! VON_MISES_CDF_INV inverts the von Mises CDF.
@@ -37533,12 +37756,12 @@ subroutine von_mises_cdf_inv ( cdf, a, b, x )
   real ( kind = 8 ) x2
   real ( kind = 8 ) x3
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'VON_MISES_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+  !  write ( *, '(a)' ) 'VON_MISES_CDF_INV - Fatal error!'
+   ! write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+   ! stop
+ ! end if
 
   if ( cdf == 0.0D+00 ) then
     x = a - pi
@@ -37571,10 +37794,11 @@ subroutine von_mises_cdf_inv ( cdf, a, b, x )
     end if
 
     if ( it_max < it ) then
-      write ( *, '(a)' ) ' '
-      write ( *, '(a)' ) 'VON_MISES_CDF_INV - Fatal error!'
-      write ( *, '(a)' ) '  Iteration limit exceeded.'
-      stop
+      !write ( *, '(a)' ) ' '
+      !write ( *, '(a)' ) 'VON_MISES_CDF_INV - Fatal error!'
+     ! write ( *, '(a)' ) '  Iteration limit exceeded.'
+     ! stop
+     return
     end if
 
     if ( sign ( 1.0D+00, cdf3 - cdf ) == sign ( 1.0D+00, cdf1 - cdf ) ) then
@@ -37763,6 +37987,7 @@ subroutine von_mises_cdf_values ( n_data, a, b, x, fx )
 
   return
 end
+#if 0
 function von_mises_check ( a, b )
 
 !*****************************************************************************80
@@ -37823,8 +38048,12 @@ function von_mises_check ( a, b )
 
   return
 end
-subroutine von_mises_circular_variance ( a, b, circular_variance )
-
+#endif
+elemental subroutine von_mises_circular_variance ( a, b, circular_variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: von_mises_circular_variance
+ !dir$ attributes forceinline :: von_mises_circular_variance
+  
 !*****************************************************************************80
 !
 !! VON_MISES_CIRCULAR_VARIANCE returns the circular variance of the von Mises PDF.
@@ -37992,13 +38221,13 @@ subroutine von_mises_pdf ( x, a, b, pdf )
   real ( kind = 8 ), parameter :: pi = 3.141592653589793D+00
   real ( kind = 8 ) x
 
-  if ( x < a - pi ) then
-    pdf = 0.0D+00
-  else if ( x <= a + pi ) then
+  !if ( x < a - pi ) then
+  !  pdf = 0.0D+00
+  !else if ( x <= a + pi ) then
     pdf = exp ( b * cos ( x - a ) ) / ( 2.0D+00 * pi * bessel_i0 ( b ) )
-  else
-    pdf = 0.0D+00
-  end if
+ ! else
+ !   pdf = 0.0D+00
+ ! end if
 
   return
 end
@@ -38856,12 +39085,12 @@ function zeta ( p )
   real ( kind = 8 ) zsum_old
   real ( kind = 8 ) zeta
 
-  if ( p <= 1.0D+00 ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'ZETA - Fatal error!'
-    write ( *, '(a)' ) '  Exponent P <= 1.0.'
-    stop
-  else if ( p == 2.0D+00 ) then
+  !if ( p <= 1.0D+00 ) then
+   ! write ( *, '(a)' ) ' '
+   ! write ( *, '(a)' ) 'ZETA - Fatal error!'
+   ! write ( *, '(a)' ) '  Exponent P <= 1.0.'
+    !stop
+  if ( p == 2.0D+00 ) then
     zeta = pi**2 / 6.0D+00
   else if ( p == 3.0D+00 ) then
     zeta = 1.2020569032D+00
@@ -38921,6 +39150,7 @@ function zeta ( p )
 
   return
 end
+#if 0
 subroutine zipf_cdf ( x, a, cdf )
 
 !*****************************************************************************80
@@ -39281,3 +39511,4 @@ subroutine zipf_variance ( a, variance )
 
   return
 end
+#endif
