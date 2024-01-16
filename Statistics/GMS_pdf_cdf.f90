@@ -38141,8 +38141,11 @@ subroutine von_mises_mean ( a, b, mean )
 
   return
 end
-subroutine von_mises_pdf ( x, a, b, pdf )
-
+elemental subroutine von_mises_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: von_mises_pdf
+ !dir$ attributes forceinline :: von_mises_pdf
+  !$omp declare simd(von_mises_pdf)  linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! VON_MISES_PDF evaluates the von Mises PDF.
@@ -38231,8 +38234,11 @@ subroutine von_mises_pdf ( x, a, b, pdf )
 
   return
 end
-subroutine von_mises_sample ( a, b, seed, x )
-
+elemental elemental subroutine von_mises_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: von_mises_sample
+ !dir$ attributes forceinline :: von_mises_sample
+  !$omp declare simd(von_mises_sample) uniform(seed) linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! VON_MISES_SAMPLE samples the von Mises PDF.
@@ -38321,8 +38327,11 @@ subroutine von_mises_sample ( a, b, seed, x )
 
   return
 end
-subroutine weibull_cdf ( x, a, b, c, cdf )
-
+elemental subroutine weibull_cdf ( x, a, b, c, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_cdf
+ !dir$ attributes forceinline :: weibull_cdf
+  !$omp declare simd(weibull_cdf)  linear(ref(a,b,x,c,cdf))
 !*****************************************************************************80
 !
 !! WEIBULL_CDF evaluates the Weibull CDF.
@@ -38359,17 +38368,20 @@ subroutine weibull_cdf ( x, a, b, c, cdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x < a ) then
-    cdf = 0.0D+00
-  else
+  !if ( x < a ) then
+  !  cdf = 0.0D+00
+ ! else
     y = ( x - a ) / b
     cdf = 1.0D+00 - 1.0D+00 / exp ( y**c )
-  end if
+ ! end if
 
   return
 end
-subroutine weibull_cdf_inv ( cdf, a, b, c, x )
-
+elemental subroutine weibull_cdf_inv ( cdf, a, b, c, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_cdf_inv
+ !dir$ attributes forceinline :: weibull_cdf_inv
+  !$omp declare simd(weibull_cdf_inv)  linear(ref(a,b,x,c,cdf))
 !*****************************************************************************80
 !
 !! WEIBULL_CDF_INV inverts the Weibull CDF.
@@ -38405,12 +38417,12 @@ subroutine weibull_cdf_inv ( cdf, a, b, c, x )
   real ( kind = 8 ) cdf
   real ( kind = 8 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'WEIBULL_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+ ! if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+ !   write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'WEIBULL_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+ ! end if
 
   x = a + b * ( - log ( 1.0D+00 - cdf ) )**( 1.0D+00 / c )
 
@@ -38553,6 +38565,7 @@ subroutine weibull_cdf_values ( n_data, alpha, beta, x, fx )
 
   return
 end
+#if 0
 function weibull_check ( a, b, c )
 
 !*****************************************************************************80
@@ -38606,8 +38619,12 @@ function weibull_check ( a, b, c )
 
   return
 end
-subroutine weibull_mean ( a, b, c, mean )
-
+#endif
+elemental subroutine weibull_mean ( a, b, c, mean )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_mean
+ !dir$ attributes forceinline :: weibull_mean
+  !$omp declare simd(weibull_mean)  linear(ref(a,b,c,mean))
 !*****************************************************************************80
 !
 !! WEIBULL_MEAN returns the mean of the Weibull PDF.
@@ -38644,8 +38661,11 @@ subroutine weibull_mean ( a, b, c, mean )
 
   return
 end
-subroutine weibull_pdf ( x, a, b, c, pdf )
-
+elemental subroutine weibull_pdf ( x, a, b, c, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_pdf
+ !dir$ attributes forceinline :: weibull_pdf
+  !$omp declare simd(weibull_pdf)  linear(ref(a,b,x,c,pdf))
 !*****************************************************************************80
 !
 !! WEIBULL_PDF evaluates the Weibull PDF.
@@ -38693,22 +38713,25 @@ subroutine weibull_pdf ( x, a, b, c, pdf )
   real ( kind = 8 ) x
   real ( kind = 8 ) y
 
-  if ( x < a ) then
+  !if ( x < a ) then
 
-    pdf = 0.0D+00
+   ! pdf = 0.0D+00
 
-  else
+ ! else
 
     y = ( x - a ) / b
 
     pdf = ( c / b ) * y**( c - 1.0D+00 )  / exp ( y**c )
 
-  end if
+ ! end if
 
   return
 end
-subroutine weibull_sample ( a, b, c, seed, x )
-
+elemental subroutine weibull_sample ( a, b, c, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_sample
+ !dir$ attributes forceinline :: weibull_sample
+  !$omp declare simd(weibull_sample) linear(ref(a,b,x,c))
 !*****************************************************************************80
 !
 !! WEIBULL_SAMPLE samples the Weibull PDF.
@@ -38752,8 +38775,11 @@ subroutine weibull_sample ( a, b, c, seed, x )
 
   return
 end
-subroutine weibull_variance ( a, b, c, variance )
-
+elemental subroutine weibull_variance ( a, b, c, variance )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_variance
+ !dir$ attributes forceinline :: weibull_variance
+  !$omp declare simd(weibull_variance)  linear(ref(a,b,c,variance))
 !*****************************************************************************80
 !
 !! WEIBULL_VARIANCE returns the variance of the Weibull PDF.
@@ -38795,8 +38821,11 @@ subroutine weibull_variance ( a, b, c, variance )
 
   return
 end
-subroutine weibull_discrete_cdf ( x, a, b, cdf )
-
+elemental subroutine weibull_discrete_cdf ( x, a, b, cdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_discrete_cdf
+ !dir$ attributes forceinline :: weibull_discrete_cdf
+  !$omp declare simd(discrete_cdf)  linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! WEIBULL_DISCRETE_CDF evaluates the Discrete Weibull CDF.
@@ -38831,16 +38860,19 @@ subroutine weibull_discrete_cdf ( x, a, b, cdf )
   real ( kind = 8 ) cdf
   integer ( kind = 4 ) x
 
-  if ( x < 0 ) then
-    cdf = 0.0D+00
-  else
+  !if ( x < 0 ) then
+  !  cdf = 0.0D+00
+  !else
     cdf = 1.0D+00 - ( 1.0D+00 - a )**((x+1)**b)
-  end if
+ ! end if
 
   return
 end
-subroutine weibull_discrete_cdf_inv ( cdf, a, b, x )
-
+elemental subroutine weibull_discrete_cdf_inv ( cdf, a, b, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_discrete_cdf_inv 
+ !dir$ attributes forceinline :: weibull_discrete_cdf_inv 
+  !$omp declare simd(weibull_discrete_cdf_inv )  linear(ref(a,b,x,cdf))
 !*****************************************************************************80
 !
 !! WEIBULL_DISCRETE_CDF_INV inverts the Discrete Weibull CDF.
@@ -38876,18 +38908,19 @@ subroutine weibull_discrete_cdf_inv ( cdf, a, b, x )
   integer ( kind = 4 ) r8_ceiling
   integer ( kind = 4 ) x
 
-  if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
-    write ( *, '(a)' ) ' '
-    write ( *, '(a)' ) 'WEIBULL_DISCRETE_CDF_INV - Fatal error!'
-    write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
-    stop
-  end if
+  !if ( cdf < 0.0D+00 .or. 1.0D+00 < cdf ) then
+  !  write ( *, '(a)' ) ' '
+ !   write ( *, '(a)' ) 'WEIBULL_DISCRETE_CDF_INV - Fatal error!'
+  !  write ( *, '(a)' ) '  CDF < 0 or 1 < CDF.'
+  !  stop
+  !end if
 
   x = r8_ceiling ( &
     ( log ( 1.0D+00 - cdf ) / log ( 1.0D+00 - a ) )**( 1.0D+00 / b ) - 1.0D+00 )
 
   return
 end
+#if 0
 function weibull_discrete_check ( a, b )
 
 !*****************************************************************************80
@@ -38941,8 +38974,12 @@ function weibull_discrete_check ( a, b )
 
   return
 end
-subroutine weibull_discrete_pdf ( x, a, b, pdf )
-
+#endif
+elemental subroutine weibull_discrete_pdf ( x, a, b, pdf )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_discrete_pdf
+ !dir$ attributes forceinline :: weibull_discrete_pdf
+  !$omp declare simd(weibull_discrete_pdf )  linear(ref(a,b,x,pdf))
 !*****************************************************************************80
 !
 !! WEIBULL_DISCRETE_PDF evaluates the discrete Weibull PDF.
@@ -38983,16 +39020,19 @@ subroutine weibull_discrete_pdf ( x, a, b, pdf )
   real ( kind = 8 ) pdf
   integer ( kind = 4 ) x
 
-  if ( x < 0 ) then
-    pdf = 0.0D+00
-  else
+ ! if ( x < 0 ) then
+ !   pdf = 0.0D+00
+ ! else
     pdf = ( 1.0D+00 - a )**(x**b) - ( 1.0D+00 - a )**((x+1)**b)
-  end if
+ ! end if
 
   return
 end
-subroutine weibull_discrete_sample ( a, b, seed, x )
-
+elemental subroutine weibull_discrete_sample ( a, b, seed, x )
+!dir$ optimize:3
+ !dir$ attributes code_align : 32 :: weibull_discrete_sample
+ !dir$ attributes forceinline :: weibull_discrete_sample
+  !$omp declare simd(weibull_discrete_sample) uniform(seed) linear(ref(a,b,x))
 !*****************************************************************************80
 !
 !! WEIBULL_DISCRETE_SAMPLE samples the discrete Weibull PDF.
