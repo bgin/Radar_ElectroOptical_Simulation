@@ -48,7 +48,7 @@ module um_diffracted_waves
     ! Tab:5 col - Type and etc.. definitions
     ! Tab:10,11 col - Type , function and subroutine code blocks.
     
-    use mod_kinds,    only : i4,sp
+    use mod_kinds,    only : i1,i4,sp
     
     public
     implicit none
@@ -1281,66 +1281,244 @@ module um_diffracted_waves
           end if
        end subroutine dealloc_um_arrays_omp_sec
        
+       ! local helper
+       function nidxrw_diff() result(bdif)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  nidxrw_diff
+            !dir$ attributes forceinline ::  nidxrw_diff
+            logical(i1) :: bdif
+            integer(i4), automatic :: diff1,diff2,diff3
+            diff1 = nidsrw-niderw
+            diff2 = nidwrw-nidnrw
+            diff3 = diff1-diff2
+            if(diff3==0) then
+               bdif=.true.
+            else 
+               bdif=.false.
+            endif
+       end function nidxrw_diff
        
        subroutine rand_norm_init_idxrw_unroll4x()
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll4x
             !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll4x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll4x
-            use rand_scalar_distributions, only : random_normal
+            use rand_scalar_distributions, only : random_normal_clamped
             use urban_model
             ! Locals
             real(sp), automatic :: r00,r10,r20,r30
             real(sp), automatic :: r01,r11,r21,r31
             real(sp), automatic :: r02,r12,r22,r32
             real(sp), automatic :: r03,r13,r23,r33
-            integer(i4), automatic :: j,i
-            
-            do i=1, nbpc
-              !dir$ assume_aligned idsrw:32
-              !dir$ assume_aligned iderw:32
-              !dir$ assume_aligned idwrw:32
-              !dir$ assume_aligned idnrw:32
-              !dir$ vector aligned
-              !dir$ ivdep
-              !dir$ vector vectorlength(4)
-              !dir$ vector always
-              do j=1, nidsrw-4,4
-                 r00 = random_normal()
-                 idsrw(j+0,i) = r00
-                 r10 = random_normal()
-                 iderw(j+0,i) = r10
-                 r20 = random_normal()
-                 idwrw(j+0,i) = r20
-                 r30 = random_normal()
-                 idnrw(j+0,i) = r30
-                 r01 = random_normal()
-                 idsrw(j+1,i) = r01
-                 r11 = random_normal()
-                 iderw(j+1,i) = r11
-                 r21 = random_normal()
-                 idwrw(j+1,i) = r21
-                 r31 = random_normal()
-                 idnrw(j+1,i) = r31
-                 r02 = random_normal()
-                 idsrw(j+2,i) = r02
-                 r12 = random_normal()
-                 iderw(j+2,i) = r12
-                 r22 = random_normal()
-                 idwrw(j+2,i) = r22
-                 r32 = random_normal()
-                 idnrw(j+2,i) = r32
-                 r03 = random_normal()
-                 idsrw(j+3,i) = r03
-                 r13 = random_normal()
-                 iderw(j+3,i) = r13
-                 r23 = random_normal()
-                 idwrw(j+3,i) = r23
-                 r33 = random_normal()
-                 idnrw(j+3,i) = r33
-              end do
-           end do
+            integer(i4), automatic :: j,i,m,m1
+            if(nidxrw_diff()) then
+               m = mod(nidsrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ assume_aligned iderw:32
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idsrw(j+0,i) = r00
+                          r10 = random_normal_clamped()
+                          iderw(j+0,i) = r10
+                          r20 = random_normal_clamped()
+                          idwrw(j+0,i) = r20
+                          r30 = random_normal_clamped()
+                          idnrw(j+0,i) = r30
+                      end do
+                   end do
+                   if(nidsrw<4) return
+               end if
+               m1 = m+1
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ assume_aligned iderw:32
+               !dir$ assume_aligned idwrw:32
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,4
+                     r00 = random_normal_clamped()
+                     idsrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+0,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+0,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+0,i) = r30
+                     r01 = random_normal_clamped()
+                     idsrw(j+1,i) = r01
+                     r11 = random_normal_clamped()
+                     iderw(j+1,i) = r11
+                     r21 = random_normal_clamped()
+                     idwrw(j+1,i) = r21
+                     r31 = random_normal_clamped()
+                     idnrw(j+1,i) = r31
+                     r02 = random_normal_clamped()
+                     idsrw(j+2,i) = r02
+                     r12 = random_normal_clamped()
+                     iderw(j+2,i) = r12
+                     r22 = random_normal_clamped()
+                     idwrw(j+2,i) = r22
+                     r32 = random_normal_clamped()
+                     idnrw(j+2,i) = r32
+                     r03 = random_normal_clamped()
+                     idsrw(j+3,i) = r03
+                     r13 = random_normal_clamped()
+                     iderw(j+3,i) = r13
+                     r23 = random_normal_clamped()
+                     idwrw(j+3,i) = r23
+                     r33 = random_normal_clamped()
+                     idnrw(j+3,i) = r33
+                   end do
+               end do
+            else
+               m = mod(nidsrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idsrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidsrw<4) return
+               end if
+               m1 = m+1
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,4
+                     r00 = random_normal_clamped()
+                     idsrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idsrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idsrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idsrw(j+3,i) = r30
+                  end do
+               end do
+               m = mod(niderw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned iderw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          iderw(j+0,i) = r00
+                      end do
+                   end do
+                   if(niderw<4) return
+               end if
+               m1 = m+1
+               do i=1, nbpc
+               !dir$ assume_aligned iderw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, niderw,4
+                     r00 = random_normal_clamped()
+                     iderw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     iderw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     iderw(j+3,i) = r30
+                  end do
+               end do
+               m = mod(nidwrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idwrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidwrw<4) return
+               end if
+               m1 = m+1
+               do i=1, nbpc
+               !dir$ assume_aligned idwrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidwrw,4
+                     r00 = random_normal_clamped()
+                     idwrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idwrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idwrw(j+3,i) = r30
+                  end do
+               end do
+               m = mod(nidnrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idnrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidnrw<4) return
+               end if
+               m1 = m+1
+               do i=1, nbpc
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidnrw,4
+                     r00 = random_normal_clamped()
+                     idnrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idnrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idnrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+3,i) = r30
+                  end do
+               end do
+            end if 
        end subroutine rand_norm_init_idxrw_unroll4x
+       
+       
+      
 
 
 
