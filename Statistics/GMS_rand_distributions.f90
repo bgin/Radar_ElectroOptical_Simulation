@@ -106,7 +106,7 @@ CONTAINS
 !DIR$ ATTRIBUTES ALIGN : 32 :: random_normal
 #endif
 FUNCTION random_normal() RESULT(fn_val)
-  
+ 
 
 
 ! Adapted from the following Fortran 77 code
@@ -252,6 +252,7 @@ RETURN
 END FUNCTION random_gamma
 
 
+
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_gamma1
 !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma1
@@ -271,7 +272,9 @@ REAL(kind=sp)                :: fn_val
 
 ! Local variables
 REAL(kind=sp), SAVE  :: c, d
+#if defined(_OPENMP)
 !$omp threadprivate (c,d)
+#endif
 REAL(kind=sp)        :: u, v, x
 
 IF (first) THEN
@@ -306,11 +309,14 @@ RETURN
 END FUNCTION random_gamma1
 
 
+
+
+
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_gamma2
  !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma2
 #endif
-  FUNCTION random_gamma2(s,first) RESULT(fn_val)
+  FUNCTION random_gamma2(s) RESULT(fn_val)
     
 
 ! Adapted from Fortran 77 code from the book:
@@ -326,14 +332,15 @@ END FUNCTION random_gamma1
 !          (REAL < 1.0)
 
 REAL(kind=sp), INTENT(IN)    :: s
-LOGICAL, INTENT(IN)          :: first
+!LOGICAL, INTENT(IN)          :: first
 REAL(kind=sp)                :: fn_val
 
 !     Local variables
 REAL(kind=sp)       :: r, x, w
 REAL(kind=sp), SAVE :: a, p, c, uf, vr, d
+#if defined(_OPENMP)
 !$omp threadprivate(a,p,c,uf,vr,d)
-
+#endif
 
 IF (first) THEN                        ! Initialization, if necessary
   a = one - s
@@ -397,6 +404,26 @@ fn_val = two * random_gamma(half*ndf, first)
 RETURN
 
 END FUNCTION random_chisq
+
+#if defined (__ICC) || defined (__INTEL_COMPILER)
+ !DIR$ ATTRIBUTES INLINE :: random_chisq_clamped
+  !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq_clamped
+#endif
+FUNCTION random_chisq_clamped(ndf, first) RESULT(fn_val)
+ 
+
+
+!     Generates a random variate from the chi-squared distribution with
+!     ndf degrees of freedom
+
+INTEGER, INTENT(IN) :: ndf
+LOGICAL, INTENT(IN) :: first
+REAL(kind=sp)                :: fn_val
+
+fn_val = two * random_gamma_clamped(half*ndf, first)
+RETURN
+
+END FUNCTION random_chisq_clamped
 
 
 
@@ -486,10 +513,13 @@ REAL(kind=sp)                :: fn_val
 REAL(kind=sp), PARAMETER  :: aln4 = 1.3862944_sp
 REAL(kind=sp)             :: a, b, g, r, s, x, y, z
 REAL(kind=sp), SAVE       :: d, f, h, t, c
+#if defined(_OPENMP)
 !$omp threadprivate(d,f,h,t,c)
+#endif
 LOGICAL, SAVE    :: swap
+#if defined(_OPENMP)
 !$omp threadprivate(swap)
-
+#endif
 
 IF (first) THEN                        ! Initialization, if necessary
   a = aa
@@ -560,7 +590,9 @@ REAL(kind=sp)               :: fn_val
 
 !     Local variables
 REAL(kind=sp), SAVE      :: s, c, a, f, g
+#if defined(_OPENMP)
 !$omp threadprivate(s,c,a,f,g)
+#endif
 REAL(kind=sp)            :: r, x, v
 
 REAL(kind=sp), PARAMETER :: three = 3.0_sp, four = 4.0_sp, quart = 0.25_sp,   &
@@ -652,8 +684,9 @@ INTEGER(kind=i4), INTENT(OUT)  :: ier
 INTEGER(kind=i4)       :: j, i, m
 REAL(kind=sp)          :: y, v
 INTEGER(kind=i4), SAVE :: n2
+#if defined(_OPENMP)
 !$omp threadprivate(n2)
-
+#endif
 
 ier = 0
 IF (first) THEN                        ! Initialization, if necessary
@@ -705,6 +738,111 @@ RETURN
 END SUBROUTINE random_mvnorm
 
 
+#if defined (__ICC) || (defined __INTEL_COMPILER)
+ !DIR$ ATTRIBUTES INLINE :: random_mvnorm_clamped
+    !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm_clamped
+#endif
+  SUBROUTINE ramdom_mvnorm_clamped(n,h,d,f,first,x,ier)
+   
+
+
+! Adapted from Fortran 77 code from the book:
+!     Dagpunar, J. 'Principles of random variate generation'
+!     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
+
+! N.B. An extra argument, ier, has been added to Dagpunar's routine
+
+!     SUBROUTINE GENERATES AN N VARIATE RANDOM NORMAL
+!     VECTOR USING A CHOLESKY DECOMPOSITION.
+
+! ARGUMENTS:
+!        N = NUMBER OF VARIATES IN VECTOR
+!           (INPUT,INTEGER >= 1)
+!     H(J) = J'TH ELEMENT OF VECTOR OF MEANS
+!           (INPUT,REAL)
+!     X(J) = J'TH ELEMENT OF DELIVERED VECTOR
+!           (OUTPUT,REAL)
+!
+!    D(J*(J-1)/2+I) = (I,J)'TH ELEMENT OF VARIANCE MATRIX (J> = I)
+!            (INPUT,REAL)
+!    F((J-1)*(2*N-J)/2+I) = (I,J)'TH ELEMENT OF LOWER TRIANGULAR
+!           DECOMPOSITION OF VARIANCE MATRIX (J <= I)
+!            (OUTPUT,REAL)
+
+!    FIRST = .TRUE. IF THIS IS THE FIRST CALL OF THE ROUTINE
+!    OR IF THE DISTRIBUTION HAS CHANGED SINCE THE LAST CALL OF THE ROUTINE.
+!    OTHERWISE SET TO .FALSE.
+!            (INPUT,LOGICAL)
+
+!    ier = 1 if the input covariance matrix is not +ve definite
+!        = 0 otherwise
+
+INTEGER(kind=i4), INTENT(IN)   :: n
+REAL(kind=sp), INTENT(IN)      :: h(:), d(:)   ! d(n*(n+1)/2)
+REAL(kind=sp), INTENT(IN OUT)  :: f(:)         ! f(n*(n+1)/2)
+REAL(kind=sp), INTENT(OUT)     :: x(:)
+LOGICAL, INTENT(IN)   :: first
+INTEGER(kind=i4), INTENT(OUT)  :: ier
+
+!     Local variables
+INTEGER(kind=i4)       :: j, i, m
+REAL(kind=sp)          :: y, v
+INTEGER(kind=i4), SAVE :: n2
+#if defined(_OPENMP)
+!$omp threadprivate(n2)
+#endif
+
+ier = 0
+IF (first) THEN                        ! Initialization, if necessary
+  n2 = 2*n
+  IF (d(1) < zero) THEN
+    ier = 1
+    RETURN
+  END IF
+
+  f(1) = SQRT(d(1))
+  y = one/f(1)
+  DO j = 2,n
+    f(j) = d(1+j*(j-1)/2) * y
+  END DO
+
+  DO i = 2,n
+    v = d(i*(i-1)/2+i)
+    DO m = 1,i-1
+      v = v - f((m-1)*(n2-m)/2+i)**2
+    END DO
+
+    IF (v < zero) THEN
+      ier = 1
+      RETURN
+    END IF
+
+    v = SQRT(v)
+    y = one/v
+    f((i-1)*(n2-i)/2+i) = v
+    DO j = i+1,n
+      v = d(j*(j-1)/2+i)
+      DO m = 1,i-1
+        v = v - f((m-1)*(n2-m)/2+i)*f((m-1)*(n2-m)/2 + j)
+      END DO ! m = 1,i-1
+      f((i-1)*(n2-i)/2 + j) = v*y
+    END DO ! j = i+1,n
+  END DO ! i = 2,n
+END IF
+
+x(1:n) = h(1:n)
+DO j = 1,n
+  y = random_normal_clamped()
+  DO i = j,n
+    x(i) = x(i) + f((j-1)*(n2-j)/2 + i) * y
+  END DO ! i = j,n
+END DO ! j = 1,n
+
+RETURN
+END SUBROUTINE random_mvnorm
+
+
+
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
  !DIR$ ATTRIBUTES INLINE :: random_inv_gauss
@@ -733,8 +871,9 @@ REAL(kind=sp)                :: fn_val
 REAL(kind=sp)            :: ym, xm, r, w, r1, r2, x
 REAL(kind=sp), SAVE      :: a, c, d, e
 REAL(kind=sp), PARAMETER :: quart = 0.25_sp
+#if defined(_OPENMP)
 !$omp threadprivate(a,c,d,e)
-
+#endif
 
 IF (first) THEN                        ! Initialization, if necessary
   IF (h > quart*b*SQRT(vlarge)) THEN
@@ -839,16 +978,24 @@ INTEGER(kind=i4)             :: ival
 REAL(kind=sp)          :: b1, b2, c, c0, c1, c2, c3, del, difmuk, e, fk, fx, fy, g,  &
                  omega, px, py, t, u, v, x, xx
 REAL(kind=sp), SAVE    :: s, d, p, q, p0
+#if defined(_OPENMP)
 !$omp threadprivate(s,d,p,q,p0)
+#endif
 INTEGER(kind=i4)       :: j, k, kflag
 LOGICAL, SAVE :: full_init
+#if defined(_OPENMP)
 !$omp threadprivate(full_init)
+#endif
 INTEGER(kind=i4), SAVE :: l, m
+#if defined(_OPENMP)
 !$omp threadprivate(l,m)
+#endif
 !     ..
 !     .. Local Arrays ..
 REAL(kind=sp), SAVE    :: pp(35)
+#if defined(_OPENMP)
 !$omp threadprivate(pp)
+#endif
 !     ..
 !     .. Data statements ..
 REAL(kind=sp), PARAMETER :: a0 = -.5_sp, a1 = .3333333_sp, a2 = -.2500068_sp, a3 = .2000118_sp,  &
@@ -1029,6 +1176,266 @@ RETURN
 END FUNCTION random_Poisson
 
 
+#elif defined (__ICC) || defined (__INTEL_COMPILER)
+!DIR$ ATTRIBUTES ALIGN : 32 :: random_Poisson_clamped
+#endif
+  FUNCTION random_Poisson_clamped(mu, first) RESULT(ival)
+    
+
+!**********************************************************************
+!     Translated to Fortran 90 by Alan Miller from:
+!                           RANLIB
+!
+!     Library of Fortran Routines for Random Number Generation
+!
+!                    Compiled and Written by:
+!
+!                         Barry W. Brown
+!                          James Lovato
+!
+!             Department of Biomathematics, Box 237
+!             The University of Texas, M.D. Anderson Cancer Center
+!             1515 Holcombe Boulevard
+!             Houston, TX      77030
+!
+! This work was supported by grant CA-16672 from the National Cancer Institute.
+
+!                    GENerate POIsson random deviate
+
+!                            Function
+
+! Generates a single random deviate from a Poisson distribution with mean mu.
+
+!                            Arguments
+
+!     mu --> The mean of the Poisson distribution from which
+!            a random deviate is to be generated.
+!                              REAL mu
+
+!                              Method
+
+!     For details see:
+
+!               Ahrens, J.H. and Dieter, U.
+!               Computer Generation of Poisson Deviates
+!               From Modified Normal Distributions.
+!               ACM Trans. Math. Software, 8, 2
+!               (June 1982),163-179
+
+!     TABLES: COEFFICIENTS A0-A7 FOR STEP F. FACTORIALS FACT
+!     COEFFICIENTS A(K) - FOR PX = FK*V*V*SUM(A(K)*V**K)-DEL
+
+!     SEPARATION OF CASES A AND B
+
+!     .. Scalar Arguments ..
+REAL(kind=sp), INTENT(IN)    :: mu
+LOGICAL,       INTENT(IN) :: first
+INTEGER(kind=i4)             :: ival
+!     ..
+!     .. Local Scalars ..
+REAL(kind=sp)          :: b1, b2, c, c0, c1, c2, c3, del, difmuk, e, fk, fx, fy, g,  &
+                 omega, px, py, t, u, v, x, xx
+REAL(kind=sp), SAVE    :: s, d, p, q, p0
+#if defined(_OPENMP)
+!$omp threadprivate(s,d,p,q,p0)
+#endif
+INTEGER(kind=i4)       :: j, k, kflag
+LOGICAL, SAVE :: full_init
+#if defined(_OPENMP)
+!$omp threadprivate(full_init)
+#endif
+INTEGER(kind=i4), SAVE :: l, m
+#if defined(_OPENMP)
+!$omp threadprivate(l,m)
+#endif
+!     ..
+!     .. Local Arrays ..
+REAL(kind=sp), SAVE    :: pp(35)
+#if defined(_OPENMP)
+!$omp threadprivate(pp)
+#endif
+!     ..
+!     .. Data statements ..
+REAL(kind=sp), PARAMETER :: a0 = -.5_sp, a1 = .3333333_sp, a2 = -.2500068_sp, a3 = .2000118_sp,  &
+                   a4 = -.1661269_sp, a5 = .1421878_sp, a6 = -.1384794_sp,   &
+                   a7 = .1250060_sp
+
+REAL(kind=sp), PARAMETER :: fact(10) = (/ 1._sp, 1._sp, 2._sp, 6._sp, 24._sp, 120._sp, 720._sp, 5040._sp,  &
+                                 40320._sp, 362880._sp /)
+
+!     ..
+!     .. Executable Statements ..
+IF (mu > 10.0_sp) THEN
+!     C A S E  A. (RECALCULATION OF S, D, L IF MU HAS CHANGED)
+
+  IF (first) THEN
+    s = SQRT(mu)
+    d = 6.0_sp*mu*mu
+
+!             THE POISSON PROBABILITIES PK EXCEED THE DISCRETE NORMAL
+!             PROBABILITIES FK WHENEVER K >= M(MU). L=IFIX(MU-1.1484)
+!             IS AN UPPER BOUND TO M(MU) FOR ALL MU >= 10 .
+
+    l = mu - 1.1484_sp
+    full_init = .false.
+  END IF
+
+
+!     STEP N. NORMAL SAMPLE - random_normal() FOR STANDARD NORMAL DEVIATE
+
+  g = mu + s*random_normal_clamped()
+  IF (g > 0.0_sp) THEN
+    ival = g
+
+!     STEP I. IMMEDIATE ACCEPTANCE IF ival IS LARGE ENOUGH
+
+    IF (ival>=l) RETURN
+
+!     STEP S. SQUEEZE ACCEPTANCE - SAMPLE U
+
+    fk = ival
+    difmuk = mu - fk
+    CALL RANDOM_NUMBER(u)
+    IF (d*u >= difmuk*difmuk*difmuk) RETURN
+  END IF
+
+!     STEP P. PREPARATIONS FOR STEPS Q AND H.
+!             (RECALCULATIONS OF PARAMETERS IF NECESSARY)
+!             .3989423=(2*PI)**(-.5)  .416667E-1=1./24.  .1428571=1./7.
+!             THE QUANTITIES B1, B2, C3, C2, C1, C0 ARE FOR THE HERMITE
+!             APPROXIMATIONS TO THE DISCRETE NORMAL PROBABILITIES FK.
+!             C=.1069/MU GUARANTEES MAJORIZATION BY THE 'HAT'-FUNCTION.
+
+  IF (.NOT. full_init) THEN
+    omega = .3989423_sp/s
+    b1 = .4166667E-1_sp/mu
+    b2 = .3_sp*b1*b1
+    c3 = .1428571_sp*b1*b2
+    c2 = b2 - 15._sp*c3
+    c1 = b1 - 6._sp*b2 + 45._sp*c3
+    c0 = 1. - b1 + 3._sp*b2 - 15._sp*c3
+    c = .1069_sp/mu
+    full_init = .true.
+  END IF
+
+  IF (g < 0.0_sp) GO TO 50
+
+!             'SUBROUTINE' F IS CALLED (KFLAG=0 FOR CORRECT RETURN)
+
+  kflag = 0
+  GO TO 70
+
+!     STEP Q. QUOTIENT ACCEPTANCE (RARE CASE)
+
+  40 IF (fy-u*fy <= py*EXP(px-fx)) RETURN
+
+!     STEP E. EXPONENTIAL SAMPLE - random_exponential() FOR STANDARD EXPONENTIAL
+!             DEVIATE E AND SAMPLE T FROM THE LAPLACE 'HAT'
+!             (IF T <= -.6744 THEN PK < FK FOR ALL MU >= 10.)
+
+  50 e = random_exponential()
+  CALL RANDOM_NUMBER(u)
+  u = u + u - one
+  t = 1.8_sp + SIGN(e, u)
+  IF (t <= (-.6744_sp)) GO TO 50
+  ival = mu + s*t
+  fk = ival
+  difmuk = mu - fk
+
+!             'SUBROUTINE' F IS CALLED (KFLAG=1 FOR CORRECT RETURN)
+
+  kflag = 1
+  GO TO 70
+
+!     STEP H. HAT ACCEPTANCE (E IS REPEATED ON REJECTION)
+
+  60 IF (c*ABS(u) > py*EXP(px+e) - fy*EXP(fx+e)) GO TO 50
+  RETURN
+
+!     STEP F. 'SUBROUTINE' F. CALCULATION OF PX, PY, FX, FY.
+!             CASE ival < 10 USES FACTORIALS FROM TABLE FACT
+
+  70 IF (ival>=10) GO TO 80
+  px = -mu
+  py = mu**ival/fact(ival+1)
+  GO TO 110
+
+!             CASE ival >= 10 USES POLYNOMIAL APPROXIMATION
+!             A0-A7 FOR ACCURACY WHEN ADVISABLE
+!             .8333333E-1=1./12.  .3989423=(2*PI)**(-.5)
+
+  80 del = .8333333E-1_sp/fk
+  del = del - 4.8_sp*del*del*del
+  v = difmuk/fk
+  IF (ABS(v)>0.25) THEN
+    px = fk*LOG(one + v) - difmuk - del
+  ELSE
+    px = fk*v*v* (((((((a7*v+a6)*v+a5)*v+a4)*v+a3)*v+a2)*v+a1)*v+a0) - del
+
+  END IF
+  py = .3989423_sp/SQRT(fk)
+  110 x = (half - difmuk)/s
+  xx = x*x
+  fx = -half*xx
+  fy = omega* (((c3*xx + c2)*xx + c1)*xx + c0)
+  IF (kflag <= 0) GO TO 40
+  GO TO 60
+
+!---------------------------------------------------------------------------
+!     C A S E  B.    mu < 10
+!     START NEW TABLE AND CALCULATE P0 IF NECESSARY
+
+ELSE
+  IF (first) THEN
+    m = MAX(1, INT(mu))
+    l = 0
+    p = EXP(-mu)
+    q = p
+    p0 = p
+  END IF
+
+!     STEP U. UNIFORM SAMPLE FOR INVERSION METHOD
+
+  DO
+    CALL RANDOM_NUMBER(u)
+    ival = 0
+    IF (u <= p0) RETURN
+
+!     STEP T. TABLE COMPARISON UNTIL THE END PP(L) OF THE
+!             PP-TABLE OF CUMULATIVE POISSON PROBABILITIES
+!             (0.458=PP(9) FOR MU=10)
+
+    IF (l == 0) GO TO 150
+    j = 1
+    IF (u > 0.458_sp) j = MIN(l, m)
+    DO k = j, l
+      IF (u <= pp(k)) GO TO 180
+    END DO
+    IF (l == 35) CYCLE
+
+!     STEP C. CREATION OF NEW POISSON PROBABILITIES P
+!             AND THEIR CUMULATIVES Q=PP(K)
+
+    150 l = l + 1
+    DO k = l, 35
+      p = p*mu / k
+      q = q + p
+      pp(k) = q
+      IF (u <= q) GO TO 170
+    END DO
+    l = 35
+  END DO
+
+  170 l = k
+  180 ival = k
+  RETURN
+END IF
+
+RETURN
+END FUNCTION random_Poisson
+
+
+
 
 #if defined (__ICC) || defined (__INTEL_COMPILER)
 !DIR$ ATTRIBUTES INLINE :: random_binomial1
@@ -1062,10 +1469,14 @@ INTEGER(kind=i4)             :: ival
 
 INTEGER(kind=i4)         :: ru, rd
 INTEGER(kind=i4), SAVE   :: r0
+#if defined(_OPENMP)
 !$omp threadprivate(r0)
+#endif
 REAL(kind=sp)            :: u, pd, pu
 REAL(kind=sp), SAVE      :: odds_ratio, p_r
-!$omp threadprivate(odds_ratio)
+#if defined(_OPENMP)
+!$omp threadprivate(odds_ratio,p_r)
+#endif
 REAL(kind=sp), PARAMETER :: zero = 0.0_sp, one = 1.0_sp
 
 IF (first) THEN
@@ -1283,15 +1694,20 @@ LOGICAL, INTENT(IN) :: first
 INTEGER(kind=i4)            :: ival
 !     ..
 !     .. Local Scalars ..
-REAL(kind=sp)            :: alv, amaxp, f, f1, f2, u, v, w, w2, x, x1, x2, ynorm, z, z2
+REAL(kind=sp)            :: alv, amaxp, f, if1, f1, if2,f2, u, v, iw,w, iw2,w2, x, ix1,x1, ix2,x2, ynorm, iz,z, iz2,z2
 REAL(kind=sp), PARAMETER :: zero = 0.0_sp, half = 0.5_sp, one = 1.0_sp
+REAL(kind=sp), PARAMETER :: C000000601250601250601251 = 0.00000601250601250601251_sp
 INTEGER(kind=i4)         :: i, ix, ix1, k, mp
 INTEGER(kind=i4), SAVE   :: m
+#if defined(_OPENMP)
 !$omp threadprivate(m)
+#endif
 REAL(kind=sp), SAVE      :: p, q, xnp, ffm, fm, xnpq, p1, xm, xl, xr, c, al, xll,  &
                    xlr, p2, p3, p4, qn, r, g
+#if defined(_OPENMP)
 !$omp threadprivate(p, q, xnp, ffm, fm, xnpq, p1, xm, xl, xr, c, al, xll)
 !$omp threadprivate(xlr, p2, p3, p4, qn, r, g)
+#endif
 
 !     ..
 !     .. Executable Statements ..
@@ -1404,18 +1820,38 @@ IF (xnp > 30._sp) THEN
 !     THE FINAL ACCEPTANCE/REJECTION TEST
 
   x1 = ix + 1
+  ix1= 1.0_sp/x1
   f1 = fm + one
-  z = n + 1 - fm
-  w = n - ix + one
+  if1= 1.0_sp/f1
+  z  = n + 1 - fm
+  iz = 1.0_sp/z
+  w  = n - ix + one
+  iw = 1.0_sp/w
   z2 = z * z
-  x2 = x1 * x1
-  f2 = f1 * f1
-  w2 = w * w
+  iz2 = 1.0_sp/z2
+  x2  = x1 * x1
+  ix2 = 1.0_sp/x2
+  f2  = f1 * f1
+  if2 = 1.0_sp/f2
+  w2  = w * w
+  iw2 = 1.0_sp/w2
+#if 0
   IF (alv - (xm*LOG(f1/x1) + (n-m+half)*LOG(z/w) + (ix-m)*LOG(w*p/(x1*q)) +    &
       (13860._sp-(462._sp-(132._sp-(99._sp-140._sp/f2)/f2)/f2)/f2)/f1/166320._sp +               &
       (13860._sp-(462._sp-(132._sp-(99._sp-140._sp/z2)/z2)/z2)/z2)/z/166320._sp +                &
       (13860._sp-(462._sp-(132._sp-(99._sp-140._sp/x2)/x2)/x2)/x2)/x1/166320._sp +               &
       (13860._sp-(462._sp-(132._sp-(99._sp-140._sp/w2)/w2)/w2)/w2)/w/166320._sp) > zero) THEN
+    GO TO 20
+  ELSE
+    GO TO 110
+  END IF
+#endif
+
+ IF (alv - (xm*LOG(f1/x1) + (n-m+half)*LOG(z/w) + (ix-m)*LOG(w*p/(x1*q)) +    &
+      (13860._sp-(462._sp-(132._sp-(99._sp-140._sp*if2)*if2)*if2)*if2)*if1*C000000601250601250601251 +    &
+      (13860._sp-(462._sp-(132._sp-(99._sp-140._sp*iz2)*iz2)*iz2)*iz2)*iz*C000000601250601250601251  +    &
+      (13860._sp-(462._sp-(132._sp-(99._sp-140._sp*ix2)*ix2)*ix2)*ix2)*ix1*C000000601250601250601251 +    &
+      (13860._sp-(462._sp-(132._sp-(99._sp-140._sp*iw2)*iw2)*iw2)*iw2)*iw*C000000601250601250601251) > zero) THEN
     GO TO 20
   ELSE
     GO TO 110
@@ -1554,10 +1990,14 @@ REAL                 :: fn_val
 
 INTEGER          :: j, n
 INTEGER, SAVE    :: nk
+#if defined(_OPENMP)
 !$omp threadprivate(nk)
+#endif
 REAL, PARAMETER  :: pi = 3.14159265_sp
 REAL, SAVE       :: p(20), theta(0:20)
+#if defined(_OPENMP)
 !$omp threadprivate(p,theta)
+#endif
 REAL             :: sump, r, th, lambda, rlast
 REAL (dp)        :: dk
 
