@@ -207,10 +207,15 @@ END DO
 !     Return ratio of P's coordinates as the normal deviate
 ! Added clamping test
   tmp = v/u
-  if(tmp>=C157079632679489661923132) fn_val=C147079632679489661923132
-  if(tmp<0.0_sp) fn_val=tmp*posv
-  if(tmp==0.0_sp.or.tmp<C01) fn_val=C01
-  fn_val = tmp
+  if(tmp>=C157079632679489661923132) then 
+      fn_val=C147079632679489661923132
+  else if(tmp<0.0_sp) then 
+      fn_val=tmp*posv
+  else if(tmp==0.0_sp.or.tmp<C01) then 
+      fn_val=C01
+  else
+      fn_val=tmp
+  end if
 RETURN
 
 END FUNCTION random_normal_clamped
@@ -243,7 +248,7 @@ REAL(kind=sp)                :: fn_val
 IF (s > one) THEN
   fn_val = random_gamma1(s, first)
 ELSE IF (s < one) THEN
-  fn_val = random_gamma2(s, first)
+  fn_val = random_gamma2(s)
 ELSE
   fn_val = random_exponential()
 END IF
@@ -405,25 +410,7 @@ RETURN
 
 END FUNCTION random_chisq
 
-#if defined (__ICC) || defined (__INTEL_COMPILER)
- !DIR$ ATTRIBUTES INLINE :: random_chisq_clamped
-  !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq_clamped
-#endif
-FUNCTION random_chisq_clamped(ndf, first) RESULT(fn_val)
- 
 
-
-!     Generates a random variate from the chi-squared distribution with
-!     ndf degrees of freedom
-
-INTEGER, INTENT(IN) :: ndf
-LOGICAL, INTENT(IN) :: first
-REAL(kind=sp)                :: fn_val
-
-fn_val = two * random_gamma_clamped(half*ndf, first)
-RETURN
-
-END FUNCTION random_chisq_clamped
 
 
 
@@ -453,6 +440,50 @@ DO
 END DO
 
 fn_val = -LOG(r)
+RETURN
+
+END FUNCTION random_exponential
+
+
+#if defined (__ICC) || defined (__INTEL_COMPILER)
+!DIR$ ATTRIBUTES INLINE :: random_exponential_clamped
+!DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential_clamped
+#endif
+  FUNCTION random_exponential_clamped() RESULT(fn_val)
+    
+
+! Adapted from Fortran 77 code from the book:
+!     Dagpunar, J. 'Principles of random variate generation'
+!     Clarendon Press, Oxford, 1988.   ISBN 0-19-852202-9
+
+! FUNCTION GENERATES A RANDOM VARIATE IN [0,INFINITY) FROM
+! A NEGATIVE EXPONENTIAL DlSTRIBUTION WlTH DENSITY PROPORTIONAL
+! TO EXP(-random_exponential), USING INVERSION.
+
+REAL(kind=sp)  :: fn_val
+REAL(kind=sp), parameter :: C01 = 0.1_sp ! angmin
+REAL(kind=sp), parameter :: C147079632679489661923132 = 1.47079632679489661923132_sp ! angmax
+REAL(kind=sp), parameter :: posv   = -1.0_sp
+REAL(kind=sp), parameter :: C157079632679489661923132 = 1.57079632679489661923132_sp
+
+!     Local variable
+REAL(kind=sp)  :: r,tmp
+
+DO
+  CALL RANDOM_NUMBER(r)
+  IF (r > zero) EXIT
+END DO
+
+tmp = -LOG(r)
+if(tmp>=C157079632679489661923132) then
+    fn_val=C147079632679489661923132
+else if(tmp<zero) then
+   fn_val=tmp*posv
+else if(tmp==zero.or.tmp<C01) then
+   fn_val=C01
+else
+fn_val = tmp
+end if
 RETURN
 
 END FUNCTION random_exponential
