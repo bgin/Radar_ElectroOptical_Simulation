@@ -1,4 +1,4 @@
-MODULE mod_vec_rand_distr
+MODULE vec_rand_distributions
 ! A module for random number generation from the following distributions:
 !
 !     Distribution                    Function/subroutine name
@@ -133,10 +133,10 @@ CONTAINS
 
 #endif
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_normal_ymm8r4() result(vrand) !GCC$ ATTRIBUTES hot :: random_normal_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_normal_ymm8r4 !GCC$ ATTRIBUTES inline :: random_normal_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
+
 function random_normal_ymm8r4() result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_normal_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_normal_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_normal_ymm8r4
@@ -187,10 +187,10 @@ function random_normal_ymm8r4() result(vrand)
   vrand = v.v/u.v
 end function random_normal_ymm8r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_normal_zmm16r4() result(vrand) !GCC$ ATTRIBUTES hot :: random_normal_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_normal_zmm16r4 !GCC$ ATTRIBUTES inline :: random_normal_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
+
 function random_normal_zmm16r4() result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_normal_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_normal_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_normal_ymm8r4
@@ -243,10 +243,9 @@ end function random_normal_zmm16r4
 
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma_ymm8r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma_ymm8r4 !GCC$ ATTRIBUTES inline :: random_gamma_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma_ymm8r4(s,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma_ymm8r4
@@ -265,10 +264,9 @@ function random_gamma_ymm8r4(s,first) result(vrand)
 end function random_gamma_ymm8r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma_zmm16r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma_zmm16r4 !GCC$ ATTRIBUTES inline :: random_gamma_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma_zmm16r4(s,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma_zmm16r4
@@ -291,10 +289,9 @@ end function random_gamma_zmm16r4
 
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma1_ymm8r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma1_ymm8r4 !GCC$ ATTRIBUTES inline :: random_gamma1_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma1_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma1_ymm8r4(s,first)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma1_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma1_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma1_ymm8r4
@@ -335,10 +332,9 @@ function random_gamma1_ymm8r4(s,first)
   end do
 end function random_gamma1_ymm8r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma1_zmm16r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma1_zmm16r4 !GCC$ ATTRIBUTES inline :: random_gamma1_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma1_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma1_zmm16r4(s,first)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma1_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma1_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma1_zmm16r4
@@ -381,10 +377,9 @@ end function random_gamma1_zmm16r4
   
   
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma2_ymm8r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma2_ymm8r4 !GCC$ ATTRIBUTES inline :: random_gamma2_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma2_ymm8r4 
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma2_ymm8r4(s,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma2_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma2_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma2_ymm8r4
@@ -437,10 +432,9 @@ function random_gamma2_ymm8r4(s,first) result(vrand)
 end function random_gamma2_ymm8r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_gamma2_zmm16r4(s,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_gamma2_zmm16r4 !GCC$ ATTRIBUTES inline :: random_gamma2_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_gamma2_zmm16r4 
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_gamma2_zmm16r4(s,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_gamma2_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_gamma2_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_gamma2_zmm16r4
@@ -492,10 +486,9 @@ function random_gamma2_zmm16r4(s,first) result(vrand)
   vrand.v = x.v
 end function random_gamma2_zmm16r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_chisq_ymm8r4(ndf,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_chisq_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_chisq_ymm8r4 !GCC$ ATTRIBUTES inline :: random_chisq_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_chisq_ymm8r4(ndf,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_chisq_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_chisq_ymm8r4
@@ -507,10 +500,9 @@ function random_chisq_ymm8r4(ndf,first) result(vrand)
   vrand.v = v8r4_n2.v*random_gamma_ymm8r4(v8r4_half.v*ndf.v,first)
 end function random_chisq_ymm8r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_chisq_zmm16r4(ndf,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_chisq_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_chisq_zmm16r4 !GCC$ ATTRIBUTES inline :: random_chisq_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_chisq_zmm16r4(ndf,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_chisq_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_chisq_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_chisq_zmm16r4
@@ -523,10 +515,9 @@ function random_chisq_zmm16r4(ndf,first) result(vrand)
 end function random_chisq_zmm16r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_exponential_ymm8r4() result(vrand) !GCC$ ATTRIBUTES hot :: random_exponential_ymm8r4 !GCC$ ATTRIBUTES inline :: random_exponential_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_exponential_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
   function random_exponential_ymm8r4() result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER  
     !DIR$ ATTRIBUTES INLINE :: random_exponential_ymm8r4
     !DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential_ymm8r4
     !DIR$ ATTRIBUTES VECTOR :: random_exponential_ymm8r4
@@ -549,10 +540,9 @@ function random_exponential_ymm8r4() result(vrand) !GCC$ ATTRIBUTES hot :: rando
 end function random_exponential_ymm8r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_exponential_zmm16r4() result(vrand) !GCC$ ATTRIBUTES hot :: random_exponential_zmm16r4 !GCC$ ATTRIBUTES inline :: random_exponential_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_exponential_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
   function random_exponential_zmm16r4() result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER  
     !DIR$ ATTRIBUTES INLINE :: random_exponential_zmm16r4
     !DIR$ ATTRIBUTES ALIGN : 32 :: random_exponential_zmm16r4
     !DIR$ ATTRIBUTES VECTOR :: random_exponential_zmm16r4
@@ -574,10 +564,9 @@ function random_exponential_zmm16r4() result(vrand) !GCC$ ATTRIBUTES hot :: rand
     vrand.v = -log(r.v)
 end function random_exponential_zmm16r4  
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_weibull_ymm8r4(a) result(vrand) !GCC$ ATTRIBUTES hot :: random_weibull_ymm8r4 !GCC$ ATTRIBUTES inline :: random_weibull_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_weibull_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_weibull_ymm8r4(a) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_weibull_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_weibull_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_wiebull_ymm8r4
@@ -593,10 +582,9 @@ function random_weibull_ymm8r4(a) result(vrand)
   vrand.v = random_exponentional_ymm8r4()**(v8r4_n1.v/a.v)
 end function random_weibull_ymm8r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_weibull_zmm16r4(a) result(vrand) !GCC$ ATTRIBUTES hot :: random_weibull_zmm16r4 !GCC$ ATTRIBUTES inline :: random_weibull_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_weibull_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_weibull_zmm16r4(a) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_weibull_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_weibull_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_wiebull_zmm16r4
@@ -613,10 +601,9 @@ function random_weibull_zmm16r4(a) result(vrand)
 end function random_weibull_ymm8r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_beta_ymm8r4(aa,bb,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_beta_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_beta_ymm8r4 !GCC$ ATTRIBUTES inline :: random_beta_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_beta_ymm8r4(aa,bb,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
     !DIR$ ATTRIBUTES INLINE :: random_beta_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_beta_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_beta_ymm8r4
@@ -694,10 +681,9 @@ function random_beta_ymm8r4(aa,bb,first) result(vrand)
 end function random_beta_ymm8r4
   
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_beta_zmm16r4(aa,bb,first) result(vrand) !GCC$ ATTRIBUTES hot :: random_beta_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_beta_zmm16r4 !GCC$ ATTRIBUTES inline :: random_beta_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_beta_zmm16r4(aa,bb,first) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
     !DIR$ ATTRIBUTES INLINE :: random_beta_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_beta_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_beta_zmm16r4
@@ -775,10 +761,9 @@ function random_beta_zmm16r4(aa,bb,first) result(vrand)
 end function random_beta_zmm16r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_t_ymm8r4(m) result(vrand) !GCC$ ATTRIBUTES hot :: random_t_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: random_t_ymm8r4 !GCC$ ATTRIBUTES inline :: random_t_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_t_ymm8r4(m) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_t_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_t_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_t_ymm8r4
@@ -836,10 +821,9 @@ function random_t_ymm8r4(m) result(vrand)
   vrand.v = x.v
 end function random_t_ymm8r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function random_t_zmm16r4(m) result(vrand) !GCC$ ATTRIBUTES hot :: random_t_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: random_t_zmm16r4 !GCC$ ATTRIBUTES inline :: random_t_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function random_t_zmm16r4(m) result(vrand)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_t_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_t_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_t_zmm16r4
@@ -897,10 +881,9 @@ function random_t_zmm16r4(m) result(vrand)
   vrand.v = x.v
 end function random_t_zmm16r4
 
-#if defined __GFORTAN__ && !defined __INTEL_COMPILER
-subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier) !GCC$ ATTRIBUTES aligned(32) :: random_mvnorm_ymm8r4 !GCC$ ATTRIBUTES hot :: random_mvnorm_ymm8r4 !GCC$ ATTRIBUTES inline :: random_mvnorm_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_mvnorm_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: random_mvnorm_ymm8r4
@@ -940,17 +923,11 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
   !        = 0 otherwise
   integer(kind=i4),             intent(in) :: n
   type(YMM8r4_t), dimension(:), intent(in) :: h,d
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED h:32,d:32
-#endif
+
   type(YMM8r4_t), dimension(:), intent(inout) :: f
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED f:32
-#endif
+
   type(YMM8r4_t), dimension(:), intent(out)  :: x
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED x:32
-#endif
+
   logical(kind=i4),             intent(in)   :: first
   integer(kind=i4),             intent(in)   :: ier
   ! Locals
@@ -970,8 +947,11 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
      f(1).v = sqrt(d(1).v)
      y.v = v8r4_n1.v/f(1).v
 #if defined __ICC || defined __INTEL_COMPILER
-     !DIR$ VECTOR ALWAYS
-     !DIR$ VECTOR ALIGNED
+      !DIR$ VECTOR ALWAYS
+      !DIR$ VECTOR ALIGNED
+      !DIR$ ASSUME_ALIGNED d:32
+      !DIR$ ASSUME_ALIGNED f:32
+      
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:32,d:32,y:32)
 #endif
@@ -984,6 +964,7 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:32
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:32)
 #endif
@@ -1005,6 +986,7 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:32
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:32)
 #endif
@@ -1024,6 +1006,8 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:32
+     !DIR$ ASSUME_ALIGNED x:32
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:32,x:32)
 #endif     
@@ -1033,10 +1017,10 @@ subroutine random_mvnorm_ymm8r4(n,h,d,f,first,x,ier)
   end do
 end subroutine random_mvnorm_ymm8r4
 
-#if defined __GFORTAN__ && !defined __INTEL_COMPILER
-subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier) !GCC$ ATTRIBUTES aligned(32) :: random_mvnorm_zmm16r4 !GCC$ ATTRIBUTES hot :: random_mvnorm_zmm16r4 !GCC$ ATTRIBUTES inline :: random_mvnorm_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
+
 subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: random_mvnorm_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: random_mvnorm_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: random_mvnorm_zmm16r4
@@ -1076,17 +1060,11 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
   !        = 0 otherwise
   integer(kind=i4),             intent(in) :: n
   type(ZMM16r4_t), dimension(:), intent(in) :: h,d
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED h:64,d:64
-#endif
+
   type(ZMM16r4_t), dimension(:), intent(inout) :: f
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED f:64
-#endif
+
   type(ZMM16r4_t), dimension(:), intent(out)  :: x
-#if defined __INTEL_COMPILER
-  !DIR$ ASSUME_ALIGNED x:64
-#endif
+
   logical(kind=i4),             intent(in)   :: first
   integer(kind=i4),             intent(in)   :: ier
   ! Locals
@@ -1108,6 +1086,8 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:64
+     !DIR$ ASSUME_ALIGNED d:64
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:64,d:64,y:64)
 #endif
@@ -1120,6 +1100,7 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:64
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:64)
 #endif
@@ -1141,6 +1122,7 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED f:64
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:64)
 #endif
@@ -1154,12 +1136,16 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
      end do
   end if
 
+   !DIR$ ASSUME_ALIGNED x:64
+   !DIR$ ASSUME_ALIGNED h:64
   x(1:n).v = h(1:n).v
   do j = 1, n
      y.v = random_normal_zmm16r4()
 #if defined __ICC || defined __INTEL_COMPILER
      !DIR$ VECTOR ALWAYS
      !DIR$ VECTOR ALIGNED
+     !DIR$ ASSUME_ALIGNED x:64
+     !DIR$ ASSUME_ALIGNED f:64
 #elif defined __GFORTRAN__ && !defined __INTEL_COMPILER
      !$OMP SIMD ALIGNED(f:64,x:64)
 #endif     
@@ -1169,10 +1155,9 @@ subroutine random_mvnorm_zmm16r4(n,h,d,f,first,x,ier)
   end do
 end subroutine random_mvnorm_zmm16r4
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function rand_inv_gauss_ymm8r4(h,b,first) result(v) !GCC$ ATTRIBUTES hot :: rand_inv_gauss_ymm8r4 !GCC$ ATTRIBUTES aligned(32) :: rand_inv_gauss_ymm8r4 !GCC$ ATTRIBUTES inline :: rand_inv_gauss_ymm8r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function rand_inv_gauss_ymm8r4(h,b,first) result(v)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: rand_inv_gauss_ymm8r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: rand_inv_gauss_ymm8r4
   !DIR$ ATTRIBUTES VECTOR :: rand_inv_gauss_ymm8r4
@@ -1229,10 +1214,9 @@ function rand_inv_gauss_ymm8r4(h,b,first) result(v)
 end function rand_inv_gauss_ymm8r4
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-function rand_inv_gauss_zmm16r4(h,b,first) result(v) !GCC$ ATTRIBUTES hot :: rand_inv_gauss_zmm16r4 !GCC$ ATTRIBUTES aligned(32) :: rand_inv_gauss_zmm16r4 !GCC$ ATTRIBUTES inline :: rand_inv_gauss_zmm16r4
-#elif defined __ICC || defined __INTEL_COMPILER
+
 function rand_inv_gauss_zmm16r4(h,b,first) result(v)
+#if defined __ICC || defined __INTEL_COMPILER
   !DIR$ ATTRIBUTES INLINE :: rand_inv_gauss_zmm16r4
   !DIR$ ATTRIBUTES ALIGN : 32 :: rand_inv_gauss_zmm16r4
   !DIR$ ATTRIBUTES VECTOR :: rand_inv_gauss_zmm16r4
@@ -1290,4 +1274,4 @@ end function rand_inv_gauss_zmm16r4
 
 
   
-END MODULE mod_vec_rand_distr
+END MODULE vec_rand_distributions
