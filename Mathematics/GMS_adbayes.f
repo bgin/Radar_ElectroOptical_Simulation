@@ -663,6 +663,12 @@
 !*
       END
       SUBROUTINE BSINIT( NDIM, KEY, WTLENG, G, W )
+          use mod_kinds, only : i4,dp
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: ADBASE
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ADBASE
+#endif
+#if 0
 ****BEGIN PROLOGUE BSINIT
 ****PURPOSE BSINIT computes abscissas and weights of the integration
 *            rule and the null rules to be used in error estimation.
@@ -697,13 +703,14 @@
 *
 *   Variables.
 *
+#endif
       INTEGER(kind=i4) NDIM, KEY, WTLENG
       REAL(kind=dp) G(*), W(*)
-*
-****FIRST EXECUTABLE STATEMENT BSINIT
-*
-*   Compute W and G.
-*
+!*
+!****FIRST EXECUTABLE STATEMENT BSINIT
+!*
+!*   Compute W and G.
+!*
       IF ( KEY .EQ. 0 ) THEN
          IF ( NDIM .LT. 12 ) THEN
             CALL BSRL07( NDIM, WTLENG, W, G )
@@ -717,11 +724,18 @@
       ELSE 
          CALL BSRL05( NDIM, WTLENG, W, G )
       END IF
-*
-****END BSINIT
-*
+!*
+!****END BSINIT
+!*
       END
+      
       SUBROUTINE BSRL07( NDIM, WTLENG, W, G )
+          use mod_kinds, only :L i4,dp
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: BSRL07
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BSRL07
+#endif          
+#if 0
 ****BEGIN PROLOGUE BSRL07
 ****KEYWORDS basic integration rule, degree 7
 ****PURPOSE  To initialize a degree 7 basic rule, and null rules.
@@ -761,20 +775,21 @@
 *
 *   Global variables
 *
+#endif
       INTEGER(kind=i4) NDIM,WTLENG
       REAL(kind=dp) W(5,*),G(NDIM,*)
-*
-*   Local Variables
-*
+!*
+!*   Local Variables
+!*
       REAL(kind=dp) RATIO,LAM0,LAM1,LAM2,LAMP,TWONDM
       INTEGER(kind=i4) RULPTS(6)
       INTEGER(kind=i4) I,J
-*
-****FIRST EXECUTABLE STATEMENT BSRL07
-*
-*
-*     Initialize generators, weights and RULPTS
-*
+!*
+!****FIRST EXECUTABLE STATEMENT BSRL07
+!*
+!*
+!*     Initialize generators, weights and RULPTS
+!*
       WTLENG = 6
       DO J = 1,WTLENG
          DO I = 1,NDIM
@@ -789,47 +804,47 @@
       RULPTS(WTLENG) = TWONDM
       RULPTS(WTLENG-1) = 2*NDIM* (NDIM-1)
       RULPTS(1) = 1
-*
-*     Compute squared generator parameters
-*
+!*
+!*     Compute squared generator parameters
+!*
       LAM0 = 0.4707
       LAMP = 0.5625
       LAM1 = 4/ (15-5/LAM0)
       RATIO = (1-LAM1/LAM0)/27
       LAM2 = (5-7*LAM1-35*RATIO)/ (7-35*LAM1/3-35*RATIO/LAM0)
-*
-*     Compute degree 7 rule weights
-*
+!*
+!*     Compute degree 7 rule weights
+!*!
       W(1,6) = 1/ (3*LAM0)**3/TWONDM
       W(1,5) = (1-5*LAM0/3)/ (60* (LAM1-LAM0)*LAM1**2)
-      W(1,3) = (1-5*LAM2/3-5*TWONDM*W(1,6)*LAM0* (LAM0-LAM2))/
-     &         (10*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(1,5)
-      W(1,2) = (1-5*LAM1/3-5*TWONDM*W(1,6)*LAM0* (LAM0-LAM1))/
-     &         (10*LAM2* (LAM2-LAM1))
-*
-*     Compute weights for 2 degree 5, 1 degree 3 and 1 degree 1 rules
-*
+      W(1,3) = (1-5*LAM2/3-5*TWONDM*W(1,6)*LAM0* (LAM0-LAM2))/              &
+              (10*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(1,5)
+      W(1,2) = (1-5*LAM1/3-5*TWONDM*W(1,6)*LAM0* (LAM0-LAM1))/              &
+              (10*LAM2* (LAM2-LAM1))
+!*
+!*     Compute weights for 2 degree 5, 1 degree 3 and 1 degree 1 rules
+!*
       W(2,6) = 1/ (36*LAM0**3)/TWONDM
       W(2,5) = (1-9*TWONDM*W(2,6)*LAM0**2)/ (36*LAM1**2)
-      W(2,3) = (1-5*LAM2/3-5*TWONDM*W(2,6)*LAM0* (LAM0-LAM2))/
-     &         (10*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(2,5)
-      W(2,2) = (1-5*LAM1/3-5*TWONDM*W(2,6)*LAM0* (LAM0-LAM1))/
-     &         (10*LAM2* (LAM2-LAM1))
+      W(2,3) = (1-5*LAM2/3-5*TWONDM*W(2,6)*LAM0* (LAM0-LAM2))/              &
+              (10*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(2,5)
+      W(2,2) = (1-5*LAM1/3-5*TWONDM*W(2,6)*LAM0* (LAM0-LAM1))/              &
+              (10*LAM2* (LAM2-LAM1))
       W(3,6) = 5/ (108*LAM0**3)/TWONDM
       W(3,5) = (1-9*TWONDM*W(3,6)*LAM0**2)/ (36*LAM1**2)
-      W(3,3) = (1-5*LAMP/3-5*TWONDM*W(3,6)*LAM0* (LAM0-LAMP))/
-     &         (10*LAM1* (LAM1-LAMP)) - 2* (NDIM-1)*W(3,5)
-      W(3,4) = (1-5*LAM1/3-5*TWONDM*W(3,6)*LAM0* (LAM0-LAM1))/
-     &         (10*LAMP* (LAMP-LAM1))
+      W(3,3) = (1-5*LAMP/3-5*TWONDM*W(3,6)*LAM0* (LAM0-LAMP))/              &
+              (10*LAM1* (LAM1-LAMP)) - 2* (NDIM-1)*W(3,5)
+      W(3,4) = (1-5*LAM1/3-5*TWONDM*W(3,6)*LAM0* (LAM0-LAM1))/              &
+              (10*LAMP* (LAMP-LAM1))
       W(4,6) = 1/ (54*LAM0**3)/TWONDM
       W(4,5) = (1-18*TWONDM*W(4,6)*LAM0**2)/ (72*LAM1**2)
-      W(4,3) = (1-10*LAM2/3-10*TWONDM*W(4,6)*LAM0* (LAM0-LAM2))/
-     &         (20*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(4,5)
-      W(4,2) = (1-10*LAM1/3-10*TWONDM*W(4,6)*LAM0* (LAM0-LAM1))/
-     &         (20*LAM2* (LAM2-LAM1))
-*
-*     Set generator values
-*
+      W(4,3) = (1-10*LAM2/3-10*TWONDM*W(4,6)*LAM0* (LAM0-LAM2))/            &
+              (20*LAM1* (LAM1-LAM2)) - 2* (NDIM-1)*W(4,5)
+      W(4,2) = (1-10*LAM1/3-10*TWONDM*W(4,6)*LAM0* (LAM0-LAM1))/            &
+              (20*LAM2* (LAM2-LAM1))
+!*
+!*     Set generator values
+!*
       LAM0 = SQRT(LAM0)
       LAM1 = SQRT(LAM1)
       LAM2 = SQRT(LAM2)
@@ -842,9 +857,9 @@
       G(1,WTLENG-4) = LAM2
       G(1,WTLENG-3) = LAM1
       G(1,WTLENG-2) = LAMP
-*
-*     Compute final weight values.
-*
+!*
+!*     Compute final weight values.
+!*
       DO J = 1, 5
          W(J,1) = TWONDM
          DO I = 2, WTLENG
@@ -853,9 +868,9 @@
          END DO
       END DO
       CALL RULNRM ( WTLENG, 5, RULPTS, W )
-*
-****END BSRL07
-*
+!*
+!****END BSRL07
+!*
       END
       SUBROUTINE BSRL05( NDIM, WTLENG, W, G )
 ****BEGIN PROLOGUE BSRL05
