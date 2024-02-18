@@ -730,7 +730,7 @@
       END
       
       SUBROUTINE BSRL07( NDIM, WTLENG, W, G )
-          use mod_kinds, only :L i4,dp
+          use mod_kinds, only : i4,dp
 #if defined (__INTEL_COMPILER)
            !DIR$ ATTRIBUTES INLINE :: BSRL07
            !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BSRL07
@@ -873,6 +873,12 @@
 !*
       END
       SUBROUTINE BSRL05( NDIM, WTLENG, W, G )
+               use mod_kinds, only : i4,dp
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: BSRL05
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BSRL05
+#endif        
+#if 0
 ****BEGIN PROLOGUE BSRL05
 ****KEYWORDS basic integration rule, degree 5.
 ****PURPOSE  To initialize a degree 5 basic rule.
@@ -908,21 +914,22 @@
 *
 *   Global variables
 *
+#endif
       INTEGER(kind=i4) NDIM,WTLENG
       REAL(kind=dp) W(5,*), G(NDIM,*)
-*
-*   Local Variables
-*
+!*
+!*   Local Variables
+!*
       REAL(kind=dp)  ONE, THREE, FIVE 
       PARAMETER ( ONE = 1, THREE = 3, FIVE = 5 )
       REAL(kind=dp) TWONDM, LAM1, LAM2, LAM3, LAM4
       INTEGER(kind=i4) RULPTS(6), I, J
-*
-****FIRST EXECUTABLE STATEMENT BSRL05
-*
-*
-*     Initialize generators, weights and RULPTS
-*
+!*
+!****FIRST EXECUTABLE STATEMENT BSRL05
+!*
+!*
+!*     Initialize generators, weights and RULPTS
+!*
       WTLENG = 6
       DO J = 1,WTLENG
          DO I = 1,NDIM
@@ -936,21 +943,21 @@
       TWONDM = 2**NDIM
       RULPTS(WTLENG  ) = 2*NDIM*(NDIM-1)
       RULPTS(1) = 1
-*
-*     Compute squared generator parameters
-*
+!*
+!*     Compute squared generator parameters
+!*
       LAM1 = 3/FIVE
       LAM2 = 1/THREE
       LAM3 = THREE/4
       LAM4 = 4/FIVE
-*
-*     Compute degree 5 rule weights
-*
+!*
+!*     Compute degree 5 rule weights
+!*
       W(1,WTLENG) = 1/(6*LAM1)**2
       W(1,WTLENG-1) = 1/(6*LAM1) - 2*(NDIM-1)*W(1,WTLENG)
-*
-*     Compute weights for 2 degree 3, and 2 degree 1 rules
-*
+!*
+!*     Compute weights for 2 degree 3, and 2 degree 1 rules
+!*
       W(2,WTLENG) = 1/(6*LAM1)**2
       W(2,2) = 1/(6*LAM3) - 2*(NDIM-1)*W(2,WTLENG)*LAM1/LAM3
       W(3,2) = ( 1/FIVE - LAM4/3 )/( 2*LAM2*(LAM2-LAM4) )
@@ -958,9 +965,9 @@
       W(4,WTLENG) = ONE/(2*NDIM*(NDIM-1))
       W(5,2) = ONE/(4*NDIM)
       W(5,4) = ONE/(4*NDIM)
-*
-*     Set generator values
-*
+!*
+!*     Set generator values
+!*
       LAM1 = SQRT(LAM1)
       LAM2 = SQRT(LAM2)
       LAM3 = SQRT(LAM3)
@@ -971,9 +978,9 @@
       G(1,2) = LAM2
       G(1,3) = LAM3
       G(1,4) = LAM4
-*
-*     Compute final weight values.
-*
+!*
+!*     Compute final weight values.
+!*
       DO J = 1,5
          W(J,1) = TWONDM
          DO I = 2,WTLENG
@@ -982,11 +989,18 @@
          END DO
       END DO
       CALL RULNRM ( WTLENG, 5, RULPTS, W )
-*
-****END BSRL05
-*
+!*
+!****END BSRL05
+!*
       END
+
       SUBROUTINE BSRL09( NDIM, WTLENG, W, G )
+              use mod_kinds, only : i4,dp
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: BSRL09
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BSRL09
+#endif 
+#if 0       
 ****BEGIN PROLOGUE BSRL09
 ****KEYWORDS basic integration rule, degree 9
 ****PURPOSE  To initialize a degree 9 basic rule and null rules.
@@ -1025,20 +1039,21 @@
 *
 *   Global variables
 *
+#endif
       INTEGER(kind=i4) NDIM,WTLENG
       REAL(kind=dp) W(5,*),G(NDIM,*)
-*
-*   Local Variables
-*
+!*
+!*   Local Variables
+!*
       REAL(kind=dp) RATIO,LAM0,LAM1,LAM2,LAM3,LAMP,TWONDM
       INTEGER(kind=i4) RULPTS(9)
       INTEGER(kind=i4) I,J
-*
-****FIRST EXECUTABLE STATEMENT BSRL09
-*
-*
-*     Initialize generators, weights and RULPTS
-*
+!*
+!****FIRST EXECUTABLE STATEMENT BSRL09
+!*
+!*
+!*     Initialize generators, weights and RULPTS
+!*
       WTLENG = 9
       IF ( NDIM .EQ. 2 ) WTLENG = 8
       DO J = 1,WTLENG
@@ -1056,93 +1071,93 @@
       RULPTS(7) = 4*NDIM* (NDIM-1)
       RULPTS(6) = 2*NDIM* (NDIM-1)
       RULPTS(1) = 1
-*
-*     Compute squared generator parameters
-*
+!*
+!*     Compute squared generator parameters
+!*
       LAM0 = 0.4707
       LAM1 = 4/ (15-5/LAM0)
       RATIO = (1-LAM1/LAM0)/27
       LAM2 = (5-7*LAM1-35*RATIO)/ (7-35*LAM1/3-35*RATIO/LAM0)
       RATIO = RATIO* (1-LAM2/LAM0)/3
-      LAM3 = (7-9* (LAM2+LAM1)+63*LAM2*LAM1/5-63*RATIO)/
-     &       (9-63* (LAM2+LAM1)/5+21*LAM2*LAM1-63*RATIO/LAM0)
+      LAM3 = (7-9* (LAM2+LAM1)+63*LAM2*LAM1/5-63*RATIO)/                    &
+            (9-63* (LAM2+LAM1)/5+21*LAM2*LAM1-63*RATIO/LAM0)
       LAMP = 0.0625
-*
-*     Compute degree 9 rule weights
-*
+!*
+!*     Compute degree 9 rule weights
+!*
       W(1,WTLENG) = 1/ (3*LAM0)**4/TWONDM
       IF (NDIM.GT.2) W(1,8) = (1-1/ (3*LAM0))/ (6*LAM1)**3
-      W(1,7) = (1-7* (LAM0+LAM1)/5+7*LAM0*LAM1/3)/
-     &         (84*LAM1*LAM2* (LAM2-LAM0)* (LAM2-LAM1))
-      W(1,6) = (1-7* (LAM0+LAM2)/5+7*LAM0*LAM2/3)/
-     &         (84*LAM1*LAM1* (LAM1-LAM0)* (LAM1-LAM2)) -
-     &         W(1,7)*LAM2/LAM1 - 2* (NDIM-2)*W(1,8)
-      W(1,4) = (1-9* ((LAM0+LAM1+LAM2)/7- (LAM0*LAM1+LAM0*LAM2+
-     &         LAM1*LAM2)/5)-3*LAM0*LAM1*LAM2)/
-     &         (18*LAM3* (LAM3-LAM0)* (LAM3-LAM1)* (LAM3-LAM2))
-      W(1,3) = (1-9* ((LAM0+LAM1+LAM3)/7- (LAM0*LAM1+LAM0*LAM3+
-     &         LAM1*LAM3)/5)-3*LAM0*LAM1*LAM3)/
-     &         (18*LAM2* (LAM2-LAM0)* (LAM2-LAM1)* (LAM2-LAM3)) -
-     &         2* (NDIM-1)*W(1,7)
-      W(1,2) = (1-9* ((LAM0+LAM2+LAM3)/7- (LAM0*LAM2+LAM0*LAM3+
-     &         LAM2*LAM3)/5)-3*LAM0*LAM2*LAM3)/
-     &         (18*LAM1* (LAM1-LAM0)* (LAM1-LAM2)* (LAM1-LAM3)) -
-     &         2* (NDIM-1)* (W(1,7)+W(1,6)+ (NDIM-2)*W(1,8))
-*
-*     Compute weights for 2 degree 7, 1 degree 5 and 1 degree 3 rules
-*
+      W(1,7) = (1-7* (LAM0+LAM1)/5+7*LAM0*LAM1/3)/                          &
+              (84*LAM1*LAM2* (LAM2-LAM0)* (LAM2-LAM1))
+      W(1,6) = (1-7* (LAM0+LAM2)/5+7*LAM0*LAM2/3)/                          &
+              (84*LAM1*LAM1* (LAM1-LAM0)* (LAM1-LAM2)) -                    &
+              W(1,7)*LAM2/LAM1 - 2* (NDIM-2)*W(1,8)
+      W(1,4) = (1-9* ((LAM0+LAM1+LAM2)/7- (LAM0*LAM1+LAM0*LAM2+             &
+             LAM1*LAM2)/5)-3*LAM0*LAM1*LAM2)/                               &
+             (18*LAM3* (LAM3-LAM0)* (LAM3-LAM1)* (LAM3-LAM2))
+      W(1,3) = (1-9* ((LAM0+LAM1+LAM3)/7- (LAM0*LAM1+LAM0*LAM3+             &
+              LAM1*LAM3)/5)-3*LAM0*LAM1*LAM3)/                              &
+              (18*LAM2* (LAM2-LAM0)* (LAM2-LAM1)* (LAM2-LAM3)) -            &
+              2* (NDIM-1)*W(1,7)
+      W(1,2) = (1-9* ((LAM0+LAM2+LAM3)/7- (LAM0*LAM2+LAM0*LAM3+             &
+              LAM2*LAM3)/5)-3*LAM0*LAM2*LAM3)/                              &
+              (18*LAM1* (LAM1-LAM0)* (LAM1-LAM2)* (LAM1-LAM3)) -            &
+              2* (NDIM-1)* (W(1,7)+W(1,6)+ (NDIM-2)*W(1,8))
+!*
+!*     Compute weights for 2 degree 7, 1 degree 5 and 1 degree 3 rules
+!*
       W(2,WTLENG) = 1/ (108*LAM0**4)/TWONDM
       IF (NDIM.GT.2) W(2,8) = (1-27*TWONDM*W(2,9)*LAM0**3)/ (6*LAM1)**3
-      W(2,7) = (1-5*LAM1/3-15*TWONDM*W(2,WTLENG)*LAM0**2* (LAM0-LAM1))/
-     &          (60*LAM1*LAM2* (LAM2-LAM1))
-      W(2,6) = (1-9* (8*LAM1*LAM2*W(2,7)+TWONDM*W(2,WTLENG)*LAM0**2))/
-     &         (36*LAM1*LAM1) - 2*W(2,8)* (NDIM-2)
-      W(2,4) = (1-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(2,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/
-     &         (14*LAM3* (LAM3-LAM1)* (LAM3-LAM2))
-      W(2,3) = (1-7* ((LAM1+LAM3)/5-LAM1*LAM3/3+TWONDM*W(2,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM3)))/
-     &         (14*LAM2* (LAM2-LAM1)* (LAM2-LAM3)) - 2* (NDIM-1)*W(2,7)
-      W(2,2) = (1-7* ((LAM2+LAM3)/5-LAM2*LAM3/3+TWONDM*W(2,
-     &         WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAM3)))/
-     &         (14*LAM1* (LAM1-LAM2)* (LAM1-LAM3)) -
-     &         2* (NDIM-1)* (W(2,7)+W(2,6)+ (NDIM-2)*W(2,8))
+      W(2,7) = (1-5*LAM1/3-15*TWONDM*W(2,WTLENG)*LAM0**2* (LAM0-LAM1))/     &
+               (60*LAM1*LAM2* (LAM2-LAM1))
+      W(2,6) = (1-9* (8*LAM1*LAM2*W(2,7)+TWONDM*W(2,WTLENG)*LAM0**2))/      &
+              (36*LAM1*LAM1) - 2*W(2,8)* (NDIM-2)
+      W(2,4) = (1-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(2,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/                    &
+              (14*LAM3* (LAM3-LAM1)* (LAM3-LAM2))
+      W(2,3) = (1-7* ((LAM1+LAM3)/5-LAM1*LAM3/3+TWONDM*W(2,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM3)))/                    &
+              (14*LAM2* (LAM2-LAM1)* (LAM2-LAM3)) - 2* (NDIM-1)*W(2,7)
+      W(2,2) = (1-7* ((LAM2+LAM3)/5-LAM2*LAM3/3+TWONDM*W(2,                 &
+              WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAM3)))/                    &
+              (14*LAM1* (LAM1-LAM2)* (LAM1-LAM3)) -                        &
+              2* (NDIM-1)* (W(2,7)+W(2,6)+ (NDIM-2)*W(2,8))
       W(3,WTLENG) = 5/ (324*LAM0**4)/TWONDM
       IF (NDIM.GT.2) W(3,8) = (1-27*TWONDM*W(3,9)*LAM0**3)/ (6*LAM1)**3
-      W(3,7) = (1-5*LAM1/3-15*TWONDM*W(3,WTLENG)*LAM0**2* (LAM0-LAM1))/
-     &          (60*LAM1*LAM2* (LAM2-LAM1))
-      W(3,6) = (1-9* (8*LAM1*LAM2*W(3,7)+TWONDM*W(3,WTLENG)*LAM0**2))/
-     &         (36*LAM1*LAM1) - 2*W(3,8)* (NDIM-2)
-      W(3,5) = (1-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(3,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/
-     &         (14*LAMP* (LAMP-LAM1)* (LAMP-LAM2))
-      W(3,3) = (1-7* ((LAM1+LAMP)/5-LAM1*LAMP/3+TWONDM*W(3,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAMP)))/
-     &         (14*LAM2* (LAM2-LAM1)* (LAM2-LAMP)) - 2* (NDIM-1)*W(3,7)
-      W(3,2) = (1-7* ((LAM2+LAMP)/5-LAM2*LAMP/3+TWONDM*W(3,
-     &         WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAMP)))/
-     &         (14*LAM1* (LAM1-LAM2)* (LAM1-LAMP)) -
-     &         2* (NDIM-1)* (W(3,7)+W(3,6)+ (NDIM-2)*W(3,8))
+      W(3,7) = (1-5*LAM1/3-15*TWONDM*W(3,WTLENG)*LAM0**2* (LAM0-LAM1))/     &
+               (60*LAM1*LAM2* (LAM2-LAM1))
+      W(3,6) = (1-9* (8*LAM1*LAM2*W(3,7)+TWONDM*W(3,WTLENG)*LAM0**2))/      &
+              (36*LAM1*LAM1) - 2*W(3,8)* (NDIM-2)
+      W(3,5) = (1-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(3,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/                    &
+              (14*LAMP* (LAMP-LAM1)* (LAMP-LAM2))
+      W(3,3) = (1-7* ((LAM1+LAMP)/5-LAM1*LAMP/3+TWONDM*W(3,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAMP)))/                    &
+              (14*LAM2* (LAM2-LAM1)* (LAM2-LAMP)) - 2* (NDIM-1)*W(3,7)
+      W(3,2) = (1-7* ((LAM2+LAMP)/5-LAM2*LAMP/3+TWONDM*W(3,                 &
+              WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAMP)))/                    &
+              (14*LAM1* (LAM1-LAM2)* (LAM1-LAMP)) -                        &
+              2* (NDIM-1)* (W(3,7)+W(3,6)+ (NDIM-2)*W(3,8))
       W(4,WTLENG) = 2/ (81*LAM0**4)/TWONDM
       IF (NDIM.GT.2) W(4,8) = (2-27*TWONDM*W(4,9)*LAM0**3)/ (6*LAM1)**3
-      W(4,7) = (2-15*LAM1/9-15*TWONDM*W(4,WTLENG)*LAM0* (LAM0-LAM1))/
-     &         (60*LAM1*LAM2* (LAM2-LAM1))
-      W(4,6) = (1-9* (8*LAM1*LAM2*W(4,7)+TWONDM*W(4,WTLENG)*LAM0**2))/
-     &         (36*LAM1*LAM1) - 2*W(4,8)* (NDIM-2)
-      W(4,4) = (2-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(4,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/
-     &         (14*LAM3* (LAM3-LAM1)* (LAM3-LAM2))
-      W(4,3) = (2-7* ((LAM1+LAM3)/5-LAM1*LAM3/3+TWONDM*W(4,
-     &         WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM3)))/
-     &         (14*LAM2* (LAM2-LAM1)* (LAM2-LAM3)) - 2* (NDIM-1)*W(4,7)
-      W(4,2) = (2-7* ((LAM2+LAM3)/5-LAM2*LAM3/3+TWONDM*W(4,
-     &         WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAM3)))/
-     &         (14*LAM1* (LAM1-LAM2)* (LAM1-LAM3)) -
-     &         2* (NDIM-1)* (W(4,7)+W(4,6)+ (NDIM-2)*W(4,8))
+      W(4,7) = (2-15*LAM1/9-15*TWONDM*W(4,WTLENG)*LAM0* (LAM0-LAM1))/       &
+              (60*LAM1*LAM2* (LAM2-LAM1))
+      W(4,6) = (1-9* (8*LAM1*LAM2*W(4,7)+TWONDM*W(4,WTLENG)*LAM0**2))/      &
+              (36*LAM1*LAM1) - 2*W(4,8)* (NDIM-2)
+      W(4,4) = (2-7* ((LAM1+LAM2)/5-LAM1*LAM2/3+TWONDM*W(4,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM2)))/                    &
+              (14*LAM3* (LAM3-LAM1)* (LAM3-LAM2))
+      W(4,3) = (2-7* ((LAM1+LAM3)/5-LAM1*LAM3/3+TWONDM*W(4,                 &
+              WTLENG)*LAM0* (LAM0-LAM1)* (LAM0-LAM3)))/                    &
+              (14*LAM2* (LAM2-LAM1)* (LAM2-LAM3)) - 2* (NDIM-1)*W(4,7)
+      W(4,2) = (2-7* ((LAM2+LAM3)/5-LAM2*LAM3/3+TWONDM*W(4,                 &
+              WTLENG)*LAM0* (LAM0-LAM2)* (LAM0-LAM3)))/                    &
+              (14*LAM1* (LAM1-LAM2)* (LAM1-LAM3)) -                        &
+              2* (NDIM-1)* (W(4,7)+W(4,6)+ (NDIM-2)*W(4,8))
       W(5,2) = 1/ (6*LAM1)
-*
-*     Set generator values
-*
+!*
+!*     Set generator values
+!*
       LAM0 = SQRT(LAM0)
       LAM1 = SQRT(LAM1)
       LAM2 = SQRT(LAM2)
@@ -1164,9 +1179,9 @@
       G(1,4) = LAM3
       G(1,3) = LAM2
       G(1,2) = LAM1
-*
-*     Compute final weight values.
-*
+!*
+!*     Compute final weight values.
+!*
       DO J = 1,5
          W(J,1) = TWONDM
          DO I = 2,WTLENG
@@ -1175,17 +1190,26 @@
          END DO
       END DO
       CALL RULNRM ( WTLENG, 5, RULPTS, W )
-*
-****END BSRL09
-*
+!*
+!****END BSRL09
+!*
       END
+      
       SUBROUTINE RULNRM( LENRUL, NUMNUL, RULPTS, W )
+               use mod_kinds, only : i4,dp
+               use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: RULNRM
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: RULNRM
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: RULNRM
+#endif        
       INTEGER(kind=i4) LENRUL, NUMNUL, I, J, K, RULPTS(*)
       REAL(kind=dp) ALPHA, NORMCF, NORMNL, W(NUMNUL,*)
-*
-*     Compute orthonormalized null rules.
-*
+!*
+!*     Compute orthonormalized null rules.
+!*
       NORMCF = 0
+      !$OMP SIMD REDUCTION(+:NORMCF) ALIGNED(RULPTS,W:64)
       DO I = 1,LENRUL
          NORMCF = NORMCF + RULPTS(I)*W(1,I)*W(1,I)
       END DO
@@ -1195,6 +1219,7 @@
          END DO
          DO J = 2, K-1
             ALPHA = 0
+            !$OMP SIMD REDUCTION(+:ALPHA) ALIGNED(RULPTS,W:64)
             DO I = 1, LENRUL
                ALPHA = ALPHA + RULPTS(I)*W(J,I)*W(K,I)
             END DO
@@ -1204,6 +1229,7 @@
             END DO
          END DO
          NORMNL = 0
+         !$OMP SIMD REDUCTION(+:NORMNL) ALIGNED(RULPTS,W:64)
          DO I = 1, LENRUL
             NORMNL = NORMNL + RULPTS(I)*W(K,I)*W(K,I)
          END DO
@@ -1213,11 +1239,17 @@
          END DO
       END DO
       END
-      SUBROUTINE SDFFER( NDIM, CENTER, HWIDTH, NF, FUNSUB, 
-     &                   X, WORK, DIVAXN )
-*
-*     Compute second differences and subdivision axis
-*
+      SUBROUTINE SDFFER( NDIM, CENTER, HWIDTH, NF, FUNSUB,  &
+                        X, WORK, DIVAXN )
+               use mod_kinds, only : i4,dp
+             
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: SDFFER
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SDFFER
+#endif  
+!*
+!*     Compute second differences and subdivision axis
+!*
       EXTERNAL FUNSUB
       INTEGER(kind=i4) I, J, NDIM, NF, DIVAXN
       REAL(kind=dp) CENTER(*), HWIDTH(*), X(*), WORK(NF,*)
@@ -1241,13 +1273,13 @@
          X(I) = CENTER(I)
          DIFSUM = 0
          DO J = 1,NF
-            FRTHDF = ABS( WORK(J,1) - 4*WORK(J,2) + 6*WORK(J,3) 
-     &                              - 4*WORK(J,4) +   WORK(J,5) ) 
-*
-*     Ignore differences below roundoff
-*     
-            IF ( ABS(WORK(J,3)) + FRTHDF/8 .GT. ABS(WORK(J,3)) ) 
-     &           DIFSUM = DIFSUM + FRTHDF
+            FRTHDF = ABS( WORK(J,1) - 4*WORK(J,2) + 6*WORK(J,3)            &
+                                   - 4*WORK(J,4) +   WORK(J,5) ) 
+!*
+!*     Ignore differences below roundoff
+!*     
+            IF ( ABS(WORK(J,3)) + FRTHDF/8 .GT. ABS(WORK(J,3)) )            &
+                DIFSUM = DIFSUM + FRTHDF
          END DO
          IF ( DIFSUM .GT. DIFMAX ) THEN
             DIFMAX = DIFSUM
@@ -1255,8 +1287,16 @@
          END IF
       END DO
       END
-      SUBROUTINE BASRUL(NDIM, CENTER, HWIDTH, WTLENG, G, W,
-     &     NUMFUN, FUNSUB, X, NULL, BASVAL, RGNERR, GREAT)
+      SUBROUTINE BASRUL(NDIM, CENTER, HWIDTH, WTLENG, G, W,                 &
+          NUMFUN, FUNSUB, X, NULL, BASVAL, RGNERR, GREAT)
+               use mod_kinds, only : i4,dp
+               use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: BASRUL
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: BASRUL
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: BASRUL
+#endif  
+#if 0
 ****BEGIN PROLOGUE BASRUL
 ****KEYWORDS basic numerical integration rule
 ****PURPOSE  To compute basic integration rule values.
@@ -1322,20 +1362,21 @@
 *
 *   Global variables.
 *
+#endif
       EXTERNAL FUNSUB
       INTEGER(kind=i4) WTLENG, NUMFUN, NDIM, NUMNUL
       PARAMETER ( NUMNUL = 4 )
-      REAL(kind=dp) GREAT, CENTER(*), X(*), HWIDTH(*), BASVAL(*),
-     &     RGNERR(*), NULL(NUMFUN,*), W(5,*), G(NDIM,*)
-*
-*   Local variables.
-*
+      REAL(kind=dp) GREAT, CENTER(*), X(*), HWIDTH(*), BASVAL(*),           &
+          RGNERR(*), NULL(NUMFUN,*), W(5,*), G(NDIM,*)
+!*
+!*   Local variables.
+!*
       REAL(kind=dp) RGNVOL, RGNCMP, RGNCPT, TWONRM
       INTEGER(kind=i4) I,J,K
-*
-****FIRST EXECUTABLE STATEMENT BASRUL
-*
-*
+!*
+!****FIRST EXECUTABLE STATEMENT BASRUL
+!*
+!*
       RGNVOL = 1
       DO I = 1,NDIM
          RGNVOL = RGNVOL*HWIDTH(I)
@@ -1346,41 +1387,48 @@
             NULL(J,K) = 0
          END DO
       END DO
-*     
-*    Finish computing the rule values.
-*
+!*     
+!*    Finish computing the rule values.
+!*
       DO I = 1,WTLENG
-         CALL FULSUM( NDIM, CENTER, HWIDTH, X, G(1,I), NUMFUN, FUNSUB,
-     &                RGNERR, NULL(1,5) )
+         CALL FULSUM( NDIM, CENTER, HWIDTH, X, G(1,I), NUMFUN, FUNSUB,      &
+                     RGNERR, NULL(1,5) )
          DO J = 1,NUMFUN
             BASVAL(J) = BASVAL(J) + W(1,I)*RGNERR(J)
+            !$OMP SIMD REDUCTION(+:NULL) ALIGNED(NULL,W,RGNERR:64)
             DO K = 1,NUMNUL
                NULL(J,K) = NULL(J,K) + W(K+1,I)*RGNERR(J)
             END DO
          END DO
       END DO
-*
-*    Compute errors.
-*
+!*
+!*    Compute errors.
+!*
       GREAT = 0
       DO J = 1,NUMFUN
          BASVAL(J) = RGNVOL*BASVAL(J)
          RGNERR(J) = TWONRM( NULL(J,1), NULL(J,2) )
          RGNCMP    = TWONRM( NULL(J,2), NULL(J,3) )
          RGNCPT    = TWONRM( NULL(J,3), NULL(J,4) )
-         IF ( 4*RGNERR(J) .LT. RGNCMP .AND. 2*RGNCMP .LT. RGNCPT ) 
-     &        RGNERR(J) = RGNERR(J)/2 
-         IF ( 2*RGNERR(J) .GT. RGNCMP ) 
-     &        RGNERR(J) = MAX( RGNERR(J), RGNCMP ) 
+         IF ( 4*RGNERR(J) .LT. RGNCMP .AND. 2*RGNCMP .LT. RGNCPT )          &    
+                      RGNERR(J) = RGNERR(J)/2 
+         IF ( 2*RGNERR(J) .GT. RGNCMP )                                     &
+             RGNERR(J) = MAX( RGNERR(J), RGNCMP ) 
          RGNERR(J) = RGNVOL*RGNERR(J)*( 1 + ABS( BASVAL(J) ) )
          GREAT = GREAT + RGNERR(J)
       END DO
-*
-****END BASRUL
-*
+!*
+!****END BASRUL
+!*
       END
-*
+!*
       REAL(kind=dp) FUNCTION TWONRM( X, Y )
+               use mod_kinds, only : i4,dp
+             
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: TWONRM
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TWONRM
+#endif      
       REAL(kind=dp) X, Y, ABX, ABY, SQTTWO
       PARAMETER ( SQTTWO = 1.4142135623730950488D0 )
       ABX = ABS(X)
@@ -1393,9 +1441,17 @@
          TWONRM = ABY*SQTTWO         
       END IF
       END
-*
-      SUBROUTINE FULSUM(NDIM,CENTER,HWIDTH,X,G,NUMFUN,FUNSUB,FULSMS,
-     &                  FUNVLS)
+!*
+      SUBROUTINE FULSUM(NDIM,CENTER,HWIDTH,X,G,NUMFUN,FUNSUB,FULSMS,        &
+                       FUNVLS)
+               use mod_kinds, only : i4,dp
+               use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: FULSUM
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: FULSUM
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: FULSUM
+#endif 
+#if 0
 ****BEGIN PROLOGUE FULSUM
 ****KEYWORDS fully symmetric sum
 ****PURPOSE  To compute fully symmetric basic rule sums
@@ -1452,28 +1508,31 @@
 *
 *   Global variables.
 *
+#endif
       EXTERNAL FUNSUB
       INTEGER(kind=i4) NDIM,NUMFUN
-      REAL(kind=dp) CENTER(NDIM),HWIDTH(NDIM),X(NDIM),G(NDIM),
-     &                 FULSMS(NUMFUN),FUNVLS(NUMFUN)
-*
-*   Local variables.
-*
+      REAL(kind=dp) CENTER(NDIM),HWIDTH(NDIM),X(NDIM),G(NDIM),              &
+                      FULSMS(NUMFUN),FUNVLS(NUMFUN)
+!*
+!*   Local variables.
+!*
       INTEGER(kind=i4) IXCHNG,LXCHNG,I,J,L
       REAL(kind=dp) GL,GI
-*
-****FIRST EXECUTABLE STATEMENT FULSUM
-*
+!*
+!****FIRST EXECUTABLE STATEMENT FULSUM
+!*
       DO J = 1, NUMFUN
          FULSMS(J) = 0
       END DO
-*     
-*     Compute centrally symmetric sum for permutation of G
-*     
+!*     
+!*     Compute centrally symmetric sum for permutation of G
+!*    
+      !$OMP SIMD ALIGNED(X,CENTER,G,HWIDTH:64)
  10   DO I = 1, NDIM
          X(I) = CENTER(I) + G(I)*HWIDTH(I)
       END DO
  20   CALL FUNSUB( NDIM, X, NUMFUN, FUNVLS )
+      !$OMP SIMD REDUCTION(+:FULSMS) ALIGNED(FULSMS,FUNVLS:64)
       DO J = 1,NUMFUN
          FULSMS(J) = FULSMS(J) + FUNVLS(J)
       END DO
@@ -1482,10 +1541,10 @@
          X(I) = CENTER(I) + G(I)*HWIDTH(I)
          IF ( G(I) .LT. 0 ) GO TO 20
       END DO
-*     
-*     Find next distinct permuation of G and loop back for next sum.
-*     Permutations are generated in reverse lexicographic order.
-*     
+!*     
+!*     Find next distinct permuation of G and loop back for next sum.
+!*     Permutations are generated in reverse lexicographic order.
+!*     
       DO I = 2, NDIM
          IF ( G(I-1) .GT. G(I) ) THEN
             GI = G(I)
@@ -1503,19 +1562,27 @@
             GO TO 10
          END IF
       END DO
-*     
-*     Restore original order to generators
-*
+!*     
+!*     Restore original order to generators
+!*
       DO I = 1,NDIM/2
           GI = G(I)
           G(I) = G(NDIM-I+1)
           G(NDIM-I+1) = GI
        END DO
-*
-****END FULSUM
-*
+!*
+!****END FULSUM
+!*
       END
+      
       SUBROUTINE TRESTR( POINTR, SBRGNS, PONTRS, RGNERS )
+                     use mod_kinds, only : i4,dp
+               
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: TRESTR
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TRESTR
+#endif 
+#if 0
 ****  BEGIN PROLOGUE TRESTR
 ****  PURPOSE TRESTR maintains a heap for subregions.
 ****  DESCRIPTION TRESTR maintains a heap for subregions.
@@ -1540,63 +1607,64 @@
 *
 *   Global variables.
 *
+#endif
       INTEGER(kind=i4) POINTR, SBRGNS
       REAL(kind=dp) PONTRS(*), RGNERS(*)
-*
-*   Local variables.
-*
-*   RGNERR Intermediate storage for the greatest error of a subregion.
-*   SUBRGN Position of child/parent subregion in the heap.
-*   SUBTMP Position of parent/child subregion in the heap.
-*
+!*
+!*   Local variables.
+!*
+!*   RGNERR Intermediate storage for the greatest error of a subregion.
+!*   SUBRGN Position of child/parent subregion in the heap.
+!*   SUBTMP Position of parent/child subregion in the heap.
+!*
       INTEGER(kind=i4) SUBRGN, SUBTMP
       REAL(kind=dp) RGNERR
-*
-****  FIRST PROCESSING STATEMENT for TRESTR
-*     
+!*
+!****  FIRST PROCESSING STATEMENT for TRESTR
+!*     
       RGNERR = RGNERS(POINTR)
       IF ( POINTR .EQ. PONTRS(1)) THEN
-*
-*        Move the new subregion inserted at the top of the heap 
-*        to its correct position in the heap.
-*
+!*
+!*        Move the new subregion inserted at the top of the heap 
+!*        to its correct position in the heap.
+!*
          SUBRGN = 1
  10      SUBTMP = 2*SUBRGN
          IF ( SUBTMP .LE. SBRGNS ) THEN
             IF ( SUBTMP .NE. SBRGNS ) THEN
-*     
-*              Find maximum of left and right child.
-*
-               IF ( RGNERS(INT(PONTRS(SUBTMP))) .LT. 
-     &              RGNERS(INT(PONTRS(SUBTMP+1))) ) SUBTMP = SUBTMP + 1
+!*     
+!*              Find maximum of left and right child.
+!*
+               IF ( RGNERS(INT(PONTRS(SUBTMP))) .LT.                        &
+                   RGNERS(INT(PONTRS(SUBTMP+1))) ) SUBTMP = SUBTMP + 1
             ENDIF
-*
-*           Compare maximum child with parent.
-*           If parent is maximum, then done.
-*
+!*
+!*           Compare maximum child with parent.
+!*           If parent is maximum, then done.
+!*
             IF ( RGNERR .LT. RGNERS(INT(PONTRS(SUBTMP))) ) THEN
-*     
-*              Move the pointer at position subtmp up the heap.
-*     
+!*     
+!*              Move the pointer at position subtmp up the heap.
+!*     
                PONTRS(SUBRGN) = PONTRS(SUBTMP)
                SUBRGN = SUBTMP
                GO TO 10
             ENDIF
          ENDIF
       ELSE
-*
-*        Insert new subregion in the heap.
-*
+!*
+!*        Insert new subregion in the heap.
+!*
          SUBRGN = SBRGNS
  20      SUBTMP = SUBRGN/2
          IF ( SUBTMP .GE. 1 ) THEN
-*
-*           Compare child with parent. If parent is maximum, then done.
-*     
+!*
+!*           Compare child with parent. If parent is maximum, then done.
+!*     
             IF ( RGNERR .GT. RGNERS(INT(PONTRS(SUBTMP))) ) THEN
-*     
-*              Move the pointer at position subtmp down the heap.
-*
+!*     
+!*              Move the pointer at position subtmp down the heap.
+!*
                PONTRS(SUBRGN) = PONTRS(SUBTMP)
                SUBRGN = SUBTMP
                GO TO 20
@@ -1604,15 +1672,21 @@
          ENDIF
       ENDIF
       PONTRS(SUBRGN) = POINTR
-*
-****  END TRESTR
-*
+!*
+!****  END TRESTR
+!*
       END
-      SUBROUTINE ADONEV( NF, A, B, MNS, MXS, F, AB, RE, IR, 
-     &     RESULT, ABSERR, IPTS, IM, IFAIL, S, E, C, H, EMX, WORK )
-*
-*     One Dimensional Adaptive Integration Routine
-*
+      SUBROUTINE ADONEV( NF, A, B, MNS, MXS, F, AB, RE, IR,                 &
+          RESULT, ABSERR, IPTS, IM, IFAIL, S, E, C, H, EMX, WORK )
+                use mod_kinds, only : i4,dp
+              
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: ADONEV
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: ADONEV
+#endif 
+!*
+!*     One Dimensional Adaptive Integration Routine
+!
       EXTERNAL F
       REAL(kind=dp) A, B, AB, RE, RESULT(*), ABSERR(*), WORK(*)
       INTEGER(kind=i4) I, IR, NF, IM, IP, IPTS, J, IFAIL, MNS, MXS
@@ -1657,19 +1731,29 @@
          GO TO 10
       ENDIF
       END
-*
-*
+!*
+!*
       SUBROUTINE KRNRDV( C, H, NF, F, RESULT, ABSERR, ERROR, FUNS )
-*
-*     Kronrod Rule
-*
+               use mod_kinds, only : i4,dp
+               use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: KRNRDV
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: KRNRDV
+#endif 
+!*
+!*     Kronrod Rule
+!*
       EXTERNAL F
       REAL(kind=dp) C, H, ABSERR(*), FUNS(*), RESULT(*), ERROR, FS
       INTEGER(kind=i4) I, J, N, NF
       PARAMETER ( N = 7 )
-*
+!*
       REAL(kind=dp) WG(0:N), WGK(0:N), XGK(0:N) 
       SAVE WG, WGK, XGK
+#if defined(_OPENMP)
+!$OMP THREADPRIVATE(WG,WGK,XGK)
+#endif
+#if 0
 *
 *           THE ABSCISSAE AND WEIGHTS ARE GIVEN FOR THE INTERVAL (-1,1)
 *           BECAUSE OF SYMMETRY ONLY THE POSITIVE ABSCISSE AND THEIR 
@@ -1685,12 +1769,13 @@
 *
 *           WG     - WEIGHTS OF THE 7-POINT GAUSS RULE
 *
+#endif
       DATA WG(0) /0.4179591836 7346938775 5102040816 327 D0/
       DATA WG(2) /0.1294849661 6886969327 0611432679 082 D0/
       DATA WG(4) /0.2797053914 8927666790 1467771423 780 D0/
       DATA WG(6) /0.3818300505 0511894495 0369775488 975 D0/
       DATA WG(1), WG(3), WG(5), WG(7) /4*0D0/
-*
+!*
       DATA XGK(0) /0.0000000000 0000000000 0000000000 000 D0/
       DATA XGK(1) /0.9914553711 2081263920 6854697526 329 D0/
       DATA XGK(2) /0.9491079123 4275852452 6189684047 851 D0/
@@ -1699,7 +1784,7 @@
       DATA XGK(5) /0.5860872354 6769113029 4144838258 730 D0/
       DATA XGK(6) /0.4058451513 7739716690 6606412076 961 D0/
       DATA XGK(7) /0.2077849550 0789846760 0689403773 245 D0/
-*
+!*
       DATA WGK(0) /0.2094821410 8472782801 2999174891 714 D0/
       DATA WGK(1) /0.0229353220 1052922496 3732008058 970 D0/
       DATA WGK(2) /0.0630920926 2997855329 0700663189 204 D0/
@@ -1708,10 +1793,10 @@
       DATA WGK(5) /0.1690047266 3926790282 6583426598 550 D0/
       DATA WGK(6) /0.1903505780 6478540991 3256402421 014 D0/
       DATA WGK(7) /0.2044329400 7529889241 4161999234 649 D0/
-*
-*           COMPUTE THE 15-POINT KRONROD APPROXIMATION TO
-*           THE INTEGRAL, AND ESTIMATE THE ABSOLUTE ERROR.
-*
+!*
+!*           COMPUTE THE 15-POINT KRONROD APPROXIMATION TO
+!*           THE INTEGRAL, AND ESTIMATE THE ABSOLUTE ERROR.
+!*
       CALL F( 1, C, NF, FUNS )
       DO I = 1,NF
          RESULT(I) = WGK(0)*FUNS(I)
