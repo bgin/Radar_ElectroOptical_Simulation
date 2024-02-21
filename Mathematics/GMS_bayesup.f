@@ -2648,8 +2648,8 @@ c                  FINEST with estimated absolute accuracies ABSERR.
                 use mod_kinds, only : i4,dp
             
 #if defined (__INTEL_COMPILER)
-           !DIR$ ATTRIBUTES INLINE :: SDFFRS
-           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: SDFFRS
+           !DIR$ ATTRIBUTES INLINE :: FLSMSR
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: FLSMSR
 #endif    
 #if 0   
 ****BEGIN PROLOGUE FLSMSR
@@ -2774,6 +2774,12 @@ c                  FINEST with estimated absolute accuracies ABSERR.
       END
       
       SUBROUTINE FUNTRN( FUNSUB, N, X, NF, FS )
+                use mod_kinds, only : i4,dp
+            
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: FUNTRUN
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: FUNTRUN
+#endif          
       EXTERNAL FUNSUB
       REAL(kind=dp) X(*), FS(*), TWOPI, TWO
       INTEGER(kind=i4) I, N, NF, MXN, P, MN, TWIMN 
@@ -2802,17 +2808,27 @@ c                  FINEST with estimated absolute accuracies ABSERR.
       Y(1+MN) = YS*COS(YT)
       CALL FUNSUB( N, Y, NF, FS )
       END
+      
       REAL(kind=dp) FUNCTION TCHINV( N, P )
-*     
-*                  TCHINV  
-*     P =  1 - K  I     exp(-t*t/2) t**(N-1) dt, for N > 1.
-*               N  0
-*     
+             use mod_kinds, only : i4,dp
+            
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: TCHINV
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TCHINV
+#endif              
+!*     
+!*                  TCHINV  
+!*     P =  1 - K  I     exp(-t*t/2) t**(N-1) dt, for N > 1.
+!*               N  0
+!*     
       INTEGER(kind=i4) I, N, NO
       REAL(kind=dp) P, PO, TWO, R, RO, RP, KN, PHINV, TCHNVC, TO
       PARAMETER ( RP = .79788456080286535588D0, TWO = 2 )
-*                 RP = SQRT(2/PI)
+!*                 RP = SQRT(2/PI)
       SAVE NO, KN, PO, RO
+#if defined (_OPENMP)
+!$OMP THREADPRIVATE(NO,KN,PO,RO)
+#endif
       DATA NO, PO / 0, TWO /
       IF ( P .EQ. PO .AND. N .EQ. NO ) THEN
          R = RO
@@ -2859,11 +2875,17 @@ c                  FINEST with estimated absolute accuracies ABSERR.
       END IF
       TCHINV = R
       END
-*
+
       REAL(kind=dp) FUNCTION TCHNVC( KN, N, P, R )
-*     
-*     Third order correction to R for TCHINV
-*     
+               use mod_kinds, only : i4,dp
+            
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: TCHNVC
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: TCHNVC
+#endif                
+!*     
+!*     Third order correction to R for TCHINV
+!*     
       INTEGER(kind=i4) N, I
       REAL(kind=dp) P, R, KN, DF, RR, RP, PF, PHI
       PARAMETER ( RP = 0.79788456080286535588D0 )
@@ -2879,25 +2901,31 @@ c                  FINEST with estimated absolute accuracies ABSERR.
       ENDIF
       TCHNVC = R - DF/( KN*EXP((N-1)*LOG(R)-RR/2) + DF*( R-(N-1)/R )/2 )
       END
-*
-      SUBROUTINE VCRDSR( M, NF, MAXPTS, FUNCTN, ABSREQ, RELREQ, 
-     &                   IR, FINEST, ESTERR, NCLS, INFORM, WORK )
-*
-*    Crude Monte Carlo Integration Subroutine Driver
-*
+!*
+      SUBROUTINE VCRDSR( M, NF, MAXPTS, FUNCTN, ABSREQ, RELREQ,                &
+                        IR, FINEST, ESTERR, NCLS, INFORM, WORK )
+                 use mod_kinds, only : i4,dp
+            
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: VCRDSR
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VCRDSR
+#endif         
+!*
+!*    Crude Monte Carlo Integration Subroutine Driver
+!*
       EXTERNAL FUNCTN
       INTEGER(kind=i4) M, NF, MAXPTS, IR, NCLS, INFORM, I
-      REAL(kind=dp)  FINEST(*), ESTERR(*), WORK(*), 
-     &     ABSREQ, RELREQ, WEIGHT, DIFFER 
-*
+      REAL(kind=dp)  FINEST(*), ESTERR(*), WORK(*),                            &
+          ABSREQ, RELREQ, WEIGHT, DIFFER 
+!*
       IF ( IR .NE. 0 ) THEN
          DO I = 1, NF
             WORK(I) = FINEST(I)
             WORK(NF+I) = ESTERR(I) 
          END DO
       END IF
-      CALL VCRDRS( M, NF, MAXPTS, FUNCTN, FINEST, ESTERR, NCLS, 
-     &             WORK(2*NF+1), WORK(3*NF+1), WORK(4*NF+1) ) 
+      CALL VCRDRS( M, NF, MAXPTS, FUNCTN, FINEST, ESTERR, NCLS,               &
+                  WORK(2*NF+1), WORK(3*NF+1), WORK(4*NF+1) ) 
       INFORM = 0
       DO I = 1, NF
          ESTERR(I) = SQRT( ESTERR(I) )
@@ -2913,28 +2941,34 @@ c                  FINEST with estimated absolute accuracies ABSERR.
             FINEST(I) = WORK(I) + DIFFER
             ESTERR(I) = SQRT(WEIGHT)*ESTERR(I)
          END IF
-         IF ( ESTERR(I) .GT. MAX( ABSREQ, RELREQ*ABS(FINEST(I)) ) ) 
-     &        INFORM = 1
+         IF ( ESTERR(I) .GT. MAX( ABSREQ, RELREQ*ABS(FINEST(I)) ) )            &
+             INFORM = 1
       END DO
       END
-*
-      SUBROUTINE VCRDRS( M, NF, MAXPTS, FUNCTN, 
-     &                   FINEST, ESTERR, NCLS, FUNS, FUNTMP, X )
-*
-*    Crude Monte Carlo Integration Subroutine 
-*
+
+      SUBROUTINE VCRDRS( M, NF, MAXPTS, FUNCTN,                                &
+                        FINEST, ESTERR, NCLS, FUNS, FUNTMP, X )
+                      use mod_kinds, only : i4,dp
+            
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: VCRDRS
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: VCRDRS
+#endif         
+!*
+!*    Crude Monte Carlo Integration Subroutine 
+!*
       EXTERNAL FUNCTN
       INTEGER(kind=i4) M, N, NF, MAXPTS, NCLS, INFORM, I, K
-      REAL(kind=dp)   
-     &     FINEST(*), ESTERR(*), FUNTMP(*), FUNS(*), X(*)
+      REAL(kind=dp)                                                            &
+         FINEST(*), ESTERR(*), FUNTMP(*), FUNS(*), X(*)
       REAL(kind=dp) UNIRAN, FINVAL, FINDIF
       DO I = 1,NF
          FINEST(I) = 0
          ESTERR(I) = 0
       END DO
-*
-*     Uses simple antithetic variates
-*
+!*
+!*     Uses simple antithetic variates
+!*
       NCLS = MAXPTS/2
       DO N = 1,NCLS
          DO K = 1,M
@@ -2954,7 +2988,7 @@ c                  FINEST with estimated absolute accuracies ABSERR.
       END DO
       NCLS = 2*NCLS
       END
-*
+
       SUBROUTINE VKRBVR( NDIM, NF, MINVLS, MAXVLS, FUNSUB, 
      *     ABSEPS, RELEPS, IR, FINEST, ABSERR, INTVLS, INFORM, WORK )
 *
