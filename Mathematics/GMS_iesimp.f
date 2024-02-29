@@ -269,6 +269,8 @@ C     USE WITH NUMKER=4.
       END
 #endif
 
+#include 'mkl_lapack.fi'
+#include 'mkl.fi'
 
       SUBROUTINE DIESMP (KERNEL, RHFCN, A, B, NZ, EPS, IFLAG, X, NUPPER,          &
              MUPPER, W, IW, IFLGR2, INFO, IER)   
@@ -1589,7 +1591,7 @@ C     ESTIMATE THE ERROR IN THE SOLUTION OBTAINED ABOVE.
       ERRMAX=ERRMAX/X_NORM
       RETURN
       END
-
+#if 0  
       SUBROUTINE DGECO(A,LDA,N,IPVT,RCOND,Z)                            00000010
 Cc     ----------------
       INTEGER LDA,N,IPVT(*)                                             00000020
@@ -2234,5 +2236,5 @@ C                                                                       00000290
    30 CONTINUE                                                          00000350
       RETURN                                                            00000360
       END                                                               00000370
-
+#endif
 
