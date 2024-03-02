@@ -486,7 +486,7 @@ fn_val = tmp
 end if
 RETURN
 
-END FUNCTION random_exponential
+END FUNCTION random_exponential_clamped
 
 
 
@@ -513,6 +513,34 @@ fn_val = random_exponential() ** (one/a)
 RETURN
 
 END FUNCTION random_Weibull
+
+
+#if defined (__ICC) || defined (__INTEL_COMPILER)
+!DIR$ ATTRIBUTES INLINE :: random_Weibull_clamped
+    !DIR$ ATTRIBUTES ALIGN : 32 :: random_Weibull_clamped
+#endif
+FUNCTION random_Weibull_clamped(a) RESULT(fn_val)
+    
+
+
+!     Generates a random variate from the Weibull distribution with
+!     probability density:
+!                      a
+!               a-1  -x
+!     f(x) = a.x    e
+! 'a' -- must be greater then 0.9!!
+
+REAL(kind=sp), INTENT(IN) :: a
+REAL(kind=sp)             :: fn_val
+
+!     For speed, there is no checking that a is not zero or very small.
+
+fn_val = random_exponential_clamped() ** (one/a)
+RETURN
+
+END FUNCTION random_Weibull_clamped
+
+
 
 
 
