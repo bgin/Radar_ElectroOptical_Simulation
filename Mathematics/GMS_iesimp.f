@@ -269,11 +269,13 @@ C     USE WITH NUMKER=4.
       END
 #endif
 
-#include 'mkl_lapack.fi'
-#include 'mkl.fi'
 
       SUBROUTINE DIESMP (KERNEL, RHFCN, A, B, NZ, EPS, IFLAG, X, NUPPER,          &
-             MUPPER, W, IW, IFLGR2, INFO, IER)   
+             MUPPER, W, IW, IFLGR2, INFO, IER)  
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DIESMP
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DIESMP
+#endif  
 #if 0                                         
 C***BEGIN PROLOGUE  DIESIMP
 C***PURPOSE  THIS ROUTINE IS FOR SOLVING LINEAR FREDHOLM INTEGRAL 
@@ -1087,9 +1089,16 @@ C
       END IF
       END 
 
-      SUBROUTINE DITERT (KERNEL, RHFCN, N, TN, WN, M, TM, WM, XM, XMZ,
-     *    KMM, KMN, KNM, RHS, LUFACT, R, RH, DELN, IPIVOT, NUP, NHALF,
-     *    IFLG)
+      SUBROUTINE DITERT (KERNEL, RHFCN, N, TN, WN, M, TM, WM, XM, XMZ,      &
+         KMM, KMN, KNM, RHS, LUFACT, R, RH, DELN, IPIVOT, NUP, NHALF,      &
+         IFLG)
+            use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DITERT
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DITERT
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DITERT
+#endif
+#if 0 
 C***BEGIN PROLOGUE  DITERT
 C***SUBSIDIARY
 C***PURPOSE  THIS ROUTINE CALCULATES ONE ITERATE XM GIVEN THE INITIAL
@@ -1187,90 +1196,103 @@ C   901001  MODIFIED TO MEET SLATEC PROLOGUE STANDARS AND TO CORRECT
 C           SMALL ERROR.
 C***END PROLOGUE  DITERT									
 C
+#endif
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION KERNEL,KMM,KMN,KNM,LUFACT
       PARAMETER (ZERO=0.0D0)
-      DIMENSION TN(N),WN(N),TM(M),WM(M),XM(M),XMZ(M),KMM(NUP,NUP),
-     *   KMN(NUP,NHALF),KNM(NHALF,NUP),RHS(M),LUFACT(NUP,NUP),
-     *   R(M),RH(N),DELN(N),IPIVOT(N)
-C
-C***FIRST EXECUTABLE STATEMENT  DITERT
-C
-C     M .GT. NUPPER MEANS THAT THE MATRICES KMM,KMN,KNM CAN NO LONGER
-C     BE STORED DUE TO LACK OF SPACE.
+      DIMENSION TN(N),WN(N),TM(M),WM(M),XM(M),XMZ(M),KMM(NUP,NUP),      &
+        KMN(NUP,NHALF),KNM(NHALF,NUP),RHS(M),LUFACT(NUP,NUP),          &
+        R(M),RH(N),DELN(N),IPIVOT(N)
+!C
+!C***FIRST EXECUTABLE STATEMENT  DITERT
+!C
+!C     M .GT. NUPPER MEANS THAT THE MATRICES KMM,KMN,KNM CAN NO LONGER
+!C     BE STORED DUE TO LACK OF SPACE.
       IF (M .GT. NUP) GO TO 130
-C
+!C
       IF(IFLG .EQ. 0) THEN
-C         THE MATRICES KMM, KMN AND KNM MUST BE COMPUTED AND STORED.
+!C         THE MATRICES KMM, KMN AND KNM MUST BE COMPUTED AND STORED.
           DO 20 J=1,M
+            !$omp simd unroll full
             DO 10 I=1,M
 10            KMM(I,J)=WM(J)*KERNEL(TM(I),TM(J))
+            !$omp simd unroll full
             DO 20 I=1,N
               KMN(J,I)=WN(I)*KERNEL(TM(J),TN(I))
 20            KNM(I,J)=WM(J)*KERNEL(TN(I),TM(J))
       END IF
-C
-C     COMPUTE  RESIDUALS R(I)=RHFCN(TM(I))-XMZ(I)+KM(TM(I))*XMZ(I)
+!C
+!C     COMPUTE  RESIDUALS R(I)=RHFCN(TM(I))-XMZ(I)+KM(TM(I))*XMZ(I)
       DO 50 I=1,M
         SUM=ZERO
+        !$omp simd reduction(+:SUM)
         DO 40 J=1,M
 40        SUM=SUM+KMM(I,J)*XMZ(J)
 50      R(I)=RHS(I)-(XMZ(I)-SUM)
-C
-C     COMPUTE RH=KM*R AT ALL TN(I).
+!C
+!C     COMPUTE RH=KM*R AT ALL TN(I).
       DO 80 I=1,N
         RH(I)=ZERO
+        !$omp simd reduction(+:RH)
         DO 70 J=1,M
 70        RH(I)=RH(I)+ KNM(I,J)*R(J)
 80      DELN(I)=RH(I)
+#if 0
 C
 C     CALCULATE DELN=((I-KN)**(-1))*KM*R AT ALL TN(I).
 C
 C     **************************************************************
-C                                                                  *
+C  
+#endif                                                                
       CALL DGESL(LUFACT,NUP,N,IPIVOT,DELN,0)
-C                                                                  *
-C     SEE THE ORIGINAL REFERENCE IN SUBROUTINE DIESP.              *
-C                                                                  *
-C     **************************************************************
-C
-C     CALCULATE NEW XM.
+!C                                                                  *
+!C     SEE THE ORIGINAL REFERENCE IN SUBROUTINE DIESP.              *
+!C!                                                                  *
+!C     **************************************************************
+!C
+!C     CALCULATE NEW XM.
       DO 120 I=1,M
         SUM=ZERO
+        !$omp simd reduction(+:SUM)
         DO 100 J=1,M
 100       SUM=SUM+KMM(I,J)*R(J)
+        !$omp simd reduction(+:SUM)
         DO 110 J=1,N
 110       SUM=SUM+KMN(I,J)*DELN(J)
 120     XM(I)=SUM+R(I)+XMZ(I)
       RETURN
-C
-C     ENTRANCE WHEN M .GT. NUP.
-C     CALCULATE RESIDUALS.
+!C
+!C     ENTRANCE WHEN M .GT. NUP.
+!C     CALCULATE RESIDUALS.
 130   DO 150 I=1,M
         SUM=ZERO
+        !$omp simd reduction(+:SUM)
         DO 140 J=1,M
 140       SUM=SUM+WM(J)*KERNEL(TM(I),TM(J))*XMZ(J)
 150     R(I)=RHS(I)-(XMZ(I)-SUM)
-C     CALCULATE RH=KM*R.
+!C     CALCULATE RH=KM*R.
       DO 180 I=1,N
         RH(I)=ZERO
+        !$omp simd reduction(+:RH)
         DO 170 J=1,M
 170       RH(I)=RH(I)+WM(J)*KERNEL(TN(I),TM(J))*R(J)
 180     DELN(I)=RH(I)
-C
-C     **************************************************************
-C                                                                  *
+!C
+!C     **************************************************************
+!C                                                                  *
       CALL DGESL(LUFACT,NUP,N,IPIVOT,DELN,0)
-C                                                                  *
-C     SEE THE ORIGINAL REFERENCE IN SUBROUTINE DIESP.              *
-C                                                                  *
-C     **************************************************************
-C
-C     CALCULATE XM.
+!C                                                                  *
+!C     SEE THE ORIGINAL REFERENCE IN SUBROUTINE DIESP.              *
+!C                                                                  *
+!C     **************************************************************
+!C
+!C     CALCULATE XM.
       DO 220 I=1,M
         SUM=ZERO
+        !$omp simd reduction(+:SUM)
         DO 200 J=1,M
 200       SUM=SUM+WM(J)*KERNEL(TM(I),TM(J))*R(J)
+        !$omp simd reduction(+:SUM)
         DO 210 J=1,N
 210       SUM=SUM+WN(J)*KERNEL(TM(I),TN(J))*DELN(J)
 220     XM(I)=SUM+R(I)+XMZ(I)
@@ -1278,6 +1300,13 @@ C     CALCULATE XM.
       END  
 
       SUBROUTINE DINTRP (TM, XM, M, TN, WN, XN, N, KERNEL, RHFCN, RHS)
+            use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DINTRP
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DINTRP
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DINTRP
+#endif 
+#if 0     
 C***BEGIN PROLOGUE  DINTRP
 C***SUBSIDIARY
 C***PURPOSE  USE THE VALUES OF XN(I), I=1,...,N, TO CALCULATE THE 
@@ -1338,22 +1367,30 @@ C   901001  MODIFIED TO MEET SLATEC PROLOGUE STANDARS AND TO CORRECT
 C           SMALL ERROR.
 C***END PROLOGUE DINTRP
 C
+#endif
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION KERNEL
       DIMENSION TM(M),XM(M),TN(N),WN(N),XN(N),RHS(M)
-C
-C***FIRST EXECUTABLE STATEMENT  DINTRP
-C
-C     CALCULATE NYSTROM INTERPOLATING FORMULA.
+!C
+!C***FIRST EXECUTABLE STATEMENT  DINTRP
+!C
+!C     CALCULATE NYSTROM INTERPOLATING FORMULA.
       DO 50 I=1,M
         RHS(I)=RHFCN(TM(I))
         XM(I)=RHS(I)
+        !$omp simd reduction(+:XM)
         DO 50 J=1,N
 50        XM(I)=XM(I)+WN(J)*KERNEL(TM(I),TN(J))*XN(J)
       RETURN
       END  
 
       DOUBLE PRECISION FUNCTION DNORM (X, Y, N, IFLAG)
+      
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DNORM
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DNORM
+#endif
+#if 0
 C***BEGIN PROLOGUE  DNORM
 C***SUBSIDIARY
 C***PURPOSE  FIND THE MAXIMUM NORM OF A VECTOR.
@@ -1402,18 +1439,19 @@ C   901001  MODIFIED TO MEET SLATEC PROLOGUE STANDARS AND TO CORRECT
 C           SMALL ERROR.
 C***END PROLOGUE DNORM
 C
+#endif
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       PARAMETER (ZERO=0.0D0)
       DIMENSION X(N),Y(N)
-C                    
-C***FIRST EXECUTABLE STATEMENT  DNORM
+!C                    
+!C***FIRST EXECUTABLE STATEMENT  DNORM
       IF (IFLAG .EQ. 0) THEN
-C         FIND THE NORM OF X.
+!C         FIND THE NORM OF X.
           DNORM=ZERO
           DO 10 I=1,N
 10          DNORM=MAX(DNORM,ABS(X(I)))
       ELSE
-C         FIND THE NORM OF X-Y.
+!C         FIND THE NORM OF X-Y.
           DNORM=ZERO
           DO 30 I=1,N
 30          DNORM=MAX(DNORM,ABS(X(I)-Y(I)))
@@ -1422,6 +1460,13 @@ C         FIND THE NORM OF X-Y.
       END 
 
       SUBROUTINE DWANDT (W, T, N, A, B)
+        use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DWANDT
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DWANDT
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DWANDT
+#endif    
+#if 0  
 C***BEGIN PROLOGUE  DWANDT
 C***SUBSIDIARY
 C***PURPOSE  THIS ROUTINE CALCULATES THE WEIGHTS AND NODE POINTS FOR
@@ -1466,17 +1511,19 @@ C   880901  UPGRADE TO FORTRAN 77.
 C   901001  MODIFIED TO MEET SLATEC PROLOGUE STANDARS AND TO CORRECT
 C           SMALL ERROR.
 C***END PROLOGUE DWANDT
+#endif
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       PARAMETER(R3=1.0D0/3.0D0,TWOR3=2.0D0*R3,FOURR3=4.0D0*R3)
       DIMENSION W(N),T(N)
-C
-C***FIRST EXECUTABLE STATEMENT  DWANDT
-C     CALCULATE NODE POINTS.
+!C
+!C***FIRST EXECUTABLE STATEMENT  DWANDT
+!C     CALCULATE NODE POINTS.
       H=(B-A)/(N-1)
+      !$omp simd
       DO 10 I=1,N
 10      T(I)=A+(I-1)*H
-C
-C     CALCULATE WEIGHTS.
+!C
+!C     CALCULATE WEIGHTS.
       W(1)=R3*H
       W(N)=R3*H
       TEMP=FOURR3*H
@@ -1489,8 +1536,15 @@ C     CALCULATE WEIGHTS.
       RETURN
       END
 
-      SUBROUTINE LINSYS(A,LUFACT,N,B,SOLN,OPTION,RCOND,IPIVOT,
-     *                  MACHIN,Z,ERRMAX)
+      SUBROUTINE LINSYS(A,LUFACT,N,B,SOLN,OPTION,RCOND,IPIVOT,          &
+                       MACHIN,Z,ERRMAX)
+            use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: LINSYS
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: LINSYS
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: LINSYS
+#endif
+#if 0
 C     -----------------
 C
 C     SOLVE A*X=B.
@@ -1543,45 +1597,48 @@ C             CORRECTION METHOD.  SINCE EXTENDED PRECISION IS NOT
 C             BEING USED TO CALCULATE THE RESIDUALS, IT IS UNLIKELY
 C             TO BE ACCURATE IN MORE THAN ITS MAGNITUDE.
 C
+#endif
       IMPLICIT DOUBLE PRECISION (A-H,O-Z)
       DOUBLE PRECISION LUFACT
       INTEGER OPTION
-      DIMENSION A(MACHIN,*),LUFACT(MACHIN,*),B(*),SOLN(*),
-     *         IPIVOT(*),Z(*)
+      DIMENSION A(MACHIN,*),LUFACT(MACHIN,*),B(*),SOLN(*),                   &
+              IPIVOT(*),Z(*)
       PARAMETER(ZERO=0.0D0)
       SAVE TRCOND
-C
+!C
       IF(OPTION .EQ. 2) THEN
-C         COPY THE MATRIX A INTO THE MATRIX LUFACT.
+!C         COPY THE MATRIX A INTO THE MATRIX LUFACT.
           DO 10 I=1,N
           DO 10 J=1,N
 10          LUFACT(I,J)=A(I,J)
         END IF
-C
-C     CALCULATE THE LU FACTORIZATION OF LUFACT.
+!C
+!C     CALCULATE THE LU FACTORIZATION OF LUFACT.
       IF(OPTION .LT. 3) THEN
           CALL DGECO(LUFACT,MACHIN,N,IPIVOT,TRCOND,Z)
           RCOND = TRCOND
           IF(TRCOND .EQ. ZERO) RETURN
         END IF
-C
-C     SOLVE THE GIVEN LINEAR SYSTEM.
+!C
+!C     SOLVE THE GIVEN LINEAR SYSTEM.
+      !$omp simd unroll full
       DO 20 I=1,N
 20      SOLN(I)=B(I)
       CALL DGESL(LUFACT,MACHIN,N,IPIVOT,SOLN,0)
       IF((OPTION .EQ. 1) .OR. (OPTION .EQ. 3)) RETURN
-C
-C     CALCULATE THE RESIDUAL OF THE LINEAR SYSTEM.
+!C
+!C     CALCULATE THE RESIDUAL OF THE LINEAR SYSTEM.
       DO 40 I=1,N
         SUM=ZERO
+        !$omp simd reduction(+:SUM)
         DO 30 J=1,N
 30        SUM=SUM+A(I,J)*SOLN(J)
 40      Z(I)=B(I)-SUM
       R_MAX=ZERO
       DO 50 I=1,N
 50      R_MAX=MAX(R_MAX,ABS(Z(I)))
-C
-C     ESTIMATE THE ERROR IN THE SOLUTION OBTAINED ABOVE.
+!C
+!C     ESTIMATE THE ERROR IN THE SOLUTION OBTAINED ABOVE.
       CALL DGESL(LUFACT,MACHIN,N,IPIVOT,Z,0)
       ERRMAX=ZERO
       X_NORM=ZERO
@@ -1591,13 +1648,20 @@ C     ESTIMATE THE ERROR IN THE SOLUTION OBTAINED ABOVE.
       ERRMAX=ERRMAX/X_NORM
       RETURN
       END
-#if 0  
-      SUBROUTINE DGECO(A,LDA,N,IPVT,RCOND,Z)                            00000010
-Cc     ----------------
-      INTEGER LDA,N,IPVT(*)                                             00000020
-      DOUBLE PRECISION A(LDA,*),Z(*)                                    00000030
-      DOUBLE PRECISION RCOND                                            00000040
-C                                                                       00000050
+
+      SUBROUTINE DGECO(A,LDA,N,IPVT,RCOND,Z)   
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DGECO
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DGECO
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGECO
+#endif                         
+
+      INTEGER LDA,N,IPVT(*)                                             
+      DOUBLE PRECISION A(LDA,*),Z(*)                                    
+      DOUBLE PRECISION RCOND  
+#if 0                                          
+C                                                                       
 C     DGECO FACTORS A DOUBLE PRECISION MATRIX BY GAUSSIAN ELIMINATION   00000060
 C     AND ESTIMATES THE CONDITION OF THE MATRIX.                        00000070
 C                                                                       00000080
@@ -1658,21 +1722,23 @@ C     FORTRAN DABS,DMAX1,DSIGN                                          00000620
 C                                                                       00000630
 C     INTERNAL VARIABLES                                                00000640
 C                                                                       00000650
-      DOUBLE PRECISION DDOT,EK,T,WK,WKM                                 00000660
-      DOUBLE PRECISION ANORM,S,DASUM,SM,YNORM                           00000670
-      INTEGER INFO,J,K,KB,KP1,L                                         00000680
-C                                                                       00000690
-C                                                                       00000700
-C     COMPUTE 1-NORM OF A                                               00000710
-C                                                                       00000720
-      ANORM = 0.0D0                                                     00000730
-      DO 10 J = 1, N                                                    00000740
-         ANORM = DMAX1(ANORM,DASUM(N,A(1,J),1))                         00000750
-   10 CONTINUE                                                          00000760
-C                                                                       00000770
-C     FACTOR                                                            00000780
-C                                                                       00000790
-      CALL DGEFA(A,LDA,N,IPVT,INFO)                                     00000800
+#endif
+      DOUBLE PRECISION DDOT,EK,T,WK,WKM                                 
+      DOUBLE PRECISION ANORM,S,DASUM,SM,YNORM                           
+      INTEGER INFO,J,K,KB,KP1,L                                         
+!C                                                                       
+!C                                                                       
+!C     COMPUTE 1-NORM OF A                                               
+!C                                                                       
+      ANORM = 0.0D0                                                    
+      DO 10 J = 1, N                                                    
+         ANORM = DMAX1(ANORM,DASUM(N,A(1,J),1))                        
+   10 CONTINUE                                                          
+!C                                                                       
+!C     FACTOR                                                            
+!C                                                                       
+      CALL DGEFA(A,LDA,N,IPVT,INFO)    
+#if 0                                       
 C                                                                       00000810
 C     RCOND = 1/(NORM(A)*(ESTIMATE OF NORM(INVERSE(A)))) .              00000820
 C     ESTIMATE = NORM(Z)/NORM(Y) WHERE  A*Z = Y  AND  TRANS(A)*Y = E .  00000830
@@ -1682,116 +1748,126 @@ C     TRANS(U)*W = E .  THE VECTORS ARE FREQUENTLY RESCALED TO AVOID    00000860
 C     OVERFLOW.                                                         00000870
 C                                                                       00000880
 C     SOLVE TRANS(U)*W = E                                              00000890
-C                                                                       00000900
-      EK = 1.0D0                                                        00000910
-      DO 20 J = 1, N                                                    00000920
-         Z(J) = 0.0D0                                                   00000930
-   20 CONTINUE                                                          00000940
-      DO 100 K = 1, N                                                   00000950
-         IF (Z(K) .NE. 0.0D0) EK = DSIGN(EK,-Z(K))                      00000960
-         IF (DABS(EK-Z(K)) .LE. DABS(A(K,K))) GO TO 30                  00000970
-            S = DABS(A(K,K))/DABS(EK-Z(K))                              00000980
-            CALL DSCAL(N,S,Z,1)                                         00000990
-            EK = S*EK                                                   00001000
-   30    CONTINUE                                                       00001010
-         WK = EK - Z(K)                                                 00001020
-         WKM = -EK - Z(K)                                               00001030
-         S = DABS(WK)                                                   00001040
-         SM = DABS(WKM)                                                 00001050
-         IF (A(K,K) .EQ. 0.0D0) GO TO 40                                00001060
-            WK = WK/A(K,K)                                              00001070
-            WKM = WKM/A(K,K)                                            00001080
-         GO TO 50                                                       00001090
-   40    CONTINUE                                                       00001100
-            WK = 1.0D0                                                  00001110
-            WKM = 1.0D0                                                 00001120
-   50    CONTINUE                                                       00001130
-         KP1 = K + 1                                                    00001140
-         IF (KP1 .GT. N) GO TO 90                                       00001150
-            DO 60 J = KP1, N                                            00001160
-               SM = SM + DABS(Z(J)+WKM*A(K,J))                          00001170
-               Z(J) = Z(J) + WK*A(K,J)                                  00001180
-               S = S + DABS(Z(J))                                       00001190
-   60       CONTINUE                                                    00001200
-            IF (S .GE. SM) GO TO 80                                     00001210
-               T = WKM - WK                                             00001220
-               WK = WKM                                                 00001230
-               DO 70 J = KP1, N                                         00001240
-                  Z(J) = Z(J) + T*A(K,J)                                00001250
-   70          CONTINUE                                                 00001260
-   80       CONTINUE                                                    00001270
-   90    CONTINUE                                                       00001280
-         Z(K) = WK                                                      00001290
-  100 CONTINUE                                                          00001300
-      S = 1.0D0/DASUM(N,Z,1)                                            00001310
-      CALL DSCAL(N,S,Z,1)                                               00001320
-C                                                                       00001330
-C     SOLVE TRANS(L)*Y = W                                              00001340
-C                                                                       00001350
-      DO 120 KB = 1, N                                                  00001360
-         K = N + 1 - KB                                                 00001370
-         IF (K .LT. N) Z(K) = Z(K) + DDOT(N-K,A(K+1,K),1,Z(K+1),1)      00001380
-         IF (DABS(Z(K)) .LE. 1.0D0) GO TO 110                           00001390
-            S = 1.0D0/DABS(Z(K))                                        00001400
-            CALL DSCAL(N,S,Z,1)                                         00001410
-  110    CONTINUE                                                       00001420
-         L = IPVT(K)                                                    00001430
-         T = Z(L)                                                       00001440
-         Z(L) = Z(K)                                                    00001450
-         Z(K) = T                                                       00001460
-  120 CONTINUE                                                          00001470
-      S = 1.0D0/DASUM(N,Z,1)                                            00001480
-      CALL DSCAL(N,S,Z,1)                                               00001490
-C                                                                       00001500
-      YNORM = 1.0D0                                                     00001510
-C                                                                       00001520
-C     SOLVE L*V = Y                                                     00001530
-C                                                                       00001540
-      DO 140 K = 1, N                                                   00001550
-         L = IPVT(K)                                                    00001560
-         T = Z(L)                                                       00001570
-         Z(L) = Z(K)                                                    00001580
-         Z(K) = T                                                       00001590
-         IF (K .LT. N) CALL DAXPY(N-K,T,A(K+1,K),1,Z(K+1),1)            00001600
-         IF (DABS(Z(K)) .LE. 1.0D0) GO TO 130                           00001610
-            S = 1.0D0/DABS(Z(K))                                        00001620
-            CALL DSCAL(N,S,Z,1)                                         00001630
-            YNORM = S*YNORM                                             00001640
-  130    CONTINUE                                                       00001650
-  140 CONTINUE                                                          00001660
-      S = 1.0D0/DASUM(N,Z,1)                                            00001670
-      CALL DSCAL(N,S,Z,1)                                               00001680
-      YNORM = S*YNORM                                                   00001690
-C                                                                       00001700
-C     SOLVE  U*Z = V                                                    00001710
-C                                                                       00001720
-      DO 160 KB = 1, N                                                  00001730
-         K = N + 1 - KB                                                 00001740
-         IF (DABS(Z(K)) .LE. DABS(A(K,K))) GO TO 150                    00001750
-            S = DABS(A(K,K))/DABS(Z(K))                                 00001760
-            CALL DSCAL(N,S,Z,1)                                         00001770
-            YNORM = S*YNORM                                             00001780
-  150    CONTINUE                                                       00001790
-         IF (A(K,K) .NE. 0.0D0) Z(K) = Z(K)/A(K,K)                      00001800
-         IF (A(K,K) .EQ. 0.0D0) Z(K) = 1.0D0                            00001810
-         T = -Z(K)                                                      00001820
-         CALL DAXPY(K-1,T,A(1,K),1,Z(1),1)                              00001830
-  160 CONTINUE                                                          00001840
-C     MAKE ZNORM = 1.0                                                  00001850
-      S = 1.0D0/DASUM(N,Z,1)                                            00001860
-      CALL DSCAL(N,S,Z,1)                                               00001870
-      YNORM = S*YNORM                                                   00001880
-C                                                                       00001890
-      IF (ANORM .NE. 0.0D0) RCOND = YNORM/ANORM                         00001900
-      IF (ANORM .EQ. 0.0D0) RCOND = 0.0D0                               00001910
-      RETURN                                                            00001920
-      END                                                               00001930
-
-      SUBROUTINE DGESL(A,LDA,N,IPVT,B,JOB)                              00000010
-C     ---------------- 
 C 
-      INTEGER LDA,N,IPVT(*),JOB                                         00000020
-      DOUBLE PRECISION A(LDA,*),B(*)                                    00000030
+#endif                                                                     
+      EK = 1.0D0                                                       
+      DO 20 J = 1, N                                                    
+         Z(J) = 0.0D0                                                   
+   20 CONTINUE                                                         
+      DO 100 K = 1, N                                                   
+         IF (Z(K) .NE. 0.0D0) EK = DSIGN(EK,-Z(K))                     
+         IF (DABS(EK-Z(K)) .LE. DABS(A(K,K))) GO TO 30                  
+            S = DABS(A(K,K))/DABS(EK-Z(K))                              
+            CALL DSCAL(N,S,Z,1)                                         
+            EK = S*EK                                                   
+   30    CONTINUE                                                       
+         WK = EK - Z(K)                                                 
+         WKM = -EK - Z(K)                                               
+         S = DABS(WK)                                                   
+         SM = DABS(WKM)                                                 
+         IF (A(K,K) .EQ. 0.0D0) GO TO 40                                !00001060
+            WK = WK/A(K,K)                                              !00001070
+            WKM = WKM/A(K,K)                                            !00001080
+         GO TO 50                                                       !00001090
+   40    CONTINUE                                                       !00001100
+            WK = 1.0D0                                                  !00001110
+            WKM = 1.0D0                                                ! 00001120
+   50    CONTINUE                                                      ! 00001130
+         KP1 = K + 1                                                    !00001140
+         IF (KP1 .GT. N) GO TO 90                                       !00001150
+            !$omp simd reduction (+:SM,Z,S)
+            DO 60 J = KP1, N                                           ! 00001160
+               SM = SM + DABS(Z(J)+WKM*A(K,J))                          !00001170
+               Z(J) = Z(J) + WK*A(K,J)                                  !00001180
+               S = S + DABS(Z(J))                                       !00001190
+   60       CONTINUE                                                    !00001200
+            IF (S .GE. SM) GO TO 80                                    ! 00001210
+               T = WKM - WK                                            ! 00001220
+               WK = WKM   
+               !$omp simd reduction(+:Z)                                           
+               DO 70 J = KP1, N                                        ! 00001240
+                  Z(J) = Z(J) + T*A(K,J)                               ! 00001250
+   70          CONTINUE                                                ! 00001260
+   80       CONTINUE                                                    !00001270
+   90    CONTINUE                                                       !00001280
+         Z(K) = WK                                                      !00001290
+  100 CONTINUE                                                          !00001300
+      S = 1.0D0/DASUM(N,Z,1)                                            !00001310
+      CALL DSCAL(N,S,Z,1)                                               !00001320
+!C                                                                       00001330
+!C     SOLVE TRANS(L)*Y = W                                              00001340
+!C                                                                       00001350
+      DO 120 KB = 1, N                                                  !00001360
+         K = N + 1 - KB                                                 !00001370
+         IF (K .LT. N) Z(K) = Z(K) + DDOT(N-K,A(K+1,K),1,Z(K+1),1)      !00001380
+         IF (DABS(Z(K)) .LE. 1.0D0) GO TO 110                           !00001390
+            S = 1.0D0/DABS(Z(K))                                        !00001400
+            CALL DSCAL(N,S,Z,1)                                         !00001410
+  110    CONTINUE                                                       !00001420
+         L = IPVT(K)                                                    !00001430
+         T = Z(L)                                                       !00001440
+         Z(L) = Z(K)                                                    !00001450
+         Z(K) = T                                                       !00001460
+  120 CONTINUE                                                          !00001470
+      S = 1.0D0/DASUM(N,Z,1)                                            !00001480
+      CALL DSCAL(N,S,Z,1)                                               !00001490
+!C                                                                       00001500
+      YNORM = 1.0D0                                                     !00001510
+!C                                                                       00001520
+!C     SOLVE L*V = Y                                                     00001530
+!C                                                                       00001540
+      DO 140 K = 1, N                                                   !00001550
+         L = IPVT(K)                                                    !00001560
+         T = Z(L)                                                       !00001570
+         Z(L) = Z(K)                                                    !00001580
+         Z(K) = T                                                       !00001590
+         IF (K .LT. N) CALL DAXPY(N-K,T,A(K+1,K),1,Z(K+1),1)            !00001600
+         IF (DABS(Z(K)) .LE. 1.0D0) GO TO 130                           !00001610
+            S = 1.0D0/DABS(Z(K))                                        !00001620
+            CALL DSCAL(N,S,Z,1)                                         !00001630
+            YNORM = S*YNORM                                             !00001640
+  130    CONTINUE                                                       !00001650
+  140 CONTINUE                                                          !00001660
+      S = 1.0D0/DASUM(N,Z,1)                                            !00001670
+      CALL DSCAL(N,S,Z,1)                                               !00001680
+      YNORM = S*YNORM                                                   !00001690
+!C                                                                       00001700
+!C     SOLVE  U*Z = V                                                    00001710
+!C                                                                       00001720
+      DO 160 KB = 1, N                                                 ! 00001730
+         K = N + 1 - KB                                                ! 00001740
+         IF (DABS(Z(K)) .LE. DABS(A(K,K))) GO TO 150                   ! 00001750
+            S = DABS(A(K,K))/DABS(Z(K))                                ! 00001760
+            CALL DSCAL(N,S,Z,1)                                        ! 00001770
+            YNORM = S*YNORM                                            ! 00001780
+  150    CONTINUE                                                      ! 00001790
+         IF (A(K,K) .NE. 0.0D0) Z(K) = Z(K)/A(K,K)                     ! 00001800
+         IF (A(K,K) .EQ. 0.0D0) Z(K) = 1.0D0                            !00001810
+         T = -Z(K)                                                      !00001820
+         CALL DAXPY(K-1,T,A(1,K),1,Z(1),1)                              !00001830
+  160 CONTINUE                                                         ! 00001840
+!C     MAKE ZNORM = 1.0                                                  00001850
+      S = 1.0D0/DASUM(N,Z,1)                                           ! 00001860
+      CALL DSCAL(N,S,Z,1)                                              ! 00001870
+      YNORM = S*YNORM                                                   !00001880
+!C                                                                       00001890
+      IF (ANORM .NE. 0.0D0) RCOND = YNORM/ANORM                        ! 00001900
+      IF (ANORM .EQ. 0.0D0) RCOND = 0.0D0                              ! 00001910
+      RETURN                                                           ! 00001920
+      END                                                               !00001930
+
+      SUBROUTINE DGESL(A,LDA,N,IPVT,B,JOB)                             
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DGESL
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DGESL
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGESL
+#endif
+!C     ---------------- 
+!C 
+      INTEGER LDA,N,IPVT(*),JOB                                         !00000020
+      DOUBLE PRECISION A(LDA,*),B(*)                                    !00000030
+#if 0
 C                                                                       00000040
 C     DGESL SOLVES THE DOUBLE PRECISION SYSTEM                          00000050
 C     A * X = B  OR  TRANS(A) * X = B                                   00000060
@@ -1849,69 +1925,77 @@ C     BLAS DAXPY,DDOT                                                   00000570
 C                                                                       00000580
 C     INTERNAL VARIABLES                                                00000590
 C                                                                       00000600
-      DOUBLE PRECISION DDOT,T                                           00000610
-      INTEGER K,KB,L,NM1                                                00000620
-C                                                                       00000630
-      NM1 = N - 1                                                       00000640
-      IF (JOB .NE. 0) GO TO 50                                          00000650
-C                                                                       00000660
-C        JOB = 0 , SOLVE  A * X = B                                     00000670
-C        FIRST SOLVE  L*Y = B                                           00000680
-C                                                                       00000690
-         IF (NM1 .LT. 1) GO TO 30                                       00000700
-         DO 20 K = 1, NM1                                               00000710
-            L = IPVT(K)                                                 00000720
-            T = B(L)                                                    00000730
-            IF (L .EQ. K) GO TO 10                                      00000740
-               B(L) = B(K)                                              00000750
-               B(K) = T                                                 00000760
-   10       CONTINUE                                                    00000770
-            CALL DAXPY(N-K,T,A(K+1,K),1,B(K+1),1)                       00000780
-   20    CONTINUE                                                       00000790
-   30    CONTINUE                                                       00000800
-C                                                                       00000810
-C        NOW SOLVE  U*X = Y                                             00000820
-C                                                                       00000830
-         DO 40 KB = 1, N                                                00000840
-            K = N + 1 - KB                                              00000850
-            B(K) = B(K)/A(K,K)                                          00000860
-            T = -B(K)                                                   00000870
-            CALL DAXPY(K-1,T,A(1,K),1,B(1),1)                           00000880
-   40    CONTINUE                                                       00000890
-      GO TO 100                                                         00000900
-   50 CONTINUE                                                          00000910
-C                                                                       00000920
-C        JOB = NONZERO, SOLVE  TRANS(A) * X = B                         00000930
-C        FIRST SOLVE  TRANS(U)*Y = B                                    00000940
-C                                                                       00000950
-         DO 60 K = 1, N                                                 00000960
-            T = DDOT(K-1,A(1,K),1,B(1),1)                               00000970
-            B(K) = (B(K) - T)/A(K,K)                                    00000980
-   60    CONTINUE                                                       00000990
-C                                                                       00001000
-C        NOW SOLVE TRANS(L)*X = Y                                       00001010
-C                                                                       00001020
-         IF (NM1 .LT. 1) GO TO 90                                       00001030
-         DO 80 KB = 1, NM1                                              00001040
-            K = N - KB                                                  00001050
-            B(K) = B(K) + DDOT(N-K,A(K+1,K),1,B(K+1),1)                 00001060
-            L = IPVT(K)                                                 00001070
-            IF (L .EQ. K) GO TO 70                                      00001080
-               T = B(L)                                                 00001090
-               B(L) = B(K)                                              00001100
-               B(K) = T                                                 00001110
-   70       CONTINUE                                                    00001120
-   80    CONTINUE                                                       00001130
-   90    CONTINUE                                                       00001140
-  100 CONTINUE                                                          00001150
-      RETURN                                                            00001160
-      END                                                               00001170
+#endif
+      DOUBLE PRECISION DDOT,T                                          ! 00000610
+      INTEGER K,KB,L,NM1                                                !00000620
+!C                                                                       00000630
+      NM1 = N - 1                                                       !00000640
+      IF (JOB .NE. 0) GO TO 50                                          !00000650
+!C                                                                       00000660
+!C        JOB = 0 , SOLVE  A * X = B                                     00000670
+!C        FIRST SOLVE  L*Y = B                                           00000680
+!C                                                                       00000690
+         IF (NM1 .LT. 1) GO TO 30                                       
+         DO 20 K = 1, NM1                                               
+            L = IPVT(K)                                                 
+            T = B(L)                                                    
+            IF (L .EQ. K) GO TO 10                                      
+               B(L) = B(K)                                              
+               B(K) = T                                                 
+   10       CONTINUE                                                    
+            CALL DAXPY(N-K,T,A(K+1,K),1,B(K+1),1)                       
+   20    CONTINUE                                                       
+   30    CONTINUE                                                       
+!C                                                                       00000810
+!C        NOW SOLVE  U*X = Y                                             00000820
+!C                                                                       00000830
+         DO 40 KB = 1, N                                                
+            K = N + 1 - KB                                              
+            B(K) = B(K)/A(K,K)                                          
+            T = -B(K)                                                   
+            CALL DAXPY(K-1,T,A(1,K),1,B(1),1)                           
+   40    CONTINUE                                                       
+      GO TO 100                                                         
+   50 CONTINUE                                                          
+!C                                                                       00000920
+!C        JOB = NONZERO, SOLVE  TRANS(A) * X = B                         00000930
+!C        FIRST SOLVE  TRANS(U)*Y = B                                    00000940
+!C    
+          !$omp simd                                                                
+         DO 60 K = 1, N                                                 
+            T = DDOT(K-1,A(1,K),1,B(1),1)                               
+            B(K) = (B(K) - T)/A(K,K)                                    
+   60    CONTINUE                                                      
+!C                                                                       00001000
+!C        NOW SOLVE TRANS(L)*X = Y                                       00001010
+!C                                                                       00001020
+         IF (NM1 .LT. 1) GO TO 90                                       !00001030
+         DO 80 KB = 1, NM1                                              !00001040
+            K = N - KB                                                  !00001050
+            B(K) = B(K) + DDOT(N-K,A(K+1,K),1,B(K+1),1)                 !00001060
+            L = IPVT(K)                                                 !00001070
+            IF (L .EQ. K) GO TO 70                                      !00001080
+               T = B(L)                                                 !00001090
+               B(L) = B(K)                                              !00001100
+               B(K) = T                                                 !00001110
+   70       CONTINUE                                                    !00001120
+   80    CONTINUE                                                       !00001130
+   90    CONTINUE                                                       !00001140
+  100 CONTINUE                                                          !00001150
+      RETURN                                                            !00001160
+      END                                                               !00001170
 
-      SUBROUTINE DGEFA(A,LDA,N,IPVT,INFO)                               00000010
-C     ----------------
-C
-      INTEGER LDA,N,IPVT(*),INFO                                        00000020
-      DOUBLE PRECISION A(LDA,*)                                         00000030
+      SUBROUTINE DGEFA(A,LDA,N,IPVT,INFO) 
+     
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DGEFA
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DGEFA
+#endif                              
+!C     ----------------
+!C
+      INTEGER LDA,N,IPVT(*),INFO                                       
+      DOUBLE PRECISION A(LDA,*)  
+#if 0                                       
 C                                                                       00000040
 C     DGEFA FACTORS A DOUBLE PRECISION MATRIX BY GAUSSIAN ELIMINATION.  00000050
 C                                                                       00000060
@@ -1957,284 +2041,308 @@ C                                                                       00000450
 C     BLAS DAXPY,DSCAL,IDAMAX                                           00000460
 C                                                                       00000470
 C     INTERNAL VARIABLES                                                00000480
-C                                                                       00000490
-      DOUBLE PRECISION T                                                00000500
-      INTEGER IDAMAX,J,K,KP1,L,NM1                                      00000510
-C                                                                       00000520
-C                                                                       00000530
-C     GAUSSIAN ELIMINATION WITH PARTIAL PIVOTING                        00000540
-C                                                                       00000550
-      INFO = 0                                                          00000560
-      NM1 = N - 1                                                       00000570
-      IF (NM1 .LT. 1) GO TO 70                                          00000580
-      DO 60 K = 1, NM1                                                  00000590
-         KP1 = K + 1                                                    00000600
-C                                                                       00000610
-C        FIND L = PIVOT INDEX                                           00000620
-C                                                                       00000630
-         L = IDAMAX(N-K+1,A(K,K),1) + K - 1                             00000640
-         IPVT(K) = L                                                    00000650
-C                                                                       00000660
-C        ZERO PIVOT IMPLIES THIS COLUMN ALREADY TRIANGULARIZED          00000670
-C                                                                       00000680
-         IF (A(L,K) .EQ. 0.0D0) GO TO 40                                00000690
-C                                                                       00000700
-C           INTERCHANGE IF NECESSARY                                    00000710
-C                                                                       00000720
-            IF (L .EQ. K) GO TO 10                                      00000730
-               T = A(L,K)                                               00000740
-               A(L,K) = A(K,K)                                          00000750
-               A(K,K) = T                                               00000760
-   10       CONTINUE                                                    00000770
-C                                                                       00000780
-C           COMPUTE MULTIPLIERS                                         00000790
-C                                                                       00000800
-            T = -1.0D0/A(K,K)                                           00000810
-            CALL DSCAL(N-K,T,A(K+1,K),1)                                00000820
-C                                                                       00000830
-C           ROW ELIMINATION WITH COLUMN INDEXING                        00000840
-C                                                                       00000850
-            DO 30 J = KP1, N                                            00000860
-               T = A(L,J)                                               00000870
-               IF (L .EQ. K) GO TO 20                                   00000880
-                  A(L,J) = A(K,J)                                       00000890
-                  A(K,J) = T                                            00000900
-   20          CONTINUE                                                 00000910
-               CALL DAXPY(N-K,T,A(K+1,K),1,A(K+1,J),1)                  00000920
-   30       CONTINUE                                                    00000930
-         GO TO 50                                                       00000940
-   40    CONTINUE                                                       00000950
-            INFO = K                                                    00000960
-   50    CONTINUE                                                       00000970
-   60 CONTINUE                                                          00000980
-   70 CONTINUE                                                          00000990
-      IPVT(N) = N                                                       00001000
-      IF (A(N,N) .EQ. 0.0D0) INFO = N                                   00001010
-      RETURN                                                            00001020
-      END                                                               00001030
+C 
+#endif                                                                      
+      DOUBLE PRECISION T                                                !00000500
+      INTEGER IDAMAX,J,K,KP1,L,NM1                                      !00000510
+!C                                                                       00000520
+!C                                                                       00000530
+!C     GAUSSIAN ELIMINATION WITH PARTIAL PIVOTING                        00000540
+!C                                                                       00000550
+      INFO = 0                                                          !00000560
+      NM1 = N - 1                                                       !00000570
+      IF (NM1 .LT. 1) GO TO 70                                          !00000580
+      DO 60 K = 1, NM1                                                  !00000590
+         KP1 = K + 1                                                    !00000600
+!C                                                                       00000610
+!C        FIND L = PIVOT INDEX                                           00000620
+!C                                                                       00000630
+         L = IDAMAX(N-K+1,A(K,K),1) + K - 1                             !00000640
+         IPVT(K) = L                                                    !00000650
+!C                                                                       00000660
+!C        ZERO PIVOT IMPLIES THIS COLUMN ALREADY TRIANGULARIZED          00000670
+!C!                                                                       00000680
+         IF (A(L,K) .EQ. 0.0D0) GO TO 40                                !00000690
+!C                                                                       00000700
+!C           INTERCHANGE IF NECESSARY                                    00000710
+!C                                                                       00000720
+            IF (L .EQ. K) GO TO 10                                      !00000730
+               T = A(L,K)                                               !00000740
+               A(L,K) = A(K,K)                                          !00000750
+               A(K,K) = T                                               !00000760
+   10       CONTINUE                                                    !00000770
+!C                                                                       00000780
+!C           COMPUTE MULTIPLIERS                                         00000790
+!C                                                                       00000800
+            T = -1.0D0/A(K,K)                                           !00000810
+            CALL DSCAL(N-K,T,A(K+1,K),1)                                !00000820
+!C                                                                       00000830
+!C           ROW ELIMINATION WITH COLUMN INDEXING                        00000840
+!C                                                                       00000850
+            DO 30 J = KP1, N                                            !00000860
+               T = A(L,J)                                               !00000870
+               IF (L .EQ. K) GO TO 20                                   !00000880
+                  A(L,J) = A(K,J)                                       !00000890
+                  A(K,J) = T                                            !00000900
+   20          CONTINUE                                                 !00000910
+               CALL DAXPY(N-K,T,A(K+1,K),1,A(K+1,J),1)                  !00000920
+   30       CONTINUE                                                    !00000930
+         GO TO 50                                                       !00000940
+   40    CONTINUE                                                       !00000950
+            INFO = K                                                    !00000960
+   50    CONTINUE                                                       !00000970
+   60 CONTINUE                                                          !00000980
+   70 CONTINUE                                                          !00000990
+      IPVT(N) = N                                                       !00001000
+      IF (A(N,N) .EQ. 0.0D0) INFO = N                                   !00001010
+      RETURN                                                            !00001020
+      END                                                               !00001030
 
-      SUBROUTINE DAXPY(N,DA,DX,INCX,DY,INCY)                            00000010
-C     ----------------
-C                                                                       00000020
-C     CONSTANT TIMES A VECTOR PLUS A VECTOR.                            00000030
-C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.                  00000040
-C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
-C                                                                       00000060
-      DOUBLE PRECISION DX(*),DY(*),DA                                   00000070
-      INTEGER I,INCX,INCY,IXIY,M,MP1,N                                  00000080
-C                                                                       00000090
-      IF(N.LE.0)RETURN                                                  00000100
-      IF (DA .EQ. 0.0D0) RETURN                                         00000110
-      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20                               00000120
-C                                                                       00000130
-C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS                00000140
-C          NOT EQUAL TO 1                                               00000150
-C                                                                       00000160
-      IX = 1                                                            00000170
-      IY = 1                                                            00000180
-      IF(INCX.LT.0)IX = (-N+1)*INCX + 1                                 00000190
-      IF(INCY.LT.0)IY = (-N+1)*INCY + 1                                 00000200
-      DO 10 I = 1,N                                                     00000210
-        DY(IY) = DY(IY) + DA*DX(IX)                                     00000220
-        IX = IX + INCX                                                  00000230
-        IY = IY + INCY                                                  00000240
-   10 CONTINUE                                                          00000250
-      RETURN                                                            00000260
-C                                                                       00000270
-C        CODE FOR BOTH INCREMENTS EQUAL TO 1                            00000280
-C                                                                       00000290
-C                                                                       00000300
-C        CLEAN-UP LOOP                                                  00000310
-C                                                                       00000320
-   20 M = MOD(N,4)                                                      00000330
-      IF( M .EQ. 0 ) GO TO 40                                           00000340
-      DO 30 I = 1,M                                                     00000350
-        DY(I) = DY(I) + DA*DX(I)                                        00000360
-   30 CONTINUE                                                          00000370
-      IF( N .LT. 4 ) RETURN                                             00000380
-   40 MP1 = M + 1                                                       00000390
-      DO 50 I = MP1,N,4                                                 00000400
-        DY(I) = DY(I) + DA*DX(I)                                        00000410
-        DY(I + 1) = DY(I + 1) + DA*DX(I + 1)                            00000420
-        DY(I + 2) = DY(I + 2) + DA*DX(I + 2)                            00000430
-        DY(I + 3) = DY(I + 3) + DA*DX(I + 3)                            00000440
-   50 CONTINUE                                                          00000450
-      RETURN                                                            00000460
-      END                                                               00000470
-
-      DOUBLE PRECISION FUNCTION DDOT(N,DX,INCX,DY,INCY)                 00000010
-C     ------------------------------
-C                                                                       00000020
-C     FORMS THE DOT PRODUCT OF TWO VECTORS.                             00000030
-C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.                  00000040
-C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
-C                                                                       00000060
-      DOUBLE PRECISION DX(*),DY(*),DTEMP                                00000070
-      INTEGER I,INCX,INCY,IX,IY,M,MP1,N                                 00000080
-C                                                                       00000090
-      DDOT = 0.0D0                                                      00000100
-      DTEMP = 0.0D0                                                     00000110
-      IF(N.LE.0)RETURN                                                  00000120
-      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20                               00000130
-C                                                                       00000140
-C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS                00000150
-C          NOT EQUAL TO 1                                               00000160
-C                                                                       00000170
-      IX = 1                                                            00000180
-      IY = 1                                                            00000190
-      IF(INCX.LT.0)IX = (-N+1)*INCX + 1                                 00000200
-      IF(INCY.LT.0)IY = (-N+1)*INCY + 1                                 00000210
-      DO 10 I = 1,N                                                     00000220
-        DTEMP = DTEMP + DX(IX)*DY(IY)                                   00000230
-        IX = IX + INCX                                                  00000240
-        IY = IY + INCY                                                  00000250
-   10 CONTINUE                                                          00000260
-      DDOT = DTEMP                                                      00000270
-      RETURN                                                            00000280
-C                                                                       00000290
-C        CODE FOR BOTH INCREMENTS EQUAL TO 1                            00000300
-C                                                                       00000310
-C                                                                       00000320
-C        CLEAN-UP LOOP                                                  00000330
-C                                                                       00000340
-   20 M = MOD(N,5)                                                      00000350
-      IF( M .EQ. 0 ) GO TO 40                                           00000360
-      DO 30 I = 1,M                                                     00000370
-        DTEMP = DTEMP + DX(I)*DY(I)                                     00000380
-   30 CONTINUE                                                          00000390
-      IF( N .LT. 5 ) GO TO 60                                           00000400
-   40 MP1 = M + 1                                                       00000410
-      DO 50 I = MP1,N,5                                                 00000420
-        DTEMP = DTEMP + DX(I)*DY(I) + DX(I + 1)*DY(I + 1) +             00000430
-     *   DX(I + 2)*DY(I + 2) + DX(I + 3)*DY(I + 3) + DX(I + 4)*DY(I + 4)00000440
-   50 CONTINUE                                                          00000450
-   60 DDOT = DTEMP                                                      00000460
-      RETURN                                                            00000470
-      END                                                               00000480
-
-      SUBROUTINE  DSCAL(N,DA,DX,INCX)                                   00000010
-C     -----------------
-C                                                                       00000020
-C     SCALES A VECTOR BY A CONSTANT.                                    00000030
-C     USES UNROLLED LOOPS FOR INCREMENT EQUAL TO ONE.                   00000040
-C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
-C                                                                       00000060
-      DOUBLE PRECISION DA,DX(*)                                         00000070
-      INTEGER I,INCX,M,MP1,N,NINCX                                      00000080
-C                                                                       00000090
-      IF(N.LE.0)RETURN                                                  00000100
-      IF(INCX.EQ.1)GO TO 20                                             00000110
-C                                                                       00000120
-C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000130
-C                                                                       00000140
-      NINCX = N*INCX                                                    00000150
-      DO 10 I = 1,NINCX,INCX                                            00000160
-        DX(I) = DA*DX(I)                                                00000170
-   10 CONTINUE                                                          00000180
-      RETURN                                                            00000190
-C                                                                       00000200
-C        CODE FOR INCREMENT EQUAL TO 1                                  00000210
-C                                                                       00000220
-C                                                                       00000230
-C        CLEAN-UP LOOP                                                  00000240
-C                                                                       00000250
-   20 M = MOD(N,5)                                                      00000260
-      IF( M .EQ. 0 ) GO TO 40                                           00000270
-      DO 30 I = 1,M                                                     00000280
-        DX(I) = DA*DX(I)                                                00000290
-   30 CONTINUE                                                          00000300
-      IF( N .LT. 5 ) RETURN                                             00000310
-   40 MP1 = M + 1                                                       00000320
-      DO 50 I = MP1,N,5                                                 00000330
-        DX(I) = DA*DX(I)                                                00000340
-        DX(I + 1) = DA*DX(I + 1)                                        00000350
-        DX(I + 2) = DA*DX(I + 2)                                        00000360
-        DX(I + 3) = DA*DX(I + 3)                                        00000370
-        DX(I + 4) = DA*DX(I + 4)                                        00000380
-   50 CONTINUE                                                          00000390
-      RETURN                                                            00000400
-      END                                                               00000410
-
-      DOUBLE PRECISION FUNCTION DASUM(N,DX,INCX)                        00000010
-C     -------------------------------
-C                                                                       00000020
-C     TAKES THE SUM OF THE ABSOLUTE VALUES.                             00000030
-C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000040
-C                                                                       00000050
-      DOUBLE PRECISION DX(*),DTEMP                                      00000060
-      INTEGER I,INCX,M,MP1,N,NINCX                                      00000070
-C                                                                       00000080
-      DASUM = 0.0D0                                                     00000090
-      DTEMP = 0.0D0                                                     00000100
-      IF(N.LE.0)RETURN                                                  00000110
-      IF(INCX.EQ.1)GO TO 20                                             00000120
-C                                                                       00000130
-C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000140
-C                                                                       00000150
-      NINCX = N*INCX                                                    00000160
-      DO 10 I = 1,NINCX,INCX                                            00000170
-        DTEMP = DTEMP + DABS(DX(I))                                     00000180
-   10 CONTINUE                                                          00000190
-      DASUM = DTEMP                                                     00000200
-      RETURN                                                            00000210
-C                                                                       00000220
-C        CODE FOR INCREMENT EQUAL TO 1                                  00000230
-C                                                                       00000240
-C                                                                       00000250
-C        CLEAN-UP LOOP                                                  00000260
-C                                                                       00000270
-   20 M = MOD(N,6)                                                      00000280
-      IF( M .EQ. 0 ) GO TO 40                                           00000290
-      DO 30 I = 1,M                                                     00000300
-        DTEMP = DTEMP + DABS(DX(I))                                     00000310
-   30 CONTINUE                                                          00000320
-      IF( N .LT. 6 ) GO TO 60                                           00000330
-   40 MP1 = M + 1                                                       00000340
-      DO 50 I = MP1,N,6                                                 00000350
-        DTEMP = DTEMP + DABS(DX(I)) + DABS(DX(I + 1)) + DABS(DX(I + 2)) 00000360
-     *  + DABS(DX(I + 3)) + DABS(DX(I + 4)) + DABS(DX(I + 5))           00000370
-   50 CONTINUE                                                          00000380
-   60 DASUM = DTEMP                                                     00000390
-      RETURN                                                            00000400
-      END                                                               00000410
-
-      INTEGER FUNCTION IDAMAX(N,DX,INCX)                                00000010
-C     -----------------------
-C                                                                       00000020
-C     FINDS THE INDEX OF ELEMENT HAVING MAX. ABSOLUTE VALUE.            00000030
-C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000040
-C                                                                       00000050
-      DOUBLE PRECISION DX(*),DMAX                                       00000060
-      INTEGER I,INCX,IX,N                                               00000070
-C                                                                       00000080
-      IDAMAX = 0                                                        00000090
-      IF( N .LT. 1 ) RETURN                                             00000100
-      IDAMAX = 1                                                        00000110
-      IF(N.EQ.1)RETURN                                                  00000120
-      IF(INCX.EQ.1)GO TO 20                                             00000130
-C                                                                       00000140
-C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000150
-C                                                                       00000160
-      IX = 1                                                            00000170
-      DMAX = DABS(DX(1))                                                00000180
-      IX = IX + INCX                                                    00000190
-      DO 10 I = 2,N                                                     00000200
-         IF(DABS(DX(IX)).LE.DMAX) GO TO 5                               00000210
-         IDAMAX = I                                                     00000220
-         DMAX = DABS(DX(IX))                                            00000230
-    5    IX = IX + INCX                                                 00000240
-   10 CONTINUE                                                          00000250
-      RETURN                                                            00000260
-C                                                                       00000270
-C        CODE FOR INCREMENT EQUAL TO 1                                  00000280
-C                                                                       00000290
-   20 DMAX = DABS(DX(1))                                                00000300
-      DO 30 I = 2,N                                                     00000310
-         IF(DABS(DX(I)).LE.DMAX) GO TO 30                               00000320
-         IDAMAX = I                                                     00000330
-         DMAX = DABS(DX(I))                                             00000340
-   30 CONTINUE                                                          00000350
-      RETURN                                                            00000360
-      END                                                               00000370
+      SUBROUTINE DAXPY(N,DA,DX,INCX,DY,INCY)                            !00000010
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DAXPY
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DAXPY
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DAXPY
 #endif
+!C     ----------------
+!C                                                                       00000020
+!C     CONSTANT TIMES A VECTOR PLUS A VECTOR.                            00000030
+!C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.                  00000040
+!C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
+!C                                                                       00000060
+      DOUBLE PRECISION DX(*),DY(*),DA                                   !00000070
+      INTEGER I,INCX,INCY,IXIY,M,MP1,N                                  !00000080
+!C                                                                       00000090
+      IF(N.LE.0)RETURN                                                  !00000100
+      IF (DA .EQ. 0.0D0) RETURN                                         !00000110
+      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20                               !00000120
+!                                                                       00000130
+!C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS                00000140
+!C          NOT EQUAL TO 1                                               00000150
+!C                                                                       00000160
+      IX = 1                                                            !00000170
+      IY = 1                                                            !00000180
+      IF(INCX.LT.0)IX = (-N+1)*INCX + 1                                 !00000190
+      IF(INCY.LT.0)IY = (-N+1)*INCY + 1 
+      !$omp simd                                
+      DO 10 I = 1,N                                                     !00000210
+        DY(IY) = DY(IY) + DA*DX(IX)                                     !00000220
+        IX = IX + INCX                                                  !00000230
+        IY = IY + INCY                                                  !00000240
+   10 CONTINUE                                                          !00000250
+      RETURN                                                            !00000260
+!C                                                                       00000270
+!C        CODE FOR BOTH INCREMENTS EQUAL TO 1                            00000280
+!C                                                                       00000290
+!C                                                                       00000300
+!C        CLEAN-UP LOOP                                                  00000310
+!C                                                                       00000320
+   20 M = MOD(N,4)                                                      !00000330
+      IF( M .EQ. 0 ) GO TO 40                                          ! 00000340
+      DO 30 I = 1,M                                                    ! 00000350
+        DY(I) = DY(I) + DA*DX(I)                                        !00000360
+   30 CONTINUE                                                         ! 00000370
+      IF( N .LT. 4 ) RETURN                                             !00000380
+   40 MP1 = M + 1                                                       !00000390
+      DO 50 I = MP1,N,4                                                 !00000400
+        DY(I) = DY(I) + DA*DX(I)                                       ! 00000410
+        DY(I + 1) = DY(I + 1) + DA*DX(I + 1)                            !00000420
+        DY(I + 2) = DY(I + 2) + DA*DX(I + 2)                            !00000430
+        DY(I + 3) = DY(I + 3) + DA*DX(I + 3)                            !00000440
+   50 CONTINUE                                                          !00000450
+      RETURN                                                           ! 00000460
+      END                                                               !00000470
+
+      DOUBLE PRECISION FUNCTION DDOT(N,DX,INCX,DY,INCY)                 !00000010
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DDOT
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DDOT
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DDOT
+#endif
+!C     ------------------------------
+!C                                                                       00000020
+!C     FORMS THE DOT PRODUCT OF TWO VECTORS.                             00000030
+!C     USES UNROLLED LOOPS FOR INCREMENTS EQUAL TO ONE.                  00000040
+!C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
+!C                                                                       00000060
+      DOUBLE PRECISION DX(*),DY(*),DTEMP                                
+      INTEGER I,INCX,INCY,IX,IY,M,MP1,N                                 
+!C                                                                       00000090
+      DDOT = 0.0D0                                                      !00000100
+      DTEMP = 0.0D0                                                     !00000110
+      IF(N.LE.0)RETURN                                                  !00000120
+      IF(INCX.EQ.1.AND.INCY.EQ.1)GO TO 20                               !00000130
+!C                                                                       00000140
+!C        CODE FOR UNEQUAL INCREMENTS OR EQUAL INCREMENTS                00000150
+!C          NOT EQUAL TO 1                                               00000160
+!C                                                                       00000170
+      IX = 1                                                            !00000180
+      IY = 1                                                            !00000190
+      IF(INCX.LT.0)IX = (-N+1)*INCX + 1                                 !00000200
+      IF(INCY.LT.0)IY = (-N+1)*INCY + 1  
+       !$omp simd                         
+      DO 10 I = 1,N                                                     !00000220
+        DTEMP = DTEMP + DX(IX)*DY(IY)                                   !00000230
+        IX = IX + INCX                                                  !00000240
+        IY = IY + INCY                                                 ! 0!0000250
+   10 CONTINUE                                                          !00000260
+      DDOT = DTEMP                                                      !00000270
+      RETURN                                                            !00000280
+!C                                                                       00000290
+!C        CODE FOR BOTH INCREMENTS EQUAL TO 1                            00000300
+!C                                                                       00000310
+!C                                                                       00000320
+!C        CLEAN-UP LOOP                                                  00000330
+!C                                                                       00000340
+   20 M = MOD(N,5)                                                     ! 00000350
+      IF( M .EQ. 0 ) GO TO 40                                          ! 00000360
+      DO 30 I = 1,M                                                     !00000370
+        DTEMP = DTEMP + DX(I)*DY(I)                                     !00000380
+   30 CONTINUE                                                          !00000390
+      IF( N .LT. 5 ) GO TO 60                                           !00000400
+   40 MP1 = M + 1                                                       !00000410
+      DO 50 I = MP1,N,5                                                 !00000420
+        DTEMP = DTEMP + DX(I)*DY(I) + DX(I + 1)*DY(I + 1) +    &         !00000430
+        DX(I + 2)*DY(I + 2) + DX(I + 3)*DY(I + 3) + DX(I + 4)*DY(I + 4)!00000440
+   50 CONTINUE                                                          !00000450
+   60 DDOT = DTEMP                                                      !00000460
+      RETURN                                                            !00000470
+      END                                                               !00000480
+
+      SUBROUTINE  DSCAL(N,DA,DX,INCX)                                 
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DSCAL
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DSCAL
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DSCAL
+#endif
+!C     -----------------
+!C                                                                       00000020
+!C     SCALES A VECTOR BY A CONSTANT.                                    00000030
+!C     USES UNROLLED LOOPS FOR INCREMENT EQUAL TO ONE.                   00000040
+!C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000050
+!C                                                                       00000060
+      DOUBLE PRECISION DA,DX(*)                                        ! 00000070
+      INTEGER I,INCX,M,MP1,N,NINCX                                     ! 00000080
+!C                                                                       00000090
+      IF(N.LE.0)RETURN                                                 ! 00000100
+      IF(INCX.EQ.1)GO TO 20                                             !00000110
+!C                                                                       00000120
+!C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000130
+!C                                                                       00000140
+      NINCX = N*INCX                                                    !00000150
+      !$omp simd
+      DO 10 I = 1,NINCX,INCX                                            !00000160
+        DX(I) = DA*DX(I)                                                !00000170
+   10 CONTINUE                                                          !00000180
+      RETURN                                                            !00000190
+                                                                 
+   20 M = MOD(N,5)                                                      !00000260
+      IF( M .EQ. 0 ) GO TO 40                                           !00000270
+      DO 30 I = 1,M                                                     !00000280
+        DX(I) = DA*DX(I)                                                !00000290
+   30 CONTINUE                                                          !00000300
+      IF( N .LT. 5 ) RETURN                                            ! 00000310
+   40 MP1 = M + 1                                                      ! 00000320
+      DO 50 I = MP1,N,5                                                 !00000330
+        DX(I) = DA*DX(I)                                                !00000340
+        DX(I + 1) = DA*DX(I + 1)                                        !00000350
+        DX(I + 2) = DA*DX(I + 2)                                        !00000360
+        DX(I + 3) = DA*DX(I + 3)                                        !00000370
+        DX(I + 4) = DA*DX(I + 4)                                        !00000380
+   50 CONTINUE                                                          !00000390
+      RETURN                                                            !00000400
+      END                                                               !00000410
+
+      DOUBLE PRECISION FUNCTION DASUM(N,DX,INCX)                        !00000010
+       use omp_lib
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: DASUM
+           !DIR$ ATTRIBUTES VECTOR:PROCESSOR(skylake_avx512) :: DASUM
+           !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: DASUM
+#endif
+!C     -------------------------------
+!C                                                                       00000020
+!C     TAKES THE SUM OF THE ABSOLUTE VALUES.                             00000030
+!C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000040
+!C                                                                       00000050
+      DOUBLE PRECISION DX(*),DTEMP                                      !00000060
+      INTEGER I,INCX,M,MP1,N,NINCX                                      !00000070
+!C                                                                       00000080
+      DASUM = 0.0D0                                                     !00000090
+      DTEMP = 0.0D0                                                     !00000100
+      IF(N.LE.0)RETURN                                                 ! 00000110
+      IF(INCX.EQ.1)GO TO 20                                             !00000120
+!C                                                                       00000130
+!C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000140
+!C                                                                       00000150
+      NINCX = N*INCX                                                   ! 00000160
+      !$omp simd reduction(+:DTEMP)
+      DO 10 I = 1,NINCX,INCX                                            !00000170
+        DTEMP = DTEMP + DABS(DX(I))                                    ! 00000180
+   10 CONTINUE                                                          !00000190
+      DASUM = DTEMP                                                     !00000200
+      RETURN                                                            !00000210
+                                                               
+   20 M = MOD(N,6)                                                     ! 00000280
+      IF( M .EQ. 0 ) GO TO 40                                          ! 00000290
+      DO 30 I = 1,M                                                     !00000300
+        DTEMP = DTEMP + DABS(DX(I))                                    ! 00000310
+   30 CONTINUE                                                          !00000320
+      IF( N .LT. 6 ) GO TO 60                                           !00000330
+   40 MP1 = M + 1                                                       !00000340
+      DO 50 I = MP1,N,6                                                 !00000350
+        DTEMP = DTEMP + DABS(DX(I)) + DABS(DX(I + 1)) + DABS(DX(I + 2)) & !00000360
+       + DABS(DX(I + 3)) + DABS(DX(I + 4)) + DABS(DX(I + 5))           !00000370
+   50 CONTINUE                                                         ! 00000380
+   60 DASUM = DTEMP                                                    ! 00000390
+      RETURN                                                           ! 00000400
+      END                                                               !00000410
+
+      INTEGER FUNCTION IDAMAX(N,DX,INCX)      
+       
+#if defined (__INTEL_COMPILER)
+           !DIR$ ATTRIBUTES INLINE :: IDAMAX
+                    !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: IDAMAX
+#endif                          
+!C     -----------------------
+!C                                                                       00000020
+!C     FINDS THE INDEX OF ELEMENT HAVING MAX. ABSOLUTE VALUE.            00000030
+!C     JACK DONGARRA, LINPACK, 3/11/78.                                  00000040
+!C                                                                       00000050
+      DOUBLE PRECISION DX(*),DMAX                                       
+      INTEGER I,INCX,IX,N                                               
+!C                                                                       00000080
+      IDAMAX = 0                                                        
+      IF( N .LT. 1 ) RETURN                                             
+      IDAMAX = 1                                                        
+      IF(N.EQ.1)RETURN                                                  
+      IF(INCX.EQ.1)GO TO 20                                             
+!C                                                                       00000140
+!C        CODE FOR INCREMENT NOT EQUAL TO 1                              00000150
+!C                                                                       00000160
+      IX = 1                                                            
+      DMAX = DABS(DX(1))                                                
+      IX = IX + INCX                                                    
+      DO 10 I = 2,N                                                     
+         IF(DABS(DX(IX)).LE.DMAX) GO TO 5                               
+         IDAMAX = I                                                     
+         DMAX = DABS(DX(IX))                                            
+    5    IX = IX + INCX                                                 
+   10 CONTINUE                                                          
+      RETURN                                                            
+!C                                                                       00000270
+!C        CODE FOR INCREMENT EQUAL TO 1                                  00000280
+!C                                                                       00000290
+   20 DMAX = DABS(DX(1))                                                
+      DO 30 I = 2,N                                                     
+         IF(DABS(DX(I)).LE.DMAX) GO TO 30                               
+         IDAMAX = I                                                     
+         DMAX = DABS(DX(I))                                             
+   30 CONTINUE                                                          
+      RETURN                                                            
+      END                                                               
+
 
