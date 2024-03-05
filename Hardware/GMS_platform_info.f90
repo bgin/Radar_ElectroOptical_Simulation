@@ -78,7 +78,7 @@ module  platform_info
       integer(kind=int4),       intent(inout) :: vmpeak
       ! Locals
       character(len=32),  automatic :: key,val
-      integer(kind=int4), automatic :: iounit
+      integer(kind=i4), automatic :: iounit
       ! Exec code ....
       vmpeak = 0
       open(newunit=iounit,name="/proc/self/status",status='scratch',err=9999)
@@ -102,10 +102,10 @@ module  platform_info
     subroutine get_anyproc_vmpeak(pid,vmpeak)
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: get_anyproc_vmpeak
       character(len=24),     intent(in)    :: pid
-      integer(kind=int4),    intent(inout) :: vmpeak
+      integer(kind=i4),    intent(inout) :: vmpeak
       ! Locals
       character(len=32), automatic :: key,val
-      integer(kind=int4),automatic :: iounit
+      integer(kind=i4),automatic :: iounit
       ! Exec code ...
       vmpeak = 0
       open(newunit=iounit,name=pid,status='scratch',err=9999)
@@ -130,10 +130,10 @@ module  platform_info
      subroutine get_self_vmsize(vmsize)
         !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: get_self_vmsize
 #endif
-        integer(kind=int4),       intent(inout) :: vmsize
+        integer(kind=i4),       intent(inout) :: vmsize
         ! Locals
         character(len=32), automatic :: key,val
-        integer(kind=int4),automatic :: iounit
+        integer(kind=i4),automatic :: iounit
         ! EXec code ...
         vmsize = 0
         open(newunit=iounit,name="/proc/self/status",status='scratch',err=9999)
@@ -157,10 +157,10 @@ module  platform_info
     subroutine get_cores_num(ncores)
          !DIR$ ATTRIBUTES COLD_ALIGN : 32 :: get_cores_num
 #endif  
-         integer(kind=int4),      intent(inout) :: ncores
+         integer(kind=i4),      intent(inout) :: ncores
          ! Locals
          character(len=9),   automatic :: key
-         integer(kind=int4), automatic :: iounit,stat
+         integer(kind=i4), automatic :: iounit,stat
          ! Exec code ...
          ncores = 0
          open(newunit=iounit,name="/proc/cpuinfo",status='scratch',iostat=stat,err=9999)
@@ -213,8 +213,8 @@ module  platform_info
          !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: get_nlines
 #endif
          character(len=128),      intent(in)    :: filename
-         integer(kind=int4),      intent(inout) :: nlines
-         integer(kind=int4),      intent(inout) :: ioerr
+         integer(kind=i4),      intent(inout) :: nlines
+         integer(kind=i4),      intent(inout) :: ioerr
          character(len=128),      intent(inout) :: errmsg
          ! Locals
          character(len=256), automatic :: line
