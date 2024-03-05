@@ -46,8 +46,8 @@ module mod_print_error
    
     implicit none
     
-    public :: print_non_fatal_error
-    public :: print_fatal_error
+    !!public :: print_non_fatal_error
+   ! public :: print_fatal_error
     public :: handle_fatal_memory_error
     public :: handle_fatal_fileio_error
     !=====================================================59
@@ -85,7 +85,8 @@ module mod_print_error
     
     !===================================
     !   Print non fatal error info
-    !===================================
+    !==================================
+#if 0
     subroutine print_non_fatal_error(header,msg,loc,fname,vaddr)
           
           character(len=*),       intent(in)                :: header, msg
@@ -114,10 +115,11 @@ module mod_print_error
           write(stderr,*) header
           
     end subroutine print_non_fatal_error
-    
+#endif    
     !====================================
     !  Print fatal error info
     !====================================
+#if 0
     subroutine print_fatal_error(header,msg,smsg,fname,loc,vaddr)
           
           
@@ -148,6 +150,7 @@ module mod_print_error
           write(stderr,*) header
           
     end subroutine
+#endif
     
     !=====================================
     !  Allocation/Deallocation fatal error
