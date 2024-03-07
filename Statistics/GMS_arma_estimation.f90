@@ -46,16 +46,14 @@ REAL(sp), PARAMETER, PRIVATE  :: zero = 0.0_sp, one = 1.0_sp, two = 2.0_sp
 
 CONTAINS
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-SUBROUTINE starma(ip,iq,ir,np,phi,theta,a,p,v,thetab,xnext,xrow,  &
-     rbar,nrbar,ifault) !GCC$ ATTRIBUTES aligned(32) :: starma !GCC$ ATTRIBUTES inline :: starma !GCC$ ATTRIBUTES hot :: starma
-#elif defined __INTEL_COMPILER
+
+
 SUBROUTINE starma(ip,iq,ir,np,phi,theta,a,p,v,thetab,xnext,xrow,  &
      rbar,nrbar,ifault)
   !DIR$ CODE_ALIGN : 32 :: starma
   !DIR$ OPTIMIZE : 3 
   !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: starma
-#endif
+
 
 !  INVOKING THIS SUBROUTINE SETS THE VALUES OF V AND PHI, AND
 !  OBTAINS THE INITIAL VALUES OF A AND P.
@@ -236,15 +234,12 @@ RETURN
 END SUBROUTINE starma
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-SUBROUTINE karma(ip,iq,ir,phi,theta,a,p,v,n,w,resid,sumlog,ssq,  &
-     iupd,delta,e,nit) !GCC$ ATTRIBUTES aligned(32) :: karma !GCC$ ATTRIBUTES inline :: karma !GCC$ ATTRIBUTES hot :: karma
-#elif defined __INTEL_COMPILER
+
 SUBROUTINE karma(ip,iq,ir,phi,theta,a,p,v,n,w,resid,sumlog,ssq,  &
      iupd,delta,e,nit)
   !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: karma
   !DIR$ ATTRIBUTES INLINE :: karma
-#endif
+
 
 ! N.B. Argument NP has been removed.
 
@@ -402,14 +397,13 @@ RETURN
 END SUBROUTINE karma
 
 
-#if defined __GFORTRAN__ && !defined __INTEL_COMPILER
-SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v) !GCC$ ATTRIBUTES HOT :: kalfor  !GCC$ ATTRIBUTES ALIGNED(32) :: kalfor
-#elif defined __INTEL_COMPILER || defined __ICC
+
+
 SUBROUTINE kalfor(m,ip,ir,np,phi,a,p,v)
     !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: kalfor
     !DIR$ OPTIMIZE : 3
     !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: kalfor
-#endif
+
 
 ! N.B. Argument WORK has been removed.
 
@@ -490,17 +484,14 @@ RETURN
 END SUBROUTINE kalfor
 
 
-#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
-SUBROUTINE inclu2(np,weight,xnext,xrow,ynext,d,rbar,thetab,  &
-                  ssqerr,recres,irank,ifault) !GCC$ ATTRIBUTES inline :: inclu2  !GCC$ ATTRIBUTES ALIGNED(32) :: inclu2
-#elif defined (__INTEL_COMPILER) || defined (__ICC)
+
 SUBROUTINE inclu2(np,weight,xnext,xrow,ynext,d,rbar,thetab,  &
                   ssqerr,recres,irank,ifault) 
       !DIR$ ATTRIBUTES FORCEINLINE :: inclu2
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: inclu2
       !DIR$ OPTIMIZE : 3
       !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: inclu2
-#endif
+
 ! N.B. Argument NRBAR has been removed.
 
 !   ALGORITHM AS 154.3  APPL. STATIST. (1980) VOL.29, P.311
@@ -576,15 +567,13 @@ RETURN
 END SUBROUTINE inclu2
 
 
-#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
-SUBROUTINE regres(np,nrbar,rbar,thetab,beta)  !GCC$ ATTRIBUTES inline :: regres  !GCC$ ATTRIBUTES ALIGNED(32) :: regres
-#elif defined (__INTEL_COMPILER) || defined (__ICC)
+
 SUBROUTINE regres(np,nrbar,rbar,thetab,beta)
       !DIR$ ATTRIBUTES FORCEINLINE :: regres
       !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: regres
       !DIR$ OPTIMIZE : 3
       !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: regres
-#endif
+
 
 !   ALGORITHM AS 154.4  APPL. STATIST. (1980) VOL.29, P.311
 
@@ -625,18 +614,14 @@ RETURN
 END SUBROUTINE regres
 
 
-#if defined (__GFORTRAN__) && !defined (__INTEL_COMPILER)
-SUBROUTINE forkal(ip, iq, ir, np, ird, irz, id, il, n, nrbar, phi, theta,  &
-                  delta, w, y, amse, a, p, v, resid, e, xnext, xrow,  &
-                  rbar, thetab, store, ifault) !GCC$ ATTRIBUTES hot :: forkal  !GCC$ ATTRIBUTES ALIGNED(32) :: forkal
-#elif defined (__INTEL_COMPILER) || defined (__ICC)
+
 SUBROUTINE forkal(ip, iq, ir, np, ird, irz, id, il, n, nrbar, phi, theta,  &
                   delta, w, y, amse, a, p, v, resid, e, xnext, xrow,  &
                   rbar, thetab, store, ifault) 
      !DIR$ ATTRIBUTES CODE_ALIGN : 32 :: forkal
       !DIR$ OPTIMIZE : 3
       !DIR$ ATTRIBUTES OPTIMIZATION_PARAMETER: TARGET_ARCH=skylake_avx512 :: forkal
-#endif
+
  
 !  ALGORITHM AS 182  APPL. STATIST. (1982) VOL.31, NO.2
 
