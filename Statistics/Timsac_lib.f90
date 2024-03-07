@@ -226,7 +226,7 @@
 !C     CXX0: INNOVATION VARIANCE
 !C
 
-          INTEGER(kind=4), parameter :: ICST = 190_I32P
+          INTEGER(kind=4), parameter :: ICST = 190
           INTEGER(kind=4) :: N, LAGH01, NEWL1,NEWN,KQ,KP,LMAX,MMAX,NMAX 
           INTEGER(kind=4), dimension(NEWL1) :: IQI1, IPI1
           INTEGER(kind=4), dimension(NMAX)  :: IQ, IP
