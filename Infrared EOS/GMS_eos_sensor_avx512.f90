@@ -2734,6 +2734,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_16x_omp_zmm16r4
         !dir$ attributes forceinline :: ratio_FH_unroll_16x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM16r4_t),  dimension(1:n),  intent(out):: FH
@@ -2889,6 +2890,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_8x_omp_zmm16r4
         !dir$ attributes forceinline :: ratio_FH_unroll_8x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM16r4_t),  dimension(1:n),  intent(out):: FH
@@ -3002,6 +3004,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_4x_omp_zmm16r4
         !dir$ attributes forceinline :: ratio_FH_unroll_4x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM16r4_t),  dimension(1:n),  intent(out):: FH
@@ -3098,6 +3101,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_2x_omp_zmm16r4
         !dir$ attributes forceinline :: ratio_FH_unroll_2x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM16r4_t),  dimension(1:n),  intent(out):: FH
@@ -3175,6 +3179,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_rolled_omp_zmm16r4
         !dir$ attributes forceinline :: ratio_FH_rolled_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM16r4_t),  dimension(1:n),  intent(out):: FH
@@ -3362,6 +3367,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_16x_omp_zmm8r8
         !dir$ attributes forceinline :: ratio_FH_unroll_16x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_16x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM8r8_t),  dimension(1:n),  intent(out):: FH
@@ -3517,6 +3523,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_8x_omp_zmm8r8
         !dir$ attributes forceinline :: ratio_FH_unroll_8x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_8x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM8r8_t),  dimension(1:n),  intent(out):: FH
@@ -3630,6 +3637,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_4x_omp_zmm8r8
         !dir$ attributes forceinline :: ratio_FH_unroll_4x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_4x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM8r8_t),  dimension(1:n),  intent(out):: FH
@@ -3726,6 +3734,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_unroll_2x_omp_zmm8r8
         !dir$ attributes forceinline :: ratio_FH_unroll_2x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_unroll_2x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM8r8_t),  dimension(1:n),  intent(out):: FH
@@ -3803,6 +3812,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: ratio_FH_rolled_omp_zmm8r8
         !dir$ attributes forceinline :: ratio_FH_rolled_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: ratio_FH_rolled_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in) :: psi
         type(ZMM8r4_t),  dimension(1:n),  intent(in) :: phi
         type(ZMM8r8_t),  dimension(1:n),  intent(out):: FH
@@ -4022,6 +4032,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_omp_zmm16r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -4218,6 +4229,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_omp_zmm16r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -4357,6 +4369,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_omp_zmm16r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -4472,6 +4485,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_omp_zmm16r4
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -4566,6 +4580,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_omp_zmm16r4
         !dir$ attributes forceinline :: scan_mirror_ang_rolled_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM16r4_t),  dimension(1:n),  intent(in)  :: phi
@@ -4791,6 +4806,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_16x_omp_zmm8r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_16x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_16x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -4987,6 +5003,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_8x_omp_zmm8r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_8x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_8x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -5126,6 +5143,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_4x_omp_zmm8r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_4x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_4x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -5241,6 +5259,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_unroll_2x_omp_zmm8r8
         !dir$ attributes forceinline :: scan_mirror_ang_unroll_2x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_unroll_2x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -5335,6 +5354,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: scan_mirror_ang_rolled_omp_zmm8r8
         !dir$ attributes forceinline :: scan_mirror_ang_rolled_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_mirror_ang_rolled_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: gam0
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: psi
         type(ZMM8r8_t),  dimension(1:n),  intent(in)  :: phi
@@ -5518,6 +5538,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_16x_omp_zmm16r4
         !dir$ attributes forceinline :: defocus_cof_unroll_16x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_16x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -5641,6 +5662,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_8x_omp_zmm16r4
         !dir$ attributes forceinline :: defocus_cof_unroll_8x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_8x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -5737,6 +5759,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_4x_omp_zmm16r4
         !dir$ attributes forceinline :: defocus_cof_unroll_4x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_4x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -5824,6 +5847,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_2x_omp_zmm16r4
         !dir$ attributes forceinline :: defocus_cof_unroll_2x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_2x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -5894,6 +5918,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_rolled_omp_zmm16r4
         !dir$ attributes forceinline :: defocus_cof_rolled_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_rolled_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                 intent(in) :: l2
         type(ZMM16r4_t), dimension(1:n), intent(in) :: alpha
         type(ZMM16r4_t),                 intent(in) :: O
@@ -6062,6 +6087,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_16x_omp_zmm8r8
         !dir$ attributes forceinline :: defocus_cof_unroll_16x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_16x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -6185,6 +6211,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_8x_omp_zmm8r8
         !dir$ attributes forceinline :: defocus_cof_unroll_8x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_8x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -6281,6 +6308,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_4x_omp_zmm8r8
         !dir$ attributes forceinline :: defocus_cof_unroll_4x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_4x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -6368,6 +6396,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_unroll_2x_omp_zmm8r8
         !dir$ attributes forceinline :: defocus_cof_unroll_2x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_unroll_2x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -6438,6 +6467,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: defocus_cof_rolled_omp_zmm8r8
         !dir$ attributes forceinline :: defocus_cof_rolled_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: defocus_cof_rolled_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                 intent(in) :: l2
         type(ZMM8r8_t), dimension(1:n), intent(in) :: alpha
         type(ZMM8r8_t),                 intent(in) :: O
@@ -6608,6 +6638,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_16x_omp_zmm16r4
         !dir$ attributes forceinline :: circle_dispersion_unroll_16x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_16x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                   intent(in) :: d
         type(ZMM16r4_t),                   intent(in) :: l1
         type(ZMM16r4_t),                   intent(in) :: l2
@@ -6735,6 +6766,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_8x_omp_zmm16r4
         !dir$ attributes forceinline :: circle_dispersion_unroll_8x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_8x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                   intent(in) :: d
         type(ZMM16r4_t),                   intent(in) :: l1
         type(ZMM16r4_t),                   intent(in) :: l2
@@ -6835,6 +6867,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_4x_omp_zmm16r4
         !dir$ attributes forceinline :: circle_dispersion_unroll_4x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_4x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                   intent(in) :: d
         type(ZMM16r4_t),                   intent(in) :: l1
         type(ZMM16r4_t),                   intent(in) :: l2
@@ -6923,6 +6956,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_2x_omp_zmm16r4
         !dir$ attributes forceinline :: circle_dispersion_unroll_2x_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_2x_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                   intent(in) :: d
         type(ZMM16r4_t),                   intent(in) :: l1
         type(ZMM16r4_t),                   intent(in) :: l2
@@ -6997,6 +7031,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_rolled_omp_zmm16r4
         !dir$ attributes forceinline :: circle_dispersion_rolled_omp_zmm16r4
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_rolled_omp_zmm16r4
+        use omp_lib
         type(ZMM16r4_t),                   intent(in) :: d
         type(ZMM16r4_t),                   intent(in) :: l1
         type(ZMM16r4_t),                   intent(in) :: l2
@@ -7167,6 +7202,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_16x_omp_zmm8r8
         !dir$ attributes forceinline :: circle_dispersion_unroll_16x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_16x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                   intent(in) :: d
         type(ZMM8r8_t),                   intent(in) :: l1
         type(ZMM8r8_t),                   intent(in) :: l2
@@ -7294,6 +7330,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_8x_omp_zmm8r8
         !dir$ attributes forceinline :: circle_dispersion_unroll_8x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_8x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                   intent(in) :: d
         type(ZMM8r8_t),                   intent(in) :: l1
         type(ZMM8r8_t),                   intent(in) :: l2
@@ -7394,6 +7431,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_4x_omp_zmm8r8
         !dir$ attributes forceinline :: circle_dispersion_unroll_4x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_4x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                   intent(in) :: d
         type(ZMM8r8_t),                   intent(in) :: l1
         type(ZMM8r8_t),                   intent(in) :: l2
@@ -7482,6 +7520,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_unroll_2x_omp_zmm8r8
         !dir$ attributes forceinline :: circle_dispersion_unroll_2x_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_unroll_2x_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                   intent(in) :: d
         type(ZMM8r8_t),                   intent(in) :: l1
         type(ZMM8r8_t),                   intent(in) :: l2
@@ -7556,6 +7595,7 @@ module eos_sensor_avx512
         !dir$ attributes code_align : 32 :: circle_dispersion_rolled_omp_zmm8r8
         !dir$ attributes forceinline :: circle_dispersion_rolled_omp_zmm8r8
         !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circle_dispersion_rolled_omp_zmm8r8
+        use omp_lib
         type(ZMM8r8_t),                   intent(in) :: d
         type(ZMM8r8_t),                   intent(in) :: l1
         type(ZMM8r8_t),                   intent(in) :: l2
@@ -7731,6 +7771,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_omp_zmm16r4
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                     intent(in) :: l1
          type(ZMM16r4_t),                     intent(in) :: l2
          type(ZMM16r4_t),    dimension(1:n),  intent(in) :: alpha
@@ -7858,6 +7899,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_omp_zmm16r4
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                     intent(in) :: l1
          type(ZMM16r4_t),                     intent(in) :: l2
          type(ZMM16r4_t),    dimension(1:n),  intent(in) :: alpha
@@ -7957,6 +7999,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_omp_zmm16r4
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                     intent(in) :: l1
          type(ZMM16r4_t),                     intent(in) :: l2
          type(ZMM16r4_t),    dimension(1:n),  intent(in) :: alpha
@@ -8044,6 +8087,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_omp_zmm16r4
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                     intent(in) :: l1
          type(ZMM16r4_t),                     intent(in) :: l2
          type(ZMM16r4_t),    dimension(1:n),  intent(in) :: alpha
@@ -8117,6 +8161,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_omp_zmm16r4
            !dir$ attributes forceinline :: circ_dispers_diam_rolled_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                     intent(in) :: l1
          type(ZMM16r4_t),                     intent(in) :: l2
          type(ZMM16r4_t),    dimension(1:n),  intent(in) :: alpha
@@ -8283,6 +8328,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_16x_omp_zmm8r8
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_16x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_16x_omp_zmm8r8
+           use omp_lib
          type(ZMM8r8_t),                     intent(in) :: l1
          type(ZMM8r8_t),                     intent(in) :: l2
          type(ZMM8r8_t),    dimension(1:n),  intent(in) :: alpha
@@ -8410,6 +8456,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_8x_omp_zmm8r8
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_8x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_8x_omp_zmm8r8
+           use omp_lib
          type(ZMM8r8_t),                     intent(in) :: l1
          type(ZMM8r8_t),                     intent(in) :: l2
          type(ZMM8r8_t),    dimension(1:n),  intent(in) :: alpha
@@ -8509,6 +8556,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_4x_omp_zmm8r8
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_4x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_4x_omp_zmm8r8
+           use omp_lib
          type(ZMM8r8_t),                     intent(in) :: l1
          type(ZMM8r8_t),                     intent(in) :: l2
          type(ZMM8r8_t),    dimension(1:n),  intent(in) :: alpha
@@ -8596,6 +8644,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_unroll_2x_omp_zmm8r8
            !dir$ attributes forceinline :: circ_dispers_diam_unroll_2x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_unroll_2x_omp_zmm8r8
+           use omp_lib
          type(ZMM8r8_t),                     intent(in) :: l1
          type(ZMM8r8_t),                     intent(in) :: l2
          type(ZMM8r8_t),    dimension(1:n),  intent(in) :: alpha
@@ -8669,6 +8718,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: circ_dispers_diam_rolled_omp_zmm8r8
            !dir$ attributes forceinline :: circ_dispers_diam_rolled_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: circ_dispers_diam_rolled_omp_zmm8r8
+           use omp_lib
          type(ZMM8r8_t),                     intent(in) :: l1
          type(ZMM8r8_t),                     intent(in) :: l2
          type(ZMM8r8_t),    dimension(1:n),  intent(in) :: alpha
@@ -8862,6 +8912,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_omp_zmm16r4
            !dir$ attributes forceinline :: fov_x_axis_unroll_16x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: gamma
@@ -9019,6 +9070,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_omp_zmm16r4
            !dir$ attributes forceinline :: fov_x_axis_unroll_8x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: gamma
@@ -9134,6 +9186,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_omp_zmm16r4
            !dir$ attributes forceinline :: fov_x_axis_unroll_4x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: gamma
@@ -9231,6 +9284,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_omp_zmm16r4
            !dir$ attributes forceinline :: fov_x_axis_unroll_2x_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_omp_zmm16r4
+           use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: gamma
@@ -9311,6 +9365,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_rolled_omp_zmm16r4
            !dir$ attributes forceinline :: fov_x_axis_rolled_omp_zmm16r4
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_omp_zmm16r4
+            use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: gamma
@@ -9498,6 +9553,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_16x_omp_zmm8r8
            !dir$ attributes forceinline :: fov_x_axis_unroll_16x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_16x_omp_zmm8r8
+            use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -9655,6 +9711,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_8x_omp_zmm8r8
            !dir$ attributes forceinline :: fov_x_axis_unroll_8x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_8x_omp_zmm8r8
+            use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -9770,6 +9827,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_4x_omp_zmm8r8
            !dir$ attributes forceinline :: fov_x_axis_unroll_4x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_4x_omp_zmm8r8
+            use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -9867,6 +9925,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_unroll_2x_omp_zmm8r8
            !dir$ attributes forceinline :: fov_x_axis_unroll_2x_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_unroll_2x_omp_zmm8r8
+            use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -9946,6 +10005,7 @@ module eos_sensor_avx512
            !dir$ attributes code_align : 32 :: fov_x_axis_rolled_omp_zmm8r8
            !dir$ attributes forceinline :: fov_x_axis_rolled_omp_zmm8r8
            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: fov_x_axis_rolled_omp_zmm8r8
+            use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: gamma
@@ -10156,6 +10216,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_16x_omp_zmm16r4
          !dir$ attributes forceinline :: scan_width_unroll_16x_omp_zmm16r4
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_16x_omp_zmm16r4
+          use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: theta
@@ -10313,6 +10374,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_8x_omp_zmm16r4
          !dir$ attributes forceinline :: scan_width_unroll_8x_omp_zmm16r4
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_omp_zmm16r4
+          use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: theta
@@ -10428,6 +10490,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_4x_omp_zmm16r4
          !dir$ attributes forceinline :: scan_width_unroll_4x_omp_zmm16r4
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_4x_omp_zmm16r4
+          use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: theta
@@ -10526,6 +10589,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_2x_omp_zmm16r4
          !dir$ attributes forceinline :: scan_width_unroll_2x_omp_zmm16r4
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_omp_zmm16r4
+          use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: theta
@@ -10604,6 +10668,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_rolled_omp_zmm16r4
          !dir$ attributes forceinline :: scan_width_rolled_omp_zmm16r4
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_rolled_omp_zmm16r4
+          use omp_lib
          type(ZMM16r4_t),                  intent(in) :: H
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM16r4_t),  dimension(1:n), intent(in)  :: theta
@@ -10791,6 +10856,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_16x_omp_zmm8r8
          !dir$ attributes forceinline :: scan_width_unroll_16x_omp_zmm8r8
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_16x_omp_zmm8r8
+          use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: theta
@@ -10948,6 +11014,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_8x_omp_zmm8r8
          !dir$ attributes forceinline :: scan_width_unroll_8x_omp_zmm8r8
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_8x_omp_zmm8r8
+          use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: theta
@@ -11064,6 +11131,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_4x_omp_zmm8r8
          !dir$ attributes forceinline :: scan_width_unroll_4x_omp_zmm8r8
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_4x_omp_zmm8r8
+          use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: theta
@@ -11162,6 +11230,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_unroll_2x_omp_zmm8r8
          !dir$ attributes forceinline :: scan_width_unroll_2x_omp_zmm8r8
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_unroll_2x_omp_zmm8r8
+          use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: theta
@@ -11240,6 +11309,7 @@ module eos_sensor_avx512
          !dir$ attributes code_align : 32 :: scan_width_rolled_omp_zmm8r8
          !dir$ attributes forceinline :: scan_width_rolled_omp_zmm8r8
          !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: scan_width_rolled_omp_zmm8r8
+          use omp_lib
          type(ZMM8r8_t),                  intent(in) :: H
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: delta
          type(ZMM8r8_t),  dimension(1:n), intent(in)  :: theta
@@ -11489,6 +11559,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_16x_omp_zmm16r4
             !dir$ attributes forceinline ::  refract_shift_unroll_16x_omp_zmm16r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_omp_zmm16r4
+             use omp_lib
             type(ZMM16r4_t),                     intent(in) :: i1
             type(ZMM16r4_t),                     intent(in) :: delta
             type(ZMM16r4_t), dimension(1:len),   intent(in) :: alfa
@@ -11686,6 +11757,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_8x_omp_zmm16r4
             !dir$ attributes forceinline ::  refract_shift_unroll_8x_omp_zmm16r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_omp_zmm16r4
+             use omp_lib
             type(ZMM16r4_t),                     intent(in) :: i1
             type(ZMM16r4_t),                     intent(in) :: delta
             type(ZMM16r4_t), dimension(1:len),   intent(in) :: alfa
@@ -11826,6 +11898,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_4x_omp_zmm16r4
             !dir$ attributes forceinline ::  refract_shift_unroll_4x_omp_zmm16r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_omp_zmm16r4
+             use omp_lib
             type(ZMM16r4_t),                     intent(in) :: i1
             type(ZMM16r4_t),                     intent(in) :: delta
             type(ZMM16r4_t), dimension(1:len),   intent(in) :: alfa
@@ -11942,6 +12015,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_2x_omp_zmm16r4
             !dir$ attributes forceinline ::  refract_shift_unroll_2x_omp_zmm16r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_omp_zmm16r4
+             use omp_lib
             type(ZMM16r4_t),                     intent(in) :: i1
             type(ZMM16r4_t),                     intent(in) :: delta
             type(ZMM16r4_t), dimension(1:len),   intent(in) :: alfa
@@ -12036,6 +12110,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_rolled_omp_zmm16r4
             !dir$ attributes forceinline ::  refract_shift_rolled_omp_zmm16r4
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_omp_zmm16r4
+             use omp_lib
             type(ZMM16r4_t),                     intent(in) :: i1
             type(ZMM16r4_t),                     intent(in) :: delta
             type(ZMM16r4_t), dimension(1:len),   intent(in) :: alfa
@@ -12287,6 +12362,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_16x_omp_zmm8r8
             !dir$ attributes forceinline ::  refract_shift_unroll_16x_omp_zmm8r8
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_16x_omp_zmm8r8
+             use omp_lib
             type(ZMM8r8_t),                     intent(in) :: i1
             type(ZMM8r8_t),                     intent(in) :: delta
             type(ZMM8r8_t), dimension(1:len),   intent(in) :: alfa
@@ -12484,6 +12560,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_8x_omp_zmm8r8
             !dir$ attributes forceinline ::  refract_shift_unroll_8x_omp_zmm8r8
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_8x_omp_zmm8r8
+             use omp_lib
             type(ZMM8r8_t),                     intent(in) :: i1
             type(ZMM8r8_t),                     intent(in) :: delta
             type(ZMM8r8_t), dimension(1:len),   intent(in) :: alfa
@@ -12624,6 +12701,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_4x_omp_zmm8r8
             !dir$ attributes forceinline ::  refract_shift_unroll_4x_omp_zmm8r8
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_4x_omp_zmm8r8
+             use omp_lib
             type(ZMM8r8_t),                     intent(in) :: i1
             type(ZMM8r8_t),                     intent(in) :: delta
             type(ZMM8r8_t), dimension(1:len),   intent(in) :: alfa
@@ -12740,6 +12818,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_unroll_2x_omp_zmm8r8
             !dir$ attributes forceinline ::  refract_shift_unroll_2x_omp_zmm8r8
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_unroll_2x_omp_zmm8r8
+             use omp_lib
             type(ZMM8r8_t),                     intent(in) :: i1
             type(ZMM8r8_t),                     intent(in) :: delta
             type(ZMM8r8_t), dimension(1:len),   intent(in) :: alfa
@@ -12834,6 +12913,7 @@ module eos_sensor_avx512
             !dir$ attributes code_align : 32 ::  refract_shift_rolled_omp_zmm8r8
             !dir$ attributes forceinline ::  refract_shift_rolled_omp_zmm8r8
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: refract_shift_rolled_omp_zmm8r8
+             use omp_lib
             type(ZMM8r8_t),                     intent(in) :: i1
             type(ZMM8r8_t),                     intent(in) :: delta
             type(ZMM8r8_t), dimension(1:len),   intent(in) :: alfa
