@@ -2173,6 +2173,9 @@ module um_diffracted_waves
                    if(nidsrw<8) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidsrw>=100) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
+               !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
                !dir$ assume_aligned idsrw:32
                !dir$ vector aligned
@@ -2199,6 +2202,7 @@ module um_diffracted_waves
                      idsrw(j+7,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(niderw,8)
                if(m/=0) then
                    !dir$ assume_aligned iderw:32
@@ -2215,6 +2219,9 @@ module um_diffracted_waves
                    if(niderw<8) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(niderw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
                !dir$ assume_aligned iderw:32
                !dir$ vector aligned
@@ -2241,6 +2248,7 @@ module um_diffracted_waves
                      iderw(j+7,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(nidwrw,8)
                if(m/=0) then
                    !dir$ assume_aligned idwrw:32
@@ -2257,6 +2265,9 @@ module um_diffracted_waves
                    if(nidwrw<8) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidwrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
                !dir$ assume_aligned idwrw:32
                !dir$ vector aligned
@@ -2283,6 +2294,7 @@ module um_diffracted_waves
                      idwrw(j+7,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(nidnrw,8)
                if(m/=0) then
                    !dir$ assume_aligned idnrw:32
@@ -2299,6 +2311,9 @@ module um_diffracted_waves
                    if(nidnrw<8) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidnrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
                !dir$ assume_aligned idnrw:32
                !dir$ vector aligned
@@ -2325,8 +2340,9 @@ module um_diffracted_waves
                      idnrw(j+7,i) = r30
                   end do
                end do
+               !$omp end parallel do
             end if 
-       end subroutine rand_norm_init_idxrw_unroll8x
+       end subroutine rand_norm_init_idxrw_unroll8x_omp
 
 
 
@@ -2755,6 +2771,457 @@ module um_diffracted_waves
                end do
             end if 
        end subroutine rand_norm_init_idxrw_unroll16x
+       
+       
+       subroutine rand_norm_init_idxrw_unroll16x_omp()
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll16x_omp
+            !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll16x_omp
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll16x_omp
+            use rand_scalar_distributions, only : random_normal_clamped
+            use urban_model
+            use omp_lib
+            ! Locals
+            real(sp), automatic :: r00,r10,r20,r30
+            real(sp), automatic :: r01,r11,r21,r31
+            real(sp), automatic :: r02,r12,r22,r32
+            real(sp), automatic :: r03,r13,r23,r33
+            integer(i4), automatic :: j,i,m,m1
+            if(nidxrw_diff()) then
+               m = mod(nidsrw,16)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ assume_aligned iderw:32
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idsrw(j+0,i) = r00
+                          r10 = random_normal_clamped()
+                          iderw(j+0,i) = r10
+                          r20 = random_normal_clamped()
+                          idwrw(j+0,i) = r20
+                          r30 = random_normal_clamped()
+                          idnrw(j+0,i) = r30
+                      end do
+                   end do
+                   if(nidsrw<16) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nbpc>=10) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
+               !$omp private(r01,r11,r21,r31,r02,r12,r22,r32)                &
+               !$omp private(r03,r13,r23,r33) shared(nbpc,nidsrw)            &
+               !$omp shared(idsrw,iderw,idwrw,idnrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ assume_aligned iderw:32
+               !dir$ assume_aligned idwrw:32
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,16
+                     r00 = random_normal_clamped()
+                     idsrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+0,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+0,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+0,i) = r30
+                     r01 = random_normal_clamped()
+                     idsrw(j+1,i) = r01
+                     r11 = random_normal_clamped()
+                     iderw(j+1,i) = r11
+                     r21 = random_normal_clamped()
+                     idwrw(j+1,i) = r21
+                     r31 = random_normal_clamped()
+                     idnrw(j+1,i) = r31
+                     r02 = random_normal_clamped()
+                     idsrw(j+2,i) = r02
+                     r12 = random_normal_clamped()
+                     iderw(j+2,i) = r12
+                     r22 = random_normal_clamped()
+                     idwrw(j+2,i) = r22
+                     r32 = random_normal_clamped()
+                     idnrw(j+2,i) = r32
+                     r03 = random_normal_clamped()
+                     idsrw(j+3,i) = r03
+                     r13 = random_normal_clamped()
+                     iderw(j+3,i) = r13
+                     r23 = random_normal_clamped()
+                     idwrw(j+3,i) = r23
+                     r33 = random_normal_clamped()
+                     idnrw(j+3,i) = r33
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+4,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+4,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+4,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+4,i) = r30
+                     r01 = random_normal_clamped()
+                     idsrw(j+5,i) = r01
+                     r11 = random_normal_clamped()
+                     iderw(j+5,i) = r11
+                     r21 = random_normal_clamped()
+                     idwrw(j+5,i) = r21
+                     r31 = random_normal_clamped()
+                     idnrw(j+5,i) = r31
+                     r02 = random_normal_clamped()
+                     idsrw(j+6,i) = r02
+                     r12 = random_normal_clamped()
+                     iderw(j+6,i) = r12
+                     r22 = random_normal_clamped()
+                     idwrw(j+6,i) = r22
+                     r32 = random_normal_clamped()
+                     idnrw(j+6,i) = r32
+                     r03 = random_normal_clamped()
+                     idsrw(j+7,i) = r03
+                     r13 = random_normal_clamped()
+                     iderw(j+7,i) = r13
+                     r23 = random_normal_clamped()
+                     idwrw(j+7,i) = r23
+                     r33 = random_normal_clamped()
+                     idnrw(j+7,i) = r33
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+8,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+8,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+8,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+8,i) = r30
+                     r01 = random_normal_clamped()
+                     idsrw(j+9,i) = r01
+                     r11 = random_normal_clamped()
+                     iderw(j+9,i) = r11
+                     r21 = random_normal_clamped()
+                     idwrw(j+9,i) = r21
+                     r31 = random_normal_clamped()
+                     idnrw(j+9,i) = r31
+                     r02 = random_normal_clamped()
+                     idsrw(j+10,i) = r02
+                     r12 = random_normal_clamped()
+                     iderw(j+10,i) = r12
+                     r22 = random_normal_clamped()
+                     idwrw(j+10,i) = r22
+                     r32 = random_normal_clamped()
+                     idnrw(j+10,i) = r32
+                     r03 = random_normal_clamped()
+                     idsrw(j+11,i) = r03
+                     r13 = random_normal_clamped()
+                     iderw(j+11,i) = r13
+                     r23 = random_normal_clamped()
+                     idwrw(j+11,i) = r23
+                     r33 = random_normal_clamped()
+                     idnrw(j+11,i) = r33
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+12,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+12,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+12,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+12,i) = r30
+                     r01 = random_normal_clamped()
+                     idsrw(j+13,i) = r01
+                     r11 = random_normal_clamped()
+                     iderw(j+13,i) = r11
+                     r21 = random_normal_clamped()
+                     idwrw(j+13,i) = r21
+                     r31 = random_normal_clamped()
+                     idnrw(j+13,i) = r31
+                     r02 = random_normal_clamped()
+                     idsrw(j+14,i) = r02
+                     r12 = random_normal_clamped()
+                     iderw(j+14,i) = r12
+                     r22 = random_normal_clamped()
+                     idwrw(j+14,i) = r22
+                     r32 = random_normal_clamped()
+                     idnrw(j+14,i) = r32
+                     r03 = random_normal_clamped()
+                     idsrw(j+15,i) = r03
+                     r13 = random_normal_clamped()
+                     iderw(j+15,i) = r13
+                     r23 = random_normal_clamped()
+                     idwrw(j+15,i) = r23
+                     r33 = random_normal_clamped()
+                     idnrw(j+15,i) = r33
+                   end do
+               end do
+               !$omp end parallel do
+            else
+               m = mod(nidsrw,16)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idsrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidsrw<16) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidsrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,nidsrw,idsrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,16
+                     r00 = random_normal_clamped()
+                     idsrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idsrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idsrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idsrw(j+3,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+4,i) = r00
+                     r10 = random_normal_clamped()
+                     idsrw(j+5,i) = r10
+                     r20 = random_normal_clamped()
+                     idsrw(j+6,i) = r20
+                     r30 = random_normal_clamped()
+                     idsrw(j+7,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+8,i) = r00
+                     r10 = random_normal_clamped()
+                     idsrw(j+9,i) = r10
+                     r20 = random_normal_clamped()
+                     idsrw(j+10,i) = r20
+                     r30 = random_normal_clamped()
+                     idsrw(j+11,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idsrw(j+12,i) = r00
+                     r10 = random_normal_clamped()
+                     idsrw(j+13,i) = r10
+                     r20 = random_normal_clamped()
+                     idsrw(j+14,i) = r20
+                     r30 = random_normal_clamped()
+                     idsrw(j+15,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(niderw,16)
+               if(m/=0) then
+                   !dir$ assume_aligned iderw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          iderw(j+0,i) = r00
+                      end do
+                   end do
+                   if(niderw<16) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(niderw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,niderw,iderw)
+               do i=1, nbpc
+               !dir$ assume_aligned iderw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, niderw,16
+                     r00 = random_normal_clamped()
+                     iderw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     iderw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     iderw(j+3,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     iderw(j+4,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+5,i) = r10
+                     r20 = random_normal_clamped()
+                     iderw(j+6,i) = r20
+                     r30 = random_normal_clamped()
+                     iderw(j+7,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     iderw(j+8,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+9,i) = r10
+                     r20 = random_normal_clamped()
+                     iderw(j+10,i) = r20
+                     r30 = random_normal_clamped()
+                     iderw(j+11,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     iderw(j+12,i) = r00
+                     r10 = random_normal_clamped()
+                     iderw(j+13,i) = r10
+                     r20 = random_normal_clamped()
+                     iderw(j+14,i) = r20
+                     r30 = random_normal_clamped()
+                     iderw(j+15,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(nidwrw,16)
+               if(m/=0) then
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idwrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidwrw<16) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidwrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,nidwrw,idwrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idwrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidwrw,16
+                     r00 = random_normal_clamped()
+                     idwrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idwrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idwrw(j+3,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idwrw(j+4,i) = r00
+                     r10 = random_normal_clamped()
+                     idwrw(j+5,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+6,i) = r20
+                     r30 = random_normal_clamped()
+                     idwrw(j+7,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idwrw(j+8,i) = r00
+                     r10 = random_normal_clamped()
+                     idwrw(j+9,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+10,i) = r20
+                     r30 = random_normal_clamped()
+                     idwrw(j+11,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idwrw(j+12,i) = r00
+                     r10 = random_normal_clamped()
+                     idwrw(j+13,i) = r10
+                     r20 = random_normal_clamped()
+                     idwrw(j+14,i) = r20
+                     r30 = random_normal_clamped()
+                     idwrw(j+15,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(nidnrw,16)
+               if(m/=0) then
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_normal_clamped()
+                          idnrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidnrw<16) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidnrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(nbpc,nidnrw,idnrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidnrw,16
+                     r00 = random_normal_clamped()
+                     idnrw(j+0,i) = r00
+                     r10 = random_normal_clamped()
+                     idnrw(j+1,i) = r10
+                     r20 = random_normal_clamped()
+                     idnrw(j+2,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+3,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idnrw(j+4,i) = r00
+                     r10 = random_normal_clamped()
+                     idnrw(j+5,i) = r10
+                     r20 = random_normal_clamped()
+                     idnrw(j+6,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+7,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idnrw(j+8,i) = r00
+                     r10 = random_normal_clamped()
+                     idnrw(j+9,i) = r10
+                     r20 = random_normal_clamped()
+                     idnrw(j+10,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+11,i) = r30
+                     ! 
+                     r00 = random_normal_clamped()
+                     idnrw(j+12,i) = r00
+                     r10 = random_normal_clamped()
+                     idnrw(j+13,i) = r10
+                     r20 = random_normal_clamped()
+                     idnrw(j+14,i) = r20
+                     r30 = random_normal_clamped()
+                     idnrw(j+15,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+            end if 
+       end subroutine rand_norm_init_idxrw_unroll16x_omp
+       
        
 !////////////////////////////////////////////////////////////////!
 
