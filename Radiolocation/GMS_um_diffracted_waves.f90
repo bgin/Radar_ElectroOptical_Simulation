@@ -1624,6 +1624,9 @@ module um_diffracted_waves
                    if(nidsrw<4) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidsrw>=100) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
+               !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
                !dir$ assume_aligned idsrw:32
                !dir$ vector aligned
@@ -1641,6 +1644,7 @@ module um_diffracted_waves
                      idsrw(j+3,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(niderw,4)
                if(m/=0) then
                    !dir$ assume_aligned iderw:32
@@ -1657,6 +1661,9 @@ module um_diffracted_waves
                    if(niderw<4) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(niderw>=100) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
+               !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
                !dir$ assume_aligned iderw:32
                !dir$ vector aligned
@@ -1674,6 +1681,7 @@ module um_diffracted_waves
                      iderw(j+3,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(nidwrw,4)
                if(m/=0) then
                    !dir$ assume_aligned idwrw:32
@@ -1690,6 +1698,9 @@ module um_diffracted_waves
                    if(nidwrw<4) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidwrw>=100) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
+               !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
                !dir$ assume_aligned idwrw:32
                !dir$ vector aligned
@@ -1707,6 +1718,7 @@ module um_diffracted_waves
                      idwrw(j+3,i) = r30
                   end do
                end do
+               !$omp end parallel do
                m = mod(nidnrw,4)
                if(m/=0) then
                    !dir$ assume_aligned idnrw:32
@@ -1723,6 +1735,9 @@ module um_diffracted_waves
                    if(nidnrw<4) return
                end if
                m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidnrw>=100) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
+               !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
                !dir$ assume_aligned idnrw:32
                !dir$ vector aligned
@@ -1740,6 +1755,7 @@ module um_diffracted_waves
                      idnrw(j+3,i) = r30
                   end do
                end do
+               !$omp end parallel do
             end if 
        end subroutine rand_norm_init_idxrw_unroll4x_omp
        
@@ -3446,6 +3462,252 @@ module um_diffracted_waves
                end do
             end if 
        end subroutine rand_gamma2_init_idxrw_unroll4x  
+       
+       
+       subroutine rand_gamma2_init_idxrw_unroll4x_omp(s)
+            !dir$ optimize:3
+            !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll4x_omp
+            !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll4x_om
+            !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll4x_omp
+            use rand_scalar_distributions, only : random_gamma2
+            use urban_model
+            use omp_lib
+            real(kind=sp), dimension(4), intent(in) :: s
+            
+            ! Locals
+            real(sp), automatic :: r00,r10,r20,r30
+            real(sp), automatic :: r01,r11,r21,r31
+            real(sp), automatic :: r02,r12,r22,r32
+            real(sp), automatic :: r03,r13,r23,r33
+            integer(i4), automatic :: j,i,m,m1
+            if(nidxrw_diff()) then
+               m = mod(nidsrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ assume_aligned iderw:32
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_gamma2(s(1))
+                          idsrw(j+0,i) = r00
+                          r10 = random_gamma2(s(2))
+                          iderw(j+0,i) = r10
+                          r20 = random_gamma2(s(3))
+                          idwrw(j+0,i) = r20
+                          r30 = random_gamma2(s(4))
+                          idnrw(j+0,i) = r30
+                      end do
+                   end do
+                   if(nidsrw<4) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nbpc>=10) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
+               !$omp private(r01,r11,r21,r31,r02,r12,r22,r32)                &
+               !$omp private(r03,r13,r23,r33) shared(s,nbpc,nidsrw)          &
+               !$omp shared(idsrw,iderw,idwrw,idnrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ assume_aligned iderw:32
+               !dir$ assume_aligned idwrw:32
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,4
+                     r00 = random_gamma2(s(1))
+                     idsrw(j+0,i) = r00
+                     r10 = random_gamma2(s(2))
+                     iderw(j+0,i) = r10
+                     r20 = random_gamma2(s(3))
+                     idwrw(j+0,i) = r20
+                     r30 = random_gamma2(s(4))
+                     idnrw(j+0,i) = r30
+                     r01 = random_gamma2(s(1))
+                     idsrw(j+1,i) = r01
+                     r11 = random_gamma2(s(2))
+                     iderw(j+1,i) = r11
+                     r21 = random_gamma2(s(3))
+                     idwrw(j+1,i) = r21
+                     r31 = random_gamma2(s(4))
+                     idnrw(j+1,i) = r31
+                     r02 = random_gamma2(s(1))
+                     idsrw(j+2,i) = r02
+                     r12 = random_gamma2(s(2))
+                     iderw(j+2,i) = r12
+                     r22 = random_gamma2(s(3))
+                     idwrw(j+2,i) = r22
+                     r32 = random_gamma2(s(4))
+                     idnrw(j+2,i) = r32
+                     r03 = random_gamma2(s(1))
+                     idsrw(j+3,i) = r03
+                     r13 = random_gamma2(s(2))
+                     iderw(j+3,i) = r13
+                     r23 = random_gamma2(s(3))
+                     idwrw(j+3,i) = r23
+                     r33 = random_gamma2(s(4))
+                     idnrw(j+3,i) = r33
+                   end do
+               end do
+               !$omp end parallel do
+            else
+               m = mod(nidsrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idsrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_gamma2(s(1))
+                          idsrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidsrw<4) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidsrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(s,nbpc,nidsrw,idsrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idsrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidsrw,4
+                     r00 = random_gamma2(s(1))
+                     idsrw(j+0,i) = r00
+                     r10 = random_gamma2(s(1))
+                     idsrw(j+1,i) = r10
+                     r20 = random_gamma2(s(1))
+                     idsrw(j+2,i) = r20
+                     r30 = random_gamma2(s(1))
+                     idsrw(j+3,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(niderw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned iderw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_gamma2(s(2))
+                          iderw(j+0,i) = r00
+                      end do
+                   end do
+                   if(niderw<4) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(niderw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(s,nbpc,niderw,iderw)
+               do i=1, nbpc
+               !dir$ assume_aligned iderw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, niderw,4
+                     r00 = random_gamma2(s(2))
+                     iderw(j+0,i) = r00
+                     r10 = random_gamma2(s(2))
+                     iderw(j+1,i) = r10
+                     r20 = random_gamma2(s(2))
+                     iderw(j+2,i) = r20
+                     r30 = random_gamma2(s(2))
+                     iderw(j+3,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(nidwrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idwrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_gamma2(s(3))
+                          idwrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidwrw<4) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidwrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(s,nbpc,nidwrw,idwrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idwrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidwrw,4
+                     r00 = random_gamma2(s(3))
+                     idwrw(j+0,i) = r00
+                     r10 = random_gamma2(s(3))
+                     idwrw(j+1,i) = r10
+                     r20 = random_gamma2(s(3))
+                     idwrw(j+2,i) = r20
+                     r30 = random_gamma2(s(3))
+                     idwrw(j+3,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+               m = mod(nidnrw,4)
+               if(m/=0) then
+                   !dir$ assume_aligned idnrw:32
+                   !dir$ vector aligned
+                   !dir$ ivdep
+                   !dir$ vector vectorlength(4)
+                   !dir$ vector always
+                   do i=1, nbpc
+                      do j=1,m
+                          r00 = random_gamma2(s(4))
+                          idnrw(j+0,i) = r00
+                      end do
+                   end do
+                   if(nidnrw<4) return
+               end if
+               m1 = m+1
+               !$omp parallel do schedule(static) default(none) if(nidnrw>=50) &
+               !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
+               !$omp shared(s,nbpc,nidnrw,idnrw)
+               do i=1, nbpc
+               !dir$ assume_aligned idnrw:32
+               !dir$ vector aligned
+               !dir$ ivdep
+               !dir$ vector vectorlength(4)
+               !dir$ vector always
+                  do j=m1, nidnrw,4
+                     r00 = random_gamma2(s(4))
+                     idnrw(j+0,i) = r00
+                     r10 = random_gamma2(s(4))
+                     idnrw(j+1,i) = r10
+                     r20 = random_gamma2(s(4))
+                     idnrw(j+2,i) = r20
+                     r30 = random_gamma2(s(4))
+                     idnrw(j+3,i) = r30
+                  end do
+               end do
+               !$omp end parallel do
+            end if 
+       end subroutine rand_gamma2_init_idxrw_unroll4x  
+       
        
        
        subroutine rand_gamma2_init_idxrw_unroll8x(s)
