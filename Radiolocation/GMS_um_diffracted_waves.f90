@@ -1320,16 +1320,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif
+        
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1346,16 +1337,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif
+
                   do j=m1, nidsrw,4
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -1394,13 +1376,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif
+
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1411,13 +1387,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+            
                   do j=m1, nidsrw,4
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -1431,13 +1401,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)               
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1448,13 +1412,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)               
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+                                
                   do j=m1, niderw,4
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
@@ -1468,13 +1426,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)               
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1485,13 +1437,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)               
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+            
                   do j=m1, nidwrw,4
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
@@ -1505,13 +1451,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)               
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1522,13 +1462,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)               
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+              
                   do j=m1, nidnrw,4
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
@@ -1563,16 +1497,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)               
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+              
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1593,16 +1518,7 @@ module um_diffracted_waves
                !$omp private(r01,r11,r21,r31,r02,r12,r22,r32,r03,r13,r23,r33)&
                !$omp shared(nbpc,nidsrw,idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)                   
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+          
                   do j=m1, nidsrw,4
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -1642,13 +1558,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)                   
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1662,13 +1572,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)                   
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+               
                   do j=m1, nidsrw,4
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -1683,13 +1587,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)                   
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1703,13 +1601,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)                   
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+             
                   do j=m1, niderw,4
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
@@ -1724,13 +1616,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)                   
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif
+
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1744,13 +1630,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)                   
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+             
                   do j=m1, nidwrw,4
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
@@ -1765,13 +1645,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,4)
                if(m/=0) then
-#if defined(__INTEL_COMPILER)                   
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-#endif                   
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1785,13 +1659,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-#if defined(__INTEL_COMPILER)                   
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-#endif               
+             
                   do j=m1, nidnrw,4
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
@@ -1810,10 +1678,12 @@ module um_diffracted_waves
        
        
        subroutine rand_norm_init_idxrw_unroll8x()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll8x
             !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll8x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll8x
+#endif            
             use rand_scalar_distributions, only : random_normal_clamped
             use urban_model
             ! Locals
@@ -1825,14 +1695,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1849,15 +1712,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidsrw,8
+              
+               do j=m1, nidsrw,8
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
                      r10 = random_normal_clamped()
@@ -1928,11 +1784,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1943,12 +1795,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidsrw,8
+            
+               do j=m1, nidsrw,8
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
                      r10 = random_normal_clamped()
@@ -1970,11 +1818,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -1985,12 +1829,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, niderw,8
+              
+               do j=m1, niderw,8
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
                      r10 = random_normal_clamped()
@@ -2012,11 +1852,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2027,12 +1863,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidwrw,8
+              
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
                      r10 = random_normal_clamped()
@@ -2054,11 +1885,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2069,12 +1896,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidnrw,8
+             
+                 do j=m1, nidnrw,8
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
                      r10 = random_normal_clamped()
@@ -2099,10 +1922,12 @@ module um_diffracted_waves
        
        
        subroutine rand_norm_init_idxrw_unroll8x_omp()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll8x_omp
             !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll8x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll8x_omp
+#endif            
             use rand_scalar_distributions, only : random_normal_clamped
             use urban_model
             use omp_lib
@@ -2115,14 +1940,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2143,14 +1961,7 @@ module um_diffracted_waves
                !$omp private(r02,r12,r22,r32,r03,r13,r23,r33)                      &
                !$omp shared(nbpc,nidsrw,idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -2223,11 +2034,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2241,11 +2048,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)              &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -2269,11 +2072,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2287,11 +2086,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, niderw,8
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
@@ -2315,11 +2110,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2333,11 +2124,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,8
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
@@ -2361,11 +2148,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2379,11 +2162,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
@@ -2411,10 +2190,12 @@ module um_diffracted_waves
 
 
        subroutine rand_norm_init_idxrw_unroll16x()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll16x
             !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll16x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll16x
+#endif            
             use rand_scalar_distributions, only : random_normal_clamped
             use urban_model
             ! Locals
@@ -2426,14 +2207,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2450,14 +2224,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -2595,11 +2362,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2610,11 +2373,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -2655,11 +2414,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2670,11 +2425,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, niderw,16
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
@@ -2715,11 +2466,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2730,11 +2477,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, nidwrw,16
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
@@ -2775,11 +2518,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2790,11 +2529,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,16
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
@@ -2838,10 +2573,12 @@ module um_diffracted_waves
        
        
        subroutine rand_norm_init_idxrw_unroll16x_omp()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_norm_init_idxrw_unroll16x_omp
             !dir$ attributes forceinline ::  rand_norm_init_idxrw_unroll16x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_norm_init_idxrw_unroll16x_omp
+#endif           
             use rand_scalar_distributions, only : random_normal_clamped
             use urban_model
             use omp_lib
@@ -2854,14 +2591,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -2883,14 +2613,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(nbpc,nidsrw)            &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -3029,12 +2752,8 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-                   do i=1, nbpc
+                 
+                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
                           idsrw(j+0,i) = r00
@@ -3047,11 +2766,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_normal_clamped()
                      idsrw(j+0,i) = r00
@@ -3093,11 +2808,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -3111,11 +2822,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, niderw,16
                      r00 = random_normal_clamped()
                      iderw(j+0,i) = r00
@@ -3157,11 +2864,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -3175,11 +2878,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,16
                      r00 = random_normal_clamped()
                      idwrw(j+0,i) = r00
@@ -3221,11 +2920,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_normal_clamped()
@@ -3239,11 +2934,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,16
                      r00 = random_normal_clamped()
                      idnrw(j+0,i) = r00
@@ -3291,10 +2982,12 @@ module um_diffracted_waves
 
 
        subroutine rand_gamma2_init_idxrw_unroll4x(s)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll4x
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll4x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll4x
+#endif            
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             real(kind=sp), dimension(4), intent(in) :: s
@@ -3308,14 +3001,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -3332,14 +3018,10 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+               
+               
+               
                   do j=m1, nidsrw,4
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -3378,11 +3060,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -3393,11 +3071,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,4
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -3411,11 +3085,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -3426,11 +3096,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,4
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -3444,11 +3110,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
@@ -3459,11 +3121,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,4
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
@@ -3477,11 +3135,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -3492,11 +3146,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,4
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -3513,10 +3163,12 @@ module um_diffracted_waves
        
        
        subroutine rand_gamma2_init_idxrw_unroll4x_omp(s)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll4x_omp
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll4x_om
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll4x_omp
+#endif            
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             use omp_lib
@@ -3531,14 +3183,10 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                   
+                   
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -3560,15 +3208,11 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(s,nbpc,nidsrw)          &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidsrw,4
+               
+               
+               
+               
+               do j=m1, nidsrw,4
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
                      r10 = random_gamma2(s(2))
@@ -3607,11 +3251,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -3625,11 +3265,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,4
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -3644,11 +3280,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -3662,11 +3294,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,4
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -3681,12 +3309,8 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-                   do i=1, nbpc
+                   
+                  do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
                           idwrw(j+0,i) = r00
@@ -3699,11 +3323,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,4
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
@@ -3718,11 +3338,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -3736,11 +3352,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,4
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -3759,10 +3371,12 @@ module um_diffracted_waves
        
        
        subroutine rand_gamma2_init_idxrw_unroll8x(s)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll8x
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll8x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll8x
+#if defined(__INTEL_COMPILER)           
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             real(kind=sp), dimension(4), intent(in) :: s
@@ -3776,14 +3390,10 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                   
+                   
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -3800,14 +3410,10 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+               
+               
+               
                   do j=m1, nidsrw,8
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -3879,12 +3485,8 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
-                   do i=1, nbpc
+                   
+                  do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
                           idsrw(j+0,i) = r00
@@ -3894,11 +3496,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -3921,11 +3519,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -3936,11 +3530,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,8
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -3963,11 +3553,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
@@ -3978,12 +3564,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
-                  do j=m1, nidwrw,8
+               
+                 do j=m1, nidwrw,8
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
                      r10 = random_gamma2(s(3))
@@ -4005,11 +3587,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -4020,11 +3598,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -4050,10 +3624,12 @@ module um_diffracted_waves
        
        
        subroutine rand_gamma2_init_idxrw_unroll8x_omp(s)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll8x_omp
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll8x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll8x_omp
+#endif            
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             use omp_lib
@@ -4068,14 +3644,10 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                   
+                   
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -4097,14 +3669,10 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(s,nbpc,nidsrw)          &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+               
+               
+               
                   do j=m1, nidsrw,8
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -4177,11 +3745,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -4195,11 +3759,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -4223,11 +3783,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -4241,11 +3797,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,8
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -4269,11 +3821,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
@@ -4287,11 +3835,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,8
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
@@ -4315,11 +3859,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -4333,11 +3873,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -4364,10 +3900,12 @@ module um_diffracted_waves
      
        
        subroutine rand_gamma2_init_idxrw_unroll16x(s)
+#if defined(__INTEL_COMPILER)      
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll16x
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll16x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll16x
+#endif            
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             real(kind=sp), dimension(4), intent(in) :: s
@@ -4380,14 +3918,10 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                   
+                   
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -4404,14 +3938,10 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+               
+               
+               
                   do j=m1, nidsrw,16
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -4549,11 +4079,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -4564,11 +4090,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -4609,11 +4131,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -4624,11 +4142,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,16
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -4669,11 +4183,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
@@ -4684,11 +4194,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,16
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
@@ -4729,11 +4235,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -4744,11 +4246,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,16
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -4792,10 +4290,12 @@ module um_diffracted_waves
        
        
        subroutine rand_gamma2_init_idxrw_unroll16x_omp(s)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_gamma2_init_idxrw_unroll16x_omp
             !dir$ attributes forceinline ::  rand_gamma2_init_idxrw_unroll16x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_gamma2_init_idxrw_unroll16x_omp
+#endif            
             use rand_scalar_distributions, only : random_gamma2
             use urban_model
             use omp_lib
@@ -4809,14 +4309,10 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                   
+                   
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -4838,14 +4334,10 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(s,nbpc,nidsrw)          &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+               
+               
+               
                   do j=m1, nidsrw,16
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -4984,11 +4476,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(1))
@@ -5002,11 +4490,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_gamma2(s(1))
                      idsrw(j+0,i) = r00
@@ -5048,11 +4532,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(2))
@@ -5066,11 +4546,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,16
                      r00 = random_gamma2(s(2))
                      iderw(j+0,i) = r00
@@ -5112,11 +4588,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(3))
@@ -5130,11 +4602,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,16
                      r00 = random_gamma2(s(3))
                      idwrw(j+0,i) = r00
@@ -5176,11 +4644,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_gamma2(s(4))
@@ -5194,11 +4658,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)             &
                !$omp shared(s,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,16
                      r00 = random_gamma2(s(4))
                      idnrw(j+0,i) = r00
@@ -5246,10 +4706,12 @@ module um_diffracted_waves
 !//////////////////////////////////////////////////////////////////////!
 
        subroutine rand_exp_init_idxrw_unroll4x()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll4x
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll4x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll4x
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             ! Locals
@@ -5261,14 +4723,8 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
+                                                       
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5285,14 +4741,8 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
+                                             
                   do j=m1, nidsrw,4
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5331,11 +4781,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5346,11 +4792,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,4
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5364,11 +4806,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5379,11 +4817,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,4
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -5397,11 +4831,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5412,11 +4842,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,4
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -5430,11 +4856,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5445,11 +4867,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,4
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -5466,10 +4884,12 @@ module um_diffracted_waves
        
        
        subroutine rand_exp_init_idxrw_unroll4x_omp()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll4x_omp
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll4x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll4x_omp
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             use omp_lib
@@ -5482,14 +4902,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5511,14 +4924,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(nbpc,nidsrw)            &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,4
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5558,11 +4964,6 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5576,11 +4977,6 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
                   do j=m1, nidsrw,4
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5595,11 +4991,6 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5613,11 +5004,6 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
                   do j=m1, niderw,4
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -5632,11 +5018,6 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5650,11 +5031,6 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
                   do j=m1, nidwrw,4
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -5669,11 +5045,6 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5687,11 +5058,6 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
                   do j=m1, nidnrw,4
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -5710,10 +5076,12 @@ module um_diffracted_waves
               
 
        subroutine rand_exp_init_idxrw_unroll8x()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll8x
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll8x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll8x
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             ! Locals
@@ -5725,14 +5093,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5749,14 +5110,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,8
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5828,11 +5182,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5843,11 +5193,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, nidsrw,8
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -5870,11 +5216,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5885,11 +5227,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, niderw,8
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -5912,11 +5250,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5927,11 +5261,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,8
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -5954,11 +5284,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -5969,11 +5295,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -5999,10 +5321,12 @@ module um_diffracted_waves
        
        
        subroutine rand_exp_init_idxrw_unroll8x_omp()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll8x_omp
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll8x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll8x_omp
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             use omp_lib
@@ -6015,14 +5339,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6044,14 +5361,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(nbpc,nidsrw)            &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,8
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6124,11 +5434,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6142,11 +5448,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6170,11 +5472,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6188,11 +5486,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,8
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -6216,11 +5510,6 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6234,11 +5523,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,8
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -6262,11 +5547,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6280,11 +5561,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,8
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -6312,10 +5589,12 @@ module um_diffracted_waves
        
        
        subroutine rand_exp_init_idxrw_unroll16x()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll16x
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll16x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll16x
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             ! Locals
@@ -6327,14 +5606,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6351,14 +5623,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6496,11 +5761,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6511,11 +5772,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6556,11 +5813,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6571,11 +5824,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,16
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -6616,11 +5865,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6631,11 +5876,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,16
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -6676,11 +5917,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6691,11 +5928,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,16
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -6739,10 +5972,12 @@ module um_diffracted_waves
        
        
        subroutine rand_exp_init_idxrw_unroll16x_omp()
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_exp_init_idxrw_unroll16x_omp
             !dir$ attributes forceinline ::  rand_exp_init_idxrw_unroll16x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_exp_init_idxrw_unroll16x_omp
+#endif            
             use rand_scalar_distributions, only : random_exponential_clamped
             use urban_model
             use omp_lib
@@ -6755,14 +5990,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6784,14 +6012,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(nbpc,nidsrw)            &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6930,11 +6151,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -6948,11 +6165,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_exponential_clamped()
                      idsrw(j+0,i) = r00
@@ -6994,11 +6207,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -7012,11 +6221,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,16
                      r00 = random_exponential_clamped()
                      iderw(j+0,i) = r00
@@ -7058,11 +6263,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -7076,11 +6277,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,16
                      r00 = random_exponential_clamped()
                      idwrw(j+0,i) = r00
@@ -7122,11 +6319,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_exponential_clamped()
@@ -7140,11 +6333,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,16
                      r00 = random_exponential_clamped()
                      idnrw(j+0,i) = r00
@@ -7191,10 +6380,12 @@ module um_diffracted_waves
 !//////////////////////////////////////////////////////////////////////////
 
        subroutine rand_weibull_init_idxrw_unroll4x(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll4x
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll4x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll4x
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             real(kind=sp), dimension(4), intent(in) :: a
@@ -7208,14 +6399,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7232,14 +6416,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,4
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7278,11 +6455,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7293,11 +6466,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, nidsrw,4
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7311,11 +6480,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -7326,11 +6491,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, niderw,4
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -7344,11 +6505,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -7359,11 +6516,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,4
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -7377,11 +6530,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -7392,11 +6541,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,4
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -7413,10 +6558,12 @@ module um_diffracted_waves
        
        
        subroutine rand_weibull_init_idxrw_unroll4x_omp(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll4x_omp
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll4x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll4x_omp
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             use omp_lib
@@ -7431,14 +6578,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7460,14 +6600,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(a,nbpc,nidsrw)          &
                !$omp shared(idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,4
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7507,11 +6640,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7525,11 +6654,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,4
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7544,11 +6669,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,4)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -7562,11 +6683,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, niderw,4
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -7581,11 +6698,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -7599,11 +6712,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,4
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -7618,11 +6727,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,4)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -7636,11 +6741,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidnrw,4
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -7659,10 +6760,12 @@ module um_diffracted_waves
        
        
        subroutine rand_weibull_init_idxrw_unroll8x(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll8x
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll8x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll8x
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             real(sp), dimension(4), intent(in) :: a
@@ -7675,14 +6778,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7699,14 +6795,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7778,11 +6867,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7793,11 +6878,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,8
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -7820,11 +6901,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -7835,11 +6912,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,8
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -7862,11 +6935,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -7877,11 +6946,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,8
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -7904,11 +6969,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -7919,11 +6980,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -7949,10 +7006,12 @@ module um_diffracted_waves
        
        
        subroutine rand_weibull_init_idxrw_unroll8x_omp(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll8x_omp
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll8x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll8x_omp
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             use omp_lib
@@ -7966,14 +7025,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                 
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -7995,14 +7047,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(a,nbpc,nidsrw)          &
                !$omp shared(a,idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,8
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8075,11 +7120,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -8093,11 +7134,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,8
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8121,11 +7158,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,8)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -8139,11 +7172,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, niderw,8
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -8167,11 +7196,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -8185,11 +7210,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidwrw,8
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -8213,11 +7234,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,8)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -8231,11 +7248,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,8
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -8263,10 +7276,12 @@ module um_diffracted_waves
        
        
        subroutine rand_weibull_init_idxrw_unroll16x(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll16x
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll16x
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll16x
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             real(sp), dimension(4),      intent(in) :: a
@@ -8280,14 +7295,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -8304,14 +7312,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8449,11 +7450,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -8464,11 +7461,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8509,11 +7502,7 @@ module um_diffracted_waves
                end do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -8524,11 +7513,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, niderw,16
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -8569,11 +7554,7 @@ module um_diffracted_waves
                end do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -8584,11 +7565,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidwrw,16
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -8629,11 +7606,7 @@ module um_diffracted_waves
                end do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                   
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -8644,11 +7617,7 @@ module um_diffracted_waves
                end if
                m1 = m+1
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,16
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -8692,10 +7661,12 @@ module um_diffracted_waves
 
        
        subroutine rand_weibull_init_idxrw_unroll16x_omp(a)
+#if defined(__INTEL_COMPILER)       
             !dir$ optimize:3
             !dir$ attributes code_align : 32 ::  rand_weibull_init_idxrw_unroll16x_omp
             !dir$ attributes forceinline ::  rand_weibull_init_idxrw_unroll16x_omp
             !dir$ attributes optimization_parameter:"target_arch=skylake-avx512" :: rand_weibull_init_idxrw_unroll16x_omp
+#endif            
             use rand_scalar_distributions, only : random_Weibull_clamped
             use urban_model
             use omp_lib
@@ -8710,14 +7681,7 @@ module um_diffracted_waves
             if(nidxrw_diff()) then
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ assume_aligned iderw:32
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -8739,14 +7703,7 @@ module um_diffracted_waves
                !$omp private(r03,r13,r23,r33) shared(a,nbpc,nidsrw)          &
                !$omp shared(a,idsrw,iderw,idwrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ assume_aligned iderw:32
-               !dir$ assume_aligned idwrw:32
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidsrw,16
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8885,11 +7842,7 @@ module um_diffracted_waves
             else
                m = mod(nidsrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idsrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(1))
@@ -8903,11 +7856,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidsrw,idsrw)
                do i=1, nbpc
-               !dir$ assume_aligned idsrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, nidsrw,16
                      r00 = random_Weibull_clamped(a(1))
                      idsrw(j+0,i) = r00
@@ -8949,11 +7898,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(niderw,16)
                if(m/=0) then
-                   !dir$ assume_aligned iderw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(2))
@@ -8967,11 +7912,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,niderw,iderw)
                do i=1, nbpc
-               !dir$ assume_aligned iderw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+              
                   do j=m1, niderw,16
                      r00 = random_Weibull_clamped(a(2))
                      iderw(j+0,i) = r00
@@ -9013,11 +7954,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidwrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idwrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(3))
@@ -9031,11 +7968,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidwrw,idwrw)
                do i=1, nbpc
-               !dir$ assume_aligned idwrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+             
                   do j=m1, nidwrw,16
                      r00 = random_Weibull_clamped(a(3))
                      idwrw(j+0,i) = r00
@@ -9077,11 +8010,7 @@ module um_diffracted_waves
                !$omp end parallel do
                m = mod(nidnrw,16)
                if(m/=0) then
-                   !dir$ assume_aligned idnrw:32
-                   !dir$ vector aligned
-                   !dir$ ivdep
-                   !dir$ vector vectorlength(4)
-                   !dir$ vector always
+                  
                    do i=1, nbpc
                       do j=1,m
                           r00 = random_Weibull_clamped(a(4))
@@ -9095,11 +8024,7 @@ module um_diffracted_waves
                !$omp firstprivate(m1) private(i,j,r00,r10,r20,r30)           &
                !$omp shared(a,nbpc,nidnrw,idnrw)
                do i=1, nbpc
-               !dir$ assume_aligned idnrw:32
-               !dir$ vector aligned
-               !dir$ ivdep
-               !dir$ vector vectorlength(4)
-               !dir$ vector always
+               
                   do j=m1, nidnrw,16
                      r00 = random_Weibull_clamped(a(4))
                      idnrw(j+0,i) = r00
@@ -9158,4 +8083,4 @@ module um_diffracted_waves
 
 
 
-end module um_diffracted_fields
+end module um_diffracted_waves
