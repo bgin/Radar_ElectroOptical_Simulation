@@ -1,0 +1,728 @@
+
+
+module specfuncs_cuda
+
+
+!===================================================================================85
+ !---------------------------- DESCRIPTION ------------------------------------------85
+ !
+ !
+ !
+ !          Module  name:
+ !                         specfuncs_cuda
+ !          
+ !          Purpose:
+ !                        CUDA implementation of special functions library.
+ !                        
+ !                        
+ !          History:
+ !                        Date: 01-01-2024
+ !                        Time: 09:46AM GMT+2
+ !                        
+ !          Version:
+ !
+ !                      Major: 1
+ !                      Minor: 0
+ !                      Micro: 0
+ !
+ !          Author:  
+ !                     Shanjie Zhang, Jianming Jin
+ ! 
+ !          Modified:
+                       Bernard Gingold 
+ !          
+ !                 
+ !          References:
+ !         
+ !                     
+ !                        Shanjie Zhang, Jianming Jin,
+ !                        Computation of Special Functions,
+ !                        Wiley, 1996,
+ !                        ISBN: 0-471-11963-6,
+ !                        LC: QA351.C45.
+ !          E-mail:
+ !                  
+ !                      beniekg@gmail.com
+!==================================================================================85
+    ! Tab:5 col - Type and etc.. definitions
+    ! Tab:10,11 col - Type , function and subroutine code blocks.
+    
+    use mod_kinds,    only : i1,i4,sp
+    use cudafor
+    
+    public
+    implicit none
+    
+
+
+     ! Major version
+    integer(kind=i4),  parameter :: SPECFUNCS_CUDA_MAJOR = 1
+    ! Minor version
+    integer(kind=i4),  parameter :: SPECFUNCS_CUDA_MINOR = 0
+    ! Micro version
+    integer(kind=i4),  parameter :: SPECFUNCS_CUDA_MICRO = 0
+    ! Full version
+    integer(kind=i4),  parameter :: SPECFUNCS_CUDA_FULLVER =   &
+            1000*SPECFUNCS_CUDA_MAJOR+100*SPECFUNCS_CUDA_MINOR+10*SPECFUNCS_CUDA_MICRO
+    ! Module creation date
+    character(*),        parameter :: SPECFUNCS_CUDA_CREATE_DATE = "01-01-2024 10:01AM +00200 (MON 01 01 2024 GMT+2)"
+    ! Module build date
+    character(*),        parameter :: SPECFUNCS_CUDA_BUILD_DATE  = __DATE__ " " __TIME__
+    ! Module author info
+    character(*),        parameter :: SPECFUNCS_CUDA_AUTHOR      = "Shanjie Zhang, Jianming Jin, Modified by Bernard Gingold"
+    ! Short description
+    character(*),        parameter :: SPECFUNCS_CUDA_SYNOPSIS    = "Cuda implementation of Special Functions library."   
+
+    
+    contains
+    
+attributes(device) subroutine airya ( x, ai, bi, ad, bd )
+
+!*****************************************************************************80
+!
+!! AIRYA computes Airy functions and their derivatives.
+!
+!  Licensing:
+!
+!    The original FORTRAN77 version of this routine is copyrighted by 
+!    Shanjie Zhang and Jianming Jin.  However, they give permission to 
+!    incorporate this routine into a user program that the copyright 
+!    is acknowledged.
+!
+!  Modified:
+!
+!    30 June 2012
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Shanjie Zhang, Jianming Jin.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!       
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument of the Airy function.
+!
+!    Output, real(kind=sp) ::  AI, BI, AD, BD, the values of Ai(x), Bi(x),
+!    Ai'(x), Bi'(x).
+!
+  implicit none
+
+  real(kind=sp) ::  ad
+  real(kind=sp) ::  ai
+  real(kind=sp) ::  bd
+  real(kind=sp) ::  bi
+  real(kind=sp) ::  c1
+  real(kind=sp) ::  c2
+  real(kind=sp) ::  pir
+  real(kind=sp) ::  sr3
+  real(kind=sp) ::  vi1
+  real(kind=sp) ::  vi2
+  real(kind=sp) ::  vj1
+  real(kind=sp) ::  vj2
+  real(kind=sp) ::  vk1
+  real(kind=sp) ::  vk2
+  real(kind=sp) ::  vy1
+  real(kind=sp) ::  vy2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xa
+  real(kind=sp) ::  xq
+  real(kind=sp) ::  z
+
+  xa = abs ( x )
+  pir = 0.318309886183891_sp
+  c1 = 0.355028053887817_sp
+  c2 = 0.258819403792807_sp
+  sr3 = 1.732050807568877_sp
+  z = xa ** 1.5_sp / 1.5_sp
+  xq = sqrt ( xa )
+
+  call ajyik ( z, vj1, vj2, vy1, vy2, vi1, vi2, vk1, vk2 )    
+
+  if ( x == 0.0_sp ) then
+    ai = c1
+    bi = sr3 * c1
+    ad = - c2
+    bd = sr3 * c2
+  else if ( 0.0_sp < x ) then
+    ai = pir * xq / sr3 * vk1
+    bi = xq * ( pir * vk1 + 2.0_sp / sr3 * vi1 ) ! pir * vk1 + 2.0_sp * invsr3 * vii
+    ad = - xa / sr3 * pir * vk2
+    bd = xa * ( pir * vk2 + 2.0_sp / sr3 * vi2 )
+  else
+    ai = 0.5_sp * xq * ( vj1 - vy1 / sr3 )
+    bi = - 0.5_sp * xq * ( vj1 / sr3 + vy1 )
+    ad = 0.5_sp * xa * ( vj2 + vy2 / sr3 )
+    bd = 0.5_sp * xa * ( vj2 / sr3 - vy2 )
+  end if
+
+end subroutine airya
+
+
+attributes(device) subroutine airyb ( x, ai, bi, ad, bd )
+
+!*****************************************************************************80
+!
+!! AIRYB computes Airy functions and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    02 June 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, argument of Airy function.
+!
+!    Output, real(kind=sp) ::  AI, Ai(x).
+!
+!    Output, real(kind=sp) ::  BI, Bi(x).
+!
+!    Output, real(kind=sp) ::  AD, Ai'(x).
+!
+!    Output, real(kind=sp) ::  BD, Bi'(x).
+!
+  implicit none
+
+  real(kind=sp) ::  ad
+  real(kind=sp) ::  ai
+  real(kind=sp) ::  bd
+  real(kind=sp) ::  bi
+  real(kind=sp) ::  c1
+  real(kind=sp) ::  c2
+  real(kind=sp) ::  ck(41)
+  real(kind=sp) ::  df
+  real(kind=sp) ::  dg
+  real(kind=sp) ::  dk(41)
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  fx
+  real(kind=sp) ::  gx
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  km
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rp
+  real(kind=sp) ::  sad
+  real(kind=sp) ::  sai
+  real(kind=sp) ::  sbd
+  real(kind=sp) ::  sbi
+  real(kind=sp) ::  sda
+  real(kind=sp) ::  sdb
+  real(kind=sp) ::  sr3
+  real(kind=sp) ::  ssa
+  real(kind=sp) ::  ssb
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xa
+  real(kind=sp) ::  xar
+  real(kind=sp) ::  xcs
+  real(kind=sp) ::  xe
+  real(kind=sp) ::  xf
+  real(kind=sp) ::  xm
+  real(kind=sp) ::  xp1
+  real(kind=sp) ::  xq
+  real(kind=sp) ::  xr1
+  real(kind=sp) ::  xr2
+  real(kind=sp) ::  xss
+
+  eps = 1.0e-15_sp
+  pi = 3.141592653589793_sp
+  c1 = 0.355028053887817_sp
+  c2 = 0.258819403792807_sp
+  sr3 = 1.732050807568877_sp
+  xa = abs ( x )
+  xq = sqrt ( xa )
+
+  if ( x <= 0.0_sp ) then
+    xm = 8.0_sp
+  else
+    xm = 5.0_sp
+  end if
+
+  !if ( x == 0.0_sp ) then
+  !  ai = c1
+  !  bi = sr3 * c1
+  !  ad = -c2
+  !  bd = sr3 * c2
+  !  return
+  !end if
+
+  if ( xa <= xm ) then
+
+    fx = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 40
+      r = r * x / ( 3.0_sp * k ) * x / ( 3.0_sp * k - 1.0_sp ) * x
+      fx = fx + r
+      if ( abs ( r ) < abs ( fx ) * eps ) then
+        exit
+      end if
+    end do
+
+    gx = x
+    r = x
+    do k = 1, 40
+      r = r * x / ( 3.0_sp * k ) * x / ( 3.0_sp * k + 1.0_sp ) * x
+      gx = gx + r
+      if ( abs ( r ) < abs ( gx ) * eps ) then
+        exit
+      end if
+    end do
+
+    ai = c1 * fx - c2 * gx
+    bi = sr3 * ( c1 * fx + c2 * gx )
+    df = 0.5_sp * x * x
+    r = df
+    do k = 1, 40
+      r = r * x / ( 3.0_sp * k ) * x / ( 3.0_sp * k + 2.0_sp ) * x
+      df = df + r 
+      if ( abs ( r ) < abs ( df ) * eps ) then
+        exit
+      end if
+    end do
+
+    dg = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 40
+      r = r * x / ( 3.0_sp * k ) * x / ( 3.0_sp * k - 2.0_sp ) * x
+      dg = dg + r
+      if ( abs ( r ) < abs ( dg ) * eps ) then
+        exit
+      end if
+    end do
+
+    ad = c1 * df - c2 * dg
+    bd = sr3 * ( c1 * df + c2 * dg )
+
+  else
+
+    xe = xa * xq / 1.5_sp
+    xr1 = 1.0_sp / xe
+    xar = 1.0_sp / xq
+    xf = sqrt ( xar )
+    rp = 0.5641895835477563_sp
+    r = 1.0_sp
+    do k = 1, 40
+      r = r * ( 6.0_sp * k - 1.0_sp ) &
+        / 216.0_sp * ( 6.0_sp * k - 3.0_sp ) &
+        / k * ( 6.0_sp * k - 5.0_sp ) / ( 2.0_sp * k - 1.0_sp )
+      ck(k) = r
+      dk(k) = - ( 6.0_sp * k + 1.0_sp ) / ( 6.0_sp * k - 1.0_sp ) * ck(k)
+    end do
+
+    km = int ( 24.5_sp - xa )
+
+    if ( xa < 6.0_sp ) then
+      km = 14
+    end if
+
+    if ( 15.0_sp < xa ) then
+      km = 10
+    end if
+
+    if ( 0.0_sp < x ) then
+      sai = 1.0_sp
+      sad = 1.0_sp
+      r = 1.0_sp
+      do k = 1, km
+        r = - r * xr1
+        sai = sai + ck(k) * r
+        sad = sad + dk(k) * r
+      end do
+      sbi = 1.0_sp
+      sbd = 1.0_sp
+      r = 1.0_sp
+      do k = 1, km
+        r = r * xr1
+        sbi = sbi + ck(k) * r
+        sbd = sbd + dk(k) * r
+      end do
+      xp1 = exp ( - xe )
+      ai = 0.5_sp * rp * xf * xp1 * sai
+      bi = rp * xf / xp1 * sbi
+      ad = -0.5_sp * rp / xf * xp1 * sad
+      bd = rp / xf / xp1 * sbd
+    else
+      xcs = cos ( xe + pi / 4.0_sp )
+      xss = sin ( xe + pi / 4.0_sp )
+      ssa = 1.0_sp
+      sda = 1.0_sp
+      r = 1.0_sp
+      xr2 = 1.0_sp / ( xe * xe )
+      do k = 1, km
+        r = - r * xr2
+        ssa = ssa + ck(2*k) * r
+        sda = sda + dk(2*k) * r
+      end do
+      ssb = ck(1) * xr1
+      sdb = dk(1) * xr1
+      r = xr1
+      do k = 1, km
+        r = - r * xr2
+        ssb = ssb + ck(2*k+1) * r
+        sdb = sdb + dk(2*k+1) * r
+      end do
+      ai = rp * xf * ( xss * ssa - xcs * ssb )
+      bi = rp * xf * ( xcs * ssa + xss * ssb )
+      ad = -rp / xf * ( xcs * sda + xss * sdb )
+      bd =  rp / xf * ( xss * sda - xcs * sdb )
+    end if
+
+  end if
+  
+end subroutine airyb
+
+
+attributes(device) subroutine ajyik ( x, vj1, vj2, vy1, vy2, vi1, vi2, vk1, vk2 )
+
+!*****************************************************************************80
+!
+!! AJYIK computes Bessel functions Jv(x), Yv(x), Iv(x), Kv(x).
+!
+!  Discussion: 
+!
+!    Compute Bessel functions Jv(x) and Yv(x), and modified Bessel functions 
+!    Iv(x) and Kv(x), and their derivatives with v = 1/3, 2/3.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    31 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.  X should not be zero.
+!
+!    Output, real(kind=sp) ::  VJ1, VJ2, VY1, VY2, VI1, VI2, VK1, VK2,
+!    the values of J1/3(x), J2/3(x), Y1/3(x), Y2/3(x), I1/3(x), I2/3(x),
+!    K1/3(x), K2/3(x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  b0
+  real(kind=sp) ::  c0
+  real(kind=sp) ::  ck
+  real(kind=sp) ::  gn
+  real(kind=sp) ::  gn1
+  real(kind=sp) ::  gn2
+  real(kind=sp) ::  gp1
+  real(kind=sp) ::  gp2
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  k0
+  integer(kind=i4) ::  l
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pv1
+  real(kind=sp) ::  pv2
+  real(kind=sp) ::  px
+  real(kind=sp) ::  qx
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rp
+  real(kind=sp) ::  rp2
+  real(kind=sp) ::  rq
+  real(kind=sp) ::  sk
+  real(kind=sp) ::  sum
+  real(kind=sp) ::  uj1
+  real(kind=sp) ::  uj2
+  real(kind=sp) ::  uu0
+  real(kind=sp) ::  vi1
+  real(kind=sp) ::  vi2
+  real(kind=sp) ::  vil
+  real(kind=sp) ::  vj1
+  real(kind=sp) ::  vj2
+  real(kind=sp) ::  vjl
+  real(kind=sp) ::  vk1
+  real(kind=sp) ::  vk2
+  real(kind=sp) ::  vl
+  real(kind=sp) ::  vsl
+  real(kind=sp) ::  vv
+  real(kind=sp) ::  vv0
+  real(kind=sp) ::  vy1
+  real(kind=sp) ::  vy2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  xk
+
+  !if ( x == 0.0_sp ) then
+  !  vj1 = 0.0_sp
+  !  vj2 = 0.0_sp
+  !  vy1 = -1.0D+300
+  !  vy2 = 1.0D+300
+  !  vi1 = 0.0_sp
+  !  vi2 = 0.0_sp
+  !  vk1 = -1.0D+300
+  !  vk2 = -1.0D+300
+  !  return
+  !end if
+
+  pi = 3.141592653589793_sp
+  rp2 = 0.63661977236758_sp
+  gp1 = 0.892979511569249_sp
+  gp2 = 0.902745292950934_sp
+  gn1 = 1.3541179394264_sp
+  gn2 = 2.678938534707747_sp
+  vv0 = 0.444444444444444_sp
+  uu0 = 1.1547005383793_sp
+  x2 = x * x
+
+  if ( x < 35.0_sp ) then
+    k0 = 12
+  else if ( x < 50.0_sp ) then
+    k0 = 10
+  else
+    k0 = 8
+  end if
+
+  if ( x <= 12.0_sp ) then
+
+    do l = 1, 2
+      vl = l / 3.0_sp
+      vjl = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 40
+        r = -0.25_sp * r * x2 / ( k * ( k + vl ) )
+        vjl = vjl + r
+        if ( abs ( r ) < 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      a0 = ( 0.5_sp * x ) ** vl
+      if ( l == 1 ) then
+        vj1 = a0 / gp1 * vjl
+      else
+        vj2 = a0 / gp2 * vjl
+      end if
+
+    end do
+
+  else
+
+    do l = 1, 2
+
+      vv = vv0 * l * l
+      px = 1.0_sp
+      rp = 1.0_sp
+
+      do k = 1, k0
+        rp = - 0.78125e-02_sp * rp &
+          * ( vv - ( 4.0_sp * k - 3.0_sp ) ** 2 ) &
+          * ( vv - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          / ( k * ( 2.0_sp * k - 1.0_sp ) * x2 )
+        px = px + rp
+      end do
+
+      qx = 1.0_sp
+      rq = 1.0_sp
+      do k = 1, k0
+        rq = - 0.78125e-02_sp * rq &
+          * ( vv - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          * ( vv - ( 4.0_sp * k + 1.0_sp ) ** 2 ) &
+          / ( k * ( 2.0_sp * k + 1.0_sp ) * x2 )
+        qx = qx + rq
+      end do
+
+      qx = 0.125_sp * ( vv - 1.0_sp ) * qx / x
+      xk = x - ( 0.5_sp * l / 3.0_sp + 0.25_sp ) * pi
+      a0 = sqrt ( rp2 / x )
+      ck = cos ( xk )
+      sk = sin ( xk )
+      if ( l == 1) then
+        vj1 = a0 * ( px * ck - qx * sk )
+        vy1 = a0 * ( px * sk + qx * ck )
+      else
+        vj2 = a0 * ( px * ck - qx * sk )
+        vy2 = a0 * ( px * sk + qx * ck )
+      end if
+
+    end do
+
+  end if
+
+  if ( x <= 12.0_sp ) then
+
+    do l = 1, 2
+
+      vl = l / 3.0_sp
+      vjl = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 40
+        r = -0.25_sp * r * x2 / ( k * ( k - vl ) )
+        vjl = vjl + r
+        if ( abs ( r ) < 1.0D-15 ) then
+          exit
+        end if
+      end do
+
+      b0 = ( 2.0_sp / x ) ** vl
+      if ( l == 1 ) then
+        uj1 = b0 * vjl / gn1
+      else
+         uj2 = b0 * vjl / gn2
+      end if
+
+    end do
+
+    pv1 = pi / 3.0_sp
+    pv2 = pi / 1.5_sp
+    vy1 = uu0 * ( vj1 * cos ( pv1 ) - uj1 )
+    vy2 = uu0 * ( vj2 * cos ( pv2 ) - uj2 )
+
+  end if
+
+  if ( x <= 18.0_sp ) then
+
+    do l = 1, 2
+      vl = l / 3.0_sp
+      vil = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 40
+        r = 0.25_sp * r * x2 / ( k * ( k + vl ) )
+        vil = vil + r
+        if ( abs ( r ) < 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      a0 = ( 0.5_sp * x ) ** vl
+
+      if ( l == 1 ) then
+        vi1 = a0 / gp1 * vil
+      else
+        vi2 = a0 / gp2 * vil
+      end if
+
+    end do
+
+  else
+
+    c0 = exp ( x ) / sqrt ( 2.0_sp * pi * x )
+
+    do l = 1, 2
+      vv = vv0 * l * l
+      vsl = 1.0_sp
+      r = 1.0_sp
+      do k = 1, k0
+        r = - 0.125_sp * r &
+          * ( vv - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * x )
+        vsl = vsl + r
+      end do
+      if ( l == 1 ) then
+        vi1 = c0 * vsl
+      else
+        vi2 = c0 * vsl
+      end if
+    end do
+
+  end if
+
+  if ( x <= 9.0_sp ) then
+
+    do l = 1, 2
+      vl = l / 3.0_sp
+      if ( l == 1 ) then
+        gn = gn1
+      else
+        gn = gn2
+      end if
+      a0 = ( 2.0_sp / x ) ** vl / gn
+      sum = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 60
+        r = 0.25_sp * r * x2 / ( k * ( k - vl ) )
+        sum = sum + r
+        if ( abs ( r ) < 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      if ( l == 1 ) then
+        vk1 = 0.5_sp * uu0 * pi * ( sum * a0 - vi1 )
+      else
+        vk2 = 0.5_sp * uu0 * pi * ( sum * a0 - vi2 )
+      end if
+
+    end do
+
+  else
+
+    c0 = exp ( - x ) * sqrt ( 0.5_sp * pi / x )
+
+    do l = 1, 2
+      vv = vv0 * l * l
+      sum = 1.0_sp
+      r = 1.0_sp
+      do k = 1, k0
+        r = 0.125_sp * r * ( vv - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * x )
+        sum = sum + r
+      end do
+      if ( l == 1 ) then
+        vk1 = c0 * sum
+      else
+        vk2 = c0 * sum
+      end if
+    end do
+
+  end if
+
+end subroutine ajyik   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+end module specfuncs_cuda
