@@ -708,8 +708,694 @@ attributes(device) subroutine ajyik ( x, vj1, vj2, vy1, vy2, vi1, vi2, vk1, vk2 
 end subroutine ajyik   
 
 
+attributes(device) subroutine beta ( p, q, bt )
+
+!*****************************************************************************80
+!
+!! BETA computes the Beta function B(p,q).
+!
+!  Licensing:
+!
+!    The original FORTRAN77 version of this routine is copyrighted by 
+!    Shanjie Zhang and Jianming Jin.  However, they give permission to 
+!    incorporate this routine into a user program that the copyright 
+!    is acknowledged.
+!
+!  Modified:
+!
+!    12 March 2012
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Shanjie Zhang, Jianming Jin.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  P, Q, the parameters.
+!    0 < P, 0 < Q.
+!
+!    Output, real(kind=sp) ::  BT, the value of B(P,Q).
+!
+  implicit none
+
+  real(kind=sp) ::  bt
+  real(kind=sp) ::  gp
+  real(kind=sp) ::  gpq
+  real(kind=sp) ::  gq
+  real(kind=sp) ::  p
+  real(kind=sp) ::  ppq
+  real(kind=sp) ::  q
+
+  call gamma ( p, gp )
+  call gamma ( q, gq )
+  ppq = p + q
+  call gamma ( ppq, gpq )
+  bt = gp * gq / gpq
+
+ 
+end subroutine beta
 
 
+attributes(device) subroutine cerf ( z, cer, cder )
+
+!*****************************************************************************80
+!
+!! CERF computes the error function and derivative for a complex argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    25 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, complex(kind=sp) :: , the argument.
+!
+!    Output, complex(kind=sp) ::  CER, CDER, the values of erf(z) and erf'(z).
+!
+  implicit none
+
+  complex(kind=sp) ::  c0
+  complex(kind=sp) ::  cder
+  complex(kind=sp) ::  cer
+  complex(kind=sp) ::  cs
+  real(kind=sp) ::  ei1
+  real(kind=sp) ::  ei2
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  er
+  real(kind=sp) ::  er0
+  real(kind=sp) ::  er1
+  real(kind=sp) ::  er2 
+  real(kind=sp) ::  eri
+  real(kind=sp) ::  err
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  n
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  ss
+  real(kind=sp) ::  w
+  real(kind=sp) ::  w1
+  real(kind=sp) ::  w2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  y
+  complex(kind=sp) ::  z
+
+  eps = 1.0e-12_sp
+  pi = 3.141592653589793_sp
+  x = real ( z, kind = 8 )
+  y = imag ( z )
+  x2 = x * x
+
+  if ( x <= 3.5_sp ) then
+
+    er = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 100
+      r = r * x2 / ( k + 0.5_sp )
+      er = er + r
+      if ( abs ( er - w ) <= eps * abs ( er ) ) then
+        exit
+      end if
+      w = er
+    end do
+
+    c0 = 2.0_sp / sqrt ( pi ) * x * exp ( - x2 )
+    er0 = c0 * er
+
+  else
+
+    er = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 12
+      r = - r * ( k - 0.5_sp ) / x2
+      er = er + r
+    end do
+    c0 = exp ( - x2 ) / ( x * sqrt ( pi ) )
+    er0 = 1.0_sp - c0 * er
+
+  end if
+
+  if ( y == 0.0_sp ) then
+    err = er0
+    eri = 0.0_sp
+  else
+    cs = cos ( 2.0_sp * x * y )
+    ss = sin ( 2.0_sp * x * y )
+    er1 = exp ( - x2 ) * ( 1.0_sp - cs ) / ( 2.0_sp * pi * x )
+    ei1 = exp ( - x2 ) * ss / ( 2.0_sp * pi * x )
+    er2 = 0.0_sp
+    do n = 1, 100
+      er2 = er2 + exp ( - 0.25_sp * n * n ) &
+        / ( n * n + 4.0_sp * x2 ) * ( 2.0_sp * x &
+        - 2.0_sp * x * cosh ( n * y ) * cs &
+        + n * sinh ( n * y ) * ss )
+      if ( abs ( ( er2 - w1 ) / er2 ) < eps ) then
+        exit
+      end if
+      w1 = er2
+    end do
+
+    c0 = 2.0_sp * exp ( - x2 ) / pi
+    err = er0 + er1 + c0 * er2
+    ei2 = 0.0_sp
+    do n = 1, 100
+      ei2 = ei2 + exp ( - 0.25_sp * n * n ) &
+        / ( n * n + 4.0_sp * x2 ) * ( 2.0_sp * x &
+        * cosh ( n * y ) * ss + n * sinh ( n * y ) * cs )
+      if ( abs ( ( ei2 - w2 ) / ei2 ) < eps ) then
+        exit
+      end if
+      w2 = ei2
+    end do
+
+    eri = ei1 + c0 * ei2
+
+  end if
+
+  cer = cmplx ( err, eri, kind = 8 )
+  cder = 2.0_sp / sqrt ( pi ) * exp ( - z * z )
+
+  
+end subroutine cerf
+
+
+attributes(device) subroutine cerror ( z, cer )
+
+!*****************************************************************************80
+!
+!! CERROR computes the error function for a complex argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    15 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CER, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  complex(kind=sp) ::  c0
+  complex(kind=sp) ::  cer
+  complex(kind=sp) ::  cl
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  cs
+  integer(kind=i4) ::  k
+  real(kind=sp) ::  pi
+  complex(kind=sp) ::  z
+  complex(kind=sp) ::  z1
+
+  a0 = abs ( z )
+  c0 = exp ( - z * z )
+  pi = 3.141592653589793_sp
+  z1 = z
+
+  if ( real ( z, kind = sp ) < 0.0_sp ) then
+    z1 = - z
+  end if
+
+  if ( a0 <= 5.8_sp ) then    
+
+    cs = z1
+    cr = z1
+    do k = 1, 120
+      cr = cr * z1 * z1 / ( k + 0.5_sp )
+      cs = cs + cr
+      if ( abs ( cr / cs ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cer = 2.0_sp * c0 * cs / sqrt ( pi )
+
+  else
+
+    cl = 1.0_sp / z1              
+    cr = cl
+    do k = 1, 13
+      cr = -cr * ( k - 0.5_sp ) / ( z1 * z1 )
+      cl = cl + cr
+      if ( abs ( cr / cl ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cer = 1.0_sp - c0 * cl / sqrt ( pi )
+
+  end if
+
+  if ( real ( z, kind = sp ) < 0.0_sp ) then
+    cer = -cer
+  end if
+
+  
+end subroutine cerror
+
+
+attributes(device) subroutine cfc ( z, zf, zd )
+
+!*****************************************************************************80
+!
+!! CFC computes the complex Fresnel integral C(z) and C'(z).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    26 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  ZF, ZD, the values of C(z) and C'(z).
+!
+  implicit none
+
+  complex(kind=sp) ::  c
+  complex(kind=sp) ::  cf
+  complex(kind=sp) ::  cf0
+  complex(kind=sp) ::  cf1
+  complex(kind=sp) ::  cg
+  complex(kind=sp) ::  cr
+  real(kind=sp) ::  eps
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  m
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  wa
+  real(kind=sp) ::  wa0
+  complex(kind=sp) ::  z
+  complex(kind=sp) ::  z0
+  complex(kind=sp) ::  zd
+  complex(kind=sp) ::  zf
+  complex(kind=sp) ::  zp
+  complex(kind=sp) ::  zp2
+
+  eps = 1.0D-14
+  pi = 3.141592653589793_sp
+  w0 = abs ( z )
+  zp = 0.5_sp * pi * z * z
+  zp2 = zp * zp
+  z0 = cmplx ( 0.0_sp, 0.0_sp, kind = sp )
+
+  if ( z .eq. z0 ) then
+
+    c = z0
+
+  else if ( w0 <= 2.5_sp ) then
+
+    cr = z
+    c = cr
+    do k = 1, 80
+      cr = -0.5_sp * cr * ( 4.0_sp * k - 3.0_sp ) &
+        / k / ( 2.0_sp * k - 1.0_sp ) &
+        / ( 4.0_sp * k + 1.0_sp ) * zp2
+      c = c + cr
+      wa = abs ( c )
+      if ( abs ( ( wa - wa0 ) / wa ) < eps .and. 10 < k ) then
+        exit
+      end if
+      wa0 = wa
+    end do
+
+  else if ( 2.5_sp < w0 .and. w0 < 4.5_sp ) then
+
+    m = 85
+    c = z0
+    cf1 = z0
+    cf0 = cmplx ( 1.0e-30_sp, 0.0_sp, kind = sp )
+    do k = m, 0, -1
+      cf = ( 2.0_sp * k + 3.0_sp ) * cf0 / zp - cf1
+      if ( k .eq. int ( k / 2 ) * 2 ) then
+        c = c + cf
+      end if
+      cf1 = cf0
+      cf0 = cf
+    end do
+    c = sqrt ( 2.0_sp / ( pi * zp ) ) * sin ( zp ) / cf * c
+
+  else
+
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind = sp )
+    cf = cmplx ( 1.0_sp, 0.0_sp, kind = sp )
+    do k = 1, 20
+      cr = - 0.25_sp * cr * ( 4.0_sp * k - 1.0_sp ) &
+        * ( 4.0_sp * k - 3.0_sp ) / zp2
+      cf = cf + cr
+    end do
+    cr = 1.0_sp / ( pi * z * z )
+    cg = cr
+    do k = 1, 12
+      cr = - 0.25_sp * cr * ( 4.0_sp * k + 1.0_sp ) &
+        * ( 4.0_sp * k - 1.0_sp ) / zp2
+      cg = cg + cr
+    end do
+    c = 0.5_sp + ( cf * sin ( zp ) - cg * cos ( zp ) ) / ( pi * z )
+
+  end if
+
+  zf = c
+  zd = cos ( 0.5_sp * pi * z * z )
+
+  
+end subroutine cfc
+
+
+attributes(device) subroutine cfs ( z, zf, zd )
+
+!*****************************************************************************80
+!
+!! CFS computes the complex Fresnel integral S(z) and S'(z).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    24 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  ZF, ZD, the values of S(z) and S'(z).
+!
+  implicit none
+
+  complex(kind=sp) ::  cf
+  complex(kind=sp) ::  cf0
+  complex(kind=sp) ::  cf1
+  complex(kind=sp) ::  cg
+  complex(kind=sp) ::  cr
+  real(kind=sp) ::  eps
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  m
+  real(kind=sp) ::  pi
+  complex(kind=sp) ::  s
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  wb
+  real(kind=sp) ::  wb0
+  complex(kind=sp) ::  z
+  complex(kind=sp) ::  z0
+  complex(kind=sp) ::  zd
+  complex(kind=sp) ::  zf
+  complex(kind=sp) ::  zp
+  complex(kind=sp) ::  zp2
+
+  eps = 1.0D-14_sp
+  pi = 3.141592653589793_sp
+  w0 = abs ( z )
+  zp = 0.5_sp * pi * z * z
+  zp2 = zp * zp
+  z0 = cmplx ( 0.0_sp, 0.0_sp, kind = sp )
+
+  if ( z == z0 ) then
+
+    s = z0
+
+  else if ( w0 <= 2.5_sp ) then
+
+    s = z * zp / 3.0_sp
+    cr = s
+    do k = 1, 80
+      cr = -0.5_sp * cr * ( 4.0_sp * k - 1.0_sp ) / k &
+        / ( 2.0_sp * k + 1.0_sp ) &
+        / ( 4.0_sp * k + 3.0_sp ) * zp2
+      s = s + cr
+      wb = abs ( s )
+      if ( abs ( wb - wb0 ) < eps .and. 10 < k ) then
+        exit
+      end if
+      wb0 = wb
+    end do
+
+  else if ( 2.5_sp < w0 .and. w0 < 4.5_sp ) then
+
+    m = 85
+    s = z0
+    cf1 = z0
+    cf0 = cmplx ( 1.0D-30_sp, 0.0_sp, kind = sp  )
+    do k = m, 0, -1
+      cf = ( 2.0_sp * k + 3.0_sp ) * cf0 / zp - cf1
+      if ( k /= int ( k / 2 ) * 2 ) then
+        s = s + cf
+      end if
+      cf1 = cf0
+      cf0 = cf
+    end do
+    s = sqrt ( 2.0_sp / ( pi * zp ) ) * sin ( zp ) / cf * s
+
+  else
+
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind = sp  )
+    cf = cmplx ( 1.0_sp, 0.0_sp, kind = sp  )
+    do k = 1, 20
+      cr = -0.25_sp * cr * ( 4.0_sp * k - 1.0_sp ) &
+        * ( 4.0_sp * k - 3.0_sp ) / zp2
+      cf = cf + cr
+    end do
+    cr = 1.0_sp / ( pi * z * z )
+    cg = cr
+    do k = 1, 12
+      cr = -0.25_sp * cr * ( 4.0_sp * k + 1.0_sp ) &
+        * ( 4.0_sp * k - 1.0_sp ) / zp2
+      cg = cg + cr
+    end do
+    s = 0.5_sp - ( cf * cos ( zp ) + cg * sin ( zp ) ) / ( pi * z )
+
+  end if
+
+  zf = s
+  zd = sin ( 0.5_sp * pi * z * z )
+
+  
+end subroutine cfs
+
+
+attributes(device) subroutine cgama ( x, y, kf, gr, gi )
+
+!*****************************************************************************80
+!
+!! CGAMA computes the Gamma function for complex argument.
+!
+!  Discussion:
+!
+!    This procedcure computes the gamma function \E2(z) or ln[\E2(z)]
+!    for a complex argument
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    26 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, Y, the real and imaginary parts of 
+!    the argument Z.
+!
+!    Input, integer(kind=i4) ::  KF, the function code.
+!    0 for ln[\E2(z)]
+!    1 for \E2(z)
+!
+!    Output, real(kind=sp) ::  GR, GI, the real and imaginary parts of
+!    the selected function.
+!
+  implicit none
+
+  real(kind=sp) :: , dimension ( 10 ) :: a = (/ &
+    8.333333333333333e-02_sp, -2.777777777777778e-03_sp, &
+    7.936507936507937e-04_sp, -5.952380952380952e-04_sp, &
+    8.417508417508418e-04_sp, -1.917526917526918e-03_sp, &
+    6.410256410256410e-03_sp, -2.955065359477124e-02_sp, &
+    1.796443723688307e-01_sp, -1.39243221690590_sp /)
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  gi
+  real(kind=sp) ::  gi1
+  real(kind=sp) ::  gr
+  real(kind=sp) ::  gr1
+  integer(kind=i4) ::  j
+  integer(kind=i4) ::  k
+  integer(kind=i4) ::  kf
+  integer(kind=i4) ::  na
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  si
+  real(kind=sp) ::  sr
+  real(kind=sp) ::  t
+  real(kind=sp) ::  th
+  real(kind=sp) ::  th1
+  real(kind=sp) ::  th2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x0
+  real(kind=sp) ::  x1
+  real(kind=sp) ::  y
+  real(kind=sp) ::  y1
+  real(kind=sp) ::  z1
+  real(kind=sp) ::  z2
+
+  pi = 3.141592653589793_sp
+
+  if ( y == 0.0_sp .and. x == int ( x ) .and. x <= 0.0_sp ) then
+    gr = huge(1.0_sp,kind=sp)
+    gi = 0.0_sp
+    return
+  else if ( x < 0.0_sp ) then
+    x1 = x
+    y1 = y
+    x = -x
+    y = -y
+  end if
+
+  x0 = x
+
+  if ( x <= 7.0_sp ) then
+    na = int ( 7 - x )
+    x0 = x + na
+  end if
+
+  z1 = sqrt ( x0 * x0 + y * y )
+  th = atan ( y / x0 )
+  gr = ( x0 - 0.5_sp ) * log ( z1 ) - th * y - x0 &
+    + 0.5_sp * log ( 2.0_sp * pi )
+  gi = th * ( x0 - 0.5_sp ) + y * log ( z1 ) - y
+
+  do k = 1, 10
+    t = z1 ** ( 1 - 2 * k )
+    gr = gr + a(k) * t * cos ( ( 2.0_sp * k - 1.0_sp ) * th )
+    gi = gi - a(k) * t * sin ( ( 2.0_sp * k - 1.0_sp ) * th )
+  end do
+
+  if ( x <= 7.0_sp ) then
+    gr1 = 0.0_sp
+    gi1 = 0.0_sp
+    do j = 0, na - 1
+      gr1 = gr1 + 0.5_sp * log ( ( x + j ) ** 2 + y * y )
+      gi1 = gi1 + atan ( y / ( x + j ) )
+    end do
+    gr = gr - gr1
+    gi = gi - gi1
+  end if
+
+  if ( x1 < 0.0_sp ) then
+    z1 = sqrt ( x * x + y * y )
+    th1 = atan ( y / x )
+    sr = - sin ( pi * x ) * cosh ( pi * y )
+    si = - cos ( pi * x ) * sinh ( pi * y )
+    z2 = sqrt ( sr * sr + si * si )
+    th2 = atan ( si / sr )
+    if ( sr < 0.0_sp ) then
+      th2 = pi + th2
+    end if
+    gr = log ( pi / ( z1 * z2 ) ) - gr
+    gi = - th1 - th2 - gi
+    x = x1
+    y = y1
+  end if
+
+  if ( kf == 1 ) then
+    g0 = exp ( gr )
+    gr = g0 * cos ( gi )
+    gi = g0 * sin ( gi )
+  end if
+
+  
+end subroutine cgama
 
 
 
