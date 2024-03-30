@@ -1,5 +1,6 @@
 !*****************************************************************************************
     module json_mod
+    use mod_kinds, only : i4
 !*****************************************************************************************
 !****h* JSON/json_module
 !
@@ -110,20 +111,20 @@
     character(len=1),parameter :: quotation_mark    = achar(34)
     character(len=1),parameter :: slash             = achar(47)
     character(len=1),parameter :: backslash         = achar(92)  
-    integer,parameter :: N_spaces_in_tab = 4
+    integer(kind=i4),parameter :: N_spaces_in_tab = 4
        
-    character(len=*),parameter :: real_fmt  = '(ES30.14E3)'      !format for real numbers
+    character(len=*),parameter :: real_fmt  = '(ES30.14E3)'      !format for real(kind=sp) numbers
     character(len=*),parameter :: int_fmt   = '(I10)'           !format for integers
 
     ! The types of data:
-    integer,parameter,public :: json_unknown   = 0
-    integer,parameter,public :: json_null      = 1
-    integer,parameter,public :: json_object    = 2
-    integer,parameter,public :: json_array     = 3
-    integer,parameter,public :: json_logical   = 4
-    integer,parameter,public :: json_integer   = 5
-    integer,parameter,public :: json_real      = 6
-    integer,parameter,public :: json_string    = 7
+    integer(kind=i4),parameter,public :: json_unknown   = 0
+    integer(kind=i4),parameter,public :: json_null      = 1
+    integer(kind=i4),parameter,public :: json_object    = 2
+    integer(kind=i4),parameter,public :: json_array     = 3
+    integer(kind=i4),parameter,public :: json_logical   = 4
+    integer(kind=i4),parameter,public :: json_integer   = 5
+    integer(kind=i4),parameter,public :: json_real     = 6
+    integer(kind=i4),parameter,public :: json_string    = 7
 
     !*********************************************************
     !****ic* json_module/json_data_non_polymorphic
@@ -138,11 +139,11 @@
     
         type :: json_data_non_polymorphic
 
-            integer :: var_type = json_unknown
+            integer(kind=i4):: var_type = json_unknown
 
             logical,allocatable             :: log_value
             integer,allocatable             :: int_value
-            real,allocatable            :: dbl_value
+            real(kind=sp),allocatable            :: dbl_value
             character(len=:),allocatable    :: str_value
 
         contains
@@ -229,7 +230,7 @@
 
         !scalars:
         procedure :: get_pointer        => get_object_from_json_file
-        procedure :: get_integer        => get_integer_from_json_file
+        procedure :: get_integer(kind=i4)       => get_integer_from_json_file
         procedure :: get_double         => get_double_from_json_file
         procedure :: get_logical        => get_logical_from_json_file
         procedure :: get_chars          => get_chars_from_json_file
@@ -250,8 +251,8 @@
             import :: json_value
             implicit none
             type(json_value), pointer,intent(in) :: element
-            integer,intent(in) :: i        !index
-            integer,intent(in) :: count    !size of array
+            integer(kind=i4),intent(in) :: i        !index
+            integer(kind=i4),intent(in) :: count    !size of array
         end subroutine array_callback_func
     end interface
     
@@ -302,14 +303,14 @@
     public :: json_value_count           !count the number of children
     public :: json_info                  !get info about a json_value
     public :: to_logical                 !set the data type of a json_value
-    public :: to_integer                 !
+    public :: to_integer(kind=i4)                !
     public :: to_string                  !
-    public :: to_real                    !
+    public :: to_real                   !
     public :: to_null                    !
     public :: to_object                  !
     public :: to_array                   !
     
-    public :: integer_to_string          !basic integer to string routine
+    public :: integer_to_string          !basic integer(kind=i4)to string routine
 
     !exception handling [private variables]
     logical :: exception_thrown = .false.            !the error flag
@@ -317,9 +318,9 @@
     logical,parameter :: print_tracebacks = .false.  !used when debugging
 
     ! POP/PUSH CHARACTER [private variables]
-    integer :: char_count = 0
-    integer :: line_count = 1
-    integer :: pushed_index = 0
+    integer(kind=i4):: char_count = 0
+    integer(kind=i4):: line_count = 1
+    integer(kind=i4):: pushed_index = 0
     character (len = 10) :: pushed_char              !JW : what is this magic number 10??
 
     contains
@@ -440,9 +441,9 @@
     implicit none
 
     class(json_file),intent(inout) :: me
-    integer,intent(in),optional :: iunit  !must be non-zero
+    integer(kind=i4),intent(in),optional :: iunit  !must be non-zero
 
-    integer :: i
+    integer(kind=i4):: i
     character(len=:),allocatable :: dummy
 
     if (present(iunit)) then
@@ -484,9 +485,9 @@
 
     class(json_file),intent(inout) :: me
     character(len=*),intent(in)    :: path
-    logical,intent(out)            :: found
-    integer,intent(out)            :: var_type
-    integer,intent(out)            :: n_children
+    logical(kind=i4),intent(out)            :: found
+    integer(kind=i4),intent(out)            :: var_type
+    integer(kind=i4),intent(out)            :: n_children
 
     type(json_value),pointer :: p
 
@@ -537,8 +538,8 @@
     implicit none
 
     type(json_value),pointer        :: p
-    integer,intent(out),optional    :: var_type
-    integer,intent(out),optional    :: n_children
+    integer(kind=i4),intent(out),optional    :: var_type
+    integer(kind=i4),intent(out),optional    :: n_children
         
     if (present(var_type))    var_type = p%data%var_type        !variable type
     if (present(n_children))  n_children = json_value_count(p)  !number of children
@@ -587,7 +588,7 @@
 !    call me%get(path,val)
 !
 !  DESCRIPTION
-!    Get an integer from a JSON file.
+!    Get an integer(kind=i4)from a JSON file.
 !
 !  AUTHOR
 !    Jacob Williams : 12/9/2013
@@ -600,7 +601,7 @@
 
     class(json_file),intent(inout)    :: me
     character(len=*),intent(in)       :: path
-    integer,intent(out)               :: val
+    integer(kind=i4),intent(out)               :: val
     logical,intent(out),optional      :: found
 
     call json_get(me%p, path=path, value=val, found=found)
@@ -618,7 +619,7 @@
 !    call me%get(path,vec)
 !
 !  DESCRIPTION
-!    Get an integer vector from a JSON file.
+!    Get an integer(kind=i4)vector from a JSON file.
 !
 !  AUTHOR
 !    Jacob Williams : 1/20/2014
@@ -631,7 +632,7 @@
 
     class(json_file),intent(inout)                  :: me
     character(len=*),intent(in)                     :: path
-    integer,dimension(:),allocatable,intent(out)    :: vec
+    integer(kind=i4),dimension(:),allocatable,intent(out)    :: vec
     logical,intent(out),optional                    :: found
 
 
@@ -663,7 +664,7 @@
 
     class(json_file),intent(inout)  :: me
     character(len=*),intent(in)     :: path
-    real,intent(out)            :: val
+    real(kind=sp),intent(out)            :: val
     logical,intent(out),optional    :: found
 
     call json_get(me%p, path=path, value=val, found=found)
@@ -694,7 +695,7 @@
 
     class(json_file),intent(inout)                  :: me
     character(len=*),intent(in)                     :: path
-    real,dimension(:),allocatable,intent(out)   :: vec
+    real(kind=sp),dimension(:),allocatable,intent(out)   :: vec
     logical,intent(out),optional                    :: found
 
     call json_get(me%p, path, vec, found)
@@ -1007,7 +1008,7 @@
 !    Example:
 !        type(json_value),pointer :: var
 !        call json_value_create(var)
-!        call to_real(var,1.0d0)
+!        call to_real(kind=sp)(var,1.0d0)
 !
 !  NOTES
 !    This routine does not check for exceptions.
@@ -1122,13 +1123,13 @@
 !*****************************************************************************************
 
 !*****************************************************************************************
-!****f* json_module/json_value_add_real
+!****f* json_module/json_value_add_real(kind=sp)
 !
 !  NAME
-!    json_value_add_real
+!    json_value_add_real(kind=sp)
 !
 !  DESCRIPTION
-!    Add a real value to the structure.
+!    Add a real(kind=sp) value to the structure.
 !
 !    These routines are part of the public API that can be
 !        used to build a json structure using data.
@@ -1144,7 +1145,7 @@
 
     type(json_value), pointer   :: me
     character(len=*),intent(in) :: name
-    real,intent(in)         :: val
+    real(kind=sp),intent(in)         :: val
 
     type(json_value),pointer :: var
 
@@ -1162,13 +1163,13 @@
 !*****************************************************************************************
 
 !*****************************************************************************************
-!****f* json_module/json_value_add_real_vec
+!****f* json_module/json_value_add_real(kind=sp)_vec
 !
 !  NAME
-!    json_value_add_real_vec
+!    json_value_add_real(kind=sp)_vec
 !
 !  DESCRIPTION
-!    Add a real vector to the structure.
+!    Add a real(kind=sp) vector to the structure.
 !
 !    These routines are part of the public API that can be
 !        used to build a json structure using data.
@@ -1184,10 +1185,10 @@
 
     type(json_value), pointer         :: me
     character(len=*),intent(in)       :: name
-    real,dimension(:),intent(in)  :: val
+    real(kind=sp),dimension(:),intent(in)  :: val
 
     type(json_value),pointer :: var
-    integer :: i
+    integer(kind=i4):: i
 
     !create the variable as an array:
     call json_value_create(var)
@@ -1214,7 +1215,7 @@
 !    json_value_add_integer
 !
 !  DESCRIPTION
-!    Add an integer value to the structure.
+!    Add an integer(kind=i4)value to the structure.
 !
 !    These routines are part of the public API that can be
 !        used to build a json structure using data.
@@ -1230,7 +1231,7 @@
 
     type(json_value), pointer     :: me
     character(len=*),intent(in)   :: name
-    integer,intent(in)            :: val
+    integer(kind=i4),intent(in)            :: val
 
     type(json_value),pointer :: var
 
@@ -1254,7 +1255,7 @@
 !    json_value_add_integer_vec
 !
 !  DESCRIPTION
-!    Add an integer vector to the structure.
+!    Add an integer(kind=i4)vector to the structure.
 !
 !    These routines are part of the public API that can be
 !        used to build a json structure using data.
@@ -1270,10 +1271,10 @@
 
     type(json_value), pointer       :: me
     character(len=*),intent(in)     :: name
-    integer,dimension(:),intent(in) :: val
+    integer(kind=i4),dimension(:),intent(in) :: val
 
     type(json_value),pointer :: var
-    integer :: i    !counter
+    integer(kind=i4):: i    !counter
 
     !create the variable as an array:
     call json_value_create(var)
@@ -1359,7 +1360,7 @@
     logical,dimension(:),intent(in) :: val
 
     type(json_value),pointer :: var
-    integer :: i    !counter
+    integer(kind=i4):: i    !counter
 
     !create the variable as an array:
     call json_value_create(var)
@@ -1444,7 +1445,7 @@
     character(len=*),intent(in)              :: str_in
     character(len=:),allocatable,intent(out) :: str_out
 
-    integer :: i
+    integer(kind=i4):: i
     character(len=1) :: c
 
     str_out = ''
@@ -1504,7 +1505,7 @@
     logical,intent(in),optional              :: adjustl_str
 
     type(json_value),pointer :: var
-    integer :: i
+    integer(kind=i4):: i
     logical :: trim_string, adjustl_string
     character(len=:),allocatable :: str
 
@@ -1564,7 +1565,7 @@
 
     implicit none
 
-    integer :: count
+    integer(kind=i4):: count
     type(json_value),pointer,intent(in) :: this
 
     type(json_value), pointer :: p
@@ -1611,10 +1612,10 @@
     implicit none
 
     type(json_value),pointer,intent(in) :: this
-    integer,intent(in)                  :: idx
+    integer(kind=i4),intent(in)                  :: idx
     type(json_value), pointer           :: p
 
-    integer :: i
+    integer(kind=i4):: i
 
     if (.not. exception_thrown) then
 
@@ -1667,7 +1668,7 @@
     character(len=*),intent(in)         :: name
     type(json_value),pointer            :: p
 
-    integer :: i
+    integer(kind=i4):: i
 
     if (.not. exception_thrown) then
 
@@ -1742,7 +1743,7 @@
     implicit none
     
     type(json_value),pointer,intent(in)  :: me
-    integer,intent(in) :: iunit                   !must be non-zero
+    integer(kind=i4),intent(in) :: iunit                   !must be non-zero
     
     character(len=:),allocatable :: dummy
     
@@ -1776,8 +1777,8 @@
     implicit none
 
     type(json_value),pointer,intent(in)  :: this
-    integer,intent(in)                   :: iunit     !file unit to write to (6=console)
-    integer,intent(in),optional          :: indent
+    integer(kind=i4),intent(in)                   :: iunit     !file unit to write to (6=console)
+    integer(kind=i4),intent(in),optional          :: indent
     logical,intent(in),optional          :: need_comma
     logical,intent(in),optional          :: colon
     character(len=:),intent(inout),allocatable :: str !if iunit==0, then the structure is 
@@ -1786,7 +1787,7 @@
                                                       ! json_value_to_string.
 
     type(json_value), pointer :: element
-    integer :: tab, i, count, spaces
+    integer(kind=i4):: tab, i, count, spaces
     character(len=32) :: tmp    !for val to string conversions
     logical :: print_comma
     logical :: print_spaces
@@ -2021,7 +2022,7 @@
     type(json_value),pointer,intent(out)    :: p
     logical,intent(out),optional            :: found
 
-    integer :: i, length, child_i
+    integer(kind=i4):: i, length, child_i
     character(len=1) :: c
     logical :: array
     type(json_value),pointer :: tmp
@@ -2170,7 +2171,7 @@
 !    Convert a string into an integer.
 !
 !  NOTES
-!    Replacement for the parse_integer function in the original code.
+!    Replacement for the parse_integer(kind=i4)function in the original code.
 !
 !  AUTHOR
 !    Jacob Williams : 12/10/2013 : Rewrote routine.  Added error checking.
@@ -2181,10 +2182,10 @@
 
     implicit none
 
-    integer                     :: ival
+    integer(kind=i4)                    :: ival
     character(len=*),intent(in) :: str
 
-    integer :: ierr
+    integer(kind=i4):: ierr
 
     if (.not. exception_thrown) then
 
@@ -2219,10 +2220,10 @@
 
     implicit none
 
-    real                    :: rval
+    real(kind=sp)                    :: rval
     character(len=*),intent(in) :: str
 
-    integer :: ierr
+    integer(kind=i4):: ierr
 
     if (.not. exception_thrown) then
 
@@ -2246,7 +2247,7 @@
 !    json_get_integer
 !
 !  DESCRIPTION
-!    Get an integer value from an json_value.
+!    Get an integer(kind=i4)value from an json_value.
 !
 !  SOURCE
 
@@ -2256,7 +2257,7 @@
 
     type(json_value),pointer,intent(in)  :: this
     character(len=*),optional            :: path
-    integer,intent(out)                  :: value
+    integer(kind=i4),intent(out)                  :: value
     logical,intent(out),optional         :: found
 
     type(json_value), pointer :: p
@@ -2326,7 +2327,7 @@
 !    json_get_integer_vec
 !
 !  DESCRIPTION
-!    Get an integer vector from a JSON value.
+!    Get an integer(kind=i4)vector from a JSON value.
 !
 !  AUTHOR
 !    Jacob Williams : 5/14/2014
@@ -2339,7 +2340,7 @@
 
     type(json_value), pointer                       :: me
     character(len=*),intent(in)                     :: path
-    integer,dimension(:),allocatable,intent(out)    :: vec
+    integer(kind=i4),dimension(:),allocatable,intent(out)    :: vec
     logical,intent(out),optional                    :: found
 
     logical :: initialized
@@ -2358,8 +2359,8 @@
         implicit none
 
         type(json_value),pointer,intent(in)     :: element
-        integer,intent(in)                      :: i        !index
-        integer,intent(in)                      :: count    !size of array
+        integer(kind=i4),intent(in)                      :: i        !index
+        integer(kind=i4),intent(in)                      :: count    !size of array
 
         !size the output array:
         if (.not. initialized) then
@@ -2393,7 +2394,7 @@
 
     type(json_value), pointer       :: this
     character(len=*), optional      :: path
-    real,intent(out)            :: value
+    real(kind=sp),intent(out)            :: value
     logical,intent(out),optional    :: found
 
     type(json_value), pointer :: p
@@ -2477,7 +2478,7 @@
 
     type(json_value), pointer                       :: me
     character(len=*),intent(in)                     :: path
-    real,dimension(:),allocatable,intent(out)    :: vec
+    real(kind=sp),dimension(:),allocatable,intent(out)    :: vec
     logical,intent(out),optional                    :: found
 
     logical :: initialized
@@ -2496,8 +2497,8 @@
         implicit none
 
         type(json_value),pointer,intent(in)     :: element
-        integer,intent(in)                      :: i        !index
-        integer,intent(in)                      :: count    !size of array
+        integer(kind=i4),intent(in)                      :: i        !index
+        integer(kind=i4),intent(in)                      :: count    !size of array
 
         !size the output array:
         if (.not. initialized) then
@@ -2666,7 +2667,7 @@
 
     type(json_value), pointer :: p
     character(len=:),allocatable :: s,pre,post
-    integer :: j,jprev,n
+    integer(kind=i4):: j,jprev,n
     character(len=1) :: c
 
     if (.not. exception_thrown) then
@@ -2895,8 +2896,8 @@
         implicit none
 
         type(json_value),pointer,intent(in)  :: element
-        integer,intent(in)                   :: i        !index
-        integer,intent(in)                   :: count    !size of array
+        integer(kind=i4),intent(in)                   :: i        !index
+        integer(kind=i4),intent(in)                   :: count    !size of array
 
         character(len=:),allocatable :: cval
 
@@ -2943,7 +2944,7 @@
     logical,intent(out),optional         :: found
 
     type(json_value), pointer :: element,p
-    integer :: i, count
+    integer(kind=i4):: i, count
 
     if (.not. exception_thrown) then
 
@@ -3020,9 +3021,9 @@
 
     character(len=*),intent(in) :: file
     type(json_value),pointer    :: p
-    integer,intent(in),optional :: unit
+    integer(kind=i4),intent(in),optional :: unit
 
-    integer :: iunit, istat
+    integer(kind=i4):: iunit, istat
     character(len=:),allocatable :: line, arrow_str
     character(len=10) :: line_str, char_str
     logical :: is_open
@@ -3128,14 +3129,14 @@
     
     implicit none
     
-    integer,intent(in)    :: iunit
+    integer(kind=i4),intent(in)    :: iunit
     character(len=:),allocatable,intent(out)    :: line
     
-    integer,parameter           :: n_chunk = 256      !chunk size [arbitrary]
+    integer(kind=i4),parameter           :: n_chunk = 256      !chunk size [arbitrary]
     character(len=*),parameter  :: nfmt = '(A256)'    !corresponding format statement
     
     character(len=n_chunk) :: chunk
-    integer :: istat,isize
+    integer(kind=i4):: istat,isize
     
     !initialize:
     line = ''
@@ -3175,7 +3176,7 @@
 
     implicit none
 
-    integer, intent(in)       :: unit
+    integer(kind=i4), intent(in)       :: unit
     type(json_value), pointer :: value
 
     logical :: eof
@@ -3329,7 +3330,7 @@
 
     type(json_value), intent(inout)        :: me
     character(len=*),intent(in),optional   :: name
-    integer,intent(in),optional            :: val
+    integer(kind=i4),intent(in),optional            :: val
 
     !set type and value:
     !associate (d => me%data)
@@ -3350,10 +3351,10 @@
 !*****************************************************************************************
 
 !*****************************************************************************************
-!****f* json_module/to_real
+!****f* json_module/to_real(kind=sp)
 !
 !  NAME
-!    to_real
+!    to_real(kind=sp)
 !
 !  DESCRIPTION
 !    Change the variable to a double.
@@ -3369,7 +3370,7 @@
 
     type(json_value), intent(inout)        :: me
     character(len=*),intent(in),optional   :: name
-    real,intent(in),optional           :: val
+    real(kind=sp),intent(in),optional           :: val
 
     !set type and value:
     !associate (d => me%data)
@@ -3542,7 +3543,7 @@
 
     implicit none
 
-    integer, intent(in)       :: unit
+    integer(kind=i4), intent(in)       :: unit
     type(json_value), pointer :: parent
 
     type(json_value), pointer :: pair
@@ -3652,7 +3653,7 @@
 
     implicit none
 
-    integer, intent(in)       :: unit
+    integer(kind=i4), intent(in)       :: unit
     type(json_value), pointer :: array
 
     type(json_value), pointer :: element
@@ -3710,13 +3711,13 @@
 
     implicit none
 
-    integer, intent(in)                      :: unit
+    integer(kind=i4), intent(in)                      :: unit
     character(len=:),allocatable,intent(out) :: string
 
     logical :: eof, is_hex, escape
     character(len=1) :: c, last
     character(len=4) :: hex
-    integer :: i
+    integer(kind=i4):: i
     
     !at least return a blank string if there is a problem:
     string = '' 
@@ -3807,10 +3808,10 @@
 
     implicit none
 
-    integer, intent(in)            :: unit
+    integer(kind=i4), intent(in)            :: unit
     character(len = *), intent(in) :: chars
 
-    integer :: i, length
+    integer(kind=i4):: i, length
     logical :: eof
     character(len=1) :: c
 
@@ -3843,7 +3844,7 @@
 !
 !  DESCRIPTION
 !    Read a numerical value from the file.
-!    The routine will determine if it is an integer or a double, and
+!    The routine will determine if it is an integer(kind=i4)or a double, and
 !    allocate the type accordingly.
 !
 !  NOTES
@@ -3858,14 +3859,14 @@
 
     implicit none
 
-    integer, intent(in)       :: unit
+    integer(kind=i4), intent(in)       :: unit
     type(json_value), pointer :: value
 
     character(len=:),allocatable :: str
     character(len=1) :: c
     logical :: eof
-    real :: rval
-    integer :: ival
+    real(kind=sp) :: rval
+    integer(kind=i4):: ival
     logical :: first
     logical :: is_integer
 
@@ -3873,7 +3874,7 @@
 
         str = ''
         first = .true.
-        is_integer = .true.    !assume it may be an integer,unless otherwise determined
+        is_integer(kind=i4)= .true.    !assume it may be an integer,unless otherwise determined
 
         !read one character at a time and accumulate the string:
         do
@@ -3890,14 +3891,14 @@
                 select case (c)
                 case('-','+')    !note: allowing a '+' as the first character here.
 
-                    if (is_integer .and. (.not. first)) is_integer = .false.
+                    if (is_integer(kind=i4).and. (.not. first)) is_integer(kind=i4)= .false.
 
                     !add it to the string:
                     str = str // c
 
-                case('.','E','e')    !can be present in real numbers
+                case('.','E','e')    !can be present in real(kind=sp) numbers
 
-                    if (is_integer) is_integer = .false.
+                    if (is_integer) is_integer(kind=i4)= .false.
 
                     !add it to the string:
                     str = str // c
@@ -3958,11 +3959,11 @@
     implicit none
 
     character(len=1)              :: popped
-    integer, intent(in)           :: unit
+    integer(kind=i4), intent(in)           :: unit
     logical, intent(out)          :: eof
     logical, intent(in), optional :: skip_ws
 
-    integer :: ios
+    integer(kind=i4):: ios
     character(len=1) :: c
     logical :: ignore
 
@@ -4071,7 +4072,7 @@
 !    integer_to_string
 !
 !  DESCRIPTION
-!    Convert an integer to a string.
+!    Convert an integer(kind=i4)to a string.
 !
 !  AUTHOR
 !    Jacob Williams : 12/4/2013
@@ -4082,10 +4083,10 @@
 
     implicit none
 
-    integer,intent(in)           :: ival
+    integer(kind=i4),intent(in)           :: ival
     character(len=*),intent(out) :: str
 
-    integer :: istat
+    integer(kind=i4):: istat
 
     write(str,fmt=int_fmt,iostat=istat) ival
 
@@ -4099,13 +4100,13 @@
 !*****************************************************************************************
 
 !*****************************************************************************************
-!****if* json_module/real_to_string
+!****if* json_module/real(kind=sp)_to_string
 !
 !  NAME
-!    real_to_string
+!    real(kind=sp)_to_string
 !
 !  DESCRIPTION
-!    Convert a real value to a string.
+!    Convert a real(kind=sp) value to a string.
 !
 !  AUTHOR
 !    Jacob Williams : 12/4/2013
@@ -4116,10 +4117,10 @@
 
     implicit none
 
-    real,intent(in)          :: rval
+    real(kind=sp),intent(in)          :: rval
     character(len=*),intent(out) :: str
 
-    integer :: istat
+    integer(kind=i4):: istat
 
     write(str,fmt=real_fmt,iostat=istat) rval
 
@@ -4159,7 +4160,7 @@
     character(len=*),intent(in) :: str
     logical :: valid
     
-    integer :: n,i
+    integer(kind=i4):: n,i
     
     !an array of the valid hex characters:
     character(len=1),dimension(16),parameter :: valid_chars = &
