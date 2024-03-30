@@ -1,5 +1,28 @@
-module flow_mod
 
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
+
+module flow_mod
+    ! ************Slightly modified by Bernard Gingold, 30/03/2024, 10:20AM**************
+    use mod_kinds, only : i4,sp
     use json_mod
     use json_xtnsn_mod
     use math_mod
@@ -10,23 +33,23 @@ module flow_mod
     
     type flow
 
-        real,dimension(:),allocatable :: v_inf ! Freestream velocity
-        real :: M_inf ! Freestream Mach number
-        real :: gamma ! Ratio of specific heats
-        real :: U, U_inv ! Freestream velocity magnitude
-        real :: B ! Compressibility scale factor
-        real :: s ! Sign of 1-M^2; determines character of governing PDE (hyperbolic (s=-1) vs elliptic(s=1))
-        real :: c ! Freestream speed of sound
-        real :: mu, C_mu ! Mach angle
-        real :: K, K_inv ! Kappa factor
-        real,dimension(3) :: c_hat_g ! Compressibility axis (assumed in MachLine to be aligned with the freestream direction)
+        real(kind=sp),dimension(:),allocatable :: v_inf ! Freestream velocity
+        real(kind=sp) :: M_inf ! Freestream Mach number
+        real(kind=sp) :: gamma ! Ratio of specific heats
+        real(kind=sp) :: U, U_inv ! Freestream velocity magnitude
+        real(kind=sp) :: B ! Compressibility scale factor
+        real(kind=sp) :: s ! Sign of 1-M^2; determines character of governing PDE (hyperbolic (s=-1) vs elliptic(s=1))
+        real(kind=sp) :: c ! Freestream speed of sound
+        real(kind=sp) :: mu, C_mu ! Mach angle
+        real(kind=sp) :: K, K_inv ! Kappa factor
+        real(kind=sp),dimension(3) :: c_hat_g ! Compressibility axis (assumed in MachLine to be aligned with the freestream direction)
         logical,dimension(3) :: sym_about ! Whether the flow condition is symmetric about any plane
-        real,dimension(3,3) :: B_mat_g, B_mat_c, B_mat_g_inv ! Dual metric matrix
-        real,dimension(3,3) :: C_mat_g, C_mat_c ! Metric matrix
+        real(kind=sp),dimension(3,3) :: B_mat_g, B_mat_c, B_mat_g_inv ! Dual metric matrix
+        real(kind=sp),dimension(3,3) :: C_mat_g, C_mat_c ! Metric matrix
         logical :: supersonic, incompressible
-        real,dimension(3,3) :: A_g_to_c, A_c_to_s, A_g_to_s ! Coordinate transformation matrices
-        real :: a_ise, b_ise, c_ise ! Constant parameters for isentropic pressure coefficient calculations
-        real :: C_P_vac, C_P_stag ! Vacuum and stagnation pressure coefficients for this flow
+        real(kind=sp),dimension(3,3) :: A_g_to_c, A_c_to_s, A_g_to_s ! Coordinate transformation matrices
+        real(kind=sp) :: a_ise, b_ise, c_ise ! Constant parameters for isentropic pressure coefficient calculations
+        real(kind=sp) :: C_P_vac, C_P_stag ! Vacuum and stagnation pressure coefficients for this flow
 
         contains
 
@@ -66,81 +89,81 @@ contains
         logical :: found
 
         ! Get flow params
-        call json_get(settings, 'freestream_velocity', this%v_inf, found)
+        call json_get(settings, 'freestream_velocity', this.v_inf, found)
         if (.not. found) then
             write(*,*) "!!! Freestream velocity was not specified. Quitting..."
             stop
         end if
-        call json_xtnsn_get(settings, 'freestream_mach_number', this%M_inf, 0.)
-        call json_xtnsn_get(settings, 'gamma', this%gamma, 1.4)
+        call json_xtnsn_get(settings, 'freestream_mach_number', this.M_inf, 0.)
+        call json_xtnsn_get(settings, 'gamma', this.gamma, 1.4)
 
         ! Check for positive Mach number (idiot-proofing)
-        if (this%M_inf < 0.) then
+        if (this.M_inf < 0.) then
             write(*,*) "!!! Invalid freestream Mach number selected. Cannot be a negative number. Quitting..."
             stop
         end if
 
         ! Check symmetry
-        this%sym_about = this%v_inf == 0.
+        this.sym_about = this.v_inf == 0.
 
         ! Derived quantities
-        this%U = norm2(this%v_inf)
-        this%U_inv = 1./this%U
-        this%c_hat_g = this%v_inf*this%U_inv
+        this.U = norm2(this.v_inf)
+        this.U_inv = 1./this.U
+        this.c_hat_g = this.v_inf*this.U_inv
 
         ! Determine condition
-        if (this%M_inf == 1.) then
+        if (this.M_inf == 1.) then
             write(*,*) "!!! A freestream Mach number of 1.0 is not allowed in MachLine. Quitting..."
             stop
         end if
-        this%supersonic = this%M_inf > 1.0
-        this%incompressible = this%M_inf == 0.
+        this.supersonic = this.M_inf > 1.0
+        this.incompressible = this.M_inf == 0.
 
         ! Calculate B and s
-        if (this%supersonic) then
-            this%B = sqrt(this%M_inf**2 - 1.)
-            this%s = -1.
-            this%K = 2.*pi
+        if (this.supersonic) then
+            this.B = sqrt(this.M_inf**2 - 1.)
+            this.s = -1.
+            this.K = 2.*pi
         else
-            this%B = sqrt(1. - this%M_inf**2)
-            this%s = 1.
-            this%K = 4.*pi
+            this.B = sqrt(1. - this.M_inf**2)
+            this.s = 1.
+            this.K = 4.*pi
         end if
-        this%K_inv = 1./this%K
+        this.K_inv = 1./this.K
 
         ! Calculate freestream speed of sound
-        this%c = this%M_inf*this%U
+        this.c = this.M_inf*this.U
 
         ! Calculate Mach angle (if supersonic; it is meaningless otherwise)
-        if (this%supersonic) then
-            this%mu = asin(1.0/this%M_inf)
-            this%C_mu = cos(this%mu)
+        if (this.supersonic) then
+            this.mu = asin(1.0/this.M_inf)
+            this.C_mu = cos(this.mu)
         end if
 
         ! Calculate relevant matrices
-        call this%calc_metric_matrices()
-        call this%calc_transforms(spanwise_axis)
+        call this.calc_metric_matrices()
+        call this.calc_transforms(spanwise_axis)
 
-        if (.not. this%incompressible) then
+        if (.not. this.incompressible) then
 
             ! Parameters for calculating isentropic pressure coefficients
-            this%a_ise = 2./(this%gamma*this%M_inf**2)
-            this%b_ise = 0.5*(this%gamma-1.)*this%M_inf**2
-            this%c_ise = this%gamma/(this%gamma-1.)
+            this.a_ise = 2./(this.gamma*this.M_inf**2)
+            this.b_ise = 0.5*(this.gamma-1.)*this.M_inf**2
+            this.c_ise = this.gamma/(this.gamma-1.)
         
             ! Vacuum pressure coefficient
-            this%C_P_vac = -this%a_ise
+            this.C_P_vac = -this.a_ise
 
             ! Stagnation pressure coefficient
-            this%C_P_stag = this%a_ise*((1. + this%b_ise)**this%c_ise - 1.)
+            this.C_P_stag = this.a_ise*((1. + this.b_ise)**this.c_ise - 1.)
 
         else
 
             ! Vacuum pressure coefficient (non-physical) (but then again, so are incompressible flows)
-            this%C_P_vac = -huge(this%C_P_vac)
+            this.C_P_vac = -huge(this.C_P_vac)
 
             ! Stagnation pressure coefficient
-            this%C_P_stag = 1.
+            this.C_P_stag = 1.
 
         end if
 
@@ -153,36 +176,36 @@ contains
 
         class(flow),intent(inout) :: this
 
-        integer :: i
+        integer(kind=i4):: i
 
         ! Assemble dual metric matrix
         ! Global (E&M Eq. (E.3.9))
         do i=1,3
-            this%B_mat_g(i,i) = 1.
+            this.B_mat_g(i,i) = 1.
         end do
-        this%B_mat_g = this%B_mat_g - this%M_inf**2*outer(this%c_hat_g, this%c_hat_g)
+        this.B_mat_g = this.B_mat_g - this.M_inf**2*outer(this.c_hat_g, this.c_hat_g)
 
         ! Invert (used for source-free formulation)
-        call matinv(3, this%B_mat_g, this%B_mat_g_inv)
+        call matinv(3, this.B_mat_g, this.B_mat_g_inv)
 
         ! Compressible (E&M Eq. (E.3.8))
-        this%B_mat_c = 0.
-        this%B_mat_c(1,1) = this%s*this%B**2
-        this%B_mat_c(2,2) = 1.
-        this%B_mat_c(3,3) = 1.
+        this.B_mat_c = 0.
+        this.B_mat_c(1,1) = this.s*this.B**2
+        this.B_mat_c(2,2) = 1.
+        this.B_mat_c(3,3) = 1.
         
         ! Assemble metric matrix
         ! Global (E&M Eq. (E.3.9))
         do i=1,3
-            this%C_mat_g(i,i) = 1.-this%M_inf**2
+            this.C_mat_g(i,i) = 1.-this.M_inf**2
         end do
-        this%C_mat_g = this%C_mat_g + this%M_inf**2*outer(this%c_hat_g, this%c_hat_g)
+        this.C_mat_g = this.C_mat_g + this.M_inf**2*outer(this.c_hat_g, this.c_hat_g)
 
         ! Compressible (E&M Eq. (E.3.8))
-        this%C_mat_c = 0.
-        this%C_mat_c(1,1) = 1.
-        this%C_mat_c(2,2) = this%s*this%B**2
-        this%C_mat_c(3,3) = this%s*this%B**2
+        this.C_mat_c = 0.
+        this.C_mat_c(1,1) = 1.
+        this.C_mat_c(2,2) = this.s*this.B**2
+        this.C_mat_c(3,3) = this.s*this.B**2
     
     end subroutine flow_calc_metric_matrices
 
@@ -194,7 +217,7 @@ contains
         class(flow),intent(inout) :: this
         character(len=:),allocatable,intent(in) :: spanwise_axis
 
-        real,dimension(3) :: j_g, c_hat_c
+        real(kind=sp),dimension(3) :: j_g, c_hat_c
 
         ! Set positive spanwise axis
         j_g = 0.
@@ -224,21 +247,21 @@ contains
         end select
 
         ! Calculate transform from global to compressible coordinates
-        this%A_g_to_c = 0.
-        this%A_g_to_c(1,:) = this%c_hat_g
-        this%A_g_to_c(3,:) = cross(this%c_hat_g, j_g)
-        this%A_g_to_c(3,:) = this%A_g_to_c(3,:)/norm2(this%A_g_to_c(3,:))
-        this%A_g_to_c(2,:) = cross(this%A_g_to_c(3,:), this%c_hat_g)
+        this.A_g_to_c = 0.
+        this.A_g_to_c(1,:) = this.c_hat_g
+        this.A_g_to_c(3,:) = cross(this.c_hat_g, j_g)
+        this.A_g_to_c(3,:) = this.A_g_to_c(3,:)/norm2(this.A_g_to_c(3,:))
+        this.A_g_to_c(2,:) = cross(this.A_g_to_c(3,:), this.c_hat_g)
 
         ! Calculate transform from compressible to scaled coordinates
-        this%A_c_to_s = 0.
-        this%A_c_to_s(1,1) = 1.
-        this%A_c_to_s(2,2) = this%B
-        this%A_c_to_s(3,3) = this%B
+        this.A_c_to_s = 0.
+        this.A_c_to_s(1,1) = 1.
+        this.A_c_to_s(2,2) = this.B
+        this.A_c_to_s(3,3) = this.B
 
         ! Check calculation
         if (run_checks) then
-            c_hat_c = matmul(this%A_g_to_c, this%c_hat_g)
+            c_hat_c = matmul(this.A_g_to_c, this.c_hat_g)
             if (abs(c_hat_c(1)-1.)>1e-12 .or. abs(c_hat_c(2))>1e-12 .or. abs(c_hat_c(3))>1e-12) then
                 write(*,*) "!!! Transformation to the compressible coordinate system failed. Quitting..."
                 stop
@@ -246,7 +269,7 @@ contains
         end if
 
         ! Calculate transform from global to scaled coordinates
-        this%A_g_to_s = matmul(this%A_c_to_s, this%A_g_to_c)
+        this.A_g_to_s = matmul(this.A_c_to_s, this.A_g_to_c)
 
     end subroutine flow_calc_transforms
 
@@ -257,10 +280,10 @@ contains
         implicit none
 
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: a, b
-        real :: c
+        real(kind=sp),dimension(3),intent(in) :: a, b
+        real(kind=sp) :: c
 
-        c = inner(a, matmul(this%B_mat_g, b))
+        c = inner(a, matmul(this.B_mat_g, b))
 
     end function flow_B_g_inner
 
@@ -271,10 +294,10 @@ contains
         implicit none
 
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: a, b
-        real :: c
+        real(kind=sp),dimension(3),intent(in) :: a, b
+        real(kind=sp) :: c
 
-        c = inner(a, matmul(this%C_mat_g, b))
+        c = inner(a, matmul(this.C_mat_g, b))
 
     end function flow_C_g_inner
 
@@ -285,10 +308,10 @@ contains
         implicit none
 
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: Q, P
+        real(kind=sp),dimension(3),intent(in) :: Q, P
         logical :: in_dod
 
-        real,dimension(3) :: d
+        real(kind=sp),dimension(3) :: d
 
         in_dod = .false.
 
@@ -296,10 +319,10 @@ contains
         d = P-Q
 
         ! Check upstream
-        if (inner(d, this%c_hat_g) >= 0.) then ! E&M Eq. (J.3.1)
+        if (inner(d, this.c_hat_g) >= 0.) then ! E&M Eq. (J.3.1)
 
             ! Check in dod
-            if (this%C_g_inner(d, d) >= 0.) then ! E&M Eq. (J.3.2)
+            if (this.C_g_inner(d, d) >= 0.) then ! E&M Eq. (J.3.2)
 
                 in_dod = .true.
 
@@ -316,11 +339,11 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real :: C_P_inc
+        real(kind=sp) :: C_P_inc
 
-        C_P_inc = 1.-inner(v, v)*this%U_inv*this%U_inv
+        C_P_inc = 1.-inner(v, v)*this.U_inv*this.U_inv
         
     end function flow_get_C_P_inc
 
@@ -331,16 +354,16 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real :: C_P_ise
+        real(kind=sp) :: C_P_ise
 
         ! Calculate
-        C_P_ise = this%get_C_P_inc(v)
-        C_P_ise = this%a_ise*( (1. + this%b_ise*C_P_ise)**this%c_ise - 1.)
+        C_P_ise = this.get_C_P_inc(v)
+        C_P_ise = this.a_ise*( (1. + this.b_ise*C_P_ise)**this.c_ise - 1.)
 
         ! Check for NaN
-        if (isnan(C_P_ise)) C_P_ise = this%C_P_vac
+        if (isnan(C_P_ise)) C_P_ise = this.C_P_vac
         
     end function flow_get_C_P_ise
 
@@ -351,11 +374,11 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real,dimension(3) :: v_pert_c
+        real(kind=sp),dimension(3) :: v_pert_c
 
-        v_pert_c = matmul(this%A_g_to_c, v - this%v_inf)
+        v_pert_c = matmul(this.A_g_to_c, v - this.v_inf)
         
     end function flow_get_v_pert_c
 
@@ -366,20 +389,20 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real :: C_P_2nd
+        real(kind=sp) :: C_P_2nd
 
-        real :: C_P_sln
-        real,dimension(3) :: v_pert_c
+        real(kind=sp) :: C_P_sln
+        real(kind=sp),dimension(3) :: v_pert_c
 
         ! Get prerequisites
-        C_P_sln = this%get_C_P_sln(v)
-        v_pert_c = this%get_v_pert_c(v)
+        C_P_sln = this.get_C_P_sln(v)
+        v_pert_c = this.get_v_pert_c(v)
 
         ! Calculate
-        C_P_2nd = C_P_sln - (1.-this%M_inf**2)*v_pert_c(1)**2*this%U_inv**2
-        call this%restrict_pressure(C_P_2nd)
+        C_P_2nd = C_P_sln - (1.-this.M_inf**2)*v_pert_c(1)**2*this.U_inv**2
+        call this.restrict_pressure(C_P_2nd)
         
     end function flow_get_C_P_2nd
 
@@ -390,19 +413,19 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real :: C_P_sln
+        real(kind=sp) :: C_P_sln
 
-        real :: C_P_lin
-        real,dimension(3) :: v_pert_c
+        real(kind=sp) :: C_P_lin
+        real(kind=sp),dimension(3) :: v_pert_c
 
         ! Get prerequisites
-        C_P_lin = this%get_C_P_lin(v)
-        v_pert_c = this%get_v_pert_c(v)
+        C_P_lin = this.get_C_P_lin(v)
+        v_pert_c = this.get_v_pert_c(v)
 
-        C_P_sln = C_P_lin - (v_pert_c(2)**2 + v_pert_c(3)**2)*this%U_inv**2
-        call this%restrict_pressure(C_P_sln)
+        C_P_sln = C_P_lin - (v_pert_c(2)**2 + v_pert_c(3)**2)*this.U_inv**2
+        call this.restrict_pressure(C_P_sln)
         
     end function flow_get_C_P_sln
 
@@ -413,17 +436,17 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
 
-        real :: C_P_lin
+        real(kind=sp) :: C_P_lin
 
-        real,dimension(3) :: v_pert_c
+        real(kind=sp),dimension(3) :: v_pert_c
 
         ! Get prerequisites
-        v_pert_c = this%get_v_pert_c(v)
+        v_pert_c = this.get_v_pert_c(v)
 
-        C_P_lin = -2.*v_pert_c(1)*this%U_inv
-        call this%restrict_pressure(C_P_lin)
+        C_P_lin = -2.*v_pert_c(1)*this.U_inv
+        call this.restrict_pressure(C_P_lin)
         
     end function flow_get_C_P_lin
 
@@ -434,18 +457,18 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,intent(in) :: M
+        real(kind=sp),intent(in) :: M
 
-        real :: C_P_crit
+        real(kind=sp) :: C_P_crit
 
-        real :: x, n, d, M2
+        real(kind=sp) :: x, n, d, M2
 
         ! Modern Compressible Flow by John Anderson Eq. (9.55)
         M2 = M*M
-        x = 0.5*(this%gamma - 1.)
+        x = 0.5*(this.gamma - 1.)
         n = 1. + x*M2
         d = 1. + x
-        C_P_crit = 2./(this%gamma*M2)*((n/d)**(this%gamma/(this%gamma-1.)) - 1.)
+        C_P_crit = 2./(this.gamma*M2)*((n/d)**(this.gamma/(this.gamma-1.)) - 1.)
         
     end function flow_get_C_P_crit
 
@@ -456,9 +479,9 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,intent(in) :: C_P_inc, M_corr
+        real(kind=sp),intent(in) :: C_P_inc, M_corr
 
-        real :: C_P_PG
+        real(kind=sp) :: C_P_PG
 
         ! Modern Compressible Flow by John Anderson Eq. (9.36)
         C_P_PG = C_P_inc / sqrt(1. - M_corr*M_corr)
@@ -472,11 +495,11 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,intent(in) :: C_P_inc, M_corr
+        real(kind=sp),intent(in) :: C_P_inc, M_corr
 
-        real :: C_P_KT
+        real(kind=sp) :: C_P_KT
 
-        real :: x, M2, sM2
+        real(kind=sp) :: x, M2, sM2
             
         ! Modern Compressible Flow by John Anderson Eq. (9.40)
         M2 = M_corr*M_corr
@@ -493,16 +516,16 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,intent(in) :: C_P_inc, M_corr
+        real(kind=sp),intent(in) :: C_P_inc, M_corr
 
-        real :: C_P_L
+        real(kind=sp) :: C_P_L
 
-        real :: x, M2, sM2
+        real(kind=sp) :: x, M2, sM2
             
         ! Modern Compressible Flow by John Anderson Eq. (9.39)
         M2 = M_corr*M_corr
         sM2 = sqrt(1. - M2)
-        x = M2 * (1. + (0.5 * (this%gamma - 1.) * M2)) / (2 * sM2)
+        x = M2 * (1. + (0.5 * (this.gamma - 1.) * M2)) / (2 * sM2)
         C_P_L = C_P_inc / (sM2 + (x * C_P_inc))
 
     end function flow_correct_C_P_L
@@ -514,12 +537,12 @@ contains
         implicit none
         
         class(flow), intent(in) :: this
-        real, intent(inout) :: C_P
+        real(kind=sp), intent(inout) :: C_P
         
-        if (C_P > this%C_P_stag) then
-            C_P = this%C_P_stag
-        else if (C_P < this%C_P_vac) then
-            C_P = this%C_P_vac
+        if (C_P > this.C_P_stag) then
+            C_P = this.C_P_stag
+        else if (C_P < this.C_P_vac) then
+            C_P = this.C_P_vac
         end if
         
     end subroutine flow_restrict_pressure
@@ -532,18 +555,18 @@ contains
         implicit none
         
         class(flow),intent(in) :: this
-        real,dimension(3),intent(in) :: v
+        real(kind=sp),dimension(3),intent(in) :: v
         character(len=*),intent(in),optional :: rule
-        real,intent(in),optional :: M_corr
+        real(kind=sp),intent(in),optional :: M_corr
 
-        real :: C_P
+        real(kind=sp) :: C_P
         character(len=:),allocatable :: pressure_rule
 
         ! Get pressure rule
         if (present(rule)) then
             pressure_rule = rule
         else
-            if (this%M_inf == 0.) then
+            if (this.M_inf == 0.) then
                 pressure_rule = "incompressible"
             else
                 pressure_rule = "isentropic"
@@ -554,31 +577,31 @@ contains
         select case (pressure_rule)
 
         case ("incompressible")
-            C_P = this%get_C_P_inc(v)
+            C_P = this.get_C_P_inc(v)
 
         case ("isentropic")
-            C_P = this%get_C_P_ise(v)
+            C_P = this.get_C_P_ise(v)
 
         case ("second-order")
-            C_P = this%get_C_P_2nd(v)
+            C_P = this.get_C_P_2nd(v)
 
         case ("slender-body")
-            C_P = this%get_C_P_sln(v)
+            C_P = this.get_C_P_sln(v)
 
         case ("linear")
-            C_P = this%get_C_P_lin(v)
+            C_P = this.get_C_P_lin(v)
 
         case ("prandtl-glauert")
-            C_P = this%get_C_P_inc(v)
-            C_P = this%correct_C_P_PG(C_P, M_corr)
+            C_P = this.get_C_P_inc(v)
+            C_P = this.correct_C_P_PG(C_P, M_corr)
 
         case ("karman-tsien")
-            C_P = this%get_C_P_inc(v)
-            C_P = this%correct_C_P_KT(C_P, M_corr)
+            C_P = this.get_C_P_inc(v)
+            C_P = this.correct_C_P_KT(C_P, M_corr)
 
         case ("laitone")
-            C_P = this%get_C_P_inc(v)
-            C_P = this%correct_C_P_L(C_P, M_corr)
+            C_P = this.get_C_P_inc(v)
+            C_P = this.correct_C_P_L(C_P, M_corr)
 
         end select
         
