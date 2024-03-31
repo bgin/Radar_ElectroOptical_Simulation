@@ -1,6 +1,32 @@
+
+! Types for the most basic geometric objects
+
+!MIT License
+
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
 ! Extends the original JSON module for usability
 module json_xtnsn_mod
-
+    
+    use mod_kinds, only : sp
     use json_mod
     implicit none
 
@@ -20,8 +46,8 @@ contains
         implicit none
         type(json_value),intent(in),pointer :: json
         character(len=*), intent(in) :: name
-        real, intent(out) :: value
-        real, intent(in), optional :: default_value
+        real(kind=sp), intent(out) :: value
+        real(kind=sp), intent(in), optional :: default_value
     
         call json_get(json, name, value, json_found)
         if(json_failed() .or. (.not. json_found)) then
@@ -103,8 +129,8 @@ contains
         implicit none
         type(json_file) :: json
         character(len=*), intent(in) :: name
-        real, intent(out) :: value
-        real, intent(in), optional :: default_value
+        real(kind=sp), intent(out) :: value
+        real(kind=sp), intent(in), optional :: default_value
     
         call json%get(name, value)
         if(json_failed()) then
