@@ -1,6 +1,31 @@
+
+! Types for the most basic geometric objects
+
+!MIT License
+
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
 ! Linear algebra subroutines
 module linalg_mod
-
+      ! ************Slightly modified by Bernard Gingold, 31/03/2024, 08:32AM**************
+    use mod_kinds, only : i4,sp
     implicit none
     
 contains
@@ -8,21 +33,21 @@ contains
 
 subroutine matinv(n, a, ai)
       ! This sobroutine inverts a matrix "a" and returns the inverse in "ai"
-      ! n  - Input by user, an integer specifying the size of the matrix to be inverted.
-      ! a  - Input by user, an n by n real array containing the matrix to be inverted.
-      ! ai - Returned by subroutine, an n by n real array containing the inverted matrix.
-      ! d  - Work array, an n by 2n real array used by the subroutine.
-      ! io - Work array, a 1-dimensional integer array of length n used by the subroutine.
+      ! n  - Input by user, an integer(kind=i4)specifying the size of the matrix to be inverted.
+      ! a  - Input by user, an n by n real(kind=sp) array containing the matrix to be inverted.
+      ! ai - Returned by subroutine, an n by n real(kind=sp) array containing the inverted matrix.
+      ! d  - Work array, an n by 2n real(kind=sp) array used by the subroutine.
+      ! io - Work array, a 1-dimensional integer(kind=i4)array of length n used by the subroutine.
 
       ! NEVER INVERT A MARTIX EXPLICITLY!
       ! Unless you know what you're doing. It's okay for small (N<10) matrices that are well-conditioned.
 
       implicit none
 
-      integer :: n,i,j,k,m,itmp
-      real :: a(n,n),ai(n,n),tmp,r
-      real,allocatable,dimension(:,:) :: d
-      integer,allocatable,dimension(:) :: io
+      integer(kind=i4):: n,i,j,k,m,itmp
+      real(kind=sp) :: a(n,n),ai(n,n),tmp,r
+      real(kind=sp),allocatable,dimension(:,:) :: d
+      integer(kind=i4),allocatable,dimension(:) :: io
 
       allocate(d(n,2*n))
       allocate(io(n))
@@ -121,13 +146,13 @@ subroutine lu_solve(N, A, b, x)
 
     implicit none
 
-    integer,intent(in) :: N
-    real,dimension(N,N),intent(inout) :: A
-    real,dimension(N),intent(in) :: b
-    real,dimension(:),allocatable,intent(out) :: x
+    integer(kind=i4),intent(in) :: N
+    real(kind=sp),dimension(N,N),intent(inout) :: A
+    real(kind=sp),dimension(N),intent(in) :: b
+    real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-    integer,allocatable,dimension(:) :: indx
-    integer :: D, info
+    integer(kind=i4),allocatable,dimension(:) :: indx
+    integer(kind=i4):: D, info
 
     allocate(indx(N))
 
@@ -175,15 +200,15 @@ subroutine lu_decomp(A, N, indx, D, code)
 
   implicit none
 
-  real,dimension(N,N),intent(inout) :: A
-  integer,intent(in) :: N
-  integer,dimension(N),intent(out) :: indx
-  integer,intent(out) :: code, D
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  integer(kind=i4),intent(in) :: N
+  integer(kind=i4),dimension(N),intent(out) :: indx
+  integer(kind=i4),intent(out) :: code, D
 
-  real,dimension(N) :: vv
-  real,parameter :: tiny=1.5e-20
-  integer :: i, j, k, imax
-  real :: amax, dum, s
+  real(kind=sp),dimension(N) :: vv
+  real(kind=sp),parameter :: tiny=1.5e-20_sp
+  integer(kind=i4):: i, j, k, imax
+  real(kind=sp) :: amax, dum, s
 
   ! Initialize
   D = 1
@@ -292,14 +317,14 @@ subroutine lu_back_sub(A, N, indx, b, x)
 
   implicit none
 
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(in) :: A
-  real,dimension(N),intent(in) :: b
-  integer,dimension(N),intent(in) :: indx
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(in) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  integer(kind=i4),dimension(N),intent(in) :: indx
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  real :: sum
-  integer :: ii,i,j,ll
+  real(kind=sp) :: sum
+  integer(kind=i4):: ii,i,j,ll
 
   ! Initialize solution
   allocate(x, source=b)
@@ -351,12 +376,12 @@ subroutine quadratic_fit(pts, a, b, c)
 
   implicit none
 
-  real,dimension(3, 2),intent(in) :: pts
-  real,intent(out) :: a, b, c
+  real(kind=sp),dimension(3, 2),intent(in) :: pts
+  real(kind=sp),intent(out) :: a, b, c
 
-  integer :: i
-  real,dimension(3,3) :: m
-  real,dimension(:),allocatable :: coeff
+  integer(kind=i4):: i
+  real(kind=sp),dimension(3,3) :: m
+  real(kind=sp),dimension(:),allocatable :: coeff
 
   do i = 1, 3
     m(i,1) = pts(i,1)**2
@@ -386,15 +411,15 @@ subroutine decompose_blocks(N, A, N_blocks, block_size, A_blocks, N_last, ind_P,
 
   implicit none
 
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(in) :: A
-  integer,intent(in) :: N_blocks, block_size
-  real,dimension(:,:,:),allocatable,intent(out) :: A_blocks
-  integer,intent(out) :: N_last
-  integer,dimension(:,:),allocatable,intent(out) :: ind_P
-  integer,dimension(:),allocatable,intent(out) :: i_start_block, i_end_block
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(in) :: A
+  integer(kind=i4),intent(in) :: N_blocks, block_size
+  real(kind=sp),dimension(:,:,:),allocatable,intent(out) :: A_blocks
+  integer(kind=i4),intent(out) :: N_last
+  integer(kind=i4),dimension(:,:),allocatable,intent(out) :: ind_P
+  integer(kind=i4),dimension(:),allocatable,intent(out) :: i_start_block, i_end_block
 
-  integer :: i, info, D
+  integer(kind=i4):: i, info, D
 
   ! Allocate start and end indices
   allocate(i_start_block(N_blocks))
@@ -470,23 +495,23 @@ subroutine block_ssor_solve(N, A, b, block_size, tol, rel, max_iter, output_file
 
   implicit none
 
-  integer,intent(in) :: N, block_size, max_iter
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
-  real,intent(inout) :: rel
+  integer(kind=i4),intent(in) :: N, block_size, max_iter
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
+  real(kind=sp),intent(inout) :: rel
   character(len=:),allocatable,intent(in) :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  real :: err, dx 
-  real,dimension(N) :: x_new, vk
-  real,dimension(:,:,:),allocatable :: A_blocks
-  real,dimension(block_size) :: bi
-  real,dimension(:),allocatable :: xi
-  integer :: i, N_blocks, r, N_last, iteration, step, start, end, unit
-  integer,dimension(:),allocatable :: i_start_block, i_end_block
-  integer,dimension(:,:),allocatable :: ind_P
+  real(kind=sp) :: err, dx 
+  real(kind=sp),dimension(N) :: x_new, vk
+  real(kind=sp),dimension(:,:,:),allocatable :: A_blocks
+  real(kind=sp),dimension(block_size) :: bi
+  real(kind=sp),dimension(:),allocatable :: xi
+  integer(kind=i4):: i, N_blocks, r, N_last, iteration, step, start, end, unit
+  integer(kind=i4),dimension(:),allocatable :: i_start_block, i_end_block
+  integer(kind=i4),dimension(:,:),allocatable :: ind_P
   logical :: verbose
 
   ! Check if we need to output
@@ -612,23 +637,23 @@ subroutine block_jacobi_solve(N, A, b, block_size, tol, rel, max_iter, output_fi
 
   implicit none
 
-  integer,intent(in) :: N, block_size, max_iter
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
-  real,intent(inout) :: rel
+  integer(kind=i4),intent(in) :: N, block_size, max_iter
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
+  real(kind=sp),intent(inout) :: rel
   character(len=:),allocatable,intent(in) :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  real :: err, dx
-  real,dimension(N) :: x_new, vk
-  real,dimension(:,:,:),allocatable :: A_blocks
-  real,dimension(block_size) :: bi
-  real,dimension(:),allocatable :: xi
-  integer :: i, N_blocks, r, N_last, iteration, step, unit
-  integer,dimension(:),allocatable :: i_start_block, i_end_block
-  integer,dimension(:,:),allocatable :: ind_P
+  real(kind=sp) :: err, dx
+  real(kind=sp),dimension(N) :: x_new, vk
+  real(kind=sp),dimension(:,:,:),allocatable :: A_blocks
+  real(kind=sp),dimension(block_size) :: bi
+  real(kind=sp),dimension(:),allocatable :: xi
+  integer(kind=i4):: i, N_blocks, r, N_last, iteration, step, unit
+  integer(kind=i4),dimension(:),allocatable :: i_start_block, i_end_block
+  integer(kind=i4),dimension(:,:),allocatable :: ind_P
   logical :: verbose
 
   ! Determine whether we need to output
@@ -734,16 +759,16 @@ subroutine purcell_solve(N, A, b, x)
 
   implicit none
 
-  integer, intent(in) :: N
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(in) :: b
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4), intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, k, s
-  integer,dimension(N) :: m
-  real,dimension(N+1,N+1) :: V
-  real,dimension(N+1) :: V_s, d
-  real :: alpha, denom
+  integer(kind=i4):: i, k, s
+  integer(kind=i4),dimension(N) :: m
+  real(kind=sp),dimension(N+1,N+1) :: V
+  real(kind=sp),dimension(N+1) :: V_s, d
+  real(kind=sp) :: alpha, denom
 
   ! Initialize the solution space
   V(:,:) = 0.
@@ -799,12 +824,12 @@ function get_lower_bandwidth(N, A) result(B_l)
 
   implicit none
   
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(in) :: A
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(in) :: A
 
-  integer :: B_l
+  integer(kind=i4):: B_l
 
-  integer :: i, j
+  integer(kind=i4):: i, j
   logical :: found_nonzero
 
   ! Initialize 
@@ -841,10 +866,10 @@ subroutine gen_givens_rot(x, y, c, s)
 
   implicit none
   
-  real,intent(inout) :: x, y
-  real,intent(out) :: c, s
+  real(kind=sp),intent(inout) :: x, y
+  real(kind=sp),intent(out) :: c, s
 
-  real :: d, t
+  real(kind=sp) :: d, t
 
   t = abs(x) + abs(y)
   d = t*sqrt((x/t)**2 + (y/t)**2)
@@ -861,11 +886,11 @@ subroutine apply_givens_row_rot(c, s, x, y, N)
 
   implicit none
   
-  real,intent(in) :: c, s
-  real,dimension(N),intent(inout) :: x, y
-  integer,intent(in) :: N
+  real(kind=sp),intent(in) :: c, s
+  real(kind=sp),dimension(N),intent(inout) :: x, y
+  integer(kind=i4),intent(in) :: N
 
-  real,dimension(:),allocatable :: t
+  real(kind=sp),dimension(:),allocatable :: t
 
   ! Apply to first row using temp storage
   allocate(t, source=c*x + s*y)
@@ -885,13 +910,13 @@ subroutine QR_givens_solve_UP(N, A, b, x)
 
   implicit none
   
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(inout) :: b
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(inout) :: b
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, j, B_l
-  real :: s, c
+  integer(kind=i4):: i, j, B_l
+  real(kind=sp) :: s, c
 
   ! Get lower bandwidth
   B_l = get_lower_bandwidth(N, A)
@@ -932,12 +957,12 @@ subroutine upper_triangular_back_sub(N, R, b, x)
 
   implicit none
   
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(in) :: R
-  real,dimension(N),intent(in) :: b
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(in) :: R
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, j
+  integer(kind=i4):: i, j
 
   ! Initialize
   allocate(x(N))
@@ -970,12 +995,12 @@ subroutine gen_fast_givens_rot(x, y, a, b, D1, D2, rot_type)
 
   implicit none
   
-  real,intent(inout) :: x, y
-  real,intent(out) :: a, b
-  real,intent(inout) :: D1, D2
-  integer,intent(out) :: rot_type
+  real(kind=sp),intent(inout) :: x, y
+  real(kind=sp),intent(out) :: a, b
+  real(kind=sp),intent(inout) :: D1, D2
+  integer(kind=i4),intent(out) :: rot_type
 
-  real :: gamma, t, d, temp, ratio
+  real(kind=sp) :: gamma, t, d, temp, ratio
 
   ! Preliminaries
   gamma = D1/D2
@@ -1076,11 +1101,11 @@ subroutine apply_fast_givens_rot(a, b, x, y, N, rot_type)
 
   implicit none
   
-  real,intent(in) :: a, b
-  real,dimension(N),intent(inout) :: x, y
-  integer,intent(in) :: N, rot_type
+  real(kind=sp),intent(in) :: a, b
+  real(kind=sp),dimension(N),intent(inout) :: x, y
+  integer(kind=i4),intent(in) :: N, rot_type
 
-  real,dimension(N) :: temp
+  real(kind=sp),dimension(N) :: temp
 
   ! Select rotation type
   select case (rot_type)
@@ -1118,14 +1143,14 @@ subroutine QR_fast_givens_solve_upper_pentagonal(N, A, b, x)
 
   implicit none
   
-  integer,intent(in) :: N
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(inout) :: b
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(in) :: N
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(inout) :: b
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, j, B_l, rot_type
-  real :: alpha, beta
-  real,dimension(N) :: D
+  integer(kind=i4):: i, j, B_l, rot_type
+  real(kind=sp) :: alpha, beta
+  real(kind=sp),dimension(N) :: D
 
   ! Initialize diagonals
   D = 1.
@@ -1170,12 +1195,12 @@ subroutine arnoldi(N, A, k, q1, Q, H)
 
   implicit none
   
-  integer,intent(in) :: N, k
-  real,dimension(N,N) :: A
-  real,dimension(N) :: q1
-  real,dimension(:,:),allocatable,intent(out) :: Q, H
+  integer(kind=i4),intent(in) :: N, k
+  real(kind=sp),dimension(N,N) :: A
+  real(kind=sp),dimension(N) :: q1
+  real(kind=sp),dimension(:,:),allocatable,intent(out) :: Q, H
 
-  integer :: i, j
+  integer(kind=i4):: i, j
 
   ! Allocate basis storage
   allocate(Q(N,k))
@@ -1210,11 +1235,11 @@ subroutine arnoldi_update(N, A, k, Q, H)
 
   implicit none
   
-  integer,intent(in) :: N, k
-  real,dimension(N,N),intent(in) :: A
-  real,dimension(:,:),allocatable,intent(inout) :: Q, H
+  integer(kind=i4),intent(in) :: N, k
+  real(kind=sp),dimension(N,N),intent(in) :: A
+  real(kind=sp),dimension(:,:),allocatable,intent(inout) :: Q, H
 
-  integer :: i
+  integer(kind=i4):: i
 
   ! Add dimension to Krylov subspace
   Q(:,k+1) = matmul(A, Q(:,k))
@@ -1238,19 +1263,19 @@ subroutine GMRES(N, A, b, tol, max_iter, output_file, total_iter, x)
 
   implicit none
   
-  integer,intent(in) :: N, max_iter
-  real,dimension(N,N),intent(in) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
+  integer(kind=i4),intent(in) :: N, max_iter
+  real(kind=sp),dimension(N,N),intent(in) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
   character(len=:),allocatable :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, k, k_max, unit
-  real,dimension(:,:),allocatable :: Q, H
-  real,dimension(N) :: E, r0
-  real :: beta, temp, err, d
-  real,dimension(:),allocatable :: y, c, s
+  integer(kind=i4):: i, k, k_max, unit
+  real(kind=sp),dimension(:,:),allocatable :: Q, H
+  real(kind=sp),dimension(N) :: E, r0
+  real(kind=sp) :: beta, temp, err, d
+  real(kind=sp),dimension(:),allocatable :: y, c, s
   logical :: verbose
 
   ! We cannot have more iterations than the size of the matrix
@@ -1341,19 +1366,19 @@ subroutine restarted_GMRES(N, A, b, tol, max_iter, restart_iter, output_file, to
 
   implicit none
   
-  integer,intent(in) :: N, max_iter, restart_iter
-  real,dimension(N,N),intent(in) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
+  integer(kind=i4),intent(in) :: N, max_iter, restart_iter
+  real(kind=sp),dimension(N,N),intent(in) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
   character(len=:),allocatable :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  integer :: i, k, k_max, unit, outer_iter
-  real,dimension(:,:),allocatable :: Q, H
-  real,dimension(N) :: E, r0
-  real :: beta, temp, err, d
-  real,dimension(:),allocatable :: y, c, s
+  integer(kind=i4):: i, k, k_max, unit, outer_iter
+  real(kind=sp),dimension(:,:),allocatable :: Q, H
+  real(kind=sp),dimension(N) :: E, r0
+  real(kind=sp) :: beta, temp, err, d
+  real(kind=sp),dimension(:),allocatable :: y, c, s
   logical :: verbose
 
   ! Intialize iterations
@@ -1473,23 +1498,23 @@ subroutine block_ssor_solve_with_adaptation(N, A, b, block_size, tol, rel, max_i
 
   implicit none
 
-  integer,intent(in) :: N, block_size, max_iter
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
-  real,intent(inout) :: rel
+  integer(kind=i4),intent(in) :: N, block_size, max_iter
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
+  real(kind=sp),intent(inout) :: rel
   character(len=:),allocatable,intent(in) :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  real :: err, dx 
-  real,dimension(N) :: x_new, vk
-  real,dimension(:,:,:),allocatable :: A_blocks
-  real,dimension(block_size) :: bi
-  real,dimension(:),allocatable :: xi
-  integer :: i, N_blocks, r, N_last, iteration, step, start, end, unit
-  integer,dimension(:),allocatable :: i_start_block, i_end_block
-  integer,dimension(:,:),allocatable :: ind_P
+  real(kind=sp) :: err, dx 
+  real(kind=sp),dimension(N) :: x_new, vk
+  real(kind=sp),dimension(:,:,:),allocatable :: A_blocks
+  real(kind=sp),dimension(block_size) :: bi
+  real(kind=sp),dimension(:),allocatable :: xi
+  integer(kind=i4):: i, N_blocks, r, N_last, iteration, step, start, end, unit
+  integer(kind=i4),dimension(:),allocatable :: i_start_block, i_end_block
+  integer(kind=i4),dimension(:,:),allocatable :: ind_P
   logical :: adaptive, verbose
 
   ! Check if we need to output
@@ -1643,23 +1668,23 @@ subroutine block_jacobi_solve_with_optimal(N, A, b, block_size, tol, rel, max_it
 
   implicit none
 
-  integer,intent(in) :: N, block_size, max_iter
-  real,dimension(N,N),intent(inout) :: A
-  real,dimension(N),intent(in) :: b
-  real,intent(in) :: tol
-  real,intent(inout) :: rel
+  integer(kind=i4),intent(in) :: N, block_size, max_iter
+  real(kind=sp),dimension(N,N),intent(inout) :: A
+  real(kind=sp),dimension(N),intent(in) :: b
+  real(kind=sp),intent(in) :: tol
+  real(kind=sp),intent(inout) :: rel
   character(len=:),allocatable,intent(in) :: output_file
-  integer,intent(out) :: total_iter
-  real,dimension(:),allocatable,intent(out) :: x
+  integer(kind=i4),intent(out) :: total_iter
+  real(kind=sp),dimension(:),allocatable,intent(out) :: x
 
-  real :: err, dx, vkTvk, bTvk, vkp1Tvkp1, vkp1Tvk, bTvkp1
-  real,dimension(N) :: x_new, vk, vkp1
-  real,dimension(:,:,:),allocatable :: A_blocks
-  real,dimension(block_size) :: bi
-  real,dimension(:),allocatable :: xi
-  integer :: i, N_blocks, r, N_last, iteration, step, unit
-  integer,dimension(:),allocatable :: i_start_block, i_end_block
-  integer,dimension(:,:),allocatable :: ind_P
+  real(kind=sp) :: err, dx, vkTvk, bTvk, vkp1Tvkp1, vkp1Tvk, bTvkp1
+  real(kind=sp),dimension(N) :: x_new, vk, vkp1
+  real(kind=sp),dimension(:,:,:),allocatable :: A_blocks
+  real(kind=sp),dimension(block_size) :: bi
+  real(kind=sp),dimension(:),allocatable :: xi
+  integer(kind=i4):: i, N_blocks, r, N_last, iteration, step, unit
+  integer(kind=i4),dimension(:),allocatable :: i_start_block, i_end_block
+  integer(kind=i4),dimension(:,:),allocatable :: ind_P
   logical :: optimal_rel, verbose
 
   ! Determine whether we need to output
@@ -1801,14 +1826,14 @@ subroutine diagonal_preconditioner(N, A, b, A_p, b_p)
 
     implicit none
 
-    integer,intent(in) :: N
-    real,dimension(N,N),intent(in) :: A
-    real,dimension(N),intent(in) :: b
-    real,dimension(:,:),allocatable,intent(out) :: A_p
-    real,dimension(:),allocatable,intent(out) :: b_p
+    integer(kind=i4),intent(in) :: N
+    real(kind=sp),dimension(N,N),intent(in) :: A
+    real(kind=sp),dimension(N),intent(in) :: b
+    real(kind=sp),dimension(:,:),allocatable,intent(out) :: A_p
+    real(kind=sp),dimension(:),allocatable,intent(out) :: b_p
 
-    real,dimension(N) :: A_ii_inv
-    integer :: i, j
+    real(kind=sp),dimension(N) :: A_ii_inv
+    integer(kind=i4):: i, j
 
     ! Get preconditioning matrix
     do i=1,N
