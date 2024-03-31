@@ -21,6 +21,7 @@
 !
 !===============================================================================
 module linked_list_mod
+  use mod_kinds, only : i4,sp
   implicit none
 
   private
@@ -49,7 +50,7 @@ module linked_list_mod
 
   type :: list
     private
-    integer :: num_nodes = 0
+    integer(kind=i4):: num_nodes = 0
     type(node), pointer :: head => null()
     type(node), pointer :: tail => null()
   contains
@@ -61,7 +62,7 @@ module linked_list_mod
     procedure :: print => list_print_integer
     procedure :: get_item_character => list_get_item_character
     procedure :: get_item_complex => list_get_item_complex
-    procedure :: get_item_integer => list_get_item_integer
+    procedure :: get_item_integer=> list_get_item_integer
     procedure :: get_item_logical => list_get_item_logical
     procedure :: get_item_real => list_get_item_real
     generic :: get => get_item_character, get_item_complex, get_item_integer, get_item_logical, get_item_real
@@ -175,12 +176,12 @@ contains
 
 
   function list_is_in_integer(this, item) result(is_in)
-    ! Checks if the integer item is in the list
+    ! Checks if the integer(kind=i4)item is in the list
 
     class(list),intent(in) :: this
-    integer,intent(in) :: item
+    integer(kind=i4),intent(in) :: item
     type(node),pointer :: curr_node
-    integer :: i
+    integer(kind=i4):: i
     logical :: is_in
 
     ! Loop through items in list
@@ -217,13 +218,13 @@ contains
 !
   subroutine list_get_item_character( this, iNode, chVal, stat, errmsg )
     class(list), intent(in) :: this
-    integer, intent(in) :: iNode
+    integer(kind=i4) intent(in) :: iNode
     character(*), intent(out) :: chVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
     type(node) :: nVal
-    integer    :: istat
+    integer(kind=i4)   :: istat
 
     call get_node(this, iNode, nVal, stat=istat)
     if (istat == 0) then
@@ -262,13 +263,13 @@ contains
 !
   subroutine list_get_item_complex( this, iNode, cVal, stat, errmsg )
     class(list), intent(in) :: this
-    integer, intent(in) :: iNode
+    integer(kind=i4), intent(in) :: iNode
     complex, intent(out) :: cVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4) intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
     type(node) :: nVal
-    integer    :: istat
+    integer(kind=i4)   :: istat
 
     call get_node(this, iNode, nVal, stat=istat)
     if (istat == 0) then
@@ -307,13 +308,13 @@ contains
 !
   subroutine list_get_item_integer( this, iNode, iVal, stat, errmsg )
     class(list), intent(in) :: this
-    integer, intent(in) :: iNode
-    integer, intent(out) :: iVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(in) :: iNode
+    integer(kind=i4), intent(out) :: iVal
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
     type(node) :: nVal
-    integer    :: istat
+    integer(kind=i4)   :: istat
 
     call get_node(this, iNode, nVal, stat=istat)
     if (istat == 0) then
@@ -352,13 +353,13 @@ contains
 !
   subroutine list_get_item_logical( this, iNode, lVal, stat, errmsg )
     class(list), intent(in) :: this
-    integer, intent(in) :: iNode
+    integer(kind=i4), intent(in) :: iNode
     logical, intent(out) :: lVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4) intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
     type(node) :: nVal
-    integer    :: istat
+    integer(kind=i4)   :: istat
 
     call get_node(this, iNode, nVal, stat=istat)
     if (istat == 0) then
@@ -385,25 +386,25 @@ contains
 !===============================================================================
 
 !===============================================================================
-!  list_get_item_real:
+!  list_get_item_real(kind=sp):
 !
 !    gets the i-th node from this list and returns item value if it is a
-!    real.
+!    real(kind=sp).
 !
 !      STAT   ERRMSG
-!        -1   item found but not of type real
+!        -1   item found but not of type real(kind=sp)
 !        -2   node found but item not allocated
 !        -3   node not found (inode exceeds list bounds)
 !
   subroutine list_get_item_real( this, inode, rval, stat, errmsg )
     class(list), intent(in) :: this
-    integer, intent(in) :: inode
-    real, intent(out) :: rval
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(in) :: inode
+    real(kind=sp), intent(out) :: rval
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
     type(node) :: nval
-    integer    :: istat
+    integer(kind=i4)   :: istat
 
     call get_node(this, inode, nval, stat=istat)
     if (istat == 0) then
@@ -436,7 +437,7 @@ contains
     
     class(list), intent(inout) :: this
 
-    integer :: i
+    integer(kind=i4):: i
   
     ! Delete every item
     do while (this%len() > 0) 
@@ -453,10 +454,10 @@ contains
     implicit none
 
     class(list), intent(inout) :: this
-    integer,intent(in) :: int
+    integer(kind=i4),intent(in) :: int
 
     type(node),pointer :: curr_node, prev_node, del_node
-    integer :: curr_val
+    integer(kind=i4):: curr_val
 
     ! Check if it's in the list
     if (.not. this%is_in(int)) then
@@ -538,7 +539,7 @@ contains
     class(list),intent(in) :: this
 
     type(node),pointer :: curr_node, prev_node
-    integer :: curr_val
+    integer(kind=i4):: curr_val
 
     ! Start at the head
     curr_node => this%head
@@ -574,12 +575,12 @@ contains
 !
   subroutine list_get_node( this, iNode, nVal, stat, errmsg )
     type(list), intent(in) :: this
-    integer, intent(in) :: iNode
+    integer(kind=i4), intent(in) :: iNode
     type(node), intent(out) :: nVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4),intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: i, istat
+    integer(kind=i4):: i, istat
     type(node), pointer :: current_node
 
 
@@ -617,7 +618,7 @@ contains
 !
   elemental function list_length( self ) result( val )
     class(list), intent(in) :: self
-    integer :: val
+    integer(kind=i4):: val
 
     val = self%num_nodes
   end function list_length
@@ -694,11 +695,11 @@ contains
 !===============================================================================
 !  node_equality_integer_node:
 !
-!    Returns .TRUE. if the given node has an item of type integer with value
-!    equal to the given integer value.
+!    Returns .TRUE. if the given node has an item of type integer(kind=i4)with value
+!    equal to the given integer(kind=i4)value.
 !
   elemental function node_equality_integer_node( iVal, nVal ) result( ans )
-    integer, intent(in) :: iVal
+    integer(kind=i4) intent(in) :: iVal
     type(node), intent(in) :: nVal
     logical :: ans
 
@@ -732,13 +733,13 @@ contains
 !===============================================================================
 
 !===============================================================================
-!  node_equality_real_node:
+!  node_equality_real(kind=sp)_node:
 !
-!    Returns .TRUE. if the given node has an item of type real with value
-!    equal to the given real value.
+!    Returns .TRUE. if the given node has an item of type real(kind=sp) with value
+!    equal to the given real(kind=sp) value.
 !
   elemental function node_equality_real_node( rVal, nVal ) result( ans )
-    real, intent(in) :: rVal
+    real(kind=sp), intent(in) :: rVal
     type(node), intent(in) :: nVal
     logical :: ans
 
@@ -794,12 +795,12 @@ contains
 !===============================================================================
 !  node_equality_node_integer:
 !
-!    Returns .TRUE. if the given node has an item of type integer with value
-!    equal to the given integer value.
+!    Returns .TRUE. if the given node has an item of type integer(kind=i4)with value
+!    equal to the given integer(kind=i4)value.
 !
   elemental function node_equality_node_integer( nVal, iVal ) result( ans )
     type(node), intent(in) :: nVal
-    integer, intent(in) :: iVal
+    integer(kind=i4) intent(in) :: iVal
     logical :: ans
 
     select type(item => nVal%item)
@@ -832,14 +833,14 @@ contains
 !===============================================================================
 
 !===============================================================================
-!  node_equality_node_real:
+!  node_equality_node_real(kind=sp):
 !
-!    Returns .TRUE. if the given node has an item of type real with value
-!    equal to the given real value.
+!    Returns .TRUE. if the given node has an item of type real(kind=sp) with value
+!    equal to the given real(kind=sp) value.
 !
   elemental function node_equality_node_real( nVal, rVal ) result( ans )
     type(node), intent(in) :: nVal
-    real, intent(in) :: rVal
+    real(kind=sp), intent(in) :: rVal
     logical :: ans
 
     select type(item => nVal%item)
@@ -877,10 +878,10 @@ contains
   elemental subroutine node_get_item_character( this, sVal, stat, errmsg )
     type(node), intent(in) :: this
     character(*), intent(out) :: sVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: istat
+    integer(kind=i4):: istat
 
     if (allocated(this%item)) then
       select type (item => this%item)
@@ -922,10 +923,10 @@ contains
   elemental subroutine node_get_item_complex( this, cVal, stat, errmsg )
     type(node), intent(in) :: this
     complex, intent(out) :: cVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: istat
+    integer(kind=i4):: istat
 
     if (allocated(this%item)) then
       select type (item => this%item)
@@ -957,8 +958,8 @@ contains
 !===============================================================================
 !  node_get_item_integer:
 !
-!    Returns .TRUE. if the given node has an item of type integer with value
-!    equal to the given integer value.
+!    Returns .TRUE. if the given node has an item of type integer(kind=i4)with value
+!    equal to the given integer(kind=i4)value.
 !
 !      STAT   ERRMSG
 !        -1   node item not of type integer
@@ -966,11 +967,11 @@ contains
 !
   elemental subroutine node_get_item_integer( this, iVal, stat, errmsg )
     type(node), intent(in) :: this
-    integer, intent(out) :: iVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(out) :: iVal
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: istat
+    integer(kind=i4):: istat
 
     if (allocated(this%item)) then
       select type (item => this%item)
@@ -1012,10 +1013,10 @@ contains
   elemental subroutine node_get_item_logical( this, lVal, stat, errmsg )
     type(node), intent(in) :: this
     logical, intent(out) :: lVal
-    integer, intent(out), optional :: stat
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: istat
+    integer(kind=i4):: istat
 
     if (allocated(this%item)) then
       select type (item => this%item)
@@ -1045,22 +1046,22 @@ contains
 !===============================================================================
 
 !===============================================================================
-!  node_get_item_real:
+!  node_get_item_real(kind=sp):
 !
-!    Returns .TRUE. if the given node has an item of type real with value
-!    equal to the given real value.
+!    Returns .TRUE. if the given node has an item of type real(kind=sp) with value
+!    equal to the given real(kind=sp) value.
 !
 !      STAT   ERRMSG
-!        -1   node item not of type real
+!        -1   node item not of type real(kind=sp)
 !        -2   node item not allocated
 !
   elemental subroutine node_get_item_real( this, rVal, stat, errmsg )
     type(node), intent(in) :: this
-    real, intent(out) :: rVal
-    integer, intent(out), optional :: stat
+    real(kind=sp), intent(out) :: rVal
+    integer(kind=i4), intent(out), optional :: stat
     character(*), intent(out), optional :: errmsg
     ! local variables:
-    integer :: istat
+    integer(kind=i4):: istat
 
     if (allocated(this%item)) then
       select type (item => this%item)
