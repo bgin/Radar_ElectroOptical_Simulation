@@ -1,6 +1,30 @@
+
+!MIT License
+
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
 ! A basic mesh type consisting of a collection of vertices and panels
 module mesh_mod
-
+     ! ************Slightly modified by Bernard Gingold, 30/03/2024, 10:13AM**************
+    use mod_kinds, only : i4,sp
     use base_geom_mod
     use panel_mod
     use flow_mod
@@ -9,11 +33,11 @@ module mesh_mod
 
     type mesh
 
-        integer :: N_verts, N_panels = 0
+        integer(kind=i4):: N_verts, N_panels = 0
         type(vertex),allocatable,dimension(:) :: vertices
         type(panel),allocatable,dimension(:) :: panels
         logical :: mirrored = .false. ! Whether the mesh is to be mirrored about any planes
-        integer :: mirror_plane ! Index of the plane across which the mesh is mirrored (1: yz, 2: xz, 3: xy); this is the index of the normal to that plane
+        integer(kind=i4):: mirror_plane ! Index of the plane across which the mesh is mirrored (1: yz, 2: xz, 3: xy); this is the index of the normal to that plane
 
         contains
 
@@ -34,7 +58,7 @@ contains
         implicit none
 
         class(mesh),intent(in) :: this
-        integer,intent(in) :: i1, i2, i3
+        integer(kind=i4),intent(in) :: i1, i2, i3
         logical :: has
 
         ! Check for zero area
@@ -49,14 +73,14 @@ contains
         implicit none
 
         class(mesh),intent(in) :: this
-        integer,dimension(:,:),allocatable,intent(out) :: i_vertices
+        integer(kind=i4),dimension(:,:),allocatable,intent(out) :: i_vertices
 
-        integer :: i, j
+        integer(kind=i4):: i, j
 
         ! Allocate space
         allocate(i_vertices(8,this%N_panels))
 
-        ! Get vertex indices for each panel since we will lose this information as soon as this%vertices is reallocated
+        ! Get vertex indices for each panel since we will lose this information as soon as this%vertices is real(kind=sp) :: located
         do i=1,this%N_panels
             do j=1,this%panels(i)%N
 
@@ -76,11 +100,11 @@ contains
         implicit none
 
         class(mesh),intent(inout),target :: this
-        integer,intent(in) :: N_new_verts
+        integer(kind=i4),intent(in) :: N_new_verts
         
         type(vertex),dimension(:),allocatable :: temp_vertices
-        integer :: i, j
-        integer,dimension(:,:),allocatable :: i_vertices
+        integer(kind=i4):: i, j
+        integer(kind=i4),dimension(:,:),allocatable :: i_vertices
 
         ! Get panel vertex indices
         call this%get_indices_to_panel_vertices(i_vertices)
@@ -94,7 +118,7 @@ contains
         ! Move allocation
         call move_alloc(temp_vertices, this%vertices)
 
-        ! Fix vertex pointers in panel objects (necessary because this%vertices got reallocated)
+        ! Fix vertex pointers in panel objects (necessary because this%vertices got real(kind=sp) :: located)
         do i=1,this%N_panels
             do j=1,this%panels(i)%N
 
@@ -116,13 +140,13 @@ contains
         implicit none
         
         class(mesh),intent(in) :: this
-        real,dimension(3),intent(in) :: point
+        real(kind=sp) :: ,dimension(3),intent(in) :: point
         type(flow),intent(in) :: freestream
         logical,intent(in) :: mirror_points
 
         logical,dimension(this%N_verts) :: verts_in_dod
 
-        integer :: i
+        integer(kind=i4):: i
 
         ! Loop through vertices
         do i=1,this%N_verts
@@ -144,14 +168,14 @@ contains
         implicit none
         
         class(mesh),intent(in) :: this
-        real,dimension(3),intent(in) :: point
+        real(kind=sp) :: ,dimension(3),intent(in) :: point
         type(flow),intent(in) :: freestream
         logical,dimension(:),allocatable,intent(in) :: verts_in_dod
         logical,intent(in) :: mirror_panels
 
         type(dod),dimension(this%N_panels) :: dod_info
 
-        integer :: i
+        integer(kind=i4):: i
 
         ! Loop through panels
         do i=1,this%N_panels
