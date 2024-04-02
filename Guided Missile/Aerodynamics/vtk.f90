@@ -1,6 +1,30 @@
+
+!MIT License
+
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
 ! Subroutines for I/O with VTK files
 module vtk_mod
-
+    ! ************Slightly modified by Bernard Gingold, 02/04/2024, 07:00PM**************
+    use mod_kinds, only : i4,sp
     use helpers_mod
     use panel_mod
     use base_geom_mod
@@ -11,7 +35,7 @@ module vtk_mod
     type vtk_out
 
         character(len=:),allocatable :: filename
-        integer :: unit
+        integer(kind=i4):: unit
         logical :: cell_data_begun, point_data_begun, cells_subdivided, panels_already_started
 
         contains
@@ -24,7 +48,7 @@ module vtk_mod
             procedure :: write_vertices => vtk_out_write_vertices
             generic :: write_point_scalars => write_point_scalars_real, write_point_scalars_integer
             procedure :: write_point_scalars_real => vtk_out_write_point_scalars_real
-            procedure :: write_point_scalars_integer => vtk_out_write_point_scalars_integer
+            procedure :: write_point_scalars_integer=> vtk_out_write_point_scalars_integer
             procedure :: write_cell_header => vtk_out_write_cell_header
             procedure :: write_point_header => vtk_out_write_point_header
             procedure :: write_cell_scalars => vtk_out_write_cell_scalars
@@ -81,10 +105,10 @@ contains
 
         class(vtk_out),intent(in) :: this
         type(vertex),dimension(:),intent(in) :: vertices
-        integer,intent(in),optional :: mirror_plane
+        integer(kind=i4),intent(in),optional :: mirror_plane
 
-        integer :: i, N_verts
-        real,dimension(3) :: mirror
+        integer(kind=i4):: i, N_verts
+        real(kind=sp),dimension(3) :: mirror
 
         ! Write vertex information
         N_verts = size(vertices)
@@ -110,11 +134,11 @@ contains
         implicit none
 
         class(vtk_out),intent(in) :: this
-        real,dimension(:,:),intent(in) :: vertices
-        integer,intent(in),optional :: mirror_plane
+        real(kind=sp),dimension(:,:),intent(in) :: vertices
+        integer(kind=i4),intent(in),optional :: mirror_plane
 
-        integer :: i, N_verts
-        real,dimension(3) :: mirror
+        integer(kind=i4):: i, N_verts
+        real(kind=sp),dimension(3) :: mirror
 
         ! Write vertex information
         N_verts = size(vertices)/3
@@ -142,9 +166,9 @@ contains
         class(vtk_out),intent(inout) :: this
         type(panel),dimension(:),intent(in) :: panels
         logical,intent(in) :: mirror
-        integer,intent(in),optional :: vertex_index_shift, N_total_panels
+        integer(kind=i4),intent(in),optional :: vertex_index_shift, N_total_panels
 
-        integer :: i, j, N_panels, shift
+        integer(kind=i4):: i, j, N_panels, shift
 
         ! Check for shift
         if (present(vertex_index_shift)) then
@@ -199,7 +223,7 @@ contains
         class(vtk_out),intent(in) :: this
         integer,intent(in) :: N_verts
 
-        integer :: i
+        integer(kind=i4):: i
 
         ! Write out vertices
         write(this%unit,'(a i20 i20)') "VERTICES", N_verts, N_verts*2
@@ -217,7 +241,7 @@ contains
         ! Checks whether the point data header has been written and writes it if necessary
 
         class(vtk_out), intent(inout) :: this
-        integer, intent(in) :: N_points
+        integer(kind=i4), intent(in) :: N_points
 
         if (.not. this%point_data_begun) then
             
@@ -236,7 +260,7 @@ contains
         ! Checks whether the cell data header has been written and writes it if necessary
 
         class(vtk_out), intent(inout) :: this
-        integer, intent(in) :: N_cells
+        integer(kind=i4), intent(in) :: N_cells
 
         if (.not. this%cell_data_begun) then
             
@@ -257,10 +281,10 @@ contains
         implicit none
 
         class(vtk_out),intent(inout) :: this
-        real,dimension(:),intent(in) :: data
+        real(kind=sp),dimension(:),intent(in) :: data
         character(len=*),intent(in) :: label
 
-        integer :: N_cells, i, j, N, N_cycle
+        integer(kind=i4):: N_cells, i, j, N, N_cycle
 
         ! Figure out size of dataset
         N_cells = size(data)
@@ -286,10 +310,10 @@ contains
         implicit none
 
         class(vtk_out),intent(inout) :: this
-        real,dimension(:,:),intent(in) :: data
+        real(kind=sp),dimension(:,:),intent(in) :: data
         character(len=*),intent(in) :: label
 
-        integer :: N_cells, i, j, N_cycle, N
+        integer(kind=i4):: N_cells, i, j, N_cycle, N
 
         ! Number of cells and subdivisions
         N_cells = size(data)/3
@@ -317,10 +341,10 @@ contains
 
         class(vtk_out),intent(inout) :: this
         type(panel),dimension(:),intent(in) :: panels
-        integer,intent(in),optional :: mirror_plane
+        integer(kind=i4),intent(in),optional :: mirror_plane
 
-        integer :: N_cells, i, j
-        real,dimension(3) :: mirror
+        integer(kind=i4):: N_cells, i, j
+        real(kind=sp),dimension(3) :: mirror
 
         ! Write cell data header
         N_cells = size(panels)
@@ -350,10 +374,10 @@ contains
         implicit none
 
         class(vtk_out),intent(inout) :: this
-        real,dimension(:),intent(in) :: data
+        real(kind=sp),dimension(:),intent(in) :: data
         character(len=*),intent(in) :: label
 
-        integer :: i, N_points
+        integer(kind=i4):: i, N_points
 
         ! Write point data header
         N_points = size(data)
@@ -375,10 +399,10 @@ contains
         implicit none
 
         class(vtk_out),intent(inout) :: this
-        integer,dimension(:),intent(in) :: data
+        integer(kind=i4),dimension(:),intent(in) :: data
         character(len=*),intent(in) :: label
 
-        integer :: i, N_points
+        integer(kind=i4):: i, N_points
 
         ! Write point data header
         N_points = size(data)
@@ -400,10 +424,10 @@ contains
         implicit none
 
         class(vtk_out),intent(inout) :: this
-        real,dimension(:,:),intent(in) :: data
+        real(kind=sp),dimension(:,:),intent(in) :: data
         character(len=*),intent(in) :: label
 
-        integer :: N_points, i
+        integer(kind=i4):: N_points, i
 
         ! Write cell data header
         N_points = size(data)/3
@@ -437,12 +461,12 @@ contains
         implicit none
 
         character(len=:),allocatable,intent(in) :: mesh_file
-        integer,intent(out) :: N_verts, N_panels
+        integer(kind=i4),intent(out) :: N_verts, N_panels
         type(vertex),dimension(:),allocatable,intent(out) :: vertices
         type(panel),dimension(:),allocatable,intent(out) :: panels
 
         character(len=200) :: line
-        integer :: ind, ver, unit
+        integer(kind=i4):: ind, ver, unit
 
         ! Determine version
         open(newunit=unit, file=mesh_file)
@@ -475,14 +499,14 @@ contains
         implicit none
 
         character(len=:),allocatable,intent(in) :: mesh_file
-        integer,intent(out) :: N_verts, N_panels
+        integer(kind=i4),intent(out) :: N_verts, N_panels
         type(vertex),dimension(:),allocatable,intent(out) :: vertices
         type(panel),dimension(:),allocatable,intent(out) :: panels
 
         character(len=200) :: dummy_read, line
-        real,dimension(:,:),allocatable :: vertex_locs
-        integer :: i, N, i1, i2, i3, N_duplicates, unit
-        integer,dimension(:),allocatable :: new_ind
+        real(kind=sp),dimension(:,:),allocatable :: vertex_locs
+        integer(kind=i4):: i, N, i1, i2, i3, N_duplicates, unit
+        integer(kind=i4),dimension(:),allocatable :: new_ind
 
         ! Open file
         open(newunit=unit, file=mesh_file)
@@ -547,14 +571,14 @@ contains
         implicit none
 
         character(len=:),allocatable,intent(in) :: mesh_file
-        integer,intent(out) :: N_verts, N_panels
+        integer(kind=i4),intent(out) :: N_verts, N_panels
         type(vertex),dimension(:),allocatable,intent(out) :: vertices
         type(panel),dimension(:),allocatable,intent(out) :: panels
 
         character(len=200) :: dummy_read, line
-        real,dimension(:,:),allocatable :: vertex_locs
-        integer :: i, N, i1, i2, i3, N_duplicates, unit, ind, N_words
-        integer,dimension(:),allocatable :: new_ind, vertex_inds
+        real(kind=sp),dimension(:,:),allocatable :: vertex_locs
+        integer(kind=i4):: i, N, i1, i2, i3, N_duplicates, unit, ind, N_words
+        integer(kind=i4),dimension(:),allocatable :: new_ind, vertex_inds
 
         ! Open file
         open(newunit=unit, file=mesh_file)
@@ -670,9 +694,9 @@ contains
         
         character(len=*),intent(in) :: line
 
-        integer :: N_words
+        integer(kind=i4):: N_words
 
-        integer :: i
+        integer(kind=i4):: i
         logical :: on_space
 
         ! Loop through each character
