@@ -1,5 +1,29 @@
-module stl_mod
 
+!MIT License
+
+!Copyright (c) 2021 USU Aero Lab
+
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
+module stl_mod
+     ! ************Slightly modified by Bernard Gingold, 04/04/2024, 06:53PM**************
+    use mod_kinds, only : i4,sp
     use panel_mod
     use base_geom_mod
     use math_mod
@@ -14,15 +38,15 @@ contains
         implicit none
 
         character(len=:),allocatable,intent(in) :: mesh_file
-        integer,intent(out) :: N_verts, N_panels
+        integer(kind=i4),intent(out) :: N_verts, N_panels
         type(vertex),dimension(:),allocatable,intent(out) :: vertices
         type(panel),dimension(:),allocatable,intent(out) :: panels
 
         character(len=200) :: dummy_read
-        integer :: stat, i, i1, i2, i3, N_duplicates, i_panel, i_vert, unit
-        integer,dimension(:,:),allocatable :: panel_vertex_indices
-        real,dimension(:,:),allocatable :: vertex_locs
-        integer,dimension(:),allocatable :: new_ind
+        integer(kind=i4):: stat, i, i1, i2, i3, N_duplicates, i_panel, i_vert, unit
+        integer(kind=i4),dimension(:,:),allocatable :: panel_vertex_indices
+        real(kind=sp),dimension(:,:),allocatable :: vertex_locs
+        integer(kind=i4),dimension(:),allocatable :: new_ind
 
         ! Open mesh file
         open(newunit=unit, file=mesh_file)
@@ -110,7 +134,7 @@ contains
             i3 = panel_vertex_indices(3,i)
 
             ! Initialize
-            call panels(i)%init(vertices(i1), vertices(i2), vertices(i3), i)
+            call panels(i).init(vertices(i1), vertices(i2), vertices(i3), i)
 
         end do
 
@@ -122,14 +146,14 @@ contains
 
         implicit none
 
-        real,dimension(:,:),allocatable,intent(in) :: vertex_locs
+        real(kind=sp),dimension(:,:),allocatable,intent(in) :: vertex_locs
         type(vertex),dimension(:),allocatable,intent(out) :: vertices
-        integer,intent(out) :: N_verts, N_duplicates
-        integer,dimension(:),allocatable,intent(out) :: new_ind
+        integer(kind=i4),intent(out) :: N_verts, N_duplicates
+        integer(kind=i4),dimension(:),allocatable,intent(out) :: new_ind
 
-        integer,dimension(:),allocatable :: duplicate_of
+        integer(kind=i4),dimension(:),allocatable :: duplicate_of
         logical,dimension(:),allocatable :: is_duplicate
-        integer :: i, j, i_unique
+        integer(kind=i4):: i, j, i_unique
 
         ! Locate duplicate vertices
         N_verts = size(vertex_locs)/3
@@ -225,7 +249,7 @@ contains
 
                 ! Initialize
                 j = new_ind(i)
-                call vertices(j)%init(vertex_locs(:,i), j)
+                call vertices(j).init(vertex_locs(:,i), j)
 
             end if
 
