@@ -33,15 +33,15 @@
 
 
 module sort_mod
-
+  use mod_kinds, only : i4,i8,sp
   implicit none
 
   !integer, parameter :: prec=kind(1d0) ! I'd prefer to use a compiler option CDG
-  integer,parameter :: i64=selected_int_kind(15)
+  integer(kind=i4),parameter :: i64=selected_int_kind(15)
 
   ! array L used by smoothsort
 
-  integer, parameter :: L(0:43) = (/ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, &
+  integer(kind=i4), parameter :: L(0:43) = (/ 1, 1, 3, 5, 9, 15, 25, 41, 67, 109, &
        177, 287, 465, 753, 1219, 1973, 3193, 5167, 8361, &
        13529, 21891, 35421, 57313, 92735, 150049, &
        242785, 392835, 635621, 1028457, 1664079, 2692537, &
@@ -56,9 +56,9 @@ module sort_mod
 contains
 
   recursive subroutine quicksort(array)
-    real, intent(inout)::array(:)
-    real :: temp,pivot
-    integer :: i,j,last,left,right
+    real(kind=sp), intent(inout)::array(:)
+    real(kind=sp) :: temp,pivot
+    integer(kind=i4):: i,j,last,left,right
 
     last=size(array)
 
@@ -123,12 +123,12 @@ contains
   ! it can guarantee that the stack needs no more than log_2(N)
   ! entries
   subroutine quicksort_nr(array)
-    real, intent(inout)::array(:)
-    real :: temp,pivot
-    integer :: i,j,left,right,low,high
+    real(kind=sp), intent(inout)::array(:)
+    real(kind=sp) :: temp,pivot
+    integer(kind=i4):: i,j,left,right,low,high
     ! If your compiler lacks storage_size(), replace
     ! storage_size(i) by 64
-    integer :: stack(2,storage_size(i)),stack_ptr
+    integer(kind=i4):: stack(2,storage_size(i)),stack_ptr
 
     low=1
     high=size(array)
@@ -212,9 +212,9 @@ contains
 
   ! dual pivot quicksort
   recursive subroutine dpquicksort(array)
-    real, intent(inout)::array(:)
-    real :: temp,p1,p2
-    integer :: i,j,last,l,k,g
+    real(kind=sp), intent(inout)::array(:)
+    real(kind=sp) :: temp,p1,p2
+    integer(kind=i4):: i,j,last,l,k,g
 
     last=size(array)
 
@@ -287,10 +287,10 @@ contains
   end subroutine dpquicksort
 
   function binary_search(array, x, start, end)
-    integer binary_search
-    integer, intent(in) :: start,end
-    real, intent(in) :: x,array(:)
-    integer :: a,b,mid
+    integer(kind=i4)binary_search
+    integer(kind=i4), intent(in) :: start,end
+    real(kind=sp), intent(in) :: x,array(:)
+    integer(kind=i4):: a,b,mid
 
     a=start
     b=end
@@ -325,9 +325,9 @@ contains
   end function binary_search
 
   subroutine binary_insertion_sort(array)
-    real, intent(inout) :: array(:)
-    integer :: i,j,pos
-    real :: x
+    real(kind=sp), intent(inout) :: array(:)
+    integer(kind=i4):: i,j,pos
+    real(kind=sp) :: x
 
     do i=2,size(array)
        x=array(i)
@@ -341,9 +341,9 @@ contains
 
 
   subroutine insertion_sort(array)
-    real,intent(inout) :: array(:)
-    integer :: i,j
-    real :: temp
+    real(kind=sp),intent(inout) :: array(:)
+    integer(kind=i4):: i,j
+    real(kind=sp) :: temp
 
     do i=2,size(array)
        temp = array(i)
@@ -361,10 +361,10 @@ contains
 
    implicit none
 
-    real,intent(in) :: array(:)
-    integer,dimension(:),allocatable,intent(out) :: i_sorted
+    real(kind=sp),intent(in) :: array(:)
+    integer(kind=i4),dimension(:),allocatable,intent(out) :: i_sorted
 
-    integer :: i, j, N, temp
+    integer(kind=i4):: i, j, N, temp
 
     ! Allocate unsorted indices
     N = size(array)
@@ -389,9 +389,9 @@ contains
 
 
   subroutine double_insertion_sort(array)
-    real, intent(inout) :: array(:)
-    integer :: i,j,left,right,last
-    real :: temp,p,next
+    real(kind=sp), intent(inout) :: array(:)
+    integer(kind=i4):: i,j,left,right,last
+    real(kind=sp) :: temp,p,next
 
     last=size(array)
 
@@ -431,9 +431,9 @@ contains
 
 
   subroutine pair_insertion_sort(array)
-    real, intent(inout) :: array(:)
-    integer :: i,j,last
-    real :: t1,t2
+    real(kind=sp), intent(inout) :: array(:)
+    integer(kind=i4):: i,j,last
+    real(kind=sp) :: t1,t2
 
     last=size(array)
     do i=2,last-1,2
@@ -466,9 +466,9 @@ contains
 
   subroutine merge_arrays(a,b,out)
     ! routine used by merge_sort()
-    real, intent(in) :: a(:),b(:)
-    real, intent(out) :: out(:)
-    integer :: ai,bi,oi,i
+    real(kind=sp), intent(in) :: a(:),b(:)
+    real(kind=sp), intent(out) :: out(:)
+    integer(kind=i4):: ai,bi,oi,i
 
     ai=1
     bi=1
@@ -504,9 +504,9 @@ contains
   recursive subroutine merge_sort(array)
     ! With a little skill, the extra copy of "array=temp"
     ! can be avoided
-    real, intent(inout) :: array(:)
-    real, allocatable :: temp(:)
-    integer :: last
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp), allocatable :: temp(:)
+    integer(kind=i4):: last
 
     last=size(array)
 
@@ -526,9 +526,9 @@ contains
   recursive subroutine alt_merge_sort(array)
     ! Alternate merges between array and temp
     ! to avoid copy
-    real, intent(inout) :: array(:)
-    real, allocatable :: temp(:)
-    integer :: last
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp), allocatable :: temp(:)
+    integer(kind=i4):: last
 
     last=size(array)
 
@@ -552,9 +552,9 @@ contains
 
   subroutine selection_sort(array)
     ! This version uses Fortran's minloc intrinsic
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: i,j
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: i,j
 
     do i=1,size(array)-1
        j=minloc(array(i:),1)+i-1
@@ -567,9 +567,9 @@ contains
 
   subroutine inline_selection_sort(array)
     ! This version does not use Fortran's minloc intrinsic
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: i,j,k
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: i,j,k
 
     do i=1,size(array)-1
        temp=array(i)
@@ -591,8 +591,8 @@ contains
     ! The sequence (3**k-1)/2 used below is given by Knuth
     ! The sort relies on the insertion sort of nearly sorted
     ! data being fast (i.e. not order N**2)
-    real, intent(inout) :: array(:)
-    integer :: i,interval,last
+    real(kind=sp), intent(inout) :: array(:)
+    integer(kind=i4):: i,interval,last
 
     interval=1
     last=size(array)
@@ -613,9 +613,9 @@ contains
 
   subroutine bubble_sort(array)
 
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: i,j,last
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: i,j,last
 
     last=size(array)
     do i=last-1,1,-1
@@ -631,9 +631,9 @@ contains
   end subroutine bubble_sort
 
   subroutine heap_sort(array)
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: i,last
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: i,last
 
     last=size(array)
 
@@ -653,9 +653,9 @@ contains
   end subroutine heap_sort
 
   recursive subroutine heapify(array,root)
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: left,right,root,last,largest
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: left,right,root,last,largest
 
     last=size(array)
     left=2*root
@@ -682,9 +682,9 @@ contains
 
   subroutine heap_sort_nr(array)
     ! The same but with a non-recursive heapify
-    real, intent(inout) :: array(:)
-    real :: temp
-    integer :: i,last
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: temp
+    integer(kind=i4):: i,last
 
     last=size(array)
 
@@ -705,9 +705,9 @@ contains
 
   subroutine heapify_nr(array,i)
     ! A non-recursive heapify
-    real, intent(inout) :: array(:)
-    real :: root_val
-    integer :: i,left,right,root,last,largest
+    real(kind=sp), intent(inout) :: array(:)
+    real(kind=sp) :: root_val
+    integer(kind=i4):: i,left,right,root,last,largest
 
     last=size(array)
     root=i
@@ -746,9 +746,9 @@ contains
   ! http://code.google.com/archive/p/combsortcs2p-and-other-sorting-algorithms
 
   subroutine smoothsort(array)
-    real, intent(inout) :: array(:)
+    real(kind=sp), intent(inout) :: array(:)
     integer(i64) :: mask
-    integer :: offset
+    integer(kind=i4):: offset
 
     if (size(array).le.1) return
 
@@ -758,10 +758,10 @@ contains
   end subroutine smoothsort
 
   subroutine smooth_heapify(array,mask,offset)
-    real, intent(inout) :: array(0:)
-    integer(i64), intent(out) :: mask
-    integer, intent(out) :: offset
-    integer :: i,last
+    real(kind=sp), intent(inout) :: array(0:)
+    integer(kind=i8), intent(out) :: mask
+    integer(kind=i4), intent(out) :: offset
+    integer(kind=i4):: i,last
     logical :: wbf
 
     mask=1
@@ -790,9 +790,9 @@ contains
 
   end subroutine smooth_heapify
   subroutine smooth_extract(array,mask,offset)
-    real, intent(inout) :: array(0:)
-    integer :: i,j,last,ch(2)
-    integer(i64),value :: mask
+    real(kind=sp), intent(inout) :: array(0:)
+    integer(kind=i4):: i,j,last,ch(2)
+    integer(kind=i8),value :: mask
     integer, value :: offset
 
     last=size(array)
@@ -821,9 +821,9 @@ contains
 
 
   subroutine sift_in(array,root,sz)
-    real, intent(inout) :: array(0:)
-    real :: tmp
-    integer :: left,right,next
+    real(kind=sp), intent(inout) :: array(0:)
+    real(kind=sp) :: tmp
+    integer(kind=i4):: left,right,next
     integer,value :: root,sz
 
     if (sz.lt.2) return
@@ -855,10 +855,10 @@ contains
   end subroutine sift_in
 
   subroutine interheap_sift(array,root,mask,offset)
-    real, intent(inout) :: array(0:)
-    real :: tmp,mx
-    integer :: left,right,next
-    integer(i64),value :: mask
+    real(kind=sp), intent(inout) :: array(0:)
+    real(kind=sp) :: tmp,mx
+    integer(kind=i4):: left,right,next
+    integer(kind=i8),value :: mask
     integer, value :: root,offset
 
     tmp=array(root)
