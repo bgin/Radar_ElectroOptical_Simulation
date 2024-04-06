@@ -131,7 +131,7 @@ attributes(device) subroutine airya ( x, ai, bi, ad, bd )
   real(kind=sp) ::  vk2
   real(kind=sp) ::  vy1
   real(kind=sp) ::  vy2
-  real(kind=sp) ::  x
+  real(kind=sp), value ::  x
   real(kind=sp) ::  xa
   real(kind=sp) ::  xq
   real(kind=sp) ::  z
@@ -235,7 +235,7 @@ attributes(device) subroutine airyb ( x, ai, bi, ad, bd )
   real(kind=sp) ::  sr3
   real(kind=sp) ::  ssa
   real(kind=sp) ::  ssb
-  real(kind=sp) ::  x
+  real(kind=sp), value ::  x
   real(kind=sp) ::  xa
   real(kind=sp) ::  xar
   real(kind=sp) ::  xcs
@@ -479,19 +479,19 @@ attributes(device) subroutine ajyik ( x, vj1, vj2, vy1, vy2, vi1, vi2, vk1, vk2 
   real(kind=sp) ::  vv0
   real(kind=sp) ::  vy1
   real(kind=sp) ::  vy2
-  real(kind=sp) ::  x
+  real(kind=sp), value ::  x
   real(kind=sp) ::  x2
   real(kind=sp) ::  xk
 
   !if ( x == 0.0_sp ) then
   !  vj1 = 0.0_sp
   !  vj2 = 0.0_sp
-  !  vy1 = -1.0D+300
-  !  vy2 = 1.0D+300
+  !  vy1 = -1.0e+300
+  !  vy2 = 1.0e+300
   !  vi1 = 0.0_sp
   !  vi2 = 0.0_sp
-  !  vk1 = -1.0D+300
-  !  vk2 = -1.0D+300
+  !  vk1 = -1.0e+300
+  !  vk2 = -1.0e+300
   !  return
   !end if
 
@@ -751,9 +751,9 @@ attributes(device) subroutine beta ( p, q, bt )
   real(kind=sp) ::  gp
   real(kind=sp) ::  gpq
   real(kind=sp) ::  gq
-  real(kind=sp) ::  p
+  real(kind=sp), value ::  p
   real(kind=sp) ::  ppq
-  real(kind=sp) ::  q
+  real(kind=sp), value ::  q
 
   call gamma ( p, gp )
   call gamma ( q, gq )
@@ -795,7 +795,7 @@ attributes(device) subroutine cerf ( z, cer, cder )
 ! 
 !  Parameters:
 !
-!    Input, complex(kind=sp) :: , the argument.
+!    Input, complex(kind=sp) :: z , the argument.
 !
 !    Output, complex(kind=sp) ::  CER, CDER, the values of erf(z) and erf'(z).
 !
@@ -825,11 +825,11 @@ attributes(device) subroutine cerf ( z, cer, cder )
   real(kind=sp) ::  x
   real(kind=sp) ::  x2
   real(kind=sp) ::  y
-  complex(kind=sp) ::  z
+  complex(kind=sp), value ::  z
 
   eps = 1.0e-12_sp
   pi = 3.141592653589793_sp
-  x = real ( z, kind = 8 )
+  x = real ( z, kind=sp )
   y = imag ( z )
   x2 = x * x
 
@@ -899,7 +899,7 @@ attributes(device) subroutine cerf ( z, cer, cder )
 
   end if
 
-  cer = cmplx ( err, eri, kind = 8 )
+  cer = cmplx ( err, eri, kind=sp )
   cder = 2.0_sp / sqrt ( pi ) * exp ( - z * z )
 
   
@@ -950,7 +950,7 @@ attributes(device) subroutine cerror ( z, cer )
   complex(kind=sp) ::  cs
   integer(kind=i4) ::  k
   real(kind=sp) ::  pi
-  complex(kind=sp) ::  z
+  complex(kind=sp), value ::  z
   complex(kind=sp) ::  z1
 
   a0 = abs ( z )
@@ -1049,7 +1049,7 @@ attributes(device) subroutine cfc ( z, zf, zd )
   real(kind=sp) ::  w0
   real(kind=sp) ::  wa
   real(kind=sp) ::  wa0
-  complex(kind=sp) ::  z
+  complex(kind=sp), value ::  z
   complex(kind=sp) ::  z0
   complex(kind=sp) ::  zd
   complex(kind=sp) ::  zf
@@ -1175,7 +1175,7 @@ attributes(device) subroutine cfs ( z, zf, zd )
   real(kind=sp) ::  w0
   real(kind=sp) ::  wb
   real(kind=sp) ::  wb0
-  complex(kind=sp) ::  z
+  complex(kind=sp), value ::  z
   complex(kind=sp) ::  z0
   complex(kind=sp) ::  zd
   complex(kind=sp) ::  zf
@@ -1312,7 +1312,7 @@ attributes(device) subroutine cgama ( x, y, kf, gr, gi )
   real(kind=sp) ::  gr1
   integer(kind=i4) ::  j
   integer(kind=i4) ::  k
-  integer(kind=i4) ::  kf
+  integer(kind=i4), value ::  kf
   integer(kind=i4) ::  na
   real(kind=sp) ::  pi
   real(kind=sp) ::  si
@@ -1321,10 +1321,10 @@ attributes(device) subroutine cgama ( x, y, kf, gr, gi )
   real(kind=sp) ::  th
   real(kind=sp) ::  th1
   real(kind=sp) ::  th2
-  real(kind=sp) ::  x
+  real(kind=sp), value ::  x
   real(kind=sp) ::  x0
   real(kind=sp) ::  x1
-  real(kind=sp) ::  y
+  real(kind=sp), value ::  y
   real(kind=sp) ::  y1
   real(kind=sp) ::  z1
   real(kind=sp) ::  z2
@@ -1398,10 +1398,2460 @@ attributes(device) subroutine cgama ( x, y, kf, gr, gi )
 end subroutine cgama
 
 
+attributes(device) subroutine cik01 ( z, cbi0, cdi0, cbi1, cdi1, cbk0, cdk0, cbk1, cdk1 )
+
+!*****************************************************************************80
+!
+!! CIK01: modified Bessel I0(z), I1(z), K0(z) and K1(z) for complex argument.
+!
+!  Discussion:
+!
+!    This procedure computes the modified Bessel functions I0(z), I1(z), 
+!    K0(z), K1(z), and their derivatives for a complex argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    31 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, complex(kind=sp) Z, the argument.
+!
+!    Output, complex(kind=sp) CBI0, CDI0, CBI1, CDI1, CBK0, CDK0, CBK1, 
+!    CDK1, the values of I0(z), I0'(z), I1(z), I1'(z), K0(z), K0'(z), K1(z), 
+!    and K1'(z).
+!
+  implicit none
+
+  real(kind=sp),dimension ( 12 ) :: a = (/ &
+    0.125_sp,           7.03125D-02,&
+    7.32421875D-02,      1.1215209960938D-01,&
+    2.2710800170898D-01, 5.7250142097473D-01,&
+    1.7277275025845_sp, 6.0740420012735_sp,&
+    2.4380529699556e+01, 1.1001714026925e+02,&
+    5.5133589612202e+02, 3.0380905109224e+03 /)
+  real(kind=sp) a0
+  real(kind=sp),dimension ( 10 ) :: a1 = (/ &
+    0.125_sp,            0.2109375_sp, &
+    1.0986328125_sp,     1.1775970458984e+01, &
+    2.1461706161499_sp2, 5.9511522710323e+03, &
+    2.3347645606175e+05,  1.2312234987631e+07, &
+    8.401390346421e+08,   7.2031420482627e+10 /)
+  real(kind=sp),dimension ( 12 ) :: b = (/ &
+   -0.375_sp,           -1.171875D-01, &
+   -1.025390625D-01,     -1.4419555664063D-01, &
+   -2.7757644653320D-01, -6.7659258842468D-01, &
+   -1.9935317337513_sp, -6.8839142681099_sp, &
+   -2.7248827311269e+01, -1.2159789187654e+02, &
+   -6.0384407670507e+02, -3.3022722944809e+03 /)
+  complex(kind=sp) :: ca
+  complex(kind=sp) :: cb
+  complex(kind=sp) :: cbi0
+  complex(kind=sp) :: cbi1
+  complex(kind=sp) :: cbk0
+  complex(kind=sp) :: cbk1
+  complex(kind=sp) :: cdi0
+  complex(kind=sp) :: cdi1
+  complex(kind=sp) :: cdk0
+  complex(kind=sp) :: cdk1
+  complex(kind=sp) :: ci
+  complex(kind=sp) :: cr
+  complex(kind=sp) :: cs
+  complex(kind=sp) :: ct
+  complex(kind=sp) :: cw
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  real(kind=sp) :: pi
+  real(kind=sp) :: w0
+  complex(kind=sp), value :: z
+  complex(kind=sp) :: z1
+  complex(kind=sp) :: z2
+  complex(kind=sp) :: zr
+  complex(kind=sp) :: zr2
+
+  pi = 3.141592653589793_sp
+  ci = cmplx ( 0.0_sp, 1.0_sp, kind=sp )
+  a0 = abs ( z )
+  z2 = z * z
+  z1 = z
+
+  if ( a0 .eq. 0.0_sp ) then
+    cbi0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cbi1 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    cdi0 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    cdi1 = cmplx ( 0.5_sp, 0.0_sp, kind=sp )
+    cbk0 = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+    cbk1 = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+    cdk0 = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+    cdk1 = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+    return
+  end if
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    z1 = -z
+  end if
+
+  if ( a0 <= 18.0_sp ) then
+
+    cbi0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 50
+      cr = 0.25_sp * cr * z2 / ( k * k )
+      cbi0 = cbi0 + cr
+      if ( abs ( cr / cbi0 ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cbi1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 50
+      cr = 0.25_sp * cr * z2 / ( k * ( k + 1 ) )
+      cbi1 = cbi1 + cr
+      if ( abs ( cr / cbi1 ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cbi1 = 0.5_sp * z1 * cbi1
+
+  else
+
+    if ( a0 < 35.0_sp ) then
+      k0 = 12
+    else if ( a0 < 50.0_sp ) then
+      k0 = 9
+    else
+      k0 = 7
+    end if
+
+    ca = exp ( z1 ) / sqrt ( 2.0_sp * pi * z1 )
+    cbi0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    zr = 1.0_sp / z1
+    do k = 1, k0
+      cbi0 = cbi0 + a(k) * zr ** k !! cbi0n, n=1,...8, for Sum(cbi01,cbi02, ....cbi08
+    end do
+    cbi0 = ca * cbi0
+    cbi1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, k0
+      cbi1 = cbi1 + b(k) * zr ** k
+    end do
+    cbi1 = ca * cbi1
+
+  end if
+
+  if ( a0 <= 9.0_sp ) then
+
+    cs = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    ct = - log ( 0.5_sp * z1 ) - 0.5772156649015329_sp
+    w0 = 0.0_sp
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 50
+      w0 = w0 + 1.0_sp / k
+      cr = 0.25_sp * cr / ( k * k ) * z2
+      cs = cs + cr * ( w0 + ct )
+      if ( abs ( ( cs - cw ) / cs ) < 1.0e-15_sp ) then
+        exit
+      end if
+      cw = cs
+    end do
+
+    cbk0 = ct + cs
+
+  else
+
+    cb = 0.5_sp / z1
+    zr2 = 1.0_sp / z2
+    cbk0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 10
+      cbk0 = cbk0 + a1(k) * zr2 ** k
+    end do
+    cbk0 = cb * cbk0 / cbi0
+
+  end if
+
+  cbk1 = ( 1.0_sp / z1 - cbi1 * cbk0 ) / cbi0
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+
+    if ( imag ( z ) < 0.0_sp ) then
+      cbk0 = cbk0 + ci * pi * cbi0
+      cbk1 = - cbk1 + ci * pi * cbi1
+    else
+      cbk0 = cbk0 - ci * pi * cbi0
+      cbk1 = - cbk1 - ci * pi * cbi1
+    end if
+
+    cbi1 = - cbi1
+
+  end if
+
+  cdi0 = cbi1
+  cdi1 = cbi0 - 1.0_sp / z * cbi1
+  cdk0 = - cbk1
+  cdk1 = - cbk0 - 1.0_sp / z * cbk1
+
+  
+end subroutine cik01
+
+
+attributes(device) subroutine ciklv ( v, z, cbiv, cdiv, cbkv, cdkv )
+
+!*****************************************************************************80
+!
+!! CIKLV: modified Bessel functions Iv(z), Kv(z), complex argument, large order.
+!
+!  Discussion:
+!
+!    This procedure computes modified Bessel functions Iv(z) and
+!    Kv(z) and their derivatives with a complex argument and a large order.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    31 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) V, the order of Iv(z) and Kv(z).
+!
+!    Input, complex(kind=sp) Z, the argument.
+!
+!    Output, real(kind=sp) CBIV, CDIV, CBKV, CDKV, the values of
+!    Iv(z), Iv'(z), Kv(z), Kv'(z).
+!
+  implicit none
+
+  real(kind=sp) :: a(91)
+  complex(kind=sp) :: cbiv
+  complex(kind=sp) :: cbkv
+  complex(kind=sp) :: cdiv
+  complex(kind=sp) :: cdkv
+  complex(kind=sp) :: ceta
+  complex(kind=sp) :: cf(12)
+  complex(kind=sp) :: cfi
+  complex(kind=sp) :: cfk
+  complex(kind=sp) :: csi
+  complex(kind=sp) :: csk
+  complex(kind=sp) :: ct
+  complex(kind=sp) :: ct2
+  complex(kind=sp) :: cws
+  integer(kind=i4) :: i
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  integer(kind=i4) :: l
+  integer(kind=i4) :: l0
+  integer(kind=i4) :: lf
+  real(kind=sp) :: pi
+  real(kind=sp), value :: v
+  real(kind=sp) :: v0
+  real(kind=sp) :: vr
+  complex(kind=sp), value :: z
+
+  pi = 3.141592653589793_sp
+  km = 12
+  call cjk ( km, a )
+
+  do l = 1, 0, -1
+
+    v0 = v - l
+    cws = sqrt ( 1.0_sp + ( z / v0 ) * ( z / v0 ) )
+    ceta = cws + log ( z / v0 / ( 1.0_sp + cws ) )
+    ct = 1.0_sp / cws
+    ct2 = ct * ct
+    do k = 1, km
+      l0 = k * ( k + 1 ) / 2 + 1
+      lf = l0 + k
+      cf(k) = a(lf)
+      do i = lf - 1, l0, -1
+        cf(k) = cf(k) * ct2 + a(i)
+      end do
+      cf(k) = cf(k) * ct ** k
+    end do
+    vr = 1.0_sp / v0
+    csi = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, km
+      csi = csi + cf(k) * vr ** k
+    end do
+    cbiv = sqrt ( ct / ( 2.0_sp * pi * v0 ) ) * exp ( v0 * ceta ) * csi
+    if ( l == 1 ) then
+      cfi = cbiv
+    end if
+    csk = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, km
+      csk = csk + ( - 1 ) ** k * cf(k) * vr ** k
+    end do
+    cbkv = sqrt ( pi * ct / ( 2.0_sp * v0 ) ) * exp ( - v0 * ceta ) * csk
+
+    if ( l == 1 ) then
+      cfk = cbkv
+    end if
+
+  end do
+
+  cdiv =   cfi - v / z * cbiv
+  cdkv = - cfk - v / z * cbkv
+
+  
+end subroutine ciklv
+
+
+attributes(device) subroutine ciknb ( n, z, nm, cbi, cdi, cbk, cdk )
+
+!*****************************************************************************80
+!
+!! CIKNB computes complex modified Bessel functions In(z) and Kn(z).
+!
+!  Discussion:
+!
+!    This procedure also evaluates the derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    30 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of In(z) and Kn(z).
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, complex(kind=sp) ::  CB((0:N), CDI(0:N), CBK(0:N), CDK(0:N), 
+!    the values of In(z), In'(z), Kn(z), Kn'(z).
+!
+  implicit none
+
+  integer(kind=i4), value :: n
+
+  real(kind=sp) ::  a0
+  complex(kind=sp) ::  c
+  complex(kind=sp) ::  ca0
+  complex(kind=sp) ::  cbi(0:n)
+  complex(kind=sp) ::  cbkl
+  complex(kind=sp) ::  cbs
+  complex(kind=sp) ::  cdi(0:n)
+  complex(kind=sp) ::  cbk(0:n)
+  complex(kind=sp) ::  cdk(0:n)
+  complex(kind=sp) ::  cf
+  complex(kind=sp) ::  cf0
+  complex(kind=sp) ::  cf1
+  complex(kind=sp) ::  cg
+  complex(kind=sp) ::  cg0
+  complex(kind=sp) ::  cg1
+  complex(kind=sp) ::  ci
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  cs0
+  complex(kind=sp) ::  csk0
+  real(kind=sp) ::  el
+  real(kind=sp) ::  fac
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  integer(kind=i4) :: l
+  integer(kind=i4) :: m
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  vt
+  complex(kind=sp), value ::  z
+  complex(kind=sp) ::  z1
+
+  pi = 3.141592653589793_sp
+  el = 0.57721566490153_sp
+  a0 = abs ( z )
+  nm = n
+
+  !if ( a0 < 1.0D-100 ) then
+  !  do k = 0, n
+  !    cbi(k) = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+  !    cbk(k) = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !    cdi(k) = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+  !    cdk(k) = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !  end do
+  !  cbi(0) = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+  !  cdi(1) = cmplx ( 0.5_sp, 0.0_sp, kind=sp ) 
+   ! return
+  !end if
+
+  ci = cmplx ( 0.0_sp, 1.0_sp, kind=sp )
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    z1 = -z
+  else
+    z1 = z
+  end if
+
+  if ( n == 0 ) then
+    nm = 1
+  end if
+
+  m = msta1 ( a0, 200 )
+
+  if ( m < nm ) then
+    nm = m
+  else
+    m = msta2 ( a0, nm, 15 )
+  end if
+
+  cbs = 0.0_sp
+  csk0 = 0.0_sp
+  cf0 = 0.0_sp
+  cf1 = huge(1.0_sp,kind=sp)
+
+  do k = m, 0, -1
+    cf = 2.0_sp * ( k + 1.0_sp ) * cf1 / z1 + cf0
+    if ( k <= nm ) then
+      cbi(k) = cf
+    end if
+    if ( k /= 0 .and. k == 2 * int ( k / 2 ) ) then
+      csk0 = csk0 + 4.0_sp * cf / k
+    end if
+    cbs = cbs + 2.0_sp * cf
+    cf0 = cf1
+    cf1 = cf
+  end do
+
+  cs0 = exp ( z1 ) / ( cbs - cf )
+
+  do k = 0, nm
+    cbi(k) = cs0 * cbi(k)
+  end do
+
+  if ( a0 <= 9.0_sp ) then
+
+    cbk(0) = - ( log ( 0.5_sp * z1 ) + el ) * cbi(0) + cs0 * csk0
+    cbk(1) = ( 1.0_sp / z1 - cbi(1) * cbk(0) ) / cbi(0)
+
+  else
+
+    ca0 = sqrt ( pi / ( 2.0_sp * z1 ) ) * exp ( -z1 )
+
+    if ( a0 < 25.0_sp ) then
+      k0 = 16
+    else if ( a0 < 80.0_sp ) then
+      k0 = 10
+    else if ( a0 < 200.0_sp ) then
+      k0 = 8
+    else
+      k0 = 6
+    end if
+
+    do l = 0, 1
+      cbkl = 1.0_sp
+      vt = 4.0_sp * l
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, k0
+        cr = 0.125_sp * cr &
+          * ( vt - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * z1 )
+        cbkl = cbkl + cr
+      end do
+      cbk(l) = ca0 * cbkl
+    end do
+  end if
+
+  cg0 = cbk(0)
+  cg1 = cbk(1)
+  do k = 2, nm
+    cg = 2.0_sp * ( k - 1.0_sp ) / z1 * cg1 + cg0
+    cbk(k) = cg
+    cg0 = cg1
+    cg1 = cg
+  end do
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    fac = 1.0_sp
+    do k = 0, nm
+      if ( imag ( z ) < 0.0_sp ) then
+        cbk(k) = fac * cbk(k) + ci * pi * cbi(k)
+      else
+        cbk(k) = fac * cbk(k) - ci * pi * cbi(k)
+      end if
+      cbi(k) = fac * cbi(k)
+      fac = - fac
+    end do
+  end if
+
+  cdi(0) = cbi(1)
+  cdk(0) = -cbk(1)
+  do k = 1, nm
+    cdi(k) = cbi(k-1) - k / z * cbi(k)
+    cdk(k) = - cbk(k-1) - k / z * cbk(k)
+  end do
+
+end subroutine ciknb
+
+
+attributes(device) subroutine cikva ( v, z, vm, cbi, cdi, cbk, cdk )
+
+!*****************************************************************************80
+!
+!! CIKVA: modified Bessel functions Iv(z), Kv(z), arbitrary order, complex.
+!
+!  Discussion:
+!
+!    Compute the modified Bessel functions Iv(z), Kv(z)
+!    and their derivatives for an arbitrary order and
+!    complex argument
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    31 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:       
+!
+!    Input, real(kind=sp) ::  V, the order of the functions.
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, real(kind=sp) ::  VM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  CBI(0:N), CDI(0:N), CBK(0:N), CDK(0:N),
+!    the values of In+v0(z), In+v0'(z), Kn+v0(z), Kn+v0'(z).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  complex(kind=sp) ::  ca
+  complex(kind=sp) ::  ca1
+  complex(kind=sp) ::  ca2
+  complex(kind=sp) ::  cb
+  complex(kind=sp) ::  cbi(0:*)
+  complex(kind=sp) ::  cbi0
+  complex(kind=sp) ::  cdi(0:*)
+  complex(kind=sp) ::  cbk(0:*)
+  complex(kind=sp) ::  cbk0
+  complex(kind=sp) ::  cbk1
+  complex(kind=sp) ::  cdk(0:*)
+  complex(kind=sp) ::  cf
+  complex(kind=sp) ::  cf1
+  complex(kind=sp) ::  cf2
+  complex(kind=sp) ::  cg0
+  complex(kind=sp) ::  cg1
+  complex(kind=sp) ::  cgk
+  complex(kind=sp) ::  ci
+  complex(kind=sp) ::  ci0
+  complex(kind=sp) ::  cp
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  cr1
+  complex(kind=sp) ::  cr2
+  complex(kind=sp) ::  cs
+  complex(kind=sp) ::  csu
+  complex(kind=sp) ::  ct
+  complex(kind=sp) ::  cvk
+  real(kind=sp) ::  gan
+  real(kind=sp) ::  gap
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  integer(kind=i4) :: m
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: n
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  piv
+  real(kind=sp), value ::  v
+  real(kind=sp) ::  v0
+  real(kind=sp) ::  v0n
+  real(kind=sp) ::  v0p
+  real(kind=sp) ::  vm
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  ws
+  real(kind=sp) ::  ws0
+  complex(kind=sp), value ::  z
+  complex(kind=sp) ::  z1
+  complex(kind=sp) ::  z2
+
+  pi = 3.141592653589793_sp
+  ci = cmplx ( 0.0_sp, 1.0_sp, kind=sp )
+  a0 = abs ( z )
+  z1 = z
+  z2 = z * z
+  n = int ( v )
+  v0 = v - n
+  piv = pi * v0
+  vt = 4.0_sp * v0 * v0
+
+  if ( n == 0 ) then
+    n = 1
+  end if
+
+  !if ( a0 < 1.0D-100 ) then
+  !
+  !  do k = 0, n
+  !    cbi(k) = 0.0_sp
+  !    cdi(k) = 0.0_sp
+  !    cbk(k) = -1.0e+300
+  !    cdk(k) = 1.0e+300
+  ! ! end do
+  !
+  !  if ( v0 == 0.0_sp ) then
+  !    cbi(0) = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+  !    cdi(1) = cmplx ( 0.5_sp, 0.0_sp, kind=sp )
+  !  end if
+  !
+  !  vm = v
+  !  return
+  !
+  !end if
+
+  if ( a0 < 35.0_sp ) then
+    k0 = 14
+  else if ( a0 < 50.0_sp ) then
+    k0 = 10
+  else
+    k0 = 8
+  end if
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    z1 = -z
+  end if
+
+  if ( a0 < 18.0_sp ) then
+
+    if ( v0 == 0.0_sp ) then
+      ca1 = cmplx (1.0_sp, 0.0_sp, kind=sp )
+    else
+      v0p = 1.0_sp + v0
+      call gamma ( v0p, gap )
+      ca1 = ( 0.5_sp * z1 ) ** v0 / gap
+    end if
+
+    ci0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 50
+      cr = 0.25_sp * cr * z2 / ( k * ( k + v0 ) )
+      ci0 = ci0 + cr
+      if ( abs ( cr ) < abs ( ci0 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cbi0 = ci0 * ca1
+
+  else
+
+    ca = exp ( z1 ) / sqrt ( 2.0_sp * pi * z1 )
+    cs = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, k0
+      cr = - 0.125_sp * cr &
+        * ( vt - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * z1 )
+      cs = cs + cr
+    end do
+    cbi0 = ca * cs
+
+  end if
+
+  m = msta1 ( a0, 200 )
+
+  if ( m < n ) then
+     n = m
+  else
+     m = msta2 ( a0, n, 15 )
+  end if
+
+  cf2 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+  cf1 = cmplx ( 1.0e-30_sp, 0.0_sp, kind=sp )
+  do k = m, 0, -1
+    cf = 2.0_sp * ( v0 + k + 1.0_sp ) / z1 * cf1 + cf2
+    if ( k <= n ) then
+      cbi(k) = cf
+    end if
+    cf2 = cf1
+    cf1 = cf
+  end do
+
+  cs = cbi0 / cf
+  do k = 0, n
+    cbi(k) = cs * cbi(k)
+  end do
+
+  if ( a0 <= 9.0_sp ) then
+
+    if ( v0 == 0.0_sp ) then
+      ct = - log ( 0.5_sp * z1 ) - 0.5772156649015329_sp
+      cs = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+      w0 = 0.0_sp
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 50
+        w0 = w0 + 1.0_sp / k
+        cr = 0.25_sp * cr / ( k * k ) * z2
+        cp = cr * ( w0 + ct )
+        cs = cs + cp
+        if ( 10 <= k .and. abs ( cp / cs ) < 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      cbk0 = ct + cs
+
+    else
+
+      v0n = 1.0_sp - v0
+      call gamma ( v0n, gan )
+      ca2 = 1.0_sp / ( gan * ( 0.5_sp * z1 ) ** v0 )
+      ca1 = ( 0.5_sp * z1 ) ** v0 / gap
+      csu = ca2 - ca1
+      cr1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      cr2 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 50
+        cr1 = 0.25_sp * cr1 * z2 / ( k * ( k - v0 ) )
+        cr2 = 0.25_sp * cr2 * z2 / ( k * ( k + v0 ) )
+        csu = csu + ca2 * cr1 - ca1 * cr2
+        ws = abs ( csu )
+        if ( 10 <= k .and. abs ( ws - ws0 ) / ws < 1.0e-15_sp ) then
+          exit
+        end if
+        ws0 = ws
+      end do
+
+      cbk0 = 0.5_sp * pi * csu / sin ( piv )
+
+    end if
+
+  else
+
+    cb = exp ( - z1 ) * sqrt ( 0.5_sp * pi / z1 )
+    cs = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, k0
+      cr = 0.125_sp * cr &
+        * ( vt - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * z1 )
+      cs = cs + cr
+    end do
+    cbk0 = cb * cs
+
+  end if
+
+  cbk1 = ( 1.0_sp / z1 - cbi(1) * cbk0 ) / cbi(0)
+  cbk(0) = cbk0
+  cbk(1) = cbk1
+  cg0 = cbk0
+  cg1 = cbk1
+
+  do k = 2, n
+    cgk = 2.0_sp * ( v0 + k - 1.0_sp ) / z1 * cg1 + cg0
+    cbk(k) = cgk
+    cg0 = cg1
+    cg1 = cgk
+  end do
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    do k = 0, n
+      cvk = exp ( ( k + v0 ) * pi * ci )
+      if ( imag ( z ) < 0.0_sp ) then
+        cbk(k) = cvk * cbk(k) + pi * ci * cbi(k)
+        cbi(k) = cbi(k) / cvk
+      else if ( 0.0_sp < imag ( z ) ) then
+        cbk(k) = cbk(k) / cvk - pi * ci * cbi(k)
+        cbi(k) = cvk * cbi(k)
+      end if
+    end do
+  end if
+
+  cdi(0) = v0 / z * cbi(0) + cbi(1)
+  cdk(0) = v0 / z * cbk(0) - cbk(1)
+  do k = 1, n
+    cdi(k) = - ( k + v0 ) / z * cbi(k) + cbi(k-1)
+    cdk(k) = - ( k + v0 ) / z * cbk(k) - cbk(k-1)
+  end do
+
+  vm = n + v0
+  
+end subroutine cikva
+
+
+attributes(device) subroutine cisia ( x, ci, si )
+
+!*****************************************************************************80
+!
+!! CISIA computes cosine Ci(x) and sine integrals Si(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    03 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument of Ci(x) and Si(x).
+!
+!    Output, real(kind=sp) ::  CI, SI, the values of Ci(x) and Si(x).
+!
+  implicit none
+
+  real(kind=sp) ::  bj(101)
+  real(kind=sp) ::  ci
+  real(kind=sp) ::  el
+  real(kind=sp) ::  eps
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  real(kind=sp) ::  p2
+  real(kind=sp) ::  si
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  xa
+  real(kind=sp) ::  xa0
+  real(kind=sp) ::  xa1
+  real(kind=sp) ::  xcs
+  real(kind=sp) ::  xf
+  real(kind=sp) ::  xg
+  real(kind=sp) ::  xg1
+  real(kind=sp) ::  xg2
+  real(kind=sp) ::  xr
+  real(kind=sp) ::  xs
+  real(kind=sp) ::  xss
+
+  p2 = 1.570796326794897_sp
+  el = 0.5772156649015329_sp
+  eps = 1.0e-15_sp
+  x2 = x * x
+
+  if ( x == 0.0_sp ) then
+
+    ci = -huge(1.0_sp,kind=sp)
+    si = 0.0_sp
+
+  else if ( x <= 16.0_sp ) then
+
+    xr = -0.25_sp * x2
+    ci = el + log ( x ) + xr
+    do k = 2, 40
+      xr = -0.5_sp * xr * ( k - 1 ) / ( k * k * ( 2 * k - 1 ) ) * x2
+      ci = ci + xr
+      if ( abs ( xr ) < abs ( ci ) * eps ) then
+        exit
+      end if
+    end do
+
+    xr = x
+    si = x
+    do k = 1, 40
+      xr = -0.5_sp * xr * ( 2 * k - 1 ) / k / ( 4 * k * k + 4 * k + 1 ) * x2
+      si = si + xr
+      if ( abs ( xr ) < abs ( si ) * eps ) then
+        return
+      end if
+    end do
+
+  else if ( x <= 32.0_sp ) then
+
+    m = int ( 47.2_sp + 0.82_sp * x )
+    xa1 = 0.0_sp
+    xa0 = tiny(1.0_sp,kind=sp)
+    do k = m, 1, -1
+      xa = 4.0_sp * k * xa0 / x - xa1
+      bj(k) = xa
+      xa1 = xa0
+      xa0 = xa
+    end do
+    xs = bj(1)
+    do k = 3, m, 2
+      xs = xs + 2.0_sp * bj(k)
+    end do
+    bj(1) = bj(1) / xs
+    do k = 2, m
+      bj(k) = bj(k) / xs
+    end do
+    xr = 1.0_sp
+    xg1 = bj(1)
+    do k = 2, m
+      xr = 0.25_sp * xr * ( 2.0_sp * k - 3.0_sp ) **2 &
+        / ( ( k - 1.0_sp ) * ( 2.0_sp * k - 1.0_sp ) ** 2 ) * x
+      xg1 = xg1 + bj(k) * xr
+    end do
+
+    xr = 1.0_sp
+    xg2 = bj(1)
+    do k = 2, m
+      xr = 0.25_sp * xr * ( 2.0_sp * k - 5.0_sp )**2 &
+        / ( ( k-1.0_sp ) * ( 2.0_sp * k - 3.0_sp ) ** 2 ) * x
+      xg2 = xg2 + bj(k) * xr
+    end do
+
+    xcs = cos ( x / 2.0_sp )
+    xss = sin ( x / 2.0_sp )
+    ci = el + log ( x ) - x * xss * xg1 + 2.0 * xcs * xg2 - 2.0 * xcs * xcs
+    si = x * xcs * xg1 + 2.0 * xss * xg2 - sin ( x )
+
+  else
+
+    xr = 1.0_sp
+    xf = 1.0_sp
+    do k = 1, 9
+      xr = -2.0_sp * xr * k * ( 2 * k - 1 ) / x2
+      xf = xf + xr
+    end do
+    xr = 1.0_sp / x
+    xg = xr
+    do k = 1, 8
+      xr = -2.0_sp * xr * ( 2 * k + 1 ) * k / x2
+      xg = xg + xr
+    end do
+    ci = xf * sin ( x ) / x - xg * cos ( x ) / x
+    si = p2 - xf * cos ( x ) / x - xg * sin ( x ) / x
+
+  end if
+
+end subroutine cisia
+
+
+attributes(device) subroutine cisib ( x, ci, si )
+
+!*****************************************************************************80
+!
+!! CISIB computes cosine and sine integrals.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    20 March 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument of Ci(x) and Si(x).
+!
+!    Output, real(kind=sp) ::  CI, SI, the values of Ci(x) and Si(x).
+!
+  implicit none
+
+  real(kind=sp) ::  ci
+  real(kind=sp) ::  fx
+  real(kind=sp) ::  gx
+  real(kind=sp) ::  si
+  real(kind=sp), value ::  x
+  real(kind=sp) ::  x2
+
+  x2 = x * x
+
+  if ( x == 0.0_sp ) then
+
+    ci = -huge(1.0_sp,kind=sp)
+    si = 0.0_sp
+
+  else if ( x <= 1.0_sp ) then
+
+    ci = (((( -3.0e-08_sp        * x2 &
+             + 3.10e-06_sp     ) * x2 &
+             - 2.3148e-04_sp   ) * x2 &
+             + 1.041667e-02_sp ) * x2 &
+             - 0.25_sp     ) * x2 + 0.577215665_sp + log ( x )
+
+     si = (((( 3.1e-07_sp        * x2 &
+             - 2.834e-05_sp    ) * x2 &
+             + 1.66667e-03_sp  ) * x2 &
+             - 5.555556e-02_sp ) * x2 + 1.0_sp ) * x
+
+  else
+
+    fx = (((( x2              &
+      + 38.027264_sp  ) * x2 &
+      + 265.187033_sp ) * x2 &
+      + 335.67732_sp  ) * x2 &
+      + 38.102495_sp  ) /    &
+      (((( x2                 &
+      + 40.021433_sp  ) * x2 &
+      + 322.624911_sp ) * x2 &
+      + 570.23628_sp  ) * x2 &
+      + 157.105423_sp )
+
+    gx = (((( x2               &
+      + 42.242855_sp  ) * x2  &
+      + 302.757865_sp ) * x2  &
+      + 352.018498_sp ) * x2  &
+      + 21.821899_sp ) /      &
+      (((( x2                  &
+      + 48.196927_sp   ) * x2 &
+      + 482.485984_sp  ) * x2 &
+      + 1114.978885_sp ) * x2 &
+      + 449.690326_sp  ) / x
+
+    ci = fx * sin ( x ) / x - gx * cos ( x ) / x
+
+    si = 1.570796327_sp - fx * cos ( x ) / x - gx * sin ( x ) / x
+
+  end if
+
+  
+end subroutine cisib
+
+
+attributes(device) subroutine cjy01 ( z, cbj0, cdj0, cbj1, cdj1, cby0, cdy0, cby1, cdy1 )
+
+!*****************************************************************************80
+!
+!! CJY01: complexBessel functions, derivatives, J0(z), J1(z), Y0(z), Y1(z).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    02 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CBJ0, CDJ0, CBJ1, CDJ1, CBY0, CDY0, CBY1, 
+!    CDY1, the values of J0(z), J0'(z), J1(z), J1'(z), Y0(z), Y0'(z), 
+!    Y1(z), Y1'(z).
+!
+  implicit none
+
+  real(kind=sp)  ,  dimension ( 12 ) :: a = (/ &
+    -0.703125D-01,0.112152099609375_sp, &
+    -0.5725014209747314_sp,0.6074042001273483e+01, &
+    -0.1100171402692467e+03,0.3038090510922384e+04, &
+    -0.1188384262567832e+06,0.6252951493434797e+07, &
+    -0.4259392165047669e+09,0.3646840080706556e+11, &
+    -0.3833534661393944e+13,0.4854014686852901e+15 /)
+  real(kind=sp) ::  a0
+  real(kind=sp)  ,  dimension ( 12 ) :: a1 = (/ &
+    0.1171875_sp,-0.144195556640625_sp, &
+    0.6765925884246826_sp,-0.6883914268109947e+01, &
+    0.1215978918765359e+03,-0.3302272294480852e+04, &
+    0.1276412726461746e+06,-0.6656367718817688e+07, &
+    0.4502786003050393e+09,-0.3833857520742790e+11, &
+    0.4011838599133198e+13,-0.5060568503314727e+15 /)
+  real(kind=sp)  ,  dimension ( 12 ) :: b = (/ &
+    0.732421875D-01,-0.2271080017089844_sp, &
+    0.1727727502584457e+01,-0.2438052969955606e+02, &
+    0.5513358961220206e+03,-0.1825775547429318e+05, &
+    0.8328593040162893e+06,-0.5006958953198893e+08, &
+    0.3836255180230433e+10,-0.3649010818849833e+12, &
+    0.4218971570284096e+14,-0.5827244631566907e+16 /)
+  real(kind=sp)  ,  dimension ( 12 ) :: b1 = (/ &
+    -0.1025390625_sp,0.2775764465332031_sp, &
+    -0.1993531733751297e+01,0.2724882731126854e+02, &
+    -0.6038440767050702e+03,0.1971837591223663e+05, &
+    -0.8902978767070678e+06,0.5310411010968522e+08, &
+    -0.4043620325107754e+10,0.3827011346598605e+12, &
+    -0.4406481417852278e+14,0.6065091351222699e+16 /)
+  complex(kind=sp) ::  cbj0
+  complex(kind=sp) ::  cbj1
+  complex(kind=sp) ::  cby0
+  complex(kind=sp) ::  cby1
+  complex(kind=sp) ::  cdj0
+  complex(kind=sp) ::  cdj1
+  complex(kind=sp) ::  cdy0
+  complex(kind=sp) ::  cdy1
+  complex(kind=sp) ::  ci
+  complex(kind=sp) ::  cp
+  complex(kind=sp) ::  cp0
+  complex(kind=sp) ::  cp1
+  complex(kind=sp) ::  cq0
+  complex(kind=sp) ::  cq1
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  cs
+  complex(kind=sp) ::  ct1
+  complex(kind=sp) ::  ct2
+  complex(kind=sp) ::  cu
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  rp2
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  w1
+  complex(kind=sp), value ::  z
+  complex(kind=sp) ::  z1
+  complex(kind=sp) ::  z2
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+  rp2 = 2.0_sp / pi
+  ci = cmplx ( 0.0_sp, 1.0_sp )
+  a0 = abs ( z )
+  z2 = z * z
+  z1 = z
+
+  !if ( a0 .eq. 0.0_sp ) then
+  !  cbj0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+  !  cbj1 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+  !  cdj0 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+  !  cdj1 = cmplx ( 0.5_sp, 0.0_sp, kind=sp )
+  !  cby0 = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !  cby1 = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !  cdy0 = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !  cdy1 = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
+  !  return
+  !end if
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    z1 = -z
+  end if
+
+  if ( a0 .le. 12.0_sp ) then
+
+    cbj0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 40
+      cr = -0.25_sp * cr * z2 / ( k * k )
+      cbj0 = cbj0 + cr
+      if ( abs ( cr ) < abs ( cbj0 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cbj1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 40
+      cr = -0.25_sp * cr * z2 / ( k * ( k + 1.0_sp ) )
+      cbj1 = cbj1 + cr
+      if ( abs ( cr ) < abs ( cbj1 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cbj1 = 0.5_sp * z1 * cbj1
+    w0 = 0.0_sp
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cs = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 40
+      w0 = w0 + 1.0_sp / k
+      cr = -0.25_sp * cr / ( k * k ) * z2
+      cp = cr * w0
+      cs = cs + cp
+      if ( abs ( cp ) < abs ( cs ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cby0 = rp2 * ( log ( z1 / 2.0_sp ) + el ) * cbj0 - rp2 * cs
+    w1 = 0.0_sp
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cs = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 40
+      w1 = w1 + 1.0_sp / k
+      cr = -0.25_sp * cr / ( k * ( k + 1 ) ) * z2
+      cp = cr * ( 2.0_sp * w1 + 1.0_sp / ( k + 1.0_sp ) )
+      cs = cs + cp
+      if ( abs ( cp ) < abs ( cs ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    cby1 = rp2 * ( ( log ( z1 / 2.0_sp ) + el ) * cbj1 &
+      - 1.0_sp / z1 - 0.25_sp * z1 * cs )
+
+  else
+
+    if ( a0 < 35.0_sp ) then
+      k0 = 12
+    else if ( a0 < 50.0_sp ) then
+      k0 = 10
+    else
+      k0 = 8
+    end if
+
+    ct1 = z1 - 0.25_sp * pi
+    cp0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, k0
+      cp0 = cp0 + a(k) * z1 ** ( - 2 * k )
+    end do
+    cq0 = -0.125_sp / z1
+    do k = 1, k0
+      cq0 = cq0 + b(k) * z1 ** ( - 2 * k - 1 )
+    end do
+    cu = sqrt ( rp2 / z1 )
+    cbj0 = cu * ( cp0 * cos ( ct1 ) - cq0 * sin ( ct1 ) )
+    cby0 = cu * ( cp0 * sin ( ct1 ) + cq0 * cos ( ct1 ) )
+    ct2 = z1 - 0.75_sp * pi
+    cp1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, k0
+      cp1 = cp1 + a1(k) * z1 ** ( - 2 * k )
+    end do
+    cq1 = 0.375_sp / z1
+    do k = 1, k0
+      cq1 = cq1 + b1(k) * z1 ** ( - 2 * k - 1 )
+    end do
+    cbj1 = cu * ( cp1 * cos ( ct2 ) - cq1 * sin ( ct2 ) )
+    cby1 = cu * ( cp1 * sin ( ct2 ) + cq1 * cos ( ct2 ) )
+
+  end if
+
+  if ( real ( z, kind=sp ) < 0.0_sp ) then
+    if ( imag ( z ) < 0.0_sp ) then
+      cby0 = cby0 - 2.0_sp * ci * cbj0
+      cby1 = - ( cby1 - 2.0_sp * ci * cbj1 )
+    else
+      cby0 = cby0 + 2.0_sp * ci * cbj0
+      cby1 = - ( cby1 + 2.0_sp * ci * cbj1 )
+    end if
+    cbj1 = -cbj1
+  end if
+
+  cdj0 = -cbj1
+  cdj1 = cbj0 - 1.0_sp / z * cbj1
+  cdy0 = -cby1
+  cdy1 = cby0 - 1.0_sp / z * cby1
+
+end subroutine cjy01
+
+
+attributes(device) subroutine cjylv ( v, z, cbjv, cdjv, cbyv, cdyv )
+
+!*****************************************************************************80
+!
+!! CJYLV: Bessel functions Jv(z), Yv(z) of complex argument and large order v.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    25 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  V, the order of Jv(z) and Yv(z).
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CBJV, CDJV, CBYV, CDYV, the values of Jv(z), 
+!    Jv'(z), Yv(z), Yv'(z).
+!
+  implicit none
+
+  real(kind=sp) ::  a(91)
+  complex(kind=sp) ::  cbjv
+  complex(kind=sp) ::  cbyv
+  complex(kind=sp) ::  cdjv
+  complex(kind=sp) ::  cdyv
+  complex(kind=sp) ::  ceta
+  complex(kind=sp) ::  cf(12)
+  complex(kind=sp) ::  cfj
+  complex(kind=sp) ::  cfy
+  complex(kind=sp) ::  csj
+  complex(kind=sp) ::  csy
+  complex(kind=sp) ::  ct
+  complex(kind=sp) ::  ct2
+  complex(kind=sp) ::  cws
+  integer(kind=i4) :: i
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  integer(kind=i4) :: l
+  integer(kind=i4) :: l0
+  integer(kind=i4) :: lf
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  v
+  real(kind=sp) ::  v0
+  real(kind=sp) ::  vr
+  complex(kind=sp) ::  z
+
+  km = 12
+  call cjk ( km, a )
+  pi = 3.141592653589793_sp
+
+  do l = 1, 0, -1
+
+    v0 = v - l
+    cws = sqrt ( 1.0_sp - ( z / v0 ) * ( z / v0 ) )
+    ceta = cws + log ( z / v0 / ( 1.0_sp + cws ) )
+    ct = 1.0_sp / cws
+    ct2 = ct * ct
+
+    do k = 1, km
+      l0 = k * ( k + 1 ) / 2 + 1
+      lf = l0 + k
+      cf(k) = a(lf)
+      do i = lf - 1, l0, -1
+        cf(k) = cf(k) * ct2 + a(i)
+      end do
+      cf(k) = cf(k) * ct ** k
+    end do
+
+    vr = 1.0_sp / v0
+    csj = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, km
+      csj = csj + cf(k) * vr ** k
+    end do
+    cbjv = sqrt ( ct / ( 2.0_sp * pi * v0 ) ) * exp ( v0 * ceta ) * csj
+    if ( l == 1 ) then
+      cfj = cbjv
+    end if
+    csy = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, km
+      csy = csy + ( -1.0_sp ) ** k * cf(k) * vr ** k
+    end do
+    cbyv = - sqrt ( 2.0_sp * ct / ( pi * v0 ) ) * exp ( - v0 * ceta ) * csy
+    if ( l == 1 ) then
+      cfy = cbyv
+    end if
+
+  end do
+
+  cdjv = - v / z * cbjv + cfj
+  cdyv = - v / z * cbyv + cfy
+
+ 
+end subroutine cjylv
+
+
+attributes(device) subroutine comelp ( hk, ck, ce )
+
+!*****************************************************************************80
+!
+!! COMELP computes complete elliptic integrals K(k) and E(k).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  HK, the modulus.  0 <= HK <= 1.
+!
+!    Output, real(kind=sp) ::  CK, CE, the values of K(HK) and E(HK).
+!
+  implicit none
+
+  real(kind=sp) ::  ae
+  real(kind=sp) ::  ak
+  real(kind=sp) ::  be
+  real(kind=sp) ::  bk
+  real(kind=sp) ::  ce
+  real(kind=sp) ::  ck
+  real(kind=sp) ::  hk
+  real(kind=sp) ::  pk
+
+  pk = 1.0_sp - hk * hk
+
+  if ( hk == 1.0_sp ) then
+
+    ck = huge(1.0_sp,kind=sp)
+    ce = 1.0_sp
+
+  else
+
+    ak = ((( &
+        0.01451196212_sp   * pk &
+      + 0.03742563713_sp ) * pk &
+      + 0.03590092383_sp ) * pk &
+      + 0.09666344259_sp ) * pk &
+      + 1.38629436112_sp
+
+    bk = ((( &
+        0.00441787012_sp   * pk &
+      + 0.03328355346_sp ) * pk &
+      + 0.06880248576_sp ) * pk &
+      + 0.12498593597_sp ) * pk &
+      + 0.5_sp
+
+    ck = ak - bk * log ( pk )
+
+    ae = ((( &
+        0.01736506451_sp   * pk &
+      + 0.04757383546_sp ) * pk &
+      + 0.0626060122_sp  ) * pk &
+      + 0.44325141463_sp ) * pk &
+      + 1.0_sp
+
+    be = ((( &
+        0.00526449639_sp   * pk &
+      + 0.04069697526_sp ) * pk &
+      + 0.09200180037_sp ) * pk &
+      + 0.2499836831_sp  ) * pk
+
+    ce = ae - be * log ( pk )
+
+  end if
+
+  
+end subroutine comelp
+
+
+attributes(device) subroutine cpdla ( n, z, cdn )
+
+!****************************************************************************80
+!
+!! CPDLA computes complex parabolic cylinder function Dn(z) for large argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer N, the order.
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CDN, the function value.
+!
+  implicit none
+
+  complex(kind=sp) ::  cb0
+  complex(kind=sp) ::  cdn
+  complex(kind=sp) ::  cr
+  integer(kind=i4) :: k
+  integer(kind=i4) :: n
+  complex(kind=sp) ::  z
+
+  cb0 = z ** n * exp ( -0.25_sp * z * z )
+  cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+  cdn = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+
+  do k = 1, 16
+
+    cr = -0.5_sp * cr * ( 2.0_sp * k - n - 1.0_sp ) &
+      * ( 2.0_sp * k - n - 2.0_sp ) / ( k * z * z )
+
+    cdn = cdn + cr
+
+    if ( abs ( cr ) < abs ( cdn ) * 1.0e-12_sp ) then
+      exit
+    end if
+
+  end do
+
+  cdn = cb0 * cdn
+
+end subroutine cpdla
 
 
 
+attributes(device) subroutine cpdsa ( n, z, cdn )
 
+!*****************************************************************************80
+!
+!! CPDSA computes complex parabolic cylinder function Dn(z) for small argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    29 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CDN, the value of DN(z).
+!
+  implicit none
+
+  complex(kind=sp) ::  ca0
+  complex(kind=sp) ::  cb0
+  complex(kind=sp) ::  cdn
+  complex(kind=sp) ::  cdw
+  complex(kind=sp) ::  cr
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  g1
+  real(kind=sp) ::  ga0
+  real(kind=sp) ::  gm
+  integer(kind=i4) :: m
+  integer(kind=i4), value :: n
+  real(kind=sp) ::  pd
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  sq2
+  real(kind=sp) ::  va0
+  real(kind=sp) ::  vm
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  xn
+  complex(kind=sp), value ::  z
+
+  eps = 1.0D-15
+  pi = 3.141592653589793_sp
+  sq2 = sqrt ( 2.0_sp )
+  ca0 = exp ( - 0.25_sp * z * z )
+  va0 = 0.5_sp * ( 1.0_sp - n )
+
+  if ( n == 0 ) then
+
+    cdn = ca0
+
+  else
+
+    if ( abs ( z ) == 0.0_sp ) then
+
+      if ( va0 <= 0.0_sp .and. va0 == int ( va0 ) ) then
+        cdn = 0.0_sp
+      else
+        call gaih ( va0, ga0 )
+        pd = sqrt ( pi ) / ( 2.0_sp ** ( -0.5_sp * n ) * ga0 )
+        cdn = cmplx ( pd, 0.0_sp, kind=sp )
+      end if
+
+    else
+
+      xn = - n
+      call gaih ( xn, g1 )
+      cb0 = 2.0_sp ** ( -0.5_sp * n - 1.0_sp ) * ca0 / g1
+      vt = -0.5_sp * n
+      call gaih ( vt, g0 )
+      cdn = cmplx ( g0, 0.0_sp, kind=sp )
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+
+      do m = 1, 250
+        vm = 0.5_sp * ( m - n )
+        call gaih ( vm, gm )
+        cr = - cr * sq2 * z / m
+        cdw = gm * cr
+        cdn = cdn + cdw
+        if ( abs ( cdw ) < abs ( cdn ) * eps ) then
+          exit
+        end if
+      end do
+
+      cdn = cb0 * cdn
+
+    end if
+
+  end if
+
+end subroutine cpdsa
+
+
+attributes(device) subroutine cy01 ( kf, z, zf, zd )
+
+!*****************************************************************************80
+!
+!! CY01 computes complex Bessel functions Y0(z) and Y1(z) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    01 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer KF, the function choice.
+!    0 for ZF = Y0(z) and ZD = Y0'(z);
+!    1 for ZF = Y1(z) and ZD = Y1'(z);
+!    2 for ZF = Y1'(z) and ZD = Y1''(z).
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  ZF, ZD, the values of the requested function 
+!    and derivative.
+!
+  implicit none
+
+  real(kind=sp)  ,  dimension(12) :: a = (/ &
+    -0.703125D-01, 0.112152099609375_sp, &
+    -0.5725014209747314_sp, 0.6074042001273483e+01_sp, &
+    -0.1100171402692467e+03_sp, 0.3038090510922384e+04_sp, &
+    -0.1188384262567832e+06_sp, 0.6252951493434797e+07_sp, &
+    -0.4259392165047669e+09_sp, 0.3646840080706556e+11_sp, &
+    -0.3833534661393944e+13_sp, 0.4854014686852901e+15_sp /)
+  real(kind=sp) ::  a0
+  real(kind=sp)  ,  dimension(12) :: a1 = (/ &
+    0.1171875_sp, -0.144195556640625_sp, &
+    0.6765925884246826_sp, -0.6883914268109947e+01_sp, &
+    0.1215978918765359e+03_sp, -0.3302272294480852e+04_sp, &
+    0.1276412726461746e+06_sp, -0.6656367718817688e+07_sp, &
+    0.4502786003050393e+09_sp, -0.3833857520742790e+11_sp, &
+    0.4011838599133198e+13_sp, -0.5060568503314727e+15_sp /)
+  real(kind=sp)  ,  dimension(12) :: b = (/ &
+    0.732421875D-01, -0.2271080017089844_sp, &
+    0.1727727502584457e+01_sp, -0.2438052969955606e+02_sp, &
+    0.5513358961220206e+03_sp, -0.1825775547429318e+05_sp, &
+    0.8328593040162893e+06_sp, -0.5006958953198893e+08_sp, &
+    0.3836255180230433e+10_sp, -0.3649010818849833e+12_sp, &
+    0.4218971570284096e+14_sp, -0.5827244631566907e+16_sp /)
+  real(kind=sp)  ,  dimension(12) :: b1 = (/ &
+    -0.1025390625_sp, 0.2775764465332031_sp, &
+    -0.1993531733751297e+01_sp, 0.2724882731126854e+02_sp, &
+    -0.6038440767050702e+03_sp, 0.1971837591223663e+05_sp, &
+    -0.8902978767070678e+06_sp, 0.5310411010968522e+08_sp, &
+    -0.4043620325107754e+10_sp, 0.3827011346598605e+12_sp, &
+    -0.4406481417852278e+14_sp, 0.6065091351222699e+16_sp /)
+  complex(kind=sp) ::  cbj0
+  complex(kind=sp) ::  cbj1
+  complex(kind=sp) ::  cby0
+  complex(kind=sp) ::  cby1
+  complex(kind=sp) ::  cdy0
+  complex(kind=sp) ::  cdy1
+  complex(kind=sp) ::  ci
+  complex(kind=sp) ::  cp
+  complex(kind=sp) ::  cp0
+  complex(kind=sp) ::  cp1
+  complex(kind=sp) ::  cq0
+  complex(kind=sp) ::  cq1
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  cs
+  complex(kind=sp) ::  ct1
+  complex(kind=sp) ::  ct2
+  complex(kind=sp) ::  cu
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  integer(kind=i4) :: kf
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  rp2
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  w1
+  complex(kind=sp) ::  z
+  complex(kind=sp) ::  z1
+  complex(kind=sp) ::  z2
+  complex(kind=sp) ::  zd
+  complex(kind=sp) ::  zf
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+  rp2 = 2.0_sp / pi
+  ci = cmplx ( 0.0_sp, 1.0_sp, kind=sp )
+  a0 = abs ( z )
+  z2 = z * z
+  z1 = z
+
+  if ( a0 == 0.0_sp ) then
+
+    cbj0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cbj1 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    cby0 = cmplx ( -huge(1.0_sp,kind=sp), 0.0_sp, kind=sp )
+    cby1 = cmplx ( -huge(1.0_sp,kind=sp), 0.0_sp, kind=sp )
+    cdy0 = cmplx ( huge(1.0_sp,kind=sp), 0.0_sp, kind=sp )
+    cdy1 = cmplx ( huge(1.0_sp,kind=sp), 0.0_sp, kind=sp )
+
+  else
+
+    if ( real ( z, kind=sp ) < 0.0_sp) then
+      z1 = -z
+    end if
+
+    if ( a0 <= 12.0_sp ) then
+
+      cbj0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 40
+        cr = - 0.25_sp * cr * z2 / ( k * k )
+        cbj0 = cbj0 + cr
+        if ( abs ( cr ) < abs ( cbj0 ) * 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      cbj1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 40
+        cr = -0.25_sp * cr * z2 / ( k * ( k + 1.0_sp ) )
+        cbj1 = cbj1 + cr
+        if ( abs ( cr ) < abs ( cbj1 ) * 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      cbj1 = 0.5_sp * z1 * cbj1
+      w0 = 0.0_sp
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      cs = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 40
+        w0 = w0 + 1.0_sp / k
+        cr = -0.25_sp * cr / ( k * k ) * z2
+        cp = cr * w0
+        cs = cs + cp
+        if ( abs ( cp ) < abs ( cs ) * 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      cby0 = rp2 * ( log ( z1 / 2.0_sp ) + el ) * cbj0 - rp2 * cs
+      w1 = 0.0_sp
+      cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      cs = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, 40
+        w1 = w1 + 1.0_sp / k
+        cr = - 0.25_sp * cr / ( k * ( k + 1 ) ) * z2
+        cp = cr * ( 2.0_sp * w1 + 1.0_sp / ( k + 1.0_sp ) )
+        cs = cs + cp
+        if ( abs ( cp ) < abs ( cs ) * 1.0e-15_sp ) then
+          exit
+        end if
+      end do
+
+      cby1 = rp2 * ( ( log ( z1 / 2.0_sp ) + el ) * cbj1 &
+        - 1.0_sp / z1 - 0.25_sp * z1 * cs )
+
+    else
+
+      if ( a0 < 35.0_sp ) then
+        k0 = 12
+      else if ( a0 < 50.0_sp ) then
+        k0 = 10
+      else
+        k0 = 8
+      end if
+
+      ct1 = z1 - 0.25_sp * pi
+      cp0 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, k0
+        cp0 = cp0 + a(k) * z1 ** ( - 2 * k )
+      end do
+      cq0 = -0.125_sp / z1
+      do k = 1, k0
+        cq0 = cq0 + b(k) * z1 ** ( - 2 * k - 1 )
+      end do
+      cu = sqrt ( rp2 / z1 )
+      cbj0 = cu * ( cp0 * cos ( ct1 ) - cq0 * sin ( ct1 ) )
+      cby0 = cu * ( cp0 * sin ( ct1 ) + cq0 * cos ( ct1 ) )
+      ct2 = z1 - 0.75_sp * pi
+      cp1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+      do k = 1, k0
+        cp1 = cp1 + a1(k) * z1 ** ( - 2 * k )
+      end do
+      cq1 = 0.375_sp / z1
+      do k = 1, k0
+        cq1 = cq1 + b1(k) * z1 ** ( - 2 * k - 1 )
+      end do
+      cbj1 = cu * ( cp1 * cos ( ct2 ) - cq1 * sin ( ct2 ) )
+      cby1 = cu * ( cp1 * sin ( ct2 ) + cq1 * cos ( ct2 ) )
+ 
+    end if
+
+    if ( real ( z, kind=sp ) < 0.0_sp ) then
+
+      if ( imag ( z ) < 0.0_sp ) then
+        cby0 = cby0 - 2.0_sp * ci * cbj0
+      else
+        cby0 = cby0 + 2.0_sp * ci * cbj0
+      end if
+
+      if ( imag ( z ) < 0.0_sp ) then
+        cby1 = - ( cby1 - 2.0_sp * ci * cbj1 )
+      else
+        cby1 = - ( cby1 + 2.0_sp * ci * cbj1 )
+      end if
+      cbj1 = - cbj1
+ 
+    end if
+
+    cdy0 = - cby1
+    cdy1 = cby0 - 1.0_sp / z * cby1
+
+  end if
+
+  if ( kf == 0 ) then
+    zf = cby0
+    zd = cdy0
+  else if ( kf == 1 ) then
+    zf = cby1
+    zd = cdy1
+  else if ( kf == 2 ) then
+    zf = cdy1
+    zd = - cdy1 / z - ( 1.0_sp - 1.0_sp / ( z * z ) ) * cby1
+  end if
+
+  
+end subroutine cy01
+
+
+attributes(device) subroutine dvla ( va, x, pd )
+
+!*****************************************************************************80
+!
+!! DVLA computes parabolic cylinder functions Dv(x) for large argument.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    06 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Input, real(kind=sp) ::  VA, the order.
+!
+!    Output, real(kind=sp) ::  PD, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  ep
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  gl
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pd
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp), value ::  va
+  real(kind=sp) ::  vl
+  real(kind=sp), value ::  x
+  real(kind=sp) ::  x1
+
+  pi = 3.141592653589793_sp
+  eps = 1.0e-12_sp
+  ep = exp ( -0.25_sp * x * x )
+  a0 = abs ( x ) ** va * ep
+  r = 1.0_sp
+  pd = 1.0_sp
+  do k = 1, 16
+    r = -0.5_sp * r * ( 2.0_sp * k - va - 1.0_sp ) &
+      * ( 2.0_sp * k - va - 2.0_sp ) / ( k * x * x )
+    pd = pd + r
+    if ( abs ( r / pd ) < eps ) then
+      exit
+    end if
+  end do
+
+  pd = a0 * pd
+
+  if ( x < 0.0_sp ) then
+    x1 = - x
+    call vvla ( va, x1, vl )
+    call gamma ( -va, gl )
+    pd = pi * vl / gl + cos ( pi * va ) * pd
+  end if
+
+  return
+end subroutine dvla
+
+
+attributes(device) subroutine e1xa ( x, e1 )
+
+!*****************************************************************************80
+!
+!! E1XA computes the exponential integral E1(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    06 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  E1, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  e1
+  real(kind=sp) ::  es1
+  real(kind=sp) ::  es2
+  real(kind=sp), value ::  x
+
+  if ( x == 0.0_sp ) then
+
+    e1 = huge(1.0_sp,kind=sp)
+
+  else if ( x <= 1.0_sp ) then
+
+    e1 = - log ( x ) + (((( &
+        1.07857e-03_sp * x &
+      - 9.76004e-03_sp ) * x &
+      + 5.519968e-02_sp ) * x &
+      - 0.24991055_sp ) * x &
+      + 0.99999193_sp ) * x &
+      - 0.57721566_sp
+
+  else
+
+    es1 = ((( x &
+      + 8.5733287401_sp ) * x &
+      +18.059016973_sp  ) * x &
+      + 8.6347608925_sp ) * x &
+      + 0.2677737343_sp
+
+    es2 = ((( x &
+      +  9.5733223454_sp ) * x &
+      + 25.6329561486_sp ) * x &
+      + 21.0996530827_sp ) * x &
+      +  3.9584969228_sp
+
+    e1 = exp ( - x ) / x * es1 / es2
+
+  end if
+
+end subroutine e1xa
+
+
+attributes(device) subroutine e1xb ( x, e1 )
+
+!*****************************************************************************80
+!
+!! E1XB computes the exponential integral E1(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    06 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  E1, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  e1
+  real(kind=sp) ::  ga
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  real(kind=sp) ::  r
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t0
+  real(kind=sp), value ::  x
+
+  if ( x == 0.0_sp ) then
+
+    e1 = huge(1.0_sp,kind=sp)
+
+  else if ( x <= 1.0_sp ) then
+
+    e1 = 1.0_sp
+    r = 1.0_sp
+
+    do k = 1, 25
+      r = -r * k * x / ( k + 1.0_sp )**2
+      e1 = e1 + r
+      if ( abs ( r ) <= abs ( e1 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    ga = 0.5772156649015328_sp
+    e1 = - ga - log ( x ) + x * e1
+
+  else
+
+    m = 20 + int ( 80.0_sp / x )
+    t0 = 0.0_sp
+    do k = m, 1, -1
+      t0 = k / ( 1.0_sp + k / ( x + t0 ) )
+    end do
+    t = 1.0_sp / ( x + t0 )
+    e1 = exp ( -x ) * t
+
+  end if
+  
+end subroutine e1xb
+
+
+attributes(device) subroutine e1z ( z, ce1 )
+
+!*****************************************************************************80
+!
+!! E1Z computes the complex exponential integral E1(z).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    16 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, complex(kind=sp) ::  Z, the argument.
+!
+!    Output, complex(kind=sp) ::  CE1, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  complex(kind=sp) ::  ce1
+  complex(kind=sp) ::  cr
+  complex(kind=sp) ::  ct
+  complex(kind=sp) ::  ct0
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  x
+  complex(kind=sp), value ::  z
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015328_sp
+  x = real ( z, kind=sp )
+  a0 = abs ( z )
+
+  if ( a0 == 0.0_sp ) then
+    ce1 = cmplx ( huge(1.0_sp,kind=sp), 0.0_sp, kind=sp )
+  else if ( a0 <= 10.0_sp .or. &
+    ( x < 0.0_sp .and. a0 < 20.0_sp ) ) then
+    ce1 = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    cr = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
+    do k = 1, 150
+      cr = - cr * k * z / ( k + 1.0_sp )**2
+      ce1 = ce1 + cr
+      if ( abs ( cr ) <= abs ( ce1 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    ce1 = - el - log ( z ) + z * ce1
+
+  else
+
+    ct0 = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
+    do k = 120, 1, -1
+      ct0 = k / ( 1.0_sp + k / ( z + ct0 ) )
+    end do
+    ct = 1.0_sp / ( z + ct0 )
+
+    ce1 = exp ( - z ) * ct
+    if ( x <= 0.0_sp .and. imag ( z ) == 0.0_sp ) then
+      ce1 = ce1 - pi * cmplx ( 0.0_sp, 1.0_sp, kind=sp )
+    end if
+
+  end if
+
+end subroutine e1z
+
+
+attributes(device) subroutine eix ( x, ei )
+
+!*****************************************************************************80
+!
+!! EIX computes the exponential integral Ei(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    10 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  EI, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  ei
+  real(kind=sp) ::  ga
+  integer(kind=i4) :: k
+  real(kind=sp) ::  r
+  real(kind=sp), value ::  x
+
+  if ( x == 0.0_sp ) then
+
+    ei = -huge(1.0_sp,kind=sp)
+
+  else if ( x <= 40.0_sp ) then
+
+    ei = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 100
+      r = r * k * x / ( k + 1.0_sp )**2
+      ei = ei + r
+      if ( abs ( r / ei ) <= 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    ga = 0.5772156649015328_sp
+    ei = ga + log ( x ) + x * ei
+
+  else
+
+    ei = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 20
+      r = r * k / x
+      ei = ei + r
+    end do
+    ei = exp ( x ) / x * ei
+
+  end if
+  
+end subroutine eix
+
+
+attributes(device) subroutine elit ( hk, phi, fe, ee )
+
+!*****************************************************************************80
+!
+!! ELIT: complete and incomplete elliptic integrals F(k,phi) and E(k,phi).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    12 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  HK, the modulus, between 0 and 1.
+!
+!    Input, real(kind=sp) ::  PHI, the argument in degrees.
+!
+!    Output, real(kind=sp) ::  FE, EE, the values of F(k,phi) and E(k,phi).
+!
+  implicit none
+
+  real(kind=sp) ::  a
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  b
+  real(kind=sp) ::  b0
+  real(kind=sp) ::  c
+  real(kind=sp) ::  ce
+  real(kind=sp) ::  ck
+  real(kind=sp) ::  d
+  real(kind=sp) ::  d0
+  real(kind=sp) ::  ee
+  real(kind=sp) ::  fac
+  real(kind=sp) ::  fe
+  real(kind=sp) ::  g
+  real(kind=sp), value ::  hk
+  integer(kind=i4) :: n
+  real(kind=sp), value ::  phi
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+
+  g = 0.0_sp
+  pi = 3.14159265358979_sp
+  a0 = 1.0_sp
+  b0 = sqrt ( 1.0_sp - hk * hk )
+  d0 = ( pi / 180.0_sp ) * phi
+  r = hk * hk
+
+  if ( hk == 1.0_sp .and. phi == 90.0_sp ) then
+
+    fe = huge(1.0_sp,kind=sp)
+    ee = 1.0_sp
+
+  else if ( hk == 1.0_sp ) then
+
+    fe = log ( ( 1.0_sp + sin ( d0 ) ) / cos ( d0 ) )
+    ee = sin ( d0 )
+
+  else
+
+    fac = 1.0_sp
+    do n = 1, 40
+      a = ( a0 + b0 ) * 0.5_sp
+      b = sqrt ( a0 * b0 )
+      c = ( a0 - b0 ) * 0.5_sp
+      fac = 2.0_sp * fac
+      r = r + fac * c * c
+      if ( phi /= 90.0_sp ) then
+        d = d0 + atan ( ( b0 / a0 ) * tan ( d0 ) )
+        g = g + c * sin( d )
+        d0 = d + pi * int ( d / pi + 0.5_sp )
+      end if
+      a0 = a
+      b0 = b
+      if ( c < 1.0e-07_sp ) then
+        exit
+      end if
+    end do
+
+    ck = pi / ( 2.0_sp * a )
+    ce = pi * ( 2.0_sp - r ) / ( 4.0_sp * a )
+    if ( phi == 90.0_sp ) then
+      fe = ck
+      ee = ce
+    else
+      fe = d / ( fac * a )
+      ee = fe * ce / ck + g
+    end if
+
+  end if
+
+end subroutine elit
 
 
 
