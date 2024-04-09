@@ -3854,6 +3854,566 @@ attributes(device) subroutine elit ( hk, phi, fe, ee )
 end subroutine elit
 
 
+attributes(device) subroutine elit3 ( phi, hk, c, el3 )
+
+!*****************************************************************************80
+!
+!! ELIT3 computes the elliptic integral of the third kind.
+!
+!  Discussion:
+!
+!    Gauss-Legendre quadrature is used.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    14 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  PHI, the argument in degrees.
+!
+!    Input, real(kind=sp) ::  HK, the modulus, between 0 and 1.
+!
+!    Input, real(kind=sp) ::  C, the parameter, between 0 and 1.
+!
+!    Output, real(kind=sp) ::  EL3, the value of the elliptic integral
+!    of the third kind.
+!
+  implicit none
+
+  real(kind=sp) ::  c
+  real(kind=sp) ::  c0
+  real(kind=sp) ::  c1
+  real(kind=sp) ::  c2
+  real(kind=sp) ::  el3
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  f2
+  real(kind=sp) ::  hk
+  integer(kind=i4) :: i 
+  logical :: lb1
+  logical :: lb2
+  real(kind=sp) ::  phi
+  real(kind=sp) , dimension ( 10 ) :: t = (/ &
+    0.9931285991850949_sp, 0.9639719272779138_sp, &
+    0.9122344282513259_sp, 0.8391169718222188_sp, &
+    0.7463319064601508_sp, 0.6360536807265150_sp, &
+    0.5108670019508271_sp, 0.3737060887154195_sp, &
+    0.2277858511416451_sp, 0.7652652113349734D-01 /)
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  t2
+  real(kind=sp) , dimension ( 10 ) :: w = (/ &
+    0.1761400713915212D-01, 0.4060142980038694D-01, &
+    0.6267204833410907D-01, 0.8327674157670475D-01, &
+    0.1019301198172404_sp, 0.1181945319615184_sp, &
+    0.1316886384491766_sp, 0.1420961093183820_sp, &
+    0.1491729864726037_sp, 0.1527533871307258_sp /)
+
+  lb1 = ( hk == 1.0_sp ) .and. ( abs ( phi - 90.0_sp ) <= 1.0e-08_sp )
+
+  lb2 = c == 1.0_sp .and. abs ( phi - 90.0_sp ) <= 1.0e-08_sp
+
+  if ( lb1 .or. lb2 ) then
+    el3 = huge(1.0_sp,kind=sp)
+    return
+  end if
+
+  c1 = 0.87266462599716e-02_sp * phi
+  c2 = c1
+
+  el3 = 0.0_sp
+  do i = 1, 10
+    c0 = c2 * t(i)
+    t1 = c1 + c0
+    t2 = c1 - c0
+    f1 = 1.0_sp / ( ( 1.0_sp - c * sin(t1) * sin(t1) ) &
+      * sqrt ( 1.0_sp - hk * hk * sin ( t1 ) * sin ( t1 ) ) )
+    f2 = 1.0_sp / ( ( 1.0_sp - c * sin ( t2 ) * sin ( t2 ) ) &
+      * sqrt( 1.0_sp - hk * hk * sin ( t2 ) * sin ( t2 ) ) )
+    el3 = el3 + w(i) * ( f1 + f2 )
+  end do
+
+  el3 = c1 * el3
+
+end subroutine elit3
+
+
+attributes(device) function envj ( n, x )
+
+!*****************************************************************************80
+!
+!! ENVJ is a utility function used by MSTA1 and MSTA2.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    14 March 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, ?
+!
+!    Input, real(kind=sp) ::  X, ?
+!
+!    Output, real(kind=sp) ::  ENVJ, ?
+!
+  implicit none
+
+  real(kind=sp) ::  envj
+  integer(kind=i4) :: n
+  real(kind=sp) ::  x
+
+  envj = 0.5_sp * log10 ( 6.28_sp * n ) - n * log10 ( 1.36_sp * x / n )
+
+end function envj
+
+
+attributes(device) subroutine enxa ( n, x, en )
+
+!*****************************************************************************80
+!
+!! ENXA computes the exponential integral En(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  EN(0:N), the function values.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  e1
+  real(kind=sp) ::  ek
+  real(kind=sp) ::  en(0:n)
+  integer(kind=i4) :: k
+  real(kind=sp) ::  x
+
+  en(0) = exp ( - x ) / x 
+  call e1xb ( x, e1 )
+
+  en(1) = e1
+  do k = 2, n
+    ek = ( exp ( - x ) - x * e1 ) / ( k - 1.0_sp )
+    en(k) = ek
+    e1 = ek
+  end do
+
+end subroutine enxa
+
+
+attributes(device) subroutine enxb ( n, x, en )
+
+!*****************************************************************************80
+!
+!! ENXB computes the exponential integral En(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    10 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  EN(0:N), the function values.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  en(0:n)
+  real(kind=sp) ::  ens
+  integer(kind=i4) :: j
+  integer(kind=i4) :: k
+  integer(kind=i4) :: l
+  integer(kind=i4) :: m
+  real(kind=sp) ::  ps
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rp
+  real(kind=sp) ::  s
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t0
+  real(kind=sp) ::  x
+
+  !if ( x == 0.0_sp ) then
+  !
+  !  en(0) = 1.0D+300
+  !  en(1) = 1.0D+300
+  !  do k = 2, n
+  !    en(k) = 1.0_sp / ( k - 1.0_sp )
+  !  end do
+  !  return
+
+  if ( x <= 1.0_sp ) then
+
+    en(0) = exp ( - x ) / x
+    do l = 1, n
+      rp = 1.0_sp
+      do j = 1, l - 1
+        rp = - rp * x / j
+      end do
+      ps = -0.5772156649015328_sp
+      do m = 1, l - 1
+        ps = ps + 1.0_sp / m
+      end do
+      ens = rp * ( - log ( x ) + ps )
+      s = 0.0_sp
+      do m = 0, 20
+        if ( m /= l - 1 ) then
+          r = 1.0_sp
+          do j = 1, m
+            r = - r * x / j
+          end do
+          s = s + r / ( m - l + 1.0_sp )
+          if ( abs ( s - s0 ) < abs ( s ) * 1.0e-15_sp ) then
+            exit
+          end if
+          s0 = s
+        end if
+      end do
+
+      en(l) = ens - s
+
+    end do
+
+  else
+
+    en(0) = exp ( - x ) / x
+    m = 15 + int ( 100.0_sp / x )
+    do l = 1, n
+      t0 = 0.0_sp
+      do k = m, 1, -1
+        t0 = ( l + k - 1.0_sp ) / ( 1.0_sp + k / ( x + t0 ) )
+      end do
+      t = 1.0_sp / ( x + t0 )
+      en(l) = exp ( - x ) * t
+    end do
+
+  end if
+  
+end subroutine enxb
+
+
+attributes(device) subroutine error ( x, err )
+
+!*****************************************************************************80
+!
+!! ERROR evaluates the error function.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  ERR, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  c0
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  er
+  real(kind=sp) ::  err
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+
+  eps = 1.0D-15
+  pi = 3.141592653589793_sp
+  x2 = x * x
+
+  if ( abs ( x ) < 3.5_sp ) then
+
+    er = 1.0_sp
+    r = 1.0_sp
+
+    do k = 1, 50
+      r = r * x2 / ( k + 0.5_sp )
+      er = er + r
+      if ( abs ( r ) <= abs ( er ) * eps ) then
+        exit
+      end if
+    end do
+
+    c0 = 2.0_sp / sqrt ( pi ) * x * exp ( - x2 )
+    err = c0 * er
+
+  else
+
+    er = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 12
+      r = - r * ( k - 0.5_sp ) / x2
+      er = er + r
+    end do
+
+    c0 = exp ( - x2 ) / ( abs ( x ) * sqrt ( pi ) )
+
+    err = 1.0_sp - c0 * er
+    if ( x < 0.0_sp ) then
+      err = -err
+    end if
+
+  end if
+
+end subroutinre error
+
+
+attributes(device) subroutine fcs ( x, c, s )
+
+!*****************************************************************************80
+!
+!! FCS computes Fresnel integrals C(x) and S(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    17 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  C, S, the function values.
+!
+  implicit none
+
+  real(kind=sp) ::  c
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  g
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  px
+  real(kind=sp) ::  q
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  su
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t0
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xa
+
+  eps = 1.0e-15_sp
+  pi = 3.141592653589793_sp
+  xa = abs ( x )
+  px = pi * xa
+  t = 0.5_sp * px * xa
+  t2 = t * t
+
+  if ( xa == 0.0_sp ) then
+
+    c = 0.0_sp
+    s = 0.0_sp
+
+  else if ( xa < 2.5_sp ) then
+
+    r = xa
+    c = r
+    do k = 1, 50
+      r = -0.5_sp * r * ( 4.0_sp * k - 3.0_sp ) / k &
+        / ( 2.0_sp * k - 1.0_sp ) / ( 4.0_sp * k + 1.0_sp ) * t2
+      c = c + r
+      if ( abs ( r ) < abs ( c ) * eps ) then
+        exit
+      end if
+    end do
+
+    s = xa * t / 3.0_sp
+    r = s
+    do k = 1, 50
+      r = - 0.5_sp * r * ( 4.0_sp * k - 1.0_sp ) / k &
+        / ( 2.0_sp * k + 1.0_sp ) / ( 4.0_sp * k + 3.0_sp ) * t2
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * eps ) then
+        if ( x < 0.0_sp ) then
+          c = -c
+          s = -s
+        end if
+        return
+      end if
+    end do
+
+  else if ( xa < 4.5_sp ) then
+
+    m = int ( 42.0_sp + 1.75_sp * t )
+    su = 0.0_sp
+    c = 0.0_sp
+    s = 0.0_sp
+    f1 = 0.0_sp
+    f0 = 1.0D-100
+
+    do k = m, 0, -1
+      f = ( 2.0_sp * k + 3.0_sp ) * f0 / t - f1
+      if ( k == int ( k / 2 ) * 2 ) then
+        c = c + f
+      else
+        s = s + f
+      end if
+      su = su + ( 2.0_sp * k + 1.0_sp ) * f * f
+      f1 = f0
+      f0 = f
+    end do
+
+    q = sqrt ( su )
+    c = c * xa / q
+    s = s * xa / q
+
+  else
+
+    r = 1.0_sp
+    f = 1.0_sp
+    do k = 1, 20
+      r = -0.25_sp * r * ( 4.0_sp * k - 1.0_sp ) &
+        * ( 4.0_sp * k - 3.0_sp ) / t2
+      f = f + r
+    end do
+    r = 1.0_sp / ( px * xa )
+    g = r
+    do k = 1, 12
+      r = -0.25_sp * r * ( 4.0_sp * k + 1.0_sp ) &
+        * ( 4.0_sp * k - 1.0_sp ) / t2
+      g = g + r
+    end do
+
+    t0 = t - int ( t / ( 2.0_sp * pi ) ) * 2.0_sp * pi
+    c = 0.5_sp + ( f * sin ( t0 ) - g * cos ( t0 ) ) / px
+    s = 0.5_sp - ( f * cos ( t0 ) + g * sin ( t0 ) ) / px
+
+  end if
+
+  if ( x < 0.0_sp ) then
+    c = -c
+    s = -s
+  end if
+ 
+end subroutine fcs
+
+
 
 
 
