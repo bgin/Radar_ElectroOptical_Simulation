@@ -4414,6 +4414,351 @@ attributes(device) subroutine fcs ( x, c, s )
 end subroutine fcs
 
 
+attributes(device) subroutine ffk ( ks, x, fr, fi, fm, fa, gr, gi, gm, ga )
+
+!*****************************************************************************80
+!
+!! FFK computes modified Fresnel integrals F+/-(x) and K+/-(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    23 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: KS, the sign code.
+!    0, to calculate F+(x) and K+(x);
+!    1, to calculate F_(x) and K_(x).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  FR, FI, FM, FA, the values of
+!    Re[F+/-(x)], Im[F+/-(x)], |F+/-(x)|, Arg[F+/-(x)]  (Degs.).
+!
+!    Output, real(kind=sp) ::  GR, GI, GM, GA, the values of
+!    Re[K+/-(x)], Im[K+/-(x)], |K+/-(x)|, Arg[K+/-(x)]  (Degs.).
+!       
+  implicit none
+
+  real(kind=sp) ::  c1
+  real(kind=sp) ::  cs
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  fa
+  real(kind=sp) ::  fi
+  real(kind=sp) ::  fi0
+  real(kind=sp) ::  fm
+  real(kind=sp) ::  fr
+  real(kind=sp) ::  ga
+  real(kind=sp) ::  gi
+  real(kind=sp) ::  gm
+  real(kind=sp) ::  gr
+  integer(kind=i4) :: k
+  integer(kind=i4) :: ks
+  integer(kind=i4) :: m
+  real(kind=sp) ::  p2p
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pp2
+  real(kind=sp) ::  s1
+  real(kind=sp) ::  srd
+  real(kind=sp) ::  ss
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  x4
+  real(kind=sp) ::  xa
+  real(kind=sp) ::  xc
+  real(kind=sp) ::  xf
+  real(kind=sp) ::  xf0
+  real(kind=sp) ::  xf1
+  real(kind=sp) ::  xg
+  real(kind=sp) ::  xp
+  real(kind=sp) ::  xq
+  real(kind=sp) ::  xq2
+  real(kind=sp) ::  xr
+  real(kind=sp) ::  xs
+  real(kind=sp) ::  xsu
+  real(kind=sp) ::  xw
+
+  srd = 57.29577951308233_sp
+  eps = 1.0D-15
+  pi = 3.141592653589793_sp
+  pp2 = 1.2533141373155_sp
+  p2p = 0.7978845608028654_sp
+  xa = abs ( x )
+  x2 = x * x
+  x4 = x2 * x2
+
+  if ( x == 0.0_sp ) then
+
+    fr = 0.5_sp * sqrt ( 0.5_sp * pi )
+    fi = ( -1.0_sp ) ** ks * fr
+    fm = sqrt ( 0.25_sp * pi )
+    fa = ( -1.0_sp ) ** ks * 45.0_sp
+    gr = 0.5_sp
+    gi = 0.0_sp
+    gm = 0.5_sp
+    ga = 0.0_sp
+
+  else
+
+    if ( xa <= 2.5_sp ) then
+
+      xr = p2p * xa
+      c1 = xr
+      do k = 1, 50
+        xr = -0.5_sp * xr * ( 4.0_sp * k - 3.0_sp ) / k &
+          / ( 2.0_sp * k - 1.0_sp ) &
+          / ( 4.0_sp * k + 1.0_sp ) * x4
+        c1 = c1 + xr
+        if ( abs ( xr / c1 ) < eps ) then
+          exit
+        end if
+      end do
+
+      s1 = p2p * xa * xa * xa / 3.0_sp
+      xr = s1
+      do k = 1, 50
+        xr = -0.5_sp * xr * ( 4.0_sp * k - 1.0_sp ) &
+          / k / ( 2.0_sp * k + 1.0_sp ) &
+          / ( 4.0_sp * k + 3.0_sp ) * x4
+        s1 = s1 + xr
+        if ( abs ( xr / s1 ) < eps ) then
+          exit
+        end if
+      end do
+
+    else if ( xa < 5.5_sp ) then
+
+      m = int ( 42.0_sp + 1.75_sp * x2 )
+      xsu = 0.0_sp
+      xc = 0.0_sp
+      xs = 0.0_sp
+      xf1 = 0.0_sp
+      xf0 = 1.0D-100
+      do k = m, 0, -1
+        xf = ( 2.0_sp * k + 3.0_sp ) * xf0 / x2 - xf1
+        if ( k == 2 * int ( k / 2 ) )  then
+          xc = xc + xf
+        else
+          xs = xs + xf
+        end if
+        xsu = xsu + ( 2.0_sp * k + 1.0_sp ) * xf * xf
+        xf1 = xf0
+        xf0 = xf
+      end do
+      xq = sqrt ( xsu )
+      xw = p2p * xa / xq
+      c1 = xc * xw
+      s1 = xs * xw
+
+    else
+
+      xr = 1.0_sp
+      xf = 1.0_sp
+      do k = 1, 12
+        xr = -0.25_sp * xr * ( 4.0_sp * k - 1.0_sp ) &
+          * ( 4.0_sp * k - 3.0_sp ) / x4
+        xf = xf + xr
+      end do
+      xr = 1.0_sp / ( 2.0_sp * xa * xa )
+      xg = xr
+      do k = 1, 12
+        xr = -0.25_sp * xr * ( 4.0_sp * k + 1.0_sp ) &
+          * ( 4.0_sp * k - 1.0_sp ) / x4
+        xg = xg + xr
+      end do
+      c1 = 0.5_sp + ( xf * sin ( x2 ) - xg * cos ( x2 ) ) &
+        / sqrt ( 2.0_sp * pi ) / xa
+      s1 = 0.5_sp - ( xf * cos ( x2 ) + xg * sin ( x2 ) ) &
+        / sqrt ( 2.0_sp * pi ) / xa
+
+    end if
+ 
+    fr = pp2 * ( 0.5_sp - c1 )
+    fi0 = pp2 * ( 0.5_sp - s1 )
+    fi = ( -1.0_sp ) ** ks * fi0
+    fm = sqrt ( fr * fr + fi * fi )
+
+    if ( 0.0_sp <= fr ) then
+      fa = srd * atan ( fi / fr )
+    else if ( 0.0_sp < fi ) then
+      fa = srd * ( atan ( fi / fr ) + pi )
+    else if ( fi < 0.0_sp ) then
+      fa = srd * ( atan ( fi / fr ) - pi )
+    end if
+
+    xp = x * x + pi / 4.0_sp
+    cs = cos ( xp )
+    ss = sin ( xp )
+    xq2 = 1.0_sp / sqrt ( pi )
+    gr = xq2 * ( fr * cs + fi0 * ss )
+    gi = ( -1.0_sp ) ** ks * xq2 * ( fi0 * cs - fr * ss )
+    gm = sqrt ( gr * gr + gi * gi )
+
+    if ( 0.0_sp <= gr ) then
+      ga = srd * atan ( gi / gr )
+    else if ( 0.0_sp < gi ) then
+      ga = srd * ( atan ( gi / gr ) + pi )
+    else if ( gi < 0.0_sp ) then
+      ga = srd * ( atan ( gi / gr ) - pi )
+    end if
+
+    if ( x < 0.0_sp ) then
+      fr = pp2 - fr
+      fi = ( -1.0_sp ) ** ks * pp2 - fi
+      fm = sqrt ( fr * fr + fi * fi )
+      fa = srd * atan ( fi / fr )
+      gr = cos ( x * x ) - gr
+      gi = - ( -1.0_sp ) ** ks * sin ( x * x ) - gi
+      gm = sqrt ( gr * gr + gi * gi )
+      ga = srd * atan ( gi / gr )
+    end if
+
+  end if
+
+end subroutine ffk
+
+
+attributes(device) subroutine gamma ( x, ga )
+
+!*****************************************************************************80
+!
+!! GAMMA evaluates the Gamma function.
+!
+!  Licensing:
+!
+!    The original FORTRAN77 version of this routine is copyrighted by 
+!    Shanjie Zhang and Jianming Jin.  However, they give permission to 
+!    incorporate this routine into a user program that the copyright 
+!    is acknowledged.
+!
+!  Modified:
+!
+!    08 September 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Shanjie Zhang, Jianming Jin.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!    X must not be 0, or any negative integer.
+!
+!    Output, real(kind=sp) ::  GA, the value of the Gamma function.
+!
+  implicit none
+
+  real(kind=sp) , dimension ( 26 ) :: g = (/ &
+    1.0_sp, &
+    0.5772156649015329_sp, &
+   -0.6558780715202538_sp, &
+   -0.420026350340952e-01_sp, &
+    0.1665386113822915_sp, &
+   -0.421977345555443e-01_sp, &
+   -0.96219715278770e-02_sp, &
+    0.72189432466630e-02_sp, &
+   -0.11651675918591e-02_sp, &
+   -0.2152416741149e-03_sp, &
+    0.1280502823882e-03_sp, & 
+   -0.201348547807e-04_sp, &
+   -0.12504934821e-05_sp, &
+    0.11330272320e-05_sp, &
+   -0.2056338417e-06_sp, & 
+    0.61160950e-08_sp, &
+    0.50020075e-08_sp, &
+   -0.11812746e-08_sp, &
+    0.1043427e-09_sp, & 
+    0.77823e-11_sp, &
+   -0.36968e-11_sp, &
+    0.51e-12_sp, &
+   -0.206e-13_sp, &
+   -0.54e-14_sp, &
+    0.14e-14_sp, &
+    0.1e-15_sp /)
+  real(kind=sp) ::  ga
+  real(kind=sp) ::  gr
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: m1
+  real(kind=sp) :: , parameter :: pi = 3.141592653589793_sp
+  real(kind=sp) ::  r
+  real(kind=sp) ::  x
+  real(kind=sp) ::  z
+
+  if ( x == aint ( x ) ) then
+
+    if ( 0.0_sp < x ) then
+      ga = 1.0_sp
+      m1 = int ( x ) - 1
+      do k = 2, m1
+        ga = ga * k
+      end do
+    else
+      ga = huge(1.0_sp,kind=sp)
+    end if
+
+  else
+
+    if ( 1.0_sp < abs ( x ) ) then
+      z = abs ( x )
+      m = int ( z )
+      r = 1.0_sp
+      do k = 1, m
+        r = r * ( z - real ( k, kind=sp ) )
+      end do
+      z = z - real ( m, kind=sp )
+    else
+      z = x
+    end if
+
+    gr = g(26)
+    do k = 25, 1, -1
+      gr = gr * z + g(k)
+    end do
+
+    ga = 1.0_sp / ( gr * z )
+
+    if ( 1.0_sp < abs ( x ) ) then
+      ga = ga * r
+      if ( x < 0.0_sp ) then
+        ga = - pi / ( x* ga * sin ( pi * x ) )
+      end if
+    end if
+
+  end if
+
+end subroutine gamma
+
+
+
+
 
 
 
