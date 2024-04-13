@@ -5800,10 +5800,438 @@ attributes(device) subroutine itairy ( x, apt, bpt, ant, bnt )
 end subroutine itairy
 
 
+attributes(device) subroutine itika ( x, ti, tk )
+
+!*****************************************************************************80
+!
+!! ITIKA computes the integral of the modified Bessel functions I0(t) and K0(t).
+!
+!  Discussion:
+!
+!    This procedure integrates modified Bessel functions I0(t) and
+!    K0(t) with respect to t from 0 to x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    18 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TI, TK, the integrals of I0(t) and K0(t)
+!    from 0 to X.
+!
+  implicit none
+
+  real(kind=sp), dimension ( 10 ) :: a = (/ &
+    0.625_sp,           1.0078125_sp, &
+    2.5927734375_sp,    9.1868591308594_sp, &
+    4.1567974090576e+01_sp, 2.2919635891914e+02_sp, &
+    1.491504060477e+03_sp,  1.1192354495579e+04_sp, &
+    9.515939374212e+04_sp,  9.0412425769041e+05_sp /)
+  real(kind=sp) ::  b1
+  real(kind=sp) ::  b2
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rc1
+  real(kind=sp) ::  rc2
+  real(kind=sp) ::  rs
+  real(kind=sp) ::  ti
+  real(kind=sp) ::  tk
+  real(kind=sp) ::  tw
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+
+ 
+
+  if ( x < 20.0_sp ) then
+
+    x2 = x * x
+    ti = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 50
+      r = 0.25_sp * r * ( 2 * k - 1.0_sp ) / ( 2 * k + 1.0_sp ) &
+        / ( k * k ) * x2
+      ti = ti + r
+      if ( abs ( r / ti ) < 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    ti = ti * x
+
+  else
+
+    ti = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 10
+      r = r / x
+      ti = ti + a(k) * r
+    end do
+    rc1 = 1.0_sp / sqrt ( 2.0_sp * pi * x )
+    ti = rc1 * exp ( x ) * ti
+
+  end if
+
+  if ( x < 12.0_sp ) then
+
+    e0 = el + log ( x / 2.0_sp )
+    b1 = 1.0_sp - e0
+    b2 = 0.0_sp
+    rs = 0.0_sp
+    r = 1.0_sp
+    do k = 1, 50
+      r = 0.25_sp * r * ( 2 * k - 1.0_sp ) &
+        / ( 2 * k + 1.0_sp ) / ( k * k ) * x2
+      b1 = b1 + r * ( 1.0_sp / ( 2 * k + 1 ) - e0 )
+      rs = rs + 1.0_sp / k
+      b2 = b2 + r * rs
+      tk = b1 + b2
+      if ( abs ( ( tk - tw ) / tk ) < 1.0e-12_sp ) then
+        exit
+      end if
+      tw = tk
+    end do
+
+    tk = tk * x
+
+  else
+
+    tk = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 10
+      r = -r / x
+      tk = tk + a(k) * r
+    end do 
+    rc2 = sqrt ( pi / ( 2.0_sp * x ) )
+    tk = pi / 2.0_sp - rc2 * tk * exp ( - x )
+
+  end if
+
+end subroutine itika
 
 
+attributes(device) subroutine itikb ( x, ti, tk )
+
+!*****************************************************************************80
+!
+!! ITIKB computes the integral of the Bessel functions I0(t) and K0(t).
+!
+!  Discussion:
+!
+!    This procedure integrates Bessel functions I0(t) and K0(t)
+!    with respect to t from 0 to x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    24 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+! 
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TI, TK, the integral of I0(t) and K0(t)
+!    from 0 to X.
+!
+  implicit none
+
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  ti
+  real(kind=sp) ::  tk
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+
+  if ( x == 0.0_sp ) then
+
+    ti = 0.0_sp
+
+  else if ( x < 5.0_sp ) then
+
+    t1 = x / 5.0_sp
+    t = t1 * t1
+    ti = (((((((( &
+        0.59434e-03_sp * t &
+      + 0.4500642e-02_sp ) * t &
+      + 0.044686921_sp ) * t &
+      + 0.300704878_sp ) * t &
+      + 1.471860153_sp ) * t &
+      + 4.844024624_sp ) * t &
+      + 9.765629849_sp ) * t &
+      +10.416666367_sp ) * t &
+      + 5.0_sp ) * t1
+
+  else if ( 5.0_sp <= x .and. x <= 8.0_sp ) then
+
+    t = 5.0_sp / x
+    ti = ((( &
+      - 0.015166_sp * t &
+      - 0.0202292_sp ) * t &
+      + 0.1294122_sp ) * t &
+      - 0.0302912_sp ) * t &
+      + 0.4161224_sp
+    ti = ti * exp ( x ) / sqrt ( x )
+
+  else
+
+    t = 8.0_sp / x
+    ti = ((((( &
+      - 0.0073995_sp * t &
+      + 0.017744_sp ) * t &
+      - 0.0114858_sp ) * t &
+      + 0.55956e-02_sp ) * t &
+      + 0.59191e-02_sp ) * t &
+      + 0.0311734_sp ) * t &
+      + 0.3989423_sp
+    ti = ti * exp ( x ) / sqrt ( x )
+
+  end if
+
+  if ( x == 0.0_sp ) then
+
+    tk = 0.0_sp
+
+  else if ( x <= 2.0_sp ) then
+
+    t1 = x / 2.0_sp
+    t = t1 * t1
+    tk = (((((( &
+        0.116e-05_sp        * t &
+      + 0.2069e-04_sp )     * t &
+      + 0.62664e-03_sp )    * t &
+      + 0.01110118_sp ) * t &
+      + 0.11227902_sp ) * t &
+      + 0.50407836_sp ) * t &
+      + 0.84556868_sp ) * t1
+    tk = tk - log ( x / 2.0_sp ) * ti
+
+  else if ( 2.0_sp < x .and. x <= 4.0_sp ) then
+
+    t = 2.0_sp / x
+    tk = ((( &
+        0.0160395_sp   * t &
+      - 0.0781715_sp ) * t &
+      + 0.185984_sp )  * t &
+      - 0.3584641_sp ) * t &
+      + 1.2494934_sp
+    tk = pi / 2.0_sp - tk * exp ( - x ) / sqrt ( x )
+
+  else if ( 4.0_sp < x .and. x <= 7.0_sp ) then
+
+    t = 4.0_sp / x
+    tk = ((((( &
+        0.37128e-02_sp * t &
+      - 0.0158449_sp ) * t &
+      + 0.0320504_sp ) * t &
+      - 0.0481455_sp ) * t &
+      + 0.0787284_sp ) * t &
+      - 0.1958273_sp ) * t &
+      + 1.2533141_sp
+    tk = pi / 2.0_sp - tk * exp ( - x ) / sqrt ( x )
+
+  else
+
+    t = 7.0_sp / x
+    tk = ((((( &
+        0.33934e-03_sp      * t &
+      - 0.163271e-02_sp )   * t &
+      + 0.417454e-02_sp )   * t &
+      - 0.933944e-02_sp )   * t &
+      + 0.02576646_sp ) * t &
+      - 0.11190289_sp ) * t &
+      + 1.25331414_sp
+    tk = pi / 2.0_sp - tk * exp ( - x ) / sqrt ( x )
+
+  end if
+
+end subroutine itikb
 
 
+attributes(device) subroutine itjya ( x, tj, ty )
+
+!*****************************************************************************80
+!
+!! ITJYA computes integrals of Bessel functions J0(t) and Y0(t).
+!
+!  Discussion:
+!
+!    This procedure integrates Bessel functions J0(t) and Y0(t) with
+!    respect to t from 0 to x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    25 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TJ, TY, the integrals of J0(t) and Y0(t) 
+!    from 0 to x.
+!
+  implicit none
+
+  real(kind=sp) ::  a(18)
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  a1
+  real(kind=sp) ::  af
+  real(kind=sp) ::  bf
+  real(kind=sp) ::  bg
+  real(kind=sp) ::  el
+  real(kind=sp) ::  eps
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r2
+  real(kind=sp) ::  rc
+  real(kind=sp) ::  rs
+  real(kind=sp) ::  tj
+  real(kind=sp) ::  ty
+  real(kind=sp) ::  ty1
+  real(kind=sp) ::  ty2
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  xp
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+  eps = 1.0D-12
+
+  if ( x == 0.0_sp ) then
+
+    tj = 0.0_sp
+    ty = 0.0_sp
+
+  else if ( x <= 20.0_sp ) then
+
+    x2 = x * x
+    tj = x
+    r = x
+    do k = 1, 60
+      r = -0.25_sp * r * ( 2 * k - 1.0_sp ) / ( 2 * k + 1.0_sp ) &
+        / ( k * k ) * x2
+      tj = tj + r
+      if ( abs ( r ) < abs ( tj ) * eps ) then
+        exit
+      end if
+    end do
+
+    ty1 = ( el + log ( x / 2.0_sp ) ) * tj
+    rs = 0.0_sp
+    ty2 = 1.0_sp
+    r = 1.0_sp
+
+    do k = 1, 60
+      r = -0.25_sp * r * ( 2 * k - 1.0_sp ) / ( 2 * k + 1.0_sp ) &
+        / ( k * k ) * x2
+      rs = rs + 1.0_sp / k
+      r2 = r * ( rs + 1.0_sp / ( 2.0_sp * k + 1.0_sp ) )
+      ty2 = ty2 + r2
+      if ( abs ( r2 ) < abs ( ty2 ) * eps ) then
+        exit
+      end if
+    end do
+
+    ty = ( ty1 - x * ty2 ) * 2.0_sp / pi
+
+  else
+
+    a0 = 1.0_sp
+    a1 = 5.0_sp / 8.0_sp
+    a(1) = a1
+
+    do k = 1, 16
+      af = ( ( 1.5_sp * ( k + 0.5_sp ) * ( k + 5.0_sp / 6.0_sp ) &
+        * a1 - 0.5_sp * ( k + 0.5_sp ) * ( k + 0.5_sp )  &
+        * ( k - 0.5_sp ) * a0 ) ) / ( k + 1.0_sp )
+      a(k+1) = af
+      a0 = a1
+      a1 = af
+    end do
+
+    bf = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 8
+      r = -r / ( x * x )
+      bf = bf + a(2*k) * r
+    end do
+    bg = a(1) / x
+    r = 1.0_sp / x
+    do k = 1, 8
+      r = -r / ( x * x )
+      bg = bg + a(2*k+1) * r
+    end do
+    xp = x + 0.25_sp * pi
+    rc = sqrt ( 2.0_sp / ( pi * x ) )
+    tj = 1.0_sp - rc * ( bf * cos ( xp ) + bg * sin ( xp ) )
+    ty = rc * ( bg * cos ( xp ) - bf * sin ( xp ) )
+
+  end if
+  
+end subroutine itjya
 
 
 end module specfuncs_cuda
