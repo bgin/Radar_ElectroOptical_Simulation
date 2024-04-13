@@ -4118,8 +4118,8 @@ attributes(device) subroutine enxb ( n, x, en )
 
   !if ( x == 0.0_sp ) then
   !
-  !  en(0) = 1.0D+300
-  !  en(1) = 1.0D+300
+  !  en(0) = 1.0e+300
+  !  en(1) = 1.0e+300
   !  do k = 2, n
   !    en(k) = 1.0_sp / ( k - 1.0_sp )
   !  end do
@@ -4757,7 +4757,1047 @@ attributes(device) subroutine gamma ( x, ga )
 end subroutine gamma
 
 
+attributes(device) subroutine ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
 
+!*****************************************************************************80
+!
+!! IK01A compute Bessel function I0(x), I1(x), K0(x), and K1(x).
+!
+!  Discussion:
+!
+!    This procedure computes modified Bessel functions I0(x), I1(x),
+!    K0(x) and K1(x), and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    16 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BI0, DI0, BI1, DI1, BK0, DK0, BK1, DK1, the
+!    values of I0(x), I0'(x), I1(x), I1'(x), K0(x), K0'(x), K1(x), K1'(x).
+!
+  implicit none
+
+  real(kind=sp) , dimension ( 12 ) :: a = (/ &
+    0.125_sp, 7.03125e-02_sp, &
+    7.32421875e-02_sp, 1.1215209960938e-01_sp, &
+    2.2710800170898D-01, 5.7250142097473e-01_sp, &
+    1.7277275025845_sp, 6.0740420012735_sp, &
+    2.4380529699556e+01_sp, 1.1001714026925e+02_sp, &
+    5.5133589612202e+02_sp, 3.0380905109224e+03_sp /)
+  real(kind=sp) , dimension ( 8 ) :: a1 = (/ &
+    0.125_sp, 0.2109375_sp, &
+    1.0986328125_sp, 1.1775970458984e+01_sp, &
+    2.1461706161499e+02_sp, 5.9511522710323e+03_sp, &
+    2.3347645606175e+05_sp, 1.2312234987631e+07_sp /)
+  real(kind=sp) , dimension ( 12 ) :: b = (/ &
+    -0.375_sp, -1.171875e-01_sp, &
+    -1.025390625e-01_sp, -1.4419555664063e-01_sp, &
+    -2.7757644653320D-01, -6.7659258842468e-01_sp, &
+    -1.9935317337513_sp, -6.8839142681099_sp, &
+    -2.7248827311269e+01_sp, -1.2159789187654e+02_sp, &
+    -6.0384407670507e+02_sp, -3.3022722944809e+03_sp /)
+  real(kind=sp) ::  bi0
+  real(kind=sp) ::  bi1
+  real(kind=sp) ::  bk0
+  real(kind=sp) ::  bk1
+  real(kind=sp) ::  ca
+  real(kind=sp) ::  cb
+  real(kind=sp) ::  ct
+  real(kind=sp) ::  di0
+  real(kind=sp) ::  di1
+  real(kind=sp) ::  dk0
+  real(kind=sp) ::  dk1
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  ww
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  xr
+  real(kind=sp) ::  xr2
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+  x2 = x * x
+
+  !if ( x == 0.0_sp ) then
+  !
+  !  bi0 = 1.0_sp
+  !  bi1 = 0.0_sp
+  !  bk0 = 1.0e+300
+  !  bk1 = 1.0e+300
+  !  di0 = 0.0_sp
+  !  di1 = 0.5_sp
+  ! ! dk0 = -1.0e+300
+  !  dk1 = -1.0e+300
+  !  return
+
+  if ( x <= 18.0_sp ) then
+
+    bi0 = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 50
+      r = 0.25_sp * r * x2 / ( k * k )
+      bi0 = bi0 + r
+      if ( abs ( r / bi0 ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    bi1 = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 50
+      r = 0.25_sp * r * x2 / ( k * ( k + 1 ) )
+      bi1 = bi1 + r
+      if ( abs ( r / bi1 ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    bi1 = 0.5_sp * x * bi1
+
+  else
+
+    if ( x < 35.0_sp ) then
+      k0 = 12
+    else if ( x < 50.0_sp ) then
+      k0 = 9
+    else
+      k0 = 7
+    end if
+
+    ca = exp ( x ) / sqrt ( 2.0_sp * pi * x )
+    bi0 = 1.0_sp
+    xr = 1.0_sp / x
+    do k = 1, k0
+      bi0 = bi0 + a(k) * xr ** k
+    end do
+    bi0 = ca * bi0
+    bi1 = 1.0_sp
+    do k = 1, k0
+      bi1 = bi1 + b(k) * xr ** k
+    end do
+    bi1 = ca * bi1
+
+  end if
+
+  if ( x <= 9.0_sp ) then
+
+    ct = - ( log ( x / 2.0_sp ) + el )
+    bk0 = 0.0_sp
+    w0 = 0.0_sp
+    r = 1.0_sp
+    do k = 1, 50
+      w0 = w0 + 1.0_sp / k
+      r = 0.25_sp * r / ( k * k ) * x2
+      bk0 = bk0 + r * ( w0 + ct )
+      if ( abs ( ( bk0 - ww ) / bk0 ) < 1.0e-15_sp ) then
+        exit
+      end if
+      ww = bk0
+    end do
+
+    bk0 = bk0 + ct
+
+  else
+
+    cb = 0.5_sp / x
+    xr2 = 1.0_sp / x2
+    bk0 = 1.0_sp
+    do k = 1, 8
+      bk0 = bk0 + a1(k) * xr2 ** k
+    end do
+    bk0 = cb * bk0 / bi0
+
+  end if
+
+  bk1 = ( 1.0_sp / x - bi1 * bk0 ) / bi0
+  di0 = bi1
+  di1 = bi0 - bi1 / x
+  dk0 = - bk1
+  dk1 = - bk0 - bk1 / x
+
+end subroutine ik01a
+
+
+attributes(device) subroutine ik01b ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
+
+!*****************************************************************************80
+!
+!! IK01B: Bessel functions I0(x), I1(x), K0(x), and K1(x) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    17 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BI0, DI0, BI1, DI1, BK0, DK0, BK1, DK1, the
+!    values of I0(x), I0'(x), I1(x), I1'(x), K0(x), K0'(x), K1(x), K1'(x).
+!
+  implicit none
+
+  real(kind=sp) ::  bi0
+  real(kind=sp) ::  bi1
+  real(kind=sp) ::  bk0
+  real(kind=sp) ::  bk1
+  real(kind=sp) ::  di0
+  real(kind=sp) ::  di1
+  real(kind=sp) ::  dk0
+  real(kind=sp) ::  dk1
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  x
+
+  !if ( x == 0.0_sp ) then
+  !
+  !  bi0 = 1.0_sp
+  !  bi1 = 0.0_sp
+  !  bk0 = 1.0e+300
+  !  bk1 = 1.0e+300
+  !  di0 = 0.0_sp
+  !  di1 = 0.5_sp
+  !  dk0 = -1.0e+300
+  !  dk1 = -1.0e+300
+  !  return
+
+  if ( x <= 3.75_sp ) then
+
+    t = x / 3.75_sp
+    t2 = t * t
+
+    bi0 = ((((( &
+        0.0045813_sp   * t2 &
+      + 0.0360768_sp ) * t2 &
+      + 0.2659732_sp ) * t2 &
+      + 1.2067492_sp ) * t2 &
+      + 3.0899424_sp ) * t2 &
+      + 3.5156229_sp ) * t2 &
+      + 1.0_sp
+
+    bi1 = x * (((((( &
+        0.00032411_sp   * t2 &
+      + 0.00301532_sp ) * t2 &
+      + 0.02658733_sp ) * t2 &
+      + 0.15084934_sp ) * t2 &
+      + 0.51498869_sp ) * t2 &
+      + 0.87890594_sp ) * t2 &
+      + 0.5_sp )
+
+  else
+
+    t = 3.75_sp / x
+
+    bi0 = (((((((( &
+        0.00392377_sp   * t &
+      - 0.01647633_sp ) * t &
+      + 0.02635537_sp ) * t &
+      - 0.02057706_sp ) * t &
+      + 0.916281D-02 ) * t &
+      - 0.157565D-02 ) * t &
+      + 0.225319D-02 ) * t &
+      + 0.01328592_sp ) * t &
+      + 0.39894228_sp ) * exp ( x ) / sqrt ( x )
+
+    bi1 = (((((((( &
+      - 0.420059D-02     * t &
+      + 0.01787654_sp ) * t &
+      - 0.02895312_sp ) * t &
+      + 0.02282967_sp ) * t &
+      - 0.01031555_sp ) * t &
+      + 0.163801D-02 ) * t &
+      - 0.00362018_sp ) * t &
+      - 0.03988024_sp ) * t &
+      + 0.39894228_sp ) * exp ( x ) / sqrt ( x )
+
+  end if
+
+  if ( x <= 2.0_sp ) then
+
+    t = x / 2.0_sp
+    t2 = t * t
+
+    bk0 = ((((( &
+        0.0000074_sp   * t2 &
+      + 0.0001075_sp ) * t2 &
+      + 0.00262698_sp ) * t2 &
+      + 0.0348859_sp ) * t2 &
+      + 0.23069756_sp ) * t2 &
+      + 0.4227842_sp ) * t2 &
+      - 0.57721566_sp - bi0 * log ( t )
+
+    bk1 = (((((( &
+      - 0.00004686_sp   * t2 &
+      - 0.00110404_sp ) * t2 &
+      - 0.01919402_sp ) * t2 &
+      - 0.18156897_sp ) * t2 &
+      - 0.67278579_sp ) * t2 &
+      + 0.15443144_sp ) * t2 &
+      + 1.0_sp ) / x + bi1 * log ( t )
+
+  else
+
+    t = 2.0_sp / x
+    t2 = t * t
+
+    bk0 = (((((( &
+        0.00053208_sp   * t &
+      - 0.0025154_sp )  * t &
+      + 0.00587872_sp ) * t &
+      - 0.01062446_sp ) * t &
+      + 0.02189568_sp ) * t &
+      - 0.07832358_sp ) * t &
+      + 1.25331414_sp ) * exp ( - x ) / sqrt ( x )
+
+    bk1 = (((((( &
+      - 0.00068245_sp   * t &
+      + 0.00325614_sp ) * t &
+      - 0.00780353_sp ) * t &
+      + 0.01504268_sp ) * t &
+      - 0.0365562_sp  ) * t & 
+      + 0.23498619_sp ) * t &
+      + 1.25331414_sp ) * exp ( - x ) / sqrt ( x )
+
+  end if
+
+  di0 = bi1
+  di1 = bi0 - bi1 / x
+  dk0 = -bk1
+  dk1 = -bk0 - bk1 / x
+  
+end subroutine ik01b
+
+
+attributes(device) subroutine ikna ( n, x, nm, bi, di, bk, dk )
+
+!*****************************************************************************80
+!
+!! IKNA compute Bessel function In(x) and Kn(x), and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    16 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of In(x) and Kn(x).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  BI(0:N), DI(0:N), BK(0:N), DK(0:N),
+!    the values of In(x), In'(x), Kn(x), Kn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  bi(0:n)
+  real(kind=sp) ::  bi0
+  real(kind=sp) ::  bi1
+  real(kind=sp) ::  bk(0:n)
+  real(kind=sp) ::  bk0
+  real(kind=sp) ::  bk1
+  real(kind=sp) ::  di(0:n)
+  real(kind=sp) ::  di0
+  real(kind=sp) ::  di1
+  real(kind=sp) ::  dk(0:n)
+  real(kind=sp) ::  dk0
+  real(kind=sp) ::  dk1
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  g
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  g1
+  real(kind=sp) ::  h
+  real(kind=sp) ::  h0
+  real(kind=sp) ::  h1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  !integer(kind=i4) :: msta1
+  !integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  x
+
+ 
+  if ( n <= 1 ) then
+    return
+  end if
+  nm = n
+
+  call ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 )
+  bi(0) = bi0
+  bi(1) = bi1
+  bk(0) = bk0
+  bk(1) = bk1
+  di(0) = di0
+  di(1) = di1
+  dk(0) = dk0
+  dk(1) = dk1
+
+  
+
+  if ( 40.0_sp < x .and. n < int ( 0.25_sp * x ) ) then
+
+    h0 = bi0
+    h1 = bi1
+    do k = 2, n
+      h = -2.0_sp * ( k - 1.0_sp ) / x * h1 + h0
+      bi(k) = h
+      h0 = h1
+      h1 = h
+    end do
+
+  else
+
+    m = msta1 ( x, 200 )
+
+    if ( m < n ) then
+      nm = m
+    else
+      m = msta2 ( x, n, 15 )
+    end if
+
+    f0 = 0.0_sp
+    f1 = tiny(1.0_sp,kind=sp)
+    do k = m, 0, -1
+      f = 2.0_sp * ( k + 1.0_sp ) * f1 / x + f0
+      if ( k <= nm ) then
+        bi(k) = f
+      end if
+      f0 = f1
+      f1 = f
+    end do
+    s0 = bi0 / f
+    do k = 0, nm
+      bi(k) = s0 * bi(k)
+    end do
+  end if
+
+  g0 = bk0
+  g1 = bk1
+  do k = 2, nm
+    g = 2.0_sp * ( k - 1.0_sp ) / x * g1 + g0
+    bk(k) = g
+    g0 = g1
+    g1 = g
+  end do
+
+  do k = 2, nm
+    di(k) = bi(k-1) - k / x * bi(k)
+    dk(k) = - bk(k-1) - k / x * bk(k)
+  end do
+
+end subroutine ikna
+
+
+attributes(device) subroutine iknb ( n, x, nm, bi, di, bk, dk )
+
+!*****************************************************************************80
+!
+!! IKNB compute Bessel function In(x) and Kn(x).
+!
+!  Discussion:
+!
+!    Compute modified Bessel functions In(x) and Kn(x),
+!    and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    17 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of In(x) and Kn(x).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  BI(0:N), DI(0:N), BK(0:N), DK(0:N),
+!    the values of In(x), In'(x), Kn(x), Kn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  bi(0:n)
+  real(kind=sp) ::  bk(0:n)
+  real(kind=sp) ::  bkl
+  real(kind=sp) ::  bs
+  real(kind=sp) ::  di(0:n)
+  real(kind=sp) ::  dk(0:n)
+  real(kind=sp) ::  el
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  g
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  g1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  integer(kind=i4) :: l
+  integer(kind=i4) :: m
+  !integer(kind=i4) :: msta1
+  !integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  sk0
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+  nm = n
+
+ 
+
+  if ( n == 0 ) then
+    nm = 1
+  end if
+
+  m = msta1 ( x, 200 )
+  if ( m < nm ) then
+    nm = m
+  else
+    m = msta2 ( x, nm, 15 )
+  end if
+
+  bs = 0.0_sp
+  sk0 = 0.0_sp
+  f0 = 0.0_sp
+  f1 = tiny(1.0_sp,kind=sp)
+  do k = m, 0, -1
+    f = 2.0_sp * ( k + 1.0_sp ) / x * f1 + f0
+    if ( k <= nm ) then
+      bi(k) = f
+    end if
+    if ( k /= 0 .and. k == 2 * int ( k / 2 ) ) then
+      sk0 = sk0 + 4.0_sp * f / k
+    end if
+    bs = bs + 2.0_sp * f
+    f0 = f1
+    f1 = f
+  end do
+
+  s0 = exp ( x ) / ( bs - f )
+  do k = 0, nm
+    bi(k) = s0 * bi(k)
+  end do
+
+  if ( x <= 8.0_sp ) then
+    bk(0) = - ( log ( 0.5_sp * x ) + el ) * bi(0) + s0 * sk0
+    bk(1) = ( 1.0_sp / x - bi(1) * bk(0) ) / bi(0)
+  else
+    a0 = sqrt ( pi / ( 2.0_sp * x ) ) * exp ( - x ) 
+
+    if ( x < 25.0_sp ) then
+      k0 = 16
+    else if ( x < 80.0_sp ) then
+      k0 = 10
+    else if ( x < 200.0_sp ) then
+      k0 = 8
+    else
+      k0 = 6
+    end if
+
+    do l = 0, 1
+      bkl = 1.0_sp
+      vt = 4.0_sp * l
+      r = 1.0_sp
+      do k = 1, k0
+        r = 0.125_sp * r * ( vt - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * x )
+        bkl = bkl + r
+      end do
+      bk(l) = a0 * bkl
+    end do
+  end if
+
+  g0 = bk(0)
+  g1 = bk(1)
+  do k = 2, nm
+    g = 2.0_sp * ( k - 1.0_sp ) / x * g1 + g0
+    bk(k) = g
+    g0 = g1
+    g1 = g
+  end do
+
+  di(0) = bi(1)
+  dk(0) = -bk(1)
+  do k = 1, nm
+    di(k) = bi(k-1) - k / x * bi(k)
+    dk(k) = -bk(k-1) - k / x * bk(k)
+  end do
+
+end subroutine iknb
+
+
+attributes(device) subroutine incob ( a, b, x, bix )
+
+!*****************************************************************************80
+!
+!! INCOB computes the incomplete beta function Ix(a,b).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    22 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  A, B, parameters.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BIX, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a
+  real(kind=sp) ::  b
+  real(kind=sp) ::  bix
+  real(kind=sp) ::  bt
+  real(kind=sp) ::  dk(51)
+  real(kind=sp) ::  fk(51)
+  integer(kind=i4) :: k
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  ta
+  real(kind=sp) ::  tb
+  real(kind=sp) ::  x
+
+  s0 = ( a + 1.0_sp ) / ( a + b + 2.0_sp )
+  call beta ( a, b, bt )
+
+  if ( x <= s0 ) then
+
+    do k = 1, 20
+      dk(2*k) = k * ( b - k ) * x / &
+        ( a + 2.0_sp * k - 1.0_sp ) / ( a + 2.0_sp * k )
+    end do
+
+    do k = 0, 20
+      dk(2*k+1) = - ( a + k ) * ( a + b + k ) * x &
+        / ( a + 2.0_sp * k ) / ( a + 2.0_sp * k + 1.0_sp )
+    end do
+
+    t1 = 0.0_sp
+    do k = 20, 1, -1
+      t1 = dk(k) / ( 1.0_sp + t1 )
+    end do
+    ta = 1.0_sp / ( 1.0_sp + t1 )
+    bix = x ** a * ( 1.0_sp - x ) ** b / ( a * bt ) * ta
+
+  else
+
+    do k = 1, 20
+      fk(2*k) = k * ( a - k ) * ( 1.0_sp - x ) &
+        / ( b + 2.0_sp * k - 1.0_sp ) / ( b + 2.0_sp * k )
+    end do
+
+    do k = 0,20
+      fk(2*k+1) = - ( b + k ) * ( a + b + k ) * ( 1.0_sp - x ) &
+        / ( b + 2.0_sp * k ) / ( b + 2.0_sp * k + 1.0_sp )
+    end do
+
+    t2 = 0.0_sp
+    do k = 20, 1, -1
+      t2 = fk(k) / ( 1.0_sp + t2 )
+    end do
+    tb = 1.0_sp / ( 1.0_sp + t2 )
+    bix = 1.0_sp - x ** a * ( 1.0_sp - x ) ** b / ( b * bt ) * tb
+
+  end if
+
+end subroutine incob
+
+
+attributes(device) subroutine incog ( a, x, gin, gim, gip )
+
+!*****************************************************************************80
+!
+!! INCOG computes the incomplete gamma function r(a,x), ,(a,x), P(a,x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    22 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  A, the parameter.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  GIN, GIM, GIP, the values of
+!    r(a,x), \E2(a,x), P(a,x).
+!
+  implicit none
+
+  real(kind=sp) ::  a
+  real(kind=sp) ::  ga
+  real(kind=sp) ::  gim
+  real(kind=sp) ::  gin
+  real(kind=sp) ::  gip
+  integer(kind=i4) :: k
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  t0
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xam
+
+  xam = -  x + a * log ( x )
+
+ 
+
+  if ( x == 0.0_sp ) then
+
+    gin = 0.0_sp
+    call gamma ( a, ga )
+    gim = ga
+    gip = 0.0_sp
+
+  else if ( x <= 1.0_sp + a ) then
+
+    s = 1.0_sp / a
+    r = s
+    do k = 1, 60
+      r = r * x / ( a + k )
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    gin = exp ( xam ) * s
+    call gamma ( a, ga )
+    gip = gin / ga
+    gim = ga - gin
+
+  else if ( 1.0_sp + a < x ) then
+
+    t0 = 0.0_sp
+    do k = 60, 1, -1
+      t0 = ( k - a ) / ( 1.0_sp + k / ( x + t0 ) )
+    end do
+    gim = exp ( xam ) / ( x + t0 )
+    call gamma ( a, ga )
+    gin = ga - gim
+    gip = 1.0_sp - gim / ga
+
+  end if
+
+end subroutine incog
+
+
+attributes(device) subroutine itairy ( x, apt, bpt, ant, bnt )
+
+!****************************************************************************80
+!
+!! ITAIRY computes the integrals of Airy functions.
+!
+!  Discussion:
+!
+!    Compute the integrals of Airy functions with respect to t,
+!    from 0 and x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    19 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  APT, BPT, ANT, BNT, the integrals, from 0 to x,
+!    of Ai(t), Bi(t), Ai(-t), and Bi(-t).
+!       
+  implicit none
+
+  real(kind=sp), dimension ( 16 ) :: a = (/ &
+    0.569444444444444_sp, 0.891300154320988_sp, &
+    0.226624344493027e+01_sp, 0.798950124766861e+01_sp, &
+    0.360688546785343e+02_sp, 0.198670292131169e+03_sp, &
+    0.129223456582211e+04_sp, 0.969483869669600e+04_sp, &
+    0.824184704952483e+05_sp, 0.783031092490225e+06_sp, &
+    0.822210493622814e+07_sp, 0.945557399360556e+08_sp, &
+    0.118195595640730e+10_sp, 0.159564653040121e+11_sp, &
+    0.231369166433050e+12_sp, 0.358622522796969e+13_sp /)
+  real(kind=sp) ::  ant
+  real(kind=sp) ::  apt
+  real(kind=sp) ::  bnt
+  real(kind=sp) ::  bpt
+  real(kind=sp) ::  c1
+  real(kind=sp) ::  c2
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  fx
+  real(kind=sp) ::  gx
+  integer(kind=i4) :: k
+  integer(kind=i4) :: l
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q0
+  real(kind=sp) ::  q1
+  real(kind=sp) ::  q2
+  real(kind=sp) ::  r
+  real(kind=sp) ::  sr3
+  real(kind=sp) ::  su1
+  real(kind=sp) ::  su2
+  real(kind=sp) ::  su3
+  real(kind=sp) ::  su4
+  real(kind=sp) ::  su5
+  real(kind=sp) ::  su6
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xe
+  real(kind=sp) ::  xp6
+  real(kind=sp) ::  xr1
+  real(kind=sp) ::  xr2
+
+  eps = 1.0e-15_sp
+  pi = 3.141592653589793_sp
+  c1 = 0.355028053887817_sp
+  c2 = 0.258819403792807_sp
+  sr3 = 1.732050807568877_sp
+
+  if ( x == 0.0_sp ) then
+
+    apt = 0.0_sp
+    bpt = 0.0_sp
+    ant = 0.0_sp
+    bnt = 0.0_sp
+
+  else
+
+    if ( abs ( x ) <= 9.25_sp ) then
+
+      do l = 0, 1
+
+        x = ( -1.0_sp ) ** l * x
+        fx = x
+        r = x
+
+        do k = 1, 40
+          r = r * ( 3.0_sp * k - 2.0_sp ) &
+            / ( 3.0_sp * k + 1.0_sp ) * x / ( 3.0_sp * k ) &
+            * x / ( 3.0_sp * k - 1.0_sp ) * x 
+          fx = fx + r
+          if ( abs ( r ) < abs ( fx ) * eps ) then
+            exit
+          end if
+        end do
+
+        gx = 0.5_sp * x * x
+        r = gx
+
+        do k = 1, 40
+          r = r * ( 3.0_sp * k - 1.0_sp ) &
+            / ( 3.0_sp * k + 2.0_sp ) * x / ( 3.0_sp * k ) * x &
+            / ( 3.0_sp * k + 1.0_sp ) * x
+          gx = gx + r
+          if ( abs ( r ) < abs ( gx ) * eps ) then
+            exit
+          end if
+        end do
+
+        ant = c1 * fx - c2 * gx
+        bnt = sr3 * ( c1 * fx + c2 * gx )
+
+        if ( l == 0 ) then
+          apt = ant
+          bpt = bnt
+        else
+          ant = -ant
+          bnt = -bnt
+          x = -x
+        end if
+
+      end do
+
+    else
+
+      q2 = 1.414213562373095_sp
+      q0 = 0.3333333333333333_sp
+      q1 = 0.6666666666666667_sp
+      xe = x * sqrt ( x ) / 1.5_sp
+      xp6 = 1.0_sp / sqrt ( 6.0_sp * pi * xe )
+      su1 = 1.0_sp
+      r = 1.0_sp
+      xr1 = 1.0_sp / xe
+      do k = 1, 16
+        r = - r * xr1
+        su1 = su1 + a(k) * r
+      end do
+      su2 = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 16
+        r = r * xr1
+        su2 = su2 + a(k) * r
+      end do
+
+      apt = q0 - exp ( - xe ) * xp6 * su1
+      bpt = 2.0_sp * exp ( xe ) * xp6 * su2
+      su3 = 1.0_sp
+      r = 1.0_sp
+      xr2 = 1.0_sp / ( xe * xe )
+      do k = 1, 8
+        r = - r * xr2
+        su3 = su3 + a(2*k) * r
+      end do
+      su4 = a(1) * xr1
+      r = xr1
+      do k = 1, 7
+        r = -r * xr2
+        su4 = su4 + a(2*k+1) * r
+      end do
+      su5 = su3 + su4
+      su6 = su3 - su4
+      ant = q1 - q2 * xp6 * ( su5 * cos ( xe ) - su6 * sin ( xe ) )
+      bnt = q2 * xp6 * ( su5 * sin ( xe ) + su6 * cos ( xe ) )
+
+    end if
+
+  end if
+  
+end subroutine itairy
 
 
 
