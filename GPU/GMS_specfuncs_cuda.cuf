@@ -6234,4 +6234,633 @@ attributes(device) subroutine itjya ( x, tj, ty )
 end subroutine itjya
 
 
+attributes(device) subroutine itjyb ( x, tj, ty )
+
+!*****************************************************************************80
+!
+!! ITJYB computes integrals of Bessel functions J0(t) and Y0(t).
+!
+!  Discussion:
+!
+!    This procedure integrates Bessel functions J0(t) and Y0(t)
+!    with respect to t from 0 to x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    25 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TJ, TY, the integrals of J0(t) and Y0(t) 
+!    from 0 to x.
+!
+  implicit none
+
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  t
+  real(kind=sp) ::  tj
+  real(kind=sp) ::  ty
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x1
+  real(kind=sp) ::  xt
+
+  pi = 3.141592653589793_sp
+
+  if ( x == 0.0_sp ) then
+
+    tj = 0.0_sp
+    ty = 0.0_sp
+
+  else if ( x <= 4.0_sp ) then
+
+    x1 = x / 4.0_sp
+    t = x1 * x1
+
+    tj = ((((((( &
+      - 0.133718e-03_sp      * t &
+      + 0.2362211e-02_sp )   * t &
+      - 0.025791036_sp ) * t &
+      + 0.197492634_sp ) * t &
+      - 1.015860606_sp ) * t &
+      + 3.199997842_sp ) * t &
+      - 5.333333161_sp ) * t &
+      + 4.0_sp ) * x1
+
+    ty = (((((((( &
+        0.13351e-04_sp       * t &
+      - 0.235002e-03_sp )    * t &
+      + 0.3034322e-02_sp )   * t &
+      - 0.029600855_sp ) * t &
+      + 0.203380298_sp ) * t &
+      - 0.904755062_sp ) * t &
+      + 2.287317974_sp ) * t &
+      - 2.567250468_sp ) * t &
+      + 1.076611469_sp ) * x1
+
+    ty = 2.0_sp / pi * log ( x / 2.0_sp ) * tj - ty
+
+  else if ( x <= 8.0_sp ) then
+
+    xt = x - 0.25_sp * pi
+    t = 16.0_sp / ( x * x )
+
+    f0 = (((((( &
+        0.1496119e-02_sp     * t &
+      - 0.739083e-02_sp )    * t &
+      + 0.016236617_sp ) * t &
+      - 0.022007499_sp ) * t &
+      + 0.023644978_sp ) * t &
+      - 0.031280848_sp ) * t &
+      + 0.124611058_sp ) * 4.0_sp / x
+
+    g0 = ((((( &
+        0.1076103e-02_sp     * t &
+      - 0.5434851e-02_sp )   * t &
+      + 0.01242264_sp )  * t &
+      - 0.018255209_sp ) * t &
+      + 0.023664841_sp ) * t &
+      - 0.049635633_sp ) * t &
+      + 0.79784879_sp
+
+    tj = 1.0_sp - ( f0 * cos ( xt ) - g0 * sin ( xt ) ) / sqrt ( x )
+
+    ty = - ( f0 * sin ( xt ) + g0 * cos ( xt ) ) / sqrt ( x )
+
+  else
+
+    t = 64.0_sp / ( x * x )
+    xt = x-0.25_sp * pi
+
+    f0 = ((((((( &
+      - 0.268482e-04_sp     * t &
+      + 0.1270039e-03_sp )  * t &
+      - 0.2755037e-03_sp )  * t &
+      + 0.3992825e-03_sp )  * t &
+      - 0.5366169e-03_sp )  * t &
+      + 0.10089872e-02_sp ) * t &
+      - 0.40403539e-02_sp ) * t &
+      + 0.0623347304_sp ) * 8.0_sp / x
+
+    g0 = (((((( &
+      - 0.226238e-04_sp        * t &
+      + 0.1107299e-03_sp )     * t &
+      - 0.2543955e-03_sp )     * t &
+      + 0.4100676e-03_sp )     * t &
+      - 0.6740148e-03_sp )     * t &
+      + 0.17870944e-02_sp )    * t &
+      - 0.01256424405_sp ) * t &
+      + 0.79788456_sp
+
+    tj = 1.0_sp  - ( f0 * cos ( xt ) - g0 * sin ( xt ) ) / sqrt ( x )
+
+    ty = - ( f0 * sin ( xt ) + g0 * cos ( xt ) ) / sqrt ( x )
+
+  end if
+
+end subroutine itjyb
+
+
+attributes(device) subroutine itsh0 ( x, th0 )
+
+!*****************************************************************************80
+!
+!! ITSH0 integrates the Struve function H0(t) from 0 to x.
+!
+!  Discussion:
+!
+!    This procedure evaluates the integral of Struve function
+!    H0(t) with respect to t from 0 and x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    25 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TH0, the integral of H0(t) from 0 to x.
+!
+  implicit none
+
+  real(kind=sp) ::  a(25)
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  a1
+  real(kind=sp) ::  af
+  real(kind=sp) ::  bf
+  real(kind=sp) ::  bg
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rd
+  real(kind=sp) ::  s
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  th0
+  real(kind=sp) ::  ty
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xp
+
+  pi = 3.141592653589793_sp
+  r = 1.0_sp            
+
+  if ( x <= 30.0_sp ) then
+
+    s = 0.5_sp
+
+    do k = 1, 100
+
+      if ( k == 1 ) then
+        rd = 0.5_sp
+      else
+        rd = 1.0_sp
+      end if
+
+      r = - r * rd * k / ( k + 1.0_sp ) &
+        * ( x / ( 2.0_sp * k + 1.0_sp ) ) ** 2
+      s = s + r
+
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+
+    end do
+
+    th0 = 2.0_sp / pi * x * x * s
+
+  else
+
+    s = 1.0_sp
+    do k = 1, 12
+      r = - r * k / ( k + 1.0_sp ) &
+        * ( ( 2.0_sp * k + 1.0_sp ) / x ) ** 2
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    el = 0.57721566490153_sp
+    s0 = s / ( pi * x * x ) + 2.0_sp / pi &
+      * ( log ( 2.0_sp * x ) + el )
+    a0 = 1.0_sp
+    a1 = 5.0_sp / 8.0_sp
+    a(1) = a1
+    do k = 1, 20
+      af = ( ( 1.5_sp * ( k + 0.5_sp ) &
+        * ( k + 5.0_sp / 6.0_sp ) * a1 - 0.5_sp &
+        * ( k + 0.5_sp ) * ( k + 0.5_sp ) &
+        * ( k - 0.5_sp ) * a0 ) ) / ( k + 1.0_sp )
+      a(k+1) = af
+      a0 = a1
+      a1 = af
+    end do
+
+    bf = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 10
+      r = - r / ( x * x )
+      bf = bf + a(2*k) * r
+    end do
+    bg = a(1) / x
+    r = 1.0_sp / x
+    do k = 1, 10
+      r = - r / ( x * x ) 
+      bg = bg + a(2*k+1) * r
+    end do
+    xp = x + 0.25_sp * pi
+    ty = sqrt ( 2.0_sp / ( pi * x ) ) &
+      * ( bg * cos ( xp ) - bf * sin ( xp ) )
+    th0 = ty + s0
+
+  end if
+  
+end subroutine itsh0
+
+
+attributes(device) subroutine itsl0 ( x, tl0 )
+
+!*****************************************************************************80
+!
+!! ITSL0 integrates the Struve function L0(t) from 0 to x.
+!
+!  Discussion:
+!
+!    This procedure evaluates the integral of modified Struve function
+!    L0(t) with respect to t from 0 to x.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    31 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the upper limit of the integral.
+!
+!    Output, real(kind=sp) ::  TL0, the integral of L0(t) from 0 to x.
+!
+  implicit none
+
+  real(kind=sp) ::  a(18)
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  a1
+  real(kind=sp) ::  af
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  rd
+  real(kind=sp) ::  s
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  ti
+  real(kind=sp) ::  tl0
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+  r = 1.0_sp
+
+  if ( x <= 20.0_sp ) then
+
+    s = 0.5_sp
+    do k = 1, 100
+ 
+      if ( k == 1 ) then
+        rd = 0.5_sp
+      else
+        rd = 1.0_sp
+      end if
+      r = r * rd * k / ( k + 1.0_sp ) &
+        * ( x / ( 2.0_sp * k + 1.0_sp ) ) ** 2
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    tl0 = 2.0_sp / pi * x * x * s
+
+  else
+
+    s = 1.0_sp
+    do k = 1, 10
+      r = r * k / ( k + 1.0_sp ) &
+        * ( ( 2.0_sp * k + 1.0_sp ) / x ) ** 2
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    el = 0.57721566490153_sp
+    s0 = - s / ( pi * x * x ) + 2.0_sp / pi &
+      * ( log ( 2.0_sp * x ) + el )
+    a0 = 1.0_sp
+    a1 = 5.0_sp / 8.0_sp
+    a(1) = a1
+    do k = 1, 10
+      af = ( ( 1.5_sp * ( k + 0.50_sp ) &
+        * ( k + 5.0_sp / 6.0_sp ) * a1 - 0.5_sp &
+        * ( k + 0.5_sp ) ** 2 * ( k -0.5_sp ) * a0 ) ) &
+        / ( k + 1.0_sp )
+      a(k+1) = af
+      a0 = a1
+      a1 = af
+    end do
+
+    ti = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 11
+      r = r / x
+      ti = ti + a(k) * r
+    end do
+    tl0 = ti / sqrt ( 2.0_sp * pi * x ) * exp ( x ) + s0
+
+  end if
+
+  
+end subroutine itsl0 
+
+
+subroutine itth0 ( x, tth )
+
+!*****************************************************************************80
+!
+!! ITTH0 integrates H0(t)/t from x to oo.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    23 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the lower limit of the integral.
+!
+!    Output, real(kind=sp) ::  TTH, the integral of H0(t)/t from x to oo.
+!
+  implicit none
+
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  g0
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  t
+  real(kind=sp) ::  tth
+  real(kind=sp) ::  tty
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xt
+
+  pi = 3.141592653589793_sp
+  s = 1.0_sp
+  r = 1.0_sp
+
+  if ( x < 24.5_sp ) then
+
+    do k = 1, 60
+      r = - r * x * x * ( 2.0_sp * k - 1.0_sp ) &
+        / ( 2.0_sp * k + 1.0_sp ) ** 3
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    tth = pi / 2.0_sp - 2.0_sp / pi * x * s
+
+  else
+
+    do k = 1, 10
+      r = - r * ( 2.0_sp * k - 1.0_sp ) ** 3 &
+        / ( ( 2.0_sp * k + 1.0_sp ) * x * x )
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    tth = 2.0_sp / ( pi * x ) * s
+    t = 8.0_sp / x
+    xt = x + 0.25_sp * pi
+    f0 = ((((( &
+        0.18118e-02_sp * t &
+      - 0.91909e-02_sp ) * t &
+      + 0.017033_sp ) * t &
+      - 0.9394e-03_sp ) * t &
+      - 0.051445_sp ) * t &
+      - 0.11e-05_sp ) * t &
+      + 0.7978846_sp
+    g0 = ((((( &
+      - 0.23731e-02_sp * t &
+      + 0.59842e-02_sp ) * t &
+      + 0.24437e-02_sp ) * t &
+      - 0.0233178_sp ) * t &
+      + 0.595e-04_sp ) * t &
+      + 0.1620695_sp ) * t
+    tty = ( f0 * sin ( xt ) - g0 * cos ( xt ) ) / ( sqrt ( x ) * x )
+    tth = tth + tty
+
+    end if
+  
+end subroutine itth0
+
+
+attributes(device) subroutine ittika ( x, tti, ttk )
+
+!*****************************************************************************80
+!
+!! ITTIKA integrates (I0(t)-1)/t from 0 to x, K0(t)/t from x to infinity.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    23 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the integral limit.
+!
+!    Output, real(kind=sp) ::  TTI, TTK, the integrals of [I0(t)-1]/t 
+!    from 0 to x, and of K0(t)/t from x to oo.
+!
+  implicit none
+
+  real(kind=sp) ::  b1
+  real(kind=sp)  , dimension ( 8 ) :: c = (/ &
+    1.625_sp, 4.1328125_sp, &
+    1.45380859375e+01_sp, 6.553353881835e+01_sp, &
+    3.6066157150269e+02_sp, 2.3448727161884e+03_sp, &
+    1.7588273098916e+04_sp, 1.4950639538279e+05_sp /)
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  el
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r2
+  real(kind=sp) ::  rc
+  real(kind=sp) ::  rs
+  real(kind=sp) ::  tti
+  real(kind=sp) ::  ttk
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+
+ 
+
+  if ( x < 40.0_sp ) then
+    tti = 1.0_sp
+    r = 1.0_sp
+    do k = 2, 50
+      r = 0.25_sp * r * ( k - 1.0_sp ) / ( k * k * k ) * x * x
+      tti = tti + r
+      if ( abs ( r / tti ) < 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    tti = tti * 0.125_sp * x * x
+
+  else
+
+    tti = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 8
+      r = r / x
+      tti = tti + c(k) * r
+    end do
+    rc = x * sqrt ( 2.0_sp * pi * x )
+    tti = tti * exp ( x ) / rc
+
+  end if
+
+  if ( x <= 12.0_sp ) then
+
+    e0 = ( 0.5_sp * log ( x / 2.0_sp ) + el ) &
+      * log ( x / 2.0_sp ) + pi * pi / 24.0_sp + 0.5_sp * el * el
+    b1 = 1.5_sp - ( el + log ( x / 2.0_sp ) )
+    rs = 1.0_sp
+    r = 1.0_sp
+    do k = 2, 50
+      r = 0.25_sp * r * ( k - 1.0_sp ) / ( k * k * k ) * x * x
+      rs = rs + 1.0_sp / k
+      r2 = r * ( rs + 1.0_sp / ( 2.0_sp * k ) &
+        - ( el + log ( x / 2.0_sp ) ) )
+      b1 = b1 + r2
+      if ( abs ( r2 / b1 ) < 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    ttk = e0 - 0.125_sp * x * x * b1
+
+  else
+
+    ttk = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 8
+      r = - r / x
+      ttk = ttk + c(k) * r
+    end do
+    rc = x * sqrt ( 2.0_sp / pi * x )
+    ttk = ttk * exp ( - x ) / rc
+
+  end if
+  
+end subroutine ittika
+
+
 end module specfuncs_cuda
