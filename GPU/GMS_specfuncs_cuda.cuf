@@ -589,7 +589,7 @@ attributes(device) subroutine ajyik ( x, vj1, vj2, vy1, vy2, vi1, vi2, vk1, vk2 
       do k = 1, 40
         r = -0.25_sp * r * x2 / ( k * ( k - vl ) )
         vjl = vjl + r
-        if ( abs ( r ) < 1.0D-15 ) then
+        if ( abs ( r ) < 1.0e-15 ) then
           exit
         end if
       end do
@@ -1056,7 +1056,7 @@ attributes(device) subroutine cfc ( z, zf, zd )
   complex(kind=sp) ::  zp
   complex(kind=sp) ::  zp2
 
-  eps = 1.0D-14
+  eps = 1.0e-14
   pi = 3.141592653589793_sp
   w0 = abs ( z )
   zp = 0.5_sp * pi * z * z
@@ -1182,7 +1182,7 @@ attributes(device) subroutine cfs ( z, zf, zd )
   complex(kind=sp) ::  zp
   complex(kind=sp) ::  zp2
 
-  eps = 1.0D-14_sp
+  eps = 1.0e-14_sp
   pi = 3.141592653589793_sp
   w0 = abs ( z )
   zp = 0.5_sp * pi * z * z
@@ -1214,7 +1214,7 @@ attributes(device) subroutine cfs ( z, zf, zd )
     m = 85
     s = z0
     cf1 = z0
-    cf0 = cmplx ( 1.0D-30_sp, 0.0_sp, kind = sp  )
+    cf0 = cmplx ( 1.0e-30_sp, 0.0_sp, kind = sp  )
     do k = m, 0, -1
       cf = ( 2.0_sp * k + 3.0_sp ) * cf0 / zp - cf1
       if ( k /= int ( k / 2 ) * 2 ) then
@@ -1442,9 +1442,9 @@ attributes(device) subroutine cik01 ( z, cbi0, cdi0, cbi1, cdi1, cbk0, cdk0, cbk
   implicit none
 
   real(kind=sp),dimension ( 12 ) :: a = (/ &
-    0.125_sp,           7.03125D-02,&
-    7.32421875D-02,      1.1215209960938D-01,&
-    2.2710800170898D-01, 5.7250142097473D-01,&
+    0.125_sp,           7.03125e-02,&
+    7.32421875e-02,      1.1215209960938e-01,&
+    2.2710800170898e-01, 5.7250142097473e-01,&
     1.7277275025845_sp, 6.0740420012735_sp,&
     2.4380529699556e+01, 1.1001714026925e+02,&
     5.5133589612202e+02, 3.0380905109224e+03 /)
@@ -1456,9 +1456,9 @@ attributes(device) subroutine cik01 ( z, cbi0, cdi0, cbi1, cdi1, cbk0, cdk0, cbk
     2.3347645606175e+05,  1.2312234987631e+07, &
     8.401390346421e+08,   7.2031420482627e+10 /)
   real(kind=sp),dimension ( 12 ) :: b = (/ &
-   -0.375_sp,           -1.171875D-01, &
-   -1.025390625D-01,     -1.4419555664063D-01, &
-   -2.7757644653320D-01, -6.7659258842468D-01, &
+   -0.375_sp,           -1.171875e-01, &
+   -1.025390625e-01,     -1.4419555664063e-01, &
+   -2.7757644653320e-01, -6.7659258842468e-01, &
    -1.9935317337513_sp, -6.8839142681099_sp, &
    -2.7248827311269e+01, -1.2159789187654e+02, &
    -6.0384407670507e+02, -3.3022722944809e+03 /)
@@ -1816,7 +1816,7 @@ attributes(device) subroutine ciknb ( n, z, nm, cbi, cdi, cbk, cdk )
   a0 = abs ( z )
   nm = n
 
-  !if ( a0 < 1.0D-100 ) then
+  !if ( a0 < 1.0e-100 ) then
   !  do k = 0, n
   !    cbi(k) = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
   !    cbk(k) = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
@@ -2048,7 +2048,7 @@ attributes(device) subroutine cikva ( v, z, vm, cbi, cdi, cbk, cdk )
     n = 1
   end if
 
-  !if ( a0 < 1.0D-100 ) then
+  !if ( a0 < 1.0e-100 ) then
   !
   !  do k = 0, n
   !    cbi(k) = 0.0_sp
@@ -2522,7 +2522,7 @@ attributes(device) subroutine cjy01 ( z, cbj0, cdj0, cbj1, cdj1, cby0, cdy0, cby
   implicit none
 
   real(kind=sp)  ,  dimension ( 12 ) :: a = (/ &
-    -0.703125D-01,0.112152099609375_sp, &
+    -0.703125e-01,0.112152099609375_sp, &
     -0.5725014209747314_sp,0.6074042001273483e+01, &
     -0.1100171402692467e+03,0.3038090510922384e+04, &
     -0.1188384262567832e+06,0.6252951493434797e+07, &
@@ -2537,7 +2537,7 @@ attributes(device) subroutine cjy01 ( z, cbj0, cdj0, cbj1, cdj1, cby0, cdy0, cby
     0.4502786003050393e+09,-0.3833857520742790e+11, &
     0.4011838599133198e+13,-0.5060568503314727e+15 /)
   real(kind=sp)  ,  dimension ( 12 ) :: b = (/ &
-    0.732421875D-01,-0.2271080017089844_sp, &
+    0.732421875e-01,-0.2271080017089844_sp, &
     0.1727727502584457e+01,-0.2438052969955606e+02, &
     0.5513358961220206e+03,-0.1825775547429318e+05, &
     0.8328593040162893e+06,-0.5006958953198893e+08, &
@@ -3044,7 +3044,7 @@ attributes(device) subroutine cpdsa ( n, z, cdn )
   real(kind=sp) ::  xn
   complex(kind=sp), value ::  z
 
-  eps = 1.0D-15
+  eps = 1.0e-15
   pi = 3.141592653589793_sp
   sq2 = sqrt ( 2.0_sp )
   ca0 = exp ( - 0.25_sp * z * z )
@@ -3139,7 +3139,7 @@ attributes(device) subroutine cy01 ( kf, z, zf, zd )
   implicit none
 
   real(kind=sp)  ,  dimension(12) :: a = (/ &
-    -0.703125D-01, 0.112152099609375_sp, &
+    -0.703125e-01, 0.112152099609375_sp, &
     -0.5725014209747314_sp, 0.6074042001273483e+01_sp, &
     -0.1100171402692467e+03_sp, 0.3038090510922384e+04_sp, &
     -0.1188384262567832e+06_sp, 0.6252951493434797e+07_sp, &
@@ -3154,7 +3154,7 @@ attributes(device) subroutine cy01 ( kf, z, zf, zd )
     0.4502786003050393e+09_sp, -0.3833857520742790e+11_sp, &
     0.4011838599133198e+13_sp, -0.5060568503314727e+15_sp /)
   real(kind=sp)  ,  dimension(12) :: b = (/ &
-    0.732421875D-01, -0.2271080017089844_sp, &
+    0.732421875e-01, -0.2271080017089844_sp, &
     0.1727727502584457e+01_sp, -0.2438052969955606e+02_sp, &
     0.5513358961220206e+03_sp, -0.1825775547429318e+05_sp, &
     0.8328593040162893e+06_sp, -0.5006958953198893e+08_sp, &
@@ -3916,12 +3916,12 @@ attributes(device) subroutine elit3 ( phi, hk, c, el3 )
     0.9122344282513259_sp, 0.8391169718222188_sp, &
     0.7463319064601508_sp, 0.6360536807265150_sp, &
     0.5108670019508271_sp, 0.3737060887154195_sp, &
-    0.2277858511416451_sp, 0.7652652113349734D-01 /)
+    0.2277858511416451_sp, 0.7652652113349734e-01 /)
   real(kind=sp) ::  t1
   real(kind=sp) ::  t2
   real(kind=sp) , dimension ( 10 ) :: w = (/ &
-    0.1761400713915212D-01, 0.4060142980038694D-01, &
-    0.6267204833410907D-01, 0.8327674157670475D-01, &
+    0.1761400713915212e-01, 0.4060142980038694e-01, &
+    0.6267204833410907e-01, 0.8327674157670475e-01, &
     0.1019301198172404_sp, 0.1181945319615184_sp, &
     0.1316886384491766_sp, 0.1420961093183820_sp, &
     0.1491729864726037_sp, 0.1527533871307258_sp /)
@@ -4221,7 +4221,7 @@ attributes(device) subroutine error ( x, err )
   real(kind=sp) ::  x
   real(kind=sp) ::  x2
 
-  eps = 1.0D-15
+  eps = 1.0e-15
   pi = 3.141592653589793_sp
   x2 = x * x
 
@@ -4365,7 +4365,7 @@ attributes(device) subroutine fcs ( x, c, s )
     c = 0.0_sp
     s = 0.0_sp
     f1 = 0.0_sp
-    f0 = 1.0D-100
+    f0 = 1.0e-100
 
     do k = m, 0, -1
       f = ( 2.0_sp * k + 3.0_sp ) * f0 / t - f1
@@ -4497,7 +4497,7 @@ attributes(device) subroutine ffk ( ks, x, fr, fi, fm, fa, gr, gi, gm, ga )
   real(kind=sp) ::  xw
 
   srd = 57.29577951308233_sp
-  eps = 1.0D-15
+  eps = 1.0e-15
   pi = 3.141592653589793_sp
   pp2 = 1.2533141373155_sp
   p2p = 0.7978845608028654_sp
@@ -4551,7 +4551,7 @@ attributes(device) subroutine ffk ( ks, x, fr, fi, fm, fa, gr, gi, gm, ga )
       xc = 0.0_sp
       xs = 0.0_sp
       xf1 = 0.0_sp
-      xf0 = 1.0D-100
+      xf0 = 1.0e-100
       do k = m, 0, -1
         xf = ( 2.0_sp * k + 3.0_sp ) * xf0 / x2 - xf1
         if ( k == 2 * int ( k / 2 ) )  then
@@ -4802,7 +4802,7 @@ attributes(device) subroutine ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 
   real(kind=sp) , dimension ( 12 ) :: a = (/ &
     0.125_sp, 7.03125e-02_sp, &
     7.32421875e-02_sp, 1.1215209960938e-01_sp, &
-    2.2710800170898D-01, 5.7250142097473e-01_sp, &
+    2.2710800170898e-01, 5.7250142097473e-01_sp, &
     1.7277275025845_sp, 6.0740420012735_sp, &
     2.4380529699556e+01_sp, 1.1001714026925e+02_sp, &
     5.5133589612202e+02_sp, 3.0380905109224e+03_sp /)
@@ -4814,7 +4814,7 @@ attributes(device) subroutine ik01a ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 
   real(kind=sp) , dimension ( 12 ) :: b = (/ &
     -0.375_sp, -1.171875e-01_sp, &
     -1.025390625e-01_sp, -1.4419555664063e-01_sp, &
-    -2.7757644653320D-01, -6.7659258842468e-01_sp, &
+    -2.7757644653320e-01, -6.7659258842468e-01_sp, &
     -1.9935317337513_sp, -6.8839142681099_sp, &
     -2.7248827311269e+01_sp, -1.2159789187654e+02_sp, &
     -6.0384407670507e+02_sp, -3.3022722944809e+03_sp /)
@@ -5038,19 +5038,19 @@ attributes(device) subroutine ik01b ( x, bi0, di0, bi1, di1, bk0, dk0, bk1, dk1 
       - 0.01647633_sp ) * t &
       + 0.02635537_sp ) * t &
       - 0.02057706_sp ) * t &
-      + 0.916281D-02 ) * t &
-      - 0.157565D-02 ) * t &
-      + 0.225319D-02 ) * t &
+      + 0.916281e-02 ) * t &
+      - 0.157565e-02 ) * t &
+      + 0.225319e-02 ) * t &
       + 0.01328592_sp ) * t &
       + 0.39894228_sp ) * exp ( x ) / sqrt ( x )
 
     bi1 = (((((((( &
-      - 0.420059D-02     * t &
+      - 0.420059e-02     * t &
       + 0.01787654_sp ) * t &
       - 0.02895312_sp ) * t &
       + 0.02282967_sp ) * t &
       - 0.01031555_sp ) * t &
-      + 0.163801D-02 ) * t &
+      + 0.163801e-02 ) * t &
       - 0.00362018_sp ) * t &
       - 0.03988024_sp ) * t &
       + 0.39894228_sp ) * exp ( x ) / sqrt ( x )
@@ -6158,7 +6158,7 @@ attributes(device) subroutine itjya ( x, tj, ty )
 
   pi = 3.141592653589793_sp
   el = 0.5772156649015329_sp
-  eps = 1.0D-12
+  eps = 1.0e-12
 
   if ( x == 0.0_sp ) then
 
@@ -6861,6 +6861,749 @@ attributes(device) subroutine ittika ( x, tti, ttk )
   end if
   
 end subroutine ittika
+
+
+attributes(device) subroutine ittikb ( x, tti, ttk )
+
+!*****************************************************************************80
+!
+!! ITTIKB integrates (I0(t)-1)/t from 0 to x, K0(t)/t from x to infinity.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    28 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the integral limit.
+!
+!    Output, real(kind=sp) ::  TTI, TTK, the integrals of
+!    [I0(t)-1]/t from 0 to x, and K0(t)/t from x to oo.
+!
+  implicit none
+
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  el
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  tti
+  real(kind=sp) ::  ttk
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x1
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+
+  if ( x == 0.0_sp ) then
+
+    tti = 0.0_sp
+
+  else if ( x <= 5.0_sp ) then
+
+    x1 = x / 5.0_sp
+    t = x1 * x1
+    tti = ((((((( &
+        0.1263e-03_sp       * t &
+      + 0.96442e-03_sp )    * t &
+      + 0.968217e-02_sp )   * t &
+      + 0.06615507_sp ) * t &
+      + 0.33116853_sp ) * t &
+      + 1.13027241_sp ) * t &
+      + 2.44140746_sp ) * t &
+      + 3.12499991_sp ) * t
+
+  else
+
+    t = 5.0_sp / x
+    tti = ((((((((( &
+         2.1945464_sp   * t &
+      -  3.5195009_sp ) * t &
+      - 11.9094395_sp ) * t &
+      + 40.394734_sp  ) * t &
+      - 48.0524115_sp ) * t &
+      + 28.1221478_sp ) * t &
+      -  8.6556013_sp ) * t &
+      +  1.4780044_sp ) * t &
+      -  0.0493843_sp ) * t &
+      +  0.1332055_sp ) * t &
+      +  0.3989314_sp
+    tti = tti * exp ( x ) / ( sqrt ( x ) * x )
+
+  end if
+
+  if ( x == 0.0_sp ) then
+
+    ttk = huge(1.0_sp,kind=sp)
+
+  else if ( x <= 2.0_sp ) then
+
+    t1 = x / 2.0_sp
+    t = t1 * t1
+    ttk = ((((( &
+        0.77e-06_sp         * t &
+      + 0.1544e-04_sp )     * t &
+      + 0.48077e-03_sp )    * t &
+      + 0.925821e-02_sp )   * t &
+      + 0.10937537_sp ) * t &
+      + 0.74999993_sp ) * t
+    e0 = el + log ( x / 2.0_sp )
+    ttk = pi * pi / 24.0_sp + e0 * ( 0.5_sp * e0 + tti ) - ttk
+
+  else if ( x <= 4.0_sp ) then
+
+    t = 2.0_sp / x
+    ttk = ((( &
+        0.06084_sp    * t &
+      - 0.280367_sp ) * t &
+      + 0.590944_sp ) * t &
+      - 0.850013_sp ) * t &
+      + 1.234684_sp
+    ttk = ttk * exp ( - x ) / ( sqrt ( x ) * x )
+
+  else
+
+    t = 4.0_sp / x
+    ttk = ((((( &
+        0.02724_sp     * t &
+      - 0.1110396_sp ) * t &
+      + 0.2060126_sp ) * t &
+      - 0.2621446_sp ) * t &
+      + 0.3219184_sp ) * t &
+      - 0.5091339_sp ) * t &
+      + 1.2533141_sp
+    ttk = ttk * exp ( - x ) / ( sqrt ( x ) * x )
+
+  end if
+
+end subroutine ittikb
+
+
+attributes(device) subroutine ittjya ( x, ttj, tty )
+
+!*****************************************************************************80
+!
+!! ITTJYA integrates (1-J0(t))/t from 0 to x, and Y0(t)/t from x to infinity.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    28 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the integral limit.
+!
+!    Output, real(kind=sp) ::  TTJ, TTY, the integrals of [1-J0(t)]/t 
+!    from 0 to x and of Y0(t)/t from x to oo.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  b1
+  real(kind=sp) ::  bj0
+  real(kind=sp) ::  bj1
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  el
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  g1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: l
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  px
+  real(kind=sp) ::  qx
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r0
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  r2
+  real(kind=sp) ::  rs
+  real(kind=sp) ::  t
+  real(kind=sp) ::  ttj
+  real(kind=sp) ::  tty
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xk
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+
+  if ( x == 0.0_sp ) then
+
+    ttj = 0.0_sp
+    tty = -huge(1.0_sp,kind=sp)
+
+  else if ( x <= 20.0_sp ) then
+
+    ttj = 1.0_sp
+    r = 1.0_sp
+    do k = 2, 100
+      r = - 0.25_sp * r * ( k - 1.0_sp ) / ( k * k * k ) * x * x
+      ttj = ttj + r
+      if ( abs ( r ) < abs ( ttj ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    ttj = ttj * 0.125_sp * x * x
+    e0 = 0.5_sp * ( pi * pi / 6.0_sp - el * el ) &
+      - ( 0.5_sp * log ( x / 2.0_sp ) + el ) &
+      * log ( x / 2.0_sp )
+    b1 = el + log ( x / 2.0_sp ) - 1.5_sp
+    rs = 1.0_sp
+    r = -1.0_sp
+    do k = 2, 100
+      r = - 0.25_sp * r * ( k - 1.0_sp ) / ( k * k * k ) * x * x
+      rs = rs + 1.0_sp / k
+      r2 = r * ( rs + 1.0_sp / ( 2.0_sp * k ) &
+        - ( el + log ( x / 2.0_sp ) ) ) 
+      b1 = b1 + r2
+      if ( abs ( r2 ) < abs ( b1 ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    tty = 2.0_sp / pi * ( e0 + 0.125_sp * x * x * b1 )
+
+  else
+
+    a0 = sqrt ( 2.0_sp / ( pi * x ) )
+
+    do l = 0, 1
+
+      vt = 4.0_sp * l * l
+      px = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 14
+        r = - 0.0078125_sp * r &
+          * ( vt - ( 4.0_sp * k - 3.0_sp ) ** 2 ) &
+          / ( x * k ) * ( vt - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          / ( ( 2.0_sp * k - 1.0_sp ) * x )
+        px = px + r
+        if ( abs ( r ) < abs ( px ) * 1.0e-12_sp ) then
+          exit
+        end if
+      end do
+
+      qx = 1.0_sp
+      r = 1.0_sp
+      do k = 1, 14
+        r = -0.0078125_sp * r &
+          * ( vt - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          / ( x * k ) * ( vt - ( 4.0_sp * k + 1.0_sp ) ** 2 ) &
+          / ( 2.0_sp * k + 1.0_sp ) / x
+        qx = qx + r
+        if ( abs ( r ) < abs ( qx ) * 1.0e-12_sp ) then
+          exit
+        end if
+      end do
+
+      qx = 0.125_sp * ( vt - 1.0_sp ) / x * qx
+      xk = x - ( 0.25_sp + 0.5_sp * l ) * pi
+      bj1 = a0 * ( px * cos ( xk ) - qx * sin ( xk ) )
+      by1 = a0 * ( px * sin ( xk ) + qx * cos ( xk ) )
+      if ( l == 0 ) then
+        bj0 = bj1
+        by0 = by1
+      end if
+
+    end do
+
+    t = 2.0_sp / x
+    g0 = 1.0_sp
+    r0 = 1.0_sp
+    do k = 1, 10
+      r0 = - k * k * t * t *r0
+      g0 = g0 + r0
+    end do
+
+    g1 = 1.0_sp
+    r1 = 1.0_sp
+    do k = 1, 10
+      r1 = - k * ( k + 1.0_sp ) * t * t * r1
+      g1 = g1 + r1
+    end do
+
+    ttj = 2.0_sp * g1 * bj0 / ( x * x ) - g0 * bj1 / x &
+      + el + log ( x / 2.0_sp )
+    tty = 2.0_sp * g1 * by0 / ( x * x ) - g0 * by1 / x
+
+  end if
+ 
+end subroutine ittjya
+
+
+attributes(device) subroutine ittjyb ( x, ttj, tty )
+
+!*****************************************************************************80
+!
+!! ITTJYB integrates (1-J0(t))/t from 0 to x, and Y0(t)/t from x to infinity.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    01 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the integral limit.
+!
+!    Output, real(kind=sp) ::  TTJ, TTY, the integrals of [1-J0(t)]/t 
+!    from 0 to x and of Y0(t)/t from x to oo.
+!
+  implicit none
+
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  el
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  g0
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  ttj
+  real(kind=sp) ::  tty
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x1
+  real(kind=sp) ::  xt
+
+  pi = 3.141592653589793_sp
+  el = 0.5772156649015329_sp
+
+  if ( x == 0.0_sp ) then
+
+    ttj = 0.0_sp
+    tty = -huge(1.0_sp,kinds=sp)
+
+  else if ( x <= 4.0_sp ) then
+
+    x1 = x / 4.0_sp
+    t = x1 * x1
+
+    ttj = (((((( &
+        0.35817e-04_sp * t &
+      - 0.639765e-03_sp ) * t &
+      + 0.7092535e-02_sp ) * t &
+      - 0.055544803_sp ) * t &
+      + 0.296292677_sp ) * t &
+      - 0.999999326_sp ) * t &
+      + 1.999999936_sp ) * t
+ 
+    tty = ((((((( &
+      - 0.3546e-05_sp        * t &
+      + 0.76217e-04_sp )     * t &
+      - 0.1059499e-02_sp )   * t &
+      + 0.010787555_sp ) * t &
+      - 0.07810271_sp )  * t &
+      + 0.377255736_sp ) * t &
+      - 1.114084491_sp ) * t &
+      + 1.909859297_sp ) * t
+
+    e0 = el + log ( x / 2.0_sp )
+    tty = pi / 6.0_sp + e0 / pi * ( 2.0_sp * ttj - e0 ) - tty
+
+  else if ( x <= 8.0_sp ) then
+
+    xt = x + 0.25_sp * pi
+    t1 = 4.0_sp / x
+    t = t1 * t1
+
+    f0 = ((((( &
+        0.0145369_sp * t &
+      - 0.0666297_sp ) * t &
+      + 0.1341551_sp ) * t &
+      - 0.1647797_sp ) * t &
+      + 0.1608874_sp ) * t &
+      - 0.2021547_sp ) * t &
+      + 0.7977506_sp
+
+    g0 = (((((( &
+        0.0160672_sp   * t &
+      - 0.0759339_sp ) * t &
+      + 0.1576116_sp ) * t &
+      - 0.1960154_sp ) * t &
+      + 0.1797457_sp ) * t &
+      - 0.1702778_sp ) * t &
+      + 0.3235819_sp ) * t1
+
+    ttj = ( f0 * cos ( xt ) + g0 * sin ( xt ) ) / ( sqrt ( x ) * x )
+    ttj = ttj + el + log ( x / 2.0_sp )
+    tty = ( f0 * sin ( xt ) - g0 * cos ( xt ) ) / ( sqrt ( x ) * x )
+
+  else
+
+    t = 8.0_sp / x
+    xt = x + 0.25_sp * pi
+
+    f0 = ((((( &
+        0.18118e-02_sp    * t &
+      - 0.91909e-02_sp )  * t &
+      + 0.017033_sp ) * t &
+      - 0.9394e-03_sp )   * t &
+      - 0.051445_sp ) * t &
+      - 0.11e-05_sp )     * t &
+      + 0.7978846_sp
+
+    g0 = ((((( &
+      - 0.23731e-02_sp     * t &
+      + 0.59842e-02_sp )   * t &
+      + 0.24437e-02_sp )   * t &
+      - 0.0233178_sp ) * t &
+      + 0.595e-04_sp )     * t &
+      + 0.1620695_sp ) * t
+
+    ttj = ( f0 * cos ( xt ) + g0 * sin ( xt ) )  &
+      / ( sqrt ( x ) * x ) + el + log ( x / 2.0_sp )
+    tty = ( f0 * sin ( xt ) - g0 * cos ( xt ) )  &
+      / ( sqrt ( x ) * x )
+
+  end if
+
+end subroutine ittjyb
+
+
+attributes(device) subroutine jelp ( u, hk, esn, ecn, edn, eph )
+
+!*****************************************************************************80
+!
+!! JELP computes Jacobian elliptic functions SN(u), CN(u), DN(u).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    08 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  U, the argument.
+!
+!    Input, real(kind=sp) ::  HK, the modulus, between 0 and 1.
+!
+!    Output, real(kind=sp) ::  ESN, ECN, EDN, EPH, the values of
+!    sn(u), cn(u), dn(u), and phi (in degrees).
+!
+  implicit none
+
+  real(kind=sp) ::  a
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  b
+  real(kind=sp) ::  b0
+  real(kind=sp) ::  c
+  real(kind=sp) ::  d
+  real(kind=sp) ::  dn
+  real(kind=sp) ::  ecn
+  real(kind=sp) ::  edn
+  real(kind=sp) ::  eph
+  real(kind=sp) ::  esn
+  real(kind=sp) ::  hk
+  integer(kind=i4) :: j
+  integer(kind=i4) :: n 
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r(40)
+  real(kind=sp) ::  sa
+  real(kind=sp) ::  t
+  real(kind=sp) ::  u
+
+  pi = 3.14159265358979_sp
+  a0 = 1.0_sp
+  b0 = sqrt ( 1.0_sp - hk * hk )
+
+  do n = 1, 40
+
+    a = ( a0 + b0 ) / 2.0_sp
+    b = sqrt ( a0 * b0 )
+    c = ( a0 - b0 ) / 2.0_sp
+    r(n) = c / a
+
+    if ( c < 1.0e-07_sp ) then
+      exit
+    end if
+
+    a0 = a
+    b0 = b
+
+  end do
+
+  dn = 2.0_sp ** n * a * u
+
+  do j = n, 1, -1
+    t = r(j) * sin ( dn )
+    sa = atan ( t / sqrt ( abs ( 1.0_sp - t * t )))
+    d = 0.5_sp * ( dn + sa )
+    dn = d
+  end do
+
+  eph = d * 180.0_sp / pi
+  esn = sin ( d )
+  ecn = cos ( d )
+  edn = sqrt ( 1.0_sp - hk * hk * esn * esn )
+
+end subroutine jelp
+
+
+attributes(device) subroutine jy01a ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
+
+!*****************************************************************************80
+!
+!! JY01A computes Bessel functions J0(x), J1(x), Y0(x), Y1(x) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    01 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BJ0, DJ0, BJ1, DJ1, BY0, DY0, BY1, DY1,
+!    the values of J0(x), J0'(x), J1(x), J1'(x), Y0(x), Y0'(x), Y1(x), Y1'(x).
+!
+  implicit none
+
+  real(kind=sp) , dimension(12) :: a = (/ &
+    -0.7031250000000000e-01, 0.1121520996093750_sp, &
+    -0.5725014209747314_sp, 0.6074042001273483e+01, &
+    -0.1100171402692467e+03, 0.3038090510922384e+04, &
+    -0.1188384262567832e+06, 0.6252951493434797e+07, &
+    -0.4259392165047669e+09, 0.3646840080706556e+11, &
+    -0.3833534661393944e+13, 0.4854014686852901e+15 /)
+  real(kind=sp) , dimension(12) :: a1 = (/ &
+    0.1171875000000000_sp, -0.1441955566406250_sp, &
+    0.6765925884246826_sp, -0.6883914268109947e+01, &
+    0.1215978918765359e+03, -0.3302272294480852e+04, &
+    0.1276412726461746e+06, -0.6656367718817688e+07, &
+    0.4502786003050393e+09, -0.3833857520742790e+11, &
+    0.4011838599133198e+13, -0.5060568503314727e+15 /)
+  real(kind=sp) , dimension(12) :: b = (/ &
+    0.7324218750000000e-01, -0.2271080017089844_sp, &
+    0.1727727502584457e+01, -0.2438052969955606e+02, &
+    0.5513358961220206e+03, -0.1825775547429318e+05, &
+    0.8328593040162893e+06, -0.5006958953198893e+08, &
+    0.3836255180230433e+10, -0.3649010818849833e+12, &
+    0.4218971570284096e+14, -0.5827244631566907e+16 /)
+  real(kind=sp) , dimension(12) :: b1 = (/ &
+    -0.1025390625000000_sp, 0.2775764465332031_sp, &
+    -0.1993531733751297e+01, 0.2724882731126854e+02, &
+    -0.6038440767050702e+03, 0.1971837591223663e+05, &
+    -0.8902978767070678e+06, 0.5310411010968522e+08, &
+    -0.4043620325107754e+10, 0.3827011346598605e+12, &
+    -0.4406481417852278e+14, 0.6065091351222699e+16 /)
+  real(kind=sp) ::  bj0
+  real(kind=sp) ::  bj1
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  cs0
+  real(kind=sp) ::  cs1
+  real(kind=sp) ::  cu
+  real(kind=sp) ::  dj0
+  real(kind=sp) ::  dj1
+  real(kind=sp) ::  dy0
+  real(kind=sp) ::  dy1
+  real(kind=sp) ::  ec
+  integer(kind=i4) :: k
+  integer(kind=i4) :: k0
+  real(kind=sp) ::  p0
+  real(kind=sp) ::  p1
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q0
+  real(kind=sp) ::  q1
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r0
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  rp2
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  w0
+  real(kind=sp) ::  w1
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x2
+
+  pi = 3.141592653589793_sp
+  rp2 = 0.63661977236758_sp
+  x2 = x * x
+
+  
+
+  if ( x <= 12.0_sp ) then
+
+    bj0 = 1.0_sp
+    r = 1.0_sp
+    do k = 1,30
+      r = -0.25_sp * r * x2 / ( k * k )
+      bj0 = bj0 + r
+      if ( abs ( r ) < abs ( bj0 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    bj1 = 1.0_sp
+    r = 1.0_sp
+    do k = 1, 30
+      r = -0.25_sp * r * x2 / ( k * ( k + 1.0_sp ) )
+      bj1 = bj1 + r
+      if ( abs ( r ) < abs ( bj1 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    bj1 = 0.5_sp * x * bj1
+    ec = log ( x / 2.0_sp ) + 0.5772156649015329_sp
+    cs0 = 0.0_sp
+    w0 = 0.0_sp
+    r0 = 1.0_sp
+    do k = 1, 30
+      w0 = w0 + 1.0_sp / k
+      r0 = -0.25_sp * r0 / ( k * k ) * x2
+      r = r0 * w0
+      cs0 = cs0 + r
+      if ( abs ( r ) < abs ( cs0 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    by0 = rp2 * ( ec * bj0 - cs0 )
+    cs1 = 1.0_sp
+    w1 = 0.0_sp
+    r1 = 1.0_sp
+    do k = 1, 30
+      w1 = w1 + 1.0_sp / k
+      r1 = -0.25_sp * r1 / ( k * ( k + 1 ) ) * x2
+      r = r1 * ( 2.0_sp * w1 + 1.0_sp / ( k + 1.0_sp ) )
+      cs1 = cs1 + r
+      if ( abs ( r ) < abs ( cs1 ) * 1.0e-15_sp ) then
+        exit
+      end if
+    end do
+
+    by1 = rp2 * ( ec * bj1 - 1.0_sp / x - 0.25_sp * x * cs1 )
+
+  else
+
+    if ( x < 35.0_sp ) then
+      k0 = 12
+    else if ( x < 50.0_sp ) then
+      k0 = 10
+    else
+      k0 = 8
+    end if
+
+    t1 = x - 0.25_sp * pi
+    p0 = 1.0_sp
+    q0 = -0.125_sp / x
+    do k = 1, k0
+      p0 = p0 + a(k) * x ** ( - 2 * k )
+      q0 = q0 + b(k) * x ** ( - 2 * k - 1 )
+    end do
+    cu = sqrt ( rp2 / x )
+    bj0 = cu * ( p0 * cos ( t1 ) - q0 * sin ( t1 ) )
+    by0 = cu * ( p0 * sin ( t1 ) + q0 * cos ( t1 ) )
+    t2 = x - 0.75_sp * pi
+    p1 = 1.0_sp
+    q1 = 0.375_sp / x
+    do k = 1, k0
+      p1 = p1 + a1(k) * x ** ( - 2 * k )
+      q1 = q1 + b1(k) * x ** ( - 2 * k - 1 )
+    end do
+    cu = sqrt ( rp2 / x )
+    bj1 = cu * ( p1 * cos ( t2 ) - q1 * sin ( t2 ) )
+    by1 = cu * ( p1 * sin ( t2 ) + q1 * cos ( t2 ) )
+
+  end if
+
+  dj0 = - bj1
+  dj1 = bj0 - bj1 / x
+  dy0 = - by1
+  dy1 = by0 - by1 / x
+
+ 
+end subroutine jy01a
 
 
 end module specfuncs_cuda
