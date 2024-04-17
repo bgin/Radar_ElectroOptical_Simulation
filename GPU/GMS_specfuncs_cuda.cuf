@@ -7606,4 +7606,318 @@ attributes(device) subroutine jy01a ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 
 end subroutine jy01a
 
 
+attributes(device) subroutine jy01b ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
+
+!*****************************************************************************80
+!
+!! JY01B computes Bessel functions J0(x), J1(x), Y0(x), Y1(x) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    02 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BJ0, DJ0, BJ1, DJ1, BY0, DY0, BY1, DY1,
+!    the values of J0(x), J0'(x), J1(x), J1'(x), Y0(x), Y0'(x), Y1(x), Y1'(x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  bj0
+  real(kind=sp) ::  bj1
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  dj0
+  real(kind=sp) ::  dj1
+  real(kind=sp) ::  dy0
+  real(kind=sp) ::  dy1
+  real(kind=sp) ::  p0
+  real(kind=sp) ::  p1
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q0
+  real(kind=sp) ::  q1
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  ta0
+  real(kind=sp) ::  ta1
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+
+  
+
+  if ( x <= 4.0_sp ) then
+
+    t = x * 0.25_sp
+    t2 = t * t
+
+    bj0 = (((((( &
+      - 0.5014415e-03_sp * t2 &
+      + 0.76771853e-02_sp ) * t2 &
+      - 0.0709253492_sp ) * t2 &
+      + 0.4443584263_sp ) * t2 &
+      - 1.7777560599_sp ) * t2 &
+      + 3.9999973021_sp ) * t2 &
+      - 3.9999998721_sp ) * t2 &
+      + 1.0_sp
+
+    bj1 = t * ((((((( &
+      - 0.1289769e-03_sp * t2 &
+      + 0.22069155e-02_sp ) * t2 &
+      - 0.0236616773_sp ) * t2 &
+      + 0.1777582922_sp ) * t2 &
+      - 0.8888839649_sp ) * t2 &
+      + 2.6666660544_sp ) * t2 &
+      - 3.9999999710_sp ) * t2 &
+      + 1.9999999998_sp )
+
+    by0 = ((((((( &
+      - 0.567433e-04_sp * t2 &
+      + 0.859977e-03_sp ) * t2 &
+      - 0.94855882e-02_sp ) * t2 &
+      + 0.0772975809_sp ) * t2 &
+      - 0.4261737419_sp ) * t2 &
+      + 1.4216421221_sp ) * t2 &
+      - 2.3498519931_sp ) * t2 &
+      + 1.0766115157_sp ) * t2 &
+      + 0.3674669052_sp
+
+    by0 = 2.0_sp / pi * log ( x * 0.5_sp ) * bj0 + by0
+
+    by1 = (((((((( &
+        0.6535773e-03_sp * t2 &
+      - 0.0108175626_sp ) * t2 &
+      + 0.107657606_sp ) * t2 &
+      - 0.7268945577_sp ) * t2 &
+      + 3.1261399273_sp ) * t2 &
+      - 7.3980241381_sp ) * t2 &
+      + 6.8529236342_sp ) * t2 &
+      + 0.3932562018_sp ) * t2 &
+      - 0.6366197726_sp ) / x
+
+    by1 = 2.0_sp / pi * log ( x * 0.5_sp ) * bj1 + by1
+
+  else
+
+    t = 4.0_sp / x
+    t2 = t * t
+    a0 = sqrt ( 2.0_sp / ( pi * x ) )
+
+    p0 = (((( &
+      - 0.9285e-05_sp * t2 &
+      + 0.43506e-04_sp ) * t2 &
+      - 0.122226e-03_sp ) * t2 &
+      + 0.434725e-03_sp ) * t2 &
+      - 0.4394275e-02_sp ) * t2 &
+      + 0.999999997_sp
+
+    q0 = t * ((((( &
+        0.8099e-05_sp * t2 &
+      - 0.35614e-04_sp ) * t2 &
+      + 0.85844e-04_sp ) * t2 &
+      - 0.218024e-03_sp ) * t2 &
+      + 0.1144106e-02_sp ) * t2 &
+      - 0.031249995_sp )
+
+    ta0 = x - 0.25_sp * pi
+    bj0 = a0 * ( p0 * cos ( ta0 ) - q0 * sin ( ta0 ) )
+    by0 = a0 * ( p0 * sin ( ta0 ) + q0 * cos ( ta0 ) )
+
+    p1 = (((( &
+        0.10632e-04_sp * t2 &
+      - 0.50363e-04_sp ) * t2 &
+      + 0.145575e-03_sp ) * t2 &
+      - 0.559487e-03_sp ) * t2 &
+      + 0.7323931e-02_sp ) * t2 &
+      + 1.000000004_sp
+
+    q1 = t * ((((( &
+      - 0.9173e-05_sp      * t2 &
+      + 0.40658e-04_sp )   * t2 &
+      - 0.99941e-04_sp )   * t2 &
+      + 0.266891e-03_sp )  * t2 &
+      - 0.1601836e-02_sp ) * t2 &
+      + 0.093749994_sp )
+
+    ta1 = x - 0.75_sp * pi
+    bj1 = a0 * ( p1 * cos ( ta1 ) - q1 * sin ( ta1 ) )
+    by1 = a0 * ( p1 * sin ( ta1 ) + q1 * cos ( ta1 ) )
+
+  end if
+
+  dj0 = - bj1
+  dj1 = bj0 - bj1 / x
+  dy0 = - by1
+  dy1 = by0 - by1 / x
+
+ 
+end subroutine jy01b
+
+
+attributes(device) subroutine jyna ( n, x, nm, bj, dj, by, dy )
+
+!*****************************************************************************80
+!
+!! JYNA computes Bessel functions Jn(x) and Yn(x) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    29 April 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  BJ(0:N), DJ(0:N), BY(0:N), DY(0:N), the values
+!    of Jn(x), Jn'(x), Yn(x), Yn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  bj(0:n)
+  real(kind=sp) ::  bj0
+  real(kind=sp) ::  bj1
+  real(kind=sp) ::  bjk
+  real(kind=sp) ::  by(0:n)
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  cs
+  real(kind=sp) ::  dj(0:n)
+  real(kind=sp) ::  dj0
+  real(kind=sp) ::  dj1
+  real(kind=sp) ::  dy(0:n)
+  real(kind=sp) ::  dy0
+  real(kind=sp) ::  dy1
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  f2
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  x
+
+  nm = n
+
+ 
+
+  call jy01b ( x, bj0, dj0, bj1, dj1, by0, dy0, by1, dy1 )
+  bj(0) = bj0
+  bj(1) = bj1
+  by(0) = by0
+  by(1) = by1
+  dj(0) = dj0
+  dj(1) = dj1
+  dy(0) = dy0
+  dy(1) = dy1
+
+  
+
+  if ( n < int ( 0.9_sp * x) ) then
+
+    do k = 2, n
+      bjk = 2.0_sp * ( k - 1.0_sp ) / x * bj1 - bj0
+      bj(k) = bjk
+      bj0 = bj1
+      bj1 = bjk
+    end do
+
+  else
+
+    m = msta1 ( x, 200 )
+
+    if ( m < n ) then
+      nm = m
+    else
+      m = msta2 ( x, n, 15 )
+    end if
+
+    f2 = 0.0_sp
+    f1 = huge(1.0_sp,kind=sp)
+    do k = m, 0, -1
+      f = 2.0_sp * ( k + 1.0_sp ) / x * f1 - f2
+      if ( k <= nm ) then
+        bj(k) = f
+      end if
+      f2 = f1
+      f1 = f
+    end do
+
+    if ( abs ( bj1 ) < abs ( bj0 ) ) then
+      cs = bj0 / f
+    else
+      cs = bj1 / f2
+    end if
+
+    do k = 0, nm
+      bj(k) = cs * bj(k)
+    end do
+
+  end if
+
+  do k = 2, nm
+    dj(k) = bj(k-1) - k / x * bj(k)
+  end do
+
+  f0 = by(0)
+  f1 = by(1)
+  do k = 2, nm
+    f = 2.0_sp * ( k - 1.0_sp ) / x * f1 - f0
+    by(k) = f
+    f0 = f1
+    f1 = f
+  end do
+
+  do k = 2, nm
+    dy(k) = by(k-1) - k * by(k) / x
+  end do
+
+ 
+end subroutine jyna
+
+
 end module specfuncs_cuda
