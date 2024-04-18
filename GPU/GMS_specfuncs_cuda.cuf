@@ -7920,4 +7920,578 @@ attributes(device) subroutine jyna ( n, x, nm, bj, dj, by, dy )
 end subroutine jyna
 
 
+attributes(device) subroutine jynb ( n, x, nm, bj, dj, by, dy )
+
+!*****************************************************************************80
+!
+!! JYNB computes Bessel functions Jn(x) and Yn(x) and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    02 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  BJ(0:N), DJ(0:N), BY(0:N), DY(0:N), the values
+!    of Jn(x), Jn'(x), Yn(x), Yn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) , dimension ( 4 ) :: a = (/ &
+    -0.7031250000000000e-01_sp, 0.1121520996093750_sp, &
+    -0.5725014209747314_sp, 0.6074042001273483e+01_sp /)
+  real(kind=sp) , dimension ( 4 ) :: a1 = (/ &
+    0.1171875000000000_sp, -0.1441955566406250_sp, &
+    0.6765925884246826_sp, -0.6883914268109947e+01_sp /)
+  real(kind=sp) , dimension ( 4 ) :: b = (/ &
+    0.7324218750000000e-01_sp, -0.2271080017089844_sp, &
+    0.1727727502584457e+01_sp, -0.2438052969955606e+02_sp /)
+  real(kind=sp) , dimension ( 4 ) :: b1 = (/ &
+    -0.1025390625000000_sp, 0.2775764465332031_sp, &
+    -0.1993531733751297e+01_sp, 0.2724882731126854e+02_sp /)
+  real(kind=sp) ::  bj(0:n)
+  real(kind=sp) ::  bj0
+  real(kind=sp) ::  bj1
+  real(kind=sp) ::  bjk
+  real(kind=sp) ::  bs
+  real(kind=sp) ::  by(0:n)
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  byk
+  real(kind=sp) ::  cu
+  real(kind=sp) ::  dj(0:n)
+  real(kind=sp) ::  dy(0:n)
+  real(kind=sp) ::  ec
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  f2
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  p0
+  real(kind=sp) ::  p1
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q0
+  real(kind=sp) ::  q1
+  real(kind=sp) ::  r2p
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  su
+  real(kind=sp) ::  sv
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+  r2p = 0.63661977236758_sp
+  nm = n
+
+  
+
+  if ( x <= 300.0_sp .or. int ( 0.9_sp * x ) < n ) then
+
+    if ( n == 0 ) then
+      nm = 1
+    end if
+
+    m = msta1 ( x, 200 )
+
+    if ( m < nm ) then
+      nm = m
+    else
+      m = msta2 ( x, nm, 15 )
+    end if
+
+    bs = 0.0_sp
+    su = 0.0_sp
+    sv = 0.0_sp
+    f2 = 0.0_sp
+    f1 = tiny(1.0_sp,kind=sp)
+
+    do k = m, 0, -1
+      f = 2.0_sp * ( k + 1.0_sp ) / x * f1 - f2
+      if ( k <= nm ) then
+        bj(k) = f
+      end if
+      if ( k == 2 * int ( k / 2 ) .and. k /= 0 ) then
+        bs = bs + 2.0_sp * f
+        su = su + ( -1.0_sp ) ** ( k / 2 ) * f / k
+      else if ( 1 < k ) then
+        sv = sv + ( -1.0_sp ) ** ( k / 2 ) * k / ( k * k - 1.0_sp ) * f
+      end if
+      f2 = f1
+      f1 = f
+    end do
+
+    s0 = bs + f
+    do k = 0, nm
+      bj(k) = bj(k) / s0
+    end do
+
+    ec = log ( x / 2.0_sp ) + 0.5772156649015329_sp
+    by0 = r2p * ( ec * bj(0) - 4.0_sp * su / s0 )
+    by(0) = by0
+    by1 = r2p * ( ( ec - 1.0_sp ) * bj(1) - bj(0) / x - 4.0_sp * sv / s0 )
+    by(1) = by1
+
+  else
+
+    t1 = x - 0.25_sp * pi
+    p0 = 1.0_sp
+    q0 = -0.125_sp / x
+    do k = 1, 4
+      p0 = p0 + a(k) * x ** ( - 2 * k )
+      q0 = q0 + b(k) * x ** ( - 2 * k - 1 )
+    end do
+    cu = sqrt ( r2p / x )
+    bj0 = cu * ( p0 * cos ( t1 ) - q0 * sin ( t1 ) )
+    by0 = cu * ( p0 * sin ( t1 ) + q0 * cos ( t1 ) )
+    bj(0) = bj0
+    by(0) = by0
+    t2 = x - 0.75_sp * pi
+    p1 = 1.0_sp
+    q1 = 0.375_sp / x
+    do k = 1, 4
+      p1 = p1 + a1(k) * x ** ( - 2 * k )
+      q1 = q1 + b1(k) * x ** ( - 2 * k - 1 )
+    end do
+    bj1 = cu * ( p1 * cos ( t2 ) - q1 * sin ( t2 ) )
+    by1 = cu * ( p1 * sin ( t2 ) + q1 * cos ( t2 ) )
+    bj(1) = bj1
+    by(1) = by1
+    do k = 2, nm
+      bjk = 2.0_sp * ( k - 1.0_sp ) / x * bj1 - bj0
+      bj(k) = bjk
+      bj0 = bj1
+      bj1 = bjk
+    end do
+  end if
+
+  dj(0) = -bj(1)
+  do k = 1, nm
+    dj(k) = bj(k-1) - k / x * bj(k)
+  end do
+
+  do k = 2, nm
+    byk = 2.0_sp * ( k - 1.0_sp ) * by1 / x - by0
+    by(k) = byk
+    by0 = by1
+    by1 = byk
+  end do
+
+  dy(0) = -by(1)
+  do k = 1, nm
+    dy(k) = by(k-1) - k * by(k) / x
+  end do
+
+end subroutine jynb
+
+
+attributes(device) subroutine jyndd ( n, x, bjn, djn, fjn, byn, dyn, fyn )
+
+!*****************************************************************************80
+!
+!! JYNDD: Bessel functions Jn(x) and Yn(x), first and second derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    02 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BJN, DJN, FJN, BYN, DYN, FYN, the values of
+!    Jn(x), Jn'(x), Jn"(x), Yn(x), Yn'(x), Yn"(x).
+!
+  implicit none
+
+  real(kind=sp) ::  bj(102)
+  real(kind=sp) ::  bjn
+  real(kind=sp) ::  byn
+  real(kind=sp) ::  bs
+  real(kind=sp) ::  by(102)
+  real(kind=sp) ::  djn
+  real(kind=sp) ::  dyn
+  real(kind=sp) ::  e0
+  real(kind=sp) ::  ec
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  fjn
+  real(kind=sp) ::  fyn
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: mt
+  integer(kind=i4) :: n
+  integer(kind=i4) :: nt
+  real(kind=sp) ::  s1
+  real(kind=sp) ::  su
+  real(kind=sp) ::  x
+
+  do nt = 1, 900
+    mt = int ( 0.5_sp * log10 ( 6.28_sp * nt ) &
+      - nt * log10 ( 1.36_sp * abs ( x ) / nt ) )
+    if ( 20 < mt ) then
+      exit
+    end if
+  end do
+
+  m = nt
+  bs = 0.0_sp
+  f0 = 0.0_sp
+  f1 = tiny(1.0_sp,kind=sp)
+  su = 0.0_sp
+  do k = m, 0, -1
+    f = 2.0_sp * ( k + 1.0_sp ) * f1 / x - f0
+    if ( k <= n + 1 ) then
+      bj(k+1) = f
+    end if
+    if ( k == 2 * int ( k / 2 ) ) then
+      bs = bs + 2.0_sp * f
+      if ( k /= 0 ) then
+        su = su + ( -1.0_sp ) ** ( k / 2 ) * f / k
+      end if
+    end if
+    f0 = f1
+    f1 = f
+  end do
+
+  do k = 0, n + 1
+    bj(k+1) = bj(k+1) / ( bs - f )
+  end do
+
+  bjn = bj(n+1)
+  ec = 0.5772156649015329_sp
+  e0 = 0.3183098861837907_sp
+  s1 = 2.0_sp * e0 * ( log ( x / 2.0_sp ) + ec ) * bj(1)
+  f0 = s1 - 8.0_sp * e0 * su / ( bs - f )
+  f1 = ( bj(2) * f0 - 2.0_sp * e0 / x ) / bj(1)
+
+  by(1) = f0
+  by(2) = f1
+  do k = 2, n + 1 
+    f = 2.0_sp * ( k - 1.0_sp ) * f1 / x - f0
+    by(k+1) = f
+    f0 = f1
+    f1 = f
+  end do
+
+  byn = by(n+1)
+  djn = - bj(n+2) + n * bj(n+1) / x
+  dyn = - by(n+2) + n * by(n+1) / x
+  fjn = ( n * n / ( x * x ) - 1.0_sp ) * bjn - djn / x
+  fyn = ( n * n / ( x * x ) - 1.0_sp ) * byn - dyn / x
+
+end subroutine jyndd 
+
+
+attributes(device) subroutine klvnb ( x, ber, bei, ger, gei, der, dei, her, hei )
+
+!*****************************************************************************80
+!
+!! KLVNB: Kelvin functions ber(x), bei(x), ker(x), and kei(x), and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    03 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  BER, BEI, GER, GEI, DER, DEI, HER, HEI, 
+!    the values of ber x, bei x, ker x, kei x, ber'x, bei'x, ker'x, kei'x.
+!
+  implicit none
+
+  real(kind=sp) ::  bei
+  real(kind=sp) ::  ber
+  real(kind=sp) ::  csn
+  real(kind=sp) ::  csp
+  real(kind=sp) ::  dei
+  real(kind=sp) ::  der
+  real(kind=sp) ::  fxi
+  real(kind=sp) ::  fxr
+  real(kind=sp) ::  gei
+  real(kind=sp) ::  ger
+  real(kind=sp) ::  hei
+  real(kind=sp) ::  her
+  integer(kind=i4) :: l
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pni
+  real(kind=sp) ::  pnr
+  real(kind=sp) ::  ppi
+  real(kind=sp) ::  ppr
+  real(kind=sp) ::  ssn
+  real(kind=sp) ::  ssp
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  tni
+  real(kind=sp) ::  tnr
+  real(kind=sp) ::  tpi
+  real(kind=sp) ::  tpr
+  real(kind=sp) ::  u
+  real(kind=sp) ::  v
+  real(kind=sp) ::  x
+  real(kind=sp) ::  yc1
+  real(kind=sp) ::  yc2
+  real(kind=sp) ::  yci
+  real(kind=sp) ::  ye1
+  real(kind=sp) ::  ye2
+  real(kind=sp) ::  yei
+  real(kind=sp) ::  yd
+
+  pi = 3.141592653589793_sp
+
+  if ( x == 0.0_sp ) then
+
+    ber = 1.0_sp
+    bei = 0.0_sp
+    ger = 1.0D+300
+    gei = -0.25_sp * pi
+    der = 0.0_sp
+    dei = 0.0_sp
+    her = -huge(1.0_sp,kind=sp)
+    hei = 0.0_sp
+
+  else if ( x < 8.0_sp ) then
+
+    t = x / 8.0_sp
+    t2 = t * t
+    u = t2 * t2
+
+    ber = (((((( &
+      - 0.901e-05_sp * u &
+      + 0.122552e-02_sp ) * u &
+      - 0.08349609_sp ) * u &
+      + 2.64191397_sp ) * u &
+      - 32.36345652_sp ) * u &
+      + 113.77777774_sp ) * u &
+      - 64.0_sp ) * u &
+      + 1.0_sp
+
+    bei = t * t * (((((( &
+        0.11346e-03_sp * u &
+      - 0.01103667_sp ) * u &
+      + 0.52185615_sp ) * u &
+      - 10.56765779_sp ) * u &
+      + 72.81777742_sp ) * u &
+      - 113.77777774_sp ) * u &
+      + 16.0_sp )
+
+    ger = (((((( &
+      - 0.2458e-04_sp * u &
+      + 0.309699e-02_sp ) * u &
+      - 0.19636347_sp ) * u &
+      + 5.65539121_sp ) * u &
+      - 60.60977451_sp ) * u &
+      + 171.36272133_sp ) * u &
+      - 59.05819744_sp ) * u &
+      - 0.57721566_sp
+
+    ger = ger - log ( 0.5_sp * x ) * ber + 0.25_sp * pi * bei
+
+    gei = t2 * (((((( &
+        0.29532e-03_sp * u &
+      - 0.02695875_sp ) * u &
+      + 1.17509064_sp ) * u &
+      - 21.30060904_sp ) * u &
+      + 124.2356965_sp ) * u &
+      - 142.91827687_sp ) * u &
+      + 6.76454936_sp )
+
+    gei = gei - log ( 0.5_sp * x ) * bei - 0.25_sp * pi * ber
+
+    der = x * t2 * (((((( &
+      - 0.394e-05_sp * u &
+      + 0.45957e-03_sp ) * u &
+      - 0.02609253_sp ) * u &
+      + 0.66047849_sp ) * u &
+      - 6.0681481_sp ) * u &
+      + 14.22222222_sp ) * u &
+      - 4.0_sp )
+
+    dei = x * (((((( &
+        0.4609e-04_sp * u &
+      - 0.379386e-02_sp ) * u &
+      + 0.14677204_sp ) * u &
+      - 2.31167514_sp ) * u &
+      + 11.37777772_sp ) * u &
+      - 10.66666666_sp ) * u &
+      + 0.5_sp ) 
+
+    her = x * t2 * (((((( &
+      - 0.1075e-04_sp * u &
+      + 0.116137e-02_sp ) * u &
+      - 0.06136358_sp ) * u &
+      + 1.4138478_sp ) * u &
+      - 11.36433272_sp ) * u &
+      + 21.42034017_sp ) * u &
+      - 3.69113734_sp )
+
+    her = her - log ( 0.5_sp * x ) * der - ber / x  &
+      + 0.25_sp * pi * dei
+
+    hei = x * (((((( &
+        0.11997e-03_sp * u &
+      - 0.926707e-02_sp ) * u &
+      + 0.33049424_sp ) * u &
+      - 4.65950823_sp ) * u &
+      + 19.41182758_sp ) * u &
+      - 13.39858846_sp ) * u &
+      + 0.21139217_sp )
+
+    hei = hei - log ( 0.5_sp * x ) * dei - bei / x  &
+      - 0.25_sp * pi * der
+
+  else
+
+    t = 8.0_sp / x
+
+    do l = 1, 2
+
+      v = ( -1.0_sp ) ** l * t
+
+      tpr = (((( &
+          0.6e-06_sp * v &
+        - 0.34e-05_sp ) * v &
+        - 0.252e-04_sp ) * v &
+        - 0.906e-04_sp ) * v * v &
+        + 0.0110486_sp ) * v
+
+      tpi = (((( &
+          0.19e-05_sp * v &
+        + 0.51e-05_sp ) * v * v &
+        - 0.901e-04_sp ) * v &
+        - 0.9765e-03_sp ) * v &
+        - 0.0110485_sp ) * v &
+        - 0.3926991_sp
+
+      if ( l == 1 ) then
+        tnr = tpr
+        tni = tpi
+      end if
+
+    end do
+
+    yd = x / sqrt ( 2.0_sp )
+    ye1 = exp ( yd + tpr )
+    ye2 = exp ( - yd + tnr )
+    yc1 = 1.0_sp / sqrt ( 2.0_sp * pi * x )
+    yc2 = sqrt ( pi / ( 2.0_sp * x ) )
+    csp = cos ( yd + tpi )
+    ssp = sin ( yd + tpi )
+    csn = cos ( - yd + tni )
+    ssn = sin ( - yd + tni )
+    ger = yc2 * ye2 * csn
+    gei = yc2 * ye2 * ssn
+    fxr = yc1 * ye1 * csp
+    fxi = yc1 * ye1 * ssp
+    ber = fxr - gei / pi
+    bei = fxi + ger / pi
+
+    do l = 1, 2
+
+      v = ( -1.0_sp ) ** l * t
+
+      ppr = ((((( &
+          0.16e-05_sp * v &
+        + 0.117e-04_sp ) * v &
+        + 0.346e-04_sp ) * v &
+        + 0.5e-06_sp ) * v &
+        - 0.13813e-02_sp ) * v &
+        - 0.0625001_sp ) * v &
+        + 0.7071068_sp
+
+      ppi = ((((( &
+        - 0.32e-05_sp * v &
+        - 0.24e-05_sp ) * v &
+        + 0.338e-04_sp ) * v &
+        + 0.2452e-03_sp ) * v &
+        + 0.13811e-02_sp ) * v &
+        - 0.1e-06_sp ) * v &
+        + 0.7071068_sp
+
+      if ( l == 1 ) then
+        pnr = ppr
+        pni = ppi
+      end if
+
+    end do
+
+    her =     gei * pni - ger * pnr
+    hei = - ( gei * pnr + ger * pni )
+    der = fxr * ppr - fxi * ppi - hei / pi
+    dei = fxi * ppr + fxr * ppi + her / pi
+
+  end if
+
+ 
+end subroutine klvnb
+
+
 end module specfuncs_cuda
