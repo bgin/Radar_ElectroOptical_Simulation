@@ -8311,7 +8311,7 @@ attributes(device) subroutine klvnb ( x, ber, bei, ger, gei, der, dei, her, hei 
 
     ber = 1.0_sp
     bei = 0.0_sp
-    ger = 1.0D+300
+    ger = 1.0e+300
     gei = -0.25_sp * pi
     der = 0.0_sp
     dei = 0.0_sp
@@ -8489,9 +8489,832 @@ attributes(device) subroutine klvnb ( x, ber, bei, ger, gei, der, dei, her, hei 
     dei = fxi * ppr + fxr * ppi + her / pi
 
   end if
-
  
 end subroutine klvnb
+
+
+attributes(device) subroutine lagzo ( n, x, w )
+
+!*****************************************************************************80
+!
+!! LAGZO computes zeros of the Laguerre polynomial, and integration weights.
+!
+!  Discussion:
+!
+!    This procedure computes the zeros of Laguerre polynomial Ln(x) in the 
+!    interval [0,\EC], and the corresponding weighting coefficients for 
+!    Gauss-Laguerre integration.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of the Laguerre polynomial.
+!
+!    Output, real(kind=sp) ::  X(N), the zeros of the Laguerre polynomial.
+!
+!    Output, real(kind=sp) ::  W(N), the weighting coefficients.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  fd
+  real(kind=sp) ::  gd
+  real(kind=sp) ::  hn
+  integer(kind=i4) :: i
+  integer(kind=i4) :: it
+  integer(kind=i4) :: j
+  integer(kind=i4) :: k
+  integer(kind=i4) :: nr
+  real(kind=sp) ::  p
+  real(kind=sp) ::  pd
+  real(kind=sp) ::  pf
+  real(kind=sp) ::  q
+  real(kind=sp) ::  w(n)
+  real(kind=sp) ::  wp
+  real(kind=sp) ::  x(n)
+  real(kind=sp) ::  z
+  real(kind=sp) ::  z0
+
+  hn = 1.0_sp / real ( n, kind=sp )
+
+  do nr = 1, n
+
+    if ( nr == 1 ) then
+      z = hn
+    else
+      z = x(nr-1) + hn * nr ** 1.27_sp
+    end if
+
+    it = 0
+
+    do
+
+      it = it + 1
+      z0 = z
+      p = 1.0_sp
+      do i = 1, nr - 1
+        p = p * ( z - x(i) )
+      end do
+
+      f0 = 1.0_sp
+      f1 = 1.0_sp - z
+      do k = 2, n
+        pf = (( 2.0_sp * k - 1.0_sp - z ) * f1 &
+          - ( k - 1.0_sp ) * f0 ) / k
+        pd = k / z * ( pf - f1 )
+        f0 = f1
+        f1 = pf
+      end do
+
+      fd = pf / p
+
+      q = 0.0_sp
+      do i = 1, nr - 1
+        wp = 1.0_sp
+        do j = 1, nr - 1
+          if ( j /= i ) then
+            wp = wp * ( z - x(j) )
+          end if
+        end do
+        q = q + wp
+      end do
+
+      gd = ( pd - q * fd ) / p
+      z = z - fd / gd
+
+      if ( 40 < it .or. abs ( ( z - z0 ) / z ) <= 1.0e-15_sp ) then
+        exit
+      end if
+
+    end do
+
+    x(nr) = z
+    w(nr) = 1.0_sp / ( z * pd * pd )
+
+  end do
+
+  
+end subroutine lagzo
+
+
+attributes(device) subroutine legzo ( n, x, w )
+
+!*****************************************************************************80
+!
+!! LEGZO computes the zeros of Legendre polynomials, and integration weights.
+!
+!  Discussion:
+!
+!    This procedure computes the zeros of Legendre polynomial Pn(x) in the 
+!    interval [-1,1], and the corresponding weighting coefficients for 
+!    Gauss-Legendre integration.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    13 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of the polynomial.
+!
+!    Output, real(kind=sp) ::  X(N), W(N), the zeros of the polynomial,
+!    and the corresponding weights.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  fd
+  real(kind=sp) ::  gd
+  integer(kind=i4) :: i
+  integer(kind=i4) :: j
+  integer(kind=i4) :: k
+  integer(kind=i4) :: n0
+  integer(kind=i4) :: nr
+  real(kind=sp) ::  p
+  real(kind=sp) ::  pd
+  real(kind=sp) ::  pf
+  real(kind=sp) ::  q
+  real(kind=sp) ::  w(n)
+  real(kind=sp) ::  wp
+  real(kind=sp) ::  x(n)
+  real(kind=sp) ::  z
+  real(kind=sp) ::  z0
+
+  n0 = ( n + 1 ) / 2
+
+  do nr = 1, n0
+
+    z = cos ( 3.14159265358979323846264_sp * ( nr - 0.25_sp ) / n )
+
+    do
+
+      z0 = z
+      p = 1.0_sp
+      do i = 1, nr - 1
+        p = p * ( z - x(i))
+      end do
+      f0 = 1.0_sp
+      if ( nr == n0 .and. n /= 2 * int ( n / 2 ) ) then
+        z = 0.0_sp
+      end if
+      f1 = z
+      do k = 2, n
+        pf = ( 2.0_sp - 1.0_sp / k ) * z * f1 &
+          - ( 1.0_sp - 1.0_sp / k ) * f0
+        pd = k * ( f1 - z * pf ) / ( 1.0_sp - z * z )
+        f0 = f1
+        f1 = pf
+      end do
+
+      if ( z == 0.0_sp ) then
+        exit
+      end if
+
+      fd = pf / p
+      q = 0.0_sp
+      do i = 1, nr - 1
+        wp = 1.0_sp
+        do j = 1, nr - 1
+          if ( j /= i ) then
+            wp = wp * ( z - x(j) )
+          end if
+        end do
+        q = q + wp
+      end do
+      gd = ( pd - q * fd ) / p
+      z = z - fd / gd
+
+      if ( abs ( z - z0 ) < abs ( z ) * 1.0e-15_sp ) then
+        exit
+      end if
+
+    end do
+
+    x(nr) = z
+    x(n+1-nr) = - z
+    w(nr) = 2.0_sp / ( ( 1.0_sp - z * z ) * pd * pd )
+    w(n+1-nr) = w(nr)
+
+  end do
+
+end subroutine legzo
+
+
+attributes(device) subroutine lgama ( kf, x, gl )
+
+!*****************************************************************************80
+!
+!! LGAMA computes the gamma function or its logarithm.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    15 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: KF, the argument code.
+!    1, for gamma(x);
+!    2, for ln(gamma(x)).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  GL, the function value.
+!
+  implicit none
+
+  real(kind=sp), dimension ( 10 ) :: a = (/ &
+    8.333333333333333e-02_sp, &
+   -2.777777777777778e-03_sp, &
+    7.936507936507937e-04_sp, &
+   -5.952380952380952e-04_sp, &
+    8.417508417508418e-04_sp, &
+   -1.917526917526918e-03_sp, &
+    6.410256410256410e-03_sp, &
+   -2.955065359477124e-02_sp, &
+    1.796443723688307e-01_sp, &
+   -1.39243221690590_sp /)
+  real(kind=sp) ::  gl
+  real(kind=sp) ::  gl0
+  integer(kind=i4) :: k
+  integer(kind=i4) :: kf
+  integer(kind=i4) :: n
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x0
+  real(kind=sp) ::  x2
+  real(kind=sp) ::  xp
+
+  x0 = x
+
+  if ( x == 1.0_sp .or. x == 2.0_sp ) then
+    gl = 0.0_sp
+    if ( kf == 1 ) then
+      gl = 1.0_sp
+    end if
+    return
+  else if ( x <= 7.0_sp ) then
+    n = int ( 7.0_sp - x )
+    x0 = x + n
+  end if
+
+  x2 = 1.0_sp / ( x0 * x0 )
+  xp = 6.283185307179586477_sp
+  gl0 = a(10)
+
+  do k = 9, 1, -1
+    gl0 = gl0 * x2 + a(k)
+  end do
+
+  gl = gl0 / x0 + 0.5_sp * log ( xp ) + ( x0 - 0.5_sp ) * log ( x0 ) - x0
+
+  if ( x <= 7.0_sp ) then
+    do k = 1, n
+      gl = gl - log ( x0 - 1.0_sp )
+      x0 = x0 - 1.0_sp
+    end do
+  end if
+
+  if ( kf == 1 ) then
+    gl = exp ( gl )
+  end if
+  
+end subroutine lgama
+
+
+attributes(device) subroutine lpn ( n, x, pn, pd )
+
+!*****************************************************************************80
+!
+!! LPN computes Legendre polynomials Pn(x) and derivatives Pn'(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    07 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the maximum degree.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  PN(0:N), PD(0:N), the values and derivatives
+!    of the polyomials of degrees 0 to N at X.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  integer(kind=i4) :: k
+  real(kind=sp) ::  p0
+  real(kind=sp) ::  p1
+  real(kind=sp) ::  pd(0:n)
+  real(kind=sp) ::  pf
+  real(kind=sp) ::  pn(0:n)
+  real(kind=sp) ::  x
+
+  pn(0) = 1.0_sp
+  pn(1) = x
+  pd(0) = 0.0_sp
+  pd(1) = 1.0_sp
+  p0 = 1.0_sp
+  p1 = x
+
+  do k = 2, n
+
+    pf = ( 2.0_sp * k - 1.0_sp ) / k * x * p1 &
+      - ( k - 1.0_sp ) / k * p0
+    pn(k) = pf
+
+    if ( abs ( x ) == 1.0_sp ) then
+      pd(k) = 0.5_sp * x ** ( k + 1 ) * k * ( k + 1.0_sp )
+    else
+      pd(k) = k * ( p1 - x * pf ) / ( 1.0_sp - x * x )
+    end if
+
+    p0 = p1
+    p1 = pf
+
+  end do
+
+end subroutine lpn
+
+
+attributes(device) function msta1 ( x, mp )
+
+!*****************************************************************************80
+!
+!! MSTA1 determines a backward recurrence starting point for Jn(x).
+!
+!  Discussion:
+!
+!    This procedure determines the starting point for backward  
+!    recurrence such that the magnitude of    
+!    Jn(x) at that point is about 10^(-MP).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    08 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Input, integer(kind=i4) :: MP, the negative logarithm of the 
+!    desired magnitude.
+!
+!    Output, integer(kind=i4) :: MSTA1, the starting point.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  envj
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: it
+  integer(kind=i4) :: mp
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: n0
+  integer(kind=i4) :: n1
+  integer(kind=i4) :: nn
+  real(kind=sp) ::  x
+
+  a0 = abs ( x )
+  n0 = int ( 1.1e+00_sp * a0 ) + 1
+  f0 = envj ( n0, a0 ) - mp
+  n1 = n0 + 5
+  f1 = envj ( n1, a0 ) - mp
+  do it = 1, 20       
+    nn = n1 - ( n1 - n0 ) / ( 1.0e+00_sp - f0 / f1 )                  
+    f = envj ( nn, a0 ) - mp
+    if ( abs ( nn - n1 ) < 1 ) then
+      exit
+    end if
+    n0 = n1
+    f0 = f1
+    n1 = nn
+    f1 = f
+  end do
+
+  msta1 = nn
+
+end
+
+attributes(device) function msta2 ( x, n, mp )
+
+!*****************************************************************************80
+!
+!! MSTA2 determines a backward recurrence starting point for Jn(x).
+!
+!  Discussion:
+!
+!    This procedure determines the starting point for a backward
+!    recurrence such that all Jn(x) has MP significant digits.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    08 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument of Jn(x).
+!
+!    Input, integer(kind=i4) :: N, the order of Jn(x).
+!
+!    Input, integer(kind=i4) :: MP, the number of significant digits.
+!
+!    Output, integer(kind=i4) :: MSTA2, the starting point.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  ejn
+  real(kind=sp) ::  envj
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  real(kind=sp) ::  hmp
+  integer(kind=i4) :: it
+  integer(kind=i4) :: mp
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: n
+  integer(kind=i4) :: n0
+  integer(kind=i4) :: n1
+  integer(kind=i4) :: nn
+  real(kind=sp) ::  obj
+  real(kind=sp) ::  x
+
+  a0 = abs ( x )
+  hmp = 0.5e+00_sp * mp
+  ejn = envj ( n, a0 )
+
+  if ( ejn <= hmp ) then
+    obj = mp
+    n0 = int ( 1.1e+00_sp * a0 )
+  else
+    obj = hmp + ejn
+    n0 = n
+  end if
+
+  f0 = envj ( n0, a0 ) - obj
+  n1 = n0 + 5
+  f1 = envj ( n1, a0 ) - obj
+
+  do it = 1, 20
+    nn = n1 - ( n1 - n0 ) / ( 1.0e+00_sp - f0 / f1 )
+    f = envj ( nn, a0 ) - obj
+    if ( abs ( nn - n1 ) < 1 ) then
+      exit
+    end if
+    n0 = n1
+    f0 = f1
+    n1 = nn
+    f1 = f
+  end do
+
+  msta2 = nn + 10
+
+end
+
+
+attributes(device) subroutine othpl ( kf, n, x, pl, dpl )
+
+!*****************************************************************************80
+!
+!! OTHPL computes orthogonal polynomials Tn(x), Un(x), Ln(x) or Hn(x).
+!
+!  Discussion:
+!
+!    This procedure computes orthogonal polynomials: Tn(x) or Un(x),
+!    or Ln(x) or Hn(x), and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    08 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: KT, the function code:
+!    1 for Chebyshev polynomial Tn(x)
+!    2 for Chebyshev polynomial Un(x)
+!    3 for Laguerre polynomial Ln(x)
+!    4 for Hermite polynomial Hn(x)
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  PL(0:N), DPL(0:N), the value and derivative of
+!    the polynomials of order 0 through N at X.
+!
+  implicit none
+
+  integer n
+
+  real(kind=sp) ::  a
+  real(kind=sp) ::  b
+  real(kind=sp) ::  c
+  real(kind=sp) ::  dpl(0:n)
+  real(kind=sp) ::  dy0
+  real(kind=sp) ::  dy1
+  real(kind=sp) ::  dyn
+  integer(kind=i4) :: k
+  integer(kind=i4) :: kf
+  real(kind=sp) ::  pl(0:n)
+  real(kind=sp) ::  x
+  real(kind=sp) ::  y0
+  real(kind=sp) ::  y1
+  real(kind=sp) ::  yn
+
+  a = 2.0_sp
+  b = 0.0_sp
+  c = 1.0_sp
+  y0 = 1.0_sp
+  y1 = 2.0_sp * x
+  dy0 = 0.0_sp
+  dy1 = 2.0_sp
+  pl(0) = 1.0_sp
+  pl(1) = 2.0_sp * x
+  dpl(0) = 0.0_sp
+  dpl(1) = 2.0_sp
+
+  if ( kf == 1 ) then
+    y1 = x
+    dy1 = 1.0_sp
+    pl(1) = x
+    dpl(1) = 1.0_sp
+  else if ( kf == 3 ) then
+    y1 = 1.0_sp - x
+    dy1 = -1.0_sp
+    pl(1) = 1.0_sp - x
+    dpl(1) = -1.0_sp
+  end if
+
+  do k = 2, n
+
+    if ( kf == 3 ) then
+      a = -1.0_sp / k
+      b = 2.0_sp + a
+      c = 1.0_sp + a
+    else if ( kf == 4 ) then
+      c = 2.0_sp * ( k - 1.0_sp )
+    end if
+
+    yn = ( a * x + b ) * y1 - c * y0
+    dyn = a * y1 + ( a * x + b ) * dy1 - c * dy0
+    pl(k) = yn
+    dpl(k) = dyn
+    y0 = y1
+    y1 = yn
+    dy0 = dy1
+    dy1 = dyn
+
+  end do
+
+end subroutine othpl
+
+
+attributes(device) subroutine rctj ( n, x, nm, rj, dj )
+
+!*****************************************************************************80
+!
+!! RCTJ computes Riccati-Bessel function of the first kind, and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    18 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of jn(x).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  RJ(0:N), the values of x jn(x).
+!
+!    Output, real(kind=sp) ::  DJ(0:N), the values of [x jn(x)]'.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  cs
+  real(kind=sp) ::  dj(0:n)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  rj(0:n)
+  real(kind=sp) ::  rj0
+  real(kind=sp) ::  rj1
+  real(kind=sp) ::  x
+
+  nm = n
+
+ 
+
+  rj(0) = sin ( x )
+  rj(1) = rj(0) / x - cos ( x )
+  rj0 = rj(0)
+  rj1 = rj(1)
+
+  if ( 2 <= n ) then
+
+    m = msta1 ( x, 200 )
+
+    if ( m < n ) then
+      nm = m
+    else
+      m = msta2 ( x, n, 15 )
+    end if
+
+    f0 = 0.0_sp
+    f1 = tiny(1.0_sp,kind=sp)
+    do k = m, 0, -1
+      f = ( 2.0_sp * k + 3.0_sp ) * f1 / x - f0
+      if ( k <= nm ) then
+        rj(k) = f
+      end if
+      f0 = f1
+      f1 = f
+    end do
+
+    if ( abs ( rj1 ) < abs ( rj0 ) ) then
+      cs = rj0 / f
+    else
+      cs = rj1 / f0
+    end if
+
+    do k = 0, nm
+      rj(k) = cs * rj(k)
+    end do
+
+  end if
+
+  dj(0) = cos ( x )
+  do k = 1, nm
+    dj(k) = - k * rj(k) / x + rj(k-1)
+  end do
+
+end subroutine rctj
 
 
 end module specfuncs_cuda
