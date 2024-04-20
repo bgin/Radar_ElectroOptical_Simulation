@@ -9317,4 +9317,1398 @@ attributes(device) subroutine rctj ( n, x, nm, rj, dj )
 end subroutine rctj
 
 
+attributes(device) subroutine rcty ( n, x, nm, ry, dy )
+
+!*****************************************************************************80
+!
+!! RCTY computes Riccati-Bessel function of the second kind, and derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    18 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of yn(x).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  RY(0:N), the values of x yn(x).
+!
+!    Output, real(kind=sp) ::  DY(0:N), the values of [x yn(x)]'.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  dy(0:n)
+  integer(kind=i4) :: k
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  rf0
+  real(kind=sp) ::  rf1
+  real(kind=sp) ::  rf2
+  real(kind=sp) ::  ry(0:n)
+  real(kind=sp) ::  x
+
+  nm = n
+
+  
+
+  ry(0) = - cos ( x )
+  ry(1) = ry(0) / x - sin ( x )
+  rf0 = ry(0)
+  rf1 = ry(1)
+  do k = 2, n
+    rf2 = ( 2.0_sp * k - 1.0_sp ) * rf1 / x - rf0
+    if ( huge(1.0_sp,kind=sp) < abs ( rf2 ) ) then
+      exit
+    end if
+    ry(k) = rf2
+    rf0 = rf1
+    rf1 = rf2
+  end do
+
+  nm = k - 1
+  dy(0) = sin ( x )
+  do k = 1, nm
+    dy(k) = - k * ry(k) / x + ry(k-1)
+  end do
+
+  
+end subroutine rcty
+
+
+attributes(device) subroutine sphi ( n, x, nm, si, di )
+
+!*****************************************************************************80
+!
+!! SPHI computes spherical Bessel functions in(x) and their derivatives in'(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    18 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order of In(X).
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  SI(0:N), DI(0:N), the values and derivatives
+!    of the function of orders 0 through N.
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  cs
+  real(kind=sp) ::  di(0:n)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  si(0:n)
+  real(kind=sp) ::  si0
+  real(kind=sp) ::  x
+
+  nm = n
+
+ 
+
+  si(0) = sinh ( x ) / x
+  si(1) = -( sinh ( x ) / x - cosh ( x ) ) / x
+  si0 = si(0)
+
+  if ( 2 <= n ) then
+
+    m = msta1 ( x, 200 )
+    if ( m < n ) then
+      nm = m
+    else
+      m = msta2 ( x, n, 15 )
+    end if
+    f0 = 0.0_sp
+    f1 = tiny(1.0_sp,kind=sp)
+    do k = m, 0, -1
+      f = ( 2.0_sp * k + 3.0_sp ) * f1 / x + f0
+      if ( k <= nm ) then
+        si(k) = f
+      end if
+      f0 = f1
+      f1 = f
+    end do
+    cs = si0 / f
+    do k = 0, nm
+      si(k) = cs * si(k)
+    end do
+
+  end if
+
+  di(0) = si(1)
+  do k = 1, nm
+    di(k) = si(k-1) - ( k + 1.0_sp ) / x * si(k)
+  end do
+
+end subroutine sphi
+
+
+attributes(device) subroutine sphj ( n, x, nm, sj, dj )
+
+!*****************************************************************************80
+!
+!! SPHJ computes spherical Bessel functions jn(x) and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    15 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  SJ(0:N), the values of jn(x).
+!
+!    Output, real(kind=sp) ::  DJ(0:N), the values of jn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  cs
+  real(kind=sp) ::  dj(0:n)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: m
+  integer(kind=i4) :: msta1
+  integer(kind=i4) :: msta2
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  sa
+  real(kind=sp) ::  sb
+  real(kind=sp) ::  sj(0:n)
+  real(kind=sp) ::  x
+
+  nm = n
+
+  
+
+  sj(0) = sin ( x ) / x
+  sj(1) = ( sj(0) - cos ( x ) ) / x
+
+  if ( 2 <= n ) then
+
+    sa = sj(0)
+    sb = sj(1)
+    m = msta1 ( x, 200 )
+    if ( m < n ) then
+      nm = m
+    else
+      m = msta2 ( x, n, 15 )
+    end if
+
+    f0 = 0.0_sp
+    f1 = tiny(1.0_sp,kind=sp)
+    do k = m, 0, -1
+      f = ( 2.0_sp * k + 3.0_sp ) * f1 / x - f0
+      if ( k <= nm ) then
+        sj(k) = f
+      end if
+      f0 = f1
+      f1 = f
+    end do
+
+    if ( abs ( sa ) <= abs ( sb ) ) then
+      cs = sb / f0
+    else
+      cs = sa / f
+    end if
+
+    do k = 0, nm
+      sj(k) = cs * sj(k)
+    end do
+
+  end if      
+
+  dj(0) = ( cos(x) - sin(x) / x ) / x
+  do k = 1, nm
+    dj(k) = sj(k-1) - ( k + 1.0_sp ) * sj(k) / x
+  end do
+
+end subroutine sphj
+
+
+attributes(device) subroutine sphk ( n, x, nm, sk, dk )
+
+!*****************************************************************************80
+!
+!! SPHK computes modified spherical Bessel functions kn(x) and derivatives.
+!
+!  Discussion:
+!
+!    This procedure computes modified spherical Bessel functions
+!    of the second kind, kn(x) and kn'(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    15 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  SK(0:N), DK(0:N), the values of kn(x) and kn'(x).
+!
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  dk(0:n)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  sk(0:n)
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+  nm = n
+  
+
+  sk(0) = 0.5_sp * pi / x * exp ( - x )
+  sk(1) = sk(0) * ( 1.0_sp + 1.0_sp / x )
+  f0 = sk(0)
+  f1 = sk(1)
+  do k = 2, n
+    f = ( 2.0_sp * k - 1.0_sp ) * f1 / x + f0
+    sk(k) = f
+    if ( huge(1.0_sp,kind=sp) < abs ( f ) ) then
+      exit
+    end if
+    f0 = f1
+    f1 = f
+  end do
+
+  nm = k - 1
+
+  dk(0) = -sk(1)
+  do k = 1, nm
+    dk(k) = -sk(k-1) - ( k + 1.0_sp ) / x * sk(k)
+  end do
+
+end subroutine sphk
+
+attributes(device) subroutine sphy ( n, x, nm, sy, dy )
+
+!*****************************************************************************80
+!
+!! SPHY computes spherical Bessel functions yn(x) and their derivatives.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    15 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: N, the order.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, integer(kind=i4) :: NM, the highest order computed.
+!
+!    Output, real(kind=sp) ::  SY(0:N), DY(0:N), the values of yn(x) and yn'(x).
+! 
+  implicit none
+
+  integer(kind=i4) :: n
+
+  real(kind=sp) ::  dy(0:n)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  f1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: nm
+  real(kind=sp) ::  sy(0:n)
+  real(kind=sp) ::  x
+
+  nm = n
+
+ 
+
+  sy(0) = - cos ( x ) / x
+  sy(1) = ( sy(0) - sin ( x ) ) / x
+  f0 = sy(0)
+  f1 = sy(1)
+  do k = 2, n
+    f = ( 2.0_sp * k - 1.0_sp ) * f1 / x - f0
+    sy(k) = f
+    if ( huge(1.0_sp,kind=sp) <= abs ( f ) ) then
+      exit
+    end if              
+    f0 = f1
+    f1 = f
+  end do
+
+  nm = k - 1
+  dy(0) = ( sin ( x ) + cos ( x ) / x ) / x
+  do k = 1, nm
+    dy(k) = sy(k-1) - ( k + 1.0_sp ) * sy(k) / x
+  end do
+
+end subroutine sphy
+
+attributes(device) subroutine stvh0 ( x, sh0 )
+
+!*****************************************************************************80
+!
+!! STVH0 computes the Struve function H0(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    22 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  SH0, the value of H0(x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  by0
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  real(kind=sp) ::  p0
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q0
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  sh0
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  ta0
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+  s = 1.0_sp
+  r = 1.0_sp
+
+  if ( x <= 20.0_sp ) then
+    a0 = 2.0_sp * x / pi
+    do k = 1, 60
+      r = - r * x / ( 2.0_sp * k + 1.0_sp ) * x &
+        / ( 2.0_sp * k + 1.0_sp )
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    sh0 = a0 * s
+
+  else
+
+    if ( x < 50.0_sp ) then
+      km = int ( 0.5_sp * ( x + 1.0_sp ) )
+    else
+      km = 25
+    end if
+
+    do k = 1, km
+      r = - r * ( ( 2.0_sp * k - 1.0_sp ) / x ) ** 2
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12_sp ) then
+        exit
+      end if
+    end do
+
+    t = 4.0_sp / x
+    t2 = t * t
+
+    p0 = (((( &
+      - 0.37043e-05_sp     * t2 &
+      + 0.173565e-04_sp )  * t2 &
+      - 0.487613e-04_sp )  * t2 &
+      + 0.17343e-03_sp )   * t2 &
+      - 0.1753062e-02_sp ) * t2 &
+      + 0.3989422793_sp
+
+    q0 = t * ((((( &
+        0.32312e-05_sp     * t2 &
+      - 0.142078e-04_sp )  * t2 &
+      + 0.342468e-04_sp )  * t2 &
+      - 0.869791e-04_sp )  * t2 &
+      + 0.4564324e-03_sp ) * t2 &
+      - 0.0124669441_sp )
+
+    ta0 = x - 0.25_sp * pi
+    by0 = 2.0_sp / sqrt ( x ) &
+      * ( p0 * sin ( ta0 ) + q0 * cos ( ta0 ) )
+    sh0 = 2.0_sp / ( pi * x ) * s + by0
+
+  end if
+
+end
+
+attributes(device) subroutine stvh1 ( x, sh1 )
+
+!*****************************************************************************80
+!
+!! STVH1 computes the Struve function H1(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    22 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  SH1, the value of H1(x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  by1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  real(kind=sp) ::  p1
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q1
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  sh1
+  real(kind=sp) ::  t
+  real(kind=sp) ::  t2
+  real(kind=sp) ::  ta1
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+  r = 1.0_sp
+
+  if ( x <= 20.0_sp ) then
+
+    s = 0.0_sp
+    a0 = - 2.0_sp / pi
+    do k = 1, 60
+      r = - r * x * x / ( 4.0_sp * k * k - 1.0_sp )
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    sh1 = a0 * s
+
+  else
+
+    s = 1.0_sp
+
+    if ( x <= 50.0_sp ) then
+      km = int ( 0.5_sp * x )
+    else
+      km = 25
+    end if
+
+    do k = 1, km
+      r = - r * ( 4.0_sp * k * k - 1.0_sp ) / ( x * x )
+      s = s + r
+      if ( abs ( r ) < abs ( s ) * 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    t = 4.0_sp / x
+    t2 = t * t
+
+    p1 = (((( &
+        0.42414e-05_sp      * t2 &
+      - 0.20092e-04_sp )    * t2 &
+      + 0.580759e-04_sp )   * t2 &
+      - 0.223203e-03_sp )   * t2 &
+      + 0.29218256e-02_sp ) * t2 &
+      + 0.3989422819_sp
+
+    q1 = t * ((((( &
+      - 0.36594e-05_sp     * t2 &
+      + 0.1622e-04_sp )    * t2 &
+      - 0.398708e-04_sp )  * t2 &
+      + 0.1064741e-03_sp ) * t2 &
+      - 0.63904e-03_sp )   * t2 &
+      + 0.0374008364_sp )
+
+    ta1 = x - 0.75_sp * pi
+    by1 = 2.0_sp / sqrt ( x ) * ( p1 * sin ( ta1 ) + q1 * cos ( ta1 ) )
+    sh1 = 2.0_sp / pi * ( 1.0_sp + s / ( x * x ) ) + by1
+
+  end if
+
+end
+
+attributes(device) subroutine stvhv ( v, x, hv )
+
+!*****************************************************************************80
+!
+!! STVHV computes the Struve function Hv(x) with arbitrary order v.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    24 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  V, the order of the function.
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  HV, the value of Hv(x).
+!
+  implicit none
+
+  real(kind=sp) ::  bf
+  real(kind=sp) ::  bf0
+  real(kind=sp) ::  bf1
+  real(kind=sp) ::  by0
+  real(kind=sp) ::  by1
+  real(kind=sp) ::  byv
+  real(kind=sp) ::  ga
+  real(kind=sp) ::  gb
+  real(kind=sp) ::  hv
+  integer(kind=i4) :: k
+  integer(kind=i4) :: l
+  integer(kind=i4) :: n
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pu0
+  real(kind=sp) ::  pu1
+  real(kind=sp) ::  qu0
+  real(kind=sp) ::  qu1
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  r2
+  real(kind=sp) ::  s
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  sa
+  real(kind=sp) ::  sr
+  real(kind=sp) ::  t0
+  real(kind=sp) ::  t1
+  real(kind=sp) ::  u
+  real(kind=sp) ::  u0
+  real(kind=sp) ::  v
+  real(kind=sp) ::  v0
+  real(kind=sp) ::  va
+  real(kind=sp) ::  vb
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  x
+
+  pi = 3.141592653589793_sp
+
+  
+
+  if ( x <= 20.0_sp ) then
+
+    v0 = v + 1.5_sp
+    call gamma ( v0, ga )
+    s = 2.0_sp / ( sqrt ( pi ) * ga )
+    r1 = 1.0_sp
+
+    do k = 1, 100
+      va = k + 1.5_sp
+      call gamma ( va, ga )
+      vb = v + k + 1.5_sp
+      call gamma ( vb, gb )
+      r1 = -r1 * ( 0.5_sp * x ) ** 2
+      r2 = r1 / ( ga * gb )
+      s = s + r2
+      if ( abs ( r2 ) < abs ( s ) * 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    hv = ( 0.5_sp * x ) ** ( v + 1.0_sp ) * s
+
+  else
+
+    sa = ( 0.5_sp * x ) ** ( v - 1.0_sp ) / pi
+    v0 = v + 0.5_sp
+    call gamma ( v0, ga )
+    s = 1.77245385090551602729817_sp / ga
+    r1 = 1.0_sp
+
+    do k = 1, 12
+      va = k + 0.5_sp
+      call gamma ( va, ga )
+      vb = - k + v + 0.5_sp
+      call gamma ( vb, gb )
+      r1 = r1 / ( 0.5_sp * x ) ** 2
+      s = s + r1 * ga / gb
+    end do
+
+    s0 = sa * s
+    u = abs ( v )
+    n = int ( u )
+    u0 = u - n
+
+    do l = 0, 1
+
+      vt = 4.0_sp * ( u0 + l ) ** 2
+      r1 = 1.0_sp
+      pu1 = 1.0_sp
+      do k = 1, 12
+        r1 = -0.0078125_sp * r1 &
+          * ( vt - ( 4.0_sp * k - 3.0_sp ) ** 2 ) &
+          * ( vt - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          / ( ( 2.0_sp * k - 1.0_sp ) * k * x * x )
+        pu1 = pu1 + r1
+      end do
+
+      qu1 = 1.0_sp
+      r2 = 1.0_sp
+      do k = 1, 12
+        r2 = -0.0078125_sp * r2 &
+          * ( vt - ( 4.0_sp * k - 1.0_sp ) ** 2 ) &
+          * ( vt - ( 4.0_sp * k + 1.0_sp ) ** 2 ) &
+          / ( ( 2.0_sp * k + 1.0_sp ) * k * x * x )
+        qu1 = qu1 + r2
+      end do
+      qu1 = 0.125_sp * ( vt - 1.0_sp ) / x * qu1
+
+      if ( l == 0 ) then
+        pu0 = pu1
+        qu0 = qu1
+      end if
+
+    end do
+
+    t0 = x - ( 0.5_sp * u0 + 0.25_sp ) * pi
+    t1 = x - ( 0.5_sp * u0 + 0.75_sp ) * pi
+    sr = sqrt ( 2.0_sp / ( pi * x ) )
+    by0 = sr * ( pu0 * sin ( t0 ) + qu0 * cos ( t0 ) )
+    by1 = sr * ( pu1 * sin ( t1 ) + qu1 * cos ( t1 ) )
+    bf0 = by0
+    bf1 = by1
+    do k = 2, n
+      bf = 2.0_sp * ( k - 1.0_sp + u0 ) / x * bf1 - bf0
+      bf0 = bf1
+      bf1 = bf
+    end do
+
+    if ( n == 0 ) then
+      byv = by0
+    else if ( n == 1 ) then
+      byv = by1
+    else
+      byv = bf
+    end if
+    hv = byv + s0
+  end if
+
+end
+
+attributes(device) subroutine stvl0 ( x, sl0 )
+
+!*****************************************************************************80
+!
+!! STVL0 computes the modified Struve function L0(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    22 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  SL0, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  a1
+  real(kind=sp) ::  bi0
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  sl0
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+  s = 1.0_sp
+  r = 1.0_sp
+
+  if ( x <= 20.0_sp ) then
+
+    a0 = 2.0_sp * x / pi
+
+    do k = 1, 60
+      r = r * ( x / ( 2.0_sp * k + 1.0_sp ) ) ** 2
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    sl0 = a0 * s
+
+  else
+
+    if ( x < 50.0_sp ) then
+      km = int ( 0.5_sp * ( x + 1.0_sp ) )
+    else
+      km = 25
+    end if
+
+    do k = 1, km
+      r = r * ( ( 2.0_sp * k - 1.0_sp ) / x ) ** 2
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    a1 = exp ( x ) / sqrt ( 2.0_sp * pi * x )
+    r = 1.0_sp
+    bi0 = 1.0_sp
+    do k = 1, 16
+      r = 0.125_sp * r * ( 2.0_sp * k - 1.0_sp ) ** 2 / ( k * x )
+      bi0 = bi0 + r
+      if ( abs ( r / bi0 ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    bi0 = a1 * bi0
+    sl0 = - 2.0_sp / ( pi * x ) * s + bi0
+
+  end if
+
+end
+
+
+attributes(device) subroutine stvl1 ( x, sl1 )
+
+!*****************************************************************************80
+!
+!! STVL1 computes the modified Struve function L1(x).
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    05 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Output, real(kind=sp) ::  SL1, the function value.
+!
+  implicit none
+
+  real(kind=sp) ::  a1
+  real(kind=sp) ::  bi1
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  s
+  real(kind=sp) ::  sl1
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+  r = 1.0_sp
+  if ( x <= 20.0_sp ) then
+    s = 0.0_sp
+    do k = 1, 60
+      r = r * x * x / ( 4.0_sp * k * k - 1.0_sp )
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    sl1 = 2.0_sp / pi * s
+
+  else
+
+    s = 1.0_sp
+    km = int ( 0.50_sp * x )
+    km = min ( km, 25 )
+
+    do k = 1, km
+      r = r * ( 2.0_sp * k + 3.0_sp ) &
+        * ( 2.0_sp * k + 1.0_sp ) / ( x * x )
+      s = s + r
+      if ( abs ( r / s ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    sl1 = 2.0_sp / pi * ( -1.0_sp + 1.0_sp &
+      / ( x * x ) + 3.0_sp * s / x**4 )
+    a1 = exp ( x ) / sqrt ( 2.0_sp * pi * x )
+    r = 1.0_sp
+    bi1 = 1.0_sp
+    do k = 1, 16
+      r = -0.125_sp * r &
+        * ( 4.0_sp - ( 2.0_sp * k - 1.0_sp ) ** 2 ) / ( k * x )
+      bi1 = bi1 + r
+      if ( abs ( r / bi1 ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    sl1 = sl1 + a1 * bi1
+
+  end if
+
+end
+
+
+attributes(device) subroutine stvlv ( v, x, slv )
+
+!*****************************************************************************80
+!
+!! STVLV computes the modified Struve function Lv(x) with arbitary order.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    04 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  V, the order of Lv(x).
+!
+!    Input, real(kind=sp) ::  X, the argument of Lv(x).
+!
+!    Output, real(kind=sp) ::  SLV, the value of Lv(x).
+!
+  implicit none
+
+  real(kind=sp) ::  bf
+  real(kind=sp) ::  bf0
+  real(kind=sp) ::  bf1
+  real(kind=sp) ::  biv
+  real(kind=sp) ::  biv0
+  real(kind=sp) ::  ga
+  real(kind=sp) ::  gb
+  integer(kind=i4) :: k
+  integer(kind=i4) :: l
+  integer(kind=i4) :: n
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  r2
+  real(kind=sp) ::  s
+  real(kind=sp) ::  s0
+  real(kind=sp) ::  sa
+  real(kind=sp) ::  slv
+  real(kind=sp) ::  u
+  real(kind=sp) ::  u0
+  real(kind=sp) ::  v
+  real(kind=sp) ::  v0
+  real(kind=sp) ::  va
+  real(kind=sp) ::  vb
+  real(kind=sp) ::  vt
+  real(kind=sp) ::  x
+
+  pi = 3.14159265358979323846264_sp
+
+  if ( x == 0.0_sp ) then
+
+    if ( -1.0_sp < v .or. int ( v ) - v == 0.5_sp ) then
+      slv = 0.0_sp
+    else if ( v < -1.0_sp ) then
+      slv = ( -1 ) ** ( int ( 0.5_sp - v ) - 1 ) * huge(1.0_sp,kind=sp)
+    else if ( v == -1.0_sp ) then
+      slv = 2.0_sp / pi
+    end if
+
+  else if ( x <= 40.0_sp ) then
+
+    v0 = v + 1.5_sp
+    call gamma ( v0, ga )
+    s = 2.0_sp / ( 1.77245385090551602729817_sp * ga )
+    r1 = 1.0_sp
+    do k = 1, 100
+      va = k + 1.5_sp
+      call gamma ( va, ga )
+      vb = v + k + 1.5_sp
+      call gamma ( vb, gb )
+      r1 = r1 * ( 0.5_sp * x ) ** 2
+      r2 = r1 / ( ga * gb )
+      s = s + r2
+      if ( abs ( r2 / s ) < 1.0e-12 ) then
+        exit
+      end if
+    end do
+
+    slv = ( 0.5_sp * x ) ** ( v + 1.0_sp ) * s
+
+  else
+
+    sa = -1.0_sp / pi * ( 0.5_sp * x ) ** ( v - 1.0_sp )
+    v0 = v + 0.5_sp
+    call gamma ( v0, ga )
+    s = - 1.77245385090551602729817_sp / ga
+    r1 = -1.0_sp
+    do k = 1, 12
+      va = k + 0.5_sp
+      call gamma ( va, ga )
+      vb = - k + v + 0.5_sp
+      call gamma ( vb, gb )
+      r1 = - r1 / ( 0.5_sp * x ) ** 2
+      s = s + r1 * ga / gb
+    end do
+    s0 = sa * s
+    u = abs ( v )
+    n = int ( u )
+    u0 = u - n
+    do l = 0, 1
+      vt = u0 + l
+      r = 1.0_sp
+      biv = 1.0_sp
+      do k = 1, 16
+        r = -0.125_sp * r * ( 4.0_sp * vt * vt - &
+          ( 2.0_sp * k - 1.0_sp )**2 ) / ( k * x )
+        biv = biv + r
+        if ( abs ( r / biv ) < 1.0e-12 ) then
+          exit
+        end if
+      end do
+
+      if ( l == 0 ) then
+        biv0 = biv
+      end if
+
+    end do
+
+    bf0 = biv0
+    bf1 = biv
+    do k = 2, n
+      bf = - 2.0_sp * ( k - 1.0_sp + u0 ) / x * bf1 + bf0
+      bf0 = bf1
+      bf1 = bf
+    end do
+
+    if ( n == 0 ) then
+      biv = biv0
+    else if ( 1 < n ) then
+      biv = bf
+    end if
+
+    slv = exp ( x ) / sqrt ( 2.0_sp * pi * x ) * biv + s0
+
+  end if
+
+end
+
+
+attributes(device) subroutine vvla ( va, x, pv )
+
+!*****************************************************************************80
+!
+!! VVLA computes parabolic cylinder function Vv(x) for large arguments.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    04 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Input, real(kind=sp) ::  VA, the order nu.
+!
+!    Output, real(kind=sp) ::  PV, the value of V(nu,x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  dsl
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  gl
+  integer(kind=i4) :: k
+  real(kind=sp) ::  pdl
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pv
+  real(kind=sp) ::  qe
+  real(kind=sp) ::  r
+  real(kind=sp) ::  va
+  real(kind=sp) ::  x
+  real(kind=sp) ::  x1
+
+  pi = 3.14159265358979323846264_sp
+  eps = 1.0e-12_sp
+  qe = exp ( 0.25_sp * x * x )
+  a0 = abs ( x ) ** ( -va - 1.0_sp ) * sqrt ( 2.0_sp / pi ) * qe
+
+  r = 1.0_sp
+  pv = 1.0_sp
+  do k = 1, 18
+    r = 0.5_sp * r * ( 2.0_sp * k + va - 1.0_sp ) &
+      * ( 2.0_sp * k + va ) / ( k * x * x )
+    pv = pv + r
+    if ( abs ( r / pv ) < eps ) then
+      exit
+    end if
+  end do
+
+  pv = a0 * pv
+
+  if ( x < 0.0_sp ) then
+    x1 = -x
+    call dvla ( va, x1, pdl )
+    call gamma ( -va, gl )
+    dsl = sin ( pi * va ) * sin ( pi * va )
+    pv = dsl * gl / pi * pdl - cos ( pi * va ) * pv
+  end if
+
+end
+
+
+attributes(device) subroutine vvsa ( va, x, pv )
+
+!*****************************************************************************80
+!
+!! VVSA computes parabolic cylinder function V(nu,x) for small arguments.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    04 July 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument.
+!
+!    Input, real(kind=sp) ::  VA, the order nu.
+!
+!    Output, real(kind=sp) ::  PV, the value of V(nu,x).
+!
+  implicit none
+
+  real(kind=sp) ::  a0
+  real(kind=sp) ::  ep
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  fac
+  real(kind=sp) ::  g1
+  real(kind=sp) ::  ga0
+  real(kind=sp) ::  gm
+  real(kind=sp) ::  gw
+  integer(kind=i4) :: m
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  pv
+  real(kind=sp) ::  r
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  sq2
+  real(kind=sp) ::  sv
+  real(kind=sp) ::  sv0
+  real(kind=sp) ::  v1
+  real(kind=sp) ::  va
+  real(kind=sp) ::  va0
+  real(kind=sp) ::  vb0
+  real(kind=sp) ::  vm
+  real(kind=sp) ::  x
+
+  eps = 1.0e-15_sp
+  pi = 3.14159265358979323846264_sp
+  ep = exp ( -0.25_sp * x * x )
+  va0 = 1.0_sp + 0.5_sp * va
+
+  if ( x == 0.0_sp ) then
+
+    if ( ( va0 <= 0.0_sp .and. va0 == int ( va0 ) ) .or. &
+      va == 0.0_sp ) then
+      pv = 0.0_sp
+    else
+      vb0 = -0.5_sp * va
+      sv0 = sin ( va0 * pi )
+      call gamma ( va0, ga0 )
+      pv = 2.0_sp ** vb0 * sv0 / ga0
+    end if
+
+  else
+
+    sq2 = sqrt ( 2.0_sp )
+    a0 = 2.0_sp ** ( -0.5_sp * va ) * ep / ( 2.0_sp * pi )
+    sv = sin ( - ( va + 0.5_sp ) * pi )
+    v1 = -0.5_sp * va
+    call gamma ( v1, g1 )
+    pv = ( sv + 1.0_sp ) * g1
+    r = 1.0_sp
+    fac = 1.0_sp
+
+    do m = 1, 250
+      vm = 0.5_sp * ( m - va )
+      call gamma ( vm, gm )
+      r = r * sq2 * x / m
+      fac = - fac
+      gw = fac * sv + 1.0_sp
+      r1 = gw * r * gm
+      pv = pv + r1
+      if ( abs ( r1 / pv ) < eps .and. gw /= 0.0_sp ) then
+        exit
+      end if
+    end do
+
+    pv = a0 * pv
+
+  end if
+
+end
+
+
+
+
 end module specfuncs_cuda
