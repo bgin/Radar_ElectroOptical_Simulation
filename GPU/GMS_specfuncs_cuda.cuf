@@ -2074,8 +2074,7 @@ attributes(device) subroutine cikva ( v, z, vm, cbi, cdi, cbk, cdk )
   integer(kind=i4) :: k
   integer(kind=i4) :: k0
   integer(kind=i4) :: m
-  integer(kind=i4) :: msta1
-  integer(kind=i4) :: msta2
+  
   integer(kind=i4) :: n
   real(kind=sp) ::  pi
   real(kind=sp) ::  piv
@@ -5219,8 +5218,6 @@ attributes(device) subroutine ikna ( n, x, nm, bi, di, bk, dk )
   real(kind=sp) ::  h1
   integer(kind=i4) :: k
   integer(kind=i4) :: m
-  !integer(kind=i4) :: msta1
-  !integer(kind=i4) :: msta2
   integer(kind=i4) :: nm
   real(kind=sp) ::  s0
   real(kind=sp) ::  x
@@ -5363,8 +5360,7 @@ attributes(device) subroutine iknb ( n, x, nm, bi, di, bk, dk )
   integer(kind=i4) :: k0
   integer(kind=i4) :: l
   integer(kind=i4) :: m
-  !integer(kind=i4) :: msta1
-  !integer(kind=i4) :: msta2
+  
   integer(kind=i4) :: nm
   real(kind=sp) ::  pi
   real(kind=sp) ::  r
@@ -9085,7 +9081,6 @@ attributes(device) function msta2 ( x, n, mp )
 
   real(kind=sp) ::  a0
   real(kind=sp) ::  ejn
-  real(kind=sp) ::  envj
   real(kind=sp) ::  f
   real(kind=sp) ::  f0
   real(kind=sp) ::  f1
@@ -9299,8 +9294,7 @@ attributes(device) subroutine rctj ( n, x, nm, rj, dj )
   real(kind=sp) ::  f1
   integer(kind=i4) :: k
   integer(kind=i4) :: m
-  integer(kind=i4) :: msta1
-  integer(kind=i4) :: msta2
+ 
   integer(kind=i4) :: nm
   real(kind=sp) ::  rj(0:n)
   real(kind=sp) ::  rj0
@@ -9488,8 +9482,6 @@ attributes(device) subroutine sphi ( n, x, nm, si, di )
   real(kind=sp) ::  f1
   integer(kind=i4) :: k
   integer(kind=i4) :: m
-  integer(kind=i4) :: msta1
-  integer(kind=i4) :: msta2
   integer(kind=i4) :: nm
   real(kind=sp) ::  si(0:n)
   real(kind=sp) ::  si0
@@ -9587,8 +9579,7 @@ attributes(device) subroutine sphj ( n, x, nm, sj, dj )
   real(kind=sp) ::  f1
   integer(kind=i4) :: k
   integer(kind=i4) :: m
-  integer(kind=i4) :: msta1
-  integer(kind=i4) :: msta2
+  
   integer(kind=i4) :: nm
   real(kind=sp) ::  sa
   real(kind=sp) ::  sb
