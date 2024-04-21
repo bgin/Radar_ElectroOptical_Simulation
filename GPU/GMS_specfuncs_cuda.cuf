@@ -1873,8 +1873,6 @@ attributes(device) subroutine ciknb ( n, z, nm, cbi, cdi, cbk, cdk )
   integer(kind=i4) :: k0
   integer(kind=i4) :: l
   integer(kind=i4) :: m
-  integer(kind=i4) :: msta1
-  integer(kind=i4) :: msta2
   integer(kind=i4) :: nm
   real(kind=sp) ::  pi
   real(kind=sp) ::  vt
@@ -1886,17 +1884,7 @@ attributes(device) subroutine ciknb ( n, z, nm, cbi, cdi, cbk, cdk )
   a0 = abs ( z )
   nm = n
 
-  !if ( a0 < 1.0e-100 ) then
-  !  do k = 0, n
-  !    cbi(k) = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
-  !    cbk(k) = cmplx ( 1.0e+30, 0.0_sp, kind=sp )
-  !    cdi(k) = cmplx ( 0.0_sp, 0.0_sp, kind=sp )
-  !    cdk(k) = - cmplx ( 1.0e+30, 0.0_sp, kind=sp )
-  !  end do
-  !  cbi(0) = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
-  !  cdi(1) = cmplx ( 0.5_sp, 0.0_sp, kind=sp ) 
-   ! return
-  !end if
+  
 
   ci = cmplx ( 0.0_sp, 1.0_sp, kind=sp )
 
@@ -2118,25 +2106,7 @@ attributes(device) subroutine cikva ( v, z, vm, cbi, cdi, cbk, cdk )
     n = 1
   end if
 
-  !if ( a0 < 1.0e-100 ) then
-  !
-  !  do k = 0, n
-  !    cbi(k) = 0.0_sp
-  !    cdi(k) = 0.0_sp
-  !    cbk(k) = -1.0e+300
-  !    cdk(k) = 1.0e+300
-  ! ! end do
-  !
-  !  if ( v0 == 0.0_sp ) then
-  !    cbi(0) = cmplx ( 1.0_sp, 0.0_sp, kind=sp )
-  !    cdi(1) = cmplx ( 0.5_sp, 0.0_sp, kind=sp )
-  !  end if
-  !
-  !  vm = v
-  !  return
-  !
-  !end if
-
+  
   if ( a0 < 35.0_sp ) then
     k0 = 14
   else if ( a0 < 50.0_sp ) then
