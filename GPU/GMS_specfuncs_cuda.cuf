@@ -1398,6 +1398,86 @@ attributes(device) subroutine cgama ( x, y, kf, gr, gi )
 end subroutine cgama
 
 
+attributes(device) subroutine cjk ( km, a )
+
+!*****************************************************************************80
+!
+!! CJK: asymptotic expansion coefficients for Bessel functions of large order.
+!
+!  Licensing:
+!
+!    This routine is copyrighted by Shanjie Zhang and Jianming Jin.  However, 
+!    they give permission to incorporate this routine into a user program 
+!    provided that the copyright is acknowledged.
+!
+!  Modified:
+!
+!    01 August 2012
+!
+!  Author:
+!
+!    Shanjie Zhang, Jianming Jin
+!
+!  Reference:
+!
+!    Shanjie Zhang, Jianming Jin,
+!    Computation of Special Functions,
+!    Wiley, 1996,
+!    ISBN: 0-471-11963-6,
+!    LC: QA351.C45.
+!
+!  Parameters:
+!
+!    Input, integer(kind=i4) :: KM, the maximum value of K.
+!
+!    Output, real(kind=sp) ::  A(L), the value of Cj(k) where j and k are 
+!    related to L by L = j+1+[k*(k+1)]/2; j,k = 0,1,...,Km.
+!
+  implicit none
+
+  real(kind=sp) ::  a(*)
+  real(kind=sp) ::  f
+  real(kind=sp) ::  f0
+  real(kind=sp) ::  g
+  real(kind=sp) ::  g0
+  integer(kind=i4) :: j
+  integer(kind=i4) :: k
+  integer(kind=i4) :: km
+  integer(kind=i4) :: l1
+  integer(kind=i4) :: l2
+  integer(kind=i4) :: l3
+  integer(kind=i4) :: l4
+
+  a(1) = 1.0_sp
+  f0 = 1.0_sp
+  g0 = 1.0_sp
+  do k = 0, km - 1
+    l1 = ( k + 1 ) * ( k + 2 ) / 2 + 1
+    l2 = ( k + 1 ) * ( k + 2 ) / 2 + k + 2
+    f = ( 0.5_sp * k + 0.125_sp / ( k + 1 ) ) * f0
+    g = - ( 1.5_sp * k + 0.625_sp &
+      / ( 3.0_sp * ( k + 1.0_sp ) ) ) * g0
+    a(l1) = f
+    a(l2) = g
+    f0 = f
+    g0 = g
+  end do
+
+  do k = 1, km - 1
+    do j = 1, k
+      l3 = k * ( k + 1 ) / 2 + j + 1
+      l4 = ( k + 1 ) * ( k + 2 ) / 2 + j + 1
+      a(l4) = ( j + 0.5_sp * k + 0.125_sp &
+        / ( 2.0_sp * j + k + 1.0_sp ) ) * a(l3) &
+        - ( j + 0.5_sp * k - 1.0_sp + 0.625_sp &
+        / ( 2.0_sp * j + k + 1.0_sp ) ) * a(l3-1)
+    end do
+  end do
+
+  
+end subroutine cjk
+
+
 attributes(device) subroutine cik01 ( z, cbi0, cdi0, cbi1, cdi1, cbk0, cdk0, cbk1, cdk1 )
 
 !*****************************************************************************80
