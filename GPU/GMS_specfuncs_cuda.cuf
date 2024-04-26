@@ -11528,6 +11528,262 @@ attributes(device) subroutine calck1 ( arg, result, jint )
 end subroutine calck1
 
 
+attributes(device) subroutine calerf ( arg, result, jint )
+
+!*****************************************************************************80
+!
+!! CALERF computes various forms of the error function.
+!
+!  Discussion:
+!
+!    This routine evaluates erf(x), erfc(x), and exp(x*x)*erfc(x)
+!    for a real argument x.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    William Cody,
+!    Rational Chebyshev Approximations for the Error Function,
+!    Mathematics of Computation,
+!    Volume 23, Number 107, July 1969, pages 631-638.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  ARG, the argument.  If JINT is 1, the
+!    argument must be less than XBIG.  If JINT is 2, the argument
+!    must lie between XNEG and XMAX.
+!
+!    Output, real(kind=sp) ::  RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    0, RESULT = erf(x);
+!    1, RESULT = erfc(x) = 1 - erf(x);
+!    2, RESULT = exp(x*x)*erfc(x) = exp(x*x) - erf(x*x)*erf(x).
+!
+!    Input, integer(kind=i4) :: JINT, chooses the function to be computed.
+!    0, erf(x);
+!    1, erfc(x);
+!    2, exp(x*x)*erfc(x).
+!
+  implicit none
+
+  real(kind=sp) ::  a(5)
+  real(kind=sp) ::  arg
+  real(kind=sp) ::  b(4)
+  real(kind=sp) ::  c(9)
+  real(kind=sp) ::  d(8)
+  real(kind=sp) ::  del
+  real(kind=sp) ::  four
+  real(kind=sp) ::  half
+  integer(kind=i4) :: i
+  integer(kind=i4) :: jint
+  real(kind=sp) ::  one
+  real(kind=sp) ::  p(6)
+  real(kind=sp) ::  q(5)
+  real(kind=sp) ::  result
+  real(kind=sp) ::  sixten
+  real(kind=sp) ::  sqrpi
+  real(kind=sp) ::  two
+  real(kind=sp) ::  thresh
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xbig
+  real(kind=sp) ::  xden
+  real(kind=sp) ::  xhuge
+  real(kind=sp) ::  xinf
+  real(kind=sp) ::  xmax
+  real(kind=sp) ::  xneg
+  real(kind=sp) ::  xnum
+  real(kind=sp) ::  xsmall
+  real(kind=sp) ::  y
+  real(kind=sp) ::  ysq
+  real(kind=sp) ::  zero
+!
+!  Mathematical constants
+!
+  data four /4.0_sp/
+  data one /1.0_sp/
+  data half /0.5_sp/
+  data two /2.0_sp/
+  data zero /0.0_sp/
+  data sqrpi /5.6418958354775628695e-1_sp/
+  data thresh /0.46875_sp/
+  data sixten /16.0_sp/
+!
+!  Machine-dependent constants
+!
+  data xinf /3.4028235e+38_sp /
+  data xneg / -26.628_sp /
+  data xsmall /1.11e-16_sp/
+  data xbig /26.543_sp /
+  data xhuge /6.71e+7_sp/
+  data xmax /2.53d307/
+!
+!  Coefficients for approximation to  erf  in first interval
+!
+  data a/3.16112374387056560e+00_sp,1.13864154151050156e+02_sp, &
+         3.77485237685302021e+02_sp,3.20937758913846947e+03_sp, &
+         1.85777706184603153e-1_sp/
+  data b/2.36012909523441209e+01_sp,2.44024637934444173e+02_sp, &
+         1.28261652607737228e+03_sp,2.84423683343917062e+03_sp/
+!
+!  Coefficients for approximation to  erfc  in second interval
+!
+  data c/5.64188496988670089e-1_sp,8.88314979438837594e+00_sp, &
+         6.61191906371416295e+01_sp,2.98635138197400131e+02_sp, &
+         8.81952221241769090e+02_sp,1.71204761263407058e+03_sp, &
+         2.05107837782607147e+03_sp,1.23033935479799725e+03_sp, &
+         2.15311535474403846e-8_sp/
+  data d/1.57449261107098347e+01_sp,1.17693950891312499e+02_sp, &
+         5.37181101862009858e+02_sp,1.62138957456669019e+03_sp, &
+         3.29079923573345963e+03_sp,4.36261909014324716e+03_sp, &
+         3.43936767414372164e+03_sp,1.23033935480374942e+03_sp/
+!
+!  Coefficients for approximation to  erfc  in third interval
+!
+  data p/3.05326634961232344e-1_sp,3.60344899949804439e-1_sp, &
+         1.25781726111229246e-1_sp,1.60837851487422766e-2_sp, &
+         6.58749161529837803e-4_sp,1.63153871373020978e-2_sp/
+  data q/2.56852019228982242e+00_sp,1.87295284992346047e+00_sp, &
+         5.27905102951428412e-1_sp,6.05183413124413191e-2_sp, &
+         2.33520497626869185e-3_sp/
+  x = arg
+  y = abs ( x )
+!
+!  Evaluate erf for |X| <= 0.46875.
+!
+  if ( y <= thresh ) then
+
+    ysq = zero
+    if ( xsmall < y ) then
+      ysq = y * y
+    end if
+
+    xnum = a(5) * ysq
+    xden = ysq
+
+    do i = 1, 3
+      xnum = ( xnum + a(i) ) * ysq
+      xden = ( xden + b(i) ) * ysq
+    end do
+
+    result = x * ( xnum + a(4) ) / ( xden + b(4) )
+
+    if ( jint /= 0 ) then
+      result = one - result
+    end if
+
+    if ( jint == 2 ) then
+      result = exp ( ysq ) * result
+    end if
+
+    return
+!
+!  Evaluate erfc for 0.46875 <= |X| <= 4.0.
+!
+   else if ( y <= four ) then
+
+     xnum = c(9) * y
+     xden = y
+
+     do i = 1, 7
+       xnum = ( xnum + c(i) ) * y
+       xden = ( xden + d(i) ) * y
+     end do
+
+     result = ( xnum + c(8) ) / ( xden + d(8) )
+
+     if ( jint /= 2 ) then
+       ysq = aint ( y * sixten ) / sixten
+       del = ( y - ysq ) * ( y + ysq )
+       result = exp ( -ysq * ysq ) * exp ( -del ) * result
+     end if
+!
+!  Evaluate erfc for 4.0 < |X|.
+!
+   else
+
+     result = zero
+
+     if ( xbig <= y ) then
+
+       if ( jint /= 2  ) then
+         go to 300
+       end if
+
+       if ( xhuge <= y ) then
+         result = sqrpi / y
+         go to 300
+       end if
+
+     end if
+
+     ysq = one / ( y * y )
+     xnum = p(6) * ysq
+     xden = ysq
+     do i = 1, 4
+       xnum = ( xnum + p(i) ) * ysq
+       xden = ( xden + q(i) ) * ysq
+      end do
+
+      result = ysq * ( xnum + p(5) ) / ( xden + q(5) )
+      result = ( sqrpi -  result ) / y
+
+      if ( jint /= 2 ) then
+        ysq = aint ( y * sixten ) / sixten
+        del = ( y - ysq ) * ( y + ysq )
+        result = exp ( -ysq * ysq ) * exp ( -del ) * result
+      end if
+
+  end if
+!
+!  Fix up for negative argument, erf, etc.
+!
+  300 continue
+
+  if ( jint == 0 ) then
+
+    result = ( half - result ) + half
+    if ( x < zero ) then
+      result = -result
+    end if
+
+  else if ( jint == 1 ) then
+
+    if ( x < zero ) then
+      result = two - result
+    end if
+
+  else
+
+    if ( x < zero ) then
+
+      if ( x < xneg ) then
+        result = xinf
+      else
+        ysq = aint ( x * sixten ) / sixten
+        del = ( x - ysq ) * ( x + ysq )
+        y = exp ( ysq * ysq ) * exp ( del )
+        result = ( y + y ) - result
+      end if
+
+    end if
+
+  end if
+
+end subroutine calerf
+
+
 
 
 end module specfuncs_cuda
