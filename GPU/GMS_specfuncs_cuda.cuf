@@ -12179,6 +12179,368 @@ attributes(device) subroutine caljy0 ( arg, result, jint )
 end subroutine caljy0 
 
 
+attributes(device) subroutine caljy1 ( arg, result, jint )
+
+!*****************************************************************************80
+!
+!! CALJY1 computes various J1 and Y1 Bessel functions.
+!
+!  Discussion:
+!
+!    This routine computes first-order Bessel functions of the first and
+!    second kind (J1 and Y1), for real arguments X, where 0 < X <= XMAX
+!    for Y1, and |X| <= XMAX for J1.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 April 2007
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    John Hart, Ward Cheney, Charles Lawson, Hans Maehly,
+!    Charles Mesztenyi, John Rice, Henry Thatcher,
+!    Christoph Witzgall,
+!    Computer Approximations,
+!    Wiley, 1968,
+!    LC: QA297.C64.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  ARG, the argument.  If JINT = 0, ARG
+!    must satisfy
+!     -XMAX < ARG < XMAX;
+!    If JINT = 1, then ARG must satisfy
+!      0 < ARG < XMAX.
+!
+!    Output, real(kind=sp) ::  RESULT, the value of the function,
+!    which depends on the input value of JINT:
+!    0, RESULT = J1(x);
+!    1, RESULT = Y1(x);
+!
+!    Input, integer(kind=i4) :: JINT, chooses the function to be computed.
+!    0, J1(x);
+!    1, Y1(x);
+!
+  implicit none
+
+  real(kind=sp) ::  arg
+  real(kind=sp) ::  ax
+  real(kind=sp) ::  down
+  real(kind=sp) ::  eight
+  real(kind=sp) ::  four
+  real(kind=sp) ::  half
+  integer(kind=i4) :: i
+  integer(kind=i4) :: jint
+  real(kind=sp) ::  pi2
+  real(kind=sp) ::  pj0(7)
+  real(kind=sp) ::  pj1(8)
+  real(kind=sp) ::  plg(4)
+  real(kind=sp) ::  prod
+  real(kind=sp) ::  py0(7)
+  real(kind=sp) ::  py1(9)
+  real(kind=sp) ::  p0(6)
+  real(kind=sp) ::  p1(6)
+  real(kind=sp) ::  p17
+  real(kind=sp) ::  qj0(5)
+  real(kind=sp) ::  qj1(7)
+  real(kind=sp) ::  qlg(4)
+  real(kind=sp) ::  qy0(6)
+  real(kind=sp) ::  qy1(8)
+  real(kind=sp) ::  q0(6)
+  real(kind=sp) ::  q1(6)
+  real(kind=sp) ::  resj
+  real(kind=sp) ::  result
+  real(kind=sp) ::  rtpi2
+  real(kind=sp) ::  r0
+  real(kind=sp) ::  r1
+  real(kind=sp) ::  throv8
+  real(kind=sp) ::  twopi
+  real(kind=sp) ::  twopi1
+  real(kind=sp) ::  twopi2
+  real(kind=sp) ::  two56
+  real(kind=sp) ::  up
+  real(kind=sp) ::  w
+  real(kind=sp) ::  wsq
+  real(kind=sp) ::  xden
+  real(kind=sp) ::  xinf
+  real(kind=sp) ::  xmax
+  real(kind=sp) ::  xnum
+  real(kind=sp) ::  xsmall
+  real(kind=sp) ::  xj0
+  real(kind=sp) ::  xj1
+  real(kind=sp) ::  xj01
+  real(kind=sp) ::  xj02
+  real(kind=sp) ::  xj11
+  real(kind=sp) ::  xj12
+  real(kind=sp) ::  xy
+  real(kind=sp) ::  xy0
+  real(kind=sp) ::  xy01
+  real(kind=sp) ::  xy02
+  real(kind=sp) ::  xy1
+  real(kind=sp) ::  xy11
+  real(kind=sp) ::  xy12
+  real(kind=sp) ::  z
+  real(kind=sp) ::  zero
+  real(kind=sp) ::  zsq
+!
+!  Mathematical constants
+!
+  data eight /8.0_sp/
+  data four /4.0_sp/
+  data half /0.5_sp/
+  data throv8 /0.375_sp/
+  data pi2 /6.3661977236758134308e-1_sp/
+  data p17 /1.716e-1_sp/
+  data twopi /6.2831853071795864769e+0_sp/
+  data zero /0.0_sp/
+  data twopi1 /6.28125_sp/
+  data twopi2 /1.9353071795864769253e-03_sp/
+  data two56 /256.0e+0_sp/
+  data rtpi2 /7.9788456080286535588e-1_sp/
+!
+!  Machine-dependent constants
+!
+  data xmax /1.07e+09_sp/
+  data xsmall /9.31e-10_sp/
+  data xinf /1.7e+38_sp/
+!
+!  Zeroes of Bessel functions
+!
+  data xj0 /3.8317059702075123156e+0_sp/
+  data xj1 /7.0155866698156187535e+0_sp/
+  data xy0 /2.1971413260310170351e+0_sp/
+  data xy1 /5.4296810407941351328e+0_sp/
+  data xj01 / 981.0e+0_sp/
+  data xj02 /-3.2527979248768438556e-04_sp/
+  data xj11 /1796.0e+0_sp/
+  data xj12 /-3.8330184381246462950e-05_sp/
+  data xy01 / 562.0e+0_sp/
+  data xy02 / 1.8288260310170351490e-03_sp/
+  data xy11 /1390.0e+0_sp/
+  data xy12 /-6.4592058648672279948e-06_sp/
+!
+!  Coefficients for rational approximation to ln(x/a)
+!
+  data plg/-2.4562334077563243311e+01_sp,2.3642701335621505212e+02_sp, &
+           -5.4989956895857911039e+02_sp,3.5687548468071500413e+02_sp/
+  data qlg/-3.5553900764052419184e+01_sp,1.9400230218539473193e+02_sp, &
+           -3.3442903192607538956e+02_sp,1.7843774234035750207e+02_sp/
+!
+!  Coefficients for rational approximation of
+!  J1(X) / (X * (X**2 - XJ0**2)), XSMALL < |X| <=  4.0
+!
+  data pj0/9.8062904098958257677e+05_sp,-1.1548696764841276794e+08_sp, &
+         6.6781041261492395835e+09_sp,-1.4258509801366645672e+11_sp, &
+        -4.4615792982775076130e+03_sp, 1.0650724020080236441e+01_sp, &
+        -1.0767857011487300348e-02_sp/
+  data qj0/5.9117614494174794095e+05_sp, 2.0228375140097033958e+08_sp, &
+         4.2091902282580133541e+10_sp, 4.1868604460820175290e+12_sp, &
+         1.0742272239517380498e+03_sp/
+!
+!  Coefficients for rational approximation of
+!  J1(X) / (X * (X**2 - XJ1**2)), 4.0 < |X| <= 8.0
+!
+  data pj1/4.6179191852758252280e+00_sp,-7.1329006872560947377e+03_sp, &
+         4.5039658105749078904e+06_sp,-1.4437717718363239107e+09_sp, &
+         2.3569285397217157313e+11_sp,-1.6324168293282543629e+13_sp, &
+         1.1357022719979468624e+14_sp, 1.0051899717115285432e+15_sp/
+  data qj1/1.1267125065029138050e+06_sp, 6.4872502899596389593e+08_sp, &
+         2.7622777286244082666e+11_sp, 8.4899346165481429307e+13_sp, &
+         1.7128800897135812012e+16_sp, 1.7253905888447681194e+18_sp, &
+         1.3886978985861357615e+03_sp/
+!
+!  Coefficients for rational approximation of
+!  (Y1(X) - 2 LN(X/XY0) J1(X)) / (X**2 - XY0**2),
+!  XSMALL < |X| <=  4.0
+!
+  data py0/2.2157953222280260820e+05_sp,-5.9157479997408395984e+07_sp, &
+           7.2144548214502560419e+09_sp,-3.7595974497819597599e+11_sp, &
+           5.4708611716525426053e+12_sp, 4.0535726612579544093e+13_sp, &
+          -3.1714424660046133456e+02_sp/
+  data qy0/8.2079908168393867438e+02_sp, 3.8136470753052572164e+05_sp, &
+           1.2250435122182963220e+08_sp, 2.7800352738690585613e+10_sp, &
+           4.1272286200406461981e+12_sp, 3.0737873921079286084e+14_sp/
+!
+!  Coefficients for rational approximation of
+!  (Y1(X) - 2 LN(X/XY1) J1(X)) / (X**2 - XY1**2),
+!  4.0 < |X| <= 8.0
+!
+  data py1/ 1.9153806858264202986e+06_sp,-1.1957961912070617006e+09_sp, &
+            3.7453673962438488783e+11_sp,-5.9530713129741981618e+13_sp, &
+            4.0686275289804744814e+15_sp,-2.3638408497043134724e+16_sp, &
+           -5.6808094574724204577e+18_sp, 1.1514276357909013326e+19_sp, &
+           -1.2337180442012953128e+03_sp/
+  data qy1/ 1.2855164849321609336e+03, 1.0453748201934079734e+06, &
+            6.3550318087088919566e+08, 3.0221766852960403645e+11, &
+            1.1187010065856971027e+14, 3.0837179548112881950e+16, &
+            5.6968198822857178911e+18, 5.3321844313316185697e+20/
+!
+!  Coefficients for Hart's approximation, 8.0 < |X|.
+!
+  data p0/-1.0982405543459346727e+05_sp,-1.5235293511811373833e+06_sp, &
+           -6.6033732483649391093e+06_sp,-9.9422465050776411957e+06_sp, &
+           -4.4357578167941278571e+06_sp,-1.6116166443246101165e+03_sp/
+  data q0/-1.0726385991103820119e+05_sp,-1.5118095066341608816e+06_sp, &
+           -6.5853394797230870728e+06_sp,-9.9341243899345856590e+06_sp, &
+           -4.4357578167941278568e+06_sp,-1.4550094401904961825e+03_sp/
+  data p1/ 1.7063754290207680021e+03_sp, 1.8494262873223866797e+04_sp, &
+            6.6178836581270835179e+04_sp, 8.5145160675335701966e+04_sp, &
+            3.3220913409857223519e+04_sp, 3.5265133846636032186e+01_sp/
+  data q1/ 3.7890229745772202641e+04_sp, 4.0029443582266975117e+05_sp, &
+            1.4194606696037208929e+06_sp, 1.8194580422439972989e+06_sp, &
+            7.0871281941028743574e+05_sp, 8.6383677696049909675e+02_sp/
+!
+!  Check for error conditions.
+!
+  ax = abs ( arg )
+
+  if ( jint == 1 .and. ( arg <= zero .or. &
+    ( arg < half .and. ax * xinf < pi2 ) ) ) then
+    result = -xinf
+    return
+  else if ( xmax < ax ) then
+    result = zero
+    return
+  end if
+
+  if ( eight < ax ) then
+    go to 800
+  else if ( ax <= xsmall ) then
+    if ( jint == 0 ) then
+      result = arg * half
+    else
+      result = -pi2 / ax
+    end if
+    return
+  end if
+!
+!  Calculate J1 for appropriate interval, preserving
+!  accuracy near the zero of J1.
+!
+  zsq = ax * ax
+
+  if ( ax <= four ) then
+    xnum = ( pj0(7) * zsq + pj0(6) ) * zsq + pj0(5)
+    xden = zsq + qj0(5)
+    do i = 1, 4
+      xnum = xnum * zsq + pj0(i)
+      xden = xden * zsq + qj0(i)
+    end do
+    prod = arg * ( ( ax - xj01 / two56 ) - xj02 ) * ( ax + xj0 )
+  else
+    xnum = pj1(1)
+    xden = ( zsq + qj1(7) ) * zsq + qj1(1)
+    do i = 2, 6
+      xnum = xnum * zsq + pj1(i)
+      xden = xden * zsq + qj1(i)
+    end do
+    xnum = xnum * ( ax - eight ) * ( ax + eight ) + pj1(7)
+    xnum = xnum * ( ax - four ) * ( ax + four ) + pj1(8)
+    prod = arg * ( ( ax - xj11 / two56 ) - xj12 ) * ( ax + xj1 )
+  end if
+
+  result = prod * ( xnum / xden )
+
+  if ( jint == 0 ) then
+    return
+  end if
+!
+!  Calculate Y1.  First find RESJ = pi/2 ln(x/xn) J1(x),
+!  where xn is a zero of Y1.
+!
+  if ( ax <= four ) then
+    up = ( ax - xy01 / two56 ) - xy02
+    xy = xy0
+  else
+    up = ( ax - xy11 / two56 ) - xy12
+    xy = xy1
+  end if
+
+  down = ax + xy
+
+  if ( abs ( up ) < p17 * down ) then
+    w = up / down
+    wsq = w * w
+    xnum = plg(1)
+    xden = wsq + qlg(1)
+    do i = 2, 4
+      xnum = xnum * wsq + plg(i)
+      xden = xden * wsq + qlg(i)
+    end do
+    resj = pi2 * result * w * xnum / xden
+  else
+    resj = pi2 * result * log ( ax / xy )
+  end if
+!
+!  Now calculate Y1 for appropriate interval, preserving
+!  accuracy near the zero of Y1.
+!
+  if ( ax <= four ) then
+    xnum = py0(7) * zsq + py0(1)
+    xden = zsq + qy0(1)
+    do i = 2, 6
+      xnum = xnum * zsq + py0(i)
+      xden = xden * zsq + qy0(i)
+    end do
+  else
+    xnum = py1(9) * zsq + py1(1)
+    xden = zsq + qy1(1)
+    do i = 2, 8
+      xnum = xnum * zsq + py1(i)
+      xden = xden * zsq + qy1(i)
+    end do
+  end if
+
+  result = resj + ( up * down / ax ) * xnum / xden
+  return
+!
+!  Calculate J1 or Y1 for 8.0 < |ARG|.
+!
+  800 continue
+
+  z = eight / ax
+  w = aint ( ax / twopi ) + throv8
+  w = ( ax - w * twopi1 ) - w * twopi2
+  zsq = z * z
+  xnum = p0(6)
+  xden = zsq + q0(6)
+  up = p1(6)
+  down = zsq + q1(6)
+
+  do i = 1, 5
+    xnum = xnum * zsq + p0(i)
+    xden = xden * zsq + q0(i)
+    up = up * zsq + p1(i)
+    down = down * zsq + q1(i)
+  end do
+
+  r0 = xnum / xden
+  r1 = up / down
+
+  if ( jint == 0 ) then
+    result = ( rtpi2 / sqrt ( ax ) ) &
+      * ( r0 * cos ( w ) - z * r1 * sin ( w ) )
+  else
+    result = ( rtpi2 / sqrt ( ax ) ) &
+      * ( r0 * sin ( w ) + z * r1 * cos ( w ) )
+  end if
+
+  if ( jint == 0 .and. arg < zero ) then
+    result = -result
+  end if
+
+end
+
+
 
 
 
