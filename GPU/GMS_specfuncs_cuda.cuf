@@ -13074,6 +13074,241 @@ attributes(device) function r8_gamma ( x )
 end suboutine r8_gamma
 
 
+attributes(device) function r8_psi ( xx )
+
+!*****************************************************************************80
+!
+!! R8_PSI evaluates the function Psi(X).
+!
+!  Discussion:
+!
+!    This routine evaluates the logarithmic derivative of the
+!    Gamma function,
+!
+!      PSI(X) = d/dX ( GAMMA(X) ) / GAMMA(X)
+!             = d/dX LN ( GAMMA(X) )
+!
+!    for real X, where either
+!
+!      - XMAX1 < X < - XMIN, and X is not a negative integer,
+!
+!    or
+!
+!      XMIN < X.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    23 January 2008
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    William Cody, Anthony Strecok, Henry Thacher,
+!    Chebyshev Approximations for the Psi Function,
+!    Mathematics of Computation,
+!    Volume 27, Number 121, January 1973, pages 123-127.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  XX, the argument of the function.
+!
+!    Output, real(kind=sp) ::  R8_PSI, the value of the function.
+!
+  implicit none
+
+  real(kind=sp) ::  aug
+  real(kind=sp) ::  den
+  real(kind=sp)  , parameter :: four = 4.0_sp
+  real(kind=sp)  , parameter :: fourth = 0.25_sp
+  real(kind=sp)  , parameter :: half = 0.5_sp
+  integer(kind=i4) :: i
+  integer(kind=i4) :: n
+  integer(kind=i4) :: nq
+  real(kind=sp)  , parameter :: one = 1.0_sp
+  real(kind=sp)  , dimension ( 9 ) :: p1 = (/ &
+   4.5104681245762934160e-03_sp, &
+   5.4932855833000385356_sp, &
+   3.7646693175929276856e+02_sp, &
+   7.9525490849151998065e+03_sp, &
+   7.1451595818951933210e+04_sp, &
+   3.0655976301987365674e+05_sp, &
+   6.3606997788964458797e+05_sp, &
+   5.8041312783537569993e+05_sp, &
+   1.6585695029761022321e+05_sp /)
+  real(kind=sp) , dimension ( 7 ) :: p2 = (/ &
+  -2.7103228277757834192_sp, &
+  -1.5166271776896121383e+01_sp, &
+  -1.9784554148719218667e+01_sp, &
+  -8.8100958828312219821_sp, &
+  -1.4479614616899842986_sp, &
+  -7.3689600332394549911e-02_sp, &
+  -6.5135387732718171306e-21_sp /)
+  real(kind=sp)  , parameter :: piov4 = 0.78539816339744830962_sp
+  real(kind=sp) , dimension ( 8 ) :: q1 = (/ &
+   9.6141654774222358525e+01_sp, &
+   2.6287715790581193330e+03_sp, &
+   2.9862497022250277920e+04_sp, &
+   1.6206566091533671639e+05_sp, &
+   4.3487880712768329037e+05_sp, &
+   5.4256384537269993733e+05_sp, &
+   2.4242185002017985252e+05_sp, &
+   6.4155223783576225996e-08_sp /)
+  real(kind=sp) , dimension ( 6 ) :: q2 = (/ &
+   4.4992760373789365846e+01_sp, &
+   2.0240955312679931159e+02_sp, &
+   2.4736979003315290057e+02_sp, &
+   1.0742543875702278326e+02_sp, &
+   1.7463965060678569906e+01_sp, &
+   8.8427520398873480342e-01_sp /)
+  real(kind=sp) ::  r8_psi
+  real(kind=sp) ::  sgn
+  real(kind=sp)  , parameter :: three = 3.0_sp
+  real(kind=sp) ::  upper
+  real(kind=sp) ::  w
+  real(kind=sp) ::  x
+  real(kind=sp)  , parameter :: x01 = 187.0_sp
+  real(kind=sp)  , parameter :: x01d = 128.0_sp
+  real(kind=sp)  , parameter :: x02 = 6.9464496836234126266e-04_sp
+  real(kind=sp)  , parameter :: xinf = 1.70e+38
+  real(kind=sp)  , parameter :: xlarge = 2.04e+15
+  real(kind=sp)  , parameter :: xmax1 = 3.60e+16
+  real(kind=sp)  , parameter :: xmin1 = 5.89e-39
+  real(kind=sp)  , parameter :: xsmall = 2.05e-09
+  real(kind=sp) ::  xx
+  real(kind=sp) ::  z
+  real(kind=sp) :: , parameter :: zero = 0.0_sp
+
+  x = xx
+  w = abs ( x )
+  aug = zero
+!
+!  Check for valid arguments, then branch to appropriate algorithm.
+!
+  if ( xmax1 <= - x .or. w < xmin1 ) then
+
+    if ( zero < x ) then
+      r8_psi = - huge ( x ,kind=sp)
+    else
+      r8_psi = huge ( x,kind=sp )
+    end if
+
+    return
+  end if
+
+  if ( x < half ) then
+!
+!  X < 0.5, use reflection formula: psi(1-x) = psi(x) + pi * cot(pi*x)
+!  Use 1/X for PI*COTAN(PI*X)  when  XMIN1 < |X| <= XSMALL.
+!
+    if ( w <= xsmall ) then
+
+      aug = - one / x
+!
+!  Argument reduction for cotangent.
+!
+    else
+
+      if ( x < zero ) then
+        sgn = piov4
+      else
+        sgn = - piov4
+      end if
+
+      w = w - real ( int ( w ), kind=sp )
+      nq = int ( w * four )
+      w = four * ( w - real ( nq, kind=sp ) * fourth )
+!
+!  W is now related to the fractional part of 4.0 * X.
+!  Adjust argument to correspond to values in the first
+!  quadrant and determine the sign.
+!
+      n = nq / 2
+
+      if ( n + n /= nq ) then
+        w = one - w
+      end if
+
+      z = piov4 * w
+
+      if ( mod ( n, 2 ) /= 0 ) then
+        sgn = - sgn
+      end if
+!
+!  Determine the final value for  -pi * cotan(pi*x).
+!
+      n = ( nq + 1 ) / 2
+      if ( mod ( n, 2 ) == 0 ) then
+!
+!  Check for singularity.
+!
+        if ( z == zero ) then
+
+          if ( zero < x ) then
+            r8_psi = - huge ( x,kind=sp )
+          else
+            r8_psi = huge ( x,kind=sp )
+          end if
+
+          return
+        end if
+
+        aug = sgn * ( four / tan ( z ) )
+
+      else
+
+        aug = sgn * ( four * tan ( z ) )
+
+      end if
+
+    end if
+
+    x = one - x
+
+  end if
+!
+!  0.5 <= X <= 3.0.
+!
+  if ( x <= three ) then
+
+    den = x
+    upper = p1(1) * x
+    do i = 1, 7
+      den = ( den + q1(i) ) * x
+      upper = ( upper + p1(i+1) ) * x
+    end do
+    den = ( upper + p1(9) ) / ( den + q1(8) )
+    x = ( x - x01 / x01d ) - x02
+    r8_psi = den * x + aug
+    return
+
+  end if
+!
+!  3.0 < X.
+!
+  if ( x < xlarge ) then
+    w = one / ( x * x )
+    den = w
+    upper = p2(1) * w
+    do i = 1, 5
+      den = ( den + q2(i) ) * w
+      upper = ( upper + p2(i+1) ) * w
+    end do
+    aug = ( upper + p2(7) ) / ( den + q2(6) ) - half / x + aug
+  end if
+
+  r8_psi = aug + log ( x )
+
+end subroutine r8_psi
+
+
 
 
 
