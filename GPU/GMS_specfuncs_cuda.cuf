@@ -12811,7 +12811,7 @@ attributes(device) function dlgama ( x )
 end function dlgama
 
 
-attributes(device) function r8_gamma ( x )
+attributes(device) function r4_gamma ( x )
 
 !*****************************************************************************80
 !
@@ -12889,7 +12889,7 @@ attributes(device) function r8_gamma ( x )
   logical parity
   real(kind=sp) ::  pi
   real(kind=sp) ::  q(8)
-  real(kind=sp) ::  r8_gamma
+  real(kind=sp) ::  r4_gamma
   real(kind=sp) ::  res
   real(kind=sp) ::  sqrtpi
   real(kind=sp) ::  sum
@@ -12962,7 +12962,7 @@ attributes(device) function r8_gamma ( x )
     else
 
       res = tiny(1.0_sp,kind=sp)
-      r8_gamma = res
+      r4_gamma = res
       return
 
     end if
@@ -12979,7 +12979,7 @@ attributes(device) function r8_gamma ( x )
       res = one / y
     else
       res = tiny(1.0_sp,kind=sp)
-      r8_gamma = res
+      r4_gamma = res
       return
     end if
 
@@ -13051,7 +13051,7 @@ attributes(device) function r8_gamma ( x )
     else
 
       res = huge ( res )
-      r8_gamma = res
+      r4_gamma = res
       return
 
     end if
@@ -13068,13 +13068,13 @@ attributes(device) function r8_gamma ( x )
     res = fact / res
   end if
 
-  r8_gamma = res
+  r4_gamma = res
 
  
-end suboutine r8_gamma
+end suboutine r4_gamma
 
 
-attributes(device) function r8_psi ( xx )
+attributes(device) function r4_psi ( xx )
 
 !*****************************************************************************80
 !
@@ -13168,7 +13168,7 @@ attributes(device) function r8_psi ( xx )
    1.0742543875702278326e+02_sp, &
    1.7463965060678569906e+01_sp, &
    8.8427520398873480342e-01_sp /)
-  real(kind=sp) ::  r8_psi
+  real(kind=sp) ::  r4_psi
   real(kind=sp) ::  sgn
   real(kind=sp)  , parameter :: three = 3.0_sp
   real(kind=sp) ::  upper
@@ -13195,9 +13195,9 @@ attributes(device) function r8_psi ( xx )
   if ( xmax1 <= - x .or. w < xmin1 ) then
 
     if ( zero < x ) then
-      r8_psi = - huge ( x ,kind=sp)
+      r4_psi = - huge ( x ,kind=sp)
     else
-      r8_psi = huge ( x,kind=sp )
+      r4_psi = huge ( x,kind=sp )
     end if
 
     return
@@ -13252,9 +13252,9 @@ attributes(device) function r8_psi ( xx )
         if ( z == zero ) then
 
           if ( zero < x ) then
-            r8_psi = - huge ( x,kind=sp )
+            r4_psi = - huge ( x,kind=sp )
           else
-            r8_psi = huge ( x,kind=sp )
+            r4_psi = huge ( x,kind=sp )
           end if
 
           return
@@ -13286,7 +13286,7 @@ attributes(device) function r8_psi ( xx )
     end do
     den = ( upper + p1(9) ) / ( den + q1(8) )
     x = ( x - x01 / x01d ) - x02
-    r8_psi = den * x + aug
+    r4_psi = den * x + aug
     return
 
   end if
@@ -13304,9 +13304,9 @@ attributes(device) function r8_psi ( xx )
     aug = ( upper + p2(7) ) / ( den + q2(6) ) - half / x + aug
   end if
 
-  r8_psi = aug + log ( x )
+  r4_psi = aug + log ( x )
 
-end subroutine r8_psi
+end subroutine r4_psi
 
 
 
