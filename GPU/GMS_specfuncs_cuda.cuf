@@ -12811,6 +12811,269 @@ attributes(device) function dlgama ( x )
 end function dlgama
 
 
+attributes(device) function r8_gamma ( x )
+
+!*****************************************************************************80
+!
+!! R8_GAMMA evaluates Gamma(X) for a real argument.
+!
+!  Discussion:
+!
+!    This function was originally named DGAMMA.
+!
+!    However, a number of Fortran compilers now include a library
+!    function of this name.  To avoid conflicts, this function was
+!    renamed R8_GAMMA.
+!
+!    This routine calculates the GAMMA function for a real argument X.
+!    Computation is based on an algorithm outlined in reference 1.
+!    The program uses rational functions that approximate the GAMMA
+!    function to at least 20 significant decimal digits.  Coefficients
+!    for the approximation over the interval (1,2) are unpublished.
+!    Those for the approximation for 12 <= X are from reference 2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    18 January 2008
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    William Cody,
+!    An Overview of Software Development for Special Functions,
+!    in Numerical Analysis Dundee, 1975,
+!    edited by GA Watson,
+!    Lecture Notes in Mathematics 506,
+!    Springer, 1976.
+!
+!    John Hart, Ward Cheney, Charles Lawson, Hans Maehly,
+!    Charles Mesztenyi, John Rice, Henry Thatcher,
+!    Christoph Witzgall,
+!    Computer Approximations,
+!    Wiley, 1968,
+!    LC: QA297.C64.
+!
+!  Parameters:
+!
+!    Input, real(kind=sp) ::  X, the argument of the function.
+!
+!    Output, real(kind=sp) ::  R8_GAMMA, the value of the function.
+!
+  implicit none
+!
+!  Coefficients for minimax approximation over (12, INF).
+!
+  real(kind=sp) , dimension ( 7 ) :: c = (/ &
+   -1.910444077728e-03_sp, &
+    8.4171387781295e-04_sp, &
+   -5.952379913043012e-04_sp, &
+    7.93650793500350248e-04_sp, &
+   -2.777777777777681622553e-03_sp, &
+    8.333333333333333331554247e-02_sp, &
+    5.7083835261e-03_sp /)
+  real(kind=sp) ::  eps
+  real(kind=sp) ::  fact
+  real(kind=sp) ::  half
+  integer(kind=i4) :: i
+  integer(kind=i4) :: n
+  real(kind=sp) ::  one
+  real(kind=sp) ::  p(8)
+  logical parity
+  real(kind=sp) ::  pi
+  real(kind=sp) ::  q(8)
+  real(kind=sp) ::  r8_gamma
+  real(kind=sp) ::  res
+  real(kind=sp) ::  sqrtpi
+  real(kind=sp) ::  sum
+  real(kind=sp) ::  twelve
+  real(kind=sp) ::  two
+  real(kind=sp) ::  x
+  real(kind=sp) ::  xbig
+  real(kind=sp) ::  xden
+  real(kind=sp) ::  xinf
+  real(kind=sp) ::  xminin
+  real(kind=sp) ::  xnum
+  real(kind=sp) ::  y
+  real(kind=sp) ::  y1
+  real(kind=sp) ::  ysq
+  real(kind=sp) ::  z
+  real(kind=sp) ::  zero
+!
+!  Mathematical constants
+!
+  data one /1.0e+00_sp /
+  data half /0.5e+00_sp/
+  data twelve /12.0e+00_sp/
+  data two /2.0e+00_sp /
+  data zero /0.0e+00_sp/
+  data sqrtpi /0.9189385332046727417803297e+00_sp/
+  data pi /3.1415926535897932384626434e+00_sp/
+!
+!  Machine dependent parameters
+!
+  data xbig / 171.624e+00_sp /
+  data xminin / 1.1754943508e-38_sp /
+  data eps / 1.19e-07_sp  /
+  !data xinf /1.79e+308/
+!
+!  Numerator and denominator coefficients for rational minimax
+!  approximation over (1,2).
+!
+  data p / -1.71618513886549492533811e+0_sp,   2.47656508055759199108314e+01_sp, &
+           -3.79804256470945635097577e+02_sp,  6.29331155312818442661052e+02_sp, &
+            8.66966202790413211295064e+02_sp, -3.14512729688483675254357e+04_sp, &
+           -3.61444134186911729807069e+04_sp,  6.64561438202405440627855e+04_sp /
+
+  data q / -3.08402300119738975254353e+01_sp,  3.15350626979604161529144e+02_sp, &
+           -1.01515636749021914166146e+03_sp, -3.10777167157231109440444e+03_sp, &
+            2.25381184209801510330112e+04_sp,  4.75584627752788110767815e+03_sp, &
+           -1.34659959864969306392456e+05_sp, -1.15132259675553483497211e+05_sp /
+
+  parity = .false.
+  fact = one
+  n = 0
+  y = x
+!
+!  Argument is negative.
+!
+  if ( y <= zero ) then
+
+    y = - x
+    y1 = aint ( y )
+    res = y - y1
+
+    if ( res /= zero ) then
+
+      if ( y1 /= aint ( y1 * half ) * two ) then
+        parity = .true.
+      end if
+
+      fact = - pi / sin ( pi * res )
+      y = y + one
+
+    else
+
+      res = tiny(1.0_sp,kind=sp)
+      r8_gamma = res
+      return
+
+    end if
+
+  end if
+!
+!  Argument is positive.
+!
+  if ( y < eps ) then
+!
+!  Argument < EPS.
+!
+    if ( xminin <= y ) then
+      res = one / y
+    else
+      res = tiny(1.0_sp,kind=sp)
+      r8_gamma = res
+      return
+    end if
+
+  else if ( y < twelve ) then
+
+    y1 = y
+!
+!  0.0 < argument < 1.0.
+!
+    if ( y < one ) then
+
+      z = y
+      y = y + one
+!
+!  1.0 < argument < 12.0.
+!  Reduce argument if necessary.
+!
+    else
+
+      n = int ( y ) - 1
+      y = y - real ( n, kind = 8 )
+      z = y - one
+
+    end if
+!
+!  Evaluate approximation for 1.0 < argument < 2.0.
+!
+    xnum = zero
+    xden = one
+    do i = 1, 8
+      xnum = ( xnum + p(i) ) * z
+      xden = xden * z + q(i)
+    end do
+
+    res = xnum / xden + one
+!
+!  Adjust result for case  0.0 < argument < 1.0.
+!
+    if ( y1 < y ) then
+
+      res = res / y1
+!
+!  Adjust result for case 2.0 < argument < 12.0.
+!
+    else if ( y < y1 ) then
+
+      do i = 1, n
+        res = res * y
+        y = y + one
+      end do
+
+    end if
+
+  else
+!
+!  Evaluate for 12.0 <= argument.
+!
+    if ( y <= xbig ) then
+
+      ysq = y * y
+      sum = c(7)
+      do i = 1, 6
+        sum = sum / ysq + c(i)
+      end do
+      sum = sum / y - y + sqrtpi
+      sum = sum + ( y - half ) * log ( y )
+      res = exp ( sum )
+
+    else
+
+      res = huge ( res )
+      r8_gamma = res
+      return
+
+    end if
+
+  end if
+!
+!  Final adjustments and return.
+!
+  if ( parity ) then
+    res = - res
+  end if
+
+  if ( fact /= one ) then
+    res = fact / res
+  end if
+
+  r8_gamma = res
+
+ 
+end suboutine r8_gamma
+
+
 
 
 
