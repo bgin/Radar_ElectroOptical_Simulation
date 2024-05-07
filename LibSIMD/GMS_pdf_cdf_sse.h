@@ -40,6 +40,7 @@ SOFTWARE.
 
 
 #include <immintrin.h>
+#include <stdint.h>
 #include "GMS_kernel_config.h"
 
 
@@ -95,22 +96,266 @@ gamma_incomplete_xmm2r8(const __m128d,
 				   __attribute__((regcall))
 				   __attribute__((aligned(32)));
 
+    
+   __m128d
+   normal_01_cdf_inv_xmm2r8(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				 
+				 
+    __m128
+   normal_01_cdf_inv_xmm4r4(const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+   __m128d 
+   reciprocal_cdf_xmm2r8(const __m128d ,
+		         const __m128d ,
+		         const __m128d )
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m128 
+   reciprocal_cdf_xmm4r4(const __m128 ,
+		         const __m128 ,
+		         const __m128 )
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m128d 		     
+    reciprocal_cdf_inv_xmm2r8(const __m128d,
+		              const __m128d,
+                              const __m128d) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
 
 
+    __m128		     
+    reciprocal_cdf_inv_xmm4r4(const __m128,
+		              const __m128,
+                              const __m128) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+      __m128d 
+      reciprocal_mean_xmm2r8(const __m128d ,
+		             const __m128d )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+      __m128 
+      reciprocal_mean_xmm4r4(const __m128 ,
+		             const __m128 )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+      __m128d
+      reciprocal_pdf_xmm2r8(const __m128d ,
+		            const __m128d ,
+                            const __m128d )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+       __m128
+      reciprocal_pdf_xmm4r4(const __m128 ,
+		            const __m128 ,
+                            const __m128 )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+       __m128d  bessesl_i0_xmm2r8(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m128  bessesl_i0_xmm4r4(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+        __m128d bessel_i1_xmm2r8(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m128 bessel_i1_xmm4r4(const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m128d beta_xmm2r8(const __m128d ,
+		             const __m128d )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m128  beta_xmm4r4(const __m128 ,
+		             const __m128 )
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m128d arcsin_cdf_xmm2r8(const __m128d,
+		                    const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m128 arcsin_cdf_xmm4r4(const __m128,
+		                   const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m128d arcsin_cdf_inv_xmm2r8(const __m128d,
+		                         const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m128  arcsin_cdf_inv_xmm4r4(const __m128,
+		                         const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m128d arcsin_pdf_xmm2r8(const __m128d,
+		                     const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	    __m128 arcsin_pdf_xmm4r4(const __m128,
+		                     const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m128d arcsin_variance_xmm2r8(const __m128d)
+	                           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+             __m128 arcsin_variance_xmm4r4(const __m128)
+	                           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	      __m128d arcsin_sample_xmm2r8()
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	      __m128d  
+              normal_01_cdf_xmm2r8(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+	      __m128  
+              normal_01_cdf_xmm4r4(const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+	      __m128d beta_binomial_cdf_xmm2r8(const int32_t,
+		                               const int32_t,
+					       const __m128d,
+					       const __m128d)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	       __m128 beta_binomial_cdf_xmm4r4(const int32_t,
+		                               const int32_t,
+					       const __m128,
+					       const __m128)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	       __m128d beta_pdf_xmm2r8(const __m128d,
+		                       const __m128d,
+				       const __m128d)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	      __m128 beta_pdf_xmm4r(const __m128,
+		                    const __m128,
+				    const __m128)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 
 
 
