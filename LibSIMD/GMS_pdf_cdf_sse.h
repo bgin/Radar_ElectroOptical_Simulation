@@ -349,14 +349,224 @@ gamma_incomplete_xmm2r8(const __m128d,
 				   __attribute__((aligned(32))); 
 				   
 				   
-	      __m128 beta_pdf_xmm4r(const __m128,
+	      __m128 beta_pdf_xmm4r4(const __m128,
 		                    const __m128,
 				    const __m128)
 				   __attribute__((noinline))
 			           __attribute__((hot))
 				   __attribute__((regcall))
 				   __attribute__((aligned(32))); 
-
-
+				   
+				   
+	     __m128d
+             beta_variance_xmm2r8(const __m128d,
+		                  const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	     __m128
+             beta_variance_xmm4r4(const __m128,
+		                  const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	      __m128d
+	      weibull_cdf_xmm2r8(const __m128d ,
+		                 const __m128d ,
+			         const __m128d ,
+			         const __m128d )
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	      __m128
+	      weibull_cdf_xmm4r4(const __m128 ,
+		                 const __m128 ,
+			         const __m128 ,
+			         const __m128 )
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	      __m128d
+	      weibull_cdf_inv_xmm2r8(const __m128d ,
+		                     const __m128d ,
+			             const __m128d ,
+				     const __m128d )
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+	       __m128		   
+	       weibull_cdf_inv_xmm4r4(const __m128 ,
+		                      const __m128 ,
+			              const __m128 ,
+				      const __m128 )
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	        __m128d
+	        weibull_sample_xmm2r8(const __m128d,
+		                      const __m128d,
+			              const __m128d,
+				      const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		 __m128
+	        weibull_sample_xmm4r4(const __m128,
+		                      const __m128,
+			              const __m128,
+				      const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		 __m128d
+                 weibull_discrete_cdf_xmm2r8(const __m128d ,
+		                             const __m128d ,
+					     const __m128d ) 
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		 __m128
+                 weibull_discrete_cdf_xmm4r4(const __m128 ,
+		                             const __m128 ,
+					     const __m128 ) 
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		 __m128d
+		 weibull_discrete_pdf_xmm2r8(const __m128d ,
+		                             const __m128d ,
+					     const __m128d )
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+		  __m128
+		 weibull_discrete_pdf_xmm4r4(const __m128 ,
+		                             const __m128 ,
+					     const __m128 )
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+		__m128d
+		weibull_discr_icdf_xmm2r8(const __m128d,
+		                          const __m128d,
+				          const __m128d)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		__m128
+		weibull_discr_icdf_xmm4r4(const __m128,
+		                          const __m128,
+				          const __m128)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		 __m128d
+		 weibull_discr_samp_xmm2r8(const __m128d,
+		                           const __m128d,
+				           const __m128d) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		  __m128d
+		  von_misses_cdf_xmm2r8(const __m128d,
+		                        const __m128d,
+					const __m128d)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		  __m128
+		  von_misses_cdf_xmm4r4(const __m128,
+		                        const __m128,
+					const __m128)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		 __m128d
+		 von_misses_pdf_xmm2r8(const __m128d,
+		                       const __m128d,
+				       const __m128d) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+		  __m128
+		 von_misses_pdf_xmm4r4(const __m128,
+		                       const __m128,
+				       const __m128) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		  __m128d
+                  von_misses_sample_xmm2r8(const __m128d,
+		                           const __m128d)  
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		  __m128
+                  von_misses_sample_xmm4r4(const __m128,
+		                           const __m128)  
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				            		   
 
 #endif /*__GMS_PDF_CDF_SSE_H__*/
