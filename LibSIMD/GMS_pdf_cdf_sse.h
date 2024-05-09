@@ -567,6 +567,263 @@ gamma_incomplete_xmm2r8(const __m128d,
 			           __attribute__((hot))
 				   __attribute__((regcall))
 				   __attribute__((aligned(32))); 
-				            		   
+				   
+				   
+	         __m128d
+		 rayleigh_pdf_xmm2r8(const __m128d,
+		                     const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+                 __m128
+		 rayleigh_pdf_xmm4r4(const __m128,
+		                     const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+		 __m128d
+		 rayleigh_mean_xmm2r8(const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	         __m128
+		 rayleigh_mean_xmm4r4(const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+		  __m128d
+		  rayleigh_invcdf_xmm2r8(const __m128d,
+		                         const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		  __m128
+		  rayleigh_invcdf_xmm4r4(const __m128,
+		                         const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+		 __m128d
+		 rayleigh_cdf_xmm2r8(const __m128d,
+		                     const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		  __m128
+		 rayleigh_cdf_xmm4r4(const __m128,
+		                     const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));     
+				   
+				   
+		  __m128d
+		  rayleigh_sample_xmm2r8(const __m128d,
+		                         const __m128d)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));     
+				   
+				   
+		   __m128
+		  rayleigh_sample_xmm4r4(const __m128,
+		                         const __m128)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		  __m128d    
+                  cauchy_cdf_xmm2r8(const __m128d,
+                                    const __m128d,
+                                    const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+		  __m128    
+                  cauchy_cdf_xmm4r4(const __m128,
+                                    const __m128,
+                                    const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+		 __m128d 
+                 cauchy_cdf_inv_xmm2r8(const __m128d,
+                                       const __m128d,
+                                       const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	         __m128 
+                 cauchy_cdf_inv_xmm4r4(const __m128,
+                                       const __m128,
+                                       const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		   __m128d  
+                   cauchy_pdf_xmm2r8( const __m128d,
+                                      const __m128d,
+                                      const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		   __m128 
+                   cauchy_pdf_xmm4r4( const __m128,
+                                      const __m128,
+                                      const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		  __m128d 
+                  maxwell_cdf_xmm2r8(const __m128d,
+                                     const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		  __m128 
+                  maxwell_cdf_xmm4r4(const __m128,
+                                     const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		   __m128d 
+		   owen_tfunc_xmm2r8(const __m128d,
+		                     const __m128d)            
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		   __m128 
+		   owen_tfunc_xmm4r4(const __m128,
+		                     const __m128)            
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+		    __m128d 
+                    gamma_xmm2r8(const __m128d)           
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		    __m128 
+                    gamma_xmm4r4(const __m128)           
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+		     __m128d 
+                     student_variance_xmm2r8( const __m128d,
+                                              const __m128d,
+                                              const __m128d)   
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		     __m128
+                     student_variance_xmm4r4( const __m128,
+                                              const __m128,
+                                              const __m128)   
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		      __m128d	 
+                      weibull_pdf_xmm2r8(const __m128d ,
+                                         const __m128d ,
+                                         const __m128d ,
+                                         const __m128d ) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		      __m128	 
+                      weibull_pdf_xmm4r4(const __m128 ,
+                                         const __m128 ,
+                                         const __m128 ,
+                                         const __m128) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		       __m128d
+                      trigamma_xmm2r8(const __m128d)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+		       __m128
+                      trigamma_xmm4r4(const __m128)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));                    		   
 
 #endif /*__GMS_PDF_CDF_SSE_H__*/
