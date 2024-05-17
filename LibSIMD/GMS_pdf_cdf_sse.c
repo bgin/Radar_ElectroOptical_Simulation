@@ -2230,7 +2230,175 @@ SOFTWARE.
 		   }
 
 
+                   
+                     
+                      __m128d arcsin_mean_xmm2r8() {
 
+		            return (_mm_setzero_pd());
+		      }
+
+
+		     
+                      __m128 arcsin_mean_xmm4r4() {
+
+		            return (_mm_setzero_ps());
+		      }
+		      
+		      
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_PDF evaluates the Arcsin PDF.
+!
+!  Discussion:
+!
+!    The LOGISTIC EQUATION has the form:
+!
+!      X(N+1) = 4.0D+00 * LAMBDA * ( 1.0D+00 - X(N) ).
+!
+!    where 0 < LAMBDA <= 1.  This nonlinear difference equation maps
+!    the unit interval into itself, and is a simple example of a system
+!    exhibiting chaotic behavior.  Ulam and von Neumann studied the
+!    logistic equation with LAMBDA = 1, and showed that iterates of the
+!    function generated a sequence of pseudorandom numbers with
+!    the Arcsin probability density function.
+!
+!    The derived sequence
+!
+!      Y(N) = ( 2 / PI ) * Arcsin ( SQRT ( X(N) ) )
+!
+!    is a pseudorandom sequence with the uniform probability density
+!    function on [0,1].  For certain starting values, such as X(0) = 0, 0.75,
+!    or 1.0D+00, the sequence degenerates into a constant sequence, and for
+!    values very near these, the sequence takes a while before becoming
+!    chaotic.
+!
+!    The formula is:
+!
+!      PDF(X) = 1 / ( pi * sqrt ( A^2 - X^2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Daniel Zwillinger, Stephen Kokoska,
+!    CRC Standard Probability and Statistics Tables and Formulae,
+!    Chapman and Hall/CRC, 2000, pages 114-115.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    -A < X < A.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!
+*/
+
+
+                    
+		      __m128d arcsin_pdf_xmm2r8(const __m128d x,
+		                                const __m128d a) {
+
+                           const __m128d pi    = _mm_set1_pd(3.14159265358979323846264338328);
+			   const __m128d _0    = _mm_setzero_pd();
+			   const __m128d _1    = _mm_set1_pd(1.0);
+			  
+			   __m128d pdf,t0;
+			   __mmask8 m,m1;
+			 
+			   m  =  _mm_cmp_pd_mask(x,negate_xmm2r8(a),_CMP_LE_OQ);
+			   t0 =  _mm_sqrt_pd(_mm_sub_pd(_mm_mul_pd(a,a),
+			                                      _mm_mul_pd(x,x)));
+			   m1 = _mm_cmp_pd_mask(x,a,_CMP_GE_OQ);
+			   __mmask8 m2 = m || m1;
+			   pdf = _mm_mask_blend_pd(m2,_mm_div_pd(_1,
+			                                           _mm_mul_pd(pi,t0)),_0);
+			   return (pdf);
+			   
+		    }
+
+
+		     
+		      __m128 arcsin_pdf_xmm4r4(const __m128 x,
+		                                const __m128 a) {
+
+                           const __m128 pi    = _mm_set1_ps(3.14159265358979323846264338328f);
+			   const __m128 _0    = _mm_setzero_ps();
+			   const __m128 _1    = _mm_set1_ps(1.0f);
+			 
+			   __m128 pdf,t0;
+			   __mmask8 m,m1;
+			 
+			   m  =  _mm_cmp_ps_mask(x,negate_xmm4r4(a),_CMP_LE_OQ);
+			   t0 =  _mm_sqrt_ps(_mm_sub_ps(_mm_mul_ps(a,a),
+			                                      _mm_mul_ps(x,x)));
+			   m1 = _mm_cmp_ps_mask(x,a,_CMP_GE_OQ);
+			   const __mmask8 m2 = m || m1;
+			   pdf = _mm_mask_blend_ps(m2,_mm_div_ps(_1,
+			                                           _mm_mul_ps(pi,t0)),_0);
+			   return (pdf);
+			   
+		    }
+
+
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_VARIANCE returns the variance of the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!		    
+*/
+
+
+                    
+                       __m128d arcsin_variance_xmm2r8(const __m128d a) {
+
+                         const __m128d _1_2 = _mm_set1_pd(0.5);
+			 __m128d variance;
+			 variance = _mm_mul_pd(a,_mm_mul_pd(a,_1_2));
+			 return (variance);
+		     }
+
+
+		    
+                       __m128 arcsin_variance_xmm4r4(const __m128 a) {
+
+                         const __m128 _1_2 = _mm_set1_ps(0.5f);
+			 __m128 variance;
+			 variance = _mm_mul_ps(a,_mm_mul_ps(a,_1_2));
+			 return (variance);
+		     }
 
 
 
