@@ -2400,7 +2400,254 @@ SOFTWARE.
 			 return (variance);
 		     }
 
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_SAMPLE samples the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+!
+*/
 
+
+          __m128d arcsin_sample_xmm2r8() {
+
+                         __m128d cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m128d nan = _mm_set1_pd(std::numeric_limits<double>::quiet_NaN());
+			    return (nan);
+			 }
+			 uniform          = svrng_new_uniform_distribution_double(0.0,1.0);
+			 const double * __restrict ptr = (const double*)(&svrng_generate2_double(engine,uniform));
+			 cdf              = arcsin_cdf_inv_xmm2r8(_mm_loadu_pd(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);
+		    }
+		    
+		    
+	  __m128d arcsin_sample_xmm2r8(const __m128 cdf) {
+
+                            return (arcsin_cdf_inv_xmm2r8(cdf));
+		    }
+		    
+		    
+/*
+
+!*****************************************************************************80
+!
+!! NORMAL_01_CDF evaluates the Normal 01 CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    AG Adams,
+!    Algorithm 39,
+!    Areas Under the Normal Curve,
+!    Computer Journal,
+!    Volume 12, pages 197-198, 1969.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+         __m128d   
+         normal_01_cdf_xmm2r8(const __m128d x) {
+		          
+		          __m128d a1 = _mm_set1_pd(0.398942280444e+00);
+		          __m128d a2 = _mm_set1_pd(0.399903438504e+00);
+		          __m128d a3 = _mm_set1_pd(5.75885480458e+00);
+                          __m128d a4 = _mm_set1_pd(29.8213557808e+00);
+                          __m128d a5 = _mm_set1_pd(2.62433121679e+00);
+                          __m128d a6 = _mm_set1_pd(48.6959930692e+00);
+                          __m128d a7 = _mm_set1_pd(5.92885724438e+00);
+                          __m128d b0 = _mm_set1_pd(0.398942280385e+00);
+                          __m128d b1 = _mm_set1_pd(3.8052e-08);
+                          __m128d b2 = _mm_set1_pd(1.00000615302e+00);
+                          __m128d b3 = _mm_set1_pd(3.98064794e-04);
+                          __m128d b4 = _mm_set1_pd(1.98615381364e+00);
+                          __m128d b5 = _mm_set1_pd(0.151679116635e+00);
+                          __m128d b6 = _mm_set1_pd(5.29330324926e+00);
+                          __m128d b7 = _mm_set1_pd(4.8385912808e+00);
+                          __m128d b8 = _mm_set1_pd(15.1508972451e+00);
+                          __m128d b9 = _mm_set1_pd(0.742380924027e+00);
+                          __m128d b10= _mm_set1_pd(30.789933034e+00);
+                          __m128d b11= _mm_set1_pd(3.99019417011e+00);
+                          __m128d C1 = _mm_set1_pd(1.0);
+                          __m128d C128 = _mm_set1_pd(1.28);
+                          __m128d C05  = _mm_set1_pd(0.5);
+                          __m128d C127 = _mm_set1_pd(12.7);
+                          __m128d absx,y,q,cdf,t0,t1;
+                          __mmask8 m0,m1,m2;
+                          m2   = _mm_cmp_pd_mask(x,_mm_setzero_pd(),_CMP_LT_OQ);
+                          absx = _mm_abs_pd(x);
+                          m0   = _mm_cmp_pd_mask(x,C128,_CMP_LE_OQ);
+                          y    = _mm_mul_pd(C05,
+                                        _mm_mul_pd(x,x));
+                          m1   = _mm_cmp_pd_mask(x,C127,_CMP_LE_OQ);
+                          if(m0) {
+                             register __m128d ya3;
+                             register __m128d ya5a6
+                             register __m128d ya7;
+                             register __m128d a2y;
+                             ya7   = _mm_add_pd(y,a7);
+                             ya5a6 = _mm_add_pd(y,_mm_add_pd(a5,a6));
+                             a2y   = _mm_mul_pd(a2,y);
+                             ya3a4 = _mm_sub_pd(_mm_add_pd(y,a3),a4);
+                             q     = _mm_sub_pd(a1,
+                                           _mm_div_pd(a2y,
+                                                  _mm_div_pd(ya3a4,
+                                                        _mm_div_pd(ya5a6,ya7))));
+                          }
+                          else if(m1) {
+                             register __m128d expmy;
+                             register __m128d absb1;
+                             register __m128d absb3;
+                             register __m128d absb5;
+                             register __m128d absb7;
+                             register __m128d absb9;
+                             register __m128d absb11;
+
+                             expmy = _mm_mul_pd(_mm_exp_pd(negate_xmm2r8(y)),b0); 
+                             absb1 = _mm_sub_pd(absx,b1);
+                             absb3 = _mm_add_pd(absx,b3);
+                             absb5 = _mm_sub_pd(absx,b5);
+                             absb7 = _mm_add_pd(absx,b7);
+                             absb9 = _mm_add_pd(absx,b9);
+                             absb11= _mm_add_pd(absx,b11);
+                             t0    = (absb1+b2/(absb3+b4/(absb5+b6/(absb7-b8/(absb9+b10/(absb11))))));
+                             q     = _mm_div_pd(expmy,t0);
+                          }
+                          else {
+                             q = _mm_setzero_pd();
+                          }
+                          
+                          cdf = _mm_mask_blend_pd(m2,_mm_sub_pd(C1,q),q);
+                          return (cdf);
+		    }
+		    
+		    
+		     __m128  
+		      normal_01_cdf_xmm4r4(const __m128 x) {
+		          
+		          __m128 a1 = _mm_set1_ps(0.398942280444f);
+		          __m128 a2 = _mm_set1_ps(0.399903438504f);
+		          __m128 a3 = _mm_set1_ps(5.75885480458f);
+                          __m128 a4 = _mm_set1_ps(29.8213557808f);
+                          __m128 a5 = _mm_set1_ps(2.62433121679f);
+                          __m128 a6 = _mm_set1_ps(48.6959930692f);
+                          __m128 a7 = _mm_set1_ps(5.92885724438f);
+                          __m128 b0 = _mm_set1_ps(0.398942280385f);
+                          __m128 b1 = _mm_set1_ps(3.8052e-08f);
+                          __m128 b2 = _mm_set1_ps(1.00000615302f);
+                          __m128 b3 = _mm_set1_ps(3.98064794e-04f);
+                          __m128 b4 = _mm_set1_ps(1.98615381364f);
+                          __m128 b5 = _mm_set1_ps(0.151679116635f);
+                          __m128 b6 = _mm_set1_ps(5.29330324926f);
+                          __m128 b7 = _mm_set1_ps(4.8385912808f);
+                          __m128 b8 = _mm_set1_ps(15.1508972451f);
+                          __m128 b9 = _mm_set1_ps(0.742380924027f);
+                          __m128 b10= _mm_set1_ps(30.789933034f);
+                          __m128 b11= _mm_set1_ps(3.99019417011f);
+                          __m128 C1 = _mm_set1_ps(1.0);
+                          __m128 C128 = _mm_set1_ps(1.28f);
+                          __m128 C05  = _mm_set1_ps(0.5f);
+                          __m128 C127 = _mm_set1_ps(12.7f);
+                          __m128 absx,y,q,cdf,t0;
+                          __mmask8 m0,m1,m2;
+                          m2   = _mm_cmp_ps_mask(x,_mm_setzero_pd(),_CMP_LT_OQ);
+                          absx = _mm_abs_ps(x);
+                          m0   = _mm_cmp_ps_mask(x,C128,_CMP_LE_OQ);
+                          y    = _mm_mul_ps(C05,
+                                        _mm_mul_ps(x,x));
+                          m1   = _mm_cmp_ps_mask(x,C127,_CMP_LE_OQ);
+                          if(m0) {
+                             register __m128 ya3;
+                             register __m128 ya5a6
+                             register __m128 ya7;
+                             register __m128 a2y;
+                             ya7   = _mm_add_ps(y,a7);
+                             ya5a6 = _mm_add_ps(y,_mm_add_ps(a5,a6));
+                             a2y   = _mm_mul_ps(a2,y);
+                             ya3a4 = _mm_sub_ps(_mm_add_ps(y,a3),a4);
+                             q     = _mm_sub_ps(a1,
+                                           _mm_div_ps(a2y,
+                                                  _mm_div_ps(ya3a4,
+                                                        _mm_div_ps(ya5a6,ya7))));
+                          }
+                          else if(m1) {
+                             register __m128 expmy;
+                             register __m128 absb1;
+                             register __m128 absb3;
+                             register __m128 absb5;
+                             register __m128 absb7;
+                             register __m128 absb9;
+                             register __m128 absb11;
+
+                             expmy = _mm_mul_ps(_mm_exp_ps(negate_xmm4r4(y)),b0); 
+                             absb1 = _mm_sub_ps(absx,b1);
+                             absb3 = _mm_add_ps(absx,b3);
+                             absb5 = _mm_sub_ps(absx,b5);
+                             absb7 = _mm_add_ps(absx,b7);
+                             absb9 = _mm_add_ps(absx,b9);
+                             absb11= _mm_add_ps(absx,b11);
+                             t0    = (absb1+b2/(absb3+b4/(absb5+b6/(absb7-b8/(absb9+b10/(absb11))))));
+                             q     = _mm_div_ps(expmy,t0);
+                          }
+                          else {
+                             q = _mm_setzero_ps();
+                          }
+                          
+                          cdf = _mm_mask_blend_ps(m2,_mm_sub_ps(C1,q),q);
+                          return (cdf);
+		    }
+		    
+		    
+  		    
 
 
     
