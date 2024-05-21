@@ -2649,15 +2649,499 @@ SOFTWARE.
 		    
   		    
 
+/*
+!*****************************************************************************80
+!
+!! BETA_BINOMIAL_CDF evaluates the Beta Binomial CDF.
+!
+!  Discussion:
+!
+!    A simple summing approach is used.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Input, integer ( kind = 4 ) C, a parameter of the PDF.
+!    0 <= C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+                    
+		      __m128d beta_binomial_cdf_xmm2r8(const int32_t x,
+		                                       const int32_t c,
+						       const __m128d a,
+						       const __m128d b) {
+
+			      const __m128d _0  = _mm_setzero_pd();
+                              const __m128d _1  = _mm_set1_pd(1.0);
+			      __m128d vx,vy,vcy,vc1,vy1,vcy1;
+			      __m128d cdf,pdf;
+                              int32_t y;
+			      if(x<0) {
+                                 cdf = _0;
+			      }
+			      else if(x<c) {
+                                 cdf = _0;
+				 for( y = 0; y < x; ++y) {
+                                     vy  = _mm_set1_pd((double)y);
+				     vx  = _mm_set1_pd((double)x);
+				     vcy = _mm_set1_pd((double)(c-y));
+				     vc1 = _mm_set1_pd((double)(c+1));
+				     vy1 = _mm_set1_pd((double)(y+1));
+				     vcy1= _mm_set1_pd((double)(c-y+1));
+				     const __m128d t0 = beta_xmm2r8(_mm_add_pd(a,vy),
+				                                    _mm_add_pd(b,vcy));
+				     const __m128d t1 = _mm_mul_pd(vc1,beta_xmm2r8(vy1,vcy1));
+				     const __m128d t2 = beta_xmm2r8(a,b);
+				     pdf              = _mm_div_pd(t0,_mm_mul_pd(t1,t2));
+				     cdf              = _mm_add_pd(cdf,pdf);
+				 }
+			      }
+			      else if(c<=x) {
+                                  cdf = _1;
+			      }
+			      return (cdf);
+		    }
 
     
 
+/*!*****************************************************************************80
+!
+!! BETA_PDF evaluates the Beta PDF.
+!
+!  Discussion:
+!
+!    The formula for the PDF is:
+!
+!      PDF(A,B;X) = X**(A-1) * (1-X)**(B-1) / BETA(A,B).
+!
+!    A = B = 1 yields the Uniform distribution on [0,1].
+!    A = B = 1/2 yields the Arcsin distribution.
+!        B = 1 yields the power function distribution.
+!    A = B -> Infinity tends to the Normal distribution.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    01 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!*/
+
+                   
+		      __m128d beta_pdf_xmm2r8(const __m128d x,
+		                              const __m128d a,
+					      const __m128d b) {
+
+                         const __m128d _0 = _mm_setzero_pd();
+			 const __m128d _1 = _mm_set1_pd(1.0);
+			 const __m128d t0 = _mm_sub_pd(a,_1);
+			 const __m128d t1 = _mm_sub_pd(_1,x);
+			 const __m128d t2 = _mm_sub_pd(b,_1);
+			 __m128d pdf,term1,term2,term3;
+			 __mmask8 m0,m1,m2;
+			 term1            = _mm_pow_pd(x,t0);
+			 m0               = _mm_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			 term2            = _mm_mul_pd(term1,_mm_pow_pd(t1,t2));
+			 m1               = _mm_cmp_pd_mask(x,_1,_CMP_LT_OQ);
+			 term3            = _mm_div_pd(term2,beta_xmm2r8(a,b));
+			 m                = m1||m2;
+			 pdf              = _mm_mask_blend_pd(m,term3,_0);
+			 return (pdf);
+		    }
+
+
+		  
+		      __m128
+		      beta_pdf_xmm4r4(const __m128 x,
+		                       const __m128 a,
+				       const __m128 b) {
+
+                         const __m128 _0 = _mm_setzero_ps();
+			 const __m128 _1 = _mm_set1_ps(1.0);
+			 const __m128 t0 = _mm_sub_ps(a,_1);
+			 const __m128 t1 = _mm_sub_ps(_1,x);
+			 const __m128 t2 = _mm_sub_ps(b,_1);
+			 __m128 pdf,term1,term2,term3;
+			 __mmask8 m0,m1,m2;
+			 term1            = _mm_pow_ps(x,t0);
+			 m0               = _mm_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			 term2            = _mm_mul_ps(term1,_mm_pow_pd(t1,t2));
+			 m1               = _mm_cmp_ps_mask(x,_1,_CMP_LT_OQ);
+			 term3            = _mm_div_ps(term2,beta_xmm4r4(a,b));
+			 m                = m1||m2;
+			 pdf              = _mm_mask_blend_ps(m,term3,_0);
+			 return (pdf);
+		    }
+
 		    
 		     		     
-		     
-		     
-		     
-		     
+			
+		      __m128d
+		      beta_variance_xmm2r8(const __m128d a,
+		                           const __m128d b) {
+
+			  __m128d variance;
+                          const __m128d _1  = _mm_set1_pd(1.0);
+			  const __m128d ab  = _mm_add_pd(a,b);
+			  const __m128d t0  = _mm_mul_pd(_mm_mul_pd(ab,ab),
+			                                    _mm_add_pd(_1,ab));
+			  variance          = _mm_div_pd(_mm_mul_pd(a,b),t0);				   
+			  
+		    }
+
+
+		    
+		      __m128
+		      beta_variance_xmm4r4(const __m128 a,
+		                            const __m128 b) {
+
+			  __m128 variance;
+                          const __m128 _1  = _mm_set1_ps(1.0f);
+			  const __m128 ab  = _mm_add_ps(a,b);
+			  const __m128 t0  = _mm_mul_ps(_mm_mul_ps(ab,ab),
+			                                    _mm_add_ps(_1,ab));
+			  variance          = _mm_div_ps(_mm_mul_ps(a,b),t0);				   
+			  
+		    }	 
 		    
 		    
+    
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_CDF evaluates the Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A <= X.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!		    
+*/
+
+                      
+                   
+                      __m128d
+		      weibull_cdf_xmm2r8(const __m128d x,
+		                         const __m128d a,
+					 const __m128d b,
+					 const __m128d c) {
+
+                          const __m128d  _0 = _mm_setzero_pd();
+			  const __m128d  _1 = _mm_set1_pd(1.0);
+			  const __m128d  y  = _mm_div_pd(_mm_sub_pd(x,a),b);
+			  const __m128d  exc= _mm_exp_pd(_mm_pow_pd(y,c));
+			  __m128d cdf;
+			  const __mmask8 m  = _mm_cmp_pd_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm_mask_blend_pd(m,_mm_sub_pd(_1,
+			                                                       _mm_div_pd(_1,exc)),_0);
+			  return (cdf);
+		   }
+		    
+		    
+		 
+                      __m128
+		      weibull_cdf_xmm4r4(const __m128 x,
+		                          const __m128 a,
+					  const __m128 b,
+					  const __m128 c) {
+
+                          const __m128  _0 = _mm_setzero_ps();
+			  const __m128  _1 = _mm_set1_ps(1.0f);
+			  const __m128  y  = _mm_div_ps(_mm_sub_ps(x,a),b);
+			  const __m128  exc= _mm_exp_ps(_mm_pow_ps(y,c));
+			  __m128 cdf;
+			  const __mmask8 m  = _mm_cmp_ps_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm_mask_blend_ps(m,_mm_sub_ps(_1,
+			                                                       _mm_div_ps(_1,exc)),_0);
+			  return (cdf);
+		   }
+		     
+		     
+		      __m128d
+		      weibull_cdf_inv_xmm2r8(const __m128d a,
+		                             const __m128d b,
+					     const __m128d c,
+					     const __m128d cdf) {
+
+                        const __m128d  _0  = _mm_setzero_pd();
+			const __m128d  _1  = _mm_set1_pd(1.0);
+			
+			__m128d t0,t1,x;
+			
+			t0                 = negate_xmm2r8(_mm_log_pd(_mm_sub_pd(_1,cdf)));
+			t1                 = _mm_pow_pd(t0,_mm_div_pd(_1,c));
+			x                  = _mm_fmadd_pd(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		   
+                      __m128
+		      weibull_cdf_inv_xmm4r4(const __m128 a,
+		                             const __m128 b,
+					     const __m128 c,
+					     const __m128 cdf) {
+
+                        const __m128  _0  = _mm_setzero_ps();
+			const __m128  _1  = _mm_set1_ps(1.0f);
+			
+			__m128 t0,t1,x;
+			
+			t0                 = negate_xmm4r4(_mm_log_pd(_mm_sub_ps(_1,cdf)));
+			t1                 = _mm_pow_ps(t0,_mm_div_ps(_1,c));
+			x                  = _mm_fmadd_ps(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		   
+		      __m128d
+		      weibull_sample_xmm2r8(const __m128d vrand,
+		                            const __m128d a,
+					    const __m128d b,
+					    const __m128d c) {
+
+                         return (weibull_cdf_xmm2r8(a,b,c,vrand));
+		   }
+
+
+		    
+		      __m128
+		      weibull_sample_xmm4r4(const __m128 vrand,
+		                            const __m128 a,
+					    const __m128 b,
+					    const __m128 c) {
+
+                         return (weibull_cdf_xmm4r4(a,b,c,vrand));
+		   }
+  
+		    
+		 
+		 /*
+!*****************************************************************************80
+!
+!! WEIBULL_VARIANCE returns the variance of the Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/
+
+
+                    
+		      __m128d
+                      weibull_discrete_cdf_xmm2r8(const __m128d x,
+		                                  const __m128d a,
+					          const __m128d b) {
+
+			    __m128d cdf;
+                            const __m128d  _0 = _mm_setzero_pd();
+			    const __m128d  _1 = _mm_set1_pd(1.0);
+			    const __m128d  t0 = _mm_pow_pd(_mm_add_pd(x,_1),b);
+			    const __m128d  t1 = _mm_pow_pd(_mm_sub_pd(_1,a),t0);
+			    const __mmask8 m  = _mm_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm_mask_blend_pd(m,_mm_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		   
+		      __m128
+                      weibull_discrete_cdf_xmm4r4(const __m128 x,
+		                                  const __m128 a,
+					          const __m128 b) {
+
+			    __m128 cdf;
+                            const __m128  _0 = _mm_setzero_ps();
+			    const __m128  _1 = _mm_set1_ps(1.0f);
+			    const __m128  t0 = _mm_pow_ps(_mm_add_ps(x,_1),b);
+			    const __m128  t1 = _mm_pow_ps(_mm_sub_ps(_1,a),t0);
+			    const __mmask8 m  = _mm_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm_mask_blend_ps(m,_mm_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		    
+		      __m128d
+		      weibull_discrete_pdf_xmm2r8(const __m128d x,
+		                                  const __m128d a,
+					          const __m128d b) {
+
+                            __m128d pdf;
+                            const __m128d  _0 = _mm_setzero_pd();
+			    const __m128d  _1 = _mm_set1_pd(1.0);
+			    const __m128d  t0 = _mm_pow_pd(_mm_add_pd(x,_1),b);
+			    const __m128d  _1a= _mm_sub_pd(_1,a);
+			    const __m128d  t1 = _mm_pow_pd(_1a,t0);
+                            const __m128d  t2 = _mm_pow_pd(x,b);
+			    const __m128d  t3 = _mm_pow_pd(_1a,t2);
+			    pdf               = _mm_sub_pd(t3,t1);
+			    return (pdf);
+		   }
+
+
+		   
+		      __m128
+		      weibull_discrete_pdf_xmm4r4(const __m128 x,
+		                                  const __m128 a,
+					          const __m128 b) {
+
+                            __m128 pdf;
+                            const __m128  _0 = _mm_setzero_ps();
+			    const __m128  _1 = _mm_set1_ps(1.0);
+			    const __m128  t0 = _mm_pow_ps(_mm_add_ps(x,_1),b);
+			    const __m128  _1a= _mm_sub_ps(_1,a);
+			    const __m128  t1 = _mm_pow_ps(_1a,t0);
+                            const __m128  t2 = _mm_pow_ps(x,b);
+			    const __m128  t3 = _mm_pow_ps(_1a,t2);
+			    pdf               = _mm_sub_ps(t3,t1);
+			    return (pdf);
+		   }
+
+
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_CDF_INV inverts the Discrete Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Output, integer ( kind = 4 ) X, the corresponding argument.
+*/
+
+
+                    
+		      __m128d
+		      weibull_discr_icdf_xmm2r8(const __m128d cdf,
+		                                const __m128d a,
+						const __m128d b) {
+
+                     
+			  const __m128d  _0  = _mm_setzero_pd();
+			  const __m128d  _1  = _mm_set1_pd(1.0);
+			
+			  const __m128d t0   =  _mm_log_pd(_mm_sub_pd(_1,cdf));
+			  const __m128d t1   =  _mm_log_pd(_mm_sub_pd(_1,a));
+			  const __m128d t2   =  _mm_div_pd(t1,t2)
+			  const __m128d t3   =  _mm_pow_pd(t2,_mm_div_pd(_1,b));
+			  __m128d x;
+			  x                  =  _mm_ceil_pd(_mm_sub_pd(t3,_1));
+			  return (x);
+		    }
+
+
+		   
+		      __m128
+		      weibull_discr_icdf_xmm4r4(const __m128 cdf,
+		                                const __m128 a,
+						const __m128 b) {
+
+                        
+			  const __m128  _0  = _mm_setzero_ps();
+			  const __m128  _1  = _mm_set1_ps(1.0f);
+			
+			  const __m128 t0   =  _mm_log_ps(_mm_sub_ps(_1,cdf));
+			  const __m128 t1   =  _mm_log_ps(_mm_sub_ps(_1,a));
+			  const __m128 t2   =  _mm_div_ps(t1,t2)
+			  const __m128 t3   =  _mm_pow_ps(t2,_mm_div_ps(_1,b));
+			  __m128 x;
+			  x                  =  _mm_ceil_ps(_mm_sub_ps(t3,_1));
+			  return (x);
+		    }
+
+   
 		    
