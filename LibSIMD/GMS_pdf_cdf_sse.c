@@ -3142,6 +3142,467 @@ SOFTWARE.
 			  x                  =  _mm_ceil_ps(_mm_sub_ps(t3,_1));
 			  return (x);
 		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_SAMPLE samples the discrete Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, integer ( kind = 4 ) X, a sample of the PDF.
+!
+*/
+
+
+                              
+                      __m128d
+		      weibull_discr_samp_xmm2r8(   const __m128d vrand,
+		                                   const __m128d a,
+						   const __m128d b) {
+
+                         return (weibull_discr_icdf_xmm2r8(vrand,a,b));
+		    }
+		    
+		    
+/*
+   !*****************************************************************************80
+!
+!! VON_MISES_PDF evaluates the von Mises PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = EXP ( B * COS ( X - A ) ) / ( 2 * PI * I0(B) )
+!
+!    where:
+!
+!      I0(*) is the modified Bessel function of the first
+!      kind of order 0.
+!
+!    The von Mises distribution for points on the unit circle is
+!    analogous to the normal distribution of points on a line.
+!    The variable X is interpreted as a deviation from the angle A,
+!    with B controlling the amount of dispersion.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    27 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Jerry Banks, editor,
+!    Handbook of Simulation,
+!    Engineering and Management Press Books, 1998, page 160.
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!    Merran Evans, Nicholas Hastings, Brian Peacock,
+!    Statistical Distributions,
+!    Wiley, 2000,
+!    LC: QA273.6.E92, pages 189-191.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    LC: QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!              
+*/
+
+
+                             
+                      __m128d
+		      von_misses_pdf_xmm2r8(const __m128d x,
+		                            const __m128d a,
+					    const __m128d b) {
+ 
+                           const __m128d   pi  = _mm_set1_pd(3.14159265358979323846264338328);
+			   const __m128d   _2pi= _mm_set1_pd(6.283185307179586476925286766559);
+			   const __m128d   _0  = _mm_setzero_pd();
+			   const __m128d   _2  = _mm_set1_pd(2.0);
+			   const __m128d   t0  = _mm_sub_pd(a,pi);
+			   const __m128d   t1  = _mm_add_pd(a,pi);
+			   __m128d pdf;
+			   __mmask8 m1,m2;
+			   m1                  = _mm_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+
+                           const __m128d tmp1  = _mm_exp_pd(_mm_mul_pd(b,
+			                                              _mm_cos_pd(
+								                _mm_sub_pd(x,a))));
+                           
+			   pdf                 = _mm_mask_blend_pd(m2,_0,_mm_div_pd(tmp1,
+			                                              _mm_mul_pd(_2pi,bessesl_i0_xmm2r8(b))));
+			   return (pdf);
+		   }
+
+
+		          
+                      __m128
+		      von_misses_pdf_xmm4r4(const __m128 x,
+		                            const __m128 a,
+					    const __m128 b) {
+ 
+                           const __m128   pi  = _mm_set1_pd(3.14159265358979323846264338328f);
+			   const __m128   _2pi= _mm_set1_pd(6.283185307179586476925286766559f);
+			   const __m128   _0  = _mm_setzero_pd();
+			   const __m128   _2  = _mm_set1_pd(2.0);
+			   const __m128   t0  = _mm_sub_pd(a,pi);
+			   const __m128   t1  = _mm_add_pd(a,pi);
+			   __m128 pdf;
+			   __mmask8 m1,m2;
+			   m1                  = _mm_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+                           const __m128 tmp1  = _mm_exp_ps(_mm_mul_pd(b,
+			                                              _mm_cos_pd(
+								                _mm_sub_pd(x,a))));
+                           
+			   pdf                 = _mm_mask_blend_pd(m2,_0,_mm_div_pd(tmp1,
+			                                              _mm_mul_pd(_2pi,bessesl_i0_xmm4r4(b))));
+			   return (pdf);
+		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_SAMPLE samples the von Mises PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+	              
+*/
+
+
+#include <math.h> //nan(),nanf()
+
+                        
+                      __m128d
+                      von_misses_sample_xmm2r8(const __m128d a,
+		                               const __m128d b) {
+
+                          const __m128d  pi   = _mm_set1_pd(3.14159265358979323846264338328);
+			  const __m128d  _1   = _mm_set1_pd(1.0);
+			  const __m128d  _2   = _mm_set1_pd(2.0);
+			  const __m128d  _4   = _mm_set1_pd(4.0);
+			  const __m128d  _1_2 = _mm_set1_pd(0.5);
+			  __m128d c,f,rho,tau,u1,r;
+			  __m128d u2,u3,x,z;
+			  __m128d t0,t1,t2;
+			  svrng_engine_t engine;
+			  svrng_distribution_t uniform;
+			  uint32_t seed    = 0U;
+			  int32_t result   = -9999;
+			  int32_t err      = -9999;
+			  result           = _rdrand32_step(&seed);
+			  if(!result) seed = 1563548129U;
+			  engine           = svrng_new_mt19937_engine(seed);
+			  err              = svrng_get_status();
+			  if(err!=SVRNG_STATUS_OK) {
+                             const __m128d nan = _mm_set1_pd(nan());
+			     return (nan);
+			  }
+			  uniform             = svrng_new_normal_distribution_double(0.0,1.0);
+			  t0                  = _mm_fmadd_pd(_4,_mm_mul_pd(b,b),_1);
+			  tau                 = _mm_add_pd(_1,_mm_sqrt_pd(t0));
+			  t1                  = _mm_add_pd(b,b);
+			  rho                 = _mm_div_pd(_mm_sub_pd(tau,
+			                                                _mm_sqrt_pd(_mm_add_pd(tau,tau))),t1);
+			  t2                  = _mm_fmadd_pd(rho,rho,_1);
+			  r                   = _mm_div_pd(t2,_mm_add_pd(rho,rho));
+            
+ 			 while(true) {
+                               
+                              const double * __restrict ptr = (const double*)(&svrng_generate2_double(engine,uniform));
+                              u1                            = _mm_loadu_pd(&ptr[0]);
+
+                              z                             = _mm_cos_pd(_mm_mul_pd(pi,u1));
+                              f                             = _mm_div_pd(_mm_fmadd_pd(r,z,_1),
+			                                                    _mm_add_pd(r,z));
+			      c                             = _mm_mul_pd(b,_mm_sub_pd(r,f));
+			      t0                            = _mm_mul_pd(c,_mm_sub_pd(_2,c));
+			                       
+			      if(_mm_cmp_mask_pd(u2,t0,_CMP_LT_OQ)) break;
+			      t1                            = _mm_add_pd(_mm_log_pd(
+			                                                  _mm_div_pd(c,u2)),_1);
+			      if(_mm_cmp_mask_pd(c,t1,_CMP_LE_OQ)) break;
+			 }
+			 const double * __restrict ptr2 =
+			                    (const double*)(&svrng_generate2_double(engine,uniform));
+			 u3                             = _mm_loadu_pd(&ptr2[0]);
+		         t2                             = xmm2r8_sign_xmm2r8(_1,_mm_sub_pd(u3,_1_2));
+			 x                              = _mm_fmadd_pd(t2,_mm_acos_pd(f),a);
+			 svrng_delete_engine(engine);
+			 return (x)
+		   }
+
+
+		   
+		   
+                      __m128
+                      von_misses_sample_xmm4r4(const __m128 a,
+		                                const __m128 b) {
+
+                          const __m128   pi   = _mm_set1_ps(3.14159265358979323846264338328f);
+			  const __m128   _1   = _mm_set1_ps(1.0f);
+			  const __m128  _2    = _mm_set1_ps(2.0f);
+			  const __m128  _4    = _mm_set1_ps(4.0f);
+			  const __m128  _1_2  = _mm_set1_ps(0.5f);
+			  __m128 c,f,rho,tau,u1,r;
+			  __m128 u2,u3,x,z;
+			  __m128 t0,t1,t2;
+			  svrng_engine_t engine;
+			  svrng_distribution_t uniform;
+			  uint32_t seed    = 0U;
+			  int32_t result   = -9999;
+			  int32_t err      = -9999;
+			  result           = _rdrand32_step(&seed);
+			  if(!result) seed = 1563548129U;
+			  engine           = svrng_new_mt19937_engine(seed);
+			  err              = svrng_get_status();
+			  if(err!=SVRNG_STATUS_OK) {
+                             const __m128 nan = _mm_set1_ps(nanf());
+			     return (nan);
+			  }
+			  uniform             = svrng_new_normal_distribution_float(0.0f,1.0f);
+			  t0                  = _mm_fmadd_ps(_4,_mm_mul_ps(b,b),_1);
+			  tau                 = _mm_add_ps(_1,_mm_sqrt_ps(t0));
+			  t1                  = _mm_add_ps(b,b);
+			  rho                 = _mm_div_ps(_mm_sub_ps(tau,
+			                                                _mm_sqrt_ps(_mm_add_ps(tau,tau))),t1);
+			  t2                  = _mm_fmadd_ps(rho,rho,_1);
+			  r                   = _mm_div_ps(t2,_mm_add_ps(rho,rho));
+            
+ 			 while(true) {
+                               
+                              const float * __restrict ptr = (const float*)(&svrng_generate4_float(engine,uniform));
+                              u1                            = _mm_loadu_ps(&ptr[0]);
+
+                              z                             = _mm_cos_ps(_mm_mul_ps(pi,u1));
+                              f                             = _mm_div_ps(_mm_fmadd_ps(r,z,_1),
+			                                                    _mm_add_ps(r,z));
+			      c                             = _mm_mul_ps(b,_mm_sub_ps(r,f));
+			      t0                            = _mm_mul_ps(c,_mm_sub_ps(_2,c));
+			                       
+			      if(_mm_cmp_mask_ps(u2,t0,_CMP_LT_OQ)) break;
+			      t1                            = _mm_add_ps(_mm_log_ps(
+			                                                  _mm_div_ps(c,u2)),_1);
+			      if(_mm_cmp_mask_ps(c,t1,_CMP_LE_OQ)) break;
+			 }
+			 const float * __restrict ptr2 =
+			                    (const float*)(&svrng_generate4_float(engine,uniform));
+			 u3                             = _mm_loadu_ps(&ptr2[0]);
+		         t2                             = xmm4r4_sign_xmm4r4(_1,_mm_sub_ps(u3,_1_2));
+			 x                              = _mm_fmadd_ps(t2,_mm_acos_ps(f),a);
+			 svrng_delete_engine(engine);
+			 return (x)
+		   }
+		   
+
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_PDF evaluates the Rayleigh PDF.
+!
+!  Discussion:
+!
+!    PDF(A;X) = ( X / A^2 ) * EXP ( - X^2 / ( 2 * A^2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    15 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0 < A.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+                      
+*/
+
+
+                            
+                      __m128d
+		      rayleigh_pdf_xmm2r8(const __m128d x,
+		                          const __m128d a) {
+
+                           const __m128d  _0 = _mm_setzero_pd();
+			   __m128d t0,t1,t2,t3,pdf;
+			   const __mmask8 m  = _mm_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			   t0                = _mm_mul_pd(a,a);
+			   t1                = negate_xmm2r8(_mm_div_pd(_mm_mul_pd(x,x),
+			                                                   _mm_add_pd(t0,t0)));
+			   t2                = _mm_div_pd(x,t0);
+			   t3               = _mm_mul_pd(t2,_mm_exp_pd(t1));
+                           pdf              = _mm_mask_blend_pd(m,t3,_0);
+                           return (pdf);
+		     }
+
+
+		            
+                      __m128
+		      rayleigh_pdf_xmm4r4(const __m128 x,
+		                           const __m128 a) {
+
+                           const __m128  _0 = _mm_setzero_ps();
+			   __m128 t0,t1,t2t3,pdf;
+			   const __mmask8 m  = _mm_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			   t0                = _mm_mul_ps(a,a);
+			   t1                = negate_xmm4r4(_mm_div_ps(_mm_mul_ps(x,x),
+			                                                   _mm_add_ps(t0,t0)));
+			   t2                = _mm_div_ps(x,t0);
+			   t3                = _mm_mul_ps(t2,_mm_exp_ps(t1));
+                           pdf               = _mm_mask_blend_ps(m,_t3,_0);
+                           return (pdf);
+		     }
+		     
+		     
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_MEAN returns the mean of the Rayleigh PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean of the PDF.		     
+*/
+
+
+                      
+      		        
+                      __m128d
+		      rayleigh_mean_xmm2r8(const __m128d a) {
+
+                          const __m128d hpi =  _mm_set1_pd(0.5*3.14159265358979323846264338328);
+			  __m128d mean;
+			  mean              =  _mm_mul_pd(a,_mm_sqrt_pd(hpi));
+			  return (mean);
+		     }
+
+
+		         
+                      __m128
+		      rayleigh_mean_xmm4r4(const __m128d a) {
+
+                          const __m128 hpi =  _mm_set1_ps(0.5f*3.14159265358979323846264338328f);
+			  __m128 mean;
+			  mean              =  _mm_mul_ps(a,_mm_sqrt_ps(hpi));
+			  return (mean);
+		   }
+
+
+
 
    
 		    
