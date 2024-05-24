@@ -3897,6 +3897,87 @@ SOFTWARE.
 			 return (inv);
 			   
 		     }
+		     
+		     
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF evaluates the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    0.0D+00 <= X.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+*/
+
+
+                           
+                      __m128d
+		      rayleigh_cdf_xmm2r8(const __m128d x,
+		                          const __m128d a) {
+
+                         const __m128d _0 = _mm_setzero_pd();
+			 const __m128d _1 = _mm_setzero_pd(1.0);
+			 __m128d cdf,t0,t1;
+			 t0              = _mm_mul_pd(_2,_mm_mul_pd(a,a));
+			 t1              = negate_xmm2r8(_mm_mul_pd(x,x));
+			 cdf             = _mm_sub_pd(_1,
+			                             _mm_exp_pd(_mm_div_pd(t1,t0)));
+                         return (cdf);
+		    }
+
+
+		             
+                      __m128
+		      rayleigh_cdf_xmm4r4(const __m128 x,
+		                           const __m128 a) {
+
+                         const __m128 _0 = _mm_setzero_ps();
+			 const __m128 _1 = _mm_setzero_ps(1.0f);
+			 __m128 cdf,t0,t1;
+			 t0              = _mm_mul_pd(_2,_mm_mul_ps(a,a));
+			 t1              = negate_xmm4r4(_mm_mul_ps(x,x));
+			 cdf             = _mm_sub_ps(_1,
+			                             _mm_exp_ps(_mm_div_ps(t1,t0)));
+                         return (cdf);
+		    }
+
+
+		    
+		           
+                      __m128d
+		      rayleigh_sample_xmm2r8(const __m128d rand,
+		                             const __m128d a) {
+
+                          return (rayleigh_invcdf_xmm2r8(rand,a));
+		     }
+
+
+		          
+                      __m128
+		      rayleigh_sample_xmm4r4(const __m128 rand,
+		                             const __m128 a) {
+
+                          return (rayleigh_invcdf_xmm4r4(rand,a));
+		     }
+		     
 
 
 
