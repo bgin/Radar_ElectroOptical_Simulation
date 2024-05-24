@@ -3602,6 +3602,303 @@ SOFTWARE.
 		   }
 
 
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_CDF evaluates the von Mises CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    22 September 2005
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Geoffrey Hill.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Geoffrey Hill,
+!    Algorithm 518,
+!    Incomplete Bessel Function I0: The von Mises Distribution,
+!    ACM Transactions on Mathematical Software,
+!    Volume 3, Number 3, September 1977, pages 279-284.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+
+
+                  
+                      __m128d
+		      von_misses_cdf_xmm2r8(const __m128d x,
+		                            const __m128d a,
+					    const __m128d b) {
+
+                        //Early exit.
+			const __m128d   _0  = _mm_setzero_pd();
+			const __m128d   _1  = _mm_set1_pd(1.0);
+			const __m128d   pi  = _mm_set1_pd(3.14159265358979323846264338328);
+			const __m128d   npi = _mm_set1_pd(-3.14159265358979323846264338328);
+			const __m128d   xsa = _mm_sub_pd(x,a);
+			if(__builtin_expect(_mm_cmp_pd_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm_cmp_pd_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m128d  _2pi = _mm_set1_pd(6.283185307179586476925286766559);
+			const __m128d  a1  = _mm_set1_pd(12.0);
+			const __m128d  a2  = _mm_set1_pd(0.8);
+			const __m128d  a3  = _mm_set1_pd(8.0);
+			const __m128d  a4  = _mm_set1_pd(1.0);
+			const __m128d  c1  = _mm_set1_pd(56.0);
+			const __m128d  ck  = _mm_set1_pd(10.5);
+			const __m128d  _2  = _mm_set1_pd(2.0);
+			const __m128d  _1_2= _mm_set1_pd(0.5);
+			__m128d arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = _mm_castps_pd(fmod_xmm2r8(_mm_castpd_ps(_mm_add_pd(xsa,pi)),
+			                                           _mm_castpd_ps(_2pi)));
+			uprv = u;
+			const __mmask8 m = _mm_cmp_pd_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm_add_pd(u,_2pi);
+			u    = _mm_mask_blend_pd(m,uprv,u);
+			y    = _mm_sub_pd(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm_cmp_pd_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m128d t0 = _mm_set1_pd(24.0);
+			   const __m128d t1 = _mm_set1_pd(54.0);
+			   const __m128d t2 = _mm_set1_pd(347.0);
+			   const __m128d t3 = _mm_set1_pd(26.0);
+			   const __m128d t4 = _mm_set1_pd(6.0);
+			   const __m128d t5 = _mm_set1_pd(12.0);
+			   const __m128d t6 = _mm_set1_pd(3.0);
+			   const __m128d t7 = _mm_set1_pd(16.0);
+			   const __m128d t8 = _mm_set1_pd(1.75);
+			   const __m128d t9 = _mm_set1_pd(83.5);
+			   c                = _mm_mul_pd(t0,z);
+			   v                = _mm_sub_pd(c,c1);
+			   const __m128d tmp1 = _mm_sub_pd(_mm_add_pd(v,t3),c);
+			   const __m128d tmp2 = _mm_div_pd(t1,_mm_div_pd(t2,tmp1));
+			   const __m128d tmp3 = _mm_add_pd(_mm_sub_pd(tmp2,t4),c);
+			   r                  = _mm_sqrt_pd(_mm_div_pd(tmp3,t5));
+
+			   z                  = _mm_mul_pd(_mm_sin_pd(
+			                                                _mm_mul_pd(_1_2,y)),r);
+                           s                  = _mm_mul_pd(_2,_mm_mul_pd(z,z));
+			   v                  = _mm_sub_pd(v,_mm_add_pd(s,t6));
+			   y                  = _mm_div_pd(_mm_sub_pd(_mm_sub_pd(c,s),
+			                                                    _mm_sub_pd(s,t7)),t6);
+			   tmp1               = _mm_sub_pd(v,y);
+			   y                  = _mm_div_pd(_mm_fmadd_pd(_mm_add_pd(s,t8),s,t9),tmp1);
+			   tmp2               = _mm_mul_pd(y,y);
+			   arg                = _mm_mul_pd(z,_mm_sub_pd(_1,
+			                                                  _mm_div_pd(s,tmp2)));
+			   erfx               = _mm_erf_pd(arg);
+			   cdf                = _mm_fmadd_pd(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm_max_pd(cdf,_0);
+			cdf                   = _mm_min_pd(cdf,_1);
+			return (cdf);
+			
+		   }
+
+
+		      
+	               
+                      __m128
+		      von_misses_cdf_xmm4r4(const __m128 x,
+		                            const __m128 a,
+					    const __m128 b) {
+
+                        //Early exit.
+			const __m128   _0  = _mm_setzero_ps();
+			const __m128   _1  = _mm_set1_ps(1.0f);
+			const __m128   pi  = _mm_set1_ps(3.14159265358979323846264338328f);
+			const __m128   npi = _mm_set1_ps(-3.14159265358979323846264338328f);
+			const __m128   xsa = _mm_sub_ps(x,a);
+			if(__builtin_expect(_mm_cmp_ps_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm_cmp_ps_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m128  _2pi = _mm_set1_ps(6.283185307179586476925286766559f);
+			const __m128  a1  = _mm_set1_ps(12.0f);
+			const __m128  a2  = _mm_set1_ps(0.8f);
+			const __m128  a3  = _mm_set1_ps(8.0f);
+			const __m128  a4  = _mm_set1_ps(1.0f);
+			const __m128  c1  = _mm_set1_ps(56.0f);
+			const __m128  ck  = _mm_set1_ps(10.5f);
+			const __m128  _2  = _mm_set1_ps(2.0f);
+			const __m128  _1_2= _mm_set1_ps(0.5f);
+			__m128 arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = fmod_xmm4r4(_mm_add_ps(xsa,pi),_2pi);
+			uprv = u;
+			const __mmask8 m = _mm_cmp_ps_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm_add_ps(u,_2pi);
+			u    = _mm_mask_blend_ps(m,uprv,u);
+			y    = _mm_sub_ps(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm_cmp_ps_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m128 t0 = _mm_set1_ps(24.0f);
+			   const __m128 t1 = _mm_set1_ps(54.0f);
+			   const __m128 t2 = _mm_set1_ps(347.0f);
+			   const __m128 t3 = _mm_set1_ps(26.0f);
+			   const __m128 t4 = _mm_set1_ps(6.0f);
+			   const __m128 t5 = _mm_set1_ps(12.0f);
+			   const __m128 t6 = _mm_set1_ps(3.0f);
+			   const __m128 t7 = _mm_set1_ps(16.0f);
+			   const __m128 t8 = _mm_set1_ps(1.75f);
+			   const __m128 t9 = _mm_set1_ps(83.5f);
+			   c                = _mm_mul_ps(t0,z);
+			   v                = _mm_sub_ps(c,c1);
+			   const __m128 tmp1 = _mm_sub_ps(_mm_add_ps(v,t3),c);
+			   const __m128 tmp2 = _mm_div_ps(t1,_mm_div_ps(t2,tmp1));
+			   const __m128 tmp3 = _mm_add_ps(_mm_sub_ps(tmp2,t4),c);
+			   r                  = _mm_sqrt_ps(_mm_div_ps(tmp3,t5));
+
+			   z                  = _mm_mul_ps(_mm_sin_ps(
+			                                                _mm_mul_ps(_1_2,y)),r);
+                           s                  = _mm_mul_ps(_2,_mm_mul_ps(z,z));
+			   v                  = _mm_sub_ps(v,_mm_add_ps(s,t6));
+			   y                  = _mm_div_ps(_mm_sub_ps(_mm_sub_ps(c,s),
+			                                                    _mm_sub_ps(s,t7)),t6);
+			   tmp1               = _mm_sub_ps(v,y);
+			   y                  = _mm_div_ps(_mm_fmadd_ps(_mm_add_ps(s,t8),s,t9),tmp1);
+			   tmp2               = _mm_mul_ps(y,y);
+			   arg                = _mm_mul_ps(z,_mm_sub_ps(_1,
+			                                                  _mm_div_ps(s,tmp2)));
+			   erfx               = _mm_erf_ps(arg);
+			   cdf                = _mm_fmadd_ps(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm_max_ps(cdf,_0);
+			cdf                   = _mm_min_ps(cdf,_1);
+			return (cdf);
+			
+		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF_INV inverts the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+*/
+
+
+                        
+                      __m128d
+		      rayleigh_invcdf_xmm2r8(const __m128d cdf,
+		                             const __m128d a) {
+
+			 const __m128d _0 = _mm_setzero_pd();
+			 const __m128d _1 = _mm_setzero_pd(1.0);
+			 const __m128d n2 = _mm_setzero_pd(-2.0);
+			 __m128d inv,t0,t1,;
+                       
+			 t0  = _mm_log_pd(_mm_sub_pd(_1,cdf));
+			 t1  = _mm_mul_pd(_2,_mm_mul_pd(a,a));
+                         inv = _mm_sqrt_pd(_mm_mul_pd(t0,t1));
+			 return (inv);
+			   
+		     }
+
+
+		         
+                      __m128
+		      rayleigh_invcdf_xmm4r4(const __m128 cdf,
+		                             const __m128 a) {
+
+			 const __m128 _0 = _mm_setzero_ps();
+			 const __m128 _1 = _mm_setzero_ps(1.0f);
+			 const __m128 n2 = _mm_setzero_ps(-2.0f);
+			 __m128 inv,t0,t1,;
+                      
+			 t0  = _mm_log_ps(_mm_sub_ps(_1,cdf));
+			 t1  = _mm_mul_ps(_2,_mm_mul_ps(a,a));
+                         inv = _mm_sqrt_ps(_mm_mul_ps(t0,t1));
+			 return (inv);
+			   
+		     }
+
+
 
 
    
