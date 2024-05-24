@@ -3979,7 +3979,70 @@ SOFTWARE.
 		     }
 		     
 
-
+		          /*
+!*****************************************************************************80
+!
+!! CAUCHY_CDF evaluates the Cauchy CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    01 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+! 
+      */
+      
+        	            
+                      __m128d    
+                      cauchy_cdf_xmm2r8(const __m128d x,
+                                        const __m128d a,
+                                        const __m128d b) {
+                        
+                         const __m128d C314159265358979323846264 = 
+                                               _mm_set1_pd(3.14159265358979323846264);
+                         const __m128d C05 = _mm_set1_pd(0.5);
+                         register __m128d cdf,y,t0,t1;
+                         t0 = _mm_sub_pd(x,a);
+                         t1 = _mm_div_pd(_mm_atan2_pd(t0,b),
+                                     C314159265358979323846264);
+                         cdf = _mm_add_pd(C05,t1);
+                         return (cdf);  
+                    }
+                    
+                    
+                            
+                      __m128    
+                      cauchy_cdf_xmm4r4( const __m128 x,
+                                         const __m128 a,
+                                         const __m128 b) {
+                        
+                         const __m128 C314159265358979323846264 = 
+                                               _mm_set1_ps(3.14159265358979323846264f);
+                         const __m128 C05 = _mm_set1_ps(0.5f);
+                         register __m128 cdf,y,t0,t1;
+                         t0 = _mm_sub_ps(x,a);
+                         t1 = _mm_div_ps(_mm_atan2_ps(t0,b),
+                                     C314159265358979323846264);
+                         cdf = _mm_add_ps(C05,t1);
+                         return (cdf);  
+                    }
+                    
+                    
 
 
    
