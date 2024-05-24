@@ -4,7 +4,7 @@
 #define __GMS_SIMD_UTILS_H__ 040120220918
 
 
-
+namespace file_info {
 
 const unsigned int GMS_SIMD_UTILS_MAJOR = 1U;
 const unsigned int GMS_SIMD_UTILS_MINOR = 0U;
@@ -19,7 +19,7 @@ const char * const GMS_SIMD_UTILS_AUTHOR        = "Programmer: Bernard Gingold, 
 const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility functions.";
 
 
-
+}
 
 
 
@@ -549,7 +549,185 @@ const char * const GMS_SIMD_UTILS_DESCRIPTION   = "Various SIMD utility function
                            return _mm256_andnot_pd(mask, x); 
                      }
 
+                              
+                                 __attribute__((regcall))
+                               __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128
+			       xmm4r4_abs_xmm4r4(const __m128 v) {
+                        	     const __m128 mask = _mm_set1_ps(0x7FFFFFFF);
+	                             return (_mm_and_ps(x,mask));
+                               }
 
+                               __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128d
+			       xmm2r8_abs_xmm2r8(const __m128d v) {
+                        	     const __m128d mask = _mm_set1_pd(0x7FFFFFFFFFFFFFFF);
+	                             return (_mm_and_pd(x,mask));
+                               }
+
+                                  __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128
+			       xmm4r4_sign_xmm4r4(const __m128 va,
+			                          const __m128 vb) {
+                                   register __m128 vret = v8_0;
+				   register __m128 t0   = xmm4r4_abs_xmm4r4(va);
+				   register __m128 mask = _mm_cmp_ps(vb,v8_0,_CMP_GE_OQ);
+				   vret = _mm_blendv_ps(t0,_mm_sub_ps(v8_0,t0),mask);
+                                   return (vret);
+			       }
+
+                                   __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128d
+			       xmm2r8_sign_xmm2r8(const __m128d va,
+			                          const __m128d vb) {
+                                   register __m128d vret = v4_0;
+				   const register __m128d t0   = xmm2r8_abs_xmm2r8(va);
+				   const register __m128d mask = _mm_cmp_pd(vb,v4_0,_CMP_GE_OQ);
+				   vret = _mm_blendv_pd(t0,_mm_sub_pd(v4_0,t0),mask);
+                                   return (vret);
+			       }
+
+                                
+                                   __attribute__((regcall))
+                               __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128d
+			       xmm2r8_truncate(const __m128d v) {
+                                  
+                                    return (_mm_cvtepi64_pd(_mm_cvttpd_epi64(v)));
+			       }
+
+			    
+                                  __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128
+			       xmm4r4_truncate(const __m128 v) {
+                                  
+                                    return (_mm_cvtepi32_ps(_mm_cvttps_epi32(v)));
+			       }
+
+
+                                  __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128 fmod_xmm4r4(const __m128 a,
+			                          const __m128 b) {
+                                   const register __m128 v = xmm4r4_truncate(_mm_div_ps(a,b));
+                                   return (_mm_sub_ps(a,_mm_mul_ps(v,b)));  
+			      }
+			      
+			      
+			         __attribute__((regcall))
+			       __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			       static inline
+			       __m128d fmod_xmm2r8(const __m128d a,
+			                          const __m128d b) {
+                                   const register __m128d v = xmm2r8_truncate(_mm_div_pd(a,b));
+                                   return (_mm_sub_pd(a,_mm_mul_pd(v,b)));  
+			      }
+                             
+			          __attribute__((regcall))
+                               __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+			      static inline
+		              __m512 fmod_zmm16r4(const __m512 a,
+		                                  const __m512 b) {
+
+                                     __m512 v = _mm512_sub_ps(a,_mm512_mul_ps(
+			             _mm512_div_round_ps(a,b,_MM_FROUND_TO_ZERO|_MM_FROUND_NO_EXEC),b));
+			             return (v);
+			  
+		               }
+
+		                
+		                  __attribute__((regcall))
+                             __attribute__((always_inline))
+			       __attribute__((aligned(32)))
+		              static inline
+		              __m512d fmod_zmm8r8(const __m512d a,
+		                                  const __m512d b) {
+
+                                    __m512d v = _mm512_sub_pd(a,_mm512_mul_pd(
+			             _mm512_div_round_pd(a,b,_MM_FROUND_TO_ZERO|_MM_FROUND_NO_EXEC),b));
+			       return (v);
+			  
+		            }
+
+
+			    
+
+                                __attribute__((regcall))
+			    __attribute__((always_inline))
+			    __attribute__((aligned(32)))
+		           static inline
+		           __m128d norm2_xmm2r8(const __m128d y,
+		                                const __m128d z,
+					        const __m128d w) {
+
+                                 const __m128d t0 = _mm_mul_pd(y,y);
+			         const __m128d t1 = _mm_mul_pd(z,z);
+			         const __m128d t2 = _mm_mul_pd(w,w);
+			         const __m128d v  = _mm_add_pd(t0,_mm_add_pd(t1,t2));
+			         return (_mm_sqrt_pd(v));
+			    
+		           }
+
+
+                              __attribute__((regcall))
+		          __attribute__((always_inline))
+			  __attribute__((aligned(32)))
+		          static inline
+		          __m128 norm2_xmm4r4(  const __m128 y,
+		                                const __m128 z,
+					        const __m128 w) {
+
+                                const __m128 t0 = _mm_mul_ps(y,y);
+			        const __m128 t1 = _mm_mul_ps(z,z);
+			        const __m128 t2 = _mm_mul_ps(w,w);
+			        const __m128 v  = _mm_add_ps(t0,_mm_add_ps(t1,t2));
+			        return (_mm_sqrt_ps(v));
+			    
+		          }
+
+                          
+                             __attribute__((regcall))
+			 __attribute__((always_inline))
+			 __attribute__((aligned(32)))
+		         static inline
+		         __m128 clip_xmm4r4( const __m128 x,
+		                             const __m128 lo,
+					     const __m128 hi) {
+
+                               return (_mm_max_ps(lo,_mm_min_ps(x,hi)));
+		          }
+
+
+                             __attribute__((regcall))
+		         __attribute__((always_inline))
+			 __attribute__((aligned(32)))
+		         static inline
+		          __m128d clip_xmm2r8(const __m128d x,
+		                              const __m128d lo,
+					      const __m128d hi) {
+
+                               return (_mm_max_pd(lo,_mm_min_pd(x,hi)));
+		          }
 
 
 		     
