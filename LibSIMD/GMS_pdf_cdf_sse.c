@@ -4044,6 +4044,516 @@ SOFTWARE.
                     
                     
 
+/*
+ !*****************************************************************************80
+!
+!! CAUCHY_CDF_INV inverts the Cauchy CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 September 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+!
+*/     
 
+
+                            
+                      __m128d 
+                      cauchy_cdf_inv_xmm2r8(const __m128d a,
+                                            const __m128d b,
+                                            const __m128d x) {
+                           
+                         const __m128d C314159265358979323846264 = 
+                                               __m128_set1_pd(3.14159265358979323846264);
+                         const __m128d C05 = _mm_set1_pd(0.5);    
+                         register __m128d cdf,t0,t1;
+                         t0 = _mm_mul_pd(C314159265358979323846264,
+                                            _mm_sub_pd(cdf,C05));
+                         t1 = _mm_tan_pd(t0);
+                         cdf = _mm_fmadd_pd(a,b,t1);
+                         return (cdf);
+                   }    
+                   
+                   
+                           
+                      __m128
+                      cauchy_cdf_inv_xmm4r4(const __m128 a,
+                                            const __m128 b,
+                                            const __m128 x) {
+                           
+                         const __m128 C314159265358979323846264 = 
+                                               __m128_set1_pd(3.14159265358979323846264f);
+                         const __m128 C05 = _mm_set1_ps(0.5);    
+                         register __m128 cdf,t0,t1;
+                         t0 = _mm_mul_ps(C314159265358979323846264,
+                                            _mm_sub_ps(cdf,C05));
+                         t1 = _mm_tan_ps(t0);
+                         cdf = _mm_fmadd_ps(a,b,t1);
+                         return (cdf);
+                   }  
+                   
+                   
+                
+/*
+  !*****************************************************************************80
+!
+!! CAUCHY_PDF evaluates the Cauchy PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = 1 / ( PI * B * ( 1 + ( ( X - A ) / B )^2 ) )
+!
+!    The Cauchy PDF is also known as the Breit-Wigner PDF.  It
+!    has some unusual properties.  In particular, the integrals for the
+!    expected value and higher order moments are "singular", in the
+!    sense that the limiting values do not exist.  A result can be
+!    obtained if the upper and lower limits of integration are set
+!    equal to +T and -T, and the limit as T=>INFINITY is taken, but
+!    this is a very weak and unreliable sort of limit.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    09 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!
+*/       
+
+
+                             
+                      __m128d  
+                      cauchy_pdf_xmm2r8( const __m128d x,
+                                         const __m128d a,
+                                         const __m128d b) {
+                           
+                         const __m128d C314159265358979323846264 = 
+                                               __m128_set1_pd(3.14159265358979323846264);
+                         const __m128d C1 = _mm_set1_pd(1.0);
+                         register __m128d pdf,t0,t1,y,pib;
+                         y   = _mm_div_pd(_mm_sub_pd(x,a),b);
+                         pib = _mm_mul_pd(C314159265358979323846264,b);
+                         t0  = _mm_fmadd_pd(y,y,C1);
+                         t1  = _mm_mul_pd(pib,t0);
+                         pdf = _mm_div_pd(C1,t1);
+                         return (pdf);                     
+                   }
+                   
+                   
+                             
+                      __m128 
+                      cauchy_pdf_xmm4r4(const __m128 x,
+                                         const __m128 a,
+                                         const __m128 b) {
+                           
+                         const __m128 C314159265358979323846264 = 
+                                               __m128_set1_ps(3.14159265358979323846264f);
+                         const __m128 C1 = _mm_set1_ps(1.0);
+                         register __m128 pdf,t0,t1,y,pib;
+                         y   = _mm_div_ps(_mm_sub_ps(x,a),b);
+                         pib = _mm_mul_ps(C314159265358979323846264,b);
+                         t0  = _mm_fmadd_ps(y,y,C1);
+                         t1  = _mm_mul_ps(pib,t0);
+                         pdf = _mm_div_ps(C1,t1);
+                         return (pdf);                     
+                   }
+                   
+                   
+/*
+ !*****************************************************************************80
+!
+!! MAXWELL_CDF evaluates the Maxwell CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    05 January 2000
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0 < A.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!                    
+*/
+
+
+                
+                        
+                      __m128d 
+                      maxwell_cdf_xmm2r8(const __m128d x,
+                                         const __m128d a) {
+                         
+                         const __m128d C15 = _mm_set1_pd(1.5);
+                         register __m128d x2,cdf;
+                         x2 = _mm_div_pd(x,a);
+                         cdf = gamma_incomplete_xmm2r8(C15,x2);
+                         return (cdf);                      
+                    }      
+                    
+                    
+                        
+                      __m128 
+                      maxwell_cdf_xmm4r4(const __m128 x,
+                                         const __m128 a) {
+                         
+                         const __m128 C15 = _mm_set1_ps(1.5f);
+                         register __m128 x2,cdf;
+                         x2 = _mm_div_ps(x,a);
+                         cdf = gamma_incomplete_xmm4r4(C15,x2);
+                         return (cdf);                      
+                    }                           
+                        
+                   
+/*
+!*****************************************************************************80
+!
+!! TFN calculates the T function of Owen.
+!
+!  Discussion:
+!
+!    Owen's T function is useful for computation of the bivariate normal
+!    distribution and the distribution of a skewed normal distribution.
+!
+!    Although it was originally formulated in terms of the bivariate
+!    normal function, the function can be defined more directly as
+!
+!      T(H,A) = 1 / ( 2 * pi ) *
+!        Integral ( 0 <= X <= A ) e^( -H^2 * (1+X^2) / 2 ) / (1+X^2) dX
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 December 2004
+!
+!  Author:
+!
+!    Original FORTRAN77 version by J C Young, C E Minder.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Donald Owen,
+!    Tables for computing the bivariate normal distribution,
+!    Annals of Mathematical Statistics,
+!    Volume 27, pages 1075-1090, 1956.
+!
+!    JC Young, CE Minder,
+!    Algorithm AS 76,
+!    An Algorithm Useful in Calculating Non-Central T and
+!    Bivariate Normal Distributions,
+!    Applied Statistics,
+!    Volume 23, Number 3, 1974, pages 455-457.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) H, A, the arguments of the T function.
+!
+!    Output, real ( kind = 8 ) TFN, the value of the T function.
+!
+*/
+
+
+		      __m128d owen_tfunc_xmm2r8(const __m128d h,
+		                                const __m128d a) {
+		             
+		             __attribute__((section(".rodata")))
+		             __ATTR_ALIGN__(16) static __m128d  weight[10] = {
+		                                _mm_set1_pd(0.666713443086881375935688098933e-01),
+                                                _mm_set1_pd(0.149451349150580593145776339658e+00),
+                                                _mm_set1_pd(0.219086362515982043995534934228e+00),
+                                                _mm_set1_pd(0.269266719309996355091226921569e+00),
+                                                _mm_set1_pd(0.295524224714752870173892994651e+00),
+                                                _mm_set1_pd(0.295524224714752870173892994651e+00),
+                                                _mm_set1_pd(0.269266719309996355091226921569e+00),
+                                                _mm_set1_pd(0.219086362515982043995534934228e+00),
+                                                _mm_set1_pd(0.149451349150580593145776339658e+00), 
+                                                _mm_set1_pd(0.666713443086881375935688098933e-01)};
+                           __attribute__((section(".rodata")))
+		            __ATTR_ALIGN__(16) static __m128d  xtab[10] = {
+		                                _mm_set1_pd(-0.973906528517171720077964012084e+00),
+                                                _mm_set1_pd(-0.865063366688984510732096688423e+00),
+                                                _mm_set1_pd(-0.679409568299024406234327365115e+00), 
+                                                _mm_set1_pd(-0.433395394129247190799265943166e+00), 
+                                                _mm_set1_pd(-0.148874338981631210884826001130e+00), 
+                                                _mm_set1_pd(0.148874338981631210884826001130e+00), 
+                                                _mm_set1_pd(0.433395394129247190799265943166e+00), 
+                                                _mm_set1_pd(0.679409568299024406234327365115e+00), 
+                                                _mm_set1_pd(0.865063366688984510732096688423e+00), 
+                                                _mm_set1_pd(0.973906528517171720077964012084e+00)};
+		           
+		             const __m128d twopinv = _mm_set1_pd(0.15915494309189533576888e+00);   
+		             const __m128d tv1     = _mm_set1_pd(1.0e-35);
+		             const __m128d tv2     = _mm_set1_pd(15.0);
+		             const __m128d tv3     = tv2;
+		             const __m128d tv4     = _mm_set1_pd(1.0e-5);
+		             const __m128d C05     = _mm_set1_pd(0.5);
+		             const __m128d C1      = _mm_set1_pd(1.0);
+		             const __m128d C2      = _mm_set1_pd(2.0);
+		             const __m128d C025    = _mm_set1_pd(0.25);
+		             const __m128d C0      = _mm_setzero_pd();
+		             __m128d x,rt,as,h1,h2,hs,t0,t1,t2;
+		             __m128d tfn;
+		             if(_mm_cmp_pd_mask(_mm_abs_pd(h),tv1,_CMP_LT_OQ)) {
+
+                                tfn = _mm_mul_pd(_mm_atan_pd(a),twopinv);
+	               
+		             }
+		             else if(_mm_cmp_pd_mask(tv2,_mm_abs_pd(h),_CMP_LT_OQ)) {
+		                tfn = C0;
+		             }
+		             else if(_mm_cmp_pd_mask(_mm_abs_pd(a),tv1,_CMP_LT_OQ)) {
+		                 tfn = C0;
+		             }
+		             else {
+		                 hs = _mm_mul_pd(negate_xmm2r8(C05),
+		                            _mm_mul_pd(h,h));
+		                 h2 = a;
+		                 as = _mm_mul_pd(a,a);
+                                 t0 = _mm_log_pd(_mm_add_pd(C1,as));
+       
+                                 __mmask8 m = _mm_cmp_pd_mask(tv3,_mm_sub_pd(t0,
+                                                                     _mm_mul_pd(hs,as)),_CMP_LE_OQ);
+                                 if(m) {
+                                    h1 = _mm_mul_pd(C05,a);
+                                    as = _mm_mul_pd(C025,as);
+                                    while(true) {
+                                          rt = _mm_add_pd(as,C1);
+                                          t0 = _mm_add_pd(h1,_mm_fmadd_pd(hs,as,_mm_log_pd(rt)));                                 
+                                          t1 = _mm_sub_pd(_mm_div_pd(C1,rt),hs);
+                                          t2 = _mm_mul_pd(C2,_mm_mul_pd(h1,t1));
+                                          h2 = _mm_div_pd(t0,t2);
+                                          as = _mm_mul_pd(h2,h2);
+                                          if(_mm_cmp_pd_mask(_mm_abs_pd(
+                                                          _mm_mul_pd(h2,h1),tv4,_CMP_LT_OQ))) break;
+                                          h1 = h2;                                               
+                                    }
+                                 }
+                                 rt = C0;
+                                 
+                               
+
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[0],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[0],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[1],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[1],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[2],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[2],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[3],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[3],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[4],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[4],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[5],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[5],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[6],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[6],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[7],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[7],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[8],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[8],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0)));
+                                 x  = _mm_fmadd_pd(C05,h2,_mm_add_pd(xtab[9],C1));
+                                 t0 = _mm_add_pd(C1,_mm_mul_pd(x,x));
+                                 rt = _mm_add_pd(rt,_mm_mul_pd(weight[9],
+                                               _mm_div_pd(_mm_exp_pd(_mm_mul_pd(hs,t0)),t0))); 
+
+
+                                 t1 = _mm_mul_pd(C05,h2);
+                                 tfn= _mm_mul_pd(rt,_mm_mul_pd(t1,twopinv)); 
+		             }
+		             return (tfn);
+		    }   
+		                                           
+                    
+                    
+		      __m128 owen_tfunc_xmm4r4(const __m128 h,
+		                                const __m128 a) {
+		             
+		             __attribute__((section(".rodata")))
+		             __ATTR_ALIGN__(16) static __m128  weight[10] = {
+		                                _mm_set1_ps(0.666713443086881375935688098933e-01f),
+                                                _mm_set1_ps(0.149451349150580593145776339658e+00f),
+                                                _mm_set1_ps(0.219086362515982043995534934228e+00f),
+                                                _mm_set1_ps(0.269266719309996355091226921569e+00f),
+                                                _mm_set1_ps(0.295524224714752870173892994651e+00f),
+                                                _mm_set1_ps(0.295524224714752870173892994651e+00f),
+                                                _mm_set1_ps(0.269266719309996355091226921569e+00f),
+                                                _mm_set1_ps(0.219086362515982043995534934228e+00f),
+                                                _mm_set1_ps(0.149451349150580593145776339658e+00f), 
+                                                _mm_set1_ps(0.666713443086881375935688098933e-01f)};
+                            __attribute__((section(".rodata")))
+		            __ATTR_ALIGN__(16) static __m128  xtab[10] = {
+		                                _mm_set1_ps(-0.973906528517171720077964012084e+00f),
+                                                _mm_set1_ps(-0.865063366688984510732096688423e+00f),
+                                                _mm_set1_ps(-0.679409568299024406234327365115e+00f), 
+                                                _mm_set1_ps(-0.433395394129247190799265943166e+00f), 
+                                                _mm_set1_ps(-0.148874338981631210884826001130e+00f), 
+                                                _mm_set1_ps(0.148874338981631210884826001130e+00f), 
+                                                _mm_set1_ps(0.433395394129247190799265943166e+00f), 
+                                                _mm_set1_ps(0.679409568299024406234327365115e+00f), 
+                                                _mm_set1_ps(0.865063366688984510732096688423e+00f), 
+                                                _mm_set1_ps(0.973906528517171720077964012084e+00f)};
+		           
+		             const __m128 twopinv = _mm_set1_ps(0.15915494309189533576888e+00f);   
+		             const __m128 tv1     = _mm_set1_ps(1.0e-35f);
+		             const __m128 tv2     = _mm_set1_ps(15.0f);
+		             const __m128 tv3     = tv2;
+		             const __m128 tv4     = _mm_set1_ps(1.0e-5f);
+		             const __m128 C05     = _mm_set1_ps(0.5f);
+		             const __m128 C1      = _mm_set1_ps(1.0f);
+		             const __m128 C2      = _mm_set1_ps(2.0f);
+		             const __m128 C025    = _mm_set1_ps(0.25f);
+		             const __m128 C0      = _mm_setzero_ps();
+		             __m128 x,rt,as,h1,h2,hs,t0,t1,t2;
+		             __m128 tfn;
+		             if(_mm_cmp_ps_mask(_mm_abs_ps(h),tv1,_CMP_LT_OQ)) {
+                                tfn = _mm_mul_ps(_mm_atan_ps(a),twopinv);
+              		     }
+		             else if(_mm_cmp_ps_mask(tv2,_mm_abs_ps(h),_CMP_LT_OQ)) {
+		                tfn = C0;
+		             }
+		             else if(_mm_cmp_pd_mask(_mm_abs_ps(a),tv1,_CMP_LT_OQ)) {
+		                 tfn = C0;
+		             }
+		             else {
+		                 hs = _mm_mul_ps(negate_zmm16r4(C05),
+		                            _mm_mul_ps(h,h));
+		                 h2 = a;
+		                 as = _mm_mul_ps(a,a);
+                                 t0 = _mm_log_ps(_mm_add_ps(C1,as));
+           
+                                 __mmask8 m = _mm_cmp_ps_mask(tv3,_mm_sub_ps(t0,
+                                                                     _mm_mul_ps(hs,as)),_CMP_LE_OQ);
+                                 if(m) {
+                                    h1 = _mm_mul_ps(C05,a);
+                                    as = _mm_mul_ps(C025,as);
+                                    while(true) {
+                                          rt = _mm_add_ps(as,C1);
+                                          t0 = _mm_add_ps(h1,_mm_fmadd_ps(hs,as,_mm_log_ps(rt)));
+                                          t1 = _mm_sub_ps(_mm_div_ps(C1,rt),hs);
+                                          t2 = _mm_mul_ps(C2,_mm_mul_ps(h1,t1));
+                                          h2 = _mm_div_ps(t0,t2);
+                                          as = _mm_mul_ps(h2,h2);
+                                          if(_mm_cmp_ps_mask(_mm_abs_ps(
+                                                          _mm_mul_ps(h2,h1),tv4,_CMP_LT_OQ))) break;
+                                          h1 = h2;                                               
+                                    }
+                                 }
+                                 rt = C0;
+                                 
+                                 
+
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[0],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[0],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[1],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[1],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[2],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[2],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[3],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[3],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[4],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[4],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[5],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[5],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[6],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[6],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[7],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[7],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[8],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[8],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0)));
+                                 x  = _mm_fmadd_ps(C05,h2,_mm_add_ps(xtab[9],C1));
+                                 t0 = _mm_add_ps(C1,_mm_mul_ps(x,x));
+                                 rt = _mm_add_ps(rt,_mm_mul_ps(weight[9],
+                                               _mm_div_ps(_mm_exp_ps(_mm_mul_ps(hs,t0)),t0))); 
+
+
+                                 t1 = _mm_mul_ps(C05,h2);
+                                 tfn= _mm_mul_ps(rt,_mm_mul_ps(t1,twopinv)); 
+		             }
+		             return (tfn);
+		    }  
+		                                               
+                   
+                   
    
 		    
