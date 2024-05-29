@@ -4553,7 +4553,693 @@ SOFTWARE.
 		             return (tfn);
 		    }  
 		                                               
+/*                   
+!*****************************************************************************80
+!
+!! R8_GAMMA evaluates Gamma(X) for a real argument.
+!
+!  Discussion:
+!
+!    This routine calculates the gamma function for a real argument X.
+!
+!    Computation is based on an algorithm outlined in reference 1.
+!    The program uses rational functions that approximate the gamma
+!    function to at least 20 significant decimal digits.  Coefficients
+!    for the approximation over the interval (1,2) are unpublished.
+!    Those for the approximation for 12 <= X are from reference 2.
+!
+!  Modified:
+!
+!    11 February 2008
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    William Cody,
+!    An Overview of Software Development for Special Functions,
+!    in Numerical Analysis Dundee, 1975,
+!    edited by GA Watson,
+!    Lecture Notes in Mathematics 506,
+!    Springer, 1976.
+!
+!    John Hart, Ward Cheney, Charles Lawson, Hans Maehly,
+!    Charles Mesztenyi, John Rice, Henry Thatcher,
+!    Christoph Witzgall,
+!    Computer Approximations,
+!    Wiley, 1968,
+!    LC: QA297.C64.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the function.
+!
+!    Output, real ( kind = 8 ) R8_GAMMA, the value of the function.
+!    Important notice: ******For argument interval: 2.0<=x<12.0 there is a scalarization in form
+!    of 8 scalar for-loops*******!!
+*/
+
+
+#include <stdbool.h>
+                            
+                      __m128d 
+                      gamma_xmm2r8(const __m128d x) {
+                         __attribute__((section(".rodata")))
+                         __ATTR_ALIGN__(16) static __m128d  c[7] = {
+                                        _mm_set1_pd(-1.910444077728e-03), 
+                                        _mm_set1_pd(8.4171387781295e-04), 
+                                        _mm_set1_pd(-5.952379913043012e-04), 
+                                        _mm_set1_pd(7.93650793500350248e-04),
+                                        _mm_set1_pd(-2.777777777777681622553e-03),
+                                        _mm_set1_pd(8.333333333333333331554247e-02),
+                                        _mm_set1_pd(5.7083835261e-03)};
+                        __attribute__((section(".rodata")))
+                        __ATTR_ALIGN__(16) static __m128d  p[8]  = {
+                                        _mm_set1_pd(-1.71618513886549492533811e+00),
+                                        _mm_set1_pd(2.47656508055759199108314e+01),
+                                        _mm_set1_pd(-3.79804256470945635097577e+02),
+                                        _mm_set1_pd(6.29331155312818442661052e+02),
+                                        _mm_set1_pd(8.66966202790413211295064e+02), 
+                                        _mm_set1_pd(-3.14512729688483675254357e+04), 
+                                        _mm_set1_pd(-3.61444134186911729807069e+04),
+                                        _mm_set1_pd(6.64561438202405440627855e+04)};   
+                       __attribute__((section(".rodata")))       
+                       __ATTR_ALIGN__(16) static __m128d  q[8]   = {
+                                        _mm_set1_pd(-3.08402300119738975254353e+01), 
+                                        _mm_set1_pd(3.15350626979604161529144e+02),
+                                        _mm_set1_pd(-1.01515636749021914166146e+03),
+                                        _mm_set1_pd(-3.10777167157231109440444e+03),
+                                        _mm_set1_pd(2.25381184209801510330112e+04),
+                                        _mm_set1_pd(4.75584627752788110767815e+03),
+                                        _mm_set1_pd(-1.34659959864969306392456e+05),
+                                        _mm_set1_pd(1.15132259675553483497211e+05)};
+                       __m128d pi                          = 
+                                        _mm_set1_pd(3.1415926535897932384626434e+00);
+                       __m128d eps                         =
+                                        _mm_set1_pd(2.22e-16);
+                       __m128d one                         =
+                                        _mm_set1_pd(1.0);
+                       __m128d half                        =
+                                        _mm_set1_pd(0.5);
+                       __m128d sqrtpi                      =
+                                        _mm_set1_pd(0.9189385332046727417803297e+00);
+                       __m128d twelve                      = 
+                                        _mm_set1_pd(12.0);
+                       __m128d two                         =
+                                        _mm_set1_pd(2.0);
+                       __m128d xbig                        =
+                                        _mm_set1_pd(171.624);
+                       __m128d xinf                        =
+                                        _mm_set1_pd(1.0e+30);
+                       __m128d xminin                      =
+                                        _mm_set1_pd(2.23e-308);
+                       
+                       __m128d zero                        =
+                                        _mm_setzero_pd();
+                       register __m128d res,sum,xden,xnum;
+                       register __m128d y,y1,ysq,z,fact;
+                       register __m128i n;
+                       
+                       bool     parity;
+                       parity = false;
+                       y      = x;
+                       // Negative argument
+                       if(_mm_cmp_pd_mask(y,zero,_CMP_LE_OQ)) {
+                          register __m128d t0,t1;
+                          y  = negate_xmm2r8(x);
+                          y1 = _mm_castsi_pd(_mm_cvttpd_epu64(y));
+                          res= _mm_sub_pd(y,y1);
+                          if(_mm_cmp_pd_mask(res,zero,_CMP_NEQ_OQ)) {
+                            
+                             t0 = _mm_mul_pd(_mm_mul_pd(y1,half),two);
+                             t1 = _mm_castsi_pd(_mm_cvttpd_epu64(t0));
+                             if(_mm_cmp_pd_mask(y1,t1,_CMP_NEQ_OQ)) parity = true;
+                             t0 = _mm_sin_pd(_mm_mul_pd(pi,res));
+                             fact = _mm_div_pd(negate_xmm2r8(pi),t0);
+                             y    = _mm_add_pd(y,one);
+                          }
+                          else {
+                             res = xinf;
+                             return (res);
+                          }
+                       }
+                       // Positive argument
+                       if(_mm_cmp_pd_mask(y,eps,_CMP_LT_OQ)) {
+                          __mmask8 m;
+                          m = _mm_cmp_pd_mask(xminin,y,_CMP_LE_OQ);
+                          res = _mm_mask_blend_pd(m,xinf,_mm_div_pd(one,y));
+                          return (res);
+                       }
+                  }
+                  else if(_mm_cmp_pd_mask(y,twelve,_CMP_LT_OQ)) {
+                          y1 = y;
+                          // 0.0 < argument < 1.0.
+                          if(_mm_cmp_pd_mask(y,one,_CMP_LT_OQ)) {
+                             z = y;
+                             y = _mm_add_pd(y,one);
+                          }
+                          else {
+                             //!  1.0 < argument < 12.0.
+                             //!  Reduce argument if necessary.
+                             n = _mm_sub_epi64(mm_castpd_si128(y),
+                                                  _mm_set1_epi64(1LL));
+                             y = _mm_sub_pd(y,_mm_castsi128_pd(n));
+                             z = _mm_sub_pd(y,one);
+                          }
+                          //  Evaluate approximation for 1.0 < argument < 2.0.
+                          xnum = zero;
+                          xden = one;
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[0]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[0]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[1]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[1]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[2]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[2]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[3]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[3]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[4]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[4]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[5]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[5]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[6]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[7]);
+                          xnum = _mm_mul_pd(_mm_add_pd(xnum,p[7]),z);
+                          xden = _mm_fmadd_pd(xden,z,q[7]);
+                          res  = _mm_add_pd(_mm_div_pd(xnum,xden),one);
+                          // Adjust result for case  0.0 < argument < 1.0.
+                          if(_mm_cmp_pd_mask(y1,y,_CMP_LT_OQ)) 
+                             res = _mm_div_pd(res,y1);
+                          else if(_mm_cmp_pd_mask(y,y1,_CMP_LT_OQ)) {
+                          //  Important notice: ******For argument interval: 2.0<=x<12.0 there is a scalarization in form
+                          //  of 8 scalar for-loops*******!!
+                             __ATTR_ALIGN__(16) int64_t sn[2];
+                             __ATTR_ALIGN__(16) double  sres[2];
+                             __ATTR_ALIGN__(16) double  sy[2];
+                             __ATTR_ALIGN__(16) double  sone[2];
+                             int64_t i;
+                             _mm_store_si128(&sn[0],n);
+                             _mm_store_pd(&sres[0],res);
+                             _mm_store_pd(&sy[0],y);
+                             _mm_store_pd(&sone[0],one);
+                             for(i=0; i != sn[0]; ++i) {
+                                 sres[0] *= sy[0];
+                                 sy[0]   += sone[0];
+                             }
+                             for(i=0; i != sn[1]; ++i) {
+                                 sres[1] *= sy[1];
+                                 sy[1]   += sone[1];
+                             }
+                           
+                            
+                             res = _mm_load_pd(&sres[0]);
+                             y   = _mm_load_pd(&sy[0]);
+                          }
+                          
+                       }
+                       else {
+                            //  Evaluate for 12.0 <= argument.
+                            if(_mm_cmp_pd_mask(y,xbig,_CMP_LE_OQ)) {
+                               ysq = _mm_mul_pd(y,y);
+                               sum = c[6];
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[0]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[1]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[2]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[3]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[4]);
+                               sum = _mm_add_pd(_mm_div_pd(sum,ysq),c[5]);
+                               sum = _mm_sub_pd(_mm_div_pd(sum,y),
+                                                   _mm_add_pd(y,sqrtpi));
+                               sum = _mm_mul_pd(_mm_add_pd(sum,
+                                                         _mm_sub_pd(y,half),_mm_log_pd(y)));
+                               res = _mm_exp_pd(sum);
+                                                    
+                            }
+                            else {
+                               res = xinf;
+                               return (res);
+                            }
+                       }
+                       // !  Final adjustments and return.
+                       if(parity) res = negate_xmm2r8(res);
+                       if(_mm_cmp_pd_mask(fact,one,_CMP_NEQ_OQ)) res = _mm_div_pd(fact,res);
+                       return (res);
+                  }
+                    
+		     
+                       
+                      __m128 
+                      gamma_xmm4r4(const __m128 x) {
+                         __attribute__((section(".rodata")))
+                         __ATTR_ALIGN__(16) static __m128  c[7] = {
+                                        _mm_set1_ps(-1.910444077728e-03f), 
+                                        _mm_set1_ps(8.4171387781295e-04f), 
+                                        _mm_set1_ps(-5.952379913043012e-04f), 
+                                        _mm_set1_ps(7.93650793500350248e-04f),
+                                        _mm_set1_ps(-2.777777777777681622553e-03f),
+                                        _mm_set1_ps(8.333333333333333331554247e-02f),
+                                        _mm_set1_ps(5.7083835261e-03f)};
+                        __attribute__((section(".rodata")))
+                        __ATTR_ALIGN__(16) static __m128  p[8]  = {
+                                        _mm_set1_ps(-1.71618513886549492533811e+00f),
+                                        _mm_set1_ps(2.47656508055759199108314e+01f),
+                                        _mm_set1_ps(-3.79804256470945635097577e+02f),
+                                        _mm_set1_ps(6.29331155312818442661052e+02f),
+                                        _mm_set1_ps(8.66966202790413211295064e+02f), 
+                                        _mm_set1_ps(-3.14512729688483675254357e+04f), 
+                                        _mm_set1_ps(-3.61444134186911729807069e+04f),
+                                        _mm_set1_ps(6.64561438202405440627855e+04f)}; 
+                       __attribute__((section(".rodata")))         
+                       __ATTR_ALIGN__(16) static __m128  q[8]   = {
+                                        _mm_set1_ps(-3.08402300119738975254353e+01f), 
+                                        _mm_set1_ps(3.15350626979604161529144e+02f),
+                                        _mm_set1_ps(-1.01515636749021914166146e+03f),
+                                        _mm_set1_ps(-3.10777167157231109440444e+03f),
+                                        _mm_set1_ps(2.25381184209801510330112e+04f),
+                                        _mm_set1_ps(4.75584627752788110767815e+03f),
+                                        _mm_set1_ps(-1.34659959864969306392456e+05f),
+                                        _mm_set1_ps(1.15132259675553483497211e+05f)};
+                       __m128 pi                          = 
+                                        _mm_set1_ps(3.1415926535897932384626434e+00f);
+                       __m128 eps                         =
+                                        _mm_set1_ps(2.22e-16f);
+                       __m128 one                         =
+                                        _mm_set1_ps(1.0f);
+                       __m128 half                        =
+                                        _mm_set1_ps(0.5f);
+                       __m128 sqrtpi                      =
+                                        _mm_set1_ps(0.9189385332046727417803297e+00f);
+                       __m128 twelve                      = 
+                                        _mm_set1_ps(12.0f);
+                       __m128 two                         =
+                                        _mm_set1_ps(2.0f);
+                       __m128 xbig                        =
+                                        _mm_set1_ps(171.624f);
+                       __m128 xinf                        =
+                                        _mm_set1_ps(1.0e+30f);
+                       __m128 xminin                      =
+                                        _mm_set1_ps(FLT_MIN);
+                       
+                       __m128 zero                        =
+                                        _mm_setzero_ps();
+                       register __m128 res,sum,xden,xnum;
+                       register __m128 y,y1,ysq,z,fact;
+                       register __m128i n;
+                       
+                       bool     parity;
+                       parity = false;
+                       y      = x;
+                       // Negative argument
+                       if(_mm_cmp_ps_mask(y,zero,_CMP_LE_OQ)) {
+                          register __m128 t0,t1;
+                          y  = negate_xmm4r4(x);
+                          y1 = _mm_castsi128_ps(_mm_cvttps_epu32(y));
+                          res= _mm_sub_ps(y,y1);
+                          if(_mm_cmp_ps_mask(res,zero,_CMP_NEQ_OQ)) {
+                            
+                             t0 = _mm_mul_ps(_mm_mul_ps(y1,half),two);
+                             t1 = _mm_castsi128_ps(_mm_cvttps_epu32(t0));
+                             if(_mm_cmp_ps_mask(y1,t1,_CMP_NEQ_OQ)) parity = true;
+                             t0 = _mm_sin_ps(_mm_mul_ps(pi,res));
+                             fact = _mm_div_ps(negate_xmm4r4(pi),t0);
+                             y    = _mm_add_ps(y,one);
+                          }
+                          else {
+                             res = xinf;
+                             return (res);
+                          }
+                       }
+                       // Positive argument
+                       if(_mm_cmp_ps_mask(y,eps,_CMP_LT_OQ)) {
+                          __mmask8 m;
+                          m = _mm_cmp_ps_mask(xminin,y,_CMP_LE_OQ);
+                          res = _mm_mask_blend_ps(m,xinf,_mm_div_ps(one,y));
+                          return (res);
+                       }
+                  }
+                  else if(_mm_cmp_ps_mask(y,twelve,_CMP_LT_OQ)) {
+                          y1 = y;
+                          // 0.0 < argument < 1.0.
+                          if(_mm_cmp_ps_mask(y,one,_CMP_LT_OQ)) {
+                             z = y;
+                             y = _mm_add_ps(y,one);
+                          }
+                          else {
+                             //!  1.0 < argument < 12.0.
+                             //!  Reduce argument if necessary.
+                             n = _mm_sub_epi32(_mm_castps_si128(y),
+                                                  _mm_set1_epi32(1));
+                             y = _mm_sub_ps(y,_mm_castsi128_ps(n));
+                             z = _mm_sub_ps(y,one);
+                          }
+                          //  Evaluate approximation for 1.0 < argument < 2.0.
+                          xnum = zero;
+                          xden = one;
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[0]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[0]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[1]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[1]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[2]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[2]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[3]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[3]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[4]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[4]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[5]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[5]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[6]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[7]);
+                          xnum = _mm_mul_ps(_mm_add_ps(xnum,p[7]),z);
+                          xden = _mm_fmadd_ps(xden,z,q[7]);
+                          res  = _mm_add_ps(_mm_div_ps(xnum,xden),one);
+                          // Adjust result for case  0.0 < argument < 1.0.
+                          if(_mm_cmp_ps_mask(y1,y,_CMP_LT_OQ)) 
+                             res = _mm_div_ps(res,y1);
+                          else if(_mm_cmp_ps_mask(y,y1,_CMP_LT_OQ)) {
+                          //  Important notice: ******For argument interval: 2.0<=x<12.0 there is a scalarization in form
+                          //  of 8 scalar for-loops*******!!
+                             __ATTR_ALIGN__(16) int32_t sn[4];
+                             __ATTR_ALIGN__(16) float  sres[4];
+                             __ATTR_ALIGN__(16) float  sy[4];
+                             __ATTR_ALIGN__(16) float  sone[4];
+                             int32_t i;
+                             _mm_store_si128(&sn[0],n);
+                             _mm_store_ps(&sres[0],res);
+                             _mm_store_ps(&sy[0],y);
+                             _mm_store_ps(&sone[0],one);
+                             for(i=0; i != sn[0]; ++i) {
+                                 sres[0] *= sy[0];
+                                 sy[0]   += sone[0];
+                             }
+                             for(i=0; i != sn[1]; ++i) {
+                                 sres[1] *= sy[1];
+                                 sy[1]   += sone[1];
+                             }
+                             for(i=0; i != sn[2]; ++i) {
+                                 sres[2] *= sy[2];
+                                 sy[2]   += sone[2];
+                             }
+                             for(i=0; i != sn[3]; ++i) {
+                                 sres[3] *= sy[3];
+                                 sy[3]   += sone[3];
+                             }
+                            
+                              
+                             res = _mm_load_ps(&sres[0]);
+                             y   = _mm_load_ps(&sy[0]);
+                          }
+                          
+                       }
+                       else {
+                            //  Evaluate for 12.0 <= argument.
+                            if(_mm_cmp_ps_mask(y,xbig,_CMP_LE_OQ)) {
+                               ysq = _mm_mul_ps(y,y);
+                               sum = c[6];
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[0]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[1]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[2]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[3]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[4]);
+                               sum = _mm_add_ps(_mm_div_ps(sum,ysq),c[5]);
+                               sum = _mm_sub_ps(_mm_div_ps(sum,y),
+                                                   _mm_add_ps(y,sqrtpi));
+
+                               sum = _mm_mul_ps(_mm_add_ps(sum,
+                                                         _mm_sub_ps(y,half),_mm_log_ps(y)));
+                               res = _mm_exp_ps(sum);
+
+
+                                                    
+                            }
+                            else {
+                               res = xinf;
+                               return (res);
+                            }
+                       }
+                       // !  Final adjustments and return.
+                       if(parity) res = negate_xmm4r4(res);
+                       if(_mm_cmp_ps_mask(fact,one,_CMP_NEQ_OQ)) res = _mm_div_ps(fact,res);
+                       return (res);
+                  }
+                  
+                  
+ /*                 
+!*****************************************************************************80
+!
+!! STUDENT_VARIANCE returns the variance of the central Student T PDF.
+!
+!  Discussion:
+!
+!    The variance is not defined unless 2 < C.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    02 November 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, shape parameters of the PDF,
+!    used to transform the argument X to a shifted and scaled
+!    value Y = ( X - A ) / B.  It is required that B be nonzero.
+!    For the standard distribution, A = 0 and B = 1.
+!
+!    Input, real ( kind = 8 ) C, is usually called the number of
+!    degrees of freedom of the distribution.  C is typically an
+!    integer, but that is not essential.  It is required that
+!    C be strictly positive.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/  
+
+
+                           
+                      __m128d 
+                      student_variance_xmm2r8(const __m128d a,
+                                              const __m128d b,
+                                              const __m128d c) {
+                                              
+                          __m128d C2 = _mm_set1_pd(2.0);     
+                          register __m128d bb,t1;
+                          register __m128d var;
+                          bb = _mm_mul_pd(b,b);
+                          t1 = _mm_sub_pd(c,C2);
+                          var= _mm_mul_pd(bb,_mm_div_pd(c,t1));
+                          return (var);                    
+                    }   
+                    
+                    
+                             
+                      __m128
+                      student_variance_xmm4r4(const __m128 a,
+                                              const __m128 b,
+                                              const __m128 c) {
+                                              
+                          __m128 C2 = _mm_set1_ps(2.0f);     
+                          register __m128 bb,t1;
+                          register __m128 var;
+                          bb = _mm_mul_ps(b,b);
+                          t1 = _mm_sub_ps(c,C2);
+                          var= _mm_mul_ps(bb,_mm_div_ps(c,t1));
+                          return (var);                    
+                    }   
+                    
+                    
+/*
+  !*****************************************************************************80
+!
+!! WEIBULL_PDF evaluates the Weibull PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B,C;X) = ( C / B ) * ( ( X - A ) / B )**( C - 1 )
+!     * EXP ( - ( ( X - A ) / B )**C ).
+!
+!    The Weibull PDF is also known as the Frechet PDF.
+!
+!    WEIBULL_PDF(A,B,1;X) is the Exponential PDF.
+!
+!    WEIBULL_PDF(0,1,2;X) is the Rayleigh PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A <= X
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+! 
+*/
+
+
+          
+	                   
+                      __m128d	 
+                      weibull_pdf_xmm2r8(const __m128d x,
+                                         const __m128d a,
+                                         const __m128d b,
+                                         const __m128d c) {
+                        
+                         register __m128d C1 = _mm_set1_pd(1.0);
+                         register __m128d y,t0,pow1,t1,exp;
+                         register __m128d pdf;
+                         t0 = _mm_div_pd(_mm_sub_pd(x,a),b);
+                         pow1 = _mm_pow_pd(t0,_mm_sub_pd(c,C1));
+                         exp  = _mm_exp_pd(_mm_pow_pd(y,c));
+                         t1   = _mm_div_pd(c,b);
+                         pdf  = _mm_div_pd(_mm_mul_pd(t1,pow1),exp); 
+                         return (pdf);     
+                   }
                    
                    
-   
+                         
+                      __m128	 
+                      weibull_pdf_xmm4r4(const __m128 x,
+                                         const __m128 a,
+                                         const __m128 b,
+                                         const __m128 c) {
+                        
+                         register __m128 C1 = _mm_set1_ps(1.0f);
+                         register __m128 y,t0,pow1,t1,exp;
+                         register __m128 pdf;
+                         t0 = _mm_div_ps(_mm_sub_ps(x,a),b);
+                         pow1 = _mm_pow_ps(t0,_mm_sub_ps(c,C1));
+                         exp  = _mm_exp_ps(_mm_pow_ps(y,c));
+                         t1   = _mm_div_ps(c,b);
+                         pdf  = _mm_div_ps(_mm_mul_ps(t1,pow1),exp); 
+                         return (pdf);     
+                   }
+                    
+                                    
+ /*
+     !*****************************************************************************80
+!
+!! TRIGAMMA calculates the TriGamma function.
+!
+!  Discussion:
+!
+!    TriGamma(x) = d^2 log ( Gamma ( x ) ) / dx^2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 January 2000
+!
+!  Author:
+!
+!    FORTRAN77 original version by B Schneider
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    BE Schneider,
+!    Algorithm AS 121:
+!    Trigamma Function,
+!    Applied Statistics,
+!    Volume 27, Number 1, page 97-99, 1978.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the trigamma function.
+!    0 < X.
+!
+!    Output, real ( kind = 8 ) TRIGAMMA, the value of the
+!    trigamma function at X.
+!     
+*/
+
+
+                            
+                      __m128d
+                      trigamma_xmm2r8(const __m128d x) {
+                         
+                         __m128d a  = _mm_setzero_pd();
+                         __m128d C1 = _mm_set1_pd(1.0);
+                         __m128d C05=_mm_set1_pd(0.5);
+                         __m128d b  = _mm_set1_pd(5.0);
+                         __m128d b2 = _mm_set1_pd(1.0/6.0);
+                         __m128d b4 = _mm_set1_pd(-1.0/30.0);
+                         __m128d b6 = _mm_set1_pd(1.0/42.0);
+                         __m128d b8 = _mm_set1_pd(-1.0/30.0);
+                         register __m128d y,z,t0,t1;
+                         register __m128d trig;
+                         
+                         if(_mm_cmp_pd_mask(x,a,_CMP_LE_OQ)) {
+                            trig = _mm_div_pd(C1,_mm_mul_pd(x,x));
+                         }
+                         else {
+                            z = x;
+                            trig = a;
+                            while(_mm_cmp_pd_mask(z,b,_CMP_LT_OQ)) {
+                                  trig = _mm_add_pd(_mm_div_pd(C1,
+                                                         _mm_mul_pd(z,z)))
+                                  z    = _mm_add_pd(z,C1);
+                            }
+                            y    = _mm_div_pd(C1,_mm_mul_pd(z,z));
+                            trig = trig+C05*y+(C1+y*(b2+y*(b4+y*(b6+y*b8))))/z; 
+                         }
+                         return (trig);
+                    } 
+                    
+                    
+                         
+                      __m128
+                      trigamma_xmm4r4(const __m128 x) {
+                         
+                         __m128 a  = _mm_setzero_ps();
+                         __m128 C1 = _mm_set1_ps(1.0f);
+                         __m128 C05=_mm_set1_ps(0.5f);
+                         __m128 b  = _mm_set1_ps(5.0f);
+                         __m128 b2 = _mm_set1_ps(1.0f/6.0f);
+                         __m128 b4 = _mm_set1_ps(-1.0f/30.0f);
+                         __m128 b6 = _mm_set1_ps(1.0f/42.0f);
+                         __m128 b8 = _mm_set1_ps(-1.0f/30.0f);
+                         register __m128 y,z,t0,t1;
+                         register __m128 trig;
+                         
+                         if(_mm_cmp_ps_mask(x,a,_CMP_LE_OQ)) {
+                            trig = _mm_div_ps(C1,_mm_mul_ps(x,x));
+                         }
+                         else {
+                            z = x;
+                            trig = a;
+                            while(_mm_cmp_ps_mask(z,b,_CMP_LT_OQ)) {
+                                  trig = _mm_add_ps(_mm_div_ps(C1,
+                                                         _mm_mul_ps(z,z)))
+                                  z    = _mm_add_ps(z,C1);
+                            }
+                            y    = _mm_div_ps(C1,_mm_mul_ps(z,z));
+                            trig = trig+C05*y+(C1+y*(b2+y*(b4+y*(b6+y*b8))))/z; 
+                         }
+                         return (trig);
+                    } 
+                       
 		    
