@@ -110,11 +110,186 @@ normal_01_cdf_inv_ymm8r4(const __m256 p)
 			           __attribute__((hot))
 				   __attribute__((regcall))
 				   __attribute__((aligned(32)));
-
-
-
-
-
-
-
+				   
+				   
+__m256d 
+reciprocal_cdf_ymm4r8(const __m256d x,
+		      const __m256d a,
+		      const __m256d b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256
+reciprocal_cdf_ymm8r4(const __m256 x,
+		      const __m256 a,
+		      const __m256 b)				  
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256d 		     
+reciprocal_cdf_inv_ymm4r8(const __m256d cdf,
+		          const __m256d a,
+		          const __m256d b)
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256		     
+reciprocal_cdf_inv_ymm8r4(const __m256 cdf,
+		          const __m256 a,
+		          const __m256 b) 			
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256d 
+reciprocal_mean_ymm4r8(const __m256d a,
+		       const __m256d b) 
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256 
+reciprocal_mean_ymm8r4(const __m256 a,
+		       const __m256 b)				   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256d
+reciprocal_pdf_ymm4r8(const __m256d x,
+		      const __m256d a,
+		      const __m256d b)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256
+reciprocal_pdf_ymm8r4(const __m256 x,
+		      const __m256 a,
+		      const __m256 b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256d
+chi_cdf_ymm4r8(const __m256d x,
+               const __m256d a,
+               const __m256d b,
+	       const __m256d c) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256
+chi_cdf_ymm8r4(const __m256 x,
+               const __m256 a,
+	       const __m256 b,
+               const __m256 c)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+__m256d
+chi_square_cdf_ymm4r8(const __m256d x,
+		      const __m256d a) 
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+__m256
+chi_square_cdf_ymm8r4(const __m256 x,
+		      const __m256 a)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+__m256d
+chi_mean_ymm4r8(const __m256d a,
+                const __m256d b,
+                const __m256d c)
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+__m256
+chi_mean_ymm8r4(const __m256 a,
+                const __m256 b,
+                const __m256 c)  
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				      
+				   
+ __m256d  bessesl_i0_ymm4r8(const __m256d arg) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256  bessesl_i0_ymm8r4(const __m256 arg) 				   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256d bessel_i1_ymm4r8(const __m256d arg) 				   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+__m256 bessel_i1_ymm8r4(const __m256 arg)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
 #endif /*__GMS_PDF_CDF_AVX_H__*/
