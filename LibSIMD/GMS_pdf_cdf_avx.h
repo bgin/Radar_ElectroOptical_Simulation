@@ -632,6 +632,92 @@ beta_pdf_ymm8r4(const __m256 x,
 		                   __attribute__((noinline))
 			           __attribute__((hot))
 				   __attribute__((regcall))
-				   __attribute__((aligned(32)));   		   
+				   __attribute__((aligned(32))); 
+				   
+				   
+  __m256d
+   weibull_cdf_ymm4r8(const __m256d x,
+		      const __m256d a,
+		      const __m256d b,
+		      const __m256d c)	
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+__m256
+ weibull_cdf_ymm8r4(const __m256 x,
+                    const __m256 a,
+		    const __m256 b,
+		    const __m256 c)  
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+  __m256d
+  weibull_cdf_inv_ymm4r8(const __m256d a,
+		         const __m256d b,
+			 const __m256d c,
+			 const __m256d cdf) 
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+ 
+ __m256
+ weibull_cdf_inv_ymm8r4(const __m256 a,
+		        const __m256 b,
+			const __m256 c,
+		        const __m256 cdf) 
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+  __m256d
+ weibull_sample_ymm4r8(const __m256d vrand,
+		       const __m256d a,
+		       const __m256d b,
+		       const __m256d c)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+  __m256
+ weibull_sample_ymm8r4(const __m256 vrand,
+		       const __m256 a,
+	               const __m256 b,
+		       const __m256 c)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+ __m256d
+ weibull_discrete_cdf_ymm4r8(const __m256d x,
+		             const __m256d a,
+		             const __m256d b)  
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+  __m256
+  weibull_discrete_cdf_ymm8r4(const __m256 x,
+		              const __m256 a,
+		              const __m256 b) 
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
 				    
 #endif /*__GMS_PDF_CDF_AVX_H__*/
