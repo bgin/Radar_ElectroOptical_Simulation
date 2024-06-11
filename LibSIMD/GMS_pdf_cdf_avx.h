@@ -719,5 +719,241 @@ __m256
 			           __attribute__((hot))
 				   __attribute__((regcall))
 				   __attribute__((aligned(32)));
+				   
+				   
+  __m256d
+ weibull_discrete_pdf_ymm4r8(const __m256d x,
+		             const __m256d a,
+			     const __m256d b)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+   __m256
+  weibull_discrete_pdf_ymm8r4(const __m256 x,
+		              const __m256 a,
+			      const __m256 b)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+   __m256d
+   weibull_discr_icdf_ymm4r8(const __m256d cdf,
+		             const __m256d a,
+			     const __m256d b) 
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+ __m256
+ weibull_discr_icdf_ymm8r4(const __m256 cdf,
+		           const __m256 a,
+			   const __m256 b) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+__m256d
+weibull_discr_samp_ymm4r8( const __m256d vrand,
+		           const __m256d a,
+			   const __m256d b)				   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+ __m256d
+ von_misses_cdf_ymm4r8(const __m256d x,
+		       const __m256d a,
+		       const __m256d b)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+ __m256
+ von_misses_cdf_ymm8r4(const __m256 x,
+		       const __m256 a,
+                       const __m256 b) 
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+ __m256d
+ von_misses_pdf_ymm4r8(const __m256d x,
+		       const __m256d a,
+		       const __m256d b)  
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+ __m256
+ von_misses_pdf_ymm8r4(const __m256 x,
+		       const __m256 a,
+		       const __m256 b)   
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256d
+ von_misses_sample_ymm4r8(const __m256d a,
+		          const __m256d b)   
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256
+ von_misses_sample_ymm8r4(const __m256 a,
+	                  const __m256 b) 
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256d
+  rayleigh_pdf_ymm4r8(const __m256d x,
+		      const __m256d a)  
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256
+ rayleigh_pdf_ymm8r4(const __m256 x,
+		     const __m256 a)   
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256d
+ rayleigh_mean_ymm4r8(const __m256d a)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+  __m256
+ rayleigh_mean_ymm8r4(const __m256d a)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256d
+ rayleigh_invcdf_ymm4r8(const __m256d cdf,
+		        const __m256d a) 
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256
+ rayleigh_invcdf_ymm8r4(const __m256 cdf,
+		        const __m256 a) 
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+ __m256d
+ rayleigh_cdf_ymm4r8(const __m256d x,
+		     const __m256d a) 				   
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+ __m256
+rayleigh_cdf_ymm8r4(const __m256 x,
+		    const __m256 a) 
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+ __m256d
+ rayleigh_sample_ymm4r8(const __m256d rand,
+		        const __m256d a)   
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+ __m256
+ rayleigh_sample_ymm8r4(const __m256 rand,
+		        const __m256 a) 
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+ __m256d    
+ cauchy_cdf_ymm4r8(const __m256d x,
+                   const __m256d a,
+                   const __m256d b)   
+				__attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+ __m256    
+ cauchy_cdf_ymm8r4( const __m256 x,
+                    const __m256 a,
+                    const __m256 b)    
+			      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+ __m256d 
+ cauchy_cdf_inv_ymm4r8(const __m256d a,
+                       const __m256d b,
+                       const __m256d x)   
+				__attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+ __m256
+ cauchy_cdf_inv_ymm8r4(const __m256 a,
+                       const __m256 b,
+                       const __m256 x) 
+                                __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				    
 #endif /*__GMS_PDF_CDF_AVX_H__*/
