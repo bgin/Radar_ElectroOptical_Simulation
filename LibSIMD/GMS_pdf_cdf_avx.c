@@ -1031,11 +1031,2234 @@ SOFTWARE.
 		    }
 		    
 		    
-		    
-		    
-		           
-                    
+/*
+       !*****************************************************************************80
+!
+!! RECIPROCAL_CDF evaluates the Reciprocal CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A <= B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
 
+
+               
+		    
+		   
+		      __m256d 
+		      reciprocal_cdf_ymm4r8(const __m256d x,
+		                            const __m256d a,
+		                            const __m256d b) {
+		          
+		          register __m256d ax,ab,l1,l2;
+		          register __m256d cdf;       
+		          ax = _mm256_div_pd(a,x);
+                          l1 = _mm256_log_pd(ax);
+	                  ab = _mm256_div_pd(a,b);
+                          l2 = _mm256_log_pd(ab);
+                          cdf= _mm256_div_pd(l1,l2);
+                          return (cdf);
+		     }
+		     
+		     
+		    
+		      __m256 
+		      reciprocal_cdf_ymm8r4(const __m256 x,
+		                             const __m256 a,
+		                             const __m256 b) {
+		          
+		          register __m256 ax,ab,l1,l2;
+		          register __m256 cdf;       
+		          ax = _mm256_div_ps(a,x);
+                          l1 = _mm256_log_ps(ax);
+	                  ab = _mm256_div_ps(a,b);
+                          l2 = _mm256_log_ps(ab);
+                          cdf= _mm256_div_ps(l1,l2);
+                          return (cdf);
+		     }
+		     
+		     
+/*
+          !*****************************************************************************80
+!
+!! RECIPROCAL_CDF_INV inverts the Reciprocal CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A <= B.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument of the CDF.
+!                      
+*/
+
+
+                      __m256d 		     
+		      reciprocal_cdf_inv_ymm4r8(const __m256d cdf,
+		                                const __m256d a,
+		                                const __m256d b) {
+		         
+		           register __m256d C1 = _mm256_set1_pd(1.0);
+		           register __m256d pow1,pow2,cdf1;
+		           register __m256d inv;
+		           cdf1 = _mm256_sub_pd(cdf,C1);
+		           pow2 = _mm256_pow_pd(b,cdf);
+		           pow1 = _mm256_pow_pd(a,cdf1);
+		           inv  = _mm256_div_pd(pow2,pow1);
+		           return (inv);                          
+		     }
+		     
+		     
 		  
+		      __m256		     
+		      reciprocal_cdf_inv_ymm8r4(const __m256 cdf,
+		                                const __m256 a,
+		                                const __m256 b) {
+		         
+		           register __m256 C1 = _mm256_set1_ps(1.0f);
+		           register __m256 pow1,pow2,cdf1;
+		           register __m256 inv;
+		           cdf1 = _mm256_sub_ps(cdf,C1);
+		           pow2 = _mm256_pow_ps(b,cdf);
+		           pow1 = _mm256_pow_ps(a,cdf1);
+		           inv  = _mm256_div_ps(pow2,pow1);
+		           return (inv);                          
+		     }  
+		     
+		     
+/*
+     !*****************************************************************************80
+!
+!! RECIPROCAL_MEAN returns the mean of the Reciprocal PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A <= B.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean of the PDF.
+!    
+*/
+
+
+                      __m256d 
+		      reciprocal_mean_ymm4r8(const __m256d a,
+		                             const __m256d b) {
+		           
+		           register __m256d ab,amb,l1;
+		           register __m256d mean;
+		           amb = _mm256_sub_pd(a,b);
+		           ab  = _mm256_div_pd(a,b);
+                           l1  = _mm256_log_pd(ab);
+	                   mean= _mm256_div_pd(amb,l1);
+                           return (mean);
+		     }	 
+		     
+		     
+		     
+		      __m256 
+		      reciprocal_mean_ymm8r4(const __m256 a,
+		                             const __m256 b) {
+		           
+		           register __m256 ab,amb,l1;
+		           register __m256 mean;
+		           amb = _mm256_sub_ps(a,b);
+		           ab  = _mm256_div_ps(a,b);
+                           l1  = _mm256_log_ps(ab);
+		           mean= _mm256_div_ps(amb,l1);
+                           return (mean);
+		     }	 
+		     		    
+		    
+/*
+           !*****************************************************************************80
+!
+!! RECIPROCAL_PDF evaluates the Reciprocal PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = 1.0D+00 / ( X * LOG ( B / A ) )
+!    for 0.0D+00 <= X
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A <= B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!                
+*/
+
+
+                    
+		      __m256d
+		      reciprocal_pdf_ymm4r8(    const __m256d x,
+		                                const __m256d a,
+		                                const __m256d b) {
+		          
+		          register __m256d C1 = _mm256_set1_pd(1.0);
+		          register __m256d ba,l1;
+		          register __m256d pdf;
+		          ba = _mm256_div_pd(b,a);
+                          l1 = _mm256_mul_pd(x,_mm256_log_pd(ba));
+	                  pdf= _mm256_div_pd(C1,l1);
+                          return (pdf);                            
+		    }
+		    
+		    
+		    
+		   
+		      __m256
+		      reciprocal_pdf_ymm8r4(    const __m256 x,
+		                                const __m256 a,
+		                                const __m256 b) {
+		          
+		          register __m256 C1 = _mm256_set1_ps(1.0f);
+		          register __m256 ba,l1;
+		          register __m256 pdf;
+		          ba = _mm256_div_ps(b,a);
+                          l1 = _mm256_mul_ps(x,_mm256_log_ps(ba));
+	                  pdf= _mm256_div_ps(C1,l1);
+                          return (pdf);                            
+		    }
+		    		           
+                    
+/*
+ 
+    !*****************************************************************************80
+!
+!! CHI_CDF evaluates the Chi CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    05 January 2000
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0 < B,
+!    0 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!                
+   
+*/
+
+                    
+		      __m256d
+		      chi_cdf_ymm4r8(const __m256d x,
+		                     const __m256d a,
+		                     const __m256d b,
+		                     const __m256d c) {
+		       
+		         const __m256d C05 = _mm256_set1_pd(0.5);
+		         __m256d p2,x2,y;
+		         __m256d cdf;
+		         y  = _mm256_div_pd(_mm256_sub_pd(x,a),b);
+		         x2 = _mm256_mul_pd(C05,_mm256_mul_pd(y,y));
+		         p2 = _mm256_mul_pd(C05,c);
+		         cdf= gamma_incomplete_ymm4r8(p2,x2);
+		         return (cdf);               
+		   }
+		   
+		   
+		    
+		      __m256
+		      chi_cdf_ymm8r4(const __m256 x,
+		                      const __m256 a,
+		                      const __m256 b,
+		                      const __m256 c) {
+		       
+		         const __m256 C05 = _mm256_set1_ps(0.5f);
+		         __m256 p2,x2,y;
+		         __m256 cdf;
+		         y  = _mm256_div_ps(_mm256_sub_ps(x,a),b);
+		         x2 = _mm256_mul_ps(C05,_mm256_mul_ps(y,y));
+		         p2 = _mm256_mul_ps(C05,c);
+		         cdf= gamma_incomplete_ymm8r4(p2,x2);
+		         return (cdf);               
+		   }
+		   
 		  
+/*
+   
+     !*****************************************************************************80
+!
+!! CHI_SQUARE_CDF evaluates the Chi squared CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the value of the random deviate.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the distribution, usually
+!    the number of degrees of freedom.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+
+*/
+
+
+                     
+		      __m256d
+		      chi_square_cdf_ymm4r8(const __m256d x,
+		                            const __m256d a) {
+		          
+		          const __m256d C05 = _mm256_set1_pd(0.5);
+		          const __m256d C1  = _mm256_set1_pd(1.0);
+		          register __m256d x2,a2,b2,c2;
+		          register __m256d cdf;
+		          a2 =  _mm256_setzero_pd();
+		          x2 =  _mm256_mul_pd(C05,C1);
+		          b2 =  C1;
+		          c2 =  _mm256_mul_pd(C05,a);
+		          cdf=  gamma_cdf_ymm4r8(x2,a2,b2,c2);
+		          return (cdf);                   
+		     }
+		     
+		     
+		    
+		      __m256
+		      chi_square_cdf_ymm8r4(const __m256 x,
+		                             const __m256 a) {
+		          
+		          const __m256 C05 = _mm256_set1_ps(0.5f);
+		          const __m256 C1  = _mm256_set1_ps(1.0f);
+		          register __m256 x2,a2,b2,c2;
+		          register __m256 cdf;
+		          a2 =  _mm256_setzero_ps();
+		          x2 =  _mm256_mul_ps(C05,C1);
+		          b2 =  C1;
+		          c2 =  _mm256_mul_ps(C05,a);
+		          cdf=  gamma_cdf_ymm8r4(x2,a2,b2,c2);
+		          return (cdf);                   
+		     }
+		     
+		     
+/*
+    
+       !*****************************************************************************80
+!
+!! CHI_MEAN returns the mean of the Chi PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    31 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0 < B,
+!    0 < C.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean value.
+!   
+
+*/
+
+
+                    
+		      __m256d
+                      chi_mean_ymm4r8(const __m256d a,
+                                      const __m256d b,
+                                      const __m256d c) {
+                          
+                          const __m256d C05 = _mm256_set1_pd(0.5);
+                          const __m256d C1  = _mm256_set1_pd(1.0);
+                          const __m256d C2  = _mm256_set1_pd(2.0);
+                          const __m256d C141421356237309504880169 = 
+                                              _mm256_set1_pd(1.41421356237309504880169);
+                          register __m256d g0,g1,arg,t0;
+                          register __m256d mean;
+                          arg = _mm256_mul_pd(C05,_mm256_add_pd(c,C1));
+                          g0  = gamma_ymm4r8(arg);
+                          t0  = _mm256_mul_pd(C141421356237309504880169,b);
+                          g1  = gamma_ymm4r8(_mm256_mul_pd(C05,c));
+                          mean= _mm256_add_pd(a,_mm256_div_pd(_mm256_mul_pd(t0,g0),g1));
+                          return (mean);
+                    }	
+                    
+                    
+                    
+		      __m256
+                      chi_mean_ymm8r4(const __m256 a,
+                                      const __m256 b,
+                                      const __m256 c) {
+                          
+                          const __m256 C05 = _mm256_set1_ps(0.5f);
+                          const __m256 C1  = _mm256_set1_ps(1.0f);
+                          const __m256 C2  = _mm256_set1_ps(2.0f);
+                          const __m256 C141421356237309504880169 = 
+                                              _mm256_set1_ps(1.41421356237309504880169f);
+                          register __m256 g0,g1,arg,t0;
+                          register __m256 mean;
+                          arg = _mm256_mul_ps(C05,_mm256_add_pd(c,C1));
+                          g0  = gamma_ymm8r4(arg);
+                          t0  = _mm256_mul_ps(C141421356237309504880169,b);
+                          g1  = gamma_ymm8r4(_mm256_mul_ps(C05,c));
+                          mean= _mm256_add_ps(a,_mm256_div_ps(_mm256_mul_ps(t0,g0),g1));
+                          return (mean);
+                    }	   
+                    
+		      
+/*
+ !*****************************************************************************80
+!
+!! BESSEL_I0 evaluates the modified Bessel function I0(X).
+!
+!  Discussion:
+!
+!    The main computation evaluates slightly modified forms of
+!    minimax approximations generated by Blair and Edwards, Chalk
+!    River (Atomic Energy of Canada Limited) Report AECL-4928,
+!    October, 1974.  This transportable program is patterned after
+!    the machine dependent FUNPACK packet NATSI0, but cannot match
+!    that version for efficiency or accuracy.  This version uses
+!    rational functions that theoretically approximate I-SUB-0(X)
+!    to at least 18 significant decimal digits.
+!
+!  Machine dependent constants:
+!
+!    beta   = Radix for the floating-point system
+!    maxexp = Smallest power of beta that overflows
+!    XMAX =   Largest argument acceptable to BESI0;  Solution to
+!             equation:
+!               W(X) * (1+1/(8*X)+9/(128*X^2) = beta^maxexp
+!             where  W(X) = EXP(X)/sqrt(2*PI*X)
+!
+!    Approximate values for some important machines are:
+!
+!                             beta       maxexp       XMAX
+!
+!    CRAY-1        (S.P.)       2         8191       5682.810
+!    Cyber 180/855
+!      under NOS   (S.P.)       2         1070        745.893
+!    IEEE (IBM/XT,
+!      SUN, etc.)  (S.P.)       2          128         91.900
+!    IEEE (IBM/XT,
+!      SUN, etc.)  (D.P.)       2         1024        713.986
+!    IBM 3033      (D.P.)      16           63        178.182
+!    VAX           (S.P.)       2          127         91.203
+!    VAX D-Format  (D.P.)       2          127         91.203
+!    VAX G-Format  (D.P.)       2         1023        713.293
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    17 October 2008
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) ARG, the argument.
+!
+!    Output, real ( kind = 8 ) BESSEL_I0, the value of the modified
+!    Bessel function of the first kind.
+!
+*/
+
+
+                    
+		      __m256d  bessesl_i0_ymm4r8(const __m256d arg) {
+                            __attribute__((section(".rodata")))
+                            __ATTR_ALIGN__(32) static __m256d p[15] = {_mm256_set1_pd(-5.2487866627945699800E-18),
+                                                                      _mm256_set1_pd(-1.5982226675653184646E-14), 
+                                                                      _mm256_set1_pd(-2.6843448573468483278E-11), 
+                                                                      _mm256_set1_pd(-3.0517226450451067446E-08), 
+                                                                      _mm256_set1_pd(-2.5172644670688975051E-05), 
+                                                                      _mm256_set1_pd(-1.5453977791786851041E-02), 
+                                                                      _mm256_set1_pd(-7.0935347449210549190E+00), 
+                                                                      _mm256_set1_pd(-2.4125195876041896775E+03), 
+                                                                      _mm256_set1_pd(-5.9545626019847898221E+05), 
+                                                                      _mm256_set1_pd(-1.0313066708737980747E+08), 
+                                                                      _mm256_set1_pd(-1.1912746104985237192E+10), 
+                                                                      _mm256_set1_pd(-8.4925101247114157499E+11), 
+                                                                      _mm256_set1_pd(-3.2940087627407749166E+13), 
+                                                                      _mm256_set1_pd(-5.5050369673018427753E+14), 
+                                                                      _mm256_set1_pd(-2.2335582639474375249E+15)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256d pp[8] = {_mm256_set1_pd(-3.9843750000000000000E-01), 
+                                                                      _mm256_set1_pd(2.9205384596336793945E+00), 
+                                                                      _mm256_set1_pd(-2.4708469169133954315E+00), 
+                                                                      _mm256_set1_pd(4.7914889422856814203E-01), 
+                                                                      _mm256_set1_pd(-3.7384991926068969150E-03), 
+                                                                      _mm256_set1_pd(-2.6801520353328635310E-03), 
+                                                                      _mm256_set1_pd(9.9168777670983678974E-05), 
+                                                                      _mm256_set1_pd(-2.1877128189032726730E-06)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256d q[5]  = {_mm256_set1_pd(-3.7277560179962773046E+03), 
+                                                                      _mm256_set1_pd(6.5158506418655165707E+06), 
+                                                                      _mm256_set1_pd(-6.5626560740833869295E+09), 
+                                                                      _mm256_set1_pd(3.7604188704092954661E+12), 
+                                                                      _mm256_set1_pd(-9.7087946179594019126E+14)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256d qq[7] = {_mm256_set1_pd(-3.1446690275135491500E+01), 
+                                                                      _mm256_set1_pd(8.5539563258012929600E+01), 
+                                                                      _mm256_set1_pd(-6.0228002066743340583E+01), 
+                                                                      _mm256_set1_pd(1.3982595353892851542E+01), 
+                                                                      _mm256_set1_pd(-1.1151759188741312645E+00), 
+                                                                      _mm256_set1_pd(3.2547697594819615062E-02), 
+                                                                      _mm256_set1_pd(-5.5194330231005480228E-04)};
+			    const __m256d rec15                    =  _mm256_set1_pd(6.6666666666666666666E-02);
+			    const __m256d xmax                     =  _mm256_set1_pd(91.9E+00);
+			    const __m256d exp40                    =  _mm256_set1_pd(2.353852668370199854E+17);
+			    const __m256d _1                       =  _mm256_set1_pd(1.0);
+			    const __m256d _15                      =  _mm256_set1_pd(15.0);
+			    const __m256d _225                     =  _mm256_set1_pd(225.0);
+			    const __m256d _40                      =  _mm256_set1_pd(40.0);
+			    const __m256d eps                      =  _mm256_set1_pd(DBL_EPSILON);
+			    const __m256d huge                     =  _mm256_set1_pd(DBL_MAX);
+			    __m256d value,a,b,bessel_i0;
+			    __m256d sump,sumq,x,xx;
+                            x = _mm256_abs_pd(arg);
+			    if(_mm256_cmp_pd_mask(x,eps,_CMP_LT_OQ)) {
+                               value = _1;
+			    }
+			    else if(_mm256_cmp_pd_mask(x,_15,_CMP_LT_OQ)) {
+                               xx   = _mm256_mul_pd(x,x);
+			       sump = p[0];
+			       sump = _mm256_fmadd_pd(sump,xx,p[1]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[2]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[3]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[4]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[5]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[6]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[7]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[8]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[9]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[10]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[11]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[12]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[13]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[14]);
+			       xx   = _mm256_sub_pd(xx,_225);
+			       const __m256d xxq0 = _mm256_add_pd(xx,q[0]);
+			       const __m256d xxq1 = _mm256_add_pd(xx,q[1]);
+			       const __m256d xxq2 = _mm256_add_pd(xx,q[2]);
+			       const __m256d xxq3 = _mm256_add_pd(xx,q[3]);
+			       const __m256d xxq4 = _mm256_add_pd(xx,q[4]);
+			       sumq = _mm256_mul_pd(xxq0,
+			                        _mm256_mul_pd(xxq1,
+						          _mm256_mul_pd(xxq2,
+							            _mm256_mul_pd(xxq3,xxq4))));
+			       value = _mm256_div_pd(sump,sumq);
+			                                         
+			    }
+			    else if(_mm256_cmp_pd_mask(_15,x,_CMP_LE_OQ)) {
+                                    if(_mm256_cmp_pd_mask(xmax,x,_CMP_LT_OQ)) {
+                                       value = huge;
+				    }
+				    else {
+                                           xx = _mm256_sub_pd(_mm256_div_pd(_1,x),rec15);
+					   const __m256d t0 = _mm256_fmadd_pd(pp[0],xx,pp[1]);
+					   const __m256d c0 = _mm256_fmadd_pd(_mm256_add_pd(xx,qq[0]),xx,qq[1]);
+					   const __m256d t1 = _mm256_fmadd_pd(t0,xx,pp[2]);
+					   const __m256d c1 = _mm256_fmadd_pd(c0,xx,qq[2]);
+					   const __m256d t2 = _mm256_fmadd_pd(t1,xx,pp[3]);
+					   const __m256d c2 = _mm256_fmadd_pd(c1,xx,qq[3]);
+					   const __m256d t3 = _mm256_fmadd_pd(t2,xx,pp[4]);
+					   const __m256d c3 = _mm256_fmadd_pd(c2,xx,qq[4]);
+					   const __m256d t4 = _mm256_fmadd_pd(t3,xx,pp[5]);
+					   const __m256d c4 = _mm256_fmadd_pd(c3,xx,qq[5]);
+					   const __m256d t5 = _mm256_fmadd_pd(t4,xx,pp[6]);
+					   const __m256d c5 = _mm256_fmadd_pd(c4,xx,qq[6]);
+					   const __m256d t6 = _mm256_fmadd_pd(t5,xx,pp[7]);
+					   sump             = t6;
+					   sumq             = c5;
+					   value            = _mm256_div_pd(sump,sumq);
+					   const __mmask8 m = _mm256_cmp_pd_mask(x,_mm256_sub_pd(xmax,_15),_CMP_LE_OQ);
+					   a                = _mm256_mask_blend_pd(m,_mm256_exp_pd(_mm256_sub_pd(x,_40)),
+					                                             _mm256_exp_pd(x));
+					   b                = _mm256_mask_blend_pd(m,exp40,_1);
+					   const __m256 tmp = _mm256_sub_pd(_mm256_mul_pd(value,a),
+					                                    _mm256_mul_pd(pp[0],a));
+					   value            = _mm256_mul_pd(_mm256_div_pd(tmp,_mm256_sqrt_pd(x)),b);
+				    }
+			    }
+			   
+			    bessel_i0 = value;
+			    return (bessel_i0);
+		    }
+		    
+		    
+                           __m256  bessesl_i0_ymm8r4(const __m256 arg) {
+                            __attribute__((section(".rodata")))
+                            __ATTR_ALIGN__(32) static __m256 p[15] = {_mm256_set1_ps(-5.2487866627945699800E-18f),
+                                                                      _mm256_set1_ps(-1.5982226675653184646E-14f), 
+                                                                      _mm256_set1_ps(-2.6843448573468483278E-11f), 
+                                                                      _mm256_set1_ps(-3.0517226450451067446E-08f), 
+                                                                      _mm256_set1_ps(-2.5172644670688975051E-05f), 
+                                                                      _mm256_set1_ps(-1.5453977791786851041E-02f), 
+                                                                      _mm256_set1_ps(-7.0935347449210549190E+00f), 
+                                                                      _mm256_set1_ps(-2.4125195876041896775E+03f), 
+                                                                      _mm256_set1_ps(-5.9545626019847898221E+05f), 
+                                                                      _mm256_set1_ps(-1.0313066708737980747E+08f), 
+                                                                      _mm256_set1_ps(-1.1912746104985237192E+10f), 
+                                                                      _mm256_set1_ps(-8.4925101247114157499E+11f), 
+                                                                      _mm256_set1_ps(-3.2940087627407749166E+13f), 
+                                                                      _mm256_set1_ps(-5.5050369673018427753E+14f), 
+                                                                      _mm256_set1_ps(-2.2335582639474375249E+15f)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256 pp[8] = {_mm256_set1_ps(-3.9843750000000000000E-01f), 
+                                                                      _mm256_set1_ps(2.9205384596336793945E+00f), 
+                                                                      _mm256_set1_ps(-2.4708469169133954315E+00f), 
+                                                                      _mm256_set1_ps(4.7914889422856814203E-01f), 
+                                                                      _mm256_set1_ps(-3.7384991926068969150E-03f), 
+                                                                      _mm256_set1_ps(-2.6801520353328635310E-03f), 
+                                                                      _mm256_set1_ps(9.9168777670983678974E-05f), 
+                                                                      _mm256_set1_ps(-2.1877128189032726730E-06f)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256 q[5]  = {_mm256_set1_ps(-3.7277560179962773046E+03f), 
+                                                                      _mm256_set1_ps(6.5158506418655165707E+06f), 
+                                                                      _mm256_set1_ps(-6.5626560740833869295E+09f), 
+                                                                      _mm256_set1_ps(3.7604188704092954661E+12f), 
+                                                                      _mm256_set1_ps(-9.7087946179594019126E+14f)};
+                            __attribute__((section(".rodata")))
+			    __ATTR_ALIGN__(32) static __m256 qq[7] = {_mm256_set1_ps(-3.1446690275135491500E+01f), 
+                                                                      _mm256_set1_ps(8.5539563258012929600E+01f), 
+                                                                      _mm256_set1_ps(-6.0228002066743340583E+01f), 
+                                                                      _mm256_set1_ps(1.3982595353892851542E+01f), 
+                                                                      _mm256_set1_ps(-1.1151759188741312645E+00f), 
+                                                                      _mm256_set1_ps(3.2547697594819615062E-02f), 
+                                                                      _mm256_set1_ps(-5.5194330231005480228E-04f)};
+			    const __m256 rec15                    =  _mm256_set1_ps(6.6666666666666666666E-02f);
+			    const __m256 xmax                     =  _mm256_set1_ps(91.9E+00f);
+			    const __m256 exp40                    =  _mm256_set1_ps(2.353852668370199854E+17f);
+			    const __m256 _1                       =  _mm256_set1_ps(1.0f);
+			    const __m256 _15                      =  _mm256_set1_ps(15.0f);
+			    const __m256 _225                     =  _mm256_set1_ps(225.0f);
+			    const __m256 _40                      =  _mm256_set1_ps(40.0f);
+			    const __m256 eps                      =  _mm256_set1_pd(FLT_EPSILON);
+			    const __m256 huge                     =  _mm256_set1_pd(FLT_MAX);
+			    __m256 value,a,b,bessel_i0;
+			    __m256 sump,sumq,x,xx;
+                            x = _mm256_abs_ps(arg);
+			    if(_mm256_cmp_ps_mask(x,eps,_CMP_LT_OQ)) {
+                               value = _1;
+			    }
+			    else if(_mm256_cmp_ps_mask(x,_15,_CMP_LT_OQ)) {
+                               xx   = _mm256_mul_ps(x,x);
+			       sump = p[0];
+			       sump = _mm256_fmadd_ps(sump,xx,p[1]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[2]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[3]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[4]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[5]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[6]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[7]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[8]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[9]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[10]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[11]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[12]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[13]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[14]);
+			       xx   = _mm256_sub_ps(xx,_225);
+			       const __m256 xxq0 = _mm256_add_ps(xx,q[0]);
+			       const __m256 xxq1 = _mm256_add_ps(xx,q[1]);
+			       const __m256 xxq2 = _mm256_add_ps(xx,q[2]);
+			       const __m256 xxq3 = _mm256_add_ps(xx,q[3]);
+			       const __m256 xxq4 = _mm256_add_ps(xx,q[4]);
+			       sumq = _mm256_mul_ps(xxq0,
+			                        _mm256_mul_ps(xxq1,
+						          _mm256_mul_ps(xxq2,
+							            _mm256_mul_ps(xxq3,xxq4))));
+			       value = _mm256_div_ps(sump,sumq);
+			                                         
+			    }
+			    else if(_mm256_cmp_ps_mask(_15,x,_CMP_LE_OQ)) {
+                                    if(_mm256_cmp_ps_mask(xmax,x,_CMP_LT_OQ)) {
+                                       value = huge;
+				    }
+				    else {
+                                           xx = _mm256_sub_ps(_mm256_div_ps(_1,x),rec15);
+					   const __m256 t0 = _mm256_fmadd_ps(pp[0],xx,pp[1]);
+					   const __m256 c0 = _mm256_fmadd_ps(_mm256_add_ps(xx,qq[0]),xx,qq[1]);
+					   const __m256 t1 = _mm256_fmadd_ps(t0,xx,pp[2]);
+					   const __m256 c1 = _mm256_fmadd_ps(c0,xx,qq[2]);
+					   const __m256 t2 = _mm256_fmadd_ps(t1,xx,pp[3]);
+					   const __m256 c2 = _mm256_fmadd_ps(c1,xx,qq[3]);
+					   const __m256 t3 = _mm256_fmadd_ps(t2,xx,pp[4]);
+					   const __m256 c3 = _mm256_fmadd_ps(c2,xx,qq[4]);
+					   const __m256 t4 = _mm256_fmadd_ps(t3,xx,pp[5]);
+					   const __m256 c4 = _mm256_fmadd_ps(c3,xx,qq[5]);
+					   const __m256 t5 = _mm256_fmadd_ps(t4,xx,pp[6]);
+					   const __m256 c5 = _mm256_fmadd_ps(c4,xx,qq[6]);
+					   const __m256 t6 = _mm256_fmadd_ps(t5,xx,pp[7]);
+					   sump             = t6;
+					   sumq             = c5;
+					   value            = _mm256_div_ps(sump,sumq);
+					   const __mmask8 m = _mm256_cmp_ps_mask(x,_mm256_sub_ps(xmax,_15),_CMP_LE_OQ);
+
+					   a                = _mm256_mask_blend_ps(m,_mm256_exp_ps(_mm256_sub_ps(x,_40)),
+					                                             _mm256_exp_ps(x));
+   					   b                = _mm256_mask_blend_ps(m,exp40,_1);
+					   const __m256 tmp = _mm256_sub_ps(_mm256_mul_ps(value,a),
+					                                    _mm256_mul_ps(pp[0],a));
+					   value            = _mm256_mul_ps(_mm256_div_ps(tmp,_mm256_sqrt_ps(x)),b);
+				    }
+			    }
+			   
+			    bessel_i0 = value;
+			    return (bessel_i0);
+		    }
+		    
+		    
+/*
+ !*****************************************************************************80
+!
+!! BESSEL_I1 evaluates the Bessel I function of order I.
+!
+!  Discussion:
+!
+!    The main computation evaluates slightly modified forms of
+!    minimax approximations generated by Blair and Edwards.
+!    This transportable program is patterned after the machine-dependent
+!    FUNPACK packet NATSI1, but cannot match that version for efficiency
+!    or accuracy.  This version uses rational functions that theoretically
+!    approximate I-SUB-1(X) to at least 18 significant decimal digits.
+!    The accuracy achieved depends on the arithmetic system, the compiler,
+!    the intrinsic functions, and proper selection of the machine-dependent
+!    constants.
+!
+!  Machine-dependent constants:
+!
+!    beta   = Radix for the floating-point system.
+!    maxexp = Smallest power of beta that overflows.
+!    XMAX =   Largest argument acceptable to BESI1;  Solution to
+!             equation:
+!               EXP(X) * (1-3/(8*X)) / SQRT(2*PI*X) = beta**maxexp
+!
+!
+!    Approximate values for some important machines are:
+!
+!                            beta       maxexp    XMAX
+!
+!    CRAY-1        (S.P.)       2         8191    5682.810
+!    Cyber 180/855
+!      under NOS   (S.P.)       2         1070     745.894
+!    IEEE (IBM/XT,
+!      SUN, etc.)  (S.P.)       2          128      91.906
+!    IEEE (IBM/XT,
+!      SUN, etc.)  (D.P.)       2         1024     713.987
+!    IBM 3033      (D.P.)      16           63     178.185
+!    VAX           (S.P.)       2          127      91.209
+!    VAX D-Format  (D.P.)       2          127      91.209
+!    VAX G-Format  (D.P.)       2         1023     713.293
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    27 October 2004
+!
+!  Author:
+!
+!    Original FORTRAN77 version by William Cody, Laura Stoltz.
+!    FORTRAN90 version by John Burkardt.
+!
+!  Reference:
+!
+!    Blair, Edwards,
+!    Chalk River Report AECL-4928,
+!    Atomic Energy of Canada, Limited,
+!    October, 1974.
+!
+!  Parameters:
+!
+!    Input, real (kind = 8 ) ARG, the argument.
+!
+!    Output, real ( kind = 8 ) BESSEL_I1, the value of the Bessel
+!    I1 function.
+!
+*/
+
+
+                    
+		      __m256d bessel_i1_ymm4r8(const __m256d arg) {
+                           __attribute__((section(".rodata")))
+                           __ATTR_ALIGN__(32) static __m256d  p[15] = {_mm256_set1_pd(-1.9705291802535139930E-19), 
+                                                                      _mm256_set1_pd(-6.5245515583151902910E-16), 
+                                                                      _mm256_set1_pd(-1.1928788903603238754E-12), 
+                                                                      _mm256_set1_pd(-1.4831904935994647675E-09), 
+                                                                      _mm256_set1_pd(-1.3466829827635152875E-06), 
+                                                                      _mm256_set1_pd(-9.1746443287817501309E-04), 
+                                                                      _mm256_set1_pd(-4.7207090827310162436E-01), 
+                                                                      _mm256_set1_pd(-1.8225946631657315931E+02), 
+                                                                      _mm256_set1_pd(-5.1894091982308017540E+04), 
+                                                                      _mm256_set1_pd(-1.0588550724769347106E+07), 
+                                                                      _mm256_set1_pd(-1.4828267606612366099E+09), 
+                                                                      _mm256_set1_pd(-1.3357437682275493024E+11), 
+                                                                      _mm256_set1_pd(-6.9876779648010090070E+12), 
+                                                                      _mm256_set1_pd(-1.7732037840791591320E+14), 
+                                                                      _mm256_set1_pd(-1.4577180278143463643E+15)};
+                           __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256d pp[8]  = {_mm256_set1_pd(-6.0437159056137600000E-02), 
+                                                                      _mm256_set1_pd(4.5748122901933459000E-01), 
+                                                                      _mm256_set1_pd(-4.2843766903304806403E-01), 
+                                                                      _mm256_set1_pd(9.7356000150886612134E-02), 
+                                                                      _mm256_set1_pd(-3.2457723974465568321E-03), 
+                                                                      _mm256_set1_pd(-3.6395264712121795296E-04), 
+                                                                      _mm256_set1_pd(1.6258661867440836395E-05), 
+                                                                      _mm256_set1_pd(-3.6347578404608223492E-07)};
+                           __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256d q[5]   = {_mm256_set1_pd(-4.0076864679904189921E+03), 
+                                                                      _mm256_set1_pd(7.4810580356655069138E+06), 
+                                                                      _mm256_set1_pd(-8.0059518998619764991E+09), 
+                                                                      _mm256_set1_pd(4.8544714258273622913E+12), 
+                                                                      _mm256_set1_pd(-1.3218168307321442305E+15)};
+                           __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256d qq[6]  = {_mm256_set1_pd(-3.8806586721556593450E+00), 
+                                                                      _mm256_set1_pd(3.2593714889036996297E+00), 
+                                                                      _mm256_set1_pd(-8.5017476463217924408E-01), 
+                                                                      _mm256_set1_pd(7.4212010813186530069E-02), 
+                                                                      _mm256_set1_pd(-2.2835624489492512649E-03), 
+                                                                      _mm256_set1_pd(3.7510433111922824643E-05)};
+			   const __m256d exp40                     =  _mm256_set1_pd(2.353852668370199854E+17);
+			   const __m256d _40                       =  _mm256_set1_pd(40.0);
+			   const __m256d _1_2                      =  _mm256_set1_pd(0.5);
+			   const __m256d _1                        =  _mm256_set1_pd(1.0);
+			   const __m256d _15                       =  _mm256_set1_pd(15.0);
+			   const __m256d pbar                      =  _mm256_set1_pd(3.98437500E-01);
+			   const __m256d rec15                     =  _mm256_set1_pd(6.6666666666666666666E-02);
+			   const __m256d _225                      =  _mm256_set1_pd(225.0);
+			   const __m256d xmax                      =  _mm256_set1_pd(713.987E+00);
+			   const __m256d _0                        =  _mm256_setzero_pd();
+			   const __m256d eps                       =  _mm256_set1_pd(DBL_EPSILON);
+			   const __m256d huge                      =  _mm256_set1_pd(DBL_MAX);
+			   __m256d a,b,bessel_i1,value;
+			   __m256d sump,sumq,x,xx;
+
+			   x  = _mm256_abs_pd(arg);
+			   if(_mm256_cmp_pd_mask(x,eps,_CMP_LT_OQ)) {
+                               value = _mm256_mul_pd(_1_2,x);
+			   }
+			   else if(_mm256_cmp_pd_mask(x,_15,_CMP_LT_OQ)) {
+                               xx   = _mm256_mul_pd(x,x);
+			       sump = p[0];
+			       sump = _mm256_fmadd_pd(sump,xx,p[1]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[2]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[3]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[4]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[5]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[6]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[7]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[8]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[9]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[10]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[11]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[12]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[13]);
+			       sump = _mm256_fmadd_pd(sump,xx,p[14]);
+			       xx   = _mm256_sub_pd(xx,_225);
+			       const __m256d t0 = _mm256_fmadd_pd(_mm256_add_pd(xx,q[0]),xx,q[1]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,q[2]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,q[3]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,q[4]);
+			       sumq             = t3;
+			       value            = _mm256_mul_pd(_mm256_div_pd(sump,sumq),x);
+			   }
+			   else if(_mm256_cmp_pd_mask(xmax,x,_CMP_LT_OQ)) {
+                               value            = huge;
+			   }
+			   else {
+                               xx               = _mm256_sub_pd(_mm256_div_pd(_1,x),rec15);
+			       const __m256d t0 = _mm256_fmadd_pd(pp[0],xx,pp[1]);
+			       const __m256d c0 = _mm256_fmadd_pd(_mm256_add_pd(xx,qq[0]),xx,qq[1]);
+			       const __m256d t1 = _mm256_fmadd_pd(t0,xx,pp[2]);
+			       const __m256d c1 = _mm256_fmadd_pd(c0,xx,qq[2]);
+			       const __m256d t2 = _mm256_fmadd_pd(t1,xx,pp[3]);
+			       const __m256d c2 = _mm256_fmadd_pd(c1,xx,qq[3]);
+			       const __m256d t3 = _mm256_fmadd_pd(t2,xx,pp[4]);
+			       const __m256d c3 = _mm256_fmadd_pd(c2,xx,qq[4]);
+			       const __m256d t4 = _mm256_fmadd_pd(t3,xx,pp[5]);
+			       const __m256d c4 = _mm256_fmadd_pd(c3,xx,qq[5]);
+			       const __m256d t5 = _mm256_fmadd_pd(t4,xx,pp[6]);
+			       const __m256d c5 = _mm256_fmadd_pd(c4,xx,qq[6]);
+			       const __m256d t6 = _mm256_fmadd_pd(t5,xx,pp[7]);
+			       sump             = t6;
+			       sumq             = c5;
+			       value            = _mm256_div_pd(sump,sumq);
+			       const __mmask8 m = _mm256_cmp_pd_mask(_mm256_sub_pd(xmax,_15),_CMP_LT_OQ);
+
+			       a                = _mm256_mask_blend_pd(m,_mm256_exp_pd(x),
+			                                                           _mm256_exp_pd(_mm256_sub_pd(x,_40)));
+			       b                = _mm256_mask_blend_pd(m,_1,_40);
+			       const __m256d tmp= _mm256_add_pd(_mm256_mul_pd(value,a),
+			                                        _mm256_mul_pd(pbar,a));
+			       value            = _mm256_mul_pd(_mm256_div_pd(tmp,_mm256_sqrt_pd(x)),b);
+			   }
+			   if(_mm256_cmp_pd_mask(arg,_0,_CMP_LT_OQ)) {
+                              value             = ymm4r8_negate(value);
+			   }
+			   bessel_i1            = value
+			   return (bessel_i1);
+		    }
+		    
+		    
+                    __m256 bessel_i1_ymm8r4(const __m256 arg) {
+                           __attribute__((section(".rodata")))
+                           __ATTR_ALIGN__(32) static __m256  p[15] = {_mm256_set1_ps(-1.9705291802535139930E-19f), 
+                                                                      _mm256_set1_ps(-6.5245515583151902910E-16f), 
+                                                                      _mm256_set1_ps(-1.1928788903603238754E-12f), 
+                                                                      _mm256_set1_ps(-1.4831904935994647675E-09f), 
+                                                                      _mm256_set1_ps(-1.3466829827635152875E-06f), 
+                                                                      _mm256_set1_ps(-9.1746443287817501309E-04f), 
+                                                                      _mm256_set1_ps(-4.7207090827310162436E-01f), 
+                                                                      _mm256_set1_ps(-1.8225946631657315931E+02f), 
+                                                                      _mm256_set1_ps(-5.1894091982308017540E+04f), 
+                                                                      _mm256_set1_ps(-1.0588550724769347106E+07f), 
+                                                                      _mm256_set1_ps(-1.4828267606612366099E+09f), 
+                                                                      _mm256_set1_ps(-1.3357437682275493024E+11f), 
+                                                                      _mm256_set1_ps(-6.9876779648010090070E+12f), 
+                                                                      _mm256_set1_ps(-1.7732037840791591320E+14f), 
+                                                                      _mm256_set1_ps(-1.4577180278143463643E+15f)};
+                           __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256 pp[8]  = {_mm256_set1_ps(-6.0437159056137600000E-02f), 
+                                                                      _mm256_set1_ps(4.5748122901933459000E-01f), 
+                                                                      _mm256_set1_ps(-4.2843766903304806403E-01f), 
+                                                                      _mm256_set1_ps(9.7356000150886612134E-02f), 
+                                                                      _mm256_set1_ps(-3.2457723974465568321E-03f), 
+                                                                      _mm256_set1_ps(-3.6395264712121795296E-04f), 
+                                                                      _mm256_set1_ps(1.6258661867440836395E-05f), 
+                                                                      _mm256_set1_ps(-3.6347578404608223492E-07f)};
+                           __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256 q[5]   = {_mm256_set1_ps(-4.0076864679904189921E+03f), 
+                                                                      _mm256_set1_ps(7.4810580356655069138E+06f), 
+                                                                      _mm256_set1_ps(-8.0059518998619764991E+09f), 
+                                                                      _mm256_set1_ps(4.8544714258273622913E+12f), 
+                                                                      _mm256_set1_ps(-1.3218168307321442305E+15f)};
+                          __attribute__((section(".rodata")))
+			   __ATTR_ALIGN__(32) static __m256 qq[6]  = {_mm256_set1_ps(-3.8806586721556593450E+00f), 
+                                                                      _mm256_set1_ps(3.2593714889036996297E+00f), 
+                                                                      _mm256_set1_ps(-8.5017476463217924408E-01f), 
+                                                                      _mm256_set1_ps(7.4212010813186530069E-02f), 
+                                                                      _mm256_set1_ps(-2.2835624489492512649E-03f), 
+                                                                      _mm256_set1_ps(3.7510433111922824643E-05f)};
+			   const __m256 exp40                     =  _mm256_set1_ps(2.353852668370199854E+17f);
+			   const __m256 _40                       =  _mm256_set1_ps(40.0f);
+			   const __m256 _1_2                      =  _mm256_set1_ps(0.5f);
+			   const __m256 _1                        =  _mm256_set1_ps(1.0f);
+			   const __m256 _15                       =  _mm256_set1_ps(15.0f);
+			   const __m256 pbar                      =  _mm256_set1_ps(3.98437500E-01f);
+			   const __m256 rec15                     =  _mm256_set1_ps(6.6666666666666666666E-02f);
+			   const __m256 _225                      =  _mm256_set1_ps(225.0f);
+			   const __m256 xmax                      =  _mm256_set1_ps(713.987E+00f);
+			   const __m256 _0                        =  _mm256_setzero_ps();
+			   const __m256 eps                       =  _mm256_set1_ps(FLT_EPSILON);
+			   const __m256 huge                      =  _mm256_set1_ps(FLT_MAX);
+			   __m256 a,b,bessel_i1,value;
+			   __m256 sump,sumq,x,xx;
+
+			   x  = _mm256_abs_ps(arg);
+			   if(_mm256_cmp_ps_mask(x,eps,_CMP_LT_OQ)) {
+                               value = _mm256_mul_ps(_1_2,x);
+			   }
+			   else if(_mm256_cmp_ps_mask(x,_15,_CMP_LT_OQ)) {
+                               xx   = _mm256_mul_ps(x,x);
+			       sump = p[0];
+			       sump = _mm256_fmadd_ps(sump,xx,p[1]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[2]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[3]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[4]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[5]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[6]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[7]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[8]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[9]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[10]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[11]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[12]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[13]);
+			       sump = _mm256_fmadd_ps(sump,xx,p[14]);
+			       xx   = _mm256_sub_ps(xx,_225);
+			       const __m256 t0 = _mm256_fmadd_ps(_mm256_add_ps(xx,q[0]),xx,q[1]);
+			       const __m256 t1 = _mm256_fmadd_ps(t0,xx,q[2]);
+			       const __m256 t2 = _mm256_fmadd_ps(t1,xx,q[3]);
+			       const __m256 t3 = _mm256_fmadd_ps(t2,xx,q[4]);
+			       sumq             = t3;
+			       value            = _mm256_mul_ps(_mm256_div_ps(sump,sumq),x);
+			   }
+			   else if(_mm256_cmp_ps_mask(xmax,x,_CMP_LT_OQ)) {
+                               value            = huge;
+			   }
+			   else {
+                               xx               = _mm256_sub_ps(_mm256_div_ps(_1,x),rec15);
+			       const __m256 t0 = _mm256_fmadd_ps(pp[0],xx,pp[1]);
+			       const __m256 c0 = _mm256_fmadd_ps(_mm256_add_ps(xx,qq[0]),xx,qq[1]);
+			       const __m256 t1 = _mm256_fmadd_ps(t0,xx,pp[2]);
+			       const __m256 c1 = _mm256_fmadd_ps(c0,xx,qq[2]);
+			       const __m256 t2 = _mm256_fmadd_ps(t1,xx,pp[3]);
+			       const __m256 c2 = _mm256_fmadd_ps(c1,xx,qq[3]);
+			       const __m256 t3 = _mm256_fmadd_ps(t2,xx,pp[4]);
+			       const __m256 c3 = _mm256_fmadd_ps(c2,xx,qq[4]);
+			       const __m256 t4 = _mm256_fmadd_ps(t3,xx,pp[5]);
+			       const __m256 c4 = _mm256_fmadd_ps(c3,xx,qq[5]);
+			       const __m256 t5 = _mm256_fmadd_ps(t4,xx,pp[6]);
+			       const __m256 c5 = _mm256_fmadd_ps(c4,xx,qq[6]);
+			       const __m256 t6 = _mm256_fmadd_ps(t5,xx,pp[7]);
+			       sump             = t6;
+			       sumq             = c5;
+			       value            = _mm256_div_ps(sump,sumq);
+			       const __mmask16 m = _mm256_cmp_ps_mask(_mm256_sub_ps(xmax,_15),_CMP_LT_OQ);
+
+			       a                = _mm256_mask_blend_ps(m,_mm256_exp_ps(x),
+			                                                           _mm256_exp_ps(_mm256_sub_ps(x,_40)));
+			       b                = _mm256_mask_blend_ps(m,_1,_40);
+			       const __m256 tmp= _mm256_add_ps(_mm256_mul_ps(value,a),
+			                                        _mm256_mul_ps(pbar,a));
+			       value            = _mm256_mul_ps(_mm256_div_ps(tmp,_mm256_sqrt_ps(x)),b);
+			   }
+			   if(_mm256_cmp_ps_mask(arg,_0,_CMP_LT_OQ)) {
+                              value             = ymm8r4_negate(value);
+			   }
+			   bessel_i1            = value
+			   return (bessel_i1);
+		    }
+
+
+/*
+!*****************************************************************************80
+!
+!! BETA returns the value of the Beta function.
+!
+!  Discussion:
+!
+!    The Beta function is defined as
+!
+!      BETA(A,B) = ( GAMMA ( A ) * GAMMA ( B ) ) / GAMMA ( A + B )
+!                = Integral ( 0 <= T <= 1 ) T**(A-1) (1-T)**(B-1) dT.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 July 1998
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the function.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) BETA, the value of the function.
+!
+
+*/
+
+
+                       __m256d beta_ymm4r8(const __m256d a,
+		                          const __m256d b) {
+
+                    	const __m256d _0  = _mm256_setzero_pd();
+			const __m256d ab  = _mm256_add_pd(a,b);
+			__m256d beta      = _mm256_setzero_pd();
+			beta              = _mm256_exp_pd(
+			                              _mm256_sub_pd(
+						                 _mm256_add_pd(gamma_log_ymm4r8(a),
+								               gamma_log_ymm4r8(b)),
+			return (beta);						                     gamma_log_ymm4r8(ab)));
+		    }
+		    
+		    
+/*
+ !*****************************************************************************80
+!
+!! GAMMA_CDF evaluates the Gamma CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    02 January 2000
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A <= X
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+                    
+		      __m256d
+		      gamma_cdf_ymm4r8(const __m256d x,
+		                       const __m256d a,
+		                       const __m256d b,
+		                       const __m256d c) {
+		      
+		          register __m256d x2,p2;
+		          register __m256d cdf;
+		          p2 = c;
+		          x2 = _mm256_div_pd(_mm256_sub_pd(x,a),b);
+		          cdf= gamma_incomplete_ymm4r8(p2,x2);
+		          return (cdf);                  
+		    }
+		    
+		    
+		    
+                   
+		      __m256
+		      gamma_cdf_ymm8r4(const __m256 x,
+		                       const __m256 a,
+		                       const __m256 b,
+		                       const __m256 c) {
+		      
+		          register __m256 x2,p2;
+		          register __m256 cdf;
+		          p2 = c;
+		          x2 = _mm256_div_ps(_mm256_sub_ps(x,a),b);
+		          cdf= gamma_incomplete_ymm8r4(p2,x2);
+		          return (cdf);                  
+		    }
+		    
+		    
+/*
+      !*****************************************************************************80
+!
+!! R8_UNIFORM_01 returns a unit pseudorandom R8.
+!
+!  Discussion:
+!
+!    An R8 is a real ( kind = 8 ) value.
+!
+!    For now, the input quantity SEED is an integer ( kind = 4 ) variable.
+!
+!    This routine implements the recursion
+!
+!      seed = 16807 * seed mod ( 2**31 - 1 )
+!      r8_uniform_01 = seed / ( 2**31 - 1 )
+!
+!    The integer arithmetic never requires more than 32 bits,
+!    including a sign bit.
+!
+!    If the initial seed is 12345, then the first three computations are
+!
+!      Input     Output      R8_UNIFORM_01
+!      SEED      SEED
+!
+!         12345   207482415  0.096616
+!     207482415  1790989824  0.833995
+!    1790989824  2035175616  0.947702
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    05 July 2006
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Paul Bratley, Bennett Fox, Linus Schrage,
+!    A Guide to Simulation,
+!    Springer Verlag, pages 201-202, 1983.
+!
+!    Pierre L'Ecuyer,
+!    Random Number Generation,
+!    in Handbook of Simulation,
+!    edited by Jerry Banks,
+!    Wiley Interscience, page 95, 1998.
+!
+!    Bennett Fox,
+!    Algorithm 647:
+!    Implementation and Relative Efficiency of Quasirandom
+!    Sequence Generators,
+!    ACM Transactions on Mathematical Software,
+!    Volume 12, Number 4, pages 362-376, 1986.
+!
+!    Peter Lewis, Allen Goodman, James Miller
+!    A Pseudo-Random Number Generator for the System/360,
+!    IBM Systems Journal,
+!    Volume 8, pages 136-143, 1969.
+!
+!  Parameters:
+!
+!    Input/output, integer ( kind = 4 ) SEED, the "seed" value, which should
+!    NOT be 0. On output, SEED has been updated.
+!
+!    Output, real ( kind = 8 ) R8_UNIFORM_01, a new pseudorandom variate,
+!    strictly between 0 and 1   
+*/
+
+
+        
+		      __m256d 
+		      uniform_01_ymm4r8( __m256i * __restrict seed) {
+		         
+		         register __m256i C127773 = _mm256_set1_epi32(127773);
+		         register __m256i C16807  = _mm256_set1_epi32(16807);
+		         register __m256i C2836   = _mm256_set1_epi32(2836);
+		         register __m256d C4656612875 = _mm256_set1_pd(4.656612875e-10);
+		         register __m256i k,t0,t1;
+		         register __m256d uni01;
+		         k  = _mm256_div_epi32(*seed,C127773);
+		         t0 = _mm256_mul_epi32(k,C2836);
+		         t1 = _mm256_sub_epi32(*seed,_mm256_mul_epi32(k,C127773));
+		         *seed = _mm256_mul_epi32(C16807,_mm256_sub_epi32(t1,t0));
+		         if(_mm256_cmp_epi32_mask(seed,_mm256_setzero_epi32(),_CMP_LT_OQ)) 
+		            seed = _mm256_add_epi32(seed,_mm256_set1_epi32(2147483647));
+		         uni01   = _mm256_mul_pd(_mm256_castsi256_pd(seed),C4656612875);
+		         return (uni01);
+		     }
+		     
+		     
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256
+		      uniform_01_ymm8r4( __m256i * __restrict seed) {
+		            
+		            return (_mm256_castpd_ps(uniform_01_ymm4r8(*seed)));
+		      }
+		    
+
+/*
+     !*****************************************************************************80
+!
+!! NORMAL_CDF_INV inverts the Normal CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    23 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+! 
+*/
+
+
+                      __m256d 		   
+		      normal_cdf_inv_zmm8r8(const __m256d cdf,
+		                            const __m256d a,
+		                            const __m256d b) {
+		          
+		          register __m256d x2;
+		          register __m256d x;
+		          x2 = normal_01_cdf_inv_ymm4r8(cdf);
+		          x  = _mm256_add_pd(a,_mm256_mul_pd(b,x2));
+		          return (x);      
+		   }
+		   
+		   
+		    
+		      __m256 		   
+		      normal_cdf_inv_zmm16r4(const __m256 cdf,
+		                            const __m256 a,
+		                            const __m256 b) {
+		          
+		          register __m256 x2;
+		          register __m256 x;
+		          x2 = normal_01_cdf_inv_ymm8r4(cdf);
+		          x  = _mm256_add_ps(a,_mm256_mul_ps(b,x2));
+		          return (x);      
+		   } 
+		   
+		   
+/*
+   
+     !*****************************************************************************80
+!
+!! NORMAL_01_PDF evaluates the Normal 01 PDF.
+!
+!  Discussion:
+!
+!    The Normal 01 PDF is also called the "Standard Normal" PDF, or
+!    the Normal PDF with 0 mean and variance 1.
+!
+!    PDF(X) = exp ( - 0.5 * X^2 ) / sqrt ( 2 * PI )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    04 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF. 
+   
+*/
+
+      
+                    
+                    
+		      __m256d  
+		      normal_01_pdf_ymm4r8(const __m256d x) {
+		         
+		          register __m256d C039894228040143267793995 = 
+		                                   _mm256_set1_pd(0.39894228040143267793995);
+		          register __m256d C05 = _mm256_set1_pd(-0.5);
+		          register __m256d earg,pdf;
+		          earg = _mm256_mul_pd(C05,_mm256_mul_pd(x,x));
+                          pdf  = _mm256_mul_pd(_mm256_exp_pd(earg),C039894228040143267793995);
+                        		   
+                          return (pdf);
+		     }  
+		     
+		     
+		    __m256 
+		      normal_01_pdf_ymm8r4(const __m256 x) {
+		         
+		          register __m256 C039894228040143267793995 = 
+		                                   _mm256_set1_ps(0.39894228040143267793995f);
+		          register __m256 C05 = _mm256_set1_ps(-0.5f);
+		          register __m256 earg,pdf;
+		          earg = _mm256_mul_ps(C05,_mm256_mul_ps(x,x));
+                          pdf  = _mm256_mul_ps(_mm256_exp_ps(earg),C039894228040143267793995);
+                        		   
+                          return (pdf);
+		     }   
+		     
+		     
+/*
+     !*****************************************************************************80
+!
+!! BETA_SAMPLE samples the Beta PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    05 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    William Kennedy, James Gentle,
+!    Algorithm BN,
+!    Statistical Computing,
+!    Dekker, 1980.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF. 
+*/
+                 
+
+                     
+		      __m256d 
+                      beta_sample_ymm4r8(const __m256d a,
+                                         const __m256d b,
+                                         __m256i * __restrict seed) {
+                         
+                          __m256d C1 = _mm256_set1_pd(1.0);
+                          __m256d C2 = _mm256_set1_pd(2.0);
+                          __m256d C05= _mm256_set1_pd(0.5);
+                          register __m256d mu,stdev,test,u,y;
+                          register __m256d a1,b1,ab2,l0,l1,l2,t0;
+                          register __m256d t1,t2,t3;
+                          register __m256d x;
+                          ab2 = _mm256_sub_pd(_mm256_add_pd(a,b),C2);
+                          a1  = _mm256_sub_pd(a,C1);
+                          b1  = _mm256_sub_pd(b,C1);
+                          mu  = _mm256_div_pd(a1,ab2);
+                          stdev = _mm256_div_pd(C05,_mm256_sqrt_pd(ab2));
+                          while(true) {
+                              
+                              y = normal_01_sample_ymm4r8(*seed);
+                              x = _mm256_add_pd(mu,_mm256_mul_pd(stdev,y));
+                              if(_mm256_cmp_pd_mask(x,_mm256_setzero_pd(),_CMP_LT_OQ) || 
+                                 _mm256_cmp_pd_mask(C1,x,_CMP_LT_OQ)) continue;
+                              t0= _mm256_mul_pd(C05,_mm256_mul_pd(y,y));
+                              u = uniform_01_ymm4r8(*seed);
+
+                              l0 = _mm256_log_pd(_mm256_div_pd(x,a1));
+                              t1 = _mm256_mul_pd(a1,l0);
+                              l1 = _mm256_log_pd(_mm256_div_pd(_mm256_sub_pd(C1,x),b1));
+                              t2 = _mm256_mul_pd(b1,l1);
+                              l2 = _mm256_add_pd(_mm256_log_pd(ab2),t0); 
+                              t3 = _mm256_mul_pd(ab2,l2);
+                              test = _mm256_add_pd(t1,_mm256_add_pd(t2,t3));
+                              if(_mm256_cmp_pd_mask(_mm256_log_pd(u),test,_CMP_LE_OQ)) break;
+                                   
+                          }  
+                          return (x);                 
+                    }
+                    
+                    
+                   
+		      __m256 
+                      beta_sample_ymm8r4(const __m256d a,
+                                          const __m256d b,
+                                          __m256i * __restrict seed) {
+                        
+                         register __m256 sample;
+                         sample = _mm256_castpd_ps(beta_sample_ymm4r8(a,b,*seed));
+                         return (sample);                      
+                   }
+                   
+                   
+/*
+ !*****************************************************************************80
+!
+!! CAUCHY_CDF_INV inverts the Cauchy CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 September 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+!
+*/     
+
+
+                          
+                      __m256d 
+                      cauchy_cdf_inv_ymm4r8(const __m256d a,
+                                            const __m256d b,
+                                            const __m256d x) {
+                           
+                         const __m256d C314159265358979323846264 = 
+                                               __m256_set1_pd(3.14159265358979323846264);
+                         const __m256d C05 = _mm256_set1_pd(0.5);    
+                         register __m256d cdf,t0,t1;
+                         t0 = _mm256_mul_pd(C314159265358979323846264,
+                                            _mm256_sub_pd(cdf,C05));
+                         t1 = _mm256_tan_pd(t0);
+                             
+                         cdf = _mm256_fmadd_pd(a,b,t1);
+                         return (cdf);
+                   }    
+                   
+                   
+                          
+                      __m256
+                      cauchy_cdf_inv_ymm8r4(const __m256 a,
+                                            const __m256 b,
+                                            const __m256 x) {
+                           
+                         const __m256 C314159265358979323846264 = 
+                                               __m256_set1_pd(3.14159265358979323846264f);
+                         const __m256 C05 = _mm256_set1_ps(0.5);    
+                         register __m256 cdf,t0,t1;
+                         t0 = _mm256_mul_ps(C314159265358979323846264,
+                                            _mm256_sub_ps(cdf,C05));
+                         t1 = _mm256_tan_ps(t0);
+                                    
+                         cdf = _mm256_fmadd_ps(a,b,t1);
+                         return (cdf);
+                   }  
+                                          
+                   		     
+                   
+/*
+   !*****************************************************************************80
+!
+!! CAUCHY_SAMPLE samples the Cauchy PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    11 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+!
+*/            
+#if defined(__ICC) || defined(__INTEL_COMPILER)
+#include <svrng.h>
+#else
+#error 'Required Intel Compiler distribution'
+#endif
+
+#include <math.h> // NAN
+                         
+                      __m256d 
+                      cauchy_sample_ymm4r8(const __m256d a,
+                                           const __m256d b) {
+                         __m256d cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m256d nan = _mm256_set1_pd(NAN);
+			    return (nan);
+			 }
+			 uniform          = svrng_new_normal_distribution_double(0.0,1.0);
+			 const double * __restrict ptr = (const double*)(&svrng_generate4_double(engine,uniform));
+			 cdf              = cauchy_cdf_inv_ymm4r8(_mm256_loadu_pd(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);                 
+                    }
+                    
+                    
+                          
+                      __m256 
+                      cauchy_sample_ymm8r4(const __m256 a,
+                                            const __m256 b) {
+                         __m256 cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m256 nan = _mm256_set1_ps(nanf(""));
+			    return (nan);
+			 }
+			 uniform          = svrng_new_normal_distribution_float(0.0f,1.0f);
+			 const float * __restrict ptr = (const float*)(&svrng_generate8_float(engine,uniform));
+			 cdf              = cauchy_cdf_inv_ymm8r4(_mm256_loadu_ps(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);                 
+                    }
+ 		      
+       
+/*
+                      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256d anglit_sample_ymm4r8() {
+
+                         __m256d cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1563548129U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m256d nan = _mm256_set1_pd(std::numeric_limits<double>::quiet_NaN());
+			    return (nan);
+			 }
+			 uniform          = svrng_new_uniform_distribution_double(0.0,1.0);
+			 const double * __restrict ptr = (const double*)(&svrng_generate8_double(engine,uniform));
+			 cdf              = anglit_cdf_inv_ymm4r8(_mm256_loadu_pd(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);
+		    }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256d anglit_sample_ymm4r8(const __m256 cdf) {
+
+                            return (anglit_cdf_inv_ymm4r8(cdf));
+		    }
+*/
+
+
+/*
+      !*****************************************************************************80
+!
+!! ARCSIN_CDF evaluates the Arcsin CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+		     
+		      __m256d arcsin_cdf_ymm4r8(const __m256d x,
+		                                const __m256d a) {
+
+                         const __m256d invpi = _mm256_set1_pd(0.318309886183790671537767526745);
+			 const __m256d _0    = _mm256_setzero_pd();
+			 const __m256d _1_2  = _mm256_set1_pd(0.5);
+			 const __m256d _1    = _mm256_set1_pd(1.0);
+			 __m256d t0,cdf;
+			 __mmask8 m0,m1;
+			 m0  = _mm256_cmp_pd_mask(x,ymm4r8_negate(a),_CMP_LE_OQ);
+                         t0  = _mm256_mul_pd(_mm256_asin_pd(_mm256_div_pd(x,a),invpi));
+			 m1  = _mm256_cmp_pd_mask(x,a,_CMP_LT_OQ);
+                         cdf = _mm256_mask_blend_pd(m0,_mm256_add_pd(_1_2,t0),_0);
+			 cdf = _mm256_mask_blend_pd(m1,cdf,_1); 
+                         return (cdf);
+		   }
+
+
+		   
+		  
+		      __m256 arcsin_cdf_ymm8r4(const __m256 x,
+		                                const __m256 a) {
+
+                         const __m256 invpi = _mm256_set1_ps(0.318309886183790671537767526745f);
+			 const __m256 _0    = _mm256_setzero_ps();
+			 const __m256 _1_2  = _mm256_set1_ps(0.5f);
+			 const __m256 _1    = _mm256_set1_ps(1.0f);
+			 __m256 t0,cdf;
+			 __mmask16 m0,m1;
+			 m0  = _mm256_cmp_ps_mask(x,ymm8r4_negate(a),_CMP_LE_OQ);
+                         t0  = _mm256_mul_ps(_mm256_asin_ps(_mm256_div_ps(x,a),invpi));
+			 m1  = _mm256_cmp_ps_mask(x,a,_CMP_LT_OQ);
+                         cdf = _mm256_mask_blend_ps(m0,_mm256_add_pd(_1_2,t0),_0);
+			 cdf = _mm256_mask_blend_ps(m1,cdf,_1); 
+                         return (cdf);
+		   }
+
+
+		    
+		      __m256d arcsin_cdf_inv_ymm4r8(const __m256d cdf,
+		                                    const __m256d a) {
+
+                           const __m256d pi    = _mm256_set1_pd(3.14159265358979323846264338328);
+			   const __m256d _0    = _mm256_setzero_pd();
+			   const __m256d _1    = _mm256_set1_pd(1.0);
+			  
+			   const __m256d _1_2  = _mm256_set1_pd(0.5);
+			   __m256d x;
+			
+                             x = _mm256_mul_pd(_mm256_sin_pd(_mm256_mul_pd(pi,_mm256_sub_pd(cdf,_1_2))));
+                             return (x);
+		   }
+
+
+		   
+		      __m256 arcsin_cdf_inv_ymm8r4(const __m256 cdf,
+		                                    const __m256 a) {
+
+                           const __m256 pi    = _mm256_set1_ps(3.14159265358979323846264338328f);
+			   const __m256 _0    = _mm256_setzero_ps();
+			   const __m256 _1    = _mm256_set1_ps(1.0f);
+			 
+			   const __m256 _1_2  = _mm256_set1_ps(0.5f);
+			   __m256 x;
+			 
+                             x = _mm256_mul_ps(_mm256_sin_ps(_mm256_mul_ps(pi,_mm256_sub_ps(cdf,_1_2))));
+                             return (x);
+		   }
+
+
+		    
+                      __m256d arcsin_mean_ymm4r8() {
+
+		            return (_mm256_setzero_pd());
+		      }
+
+
+                      __m256 arcsin_mean_ymm8r4() {
+
+		            return (_mm256_setzero_ps());
+		      }
+		      
+		      
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_PDF evaluates the Arcsin PDF.
+!
+!  Discussion:
+!
+!    The LOGISTIC EQUATION has the form:
+!
+!      X(N+1) = 4.0D+00 * LAMBDA * ( 1.0D+00 - X(N) ).
+!
+!    where 0 < LAMBDA <= 1.  This nonlinear difference equation maps
+!    the unit interval into itself, and is a simple example of a system
+!    exhibiting chaotic behavior.  Ulam and von Neumann studied the
+!    logistic equation with LAMBDA = 1, and showed that iterates of the
+!    function generated a sequence of pseudorandom numbers with
+!    the Arcsin probability density function.
+!
+!    The derived sequence
+!
+!      Y(N) = ( 2 / PI ) * Arcsin ( SQRT ( X(N) ) )
+!
+!    is a pseudorandom sequence with the uniform probability density
+!    function on [0,1].  For certain starting values, such as X(0) = 0, 0.75,
+!    or 1.0D+00, the sequence degenerates into a constant sequence, and for
+!    values very near these, the sequence takes a while before becoming
+!    chaotic.
+!
+!    The formula is:
+!
+!      PDF(X) = 1 / ( pi * sqrt ( A^2 - X^2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Daniel Zwillinger, Stephen Kokoska,
+!    CRC Standard Probability and Statistics Tables and Formulae,
+!    Chapman and Hall/CRC, 2000, pages 114-115.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    -A < X < A.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!
+*/
+
+
+                   
+		      __m256d arcsin_pdf_ymm4r8(const __m256d x,
+		                                const __m256d a) {
+
+                           const __m256d pi    = _mm256_set1_pd(3.14159265358979323846264338328);
+			   const __m256d _0    = _mm256_setzero_pd();
+			   const __m256d _1    = _mm256_set1_pd(1.0);
+			 
+			   __m256d pdf,t0;
+			   __mmask8 m,m1;
+			  
+			   m  =  _mm256_cmp_pd_mask(x,ymm4r8_negate(a),_CMP_LE_OQ);
+			   t0 =  _mm256_sqrt_pd(_mm256_sub_pd(_mm256_mul_pd(a,a),
+			                                      _mm256_mul_pd(x,x)));
+			   m1 = _mm256_cmp_pd_mask(x,a,_CMP_GE_OQ);
+			   __mmask8 m2 = m || m1;
+			   pdf = _mm256_mask_blend_pd(m2,_mm256_div_pd(_1,
+			                                           _mm256_mul_pd(pi,t0)),_0);
+			   return (pdf);
+			   
+		    }
+
+
+		    
+		      __m256 arcsin_pdf_ymm8r4(const __m256 x,
+		                                const __m256 a) {
+
+                           const __m256 pi    = _mm256_set1_ps(3.14159265358979323846264338328f);
+			   const __m256 _0    = _mm256_setzero_ps();
+			   const __m256 _1    = _mm256_set1_ps(1.0f);
+			 
+			   __m256 pdf,t0;
+			   __mmask 16m,m1;
+			  
+			   m  =  _mm256_cmp_ps_mask(x,ymm8r4_negate(a),_CMP_LE_OQ);
+			   t0 =  _mm256_sqrt_ps(_mm256_sub_ps(_mm256_mul_ps(a,a),
+			                                      _mm256_mul_ps(x,x)));
+			   m1 = _mm256_cmp_ps_mask(x,a,_CMP_GE_OQ);
+			   const __mmask16 m2 = m || m1;
+			   pdf = _mm256_mask_blend_ps(m2,_mm256_div_ps(_1,
+			                                           _mm256_mul_ps(pi,t0)),_0);
+			   return (pdf);
+			   
+		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_VARIANCE returns the variance of the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!		    
+*/
+
+
+                    
+                       __m256d arcsin_variance_ymm4r8(const __m256d a) {
+
+                         const __m256d _1_2 = _mm256_set1_pd(0.5);
+			 __m256d variance;
+			 variance = _mm256_mul_pd(a,_mm256_mul_pd(a,_1_2));
+			 return (variance);
+		     }
+
+
+		     
+                       __m256 arcsin_variance_ymm8r4(const __m256 a) {
+
+                         const __m256 _1_2 = _mm256_set1_ps(0.5f);
+			 __m256 variance;
+			 variance = _mm256_mul_ps(a,_mm256_mul_ps(a,_1_2));
+			 return (variance);
+		     }
+		     
+		     
+/*
+!*****************************************************************************80
+!
+!! ARCSIN_SAMPLE samples the Arcsin PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    20 March 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the CDF.
+!    A must be positive.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+!
+*/
+		    
+		      __m256d arcsin_sample_ymm4r8() {
+
+                         __m256d cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m256d nan = _mm256_set1_pd(NAN);
+			    return (nan);
+			 }
+			 uniform          = svrng_new_uniform_distribution_double(0.0,1.0);
+			 const double * __restrict ptr = (const double*)(&svrng_generate4_double(engine,uniform));
+			 cdf              = arcsin_cdf_inv_ymm4r8(_mm256_loadu_pd(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);
+		    }
+
+
+		    
+		      __m256d arcsin_sample_ymm4r8(const __m256 cdf) {
+
+                            return (arcsin_cdf_inv_ymm4r8(cdf));
+		    }
+		    
+
+/*
+
+!*****************************************************************************80
+!
+!! NORMAL_01_CDF evaluates the Normal 01 CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    AG Adams,
+!    Algorithm 39,
+!    Areas Under the Normal Curve,
+!    Computer Journal,
+!    Volume 12, pages 197-198, 1969.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+                     
+		      __m256d  
+		      normal_01_cdf_ymm8r4(const __m256d x) {
+		          
+		          __m256d a1 = _mm256_set1_pd(0.398942280444e+00);
+		          __m256d a2 = _mm256_set1_pd(0.399903438504e+00);
+		          __m256d a3 = _mm256_set1_pd(5.75885480458e+00);
+                          __m256d a4 = _mm256_set1_pd(29.8213557808e+00);
+                          __m256d a5 = _mm256_set1_pd(2.62433121679e+00);
+                          __m256d a6 = _mm256_set1_pd(48.6959930692e+00);
+                          __m256d a7 = _mm256_set1_pd(5.92885724438e+00);
+                          __m256d b0 = _mm256_set1_pd(0.398942280385e+00);
+                          __m256d b1 = _mm256_set1_pd(3.8052e-08);
+                          __m256d b2 = _mm256_set1_pd(1.00000615302e+00);
+                          __m256d b3 = _mm256_set1_pd(3.98064794e-04);
+                          __m256d b4 = _mm256_set1_pd(1.98615381364e+00);
+                          __m256d b5 = _mm256_set1_pd(0.151679116635e+00);
+                          __m256d b6 = _mm256_set1_pd(5.29330324926e+00);
+                          __m256d b7 = _mm256_set1_pd(4.8385912808e+00);
+                          __m256d b8 = _mm256_set1_pd(15.1508972451e+00);
+                          __m256d b9 = _mm256_set1_pd(0.742380924027e+00);
+                          __m256d b10= _mm256_set1_pd(30.789933034e+00);
+                          __m256d b11= _mm256_set1_pd(3.99019417011e+00);
+                          __m256d C1 = _mm256_set1_pd(1.0);
+                          __m256d C128 = _mm256_set1_pd(1.28);
+                          __m256d C05  = _mm256_set1_pd(0.5);
+                          __m256d C127 = _mm256_set1_pd(12.7);
+                          __m256d absx,y,q,cdf,t0,t1;
+                          __mmask8 m0,m1,m2;
+                          m2   = _mm256_cmp_pd_mask(x,_mm256_setzero_pd(),_CMP_LT_OQ);
+                          absx = _mm256_abs_pd(x);
+                          m0   = _mm256_cmp_pd_mask(x,C128,_CMP_LE_OQ);
+                          y    = _mm256_mul_pd(C05,
+                                        _mm256_mul_pd(x,x));
+                          m1   = _mm256_cmp_pd_mask(x,C127,_CMP_LE_OQ);
+                          if(m0) {
+                             register __m256d ya3;
+                             register __m256d ya5a6
+                             register __m256d ya7;
+                             register __m256d a2y;
+                             ya7   = _mm256_add_pd(y,a7);
+                             ya5a6 = _mm256_add_pd(y,_mm256_add_pd(a5,a6));
+                             a2y   = _mm256_mul_pd(a2,y);
+                             ya3a4 = _mm256_sub_pd(_mm256_add_pd(y,a3),a4);
+                             q     = _mm256_sub_pd(a1,
+                                           _mm256_div_pd(a2y,
+                                                  _mm256_div_pd(ya3a4,
+                                                        _mm256_div_pd(ya5a6,ya7))));
+                          }
+                          else if(m1) {
+                             register __m256d expmy;
+                             register __m256d absb1;
+                             register __m256d absb3;
+                             register __m256d absb5;
+                             register __m256d absb7;
+                             register __m256d absb9;
+                             register __m256d absb11;
+
+                             expmy = _mm256_mul_pd(_mm256_exp_pd(negate_ymm4r8(y)),b0); 
+                             absb1 = _mm256_sub_pd(absx,b1);
+                             absb3 = _mm256_add_pd(absx,b3);
+                             absb5 = _mm256_sub_pd(absx,b5);
+                             absb7 = _mm256_add_pd(absx,b7);
+                             absb9 = _mm256_add_pd(absx,b9);
+                             absb11= _mm256_add_pd(absx,b11);
+                             t0    = (absb1+b2/(absb3+b4/(absb5+b6/(absb7-b8/(absb9+b10/(absb11))))));
+                             q     = _mm256_div_pd(expmy,t0);
+                          }
+                          else {
+                             q = _mm256_setzero_pd();
+                          }
+                          
+                          cdf = _mm256_mask_blend_pd(m2,_mm256_sub_pd(C1,q),q);
+                          return (cdf);
+		    }
+		    
+		    
+		    
+		      __m256  
+		      normal_01_cdf_ymm8r4(const __m256 x) {
+		          
+		          __m256 a1 = _mm256_set1_ps(0.398942280444f);
+		          __m256 a2 = _mm256_set1_ps(0.399903438504f);
+		          __m256 a3 = _mm256_set1_ps(5.75885480458f);
+                          __m256 a4 = _mm256_set1_ps(29.8213557808f);
+                          __m256 a5 = _mm256_set1_ps(2.62433121679f);
+                          __m256 a6 = _mm256_set1_ps(48.6959930692f);
+                          __m256 a7 = _mm256_set1_ps(5.92885724438f);
+                          __m256 b0 = _mm256_set1_ps(0.398942280385f);
+                          __m256 b1 = _mm256_set1_ps(3.8052e-08f);
+                          __m256 b2 = _mm256_set1_ps(1.00000615302f);
+                          __m256 b3 = _mm256_set1_ps(3.98064794e-04f);
+                          __m256 b4 = _mm256_set1_ps(1.98615381364f);
+                          __m256 b5 = _mm256_set1_ps(0.151679116635f);
+                          __m256 b6 = _mm256_set1_ps(5.29330324926f);
+                          __m256 b7 = _mm256_set1_ps(4.8385912808f);
+                          __m256 b8 = _mm256_set1_ps(15.1508972451f);
+                          __m256 b9 = _mm256_set1_ps(0.742380924027f);
+                          __m256 b10= _mm256_set1_ps(30.789933034f);
+                          __m256 b11= _mm256_set1_ps(3.99019417011f);
+                          __m256 C1 = _mm256_set1_ps(1.0);
+                          __m256 C128 = _mm256_set1_ps(1.28f);
+                          __m256 C05  = _mm256_set1_ps(0.5f);
+                          __m256 C127 = _mm256_set1_ps(12.7f);
+                          __m256 absx,y,q,cdf,t0;
+                          __mmask8 m0,m1,m2;
+                          m2   = _mm256_cmp_ps_mask(x,_mm256_setzero_pd(),_CMP_LT_OQ);
+                          absx = _mm256_abs_ps(x);
+                          m0   = _mm256_cmp_ps_mask(x,C128,_CMP_LE_OQ);
+                          y    = _mm256_mul_ps(C05,
+                                        _mm256_mul_ps(x,x));
+                          m1   = _mm256_cmp_ps_mask(x,C127,_CMP_LE_OQ);
+                          if(m0) {
+                             register __m256 ya3;
+                             register __m256 ya5a6
+                             register __m256 ya7;
+                             register __m256 a2y;
+                             ya7   = _mm256_add_ps(y,a7);
+                             ya5a6 = _mm256_add_ps(y,_mm256_add_ps(a5,a6));
+                             a2y   = _mm256_mul_ps(a2,y);
+                             ya3a4 = _mm256_sub_ps(_mm256_add_ps(y,a3),a4);
+                             q     = _mm256_sub_ps(a1,
+                                           _mm256_div_ps(a2y,
+                                                  _mm256_div_ps(ya3a4,
+                                                        _mm256_div_ps(ya5a6,ya7))));
+                          }
+                          else if(m1) {
+                             register __m256 expmy;
+                             register __m256 absb1;
+                             register __m256 absb3;
+                             register __m256 absb5;
+                             register __m256 absb7;
+                             register __m256 absb9;
+                             register __m256 absb11;
+
+                             expmy = _mm256_mul_ps(_mm256_exp_ps(negate_ymm8r4(y)),b0); 
+                             absb1 = _mm256_sub_ps(absx,b1);
+                             absb3 = _mm256_add_ps(absx,b3);
+                             absb5 = _mm256_sub_ps(absx,b5);
+                             absb7 = _mm256_add_ps(absx,b7);
+                             absb9 = _mm256_add_ps(absx,b9);
+                             absb11= _mm256_add_ps(absx,b11);
+                             t0    = (absb1+b2/(absb3+b4/(absb5+b6/(absb7-b8/(absb9+b10/(absb11))))));
+                             q     = _mm256_div_ps(expmy,t0);
+                          }
+                          else {
+                             q = _mm256_setzero_ps();
+                          }
+                          
+                          cdf = _mm256_mask_blend_ps(m2,_mm256_sub_ps(C1,q),q);
+                          return (cdf);
+		    }
+		    		    
+
+		     		  
 
