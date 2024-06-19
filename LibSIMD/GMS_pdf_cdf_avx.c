@@ -3258,6 +3258,1231 @@ SOFTWARE.
                           cdf = _mm256_mask_blend_ps(m2,_mm256_sub_ps(C1,q),q);
                           return (cdf);
 		    }
+		    
+		    
+/*
+
+      BRADFORD_CDF evaluates the Bradford CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    A < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+
+*/
+		    
+        
+        	   
+		      __m256d 
+		      bradford_cdf_ymm4r8(const __m256d x,
+		                          const __m256d a,
+		                          const __m256d b,
+		                          const __m256d c) {
+		          
+		            register __m256d C1 = _mm2562_set1_pd(1.0);
+		            register __m256d cp1,xa,ba,ratio,l0,l1;
+		            register __m256d cdf;
+		            cp1 = _mm256_add_pd(c,C1);
+		            xa  = _mm256_sub_pd(x,a);
+		            ba  = _mm256_sub_pd(b,a);
+                            l1  = _mm256_log_pd(cp1);
+		             
+                            ratio = _mm256_div_pd(_mm256_mul_pd(c,xa),ba);
+                            l0  = _mm256_log_pd(_mm256_add_pd(C1,ratio));
+       
+                            cdf = _mm256_div_pd(l0,l1);
+                            return (cdf);                   
+		     }
+		     
+		     
+		    
+		      __m256 
+		      bradford_cdf_ymm8r4(const __m256 x,
+		                          const __m256 a,
+		                          const __m256 b,
+		                          const __m256 c) {
+		          
+		            register __m256 C1 = _mm256_set1_ps(1.0f);
+		            register __m256 cp1,xa,ba,ratio,l0,l1;
+		            register __m256 cdf;
+		            cp1 = _mm256_add_ps(c,C1);
+		            xa  = _mm256_sub_ps(x,a);
+		            ba  = _mm256_sub_ps(b,a);
+                            l1  = _mm256_log_ps(cp1);
+		                         
+                             ratio = _mm256_div_ps(_mm256_mul_ps(c,xa),ba);
+                            l0  = _mm256_log_ps(_mm256_add_ps(C1,ratio));
+        
+                            cdf = _mm256_div_ps(l0,l1);
+                            return (cdf);                   
+		     }
+		     
+		     
+/*
+
+      !*****************************************************************************80
+!
+!! BRADFORD_CDF_INV inverts the Bradford CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    A < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument of the CDF.
+!
+
+*/
+
+
+                   
+		      __m256d 
+		      bradford_cdf_inv_ymm4r8(const __m256d cdf,
+		                              const __m256d a,
+		                              const __m256d b,
+		                              const __m256d c) {
+		        
+		          register __m256d C1 = _mm256_set1_pd(1.0);
+		          register __m256d ba,cp1,pow,t0;
+		          register __m256d x;
+		                	        
+		              ba  = _mm256_sub_pd(b,a);
+		              cp1 = _mm256_add_pd(c,C1);
+		              pow = _mm256_sub_pd(_mm256_pow_pd(C1,cdf),C1);
+		              t0  = _mm256_div_pd(pow,c);
+		              x   = _mm256_mul_pd(_mm256_add_pd(a,ba),t0);
+		              return (x);
+		         		                     
+		    }	
+		    
+		    
+		   
+		      __m256 
+		      bradford_cdf_inv_ymm8r4(const __m256 cdf,
+		                               const __m256 a,
+		                               const __m256 b,
+		                               const __m256 c) {
+		        
+		          register __m256 C1 = _mm256_set1_ps(1.0f);
+		          register __m256 ba,cp1,pow,t0;
+		          register __m256 x;
+		          
+		              ba  = _mm256_sub_ps(b,a);
+		              cp1 = _mm256_add_ps(c,C1);
+		              pow = _mm256_sub_ps(_mm256_pow_ps(C1,cdf),C1);
+		              t0  = _mm256_div_ps(pow,c);
+		              x   = _mm256_mul_ps(_mm256_add_ps(a,ba),t0);
+		              return (x);
+		                		                     
+		    }	
+		    
+		     
+/*
+         
+        !*****************************************************************************80
+!
+!! BRADFORD_MEAN returns the mean of the Bradford PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    A < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean of the PDF.
+!  
+
+*/
+	
+	            
+		      __m256d  
+		      bradford_mean_ymm4r8(const __m256d a,
+		                           const __m256d b,
+		                           const __m256d c) {
+		       
+		         register __m256d C1 = _mm256_set1_pd(1.0);
+		         register __m256d t1,t2,cp1,cba,acb,l0,l1;
+		         register __m256d mean;
+		         cp1  = _mm256_add_pd(c,C1);
+		         cba  = _mm256_mul_pd(c,_mm256_sub_pd(b,a));
+		         acb  = _mm256_sub_pd(_mm256_mul_pd(a,c1),b);
+
+                         l0   = _mm256_log_pd(cp1);
+
+                         t2   = _mm256_mul_pd(c,l0);
+                         t1   = _mm256_mul_pd(l0,acb);
+                         mean = _mm256_div_pd(_mm256_add_pd(cba,t1),t2);
+                         return (mean);   		                                  
+		   }
+		   
+		   
+		   
+		      __m256  
+		      bradford_mean_ymm8r4(const __m256 a,
+		                           const __m256 b,
+		                           const __m256 c) {
+		       
+		         register __m256 C1 = _mm256_set1_ps(1.0f);
+		         register __m256 t1,t2,cp1,cba,acb,l0,l1;
+		         register __m256 mean;
+		         cp1  = _mm256_add_ps(c,C1);
+		         cba  = _mm256_mul_ps(c,_mm256_sub_ps(b,a));
+		         acb  = _mm256_sub_ps(_mm256_mul_ps(a,c1),b);
+
+                         l0   = _mm256_log_ps(cp1);
+
+                         t2   = _mm256_mul_ps(c,l0);
+                         t1   = _mm256_mul_ps(l0,acb);
+                         mean = _mm256_div_ps(_mm256_add_ps(cba,t1),t2);
+                         return (mean);   		                                  
+		   }
+		   
+		   
+/*
+
+      BRADFORD_PDF evaluates the Bradford PDF.
+!
+!  Discussion:
+!
+!    The formula is:
+!
+!      PDF(A,B,C;X) =
+!        C / ( ( C * ( X - A ) + B - A ) * log ( C + 1 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    30 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A <= X
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    A < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.   
+
+*/	
+
+
+      	             
+		      __m256d  
+		      bradford_pdf_ymm4r8(const __m256d a,
+		                           const __m256d b,
+		                           const __m256d c) {
+		          
+		           register __m256d C1 = _mm256_set1_pd(1.0);
+		           register __m256d l0,c1p,xa,ba,t0,t1;
+		           register __m256d pdf;
+		           c1p = _mm256_add_pd(c,C1);
+		           xa  = _mm256_sub_pd(x,a);
+		           ba  = _mm256_sub_pd(b,a);
+
+                           l0   = _mm256_log_pd(cp1);
+		
+                           t0   = _mm256_fmadd_pd(c,xa,ba);
+                           t1   = _mm256_mul_pd(t0,l0);
+                           pdf  = _mm256_div_pd(c,t1);
+                           return (pdf);                              
+		    }
+		    
+		    
+		   
+		      __m256  
+		      bradford_pdf_ymm8r4(const __m256 a,
+		                           const __m256 b,
+		                           const __m256 c) {
+		          
+		           register __m256 C1 = _mm256_set1_ps(1.0f);
+		           register __m256 l0,c1p,xa,ba,t0,t1;
+		           register __m256 pdf;
+		           c1p = _mm256_add_ps(c,C1);
+		           xa  = _mm256_sub_ps(x,a);
+		           ba  = _mm256_sub_ps(b,a);
+
+                           l0   = _mm256_log_ps(cp1);
+	                   t0   = _mm256_fmadd_ps(c,xa,ba);
+                           t1   = _mm256_mul_ps(t0,l0);
+                           pdf  = _mm256_div_ps(c,t1);
+                           return (pdf);                              
+		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! BETA_BINOMIAL_CDF evaluates the Beta Binomial CDF.
+!
+!  Discussion:
+!
+!    A simple summing approach is used.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 December 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, integer ( kind = 4 ) X, the argument of the CDF.
+!
+!    Input, real ( kind = 8 ) A, B, parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Input, integer ( kind = 4 ) C, a parameter of the PDF.
+!    0 <= C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+                      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256d beta_binomial_cdf_ymm4r8(const int32_t x,
+		                                       const int32_t c,
+						       const __m256d a,
+						       const __m256d b) {
+
+			      const __m256d _0  = _mm256_setzero_pd();
+                              const __m256d _1  = _mm256_set1_pd(1.0);
+			      __m256d vx,vy,vcy,vc1,vy1,vcy1;
+			      __m256d cdf,pdf;
+                              int32_t y;
+			      if(x<0) {
+                                 cdf = _0;
+			      }
+			      else if(x<c) {
+                                 cdf = _0;
+				 for(y = 0; y < x; ++y) {
+                                     vy  = _mm256_set1_pd((double)y);
+				     vx  = _mm256_set1_pd((double)x);
+				     vcy = _mm256_set1_pd((double)(c-y));
+				     vc1 = _mm256_set1_pd((double)(c+1));
+				     vy1 = _mm256_set1_pd((double)(y+1));
+				     vcy1= _mm256_set1_pd((double)(c-y+1));
+				     const __m256d t0 = beta_ymm4r8(_mm256_add_pd(a,vy),
+				                                    _mm256_add_pd(b,vcy));
+				     const __m256d t1 = _mm256_mul_pd(vc1,beta_ymm4r8(vy1,vcy1));
+				     const __m256d t2 = beta_ymm4r8(a,b);
+				     pdf              = _mm256_div_pd(t0,_mm256_mul_pd(t1,t2));
+				     cdf              = _mm256_add_pd(cdf,pdf);
+				 }
+			      }
+			      else if(c<=x) {
+                                  cdf = _1;
+			      }
+			      return (cdf);
+		    }
+		    
+		    
+/*!*****************************************************************************80
+!
+!! BETA_PDF evaluates the Beta PDF.
+!
+!  Discussion:
+!
+!    The formula for the PDF is:
+!
+!      PDF(A,B;X) = X**(A-1) * (1-X)**(B-1) / BETA(A,B).
+!
+!    A = B = 1 yields the Uniform distribution on [0,1].
+!    A = B = 1/2 yields the Arcsin distribution.
+!        B = 1 yields the power function distribution.
+!    A = B -> Infinity tends to the Normal distribution.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    01 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < A,
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!*/
+
+                    
+		      __m256d beta_pdf_ymm4r8(const __m256d x,
+		                              const __m256d a,
+					      const __m256d b) {
+
+                         const __m256d _0 = _mm256_setzero_pd();
+			 const __m256d _1 = _mm256_set1_pd(1.0);
+			 const __m256d t0 = _mm256_sub_pd(a,_1);
+			 const __m256d t1 = _mm256_sub_pd(_1,x);
+			 const __m256d t2 = _mm256_sub_pd(b,_1);
+			 __m256d pdf,term1,term2,term3;
+			 __mmask8 m0,m1,m2;
+			 term1            = _mm256_pow_pd(x,t0);
+			 m0               = _mm256_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			 term2            = _mm256_mul_pd(term1,_mm256_pow_pd(t1,t2));
+			 m1               = _mm256_cmp_pd_mask(x,_1,_CMP_LT_OQ);
+			 term3            = _mm256_div_pd(term2,beta_ymm4r8(a,b));
+			 m                = m1||m2;
+			 pdf              = _mm256_mask_blend_pd(m,term3,_0);
+			 return (pdf);
+		    }
+
+
+		   
+		      __m256
+		      beta_pdf_ymm8r4(const __m256 x,
+		                       const __m256 a,
+				       const __m256 b) {
+
+                         const __m256 _0 = _mm256_setzero_ps();
+			 const __m256 _1 = _mm256_set1_ps(1.0);
+			 const __m256 t0 = _mm256_sub_ps(a,_1);
+			 const __m256 t1 = _mm256_sub_ps(_1,x);
+			 const __m256 t2 = _mm256_sub_ps(b,_1);
+			 __m256 pdf,term1,term2,term3;
+			 __mmask16 m0,m1,m2;
+			 term1            = _mm256_pow_ps(x,t0);
+			 m0               = _mm256_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			 term2            = _mm256_mul_ps(term1,_mm256_pow_pd(t1,t2));
+			 m1               = _mm256_cmp_ps_mask(x,_1,_CMP_LT_OQ);
+			 term3            = _mm256_div_ps(term2,beta_ymm8r4(a,b));
+			 m                = m1||m2;
+			 pdf              = _mm256_mask_blend_ps(m,term3,_0);
+			 return (pdf);
+		    }
+
+
+		   
+		      __m256d
+		      beta_variance_ymm4r8(const __m256d a,
+		                           const __m256d b) {
+
+			  __m256d variance;
+                          const __m256d _1  = _mm256_set1_pd(1.0);
+			  const __m256d ab  = _mm256_add_pd(a,b);
+			  const __m256d t0  = _mm256_mul_pd(_mm256_mul_pd(ab,ab),
+			                                    _mm256_add_pd(_1,ab));
+			  variance          = _mm256_div_pd(_mm256_mul_pd(a,b),t0);				   
+			  
+		    }
+
+
+		 
+		      __m256
+		      beta_variance_ymm8r4(const __m256 a,
+		                            const __m256 b) {
+
+			  __m256 variance;
+                          const __m256 _1  = _mm256_set1_ps(1.0f);
+			  const __m256 ab  = _mm256_add_ps(a,b);
+			  const __m256 t0  = _mm256_mul_ps(_mm256_mul_ps(ab,ab),
+			                                    _mm256_add_ps(_1,ab));
+			  variance          = _mm256_div_ps(_mm256_mul_ps(a,b),t0);				   
+			  
+		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_CDF evaluates the Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A <= X.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!		    
+*/
+
+                      
+                     
+                      __m256d
+		      weibull_cdf_ymm4r8(const __m256d x,
+		                         const __m256d a,
+					 const __m256d b,
+					 const __m256d c) {
+
+                          const __m256d  _0 = _mm256_setzero_pd();
+			  const __m256d  _1 = _mm256_set1_pd(1.0);
+			  const __m256d  y  = _mm256_div_pd(_mm256_sub_pd(x,a),b);
+			  const __m256d  exc= _mm256_exp_pd(_mm256_pow_pd(y,c));
+			  __m256d cdf;
+			  const __mmask8 m  = _mm256_cmp_pd_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm256_mask_blend_pd(m,_mm256_sub_pd(_1,
+			                                                       _mm256_div_pd(_1,exc)),_0);
+			  return (cdf);
+		   }
+		    
+		    
+		    
+                      __m256
+		      weibull_cdf_ymm8r4(const __m256 x,
+		                          const __m256 a,
+					  const __m256 b,
+					  const __m256 c) {
+
+                          const __m256  _0 = _mm256_setzero_ps();
+			  const __m256  _1 = _mm256_set1_ps(1.0f);
+			  const __m256  y  = _mm256_div_ps(_mm256_sub_ps(x,a),b);
+			  const __m256  exc= _mm256_exp_ps(_mm256_pow_ps(y,c));
+			  __m256 cdf;
+			  const __mmask16 m  = _mm256_cmp_ps_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm256_mask_blend_ps(m,_mm256_sub_ps(_1,
+			                                                       _mm256_div_ps(_1,exc)),_0);
+			  return (cdf);
+		   }
+
+
+		    
+                      __m256d
+		      weibull_cdf_inv_ymm4r8(const __m256d a,
+		                             const __m256d b,
+					     const __m256d c,
+					     const __m256d cdf) {
+
+                        const __m256d  _0  = _mm256_setzero_pd();
+			const __m256d  _1  = _mm256_set1_pd(1.0);
+			
+			__m256d t0,t1,x;
+			
+			t0                 = ymm4r8_negate(_mm256_log_pd(_mm256_sub_pd(_1,cdf)));
+			t1                 = _mm256_pow_pd(t0,_mm256_div_pd(_1,c));
+			x                  = _mm256_fmadd_pd(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+                      __m256
+		      weibull_cdf_inv_ymm8r4(const __m256 a,
+		                             const __m256 b,
+					     const __m256 c,
+					     const __m256 cdf) {
+
+                        const __m256  _0  = _mm256_setzero_ps();
+			const __m256  _1  = _mm256_set1_ps(1.0f);
+			
+			__m256 t0,t1,x;
+			
+			t0                 = ymm8r4_negate(_mm256_log_pd(_mm256_sub_ps(_1,cdf)));
+			t1                 = _mm256_pow_ps(t0,_mm256_div_ps(_1,c));
+			x                  = _mm256_fmadd_ps(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256d
+		      weibull_sample_ymm4r8(const __m256d vrand,
+		                            const __m256d a,
+					    const __m256d b,
+					    const __m256d c) {
+
+                         return (weibull_cdf_ymm4r8(a,b,c,vrand));
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m256
+		      weibull_sample_ymm8r4(const __m256 vrand,
+		                            const __m256 a,
+					    const __m256 b,
+					    const __m256 c) {
+
+                         return (weibull_cdf_ymm8r4(a,b,c,vrand));
+		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_VARIANCE returns the variance of the Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/
+
+
+                     
+		      __m256d
+                      weibull_discrete_cdf_ymm4r8(const __m256d x,
+		                                  const __m256d a,
+					          const __m256d b) {
+
+			    __m256d cdf;
+                            const __m256d  _0 = _mm256_setzero_pd();
+			    const __m256d  _1 = _mm256_set1_pd(1.0);
+			    const __m256d  t0 = _mm256_pow_pd(_mm256_add_pd(x,_1),b);
+			    const __m256d  t1 = _mm256_pow_pd(_mm256_sub_pd(_1,a),t0);
+			    const __mmask8 m  = _mm256_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm256_mask_blend_pd(m,_mm256_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		     
+		      __m256
+                      weibull_discrete_cdf_ymm8r4(const __m256 x,
+		                                  const __m256 a,
+					          const __m256 b) {
+
+			    __m256 cdf;
+                            const __m256  _0 = _mm256_setzero_ps();
+			    const __m256  _1 = _mm256_set1_ps(1.0f);
+			    const __m256  t0 = _mm256_pow_ps(_mm256_add_ps(x,_1),b);
+			    const __m256  t1 = _mm256_pow_ps(_mm256_sub_ps(_1,a),t0);
+			    const __mmask16 m  = _mm256_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm256_mask_blend_ps(m,_mm256_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		    
+		      __m256d
+		      weibull_discrete_pdf_ymm4r8(const __m256d x,
+		                                  const __m256d a,
+					          const __m256d b) {
+
+                            __m256d pdf;
+                            const __m256d  _0 = _mm256_setzero_pd();
+			    const __m256d  _1 = _mm256_set1_pd(1.0);
+			    const __m256d  t0 = _mm256_pow_pd(_mm256_add_pd(x,_1),b);
+			    const __m256d  _1a= _mm256_sub_pd(_1,a);
+			    const __m256d  t1 = _mm256_pow_pd(_1a,t0);
+                            const __m256d  t2 = _mm256_pow_pd(x,b);
+			    const __m256d  t3 = _mm256_pow_pd(_1a,t2);
+			    pdf               = _mm256_sub_pd(t3,t1);
+			    return (pdf);
+		   }
+
+
+		    
+		      __m256
+		      weibull_discrete_pdf_ymm8r4(const __m256 x,
+		                                  const __m256 a,
+					          const __m256 b) {
+
+                            __m256 pdf;
+                            const __m256  _0 = _mm256_setzero_ps();
+			    const __m256  _1 = _mm256_set1_ps(1.0);
+			    const __m256  t0 = _mm256_pow_ps(_mm256_add_ps(x,_1),b);
+			    const __m256  _1a= _mm256_sub_ps(_1,a);
+			    const __m256  t1 = _mm256_pow_ps(_1a,t0);
+                            const __m256  t2 = _mm256_pow_ps(x,b);
+			    const __m256  t3 = _mm256_pow_ps(_1a,t2);
+			    pdf               = _mm256_sub_ps(t3,t1);
+			    return (pdf);
+		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_CDF_INV inverts the Discrete Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Output, integer ( kind = 4 ) X, the corresponding argument.
+*/
+
+
+		      __m256d
+		      weibull_discr_icdf_ymm4r8(const __m256d cdf,
+		                                const __m256d a,
+						const __m256d b) {
+
+                       
+			  const __m256d  _0  = _mm256_setzero_pd();
+			  const __m256d  _1  = _mm256_set1_pd(1.0);
+			
+			  const __m256d t0   =  _mm256_log_pd(_mm256_sub_pd(_1,cdf));
+			  const __m256d t1   =  _mm256_log_pd(_mm256_sub_pd(_1,a));
+			  const __m256d t2   =  _mm256_div_pd(t1,t2)
+			  const __m256d t3   =  _mm256_pow_pd(t2,_mm256_div_pd(_1,b));
+			  __m256d x;
+			  x                  =  _mm256_ceil_pd(_mm256_sub_pd(t3,_1));
+			  return (x);
+		    }
+
+
+		    
+		      __m256
+		      weibull_discr_icdf_ymm8r4(const __m256 cdf,
+		                                const __m256 a,
+						const __m256 b) {
+
+                      
+			  const __m256  _0  = _mm256_setzero_ps();
+			  const __m256  _1  = _mm256_set1_ps(1.0f);
+			
+			  const __m256 t0   =  _mm256_log_ps(_mm256_sub_ps(_1,cdf));
+			  const __m256 t1   =  _mm256_log_ps(_mm256_sub_ps(_1,a));
+			  const __m256 t2   =  _mm256_div_ps(t1,t2)
+			  const __m256 t3   =  _mm256_pow_ps(t2,_mm256_div_ps(_1,b));
+			  __m256 x;
+			  x                  =  _mm256_ceil_ps(_mm256_sub_ps(t3,_1));
+			  return (x);
+		    }
+
+
+		    
+
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_SAMPLE samples the discrete Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, integer ( kind = 4 ) X, a sample of the PDF.
+!
+*/
+
+
+                         
+                      __m256d
+		      weibull_discr_samp_ymm4r8(   const __m256d vrand,
+		                                   const __m256d a,
+						   const __m256d b) {
+
+                         return (weibull_discr_icdf_ymm4r8(vrand,a,b));
+		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_CDF evaluates the von Mises CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    22 September 2005
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Geoffrey Hill.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Geoffrey Hill,
+!    Algorithm 518,
+!    Incomplete Bessel Function I0: The von Mises Distribution,
+!    ACM Transactions on Mathematical Software,
+!    Volume 3, Number 3, September 1977, pages 279-284.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+
+
+
+                        
+                      __m256d
+		      von_misses_cdf_ymm4r8(const __m256d x,
+		                            const __m256d a,
+					    const __m256d b) {
+
+                        //Early exit.
+			const __m256d   _0  = _mm256_setzero_pd();
+			const __m256d   _1  = _mm256_set1_pd(1.0);
+			const __m256d   pi  = _mm256_set1_pd(3.14159265358979323846264338328);
+			const __m256d   npi = _mm256_set1_pd(-3.14159265358979323846264338328);
+			const __m256d   xsa = _mm256_sub_pd(x,a);
+			if(__builtin_expect(_mm256_cmp_pd_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm256_cmp_pd_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m256d  _2pi = _mm256_set1_pd(6.283185307179586476925286766559);
+			const __m256d  a1  = _mm256_set1_pd(12.0);
+			const __m256d  a2  = _mm256_set1_pd(0.8);
+			const __m256d  a3  = _mm256_set1_pd(8.0);
+			const __m256d  a4  = _mm256_set1_pd(1.0);
+			const __m256d  c1  = _mm256_set1_pd(56.0);
+			const __m256d  ck  = _mm256_set1_pd(10.5);
+			const __m256d  _2  = _mm256_set1_pd(2.0);
+			const __m256d  _1_2= _mm256_set1_pd(0.5);
+			__m256d arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = _mm256_castps_pd(_fmod_ymm8r4(_mm256_castpd_ps(_mm256_add_pd(xsa,pi)),
+			                                           _mm256_castpd_ps(_2pi)));
+			uprv = u;
+			const __mmask8 m = _mm256_cmp_pd_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm256_add_pd(u,_2pi);
+			u    = _mm256_mask_blend_pd(m,uprv,u);
+			y    = _mm256_sub_pd(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm256_cmp_pd_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m256d t0 = _mm256_set1_pd(24.0);
+			   const __m256d t1 = _mm256_set1_pd(54.0);
+			   const __m256d t2 = _mm256_set1_pd(347.0);
+			   const __m256d t3 = _mm256_set1_pd(26.0);
+			   const __m256d t4 = _mm256_set1_pd(6.0);
+			   const __m256d t5 = _mm256_set1_pd(12.0);
+			   const __m256d t6 = _mm256_set1_pd(3.0);
+			   const __m256d t7 = _mm256_set1_pd(16.0);
+			   const __m256d t8 = _mm256_set1_pd(1.75);
+			   const __m256d t9 = _mm256_set1_pd(83.5);
+			   c                = _mm256_mul_pd(t0,z);
+			   v                = _mm256_sub_pd(c,c1);
+			   const __m256d tmp1 = _mm256_sub_pd(_mm256_add_pd(v,t3),c);
+			   const __m256d tmp2 = _mm256_div_pd(t1,_mm256_div_pd(t2,tmp1));
+			   const __m256d tmp3 = _mm256_add_pd(_mm256_sub_pd(tmp2,t4),c);
+			   r                  = _mm256_sqrt_pd(_mm256_div_pd(tmp3,t5));
+
+			   z                  = _mm256_mul_pd(_mm256_sin_pd(
+			                                                _mm256_mul_pd(_1_2,y)),r);
+                           s                  = _mm256_mul_pd(_2,_mm256_mul_pd(z,z));
+			   v                  = _mm256_sub_pd(v,_mm256_add_pd(s,t6));
+			   y                  = _mm256_div_pd(_mm256_sub_pd(_mm256_sub_pd(c,s),
+			                                                    _mm256_sub_pd(s,t7)),t6);
+			   tmp1               = _mm256_sub_pd(v,y);
+			   y                  = _mm256_div_pd(_mm256_fmadd_pd(_mm256_add_pd(s,t8),s,t9),tmp1);
+			   tmp2               = _mm256_mul_pd(y,y);
+			   arg                = _mm256_mul_pd(z,_mm256_sub_pd(_1,
+			                                                  _mm256_div_pd(s,tmp2)));
+			   erfx               = _mm256_erf_pd(arg);
+			   cdf                = _mm256_fmadd_pd(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm256_max_pd(cdf,_0);
+			cdf                   = _mm256_min_pd(cdf,_1);
+			return (cdf);
+			
+		   }
+		   
+		   
+       
+                      __m256
+		      von_misses_cdf_ymm8r4(const __m256 x,
+		                            const __m256 a,
+					    const __m256 b) {
+
+                        //Early exit.
+			const __m256   _0  = _mm256_setzero_ps();
+			const __m256   _1  = _mm256_set1_ps(1.0f);
+			const __m256   pi  = _mm256_set1_ps(3.14159265358979323846264338328f);
+			const __m256   npi = _mm256_set1_ps(-3.14159265358979323846264338328f);
+			const __m256   xsa = _mm256_sub_ps(x,a);
+			if(__builtin_expect(_mm256_cmp_ps_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm256_cmp_ps_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m256  _2pi = _mm256_set1_ps(6.283185307179586476925286766559f);
+			const __m256  a1  = _mm256_set1_ps(12.0f);
+			const __m256  a2  = _mm256_set1_ps(0.8f);
+			const __m256  a3  = _mm256_set1_ps(8.0f);
+			const __m256  a4  = _mm256_set1_ps(1.0f);
+			const __m256  c1  = _mm256_set1_ps(56.0f);
+			const __m256  ck  = _mm256_set1_ps(10.5f);
+			const __m256  _2  = _mm256_set1_ps(2.0f);
+			const __m256  _1_2= _mm256_set1_ps(0.5f);
+			__m256 arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = fmod_ymm8r4(_mm256_add_ps(xsa,pi),_2pi);
+			uprv = u;
+			const __mmask8 m = _mm256_cmp_ps_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm256_add_ps(u,_2pi);
+			u    = _mm256_mask_blend_ps(m,uprv,u);
+			y    = _mm256_sub_ps(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm256_cmp_ps_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m256 t0 = _mm256_set1_ps(24.0f);
+			   const __m256 t1 = _mm256_set1_ps(54.0f);
+			   const __m256 t2 = _mm256_set1_ps(347.0f);
+			   const __m256 t3 = _mm256_set1_ps(26.0f);
+			   const __m256 t4 = _mm256_set1_ps(6.0f);
+			   const __m256 t5 = _mm256_set1_ps(12.0f);
+			   const __m256 t6 = _mm256_set1_ps(3.0f);
+			   const __m256 t7 = _mm256_set1_ps(16.0f);
+			   const __m256 t8 = _mm256_set1_ps(1.75f);
+			   const __m256 t9 = _mm256_set1_ps(83.5f);
+			   c                = _mm256_mul_ps(t0,z);
+			   v                = _mm256_sub_ps(c,c1);
+			   const __m256d tmp1 = _mm256_sub_ps(_mm256_add_ps(v,t3),c);
+			   const __m256d tmp2 = _mm256_div_ps(t1,_mm256_div_ps(t2,tmp1));
+			   const __m256d tmp3 = _mm256_add_ps(_mm256_sub_ps(tmp2,t4),c);
+			   r                  = _mm256_sqrt_ps(_mm256_div_ps(tmp3,t5));
+
+			   z                  = _mm256_mul_ps(_mm256_sin_ps(
+			                                                _mm256_mul_ps(_1_2,y)),r);
+                           s                  = _mm256_mul_ps(_2,_mm256_mul_ps(z,z));
+			   v                  = _mm256_sub_ps(v,_mm256_add_ps(s,t6));
+			   y                  = _mm256_div_ps(_mm256_sub_ps(_mm256_sub_ps(c,s),
+			                                                    _mm256_sub_ps(s,t7)),t6);
+			   tmp1               = _mm256_sub_ps(v,y);
+			   y                  = _mm256_div_ps(_mm256_fmadd_ps(_mm256_add_ps(s,t8),s,t9),tmp1);
+			   tmp2               = _mm256_mul_ps(y,y);
+			   arg                = _mm256_mul_ps(z,_mm256_sub_ps(_1,
+			                                                  _mm256_div_ps(s,tmp2)));
+			   erfx               = _mm256_erf_ps(arg);
+			   cdf                = _mm256_fmadd_ps(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm256_max_ps(cdf,_0);
+			cdf                   = _mm256_min_ps(cdf,_1);
+			return (cdf);
+			
+		   }
+		   
+		   
+/*
+   !*****************************************************************************80
+!
+!! VON_MISES_PDF evaluates the von Mises PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = EXP ( B * COS ( X - A ) ) / ( 2 * PI * I0(B) )
+!
+!    where:
+!
+!      I0(*) is the modified Bessel function of the first
+!      kind of order 0.
+!
+!    The von Mises distribution for points on the unit circle is
+!    analogous to the normal distribution of points on a line.
+!    The variable X is interpreted as a deviation from the angle A,
+!    with B controlling the amount of dispersion.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    27 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Jerry Banks, editor,
+!    Handbook of Simulation,
+!    Engineering and Management Press Books, 1998, page 160.
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!    Merran Evans, Nicholas Hastings, Brian Peacock,
+!    Statistical Distributions,
+!    Wiley, 2000,
+!    LC: QA273.6.E92, pages 189-191.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    LC: QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!              
+*/
+
+    
+                      __m256d
+		      von_misses_pdf_ymm4r8(const __m256d x,
+		                            const __m256d a,
+					    const __m256d b) {
+ 
+                           const __m256d   pi  = _mm256_set1_pd(3.14159265358979323846264338328);
+			   const __m256d   _2pi= _mm256_set1_pd(6.283185307179586476925286766559);
+			   const __m256d   _0  = _mm256_setzero_pd();
+			   const __m256d   _2  = _mm256_set1_pd(2.0);
+			   const __m256d   t0  = _mm256_sub_pd(a,pi);
+			   const __m256d   t1  = _mm256_add_pd(a,pi);
+			   __m256d pdf;
+			   __mmask8 m1,m2;
+			   m1                  = _mm256_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm256_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm256_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+
+                           const __m256d tmp1  = _mm256_exp_pd(_mm256_mul_pd(b,
+			                                              _mm256_cos_pd(
+								                _mm256_sub_pd(x,a))));
+                           
+			   pdf                 = _mm256_mask_blend_pd(m2,_0,_mm256_div_pd(tmp1,
+			                                              _mm256_mul_pd(_2pi,bessesl_i0_ymm4r8(b))));
+			   return (pdf);
+		   }
+
+
+		        
+                      __m256
+		      von_misses_pdf_ymm8r4(const __m256 x,
+		                            const __m256 a,
+					    const __m256 b) {
+ 
+                           const __m256   pi  = _mm256_set1_pd(3.14159265358979323846264338328f);
+			   const __m256   _2pi= _mm256_set1_pd(6.283185307179586476925286766559f);
+			   const __m256   _0  = _mm256_setzero_pd();
+			   const __m256   _2  = _mm256_set1_pd(2.0);
+			   const __m256   t0  = _mm256_sub_pd(a,pi);
+			   const __m256   t1  = _mm256_add_pd(a,pi);
+			   __m256 pdf;
+			   __mmask8 m1,m2;
+			   m1                  = _mm256_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm256_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm256_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+                           const __m256 tmp1  = _mm256_exp_ps(_mm256_mul_pd(b,
+			                                              _mm256_cos_pd(
+								                _mm256_sub_pd(x,a))));
+                           
+			   pdf                 = _mm256_mask_blend_pd(m2,_0,_mm256_div_pd(tmp1,
+			                                              _mm256_mul_pd(_2pi,bessesl_i0_ymm8r4(b))));
+			   return (pdf);
+		   }
+
+
+
+
+
+
+
+
+
+               
+		   		    
+		    
+
 		    		    
 
 		     		  
