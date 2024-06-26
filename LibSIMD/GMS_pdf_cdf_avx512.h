@@ -180,11 +180,166 @@ SOFTWARE.
 			           __attribute__((hot))
 				   __attribute__((regcall))
 				   __attribute__((aligned(32)));
- 
- 
- 
- 
- 
- 
+				   
+				   
+    __m512d
+   reciprocal_pdf_zmm8r8( const __m512d x,
+		          const __m512d a,
+		          const __m512d b) 
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m512
+    reciprocal_pdf_zmm16r4( const __m512 x,
+		            const __m512 a,
+		            const __m512 b) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+     __m512d
+     reciprocal_sample_zmm8r8( __m512i * __restrict seed,
+                               const __m512d a,
+                                const __m512d b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m512
+    reciprocal_sample_zmm16r4( __m512i * __restrict seed,
+                               const __m512 a,
+                               const __m512 b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m512d  
+    reciprocal_var_zmm8r8(const __m512d a,
+                          const __m512d b) 
+                                __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+    __m512  
+    reciprocal_var_zmm16r4(const __m512 a,
+                           const __m512 b)
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+   __m512d
+   sech_zmm8r8(const __m512d x) 
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+     __m512
+     sech_zmm16r4(const __m512 x)
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+     __m512d                     
+     sech_cdf_zmm8r8(const __m512d x,
+                     const __m512d a,
+                     const __m512d b)    
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+     sech_cdf_zmm16r4(const __m512 x,
+                      const __m512 a,
+                      const __m512 b)  
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+      __m512d  
+     sech_cdf_inv_zmm8r8(const __m512d cdf,
+		         const __m512d a,
+		         const __m512d b) 
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+      __m512  
+      sech_cdf_inv_zmm16r4(const __m512 cdf,
+		           const __m512 a,
+		           const __m512 b) 
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+       __m512d  
+       sech_pdf_zmm8r8(const __m512d x
+                       const __m512d a,
+                       const __m512d b)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+       __m512  
+       sech_pdf_zmm16r4(const __m512 x
+                        const __m512 a,
+                        const __m512 b)
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+        __m512d 
+        sech_sample_zmm8r8(const __m512d a,
+                           const __m512d b,
+                           const __m512i * __restrict seed) 
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
  
  #endif /*__GMS_PDF_CDF_AVX512_H__*/
