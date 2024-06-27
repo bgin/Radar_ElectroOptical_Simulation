@@ -324,21 +324,162 @@ SOFTWARE.
 				   __attribute__((regcall))
 				   __attribute__((aligned(32))); 
 				   
+	 __m512
+         sech_sample_zmm16r4(const __m512d a,
+                             const __m512d b,
+                             const __m512i * __restrict seed) 			   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				  
+	 __m512d    
+         sech_variance_zmm8r8(const __m512d a,
+                              const __m512d b)
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512   
+          sech_variance_zmm16r4(const __m512 a,
+                                const __m512 b)
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512d  
+          vpoly_eval_zmm8r8(const int32_t n,
+		            const __m512d * __restrict  __attribute__((aligned(64))) a,
+		            const __m512d x)  
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512  
+          vpoly_eval_zmm16r4(const int32_t n,
+		             const __m512 * __restrict __attribute__((aligned(64))) a,
+		             const __m512 x)
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	   __m512d    
+		      normal_01_cdf_inv_zmm8r8(const __m512d p) 
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512    
+		      normal_01_cdf_inv_zmm16r4(const __m512 p) 
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512d 		   
+		      normal_cdf_inv_zmm8r8(const __m512d cdf,
+		                            const __m512d a,
+		                            const __m512d b) 
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	   __m512 		   
+		      normal_cdf_inv_zmm16r4(const __m512 cdf,
+		                            const __m512 a,
+		                            const __m512 b)
+		                      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
+				   
+	   __m512d  
+		      normal_01_pdf_zmm8r8(const __m512d x)           
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	    __m512 
+		      normal_01_pdf_zmm16r4(const __m512 x)
+		                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512d 
+		      uniform_01_zmm8r8( __m512i * __restrict seed) 
+				     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512 
+		      uniform_01_zmm16r4( __m512i * __restrict seed)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512d 
+	              uniform_zmm8r8(const __m512d a,
+	                             const __m512d b,
+	                             __m512i * __restrict seed) 
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512 
+	              uniform_zmm16r4(const __m512d a,
+	                              const __m512d b,
+	                              __m512i * __restrict seed)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	  __m512d 
+		      bradford_cdf_zmm8r8(const __m512d x,
+		                          const __m512d a,
+		                          const __m512d b,
+		                          const __m512d c)
+		                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	  __m512 
+		      bradford_cdf_zmm16r4(const __m512 x,
+		                          const __m512 a,
+		                          const __m512 b,
+		                          const __m512 c)    
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
  
