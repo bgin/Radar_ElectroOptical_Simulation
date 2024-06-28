@@ -482,5 +482,167 @@ SOFTWARE.
 				   __attribute__((aligned(32))); 
 				   
 				   
+	  __m512d 
+		      bradford_cdf_inv_zmm8r8(const __m512d cdf,
+		                              const __m512d a,
+		                              const __m512d b,
+		                              const __m512d c)
+		                         __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	  __m512 
+		      bradford_cdf_inv_zmm16r4(const __m512 cdf,
+		                               const __m512 a,
+		                               const __m512 b,
+		                               const __m512 c)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+	  __m512d  
+		      bradford_mean_zmm8r8(const __m512d a,
+		                           const __m512d b,
+		                           const __m512d c)
+		                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+	     __m512  
+		      bradford_mean_zmm16r4(const __m512 a,
+		                           const __m512 b,
+		                           const __m512 c)
+		                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+				   
+	  __m512d  
+		      bradford_pdf_zmm8r8(const __m512d a,
+		                           const __m512d b,
+		                           const __m512d c) 
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
+				   
+				   
+	    __m512  
+		      bradford_pdf_zmm16r4(const __m512 a,
+		                           const __m512 b,
+		                           const __m512 c)
+		                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	    __m512d  
+                      gamma_incomplete_zmm8r8(const __m512d p,
+                                              const __m512d x) 
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+           __m512
+                      gamma_incomplete_zmm16r4(const __m512 p,
+                                              const __m512 x)
+                                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m512d
+		      gamma_cdf_zmm8r8(const __m512d x,
+		                       const __m512d a,
+		                       const __m512d b,
+		                       const __m512d c)
+		                      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m512
+		      gamma_cdf_zmm16r4(const __m512 x,
+		                       const __m512 a,
+		                       const __m512 b,
+		                       const __m512 c)                                  
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m512d
+		      chi_cdf_zmm8r8(const __m512d x,
+		                     const __m512d a,
+		                     const __m512d b,
+		                     const __m512d c)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	  __m512
+		      chi_cdf_zmm16r4(const __m512 x,
+		                      const __m512 a,
+		                      const __m512 b,
+		                      const __m512 c)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d
+		      chi_square_cdf_zmm8r8(const __m512d x,
+		                            const __m512d a) 
+		                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512
+		      chi_square_cdf_zmm16r4(const __m512 x,
+		                             const __m512 a)
+		                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512d
+                      chi_mean_zmm8r8(const __m512d a,
+                                      const __m512d b,
+                                      const __m512d c)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512
+                      chi_mean_zmm16r4(const __m512 a,
+                                      const __m512 b,
+                                      const __m512 c)
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));           
+				   
  
  #endif /*__GMS_PDF_CDF_AVX512_H__*/
