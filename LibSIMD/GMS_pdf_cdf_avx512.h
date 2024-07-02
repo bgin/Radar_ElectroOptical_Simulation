@@ -642,7 +642,147 @@ SOFTWARE.
                                   __attribute__((noinline))
 			           __attribute__((hot))
 				   __attribute__((regcall))
-				   __attribute__((aligned(32)));           
+				   __attribute__((aligned(32)));  
 				   
+				   
+	   __m512d   
+                      chi_pdf_zmm8r8(const __m512d x,
+                                     const __m512d a,
+                                     const __m512d b,
+                                     const __m512d c)          
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512   
+                      chi_pdf_zmm16r4(const __m512 x,
+                                     const __m512 a,
+                                     const __m512 b,
+                                     const __m512 c) 
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512d beta_zmm8r8(const __m512d a,
+		                const __m512d b)
+		                 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m512d 
+                      beta_sample_zmm8r8(const __m512d a,
+                                         const __m512d b,
+                                         __m512i * __restrict seed)     
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	    __m512 
+                      beta_sample_zmm16r4(const __m512d a,
+                                          const __m512d b,
+                                          __m512i * __restrict seed)
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	      __m512d arcsin_cdf_zmm8r8(const __m512d x,
+		                        const __m512d a)   
+		                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	    __m512 arcsin_cdf_zmm16r4(const __m512 x,
+		                      const __m512 a)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d arcsin_cdf_inv_zmm8r8(const __m512d cdf,
+		                         const __m512d a)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	  __m512 arcsin_cdf_inv_zmm16r4(const __m512 cdf,
+		                        const __m512 a) 
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d arcsin_pdf_zmm8r8(const __m512d x,
+		                     const __m512d a) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512 arcsin_pdf_zmm16r4(const __m512 x,
+		                     const __m512 a)  
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512d arcsin_variance_zmm8r8(const __m512d a) 
+	                         __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512 arcsin_variance_zmm16r4(const __m512 a) 
+	                         __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	   __m512d arcsin_sample_zmm8r8() 
+				 __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m512d arcsin_sample_zmm8r8(const __m512 cdf)
+	                          __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				   
+				         
  
  #endif /*__GMS_PDF_CDF_AVX512_H__*/
