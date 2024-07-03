@@ -771,12 +771,303 @@ SOFTWARE.
 				   __attribute__((aligned(32))); 
 				   
 				   
+	 __m512d beta_binomial_cdf_zmm8r8(const int32_t x,
+		                          const int32_t c,
+			                  const __m512d a,
+				          const __m512d b)			   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
 				   
 				   
+	   __m512d beta_pdf_zmm8r8(const __m512d x,
+		                   const __m512d a,
+			           const __m512d b)
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
 				   
 				   
+	   __m512
+		      beta_pdf_zmm16r4(const __m512 x,
+		                       const __m512 a,
+				       const __m512 b)
+				      __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
 				   
 				   
+	   __m512d
+		      beta_variance_zmm8r8(const __m512d a,
+		                           const __m512d b) 
+		                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m512
+		      beta_variance_zmm16r4(const __m512 a,
+		                            const __m512 b)  
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512d
+		      weibull_cdf_zmm8r8(const __m512d x,
+		                         const __m512d a,
+					 const __m512d b,
+					 const __m512d c)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512
+		      weibull_cdf_zmm16r4(const __m512 x,
+		                          const __m512 a,
+					  const __m512 b,
+					  const __m512 c)   
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512d
+		      weibull_cdf_inv_zmm8r8(const __m512d a,
+		                             const __m512d b,
+					     const __m512d c,
+					     const __m512d cdf) 
+			          __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512
+		      weibull_cdf_inv_zmm16r4(const __m512 a,
+		                             const __m512 b,
+					     const __m512 c,
+					     const __m512 cdf) 
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512d
+		      weibull_sample_zmm8r8(const __m512d vrand,
+		                            const __m512d a,
+					    const __m512d b,
+					    const __m512d c)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512
+		      weibull_sample_zmm16r4(const __m512 vrand,
+		                            const __m512 a,
+					    const __m512 b,
+					    const __m512 c)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512d
+                      weibull_discrete_cdf_zmm8r8(const __m512d x,
+		                                  const __m512d a,
+					          const __m512d b)
+			          __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m512
+                      weibull_discrete_cdf_zmm16r4(const __m512 x,
+		                                  const __m512 a,
+					          const __m512 b)
+			          __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512d
+		      weibull_discrete_pdf_zmm8r8(const __m512d x,
+		                                  const __m512d a,
+					          const __m512d b)
+			            __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512
+		      weibull_discrete_pdf_zmm16r4(const __m512 x,
+		                                  const __m512 a,
+					          const __m512 b)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m512d
+		      weibull_discr_icdf_zmm8r8(const __m512d cdf,
+		                                const __m512d a,
+						const __m512d b)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	 __m512
+		      weibull_discr_icdf_zmm16r4(const __m512 cdf,
+		                                const __m512 a,
+						const __m512 b)
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m512d
+		      weibull_discr_samp_zmm8r8(   const __m512d vrand,
+		                                   const __m512d a,
+						   const __m512d b) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m512d 
+                      gamma_zmm8r8(const __m512d x) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m512 
+                      gamma_zmm16r4(const __m512 x)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	__m512d 
+                      student_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b,
+                                         const __m512d c)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	 __m512
+                      student_pdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b,
+                                         const __m512 c)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	 __m512d 
+                      student_variance_zmm8r8(const __m512d a,
+                                              const __m512d b,
+                                              const __m512d c) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	 __m512
+                      student_variance_zmm16r4(const __m512 a,
+                                              const __m512 b,
+                                              const __m512 c)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	 __m512d
+                      trigamma_zmm8r8(const __m512d x)   
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	 __m512
+                      trigamma_zmm16r4(const __m512 x)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	 __m512d	 
+                      weibull_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b,
+                                         const __m512d c) 
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	 __m512	 
+                      weibull_pdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b,
+                                         const __m512 c) 
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+         __m512d
+		      von_misses_cdf_zmm8r8(const __m512d x,
+		                            const __m512d a,
+					    const __m512d b)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));
+				   
+				   
+	  __m512
+		      von_misses_cdf_zmm16r4(const __m512 x,
+		                            const __m512 a,
+					    const __m512 b) 
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));    
 				   
 				   
 				   
