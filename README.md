@@ -1,4 +1,4 @@
-# Guided-Missile-Radar-IR-EOS-Simulation
+# Radar-IR-EOS-Simulation
 
 This project attempts to model and simulate the innerworking of Radar system, Electro-Optical active and passive sources of IR radiation and missile guidance system. The main purpose is to achieve a realisitic system modeling and simulation as much as possible, hence the main sources of knowledge are russian-language (soviet-era) engineering and technical literature reaching design level (candidate of science and experienced system engineers and designers). The second firm foundation which this project stand upon is being wholly optimized at basic level of massive manual vectorization by relying of Fortran array syntax,
 better known as a packed array of small structures easily replicating SIMD registers of the CPU. This kind of approach allows mimicking of SIMD (C) intrinsics and leverages compiler autovectorization of the
