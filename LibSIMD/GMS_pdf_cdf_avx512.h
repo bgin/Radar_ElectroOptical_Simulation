@@ -1067,10 +1067,237 @@ SOFTWARE.
 				   __attribute__((noinline))
 			           __attribute__((hot))
 				   __attribute__((regcall))
-				   __attribute__((aligned(32)));    
+				   __attribute__((aligned(32)));   
+				   
+				   
+	  __m512d
+		      von_misses_pdf_zmm8r8(const __m512d x,
+		                            const __m512d a,
+					    const __m512d b)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	 __m512
+		      von_misses_pdf_zmm16r4(const __m512 x,
+		                            const __m512 a,
+					    const __m512 b)
+				    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	__m512d owen_tfunc_zmm8r8(const __m512d h,
+		                  const __m512d a)
+			           __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	 __m512 owen_tfunc_zmm16r4(const __m512 h,
+		                   const __m512 a)
+				  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	  __m512d
+                      von_misses_sample_zmm8r8(const __m512d a,
+		                               const __m512d b) 
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	  __m512
+                      von_misses_sample_zmm16r4(const __m512 a,
+		                                const __m512 b)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));   
+				   
+				   
+	  __m512d
+		      rayleigh_pdf_zmm8r8(const __m512d x,
+		                          const __m512d a) 
+		                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	  __m512
+		      rayleigh_pdf_zmm16r4(const __m512 x,
+		                           const __m512 a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d
+		      rayleigh_mean_zmm8r8(const __m512d a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512
+		      rayleigh_mean_zmmr16r4(const __m512d a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d
+		      rayleigh_invcdf_zmm8r8(const __m512d cdf,
+		                             const __m512d a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
 				   
 				   
 				   
+	   __m512
+		      rayleigh_invcdf_zmm16r4(const __m512 cdf,
+		                             const __m512 a)                    
+				   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	   __m512d
+		      rayleigh_cdf_zmm8r8(const __m512d x,
+		                          const __m512d a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512
+		      rayleigh_cdf_zmm16r4(const __m512 x,
+		                           const __m512 a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	    __m512d
+		      rayleigh_sample_zmm8r8(const __m512d rand,
+		                             const __m512d a)
+		                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	      __m512
+		      rayleigh_sample_zmm16r4(const __m512 rand,
+		                             const __m512 a)
+		                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	        __m512d    
+                      cauchy_cdf_zmm8r8(const __m512d x,
+                                        const __m512d a,
+                                        const __m512d b)
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	       __m512    
+                      cauchy_cdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));  
+				   
+				   
+	      __m512d 
+                      cauchy_cdf_inv_zmm8r8(const __m512d a,
+                                            const __m512d b,
+                                            const __m512d x)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	      __m512
+                      cauchy_cdf_inv_zmm16r4(const __m512 a,
+                                            const __m512 b,
+                                            const __m512 x)
+                                  __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+				   
+	     __m512d  
+                      cauchy_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	    __m512d 
+                      cauchy_sample_zmm8r8(const __m512d a,
+                                           const __m512d b) 
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	    __m512 
+                      cauchy_sample_zmm16r4(const __m512 a,
+                                            const __m512 b) 
+                                    __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	    __m512d 
+                      maxwell_cdf_zmm8r8(const __m512d x,
+                                         const __m512d a)
+                                     __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32))); 
+				   
+				   
+	   __m512 
+                      maxwell_cdf_zmm16r4(const __m512 x,
+                                         const __m512 a)
+                                   __attribute__((noinline))
+			           __attribute__((hot))
+				   __attribute__((regcall))
+				   __attribute__((aligned(32)));              
 				   
 				   
 				   
