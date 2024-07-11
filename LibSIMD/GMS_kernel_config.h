@@ -96,7 +96,9 @@
 #endif         
 
 
-
+#if !defined(USE_SLEEF_LIB)
+#define USE_SLEEF_LIB 0
+#endif
 
 
 
