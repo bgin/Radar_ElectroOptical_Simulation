@@ -4662,6 +4662,149 @@ SOFTWARE.
 			  variance          = _mm512_div_ps(_mm512_mul_ps(a,b),t0);				   
 			  
 		    }
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_CDF evaluates the Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A <= X.
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!		    
+*/
+
+                      
+                     
+                      __m512d
+		      weibull_cdf_zmm8r8(const __m512d x,
+		                         const __m512d a,
+					 const __m512d b,
+					 const __m512d c) {
+
+                          const __m512d  _0 = _mm512_setzero_pd();
+			  const __m512d  _1 = _mm512_set1_pd(1.0);
+			  const __m512d  y  = _mm512_div_pd(_mm512_sub_pd(x,a),b);
+			  const __m512d  exc= _mm512_exp_pd(_mm512_pow_pd(y,c));
+			  __m512d cdf;
+			  const __mmask8 m  = _mm512_cmp_pd_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm512_mask_blend_pd(m,_mm512_sub_pd(_1,
+			                                                       _mm512_div_pd(_1,exc)),_0);
+			  return (cdf);
+		   }
+		    
+		    
+		     
+                      __m512
+		      weibull_cdf_zmm16r4(const __m512 x,
+		                          const __m512 a,
+					  const __m512 b,
+					  const __m512 c) {
+
+                          const __m512  _0 = _mm512_setzero_ps();
+			  const __m512  _1 = _mm512_set1_ps(1.0f);
+			  const __m512  y  = _mm512_div_ps(_mm512_sub_ps(x,a),b);
+			  const __m512  exc= _mm512_exp_ps(_mm512_pow_ps(y,c));
+			  __m512 cdf;
+			  const __mmask16 m  = _mm512_cmp_ps_mask(a,x,_CMP_LT_OQ);
+			  cdf               = _mm512_mask_blend_ps(m,_mm512_sub_ps(_1,
+			                                                       _mm512_div_ps(_1,exc)),_0);
+			  return (cdf);
+		   }
+
+
+		     
+                      __m512d
+		      weibull_cdf_inv_zmm8r8(const __m512d a,
+		                             const __m512d b,
+					     const __m512d c,
+					     const __m512d cdf) {
+
+                        const __m512d  _0  = _mm512_setzero_pd();
+			const __m512d  _1  = _mm512_set1_pd(1.0);
+		        __m512d t0,t1,x;
+			t0                 = zmm8r8_negate(_mm512_log_pd(_mm512_sub_pd(_1,cdf)));
+			t1                 = _mm512_pow_pd(t0,_mm512_div_pd(_1,c));
+			x                  = _mm512_fmadd_pd(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+                      __m512
+		      weibull_cdf_inv_zmm16r4(const __m512 a,
+		                             const __m512 b,
+					     const __m512 c,
+					     const __m512 cdf) {
+
+                        const __m512  _0  = _mm512_setzero_ps();
+			const __m512  _1  = _mm512_set1_ps(1.0f);
+			__m512 t0,t1,x;
+			t0                 = zmm16r4_negate(_mm512_log_pd(_mm512_sub_ps(_1,cdf)));
+			t1                 = _mm512_pow_ps(t0,_mm512_div_ps(_1,c));
+			x                  = _mm512_fmadd_ps(a,b,t1);
+			return (x);
+			
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m512d
+		      weibull_sample_zmm8r8(const __m512d vrand,
+		                            const __m512d a,
+					    const __m512d b,
+					    const __m512d c) {
+
+                         return (weibull_cdf_zmm8r8(a,b,c,vrand));
+		   }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m512
+		      weibull_sample_zmm16r4(const __m512 vrand,
+		                            const __m512 a,
+					    const __m512 b,
+					    const __m512 c) {
+
+                         return (weibull_cdf_zmm16r4(a,b,c,vrand));
+		   }
+		    
+		    
+		    
+		    
 	    	     		
 		     		     
 		     
