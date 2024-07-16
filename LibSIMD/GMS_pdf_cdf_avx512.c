@@ -4888,6 +4888,80 @@ SOFTWARE.
 			    pdf               = _mm512_sub_ps(t3,t1);
 			    return (pdf);
 		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_DISCRETE_CDF_INV inverts the Discrete Weibull CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    19 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 <= A <= 1.0D+00,
+!    0.0D+00 < B.
+!
+!    Output, integer ( kind = 4 ) X, the corresponding argument.
+*/
+
+
+                    
+		      __m512d
+		      weibull_discr_icdf_zmm8r8(const __m512d cdf,
+		                                const __m512d a,
+						const __m512d b) {
+
+                        
+			  const __m512d  _0  = _mm512_setzero_pd();
+			  const __m512d  _1  = _mm512_set1_pd(1.0);
+			  const __m512d t0   =  _mm512_log_pd(_mm512_sub_pd(_1,cdf));
+			  const __m512d t1   =  _mm512_log_pd(_mm512_sub_pd(_1,a));
+			  const __m512d t2   =  _mm512_div_pd(t1,t2)
+			  const __m512d t3   =  _mm512_pow_pd(t2,_mm512_div_pd(_1,b));
+			  __m512d x;
+			  x                  =  _mm512_ceil_pd(_mm512_sub_pd(t3,_1));
+			  return (x);
+		    }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline
+		      __m512
+		      weibull_discr_icdf_zmm16r4(const __m512 cdf,
+		                                const __m512 a,
+						const __m512 b) {
+
+                      
+			  const __m512  _0  = _mm512_setzero_ps();
+			  const __m512  _1  = _mm512_set1_ps(1.0f);
+			  const __m512 t0   =  _mm512_log_ps(_mm512_sub_ps(_1,cdf));
+			  const __m512 t1   =  _mm512_log_ps(_mm512_sub_ps(_1,a));
+			  const __m512 t2   =  _mm512_div_ps(t1,t2)
+			  const __m512 t3   =  _mm512_pow_ps(t2,_mm512_div_ps(_1,b));
+			  __m512 x;
+			  x                  =  _mm512_ceil_ps(_mm512_sub_ps(t3,_1));
+			  return (x);
+		    }
+
+		   
 		    
 		    
 	    	     		
