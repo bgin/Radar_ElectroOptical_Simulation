@@ -4751,11 +4751,7 @@ SOFTWARE.
 		   }
 
 
-		      __ATTR_REGCALL__
-                      __ATTR_ALWAYS_INLINE__
-		      __ATTR_HOT__
-		      __ATTR_ALIGN__(32)
-		      static inline
+		    
                       __m512
 		      weibull_cdf_inv_zmm16r4(const __m512 a,
 		                             const __m512 b,
@@ -4773,11 +4769,7 @@ SOFTWARE.
 		   }
 
 
-		      __ATTR_REGCALL__
-                      __ATTR_ALWAYS_INLINE__
-		      __ATTR_HOT__
-		      __ATTR_ALIGN__(32)
-		      static inline
+		    
 		      __m512d
 		      weibull_sample_zmm8r8(const __m512d vrand,
 		                            const __m512d a,
@@ -4788,11 +4780,7 @@ SOFTWARE.
 		   }
 
 
-		      __ATTR_REGCALL__
-                      __ATTR_ALWAYS_INLINE__
-		      __ATTR_HOT__
-		      __ATTR_ALIGN__(32)
-		      static inline
+		   
 		      __m512
 		      weibull_sample_zmm16r4(const __m512 vrand,
 		                            const __m512 a,
@@ -4803,6 +4791,103 @@ SOFTWARE.
 		   }
 		    
 		    
+/*
+!*****************************************************************************80
+!
+!! WEIBULL_VARIANCE returns the variance of the Weibull PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/
+
+
+		      __m512d
+                      weibull_discrete_cdf_zmm8r8(const __m512d x,
+		                                  const __m512d a,
+					          const __m512d b) {
+
+			    __m512d cdf;
+                            const __m512d  _0 = _mm512_setzero_pd();
+			    const __m512d  _1 = _mm512_set1_pd(1.0);
+			    const __m512d  t0 = _mm512_pow_pd(_mm512_add_pd(x,_1),b);
+			    const __m512d  t1 = _mm512_pow_pd(_mm512_sub_pd(_1,a),t0);
+			    const __mmask8 m  = _mm512_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm512_mask_blend_pd(m,_mm512_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		    
+		      __m512
+                      weibull_discrete_cdf_zmm16r4(const __m512 x,
+		                                  const __m512 a,
+					          const __m512 b) {
+
+			    __m512 cdf;
+                            const __m512  _0 = _mm512_setzero_ps();
+			    const __m512  _1 = _mm512_set1_ps(1.0f);
+			    const __m512  t0 = _mm512_pow_ps(_mm512_add_ps(x,_1),b);
+			    const __m512  t1 = _mm512_pow_ps(_mm512_sub_ps(_1,a),t0);
+			    const __mmask16 m  = _mm512_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			    cdf               = _mm512_mask_blend_ps(m,_mm512_sub_pd(_1,t1),_0);
+			    return (cdf);
+		    }
+
+
+		  
+		      __m512d
+		      weibull_discrete_pdf_zmm8r8(const __m512d x,
+		                                  const __m512d a,
+					          const __m512d b) {
+
+                            __m512d pdf;
+                            const __m512d  _0 = _mm512_setzero_pd();
+			    const __m512d  _1 = _mm512_set1_pd(1.0);
+			    const __m512d  t0 = _mm512_pow_pd(_mm512_add_pd(x,_1),b);
+			    const __m512d  _1a= _mm512_sub_pd(_1,a);
+			    const __m512d  t1 = _mm512_pow_pd(_1a,t0);
+                            const __m512d  t2 = _mm512_pow_pd(x,b);
+			    const __m512d  t3 = _mm512_pow_pd(_1a,t2);
+			    pdf               = _mm512_sub_pd(t3,t1);
+			    return (pdf);
+		   }
+
+
+		     
+		      __m512
+		      weibull_discrete_pdf_zmm16r4(const __m512 x,
+		                                  const __m512 a,
+					          const __m512 b) {
+
+                            __m512 pdf;
+                            const __m512  _0 = _mm512_setzero_ps();
+			    const __m512  _1 = _mm512_set1_ps(1.0);
+			    const __m512  t0 = _mm512_pow_ps(_mm512_add_ps(x,_1),b);
+			    const __m512  _1a= _mm512_sub_ps(_1,a);
+			    const __m512  t1 = _mm512_pow_ps(_1a,t0);
+                            const __m512  t2 = _mm512_pow_ps(x,b);
+			    const __m512  t3 = _mm512_pow_ps(_1a,t2);
+			    pdf               = _mm512_sub_ps(t3,t1);
+			    return (pdf);
+		   }
 		    
 		    
 	    	     		
