@@ -5688,6 +5688,113 @@ SOFTWARE.
                           return (var);                    
                     }   
                     
+                    
+/*
+     !*****************************************************************************80
+!
+!! TRIGAMMA calculates the TriGamma function.
+!
+!  Discussion:
+!
+!    TriGamma(x) = d^2 log ( Gamma ( x ) ) / dx^2.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    03 January 2000
+!
+!  Author:
+!
+!    FORTRAN77 original version by B Schneider
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    BE Schneider,
+!    Algorithm AS 121:
+!    Trigamma Function,
+!    Applied Statistics,
+!    Volume 27, Number 1, page 97-99, 1978.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the trigamma function.
+!    0 < X.
+!
+!    Output, real ( kind = 8 ) TRIGAMMA, the value of the
+!    trigamma function at X.
+!     
+*/
+
+  
+                      __m512d
+                      trigamma_zmm8r8(const __m512d x) {
+                         
+                         __m512d a  = _mm512_setzero_pd();
+                         __m512d C1 = _mm512_set1_pd(1.0);
+                         __m512d C05=_mm512_set1_pd(0.5);
+                         __m512d b  = _mm512_set1_pd(5.0);
+                         __m512d b2 = _mm512_set1_pd(1.0/6.0);
+                         __m512d b4 = _mm512_set1_pd(-1.0/30.0);
+                         __m512d b6 = _mm512_set1_pd(1.0/42.0);
+                         __m512d b8 = _mm512_set1_pd(-1.0/30.0);
+                         register __m512d y,z,t0,t1;
+                         register __m512d trig;
+                         
+                         if(_mm512_cmp_pd_mask(x,a,_CMP_LE_OQ)) {
+                            trig = _mm512_div_pd(C1,_mm512_mul_pd(x,x));
+                         }
+                         else {
+                            z = x;
+                            trig = a;
+                            while(_mm512_cmp_pd_mask(z,b,_CMP_LT_OQ)) {
+                                  trig = _mm512_add_pd(_mm512_div_pd(C1,
+                                                         _mm512_mul_pd(z,z)))
+                                  z    = _mm512_add_pd(z,C1);
+                            }
+                            y    = _mm512_div_pd(C1,_mm512_mul_pd(z,z));
+                            trig = trig+C05*y+(C1+y*(b2+y*(b4+y*(b6+y*b8))))/z; 
+                         }
+                         return (trig);
+                    } 
+                    
+                    
+                        
+                      __m512
+                      trigamma_zmm16r4(const __m512 x) {
+                         
+                         __m512 a  = _mm512_setzero_ps();
+                         __m512 C1 = _mm512_set1_ps(1.0f);
+                         __m512 C05=_mm512_set1_ps(0.5f);
+                         __m512 b  = _mm512_set1_ps(5.0f);
+                         __m512 b2 = _mm512_set1_ps(1.0f/6.0f);
+                         __m512 b4 = _mm512_set1_ps(-1.0f/30.0f);
+                         __m512 b6 = _mm512_set1_ps(1.0f/42.0f);
+                         __m512 b8 = _mm512_set1_ps(-1.0f/30.0f);
+                         register __m512 y,z,t0,t1;
+                         register __m512 trig;
+                         
+                         if(_mm512_cmp_ps_mask(x,a,_CMP_LE_OQ)) {
+                            trig = _mm512_div_ps(C1,_mm512_mul_ps(x,x));
+                         }
+                         else {
+                            z = x;
+                            trig = a;
+                            while(_mm512_cmp_ps_mask(z,b,_CMP_LT_OQ)) {
+                                  trig = _mm512_add_ps(_mm512_div_ps(C1,
+                                                         _mm512_mul_ps(z,z)))
+                                  z    = _mm512_add_ps(z,C1);
+                            }
+                            y    = _mm512_div_ps(C1,_mm512_mul_ps(z,z));
+                            trig = trig+C05*y+(C1+y*(b2+y*(b4+y*(b6+y*b8))))/z; 
+                         }
+                         return (trig);
+                    } 
+
+                    
                                       
   		    
 	    	     		
