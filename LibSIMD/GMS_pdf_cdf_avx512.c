@@ -6256,7 +6256,419 @@ SOFTWARE.
 		   }
 		                    
                                       
-  		    
+ /*
+!*****************************************************************************80
+!
+!! TFN calculates the T function of Owen.
+!
+!  Discussion:
+!
+!    Owen's T function is useful for computation of the bivariate normal
+!    distribution and the distribution of a skewed normal distribution.
+!
+!    Although it was originally formulated in terms of the bivariate
+!    normal function, the function can be defined more directly as
+!
+!      T(H,A) = 1 / ( 2 * pi ) *
+!        Integral ( 0 <= X <= A ) e^( -H^2 * (1+X^2) / 2 ) / (1+X^2) dX
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    10 December 2004
+!
+!  Author:
+!
+!    Original FORTRAN77 version by J C Young, C E Minder.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Donald Owen,
+!    Tables for computing the bivariate normal distribution,
+!    Annals of Mathematical Statistics,
+!    Volume 27, pages 1075-1090, 1956.
+!
+!    JC Young, CE Minder,
+!    Algorithm AS 76,
+!    An Algorithm Useful in Calculating Non-Central T and
+!    Bivariate Normal Distributions,
+!    Applied Statistics,
+!    Volume 23, Number 3, 1974, pages 455-457.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) H, A, the arguments of the T function.
+!
+!    Output, real ( kind = 8 ) TFN, the value of the T function.
+!
+*/
+
+
+                    
+		      __m512d owen_tfunc_zmm8r8(const __m512d h,
+		                                const __m512d a) {
+		             
+		             __attribute__((section(".rodata")))
+		             __ATTR_ALIGN__(64) static __m512d  weight[10] = {
+		                                _mm512_set1_pd(0.666713443086881375935688098933e-01),
+                                                _mm512_set1_pd(0.149451349150580593145776339658e+00),
+                                                _mm512_set1_pd(0.219086362515982043995534934228e+00),
+                                                _mm512_set1_pd(0.269266719309996355091226921569e+00),
+                                                _mm512_set1_pd(0.295524224714752870173892994651e+00),
+                                                _mm512_set1_pd(0.295524224714752870173892994651e+00),
+                                                _mm512_set1_pd(0.269266719309996355091226921569e+00),
+                                                _mm512_set1_pd(0.219086362515982043995534934228e+00),
+                                                _mm512_set1_pd(0.149451349150580593145776339658e+00), 
+                                                _mm512_set1_pd(0.666713443086881375935688098933e-01)};
+                            __attribute__((section(".rodata")))
+		            __ATTR_ALIGN__(64) static __m512d  xtab[10] = {
+		                                _mm512_set1_pd(-0.973906528517171720077964012084e+00),
+                                                _mm512_set1_pd(-0.865063366688984510732096688423e+00),
+                                                _mm512_set1_pd(-0.679409568299024406234327365115e+00), 
+                                                _mm512_set1_pd(-0.433395394129247190799265943166e+00), 
+                                                _mm512_set1_pd(-0.148874338981631210884826001130e+00), 
+                                                _mm512_set1_pd(0.148874338981631210884826001130e+00), 
+                                                _mm512_set1_pd(0.433395394129247190799265943166e+00), 
+                                                _mm512_set1_pd(0.679409568299024406234327365115e+00), 
+                                                _mm512_set1_pd(0.865063366688984510732096688423e+00), 
+                                                _mm512_set1_pd(0.973906528517171720077964012084e+00)};
+		           
+		             const __m512d twopinv = _mm512_set1_pd(0.15915494309189533576888e+00);   
+		             const __m512d tv1     = _mm512_set1_pd(1.0e-35);
+		             const __m512d tv2     = _mm512_set1_pd(15.0);
+		             const __m512d tv3     = tv2;
+		             const __m512d tv4     = _mm512_set1_pd(1.0e-5);
+		             const __m512d C05     = _mm512_set1_pd(0.5);
+		             const __m512d C1      = _mm512_set1_pd(1.0);
+		             const __m512d C2      = _mm512_set1_pd(2.0);
+		             const __m512d C025    = _mm512_set1_pd(0.25);
+		             const __m512d C0      = _mm512_setzero_pd();
+		             __m512d x,rt,as,h1,h2,hs,t0,t1,t2;
+		             __m512d tfn;
+		             if(_mm512_cmp_pd_mask(_mm512_abs_pd(h),tv1,_CMP_LT_OQ)) {
+#if (USE_SLEEF_LIB) == 1
+                                tfn = _mm512_mul_pd(xatan(a),twopinv);	
+#else
+                                tfn = _mm512_mul_pd(_mm512_atan_pd(a),twopinv);
+#endif	               
+		             }
+		             else if(_mm512_cmp_pd_mask(tv2,_mm512_abs_pd(h),_CMP_LT_OQ)) {
+		                tfn = C0;
+		             }
+		             else if(_mm512_cmp_pd_mask(_mm512_abs_pd(a),tv1,_CMP_LT_OQ)) {
+		                 tfn = C0;
+		             }
+		             else {
+		                 hs = _mm512_mul_pd(negate_zmm8r8(C05),
+		                            _mm512_mul_pd(h,h));
+		                 h2 = a;
+		                 as = _mm512_mul_pd(a,a);
+#if (USE_SLEEF_LIB) == 1		                 
+		                 t0 = xlog(_mm512_add_pd(C1,as));
+#else
+                                 t0 = _mm512_log_pd(_mm512_add_pd(C1,as));
+#endif		           
+                                 __mmask8 m = _mm512_cmp_pd_mask(tv3,_mm512_sub_pd(t0,
+                                                                     _mm512_mul_pd(hs,as)),_CMP_LE_OQ);
+                                 if(m) {
+                                    h1 = _mm512_mul_pd(C05,a);
+                                    as = _mm512_mul_pd(C025,as);
+                                    while(true) {
+                                          rt = _mm512_add_pd(as,C1);
+#if (USE_SLEEF_LIB) == 1
+                                          t0 = _mm512_add_pd(h1,_mm512_fmadd_pd(hs,as,xlog(rt)));
+#else
+                                          t0 = _mm512_add_pd(h1,_mm512_fmadd_pd(hs,as,_mm512_log_pd(rt)));
+#endif                                   
+                                          t1 = _mm512_sub_pd(_mm512_div_pd(C1,rt),hs);
+                                          t2 = _mm512_mul_pd(C2,_mm512_mul_pd(h1,t1));
+                                          h2 = _mm512_div_pd(t0,t2);
+                                          as = _mm512_mul_pd(h2,h2);
+                                          if(_mm512_cmp_pd_mask(_mm512_abs_pd(
+                                                          _mm512_mul_pd(h2,h1),tv4,_CMP_LT_OQ))) break;
+                                          h1 = h2;                                               
+                                    }
+                                 }
+                                 rt = C0;
+                                 
+                                 //for(int32_t i=0; i<10; ++i) 
+#if (USE_SLEEF_LIB) == 1
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[0],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[0],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[1],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[1],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[2],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[2],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[3],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[3],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[4],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[4],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[5],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[5],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[6],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[6],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[7],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[7],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[8],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[8],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[9],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[9],
+                                               _mm512_div_pd(xexp(_mm512_mul_pd(hs,t0)),t0)));
+                                 
+#else
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[0],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[0],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[1],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[1],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[2],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[2],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[3],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[3],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[4],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[4],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[5],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[5],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[6],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[6],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[7],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[7],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[8],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[8],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_pd(C05,h2,_mm512_add_pd(xtab[9],C1));
+                                 t0 = _mm512_add_pd(C1,_mm512_mul_pd(x,x));
+                                 rt = _mm512_add_pd(rt,_mm512_mul_pd(weight[9],
+                                               _mm512_div_pd(_mm512_exp_pd(_mm512_mul_pd(hs,t0)),t0))); 
+
+#endif
+                                 t1 = _mm512_mul_pd(C05,h2);
+                                 tfn= _mm512_mul_pd(rt,_mm512_mul_pd(t1,twopinv)); 
+		             }
+		             return (tfn);
+		    }   
+		    
+		    
+		   
+		      __m512 owen_tfunc_zmm16r4(const __m512 h,
+		                                const __m512 a) {
+		             
+		             __attribute__((section(".rodata")))
+		             __ATTR_ALIGN__(64) static __m512  weight[10] = {
+		                                _mm512_set1_ps(0.666713443086881375935688098933e-01f),
+                                                _mm512_set1_ps(0.149451349150580593145776339658e+00f),
+                                                _mm512_set1_ps(0.219086362515982043995534934228e+00f),
+                                                _mm512_set1_ps(0.269266719309996355091226921569e+00f),
+                                                _mm512_set1_ps(0.295524224714752870173892994651e+00f),
+                                                _mm512_set1_ps(0.295524224714752870173892994651e+00f),
+                                                _mm512_set1_ps(0.269266719309996355091226921569e+00f),
+                                                _mm512_set1_ps(0.219086362515982043995534934228e+00f),
+                                                _mm512_set1_ps(0.149451349150580593145776339658e+00f), 
+                                                _mm512_set1_ps(0.666713443086881375935688098933e-01f)};
+                            __attribute__((section(".rodata")))
+		            __ATTR_ALIGN__(64) static __m512  xtab[10] = {
+		                                _mm512_set1_ps(-0.973906528517171720077964012084e+00f),
+                                                _mm512_set1_ps(-0.865063366688984510732096688423e+00f),
+                                                _mm512_set1_ps(-0.679409568299024406234327365115e+00f), 
+                                                _mm512_set1_ps(-0.433395394129247190799265943166e+00f), 
+                                                _mm512_set1_ps(-0.148874338981631210884826001130e+00f), 
+                                                _mm512_set1_ps(0.148874338981631210884826001130e+00f), 
+                                                _mm512_set1_ps(0.433395394129247190799265943166e+00f), 
+                                                _mm512_set1_ps(0.679409568299024406234327365115e+00f), 
+                                                _mm512_set1_ps(0.865063366688984510732096688423e+00f), 
+                                                _mm512_set1_ps(0.973906528517171720077964012084e+00f)};
+		           
+		             const __m512 twopinv = _mm512_set1_ps(0.15915494309189533576888e+00f);   
+		             const __m512 tv1     = _mm512_set1_ps(std::numeric_limits<float>::min());
+		             const __m512 tv2     = _mm512_set1_ps(15.0f);
+		             const __m512 tv3     = tv2;
+		             const __m512 tv4     = _mm512_set1_ps(1.0e-5f);
+		             const __m512 C05     = _mm512_set1_ps(0.5f);
+		             const __m512 C1      = _mm512_set1_ps(1.0f);
+		             const __m512 C2      = _mm512_set1_ps(2.0f);
+		             const __m512 C025    = _mm512_set1_ps(0.25f);
+		             const __m512 C0      = _mm512_setzero_ps();
+		             __m512 x,rt,as,h1,h2,hs,t0,t1,t2;
+		             __m512 tfn;
+		             if(_mm512_cmp_ps_mask(_mm512_abs_ps(h),tv1,_CMP_LT_OQ)) {
+#if (USE_SLEEF_LIB) == 1
+                                tfn = _mm512_mul_ps(xatanf(a),twopinv);	
+#else
+                                tfn = _mm512_mul_ps(_mm512_atan_ps(a),twopinv);
+#endif	               
+		             }
+		             else if(_mm512_cmp_ps_mask(tv2,_mm512_abs_ps(h),_CMP_LT_OQ)) {
+		                tfn = C0;
+		             }
+		             else if(_mm512_cmp_pd_mask(_mm512_abs_ps(a),tv1,_CMP_LT_OQ)) {
+		                 tfn = C0;
+		             }
+		             else {
+		                 hs = _mm512_mul_ps(negate_zmm16r4(C05),
+		                            _mm512_mul_ps(h,h));
+		                 h2 = a;
+		                 as = _mm512_mul_ps(a,a);
+#if (USE_SLEEF_LIB) == 1		                 
+		                 t0 = xlogf(_mm512_add_ps(C1,as));
+#else
+                                 t0 = _mm512_log_ps(_mm512_add_ps(C1,as));
+#endif		           
+                                 __mmask16 m = _mm512_cmp_ps_mask(tv3,_mm512_sub_ps(t0,
+                                                                     _mm512_mul_ps(hs,as)),_CMP_LE_OQ);
+                                 if(m) {
+                                    h1 = _mm512_mul_ps(C05,a);
+                                    as = _mm512_mul_ps(C025,as);
+                                    while(true) {
+                                          rt = _mm512_add_ps(as,C1);
+#if (USE_SLEEF_LIB) == 1
+                                          t0 = _mm512_add_ps(h1,_mm512_fmadd_ps(hs,as,xlogf(rt)));
+#else
+                                          t0 = _mm512_add_ps(h1,_mm512_fmadd_ps(hs,as,_mm512_log_ps(rt)));
+#endif                                   
+                                          t1 = _mm512_sub_ps(_mm512_div_ps(C1,rt),hs);
+                                          t2 = _mm512_mul_ps(C2,_mm512_mul_ps(h1,t1));
+                                          h2 = _mm512_div_ps(t0,t2);
+                                          as = _mm512_mul_ps(h2,h2);
+                                          if(_mm512_cmp_ps_mask(_mm512_abs_ps(
+                                                          _mm512_mul_ps(h2,h1),tv4,_CMP_LT_OQ))) break;
+                                          h1 = h2;                                               
+                                    }
+                                 }
+                                 rt = C0;
+                                 
+                                 //for(int32_t i=0; i<10; ++i) 
+#if (USE_SLEEF_LIB) == 1
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[0],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[0],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[1],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[1],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[2],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[2],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[3],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[3],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[4],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[4],
+                                               _mm512_div_pd(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[5],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[5],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[6],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[6],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[7],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[7],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[8],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[8],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[9],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[9],
+                                               _mm512_div_ps(xexpf(_mm512_mul_ps(hs,t0)),t0)));
+                                 
+#else
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[0],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[0],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[1],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[1],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[2],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[2],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[3],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[3],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[4],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[4],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[5],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[5],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[6],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[6],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[7],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[7],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[8],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[8],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0)));
+                                 x  = _mm512_fmadd_ps(C05,h2,_mm512_add_ps(xtab[9],C1));
+                                 t0 = _mm512_add_ps(C1,_mm512_mul_ps(x,x));
+                                 rt = _mm512_add_ps(rt,_mm512_mul_ps(weight[9],
+                                               _mm512_div_ps(_mm512_exp_ps(_mm512_mul_ps(hs,t0)),t0))); 
+
+#endif
+                                 t1 = _mm512_mul_ps(C05,h2);
+                                 tfn= _mm512_mul_ps(rt,_mm512_mul_ps(t1,twopinv)); 
+		             }
+		             return (tfn);
+		    }    
+		     
+		    
+		     		    
 	    	     		
 		     		     
 		     
