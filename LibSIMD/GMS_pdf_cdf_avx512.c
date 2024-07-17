@@ -6121,7 +6121,140 @@ SOFTWARE.
 		   }
 
 
-                    
+/*
+   !*****************************************************************************80
+!
+!! VON_MISES_PDF evaluates the von Mises PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = EXP ( B * COS ( X - A ) ) / ( 2 * PI * I0(B) )
+!
+!    where:
+!
+!      I0(*) is the modified Bessel function of the first
+!      kind of order 0.
+!
+!    The von Mises distribution for points on the unit circle is
+!    analogous to the normal distribution of points on a line.
+!    The variable X is interpreted as a deviation from the angle A,
+!    with B controlling the amount of dispersion.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    27 October 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Jerry Banks, editor,
+!    Handbook of Simulation,
+!    Engineering and Management Press Books, 1998, page 160.
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!    Merran Evans, Nicholas Hastings, Brian Peacock,
+!    Statistical Distributions,
+!    Wiley, 2000,
+!    LC: QA273.6.E92, pages 189-191.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    LC: QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!              
+*/
+
+
+                      
+                      __m512d
+		      von_misses_pdf_zmm8r8(const __m512d x,
+		                            const __m512d a,
+					    const __m512d b) {
+ 
+                           const __m512d   pi  = _mm512_set1_pd(3.14159265358979323846264338328);
+			   const __m512d   _2pi= _mm512_set1_pd(6.283185307179586476925286766559);
+			   const __m512d   _0  = _mm512_setzero_pd();
+			   const __m512d   _2  = _mm512_set1_pd(2.0);
+			   const __m512d   t0  = _mm512_sub_pd(a,pi);
+			   const __m512d   t1  = _mm512_add_pd(a,pi);
+			   __m512d pdf;
+			   __mmask8 m1,m2;
+			   m1                  = _mm512_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm512_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm512_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+#if (USE_SLEEF_LIB) == 1
+			   const __m512d tmp1  = xexp(_mm512_mul_pd(b,xcos(_mm512_sub_pd(x,a))));
+#else
+                           const __m512d tmp1  = _mm512_exp(_mm512_mul_pd(b,
+			                                              _mm512_cos_pd(
+								                _mm512_sub_pd(x,a))));
+#endif
+                           
+			   pdf                 = _mm512_mask_blend_pd(m2,_0,_mm512_div_pd(tmp1,
+			                                              _mm512_mul_pd(_2pi,bessesl_i0_zmm8r8(b))));
+			   return (pdf);
+		   }
+
+
+		           
+                      __m512
+		      von_misses_pdf_zmm16r4(const __m512 x,
+		                            const __m512 a,
+					    const __m512 b) {
+ 
+                           const __m512   pi  = _mm512_set1_pd(3.14159265358979323846264338328f);
+			   const __m512   _2pi= _mm512_set1_pd(6.283185307179586476925286766559f);
+			   const __m512   _0  = _mm512_setzero_pd();
+			   const __m512   _2  = _mm512_set1_pd(2.0);
+			   const __m512   t0  = _mm512_sub_pd(a,pi);
+			   const __m512   t1  = _mm512_add_pd(a,pi);
+			   __m512 pdf;
+			   __mmask16 m1,m2;
+			   m1                  = _mm512_cmp_pd_mask(x,t0,_CMP_LT_OQ);
+			   pdf                 = _mm512_mask_blend_pd(m1,_0,_0);
+			   m2                  = _mm512_cmp_pd_mask(x,t1,_CMP_LE_OQ);
+#if (USE_SLEEF_LIB) == 1
+			   const __m512 tmp1  = xexpf(_mm512_mul_pd(b,xcosf(_mm512_sub_pd(x,a))));
+#else
+                           const __m512 tmp1  = _mm512_exp(_mm512_mul_pd(b,
+			                                              _mm512_cos_pd(
+								                _mm512_sub_pd(x,a))));
+#endif
+                           
+			   pdf                 = _mm512_mask_blend_pd(m2,_0,_mm512_div_pd(tmp1,
+			                                              _mm512_mul_pd(_2pi,bessesl_i0_zmm8r8(b))));
+			   return (pdf);
+		   }
+		                    
                                       
   		    
 	    	     		
