@@ -5793,6 +5793,97 @@ SOFTWARE.
                          }
                          return (trig);
                     } 
+                    
+                    
+/*
+  !*****************************************************************************80
+!
+!! WEIBULL_PDF evaluates the Weibull PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B,C;X) = ( C / B ) * ( ( X - A ) / B )**( C - 1 )
+!     * EXP ( - ( ( X - A ) / B )**C ).
+!
+!    The Weibull PDF is also known as the Frechet PDF.
+!
+!    WEIBULL_PDF(A,B,1;X) is the Exponential PDF.
+!
+!    WEIBULL_PDF(0,1,2;X) is the Rayleigh PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    12 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    A <= X
+!
+!    Input, real ( kind = 8 ) A, B, C, the parameters of the PDF.
+!    0.0D+00 < B,
+!    0.0D+00 < C.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+! 
+*/
+
+
+          
+	                  
+                      __m512d	 
+                      weibull_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b,
+                                         const __m512d c) {
+                        
+                         register __m512d C1 = _mm512_set1_pd(1.0);
+                         register __m512d y,t0,pow1,t1,exp;
+                         register __m512d pdf;
+                         t0 = _mm512_div_pd(_mm512_sub_pd(x,a),b);
+                         pow1 = _mm512_pow_pd(t0,_mm512_sub_pd(c,C1));
+#if (USE_SLEEF_LIB) == 1
+                         exp  = xexp(_mm512_pow_pd(y,c));
+#else
+                         exp  = _mm512_exp_pd(_mm512_pow_pd(y,c));
+#endif                   
+                         t1   = _mm512_div_pd(c,b);
+                         pdf  = _mm512_div_pd(_mm512_mul_pd(t1,pow1),exp); 
+                         return (pdf);     
+                   }
+                   
+                   
+                           
+                      __m512	 
+                      weibull_pdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b,
+                                         const __m512 c) {
+                        
+                         register __m512 C1 = _mm512_set1_ps(1.0f);
+                         register __m512 y,t0,pow1,t1,exp;
+                         register __m512 pdf;
+                         t0 = _mm512_div_ps(_mm512_sub_ps(x,a),b);
+                         pow1 = _mm512_pow_ps(t0,_mm512_sub_ps(c,C1));
+#if (USE_SLEEF_LIB) == 1
+                         exp  = xexp(_mm512_pow_ps(y,c));
+#else
+                         exp  = _mm512_exp_ps(_mm512_pow_ps(y,c));
+#endif                   
+                         t1   = _mm512_div_ps(c,b);
+                         pdf  = _mm512_div_ps(_mm512_mul_ps(t1,pow1),exp); 
+                         return (pdf);     
+                   }
+
+
 
                     
                                       
