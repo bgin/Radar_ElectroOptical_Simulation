@@ -5618,6 +5618,77 @@ SOFTWARE.
                          pdf  = _mm512_div_ps(r8g1,t3);
                          return (pdf);
                    }
+                   
+                   
+/*                 
+!*****************************************************************************80
+!
+!! STUDENT_VARIANCE returns the variance of the central Student T PDF.
+!
+!  Discussion:
+!
+!    The variance is not defined unless 2 < C.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    02 November 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, shape parameters of the PDF,
+!    used to transform the argument X to a shifted and scaled
+!    value Y = ( X - A ) / B.  It is required that B be nonzero.
+!    For the standard distribution, A = 0 and B = 1.
+!
+!    Input, real ( kind = 8 ) C, is usually called the number of
+!    degrees of freedom of the distribution.  C is typically an
+!    integer, but that is not essential.  It is required that
+!    C be strictly positive.
+!
+!    Output, real ( kind = 8 ) VARIANCE, the variance of the PDF.
+!
+*/  
+
+
+                           
+                      __m512d 
+                      student_variance_zmm8r8(const __m512d a,
+                                              const __m512d b,
+                                              const __m512d c) {
+                                              
+                          __m512d C2 = _mm512_set1_pd(2.0);     
+                          register __m512d bb,t1;
+                          register __m512d var;
+                          bb = _mm512_mul_pd(b,b);
+                          t1 = _mm512_sub_pd(c,C2);
+                          var= _mm512_mul_pd(bb,_mm512_div_pd(c,t1));
+                          return (var);                    
+                    }   
+                    
+                           
+                      __m512
+                      student_variance_zmm16r4(const __m512 a,
+                                              const __m512 b,
+                                              const __m512 c) {
+                                              
+                          __m512 C2 = _mm512_set1_ps(2.0f);     
+                          register __m512 bb,t1;
+                          register __m512 var;
+                          bb = _mm512_mul_ps(b,b);
+                          t1 = _mm512_sub_ps(c,C2);
+                          var= _mm512_mul_ps(bb,_mm512_div_ps(c,t1));
+                          return (var);                    
+                    }   
+                    
+                                      
   		    
 	    	     		
 		     		     
