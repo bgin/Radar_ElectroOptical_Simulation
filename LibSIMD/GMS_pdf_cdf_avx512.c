@@ -5522,7 +5522,103 @@ SOFTWARE.
                   }
                   		   
 		    
-		    
+/*
+!*****************************************************************************80
+!
+!! STUDENT_PDF evaluates the central Student T PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B,C;X) = Gamma ( (C+1)/2 ) /
+!      ( Gamma ( C / 2 ) * Sqrt ( PI * C )
+!      * ( 1 + ((X-A)/B)^2/C )^(C + 1/2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    02 November 2005
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, shape parameters of the PDF,
+!    used to transform the argument X to a shifted and scaled
+!    value Y = ( X - A ) / B.  It is required that B be nonzero.
+!    For the standard distribution, A = 0 and B = 1.
+!
+!    Input, real ( kind = 8 ) C, is usually called the number of
+!    degrees of freedom of the distribution.  C is typically an
+!    integer, but that is not essential.  It is required that
+!    C be strictly positive.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+*/
+
+
+          
+		            
+                      __m512d 
+                      student_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b,
+                                         const __m512d c) {
+                         
+                         __m512d C314159265358979323846264 = 
+                                           _mm512_set1_pd(3.14159265358979323846264);   
+                         __m512d C1 = _mm512_set1_pd(1.0);
+                         __m512d C05= _mm512_set1_pd(0.5);  
+                         __m512d C2 = _mm512_set1_pd(2.0); 
+                         register __m512d y,t0,t1,t2,t3;
+                         register __m512d r8g1,r8g2,pdf;
+                         t0   = _mm512_mul_pd(C05,_mm512_add_pd(c,C1));
+                         y    = _mm512_div_pd(_mm512_sub_pd(x,a),b);
+                         r8g1 = gamma_zmm8r8(t0);
+                         t1   = _mm512_fmadd_pd(C2,c,C1);
+                         t2   = _mm512_add_pd(_mm512_div_pd(_mm512_mul_pd(y,y),c),C1);
+                         t0   = _mm512_pow_pd(t2,t1); //used
+                         r8g2 = gamma_zmm8r8(_mm512_mul_pd(C05,c));
+                         y    = _mm512_sqrt_pd(_mm512_mul_pd(C314159265358979323846264,c));
+                         t3   = _mm512_mul_pd(y,_mm512_mul_pd(r8g2,t0));
+                         pdf  = _mm512_div_pd(r8g1,t3);
+                         return (pdf);
+                   }
+                   
+                   
+                          
+                      __m512
+                      student_pdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b,
+                                         const __m512 c) {
+                         
+                         __m512 C314159265358979323846264 = 
+                                           _mm512_set1_ps(3.14159265358979323846264f);   
+                         __m512 C1 = _mm512_set1_ps(1.0f);
+                         __m512 C05= _mm512_set1_ps(0.5f);  
+                         __m512 C2 = _mm512_set1_ps(2.0f); 
+                         register __m512 y,t0,t1,t2,t3;
+                         register __m512 r8g1,r8g2,pdf;
+                         t0   = _mm512_mul_ps(C05,_mm512_add_ps(c,C1));
+                         y    = _mm512_div_ps(_mm512_sub_ps(x,a),b);
+                         r8g1 = gamma_zmm16r4(t0);
+                         t1   = _mm512_fmadd_ps(C2,c,C1);
+                         t2   = _mm512_add_ps(_mm512_div_ps(_mm512_mul_ps(y,y),c),C1);
+                         t0   = _mm512_pow_ps(t2,t1); //used
+                         r8g2 = gamma_zmm16r4(_mm512_mul_ps(C05,c));
+                         y    = _mm512_sqrt_ps(_mm512_mul_ps(C314159265358979323846264,c));
+                         t3   = _mm512_mul_ps(y,_mm512_mul_ps(r8g2,t0));
+                         pdf  = _mm512_div_ps(r8g1,t3);
+                         return (pdf);
+                   }
+  		    
 	    	     		
 		     		     
 		     
