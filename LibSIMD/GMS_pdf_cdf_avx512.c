@@ -5884,6 +5884,242 @@ SOFTWARE.
                    }
 
 
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_CDF evaluates the von Mises CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    22 September 2005
+!
+!  Author:
+!
+!    Original FORTRAN77 version by Geoffrey Hill.
+!    FORTRAN90 version by John Burkardt
+!
+!  Reference:
+!
+!    Geoffrey Hill,
+!    Algorithm 518,
+!    Incomplete Bessel Function I0: The von Mises Distribution,
+!    ACM Transactions on Mathematical Software,
+!    Volume 3, Number 3, September 1977, pages 279-284.
+!
+!    Kanti Mardia, Peter Jupp,
+!    Directional Statistics,
+!    Wiley, 2000,
+!    QA276.M335
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    A - PI <= X <= A + PI.
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!
+*/
+
+//#include "GMS_rotations_avx512_helpers.hpp" // fmod
+
+
+                         
+                      __m512d
+		      von_misses_cdf_zmm8r8(const __m512d x,
+		                            const __m512d a,
+					    const __m512d b) {
+
+                        //Early exit.
+			const __m512d   _0  = _mm512_setzero_pd();
+			const __m512d   _1  = _mm512_set1_pd(1.0);
+			const __m512d   pi  = _mm512_set1_pd(3.14159265358979323846264338328);
+			const __m512d   npi = _mm512_set1_pd(-3.14159265358979323846264338328);
+			const __m512d   xsa = _mm512_sub_pd(x,a);
+			if(__builtin_expect(_mm512_cmp_pd_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm512_cmp_pd_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m512d  _2pi = _mm512_set1_pd(6.283185307179586476925286766559);
+			const __m512d  a1  = _mm512_set1_pd(12.0);
+			const __m512d  a2  = _mm512_set1_pd(0.8);
+			const __m512d  a3  = _mm512_set1_pd(8.0);
+			const __m512d  a4  = _mm512_set1_pd(1.0);
+			const __m512d  c1  = _mm512_set1_pd(56.0);
+			const __m512d  ck  = _mm512_set1_pd(10.5);
+			const __m512d  _2  = _mm512_set1_pd(2.0);
+			const __m512d  _1_2= _mm512_set1_pd(0.5);
+			__m512d arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = fmod_zmm8r8(_mm512_add_pd(xsa,pi),_2pi);
+			uprv = u;
+			const __mmask8 m = _mm512_cmp_pd_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm512_add_pd(u,_2pi);
+			u    = _mm512_mask_blend_pd(m,uprv,u);
+			y    = _mm512_sub_pd(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm512_cmp_pd_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m512d t0 = _mm512_set1_pd(24.0);
+			   const __m512d t1 = _mm512_set1_pd(54.0);
+			   const __m512d t2 = _mm512_set1_pd(347.0);
+			   const __m512d t3 = _mm512_set1_pd(26.0);
+			   const __m512d t4 = _mm512_set1_pd(6.0);
+			   const __m512d t5 = _mm512_set1_pd(12.0);
+			   const __m512d t6 = _mm512_set1_pd(3.0);
+			   const __m512d t7 = _mm512_set1_pd(16.0);
+			   const __m512d t8 = _mm512_set1_pd(1.75);
+			   const __m512d t9 = _mm512_set1_pd(83.5);
+			   c                = _mm512_mul_pd(t0,z);
+			   v                = _mm512_sub_pd(c,c1);
+			   const __m512d tmp1 = _mm512_sub_pd(_mm512_add_pd(v,t3),c);
+			   const __m512d tmp2 = _mm512_div_pd(t1,_mm512_div_pd(t2,tmp1));
+			   const __m512d tmp3 = _mm512_add_pd(_mm512_sub_pd(tmp2,t4),c);
+			   r                  = _mm512_sqrt_pd(_mm512_div_pd(tmp3,t5));
+#if (USE_SLEEF_LIB) == 1
+                           z                  = _mm512_mul_pd(xsin(_mm512_mul_pd(_1_2,y)),r);
+#else
+			   z                  = _mm512_mul_pd(_mm512_sin_pd(
+			                                                _mm512_mul_pd(_1_2,y)),r);
+#endif
+                           s                  = _mm512_mul_pd(_2,_mm512_mul_pd(z,z));
+			   v                  = _mm512_sub_pd(v,_mm512_add_pd(s,t6));
+			   y                  = _mm512_div_pd(_mm512_sub_pd(_mm512_sub_pd(c,s),
+			                                                    _mm512_sub_pd(s,t7)),t6);
+			   tmp1               = _mm512_sub_pd(v,y);
+			   y                  = _mm512_div_pd(_mm512_fmadd_pd(_mm512_add_pd(s,t8),s,t9),tmp1);
+			   tmp2               = _mm512_mul_pd(y,y);
+			   arg                = _mm512_mul_pd(z,_mm512_sub_pd(_1,
+			                                                  _mm512_div_pd(s,tmp2)));
+			   erfx               = _mm512_erf_pd(arg);
+			   cdf                = _mm512_fmadd_pd(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm512_max_pd(cdf,_0);
+			cdf                   = _mm512_min_pd(cdf,_1);
+			return (cdf);
+			
+		   }
+
+
+		      
+	                      
+                      __m512
+		      von_misses_cdf_zmm16r4(const __m512 x,
+		                            const __m512 a,
+					    const __m512 b) {
+
+                        //Early exit.
+			const __m512   _0  = _mm512_setzero_ps();
+			const __m512   _1  = _mm512_set1_ps(1.0f);
+			const __m512   pi  = _mm512_set1_ps(3.14159265358979323846264338328f);
+			const __m512   npi = _mm512_set1_ps(-3.14159265358979323846264338328f);
+			const __m512   xsa = _mm512_sub_ps(x,a);
+			if(__builtin_expect(_mm512_cmp_ps_mask(xsa,npi,_CMP_LE_OQ),0)) {
+		             return (_0);
+			}
+			if(__builtin_expect(_mm512_cmp_ps_mask(npi,xsa,_CMP_LE_OQ),0)) {
+                             return (_1); 
+			}
+			const __m512  _2pi = _mm512_set1_ps(6.283185307179586476925286766559f);
+			const __m512  a1  = _mm512_set1_ps(12.0f);
+			const __m512  a2  = _mm512_set1_ps(0.8f);
+			const __m512  a3  = _mm512_set1_ps(8.0f);
+			const __m512  a4  = _mm512_set1_ps(1.0f);
+			const __m512  c1  = _mm512_set1_ps(56.0f);
+			const __m512  ck  = _mm512_set1_ps(10.5f);
+			const __m512  _2  = _mm512_set1_ps(2.0f);
+			const __m512  _1_2= _mm512_set1_ps(0.5f);
+			__m512 arg,cdf,cn,p,r,s,sn,u,v,y,z,uprv,erfx;
+			//  Convert the angle (X - A) modulo 2 PI to the range ( 0, 2 * PI ).
+			z    = b;
+			u    = fmod_zmm16r4(_mm512_add_ps(xsa,pi),_2pi);
+			uprv = u;
+			const __mmask16 m = _mm512_cmp_ps_mask(u,_0,_CMP_LT_OQ);
+			u    = _mm512_add_ps(u,_2pi);
+			u    = _mm512_mask_blend_ps(m,uprv,u);
+			y    = _mm512_sub_ps(u,pi);
+			
+			//For small B, sum IP terms by backwards recursion.
+			// Can not be vectorized manually, hence 0 is returned.
+			// Only large B is computed.
+			/*
+                              This scalar code can not be vectorized.
+                              ip = int ( z * a2 - a3 / ( z + a4 ) + a1 )
+                              Used as loop control variable
+                              do n = 2, ip
+                         */
+                        if(_mm512_cmp_ps_mask(z,ck,_CMP_LE_OQ)) {
+                           return (_0);
+			}
+			else {
+                           const __m512 t0 = _mm512_set1_ps(24.0f);
+			   const __m512 t1 = _mm512_set1_ps(54.0f);
+			   const __m512 t2 = _mm512_set1_ps(347.0f);
+			   const __m512 t3 = _mm512_set1_ps(26.0f);
+			   const __m512 t4 = _mm512_set1_ps(6.0f);
+			   const __m512 t5 = _mm512_set1_ps(12.0f);
+			   const __m512 t6 = _mm512_set1_ps(3.0f);
+			   const __m512 t7 = _mm512_set1_ps(16.0f);
+			   const __m512 t8 = _mm512_set1_ps(1.75f);
+			   const __m512 t9 = _mm512_set1_ps(83.5f);
+			   c                = _mm512_mul_ps(t0,z);
+			   v                = _mm512_sub_ps(c,c1);
+			   const __m512d tmp1 = _mm512_sub_ps(_mm512_add_ps(v,t3),c);
+			   const __m512d tmp2 = _mm512_div_ps(t1,_mm512_div_ps(t2,tmp1));
+			   const __m512d tmp3 = _mm512_add_ps(_mm512_sub_ps(tmp2,t4),c);
+			   r                  = _mm512_sqrt_ps(_mm512_div_ps(tmp3,t5));
+#if (USE_SLEEF_LIB) == 1
+                           z                  = _mm512_mul_ps(xsinf(_mm512_mul_ps(_1_2,y)),r);
+#else
+			   z                  = _mm512_mul_ps(_mm512_sin_ps(
+			                                                _mm512_mul_ps(_1_2,y)),r);
+#endif
+                           s                  = _mm512_mul_ps(_2,_mm512_mul_ps(z,z));
+			   v                  = _mm512_sub_ps(v,_mm512_add_ps(s,t6));
+			   y                  = _mm512_div_ps(_mm512_sub_ps(_mm512_sub_ps(c,s),
+			                                                    _mm512_sub_ps(s,t7)),t6);
+			   tmp1               = _mm512_sub_ps(v,y);
+			   y                  = _mm512_div_ps(_mm512_fmadd_ps(_mm512_add_ps(s,t8),s,t9),tmp1);
+			   tmp2               = _mm512_mul_ps(y,y);
+			   arg                = _mm512_mul_ps(z,_mm512_sub_ps(_1,
+			                                                  _mm512_div_ps(s,tmp2)));
+			   erfx               = _mm512_erf_ps(arg);
+			   cdf                = _mm512_fmadd_ps(_1_2,erfx,_1_2);
+			}
+			cdf                   = _mm512_max_ps(cdf,_0);
+			cdf                   = _mm512_min_ps(cdf,_1);
+			return (cdf);
+			
+		   }
+
 
                     
                                       
