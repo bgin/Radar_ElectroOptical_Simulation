@@ -6665,7 +6665,185 @@ SOFTWARE.
                                  tfn= _mm512_mul_ps(rt,_mm512_mul_ps(t1,twopinv)); 
 		             }
 		             return (tfn);
-		    }    
+		    }  
+		    
+		    
+/*
+!*****************************************************************************80
+!
+!! VON_MISES_SAMPLE samples the von Mises PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    07 March 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Reference:
+!
+!    Donald Best, Nicholas Fisher,
+!    Efficient Simulation of the von Mises Distribution,
+!    Applied Statistics,
+!    Volume 28, Number 2, pages 152-157.
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, a parameter of the PDF.
+!    A is the preferred direction, in radians.
+!    -PI <= A <= PI.
+!
+!    Input, real ( kind = 8 ) B, a parameter of the PDF.
+!    B measures the "concentration" of the distribution around the
+!    angle A.  B = 0 corresponds to a uniform distribution
+!    (no concentration).  Higher values of B cause greater concentration
+!    of probability near A.
+!    0.0D+00 <= B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+	              
+*/
+
+
+                     
+                      __m512d
+                      von_misses_sample_zmm8r8(const __m512d a,
+		                               const __m512d b) {
+
+                          const __m512d  pi   = _mm512_set1_pd(3.14159265358979323846264338328);
+			  const __m512d  _1   = _mm512_set1_pd(1.0);
+			  const __m512d  _2   = _mm512_set1_pd(2.0);
+			  const __m512d  _4   = _mm512_set1_pd(4.0);
+			  const __m512d  _1_2 = _mm512_set1_pd(0.5);
+			  __m512d c,f,rho,tau,u1,r;
+			  __m512d u2,u3,x,z;
+			  __m512d t0,t1,t2;
+			  svrng_engine_t engine;
+			  svrng_distribution_t uniform;
+			  uint32_t seed    = 0U;
+			  int32_t result   = -9999;
+			  int32_t err      = -9999;
+			  result           = _rdrand32_step(&seed);
+			  if(!result) seed = 1563548129U;
+			  engine           = svrng_new_mt19937_engine(seed);
+			  err              = svrng_get_status();
+			  if(err!=SVRNG_STATUS_OK) {
+                             const __m512d nan = _mm512_set1_pd(nan(""));
+			     return (nan);
+			  }
+			  uniform             = svrng_new_normal_distribution_double(0.0,1.0);
+			  t0                  = _mm512_fmadd_pd(_4,_mm512_mul_pd(b,b),_1);
+			  tau                 = _mm512_add_pd(_1,_mm512_sqrt_pd(t0));
+			  t1                  = _mm512_add_pd(b,b);
+			  rho                 = _mm512_div_pd(_mm512_sub_pd(tau,
+			                                                _mm512_sqrt_pd(_mm512_add_pd(tau,tau))),t1);
+			  t2                  = _mm512_fmadd_pd(rho,rho,_1);
+			  r                   = _mm512_div_pd(t2,_mm512_add_pd(rho,rho));
+            
+ 			 while(true) {
+                               
+                              const double * __restrict ptr = (const double*)(&svrng_generate8_double(engine,uniform));
+                              u1                            = _mm512_loadu_pd(&ptr[0]);
+#if (USE_SLEEF_LIB) == 1
+			      z                             = xcos(_mm512_mul_pd(pi,u1));
+#else
+                              z                             = _mm512_cos_pd(_mm512_mul_pd(pi,u1));
+#endif
+                              f                             = _mm512_div_pd(_mm512_fmadd_pd(r,z,_1),
+			                                                    _mm512_add_pd(r,z));
+			      c                             = _mm512_mul_pd(b,_mm512_sub_pd(r,f));
+			      t0                            = _mm512_mul_pd(c,_mm512_sub_pd(_2,c));
+			                       
+			      if(_mm512_cmp_mask_pd(u2,t0,_CMP_LT_OQ)) break;
+			      t1                            = _mm512_add_pd(_mm512_log_pd(
+			                                                  _mm512_div_pd(c,u2)),_1);
+			      if(_mm512_cmp_mask_pd(c,t1,_CMP_LE_OQ)) break;
+			 }
+			 const double * __restrict ptr2 =
+			                    (const double*)(&svrng_generate8_double(engine,uniform));
+			 u3                             = _mm512_loadu_pd(&ptr2[0]);
+		         t2                             = zmm8r8_sign_zmm8r8(_1,_mm512_sub_pd(u3,_1_2));
+			 x                              = _mm512_fmadd_pd(t2,_mm512_acos_pd(f),a);
+			 svrng_delete_engine(engine);
+			 return (x)
+		   }
+
+
+		   
+		       
+                      __m512
+                      von_misses_sample_zmm16r4(const __m512 a,
+		                                const __m512 b) {
+
+                          const __m512   pi   = _mm512_set1_ps(3.14159265358979323846264338328f);
+			  const __m512   _1   = _mm512_set1_ps(1.0f);
+			  const __m512  _2    = _mm512_set1_ps(2.0f);
+			  const __m512  _4    = _mm512_set1_ps(4.0f);
+			  const __m512  _1_2  = _mm512_set1_ps(0.5f);
+			  __m512 c,f,rho,tau,u1,r;
+			  __m512 u2,u3,x,z;
+			  __m512 t0,t1,t2;
+			  svrng_engine_t engine;
+			  svrng_distribution_t uniform;
+			  uint32_t seed    = 0U;
+			  int32_t result   = -9999;
+			  int32_t err      = -9999;
+			  result           = _rdrand32_step(&seed);
+			  if(!result) seed = 1563548129U;
+			  engine           = svrng_new_mt19937_engine(seed);
+			  err              = svrng_get_status();
+			  if(err!=SVRNG_STATUS_OK) {
+                             const __m512 nan = _mm512_set1_ps(nanf(""));
+			     return (nan);
+			  }
+			  uniform             = svrng_new_normal_distribution_float(0.0f,1.0f);
+			  t0                  = _mm512_fmadd_ps(_4,_mm512_mul_ps(b,b),_1);
+			  tau                 = _mm512_add_ps(_1,_mm512_sqrt_ps(t0));
+			  t1                  = _mm512_add_ps(b,b);
+			  rho                 = _mm512_div_ps(_mm512_sub_ps(tau,
+			                                                _mm512_sqrt_ps(_mm512_add_ps(tau,tau))),t1);
+			  t2                  = _mm512_fmadd_ps(rho,rho,_1);
+			  r                   = _mm512_div_ps(t2,_mm512_add_ps(rho,rho));
+            
+ 			 while(true) {
+                               
+                              const float * __restrict ptr = (const float*)(&svrng_generate16_float(engine,uniform));
+                              u1                            = _mm512_loadu_ps(&ptr[0]);
+#if (USE_SLEEF_LIB) == 1
+			      z                             = xcosf(_mm512_mul_ps(pi,u1));
+#else
+                              z                             = _mm512_cos_ps(_mm512_mul_ps(pi,u1));
+#endif
+                              f                             = _mm512_div_ps(_mm512_fmadd_ps(r,z,_1),
+			                                                    _mm512_add_ps(r,z));
+			      c                             = _mm512_mul_ps(b,_mm512_sub_ps(r,f));
+			      t0                            = _mm512_mul_ps(c,_mm512_sub_ps(_2,c));
+			                       
+			      if(_mm512_cmp_mask_ps(u2,t0,_CMP_LT_OQ)) break;
+			      t1                            = _mm512_add_ps(_mm512_log_ps(
+			                                                  _mm512_div_ps(c,u2)),_1);
+			      if(_mm512_cmp_mask_ps(c,t1,_CMP_LE_OQ)) break;
+			 }
+			 const float * __restrict ptr2 =
+			                    (const float*)(&svrng_generate16_float(engine,uniform));
+			 u3                             = _mm512_loadu_ps(&ptr2[0]);
+		         t2                             = zmm16r4_sign_zmm16r4(_1,_mm512_sub_ps(u3,_1_2));
+			 x                              = _mm512_fmadd_ps(t2,_mm512_acos_ps(f),a);
+			 svrng_delete_engine(engine);
+			 return (x)
+		   }
+		   
+		   
+		   
+  
 		     
 		    
 		     		    
