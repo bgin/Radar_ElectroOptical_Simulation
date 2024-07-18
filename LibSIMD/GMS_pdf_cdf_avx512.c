@@ -6967,6 +6967,77 @@ SOFTWARE.
 			  mean              =  _mm512_mul_ps(a,_mm512_sqrt_ps(hpi));
 			  return (mean);
 		   }
+		   
+		   
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF_INV inverts the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+*/
+
+
+                          
+                      __m512d
+		      rayleigh_invcdf_zmm8r8(const __m512d cdf,
+		                             const __m512d a) {
+
+			 const __m512d _0 = _mm512_setzero_pd();
+			 const __m512d _1 = _mm512_setzero_pd(1.0);
+			 const __m512d n2 = _mm512_setzero_pd(-2.0);
+			 __m512d inv,t0,t1;
+                      
+			 t0  = _mm512_log_pd(_mm512_sub_pd(_1,cdf));
+			 t1  = _mm512_mul_pd(_2,_mm512_mul_pd(a,a));
+                         inv = _mm512_sqrt_pd(_mm512_mul_pd(t0,t1));
+			 return (inv);
+			   
+		     }
+
+
+		      __ATTR_REGCALL__
+                      __ATTR_ALWAYS_INLINE__
+		      __ATTR_HOT__
+		      __ATTR_ALIGN__(32)
+		      static inline           
+                      __m512
+		      rayleigh_invcdf_zmm16r4(const __m512 cdf,
+		                             const __m512 a) {
+
+			 const __m512 _0 = _mm512_setzero_ps();
+			 const __m512 _1 = _mm512_setzero_ps(1.0f);
+			 const __m512 n2 = _mm512_setzero_ps(-2.0f);
+			 __m512 inv,t0,t1;
+                      
+			 t0  = _mm512_log_ps(_mm512_sub_ps(_1,cdf));
+			 t1  = _mm512_mul_ps(_2,_mm512_mul_ps(a,a));
+                         inv = _mm512_sqrt_ps(_mm512_mul_ps(t0,t1));
+			 return (inv);
+			   
+		     }
+
+
 
 	   
   
