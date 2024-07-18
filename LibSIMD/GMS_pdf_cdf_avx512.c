@@ -7355,6 +7355,139 @@ SOFTWARE.
                    }
                    
 	   
+/*
+   !*****************************************************************************80
+!
+!! CAUCHY_SAMPLE samples the Cauchy PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    11 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Input/output, integer ( kind = 4 ) SEED, a seed for the random 
+!    number generator.
+!
+!    Output, real ( kind = 8 ) X, a sample of the PDF.
+!
+*/            
+
+
+                         
+                      __m512d 
+                      cauchy_sample_zmm8r8(const __m512d a,
+                                           const __m512d b) {
+                         __m512d cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m512d nan = _mm512_set1_pd(nan(""));
+			    return (nan);
+			 }
+			 uniform          = svrng_new_normal_distribution_double(0.0,1.0);
+			 const double * __restrict ptr = (const double*)(&svrng_generate8_double(engine,uniform));
+			 cdf              = cauchy_cdf_inv_zmm8r8(_mm512_loadu_pd(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);                 
+                    }
+                    
+                    
+                           
+                      __m512 
+                      cauchy_sample_zmm16r4(const __m512 a,
+                                            const __m512 b) {
+                         __m512 cdf;
+			 svrng_engine_t engine;
+			 svrng_distribution_t uniform;
+			 uint32_t seed    = 0U;
+			 int32_t result   = -9999;
+			 int32_t err      = -9999;
+			 result           = _rdrand32_step(&seed);
+			 if(!result) seed = 1043915199U;
+			 engine           = svrng_new_mt19937_engine(seed);
+			 err              = svrng_get_status();
+			 if(err!=SVRNG_STATUS_OK) {
+                            const __m512 nan = _mm512_set1_ps(nanf(""));
+			    return (nan);
+			 }
+			 uniform          = svrng_new_normal_distribution_float(0.0f,1.0f);
+			 const float * __restrict ptr = (const float*)(&svrng_generate16_float(engine,uniform));
+			 cdf              = cauchy_cdf_inv_zmm16r4(_mm512_loadu_ps(&ptr[0]));
+			 svrng_delete_engine(engine);
+			 return (cdf);                 
+                    }
+#if 0                    
+!*****************************************************************************80
+!
+!! MAXWELL_CDF evaluates the Maxwell CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    05 January 2000
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0 < A.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+!                    
+#endif
+
+    
+                      __m512d 
+                      maxwell_cdf_zmm8r8(const __m512d x,
+                                         const __m512d a) {
+                         
+                         const __m512d C15 = _mm512_set1_pd(1.5);
+                         register __m512d x2,cdf;
+                         x2 = _mm512_div_pd(x,a);
+                         cdf = gamma_incomplete_zmm8r8(C15,x2);
+                         return (cdf);                      
+                    }      
+                    
+                        
+                      __m512 
+                      maxwell_cdf_zmm16r4(const __m512 x,
+                                         const __m512 a) {
+                         
+                         const __m512 C15 = _mm512_set1_ps(1.5f);
+                         register __m512 x2,cdf;
+                         x2 = _mm512_div_ps(x,a);
+                         cdf = gamma_incomplete_zmm16r4(C15,x2);
+                         return (cdf);                      
+                    }   
+                    
   
 		     
 		    
