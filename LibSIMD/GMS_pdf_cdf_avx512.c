@@ -7038,6 +7038,94 @@ SOFTWARE.
 		     }
 
 
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_CDF evaluates the Rayleigh CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the CDF.
+!    0.0D+00 <= X.
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) CDF, the value of the CDF.
+*/
+
+    
+                      __m512d
+		      rayleigh_cdf_zmm8r8(const __m512d x,
+		                          const __m512d a) {
+
+                         const __m512d _0 = _mm512_setzero_pd();
+			 const __m512d _1 = _mm512_setzero_pd(1.0);
+			 __m512d cdf,t0,t1;
+			 t0              = _mm512_mul_pd(_2,_mm512_mul_pd(a,a));
+			 t1              = zmm8r8_negate(_mm512_mul_pd(x,x));
+#if (USE_SLEEF_LIB) == 1
+                         cdf             = _mm512_sub_pd(_1,xexp(_mm512_div_pd(t1,t0)));
+			                            
+#else
+			 cdf             = _mm512_sub_pd(_1,
+			                             _mm512_exp_pd(_mm512_div_pd(t1,t0)));
+#endif
+                         return (cdf);
+		    }
+
+
+		        
+                      __m512
+		      rayleigh_cdf_zmm16r4(const __m512 x,
+		                           const __m512 a) {
+
+                         const __m512 _0 = _mm512_setzero_ps();
+			 const __m512 _1 = _mm512_setzero_ps(1.0f);
+			 __m512 cdf,t0,t1;
+			 t0              = _mm512_mul_pd(_2,_mm512_mul_ps(a,a));
+			 t1              = zmm16r4_negate(_mm512_mul_ps(x,x));
+#if (USE_SLEEF_LIB) == 1
+                         cdf             = _mm512_sub_ps(_1,xexpf(_mm512_div_ps(t1,t0)));
+			                            
+#else
+			 cdf             = _mm512_sub_ps(_1,
+			                             _mm512_exp_ps(_mm512_div_ps(t1,t0)));
+#endif
+                         return (cdf);
+		    }
+
+
+		    
+		     
+                      __m512d
+		      rayleigh_sample_zmm8r8(const __m512d rand,
+		                             const __m512d a) {
+
+                          return (rayleigh_invcdf_zmm8r8(rand,a));
+		     }
+
+
+		         
+                      __m512
+		      rayleigh_sample_zmm16r4(const __m512 rand,
+		                             const __m512 a) {
+
+                          return (rayleigh_invcdf_zmm16r4(rand,a));
+		     }
+		     
 
 	   
   
