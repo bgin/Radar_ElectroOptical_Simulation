@@ -6920,7 +6920,55 @@ SOFTWARE.
                            return (pdf);
 		     }
 
-/*	   
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_MEAN returns the mean of the Rayleigh PDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    16 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0.0D+00 < A.
+!
+!    Output, real ( kind = 8 ) MEAN, the mean of the PDF.		     
+*/
+
+
+                      
+      		           
+                      __m512d
+		      rayleigh_mean_zmm8r8(const __m512d a) {
+
+                          const __m512d hpi =  _mm512_set1_pd(0.5*3.14159265358979323846264338328);
+			  __m512d mean;
+			  mean              =  _mm512_mul_pd(a,_mm512_sqrt_pd(hpi));
+			  return (mean);
+		     }
+
+
+		             
+                      __m512
+		      rayleigh_mean_zmmr16r4(const __m512d a) {
+
+                          const __m512 hpi =  _mm512_set1_ps(0.5f*3.14159265358979323846264338328f);
+			  __m512 mean;
+			  mean              =  _mm512_mul_ps(a,_mm512_sqrt_ps(hpi));
+			  return (mean);
+		   }
+
+	   
   
 		     
 		    
