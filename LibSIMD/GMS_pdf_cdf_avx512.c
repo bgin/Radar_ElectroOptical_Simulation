@@ -7202,7 +7202,80 @@ SOFTWARE.
                     }
                     
                     
-		     
+/*
+ !*****************************************************************************80
+!
+!! CAUCHY_CDF_INV inverts the Cauchy CDF.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    21 September 2004
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) CDF, the value of the CDF.
+!    0.0D+00 <= CDF <= 1.0.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) X, the corresponding argument.
+!
+*/     
+
+
+                          
+                      __m512d 
+                      cauchy_cdf_inv_zmm8r8(const __m512d a,
+                                            const __m512d b,
+                                            const __m512d x) {
+                           
+                         const __m512d C314159265358979323846264 = 
+                                               __m512_set1_pd(3.14159265358979323846264);
+                         const __m512d C05 = _mm512_set1_pd(0.5);    
+                         register __m512d cdf,t0,t1;
+                         t0 = _mm512_mul_pd(C314159265358979323846264,
+                                            _mm512_sub_pd(cdf,C05));
+#if (USE_SLEEF_LIB) == 1
+                         t1 = xtan(t0);
+#else
+                         t1 = _mm512_tan_pd(t0);
+#endif                                      
+                         cdf = _mm512_fmadd_pd(a,b,t1);
+                         return (cdf);
+                   }    
+                   
+                   
+                        
+                      __m512
+                      cauchy_cdf_inv_zmm16r4(const __m512 a,
+                                            const __m512 b,
+                                            const __m512 x) {
+                           
+                         const __m512 C314159265358979323846264 = 
+                                               __m512_set1_pd(3.14159265358979323846264f);
+                         const __m512 C05 = _mm512_set1_ps(0.5);    
+                         register __m512 cdf,t0,t1;
+                         t0 = _mm512_mul_ps(C314159265358979323846264,
+                                            _mm512_sub_ps(cdf,C05));
+#if (USE_SLEEF_LIB) == 1
+                         t1 = xtanf(t0);
+#else
+                         t1 = _mm512_tan_ps(t0);
+#endif                                      
+                         cdf = _mm512_fmadd_ps(a,b,t1);
+                         return (cdf);
+                   }  
+                   
+                   		     
 
 	   
   
