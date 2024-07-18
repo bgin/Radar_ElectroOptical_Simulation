@@ -6842,7 +6842,85 @@ SOFTWARE.
 		   }
 		   
 		   
-		   
+		  
+/*
+!*****************************************************************************80
+!
+!! RAYLEIGH_PDF evaluates the Rayleigh PDF.
+!
+!  Discussion:
+!
+!    PDF(A;X) = ( X / A^2 ) * EXP ( - X^2 / ( 2 * A^2 ) )
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    15 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!    0.0D+00 <= X
+!
+!    Input, real ( kind = 8 ) A, the parameter of the PDF.
+!    0 < A.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+                      
+*/
+
+
+                          
+                      __m512d
+		      rayleigh_pdf_zmm8r8(const __m512d x,
+		                          const __m512d a) {
+
+                           const __m512d  _0 = _mm512_setzero_pd();
+			   __m512d t0,t1,t2,t3,pdf;
+			   const __mmask8 m  = _mm512_cmp_pd_mask(x,_0,_CMP_LT_OQ);
+			   t0                = _mm512_mul_pd(a,a);
+			   t1                = zmm8r8_negate(_mm512_div_pd(_mm512_mul_pd(x,x),
+			                                                   _mm512_add_pd(t0,t0)));
+			   t2                = _mm512_div_pd(x,t0);
+#if (USE_SLEEF_LIB) == 1
+                           t3               = _mm512_mul_pd(t2,xexp(t1));
+#else
+			   t3               = _mm512_mul_pd(t2,_mm512_exp_pd(t1));
+#endif
+                           pdf              = _mm512_mask_blend_pd(m,t3,_0);
+                           return (pdf);
+		     }
+
+
+		      
+                      __m512
+		      rayleigh_pdf_zmm16r4(const __m512 x,
+		                           const __m512 a) {
+
+                           const __m512  _0 = _mm512_setzero_ps();
+			   __m512 t0,t1,t2t3,pdf;
+			   const __mmask16 m  = _mm512_cmp_ps_mask(x,_0,_CMP_LT_OQ);
+			   t0                = _mm512_mul_ps(a,a);
+			   t1                = zmm16r4_negate(_mm512_div_ps(_mm512_mul_ps(x,x),
+			                                                   _mm512_add_ps(t0,t0)));
+			   t2                = _mm512_div_ps(x,t0);
+#if (USE_SLEEF_LIB) == 1
+                           t3                = _mm512_mul_ps(t2,xexpf(t1));
+#else
+			   t3                = _mm512_mul_ps(t2,_mm512_exp_ps(t1));
+#endif
+                           pdf               = _mm512_mask_blend_ps(m,_t3,_0);
+                           return (pdf);
+		     }
+
+/*	   
   
 		     
 		    
