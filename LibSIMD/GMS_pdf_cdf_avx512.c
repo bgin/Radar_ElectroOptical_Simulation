@@ -7276,7 +7276,84 @@ SOFTWARE.
                    }  
                    
                    		     
+/*
+  !*****************************************************************************80
+!
+!! CAUCHY_PDF evaluates the Cauchy PDF.
+!
+!  Discussion:
+!
+!    PDF(A,B;X) = 1 / ( PI * B * ( 1 + ( ( X - A ) / B )^2 ) )
+!
+!    The Cauchy PDF is also known as the Breit-Wigner PDF.  It
+!    has some unusual properties.  In particular, the integrals for the
+!    expected value and higher order moments are "singular", in the
+!    sense that the limiting values do not exist.  A result can be
+!    obtained if the upper and lower limits of integration are set
+!    equal to +T and -T, and the limit as T=>INFINITY is taken, but
+!    this is a very weak and unreliable sort of limit.
+!
+!  Licensing:
+!
+!    This code is distributed under the GNU LGPL license.
+!
+!  Modified:
+!
+!    09 February 1999
+!
+!  Author:
+!
+!    John Burkardt
+!
+!  Parameters:
+!
+!    Input, real ( kind = 8 ) X, the argument of the PDF.
+!
+!    Input, real ( kind = 8 ) A, B, the parameters of the PDF.
+!    0.0D+00 < B.
+!
+!    Output, real ( kind = 8 ) PDF, the value of the PDF.
+!
+*/       
 
+
+                          
+                      __m512d  
+                      cauchy_pdf_zmm8r8(const __m512d x,
+                                         const __m512d a,
+                                         const __m512d b) {
+                           
+                         const __m512d C314159265358979323846264 = 
+                                               __m512_set1_pd(3.14159265358979323846264);
+                         const __m512d C1 = _mm512_set1_pd(1.0);
+                         register __m512d pdf,t0,t1,y,pib;
+                         y   = _mm512_div_pd(_mm512_sub_pd(x,a),b);
+                         pib = _mm512_mul_pd(C314159265358979323846264,b);
+                         t0  = _mm512_fmadd_pd(y,y,C1);
+                         t1  = _mm512_mul_pd(pib,t0);
+                         pdf = _mm512_div_pd(C1,t1);
+                         return (pdf);                     
+                   }
+                   
+                   
+                              
+                      __m512 
+                      cauchy_pdf_zmm16r4(const __m512 x,
+                                         const __m512 a,
+                                         const __m512 b) {
+                           
+                         const __m512 C314159265358979323846264 = 
+                                               __m512_set1_ps(3.14159265358979323846264f);
+                         const __m512 C1 = _mm512_set1_ps(1.0);
+                         register __m512 pdf,t0,t1,y,pib;
+                         y   = _mm512_div_ps(_mm512_sub_ps(x,a),b);
+                         pib = _mm512_mul_ps(C314159265358979323846264,b);
+                         t0  = _mm512_fmadd_ps(y,y,C1);
+                         t1  = _mm512_mul_ps(pib,t0);
+                         pdf = _mm512_div_ps(C1,t1);
+                         return (pdf);                     
+                   }
+                   
 	   
   
 		     
