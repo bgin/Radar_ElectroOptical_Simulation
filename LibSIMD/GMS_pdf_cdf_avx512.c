@@ -2626,7 +2626,10 @@ SOFTWARE.
                                 t1               = _mm512_div_pd(vpoly_eval_zmm8r8_v2(64,normal_01_cdf_inv_zmm8r8_e,r),
                                                                  vpoly_eval_zmm8r8_v2(64,normal_01_cdf_inv_zmm8r8_f,r));
 #elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
-
+                                t0               = _mm512_div_pd(vpoly_eval_zmm8r8(8,normal_01_cdf_inv_zmm8r8_c,r),
+                                                                 vpoly_eval_zmm8r8(8,normal_01_cdf_inv_zmm8r8_d,r));
+                                t1               = _mm512_div_pd(vpoly_eval_zmm8r8(8,normal_01_cdf_inv_zmm8r8_e,r),
+                                                                 vpoly_eval_zmm8r8(8,normal_01_cdf_inv_zmm8r8_f,r));
 #endif                                                                 
                                 x                = _mm512_mask_blend_pd(m,t1,t0);      
                              }
@@ -2652,8 +2655,13 @@ SOFTWARE.
                           q = _mm512_sub_ps(p,C05);
                           if(_mm512_cmp_ps_mask(q,split1,_CMP_LE_OQ)) {
                              r = _mm512_sub_ps(const1,_mm512_mul_ps(q,q));
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                              
+                             t0= vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_a,r);
+                             t1= vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_b,r);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
                              t0= vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_a,r);
                              t1= vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_b,r);
+#endif                             
                              x = _mm512_div_ps(_mm512_mul_ps(q,t0),t1);
                           } 
                           else {
@@ -2671,10 +2679,17 @@ SOFTWARE.
                                 const __mmask16 m = _mm512_cmp_ps_mask(r,split2,_CMP_LE_OQ);
                                 r                = _mm512_mask_blend_ps(m,_mm512_sub_ps(r,split2),
                                                                           _mm512_sub_ps(r,const2));
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                                                            
+                                t0               = _mm512_div_ps(vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_c,r),
+                                                                 vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_d,r));
+                                t1               = _mm512_div_ps(vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_e,r),
+                                                                 vpoly_eval_zmm16r4_v2(128,normal_01_cdf_inv_zmm16r4_f,r));
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
                                 t0               = _mm512_div_ps(vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_c,r),
                                                                  vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_d,r));
                                 t1               = _mm512_div_ps(vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_e,r),
                                                                  vpoly_eval_zmm16r4(8,normal_01_cdf_inv_zmm16r4_f,r));
+#endif                                                                 
                                 x                = _mm512_mask_blend_ps(m,t1,t0);      
                              }
                              if(_mm512_cmp_ps_mask(q,C0,_CMP_LT_OQ)) x = negate_zmm16r4(x);
