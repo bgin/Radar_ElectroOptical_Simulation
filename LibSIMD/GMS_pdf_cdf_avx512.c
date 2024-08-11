@@ -5058,35 +5058,7 @@ SOFTWARE.
                             
                       __m512d 
                       gamma_zmm8r8(const __m512d x) {
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(64) static __m512d  c[7] = {
-                                        _mm512_set1_pd(-1.910444077728e-03), 
-                                        _mm512_set1_pd(8.4171387781295e-04), 
-                                        _mm512_set1_pd(-5.952379913043012e-04), 
-                                        _mm512_set1_pd(7.93650793500350248e-04),
-                                        _mm512_set1_pd(-2.777777777777681622553e-03),
-                                        _mm512_set1_pd(8.333333333333333331554247e-02),
-                                        _mm512_set1_pd(5.7083835261e-03)};
-                        __attribute__((section(".rodata")))
-                        __ATTR_ALIGN__(64) static __m512d  p[8]  = {
-                                        _mm512_set1_pd(-1.71618513886549492533811e+00),
-                                        _mm512_set1_pd(2.47656508055759199108314e+01),
-                                        _mm512_set1_pd(-3.79804256470945635097577e+02),
-                                        _mm512_set1_pd(6.29331155312818442661052e+02),
-                                        _mm512_set1_pd(8.66966202790413211295064e+02), 
-                                        _mm512_set1_pd(-3.14512729688483675254357e+04), 
-                                        _mm512_set1_pd(-3.61444134186911729807069e+04),
-                                        _mm512_set1_pd(6.64561438202405440627855e+04)};
-                       __attribute__((section(".rodata")))          
-                       __ATTR_ALIGN__(64) static __m512d  q[8]   = {
-                                        _mm512_set1_pd(-3.08402300119738975254353e+01), 
-                                        _mm512_set1_pd(3.15350626979604161529144e+02),
-                                        _mm512_set1_pd(-1.01515636749021914166146e+03),
-                                        _mm512_set1_pd(-3.10777167157231109440444e+03),
-                                        _mm512_set1_pd(2.25381184209801510330112e+04),
-                                        _mm512_set1_pd(4.75584627752788110767815e+03),
-                                        _mm512_set1_pd(-1.34659959864969306392456e+05),
-                                        _mm512_set1_pd(1.15132259675553483497211e+05)};
+                        
                        __m512d pi                          = 
                                         _mm512_set1_pd(3.1415926535897932384626434e+00);
                        __m512d eps                         =
@@ -5260,7 +5232,7 @@ SOFTWARE.
                             if(_mm512_cmp_pd_mask(y,xbig,_CMP_LE_OQ)) {
                                ysq = _mm512_mul_pd(y,y);
 #if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                  
-                               sum = c[6];
+                               sum = *(__m512d*)&gamma_zmm8r8_c[48];
                                sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[0]);
                                sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[8]);
                                sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[16]);
@@ -5306,35 +5278,7 @@ SOFTWARE.
                          
                       __m512 
                       gamma_zmm16r4(const __m512 x) {
-                         __attribute__((section(".rodata")))
-                         __ATTR_ALIGN__(64) static __m512  c[7] = {
-                                        _mm512_set1_ps(-1.910444077728e-03f), 
-                                        _mm512_set1_ps(8.4171387781295e-04f), 
-                                        _mm512_set1_ps(-5.952379913043012e-04f), 
-                                        _mm512_set1_ps(7.93650793500350248e-04f),
-                                        _mm512_set1_ps(-2.777777777777681622553e-03f),
-                                        _mm512_set1_ps(8.333333333333333331554247e-02f),
-                                        _mm512_set1_ps(5.7083835261e-03f)};
-                        __attribute__((section(".rodata")))
-                        __ATTR_ALIGN__(64) static __m512  p[8]  = {
-                                        _mm512_set1_ps(-1.71618513886549492533811e+00f),
-                                        _mm512_set1_ps(2.47656508055759199108314e+01f),
-                                        _mm512_set1_ps(-3.79804256470945635097577e+02f),
-                                        _mm512_set1_ps(6.29331155312818442661052e+02f),
-                                        _mm512_set1_ps(8.66966202790413211295064e+02f), 
-                                        _mm512_set1_ps(-3.14512729688483675254357e+04f), 
-                                        _mm512_set1_ps(-3.61444134186911729807069e+04f),
-                                        _mm512_set1_ps(6.64561438202405440627855e+04f)}; 
-                       __attribute__((section(".rodata")))         
-                       __ATTR_ALIGN__(64) static __m512  q[8]   = {
-                                        _mm512_set1_ps(-3.08402300119738975254353e+01f), 
-                                        _mm512_set1_ps(3.15350626979604161529144e+02f),
-                                        _mm512_set1_ps(-1.01515636749021914166146e+03f),
-                                        _mm512_set1_ps(-3.10777167157231109440444e+03f),
-                                        _mm512_set1_ps(2.25381184209801510330112e+04f),
-                                        _mm512_set1_ps(4.75584627752788110767815e+03f),
-                                        _mm512_set1_ps(-1.34659959864969306392456e+05f),
-                                        _mm512_set1_ps(1.15132259675553483497211e+05f)};
+                        
                        __m512 pi                          = 
                                         _mm512_set1_ps(3.1415926535897932384626434e+00f);
                        __m512 eps                         =
@@ -5415,22 +5359,41 @@ SOFTWARE.
                           //  Evaluate approximation for 1.0 < argument < 2.0.
                           xnum = zero;
                           xden = one;
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[0]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[0]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[1]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[1]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[2]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[2]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[3]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[3]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[4]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[4]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[5]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[5]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[6]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[7]);
-                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,p[7]),z);
-                          xden = _mm512_fmadd_ps(xden,z,q[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                            
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[0]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[0]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[16]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[16]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[32]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[32]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[48]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[48]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[64]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[64]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[80]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[80]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[96]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[112]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,*(__m512*)&gamma_zmm16r4_p[112]),z);
+                          xden = _mm512_fmadd_ps(xden,z,*(__m512*)&gamma_zmm16r4_q[112]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[0]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[0]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[1]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[1]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[2]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[2]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[3]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[3]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[4]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[4]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[5]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[5]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[6]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[7]);
+                          xnum = _mm512_mul_ps(_mm512_add_ps(xnum,gamma_zmm16r4_p[7]),z);
+                          xden = _mm512_fmadd_ps(xden,z,gamma_zmm16r4_q[7]);
+#endif                          
                           res  = _mm512_add_ps(_mm512_div_ps(xnum,xden),one);
                           // Adjust result for case  0.0 < argument < 1.0.
                           if(_mm512_cmp_ps_mask(y1,y,_CMP_LT_OQ)) 
@@ -5520,13 +5483,23 @@ SOFTWARE.
                             //  Evaluate for 12.0 <= argument.
                             if(_mm512_cmp_ps_mask(y,xbig,_CMP_LE_OQ)) {
                                ysq = _mm512_mul_ps(y,y);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                
                                sum = c[6];
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[0]);
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[1]);
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[2]);
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[3]);
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[4]);
-                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),c[5]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[0]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[16]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[32]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[48]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[64]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),*(__m512*)&gamma_zmm16r4_c[80]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sum = c[6];
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[0]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[1]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[2]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[3]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[4]);
+                               sum = _mm512_add_ps(_mm512_div_ps(sum,ysq),gamma_zmm16r4_c[5]);
+#endif                               
                                sum = _mm512_sub_ps(_mm512_div_ps(sum,y),
                                                    _mm512_add_ps(y,sqrtpi));
 #if (USE_SLEEF_LIB) == 1
