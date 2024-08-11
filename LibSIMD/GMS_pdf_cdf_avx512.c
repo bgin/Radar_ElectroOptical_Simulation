@@ -5167,22 +5167,41 @@ SOFTWARE.
                           //  Evaluate approximation for 1.0 < argument < 2.0.
                           xnum = zero;
                           xden = one;
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[0]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[0]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[1]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[1]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[2]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[2]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[3]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[3]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[4]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[4]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[5]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[5]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[6]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[7]);
-                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,p[7]),z);
-                          xden = _mm512_fmadd_pd(xden,z,q[7]);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                               
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[0]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[0]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[8]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[8]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[16]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[16]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[24]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[24]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[32]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[32]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[40]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[40]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[48]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[56]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,*(__m512d*)&gamma_zmm8r8_p[56]),z);
+                          xden = _mm512_fmadd_pd(xden,z,*(__m512d*)&gamma_zmm8r8_q[56]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[0]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[0]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[1]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[1]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[2]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[2]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[3]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[3]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[4]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[4]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[5]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[5]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[6]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[7]);
+                          xnum = _mm512_mul_pd(_mm512_add_pd(xnum,gamma_zmm8r8_p[7]),z);
+                          xden = _mm512_fmadd_pd(xden,z,gamma_zmm8r8_q[7]);
+#endif                          
                           res  = _mm512_add_pd(_mm512_div_pd(xnum,xden),one);
                           // Adjust result for case  0.0 < argument < 1.0.
                           if(_mm512_cmp_pd_mask(y1,y,_CMP_LT_OQ)) 
@@ -5240,13 +5259,23 @@ SOFTWARE.
                             //  Evaluate for 12.0 <= argument.
                             if(_mm512_cmp_pd_mask(y,xbig,_CMP_LE_OQ)) {
                                ysq = _mm512_mul_pd(y,y);
+#if defined(__GNUC__) && !defined(__INTEL_COMPILER)                                  
                                sum = c[6];
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[0]);
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[1]);
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[2]);
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[3]);
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[4]);
-                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),c[5]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[0]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[8]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[16]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[24]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[32]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),*(__m512d*)&gamma_zmm8r8_c[40]);
+#elif !defined(__GNUC__) && defined(__INTEL_COMPILER)
+                               sum = c[6];
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[0]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[1]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[2]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[3]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[4]);
+                               sum = _mm512_add_pd(_mm512_div_pd(sum,ysq),gamma_zmm8r8_c[5]);
+#endif                               
                                sum = _mm512_sub_pd(_mm512_div_pd(sum,y),
                                                    _mm512_add_pd(y,sqrtpi));
 #if (USE_SLEEF_LIB) == 1
