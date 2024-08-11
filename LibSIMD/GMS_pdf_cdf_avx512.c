@@ -26,7 +26,7 @@ SOFTWARE.
 #include "GMS_sleefsimdsp.hpp"
 #endif
 #include "GMS_simd_utils.h"
-#include "GMS_LUT_cdf_pdf.h"
+#include "GMS_LUT_cdf_pdf_avx512.h"
 
 
  /*
