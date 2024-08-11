@@ -1403,7 +1403,7 @@ __attribute__((aligned(64))) const static float gamma_log_zmm16r4_q4[128] = {
         4.463158187419713286462081E+11,
         4.463158187419713286462081E+11,
         4.463158187419713286462081E+11}; 
-        
+////////////////////////////////////////////////////////////////////////////////////       
 /* Used by the function: bessel_i0_zmm8r8*/               
 __attribute__((section(".rodata")))
 __attribute__((aligned(64))) const static double bessel_i0_zmm8r8_p[120] = {  
@@ -1702,7 +1702,7 @@ __attribute__((aligned(64))) const static double bessel_i0_zmm8r8_qq[56] = {
        
 /* Used by the function: bessel_i0_zmm16r4*/               
 __attribute__((section(".rodata")))
-__attribute__((aligned(64))) const static float bessel_i0_zmm8r8_p[240] = {  
+__attribute__((aligned(64))) const static float bessel_i0_zmm16r4_p[240] = {  
        -5.2487866627945699800E-18,
        -5.2487866627945699800E-18,
        -5.2487866627945699800E-18,
